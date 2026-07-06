@@ -1,0 +1,42 @@
+# encoding: utf-8
+# 2024 R2
+SetScriptVersion(Version="24.2.133")
+Save(Overwrite=True)
+template1 = GetTemplate(TemplateName="Fluid Flow")
+system1 = GetSystem(Name="ENGD")
+system2 = template1.CreateSystem(
+    Position="Right",
+    RelativeTo=system1)
+template2 = GetTemplate(TemplateName="Mechanical Model")
+system3 = template2.CreateSystem(
+    Position="Left",
+    RelativeTo=system2)
+engineeringDataComponent1 = system3.GetComponent(Name="Engineering Data")
+engineeringDataComponent2 = system1.GetComponent(Name="Engineering Data")
+engineeringDataComponent1.ReplaceWithShare(
+    TargetSystem=system3,
+    ComponentToShare=engineeringDataComponent2,
+    SourceSystem=system1)
+geometry1 = system3.GetContainer(ComponentName="Geometry")
+geometry1.SetFile(FilePath="//Mac/Home/Library/CloudStorage/OneDrive-Megosztotttárak–MassachusettsInstituteofTechnology/MIT Rocket Team - Dokumentumok/Summer_26/SolidProp/P_motor.scdocx")
+modelComponent1 = system3.GetComponent(Name="Model")
+modelComponent1.Refresh()
+Save(Overwrite=True)
+Save(Overwrite=True)
+Reset()
+Extensions.UnloadExtension(
+    Id="5f463412-bd3e-484b-87e7-cbc0a665e474",
+    Version="2024.2",
+    Format="Binary")
+Extensions.UnloadExtension(
+    Id="7b0e9e84-396d-4099-9602-2ced9dddc253",
+    Version="2024.2",
+    Format="Binary")
+Extensions.UnloadExtension(
+    Id="20180725-3f81-49eb-9f31-41364844c769",
+    Version="2024.2",
+    Format="Binary")
+Extensions.UnloadExtension(
+    Id="f3e3da52-fb02-4910-8cc9-980efd047bc6",
+    Version="2023.1",
+    Format="Binary")
