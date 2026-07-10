@@ -1,0 +1,28 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+template1 = GetTemplate(
+    TemplateName="Transient Thermal",
+    Solver="ANSYS")
+system1 = GetSystem(Name="SYS")
+system2 = template1.CreateSystem(
+    Position="Below",
+    RelativeTo=system1)
+engineeringDataComponent1 = system2.GetComponent(Name="Engineering Data")
+system3 = GetSystem(Name="ENGD")
+engineeringDataComponent2 = system3.GetComponent(Name="Engineering Data")
+engineeringDataComponent1.ReplaceWithShare(
+    TargetSystem=system2,
+    ComponentToShare=engineeringDataComponent2,
+    SourceSystem=system3)
+geometry1 = system2.GetContainer(ComponentName="Geometry")
+geometry1.Edit(IsDiscoveryGeometry=True)
+geometry1.SetFile(FilePath="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/solidprop/phenolic_case_study/tmp3/motoren.stp")
+geometry1.Edit(IsSpaceClaimGeometry=True)
+geometry1.Edit()
+Save(Overwrite=True)
+geometry1.Exit()
+modelComponent1 = system2.GetComponent(Name="Model")
+modelComponent1.Refresh()
+model1 = system2.GetContainer(ComponentName="Model")
+model1.Edit()
