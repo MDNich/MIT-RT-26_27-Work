@@ -1,0 +1,67 @@
+! ------------------------------------------------------------
+! Prebuilt native Fortran UserMatTh material for inner body phe0
+! Solver units: m, kg, s, W, degree C
+! ------------------------------------------------------------
+
+/COM,Prebuilt Fortran UserMatTh pyrolysis model requested
+
+PYRA  = 333.0
+PYREA = 64081.0
+PYRN  = 1.0
+PYRDH = 418000.0
+TO_K  = 273.15
+
+! TB,USER properties:
+! 1  virgin conductivity
+! 2  char conductivity
+! 3  virgin specific heat
+! 4  char specific heat
+! 5  virgin density
+! 6  char density
+! 7  Arrhenius A
+! 8  activation energy Ea
+! 9  reaction order n
+! 10 positive endothermic pyrolysis enthalpy
+! 11 Celsius-to-Kelvin offset
+
+TB,USER,matid,9,11,THERM
+
+TBTEMP,26.85
+TBDATA,1,0.25,0.30,900,800,1250,700
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,326.85
+TBDATA,1,0.32,0.35,1100,900,1200,650
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,626.85
+TBDATA,1,0.36,0.40,1300,1000,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,776.85
+TBDATA,1,0.36,0.44,1300,1250,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,926.85
+TBDATA,1,0.36,0.49,1300,1550,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,1226.85
+TBDATA,1,0.36,0.68,1300,1950,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,1426.85
+TBDATA,1,0.36,0.81,1300,2060,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,1926.85
+TBDATA,1,0.36,1.24,1300,2085,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+TBTEMP,2476.85
+TBDATA,1,0.36,1.73,1300,2090,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K
+
+! SVAR1 = alpha; SVAR2 = alpha rate
+TB,STATE,matid,,2
+TBDATA,1,0.0,0.0

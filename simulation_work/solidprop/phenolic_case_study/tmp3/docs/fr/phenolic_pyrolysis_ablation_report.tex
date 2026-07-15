@@ -1,0 +1,950 @@
+\documentclass[oneside,openany]{amsdtx}
+\usepackage[margin=.75in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{multicol}
+\usepackage{fancyvrb}
+\usepackage[allcolors=black]{hyperref}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french,english]{babel}
+\usepackage{listingsutf8}
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage{siunitx}
+\usetikzlibrary{arrows.meta,calc,fit,positioning,shapes.geometric}
+
+\definecolor{b}{HTML}{3C78D8}
+\definecolor{B}{HTML}{08357E}
+\definecolor{g}{HTML}{38761D}
+\definecolor{r}{HTML}{7A0101}
+\definecolor{o}{HTML}{FF7F0E}
+\definecolor{p}{HTML}{A64D79}
+\definecolor{codegreen}{HTML}{38761D}
+\definecolor{codeblue}{HTML}{000076}
+\definecolor{codepurple}{HTML}{7A0101}
+\definecolor{phenolicA}{HTML}{A65A2E}
+\definecolor{phenolicB}{HTML}{C98A5A}
+\definecolor{epoxy}{HTML}{E9C46A}
+\definecolor{aluminium}{HTML}{A8B0B8}
+\definecolor{gas}{HTML}{E76F51}
+
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{white},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{codepurple},
+  numberstyle=\ttfamily\scriptsize\color{codeblue},
+  stringstyle=\color{b},
+  basicstyle=\ttfamily\scriptsize,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  keepspaces=true,
+  numbers=left,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=4,
+  texcl=false
+}
+\lstset{style=mystyle,inputencoding=utf8,extendedchars=true}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+\protected\def\code#1{\texttt{\detokenize{#1}}}
+\pdfstringdefDisableCommands{\def\code#1{#1}}
+\providecommand{\codepath}[1]{\path{#1}}
+\newcommand{\dd}{\mathop{}\!\mathrm{d}}
+\newcommand{\pd}{\partial}
+\newcommand{\vect}[1]{\bm{#1}}
+\newcommand{\placeholder}[1]{%
+  \begin{center}
+  \fbox{\begin{minipage}[c][45mm][c]{0.90\textwidth}
+    \centering\color{gray}\large #1
+  \end{minipage}}
+  \end{center}}
+
+\sisetup{locale=FR,per-mode=symbol,range-phrase=--,range-units=single}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\title{~\\[-2em]\sc Modélisation Thermochimique d'un Liner Phénolique\\
+dans un Moteur-fusée Solide avec ANSYS Mechanical}
+\author{\sc MIT Rocket Team --- M. Nichitiu --- Simulations/Propulsion Solide}
+\date{\sc 15 juillet 2026}
+
+\begin{document}
+\selectlanguage{french}
+\maketitle
+\begin{multicols}{2}
+	{\color[HTML]{FFFFFF} .}~~~~~~~~~~~~~~~~~\includegraphics[scale=0.1]{logos/rtlogo.pdf}\\[1em]
+
+
+~\vspace{3.3em}~\\[-4.6em]{\color[HTML]{FFFFFF} .}~~~~~\includegraphics[scale=0.2]{logos/ansys}
+\end{multicols}
+~\\[-1em]
+\setcounter{tocdepth}{2}
+\tableofcontents\vfill 
+\begin{center}
+\begin{minipage}{1\textwidth}
+\small
+\textbf{Objet du document.} \it Ce rapport décrit d'abord le modèle thermique
+transitoire actuellement exécuté, limité à la pyrolyse volumique de la couche
+phénolique interne \code{phe0}. Il propose ensuite une extension qui reste dans
+ANSYS Mechanical pour représenter le dégazage et une récession discrète par
+suppression d'éléments. Fluent et la combustion du propergol ne font pas partie
+du périmètre. Les valeurs marquées \emph{provisoires} doivent être remplacées ou
+validées par des mesures du matériau effectivement fabriqué avant toute décision
+de dimensionnement ou de sécurité.
+\end{minipage}
+\end{center}
+\vfill
+% ============================================================================
+\section{Contexte : Moteur à Propulsion Solide et Empilement du Carter}
+
+\subsection{Périmètre Physique}
+
+Le moteur étudié est un moteur-fusée à propergol solide dont le carter est
+modélisé par quatre tubes coaxiaux en contact : une première couche phénolique
+interne, une couche mince d'époxy, une seconde couche phénolique, puis une
+enveloppe d'aluminium. Le fichier de géométrie contient les corps
+\code{Phenolic0}, \code{Epoxy}, \code{Phenolic1} et \code{Alu}, qui correspondent
+respectivement aux sélections nommées Mechanical \code{phe0}, \code{epo},
+\code{phe1} et \code{alu}. Mechanical ne maille toutefois qu'une portion
+axialement tronquée de ce modèle de référence : l'empilement radial est conservé,
+mais la hauteur réduite allège le maillage et permet un temps de calcul
+raisonnable. Les dimensions ci-après décrivent le moteur complet; les grandeurs
+extensives calculées doivent donc être remises à l'échelle avant toute
+extrapolation au moteur complet.
+
+Le propergol n'est pas présent dans la géométrie. Son action est remplacée par
+une température de gaz et un coefficient de convection imposés sur la face
+interne de \code{phe0}. Il faut également préciser que le perchlorate d'ammonium
+(AP) est l'\emph{oxydant} d'un propergol composite et non, à lui seul, le
+combustible. La composition du liant combustible, la fraction d'aluminium
+éventuelle, la pression de chambre et le profil de combustion ne sont pas
+documentés dans le modèle actuel. Il est donc impossible d'en déduire un flux
+pariétal de premier principe : la condition chaude actuelle demeure une donnée
+d'entrée à calibrer par essai moteur ou par un modèle interne séparé.
+
+\subsection{Dimensions Extraites du Modèle 3D}
+
+Le fichier STEP AP214 utilise le mètre. Les surfaces cylindriques donnent les
+rayons d'interface du tableau~\ref{tab:geometry}. Le modèle est un cylindre droit
+de longueur \(L=\SI{1.8288}{m}\), soit exactement \SI{72}{in}; son alésage vaut
+\SI{266.7}{mm} (\SI{10.5}{in}) et son diamètre extérieur \SI{304.8}{mm}
+(\SI{12}{in}). Les épaisseurs totalisent \SI{19.05}{mm}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.75cm,y=0.80cm,font=\sffamily\small,>=Latex]
+  \draw[fill=gas!18,draw=gas,very thick] (0,0) rectangle (2.4,2.4);
+  \draw[fill=phenolicA!72,draw=phenolicA,very thick] (2.4,0) rectangle (3.7,2.4);
+  \draw[fill=epoxy!75,draw=o,very thick] (3.7,0) rectangle (4.35,2.4);
+  \draw[fill=phenolicB!72,draw=phenolicA,very thick] (4.35,0) rectangle (7.25,2.4);
+  \draw[fill=aluminium!72,draw=black!55,very thick] (7.25,0) rectangle (11.35,2.4);
+  \node[align=center] at (1.2,1.2) {gaz chauds\\propergol\\non maillé};
+  \node[rotate=90] at (3.05,1.2) {\code{phe0}};
+  \node[rotate=90] at (4.025,1.2) {époxy};
+  \node at (5.80,1.2) {\code{phe1}};
+  \node at (9.30,1.2) {aluminium};
+  \draw[->,very thick,gas] (0.15,2.75) -- (2.20,2.75)
+    node[midway,above] {flux chaud \(q''_\mathrm{in}\)};
+  \draw[->,very thick,o] (11.55,1.2) -- (14.8,1.2)
+    node[midway,above] {convection};
+  \draw[->,very thick,r] (11.55,0.85) -- (14.8,0.85)
+    node[midway,below] {rayonnement};
+  \draw[<->] (2.4,-0.40) -- (3.7,-0.40) node[midway,below] {\SI{2.540}{mm}};
+  \draw[<->] (3.7,-1.05) -- (4.35,-1.05) node[midway,below] {\SI{0.635}{mm}};
+  \draw[<->] (4.35,-0.40) -- (7.25,-0.40) node[midway,below] {\SI{6.350}{mm}};
+  \draw[<->] (7.25,-1.05) -- (11.35,-1.05) node[midway,below] {\SI{9.525}{mm}};
+  \node[anchor=west] at (0,-2.45) {\it direction radiale : intérieur \(\longrightarrow\) extérieur};
+\end{tikzpicture}
+\caption{Empilement radial extrait du modèle 3D. La largeur des couches est
+schématique; les cotes indiquées sont exactes.}
+\label{fig:stack}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.18\textwidth}M{0.14\textwidth}M{0.14\textwidth}M{0.15\textwidth}M{0.16\textwidth}}
+\toprule
+\textbf{Corps} & \textbf{Rayon intérieur} & \textbf{Rayon extérieur} & \textbf{Épaisseur} & \textbf{Masse initiale estimée} \\
+ & (mm) & (mm) & (mm) & (kg) \\
+\midrule
+\code{phe0} & 133,350 & 135,890 & 2,540 & 4,911 \\
+\code{epo}  & 135,890 & 136,525 & 0,635 & 1,143 \\
+\code{phe1} & 136,525 & 142,875 & 6,350 & 12,742 \\
+\code{alu}  & 142,875 & 152,400 & 9,525 & 43,629 \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Géométrie du moteur. Les masses sont calculées avec les
+densités initiales du modèle, sans fonds, joints, interfaces ni propergol.}
+\label{tab:geometry}
+\end{table}
+
+L'aire cylindrique chaude est \(2\pi r_i L=\SI{1.5323}{m^2}\) et l'aire
+extérieure \(2\pi r_o L=\SI{1.7512}{m^2}\). Ces valeurs seront utiles pour les
+bilans d'énergie et de masse indépendants du solveur.
+
+\subsection{Matériaux et Interfaces}
+
+Le corps interne \code{phe0} utilise le matériau utilisateur
+\code{PHENOLIC_PYROLYSIS}; \code{phe1} utilise \code{PHENOLIC_VIRGIN}; l'époxy
+et l'aluminium utilisent les matériaux génériques du projet. Les trois
+interfaces concentriques sont en contact thermique lié (\emph{bonded}) et
+contrôlées par le programme. Cette configuration représente une adhésion parfaite
+sans décollement et sans résistance thermique de contact. Elle est cohérente
+pour une première étude, mais elle ne teste ni la délamination, ni la
+carbonisation de l'époxy, ni la création d'un interstice gazeux.
+
+La masse volumique initiale employée est \SI{1250}{kg.m^{-3}} pour le phénolique
+vierge, \SI{1150}{kg.m^{-3}} pour l'époxy et \SI{2700}{kg.m^{-3}} pour
+l'aluminium. L'alliage d'aluminium et le grade exact de l'époxy ne sont pas
+spécifiés. Les propriétés associées sont donc des approximations génériques,
+pas une fiche matériau qualifiée.
+
+% ============================================================================
+\clearpage
+\section{Simulation 1 : Pyrolyse Volumique de la Première Couche Phénolique}
+
+\subsection{Théorie et Dérivation}
+
+\subsubsection{Conservation Locale de l'Énergie}
+
+Considérons un volume matériel fixe \(V\) de phénolique, de frontière
+\(\partial V\), sans mouvement macroscopique du solide. Le premier principe de
+la thermodynamique impose que le taux de variation de l'énergie interne soit
+égal à la puissance thermique reçue par conduction et à la production
+volumique :
+\begin{equation}
+  \frac{\dd}{\dd t}\int_V \rho u\,\dd V
+  =-\int_{\partial V}\vect q\cdot\vect n\,\dd S
+   +\int_V \rho\dot q_m\,\dd V .
+  \label{eq:first-law-integral}
+\end{equation}
+Ici \(u\) est l'énergie interne massique, \(\rho\) la masse volumique du
+milieu condensé, \(\dot q_m\) une source massique et \(\vect q\) le flux de
+chaleur. Le théorème de Gauss transforme le flux surfacique; comme le volume est
+arbitraire,
+\begin{equation}
+  \frac{\pd(\rho u)}{\pd t}=-\vect\nabla\cdot\vect q+\rho\dot q_m .
+\end{equation}
+Avec la loi de Fourier \(\vect q=-k\vect\nabla T\), et en assimilant
+\(\pd u/\pd T\) à \(c_p\) dans la formulation thermique de Mechanical, on
+obtient la forme employée par le modèle :
+\begin{equation}
+  \rho c_p\frac{\pd T}{\pd t}
+  =\vect\nabla\cdot\left(k\vect\nabla T\right)+\rho\dot q_m .
+  \label{eq:heat-general}
+\end{equation}
+
+La pyrolyse est endothermique. Si \(\Delta H_p>0\) est l'enthalpie absorbée par
+kilogramme de matière convertie et \(\alpha\) le degré de conversion, la source
+massique est
+\begin{equation}
+  \dot q_m=-\Delta H_p\dot\alpha,
+\end{equation}
+d'où
+\begin{equation}
+  \boxed{\rho c_p\frac{\pd T}{\pd t}
+  =\vect\nabla\cdot(k\vect\nabla T)
+  -\rho\Delta H_p\dot\alpha.}
+  \label{eq:heat-pyrolysis}
+\end{equation}
+Cette première simulation ne transporte pas l'enthalpie des gaz de pyrolyse et
+ne déplace pas la frontière chaude. L'équation~\eqref{eq:heat-pyrolysis} est donc
+une équation de conduction-réaction, non un modèle complet d'ablation.
+
+\subsubsection{Variable de Conversion et Perte de Masse}
+
+À une température donnée, on interpole entre l'état vierge \(v\) et le résidu
+carbonisé \(c\). La masse volumique apparente du solide est écrite
+\begin{equation}
+  \rho_s(T,\alpha)=(1-\alpha)\rho_v(T)+\alpha\rho_c(T).
+  \label{eq:density-mix}
+\end{equation}
+La définition équivalente de la conversion est
+\begin{equation}
+  \alpha=\frac{\rho_v-\rho_s}{\rho_v-\rho_c},\qquad 0\le\alpha\le1.
+  \label{eq:alpha-density}
+\end{equation}
+Ainsi \(\alpha=0\) désigne la matière vierge et \(\alpha=1\) le
+\emph{char} résiduel. Ce point est essentiel : \(\alpha=1\) ne signifie ni vide,
+ni élément entièrement consommé. Le taux de matière volatile libérée par unité
+de volume est, dans ce modèle à une réaction,
+\begin{equation}
+  \dot\omega'''_g=(\rho_v-\rho_c)\dot\alpha.
+  \label{eq:gas-source}
+\end{equation}
+
+Les autres propriétés sont mélangées linéairement :
+\begin{equation}
+  X(T,\alpha)=(1-\alpha)X_v(T)+\alpha X_c(T),
+  \qquad X\in\{k,c_p,\rho\}.
+  \label{eq:mix-rule}
+\end{equation}
+Cette règle est simple et monotone, mais n'est pas une loi universelle des
+composites poreux. Sa validation exige des mesures intermédiaires ou une analyse
+de sensibilité.
+
+\subsubsection{Cinétique d'Arrhenius et Intégration dans un Incrément}
+
+La fréquence des événements moléculaires activés est représentée par une
+constante d'Arrhenius
+\begin{equation}
+  k_r(T)=A\exp\left(-\frac{E_a}{R T}\right),
+  \label{eq:arrhenius}
+\end{equation}
+où \(A\) est le facteur pré-exponentiel, \(E_a\) l'énergie d'activation et
+\(R=\SI{8.314462618}{J.mol^{-1}.K^{-1}}\). En supposant que la quantité de sites
+réactifs restante est proportionnelle à \((1-\alpha)^n\),
+\begin{equation}
+  \boxed{\dot\alpha=k_r(T)(1-\alpha)^n.}
+  \label{eq:kinetic-law}
+\end{equation}
+
+Pendant un incrément courant \([t,t+\Delta t]\), le code prend \(T\) à la
+température médiane et considère \(k_r\) constant. Posons
+\(\beta=1-\alpha\). Alors \(\dot\beta=-k_r\beta^n\). Pour \(n=1\),
+\begin{equation}
+  \int_{\beta_0}^{\beta_1}\frac{\dd\beta}{\beta}
+  =-k_r\int_t^{t+\Delta t}\dd t,
+\end{equation}
+donc
+\begin{equation}
+  \beta_1=\beta_0\exp(-k_r\Delta t),\qquad
+  \boxed{\alpha_1=1-(1-\alpha_0)\exp(-k_r\Delta t).}
+  \label{eq:analytic-n1}
+\end{equation}
+Pour \(n\ne1\), l'intégration donne
+\begin{equation}
+  \frac{\beta_1^{1-n}-\beta_0^{1-n}}{1-n}=-k_r\Delta t,
+\end{equation}
+soit
+\begin{equation}
+  \boxed{\beta_1=
+  \left[\beta_0^{1-n}-(1-n)k_r\Delta t\right]^{1/(1-n)},
+  \qquad\alpha_1=1-\beta_1.}
+  \label{eq:analytic-n}
+\end{equation}
+Le terme entre crochets est borné pour éviter une valeur non physique. Le taux
+stocké est la moyenne de l'incrément
+\(\dot\alpha=(\alpha_1-\alpha_0)/\Delta t\). Le code demande une réduction du
+pas si \(\Delta\alpha>0{,}05\), ce qui limite une conversion numérique trop
+brutale. \emph{L'incrément courant} désigne précisément ce sous-pas accepté ou
+tenté par le solveur entre deux instants convergés, et non le pas de charge
+complet de sept secondes.
+
+\subsubsection{Forme Faible à Éléments Finis}
+
+En multipliant l'équation~\eqref{eq:heat-pyrolysis} par une fonction test
+\(N_i\), puis en intégrant par parties le terme de conduction, on obtient
+\begin{align}
+  \int_V N_i\rho c_p\frac{\pd T}{\pd t}\,\dd V
+  +\int_V \vect\nabla N_i\cdot k\vect\nabla T\,\dd V
+  ={}&-\int_{\partial V}N_i\vect q\cdot\vect n\,\dd S \\
+  &-\int_V N_i\rho\Delta H_p\dot\alpha\,\dd V.
+  \label{eq:weak}
+\end{align}
+Après l'approximation \(T=\sum_jN_jT_j\), la forme matricielle est
+\begin{equation}
+  \vect C(T,\alpha)\dot{\vect T}
+  +\vect K(T,\alpha)\vect T
+  =\vect f_q-\vect f_p(T,\alpha).
+\end{equation}
+La dépendance de \(k\), \(c_p\), \(\rho\) et \(\dot\alpha\) à la température et
+à l'historique rend le problème non linéaire. \code{UserMatTh} est appelée à
+chaque point d'intégration et renvoie le flux, sa tangente, la capacité, la
+densité, la source massique et les variables d'état~\cite{ansys-usermatth}.
+
+\subsection{Configuration ANSYS Mechanical actuellement choisie}
+
+\subsubsection{Discrétisation, contacts et conditions aux limites}
+
+Les quatre corps utilisent des éléments thermiques volumiques \code{SOLID279}.
+L'export contrôlé contient environ \num{482900} éléments solides et
+\num{2242327} équations. La répartition est donnée au
+tableau~\ref{tab:mesh}. Les huit couches dans \code{phe0} donnent une épaisseur
+radiale moyenne de seulement \SI{0.318}{mm}, ce qui est adapté à la résolution
+d'un front de pyrolyse. Même avec la troncature axiale décrite précédemment,
+cette résolution radiale reste coûteuse en temps de calcul.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{L{0.22\textwidth}M{0.18\textwidth}M{0.24\textwidth}L{0.25\textwidth}}
+\toprule
+\textbf{Corps} & \textbf{Éléments} & \textbf{Niveaux radiaux moyens} & \textbf{Matériau} \\
+\midrule
+\code{phe0} & 315536 & 8 & \code{PHENOLIC_PYROLYSIS} \\
+\code{epo}  & 9516   & 1 & époxy générique \\
+\code{phe1} & 59028  & 6 & \code{PHENOLIC_VIRGIN} \\
+\code{alu}  & 98820  & 9 & aluminium générique \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Maillage du domaine axial tronqué exporté par Mechanical.}
+\label{tab:mesh}
+\end{table}
+
+Les trois paires de contact sont liées : \code{phe0_ext--epo_int},
+\code{epo_ext--phe1_int} et \code{phe1_ext--alu_int}. La température initiale
+est \(T_0=\SI{295.15}{K}\). La face interne reçoit
+\begin{equation}
+  q''_\mathrm{in}=h_\mathrm{in}(T_g-T_s),\qquad
+  h_\mathrm{in}=\SI{1000}{W.m^{-2}.K^{-1}},\quad T_g=\SI{2504}{K}.
+  \label{eq:inner-bc}
+\end{equation}
+Il s'agit de \SI{2230.85}{\degreeCelsius} dans l'interface Mechanical. À
+l'extérieur, le modèle combine une convection naturelle
+\(h_\mathrm{out}=\SI{8}{W.m^{-2}.K^{-1}}\) vers \SI{295.15}{K} et un
+rayonnement de corps gris
+\begin{equation}
+  q''_\mathrm{rad}=\varepsilon\sigma(T_s^4-T_\infty^4),\qquad
+  \varepsilon_\mathrm{Al}=0{,}25.
+\end{equation}
+Les coefficients \(h_\mathrm{in}\), \(h_\mathrm{out}\), la température des gaz et
+l'émissivité sont des hypothèses du projet, non des résultats de la combustion.
+
+L'étude est une thermique transitoire complète de \SI{7}{s}, avec pas
+automatique : \(\Delta t_\mathrm{initial}=\SI{0.05}{s}\),
+\(\Delta t_\mathrm{min}=\SI{0.001}{s}\),
+\(\Delta t_\mathrm{max}=\SI{0.05}{s}\). La routine utilisateur ajoute son propre
+critère \(\Delta\alpha\le0{,}05\). Les variables d'état sont demandées à tous
+les sous-pas par \code{OUTRES,SVAR,ALL}. La configuration observée lance huit
+processus DMP; la routine n'utilise aucune variable globale mutable et convient
+donc aussi à un futur calcul distribué, sous réserve que la DLL soit accessible
+à chaque processus.
+
+\subsubsection{Propriétés thermiques et cinétiques}
+
+Le tableau~\ref{tab:phenolic-props} reproduit les courbes effectivement passées
+à \code{UserMatTh}. Mechanical travaille en degrés Celsius dans cet export,
+mais le tableau est présenté en kelvins. Entre les points, ANSYS interpole les
+propriétés; au-delà du dernier point, toute extrapolation doit être évitée.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{M{0.075\textwidth}M{0.085\textwidth}M{0.085\textwidth}M{0.095\textwidth}M{0.095\textwidth}M{0.085\textwidth}M{0.085\textwidth}}
+\toprule
+\(T\) & \(k_v\) & \(k_c\) & \(c_{p,v}\) & \(c_{p,c}\) & \(\rho_v\) & \(\rho_c\) \\
+(K) & \multicolumn{2}{c}{(W m\(^{-1}\) K\(^{-1}\))} &
+\multicolumn{2}{c}{(J kg\(^{-1}\) K\(^{-1}\))} &
+\multicolumn{2}{c}{(kg m\(^{-3}\))} \\
+\midrule
+300  & 0,25 & 0,30 & 900  & 800  & 1250 & 700 \\
+600  & 0,32 & 0,35 & 1100 & 900  & 1200 & 650 \\
+900  & 0,36 & 0,40 & 1300 & 1000 & 1150 & 600 \\
+1050 & 0,36 & 0,44 & 1300 & 1250 & 1150 & 600 \\
+1200 & 0,36 & 0,49 & 1300 & 1550 & 1150 & 600 \\
+1500 & 0,36 & 0,68 & 1300 & 1950 & 1150 & 600 \\
+1700 & 0,36 & 0,81 & 1300 & 2060 & 1150 & 600 \\
+2200 & 0,36 & 1,24 & 1300 & 2085 & 1150 & 600 \\
+2750 & 0,36 & 1,73 & 1300 & 2090 & 1150 & 600 \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Courbes vierge/char du matériau \code{PHENOLIC_PYROLYSIS} actuellement
+codées. Elles sont des courbes d'ingénierie du projet, pas encore une
+caractérisation certifiée du grade fabriqué.}
+\label{tab:phenolic-props}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.22\textwidth}M{0.20\textwidth}L{0.47\textwidth}}
+\toprule
+\textbf{Paramètre} & \textbf{Valeur actuelle} & \textbf{Statut et provenance} \\
+\midrule
+\(A\) & \(333\ \mathrm{s^{-1}}\) & Valeur lue dans
+\code{phenolic_pyrolysis_native.apdl}; origine expérimentale non incorporée au
+projet. À recalibrer par TGA multi-vitesses. \\
+\(E_a\) & \(\SI{64.081}{kJ.mol^{-1}}\) & Même statut que \(A\); le couple
+\((A,E_a)\) doit être identifié ensemble. \\
+\(n\) & 1 & Hypothèse de réaction globale du premier ordre. \\
+\(\Delta H_p\) & \(\SI{418}{kJ.kg^{-1}}\) & Enthalpie endothermique codée dans
+le projet; à remplacer par une mesure DSC du système résine/fibres réel. \\
+\(R\) & \(\SI{8.31446}{J.mol^{-1}.K^{-1}}\) & Constante universelle des gaz. \\
+\(\Delta\alpha_\mathrm{max}\) & 0,05 par incrément & Critère numérique codé dans
+\code{usermatth.F}, pas une propriété physique. \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Cinétique de pyrolyse de la simulation 1.}
+\label{tab:kinetics}
+\end{table}
+
+Le phénolique vierge \code{phe1} emploie les colonnes vierges du
+tableau~\ref{tab:phenolic-props} sans conversion. L'époxy générique a
+\(\rho=\SI{1150}{kg.m^{-3}}\), \(k=0{,}25\) puis
+\(\SI{0.30}{W.m^{-1}.K^{-1}}\) à 300 et \SI{600}{K}, et \(c_p=1000\) puis
+\(\SI{1100}{J.kg^{-1}.K^{-1}}\). L'aluminium générique a
+\(\rho=\SI{2700}{kg.m^{-3}}\), \(k=\SI{167}{W.m^{-1}.K^{-1}}\) et
+\(c_p=\SI{896}{J.kg^{-1}.K^{-1}}\). Ces deux matériaux ne possèdent pas, dans
+le projet, de courbe complète jusqu'à \SI{2750}{K}; l'extrapolation constante
+est un risque majeur si la chaleur atteint les couches externes. Pour une étude
+qualifiée, il faut connaître le grade d'époxy et l'alliage d'aluminium, puis
+ajouter leurs propriétés dépendantes de \(T\), transitions, décomposition ou
+fusion selon le domaine réellement atteint.
+
+Les tendances du char (conductivité croissante à haute température, perte de
+masse et capacité élevée) sont qualitativement compatibles avec les modèles
+d'ablateurs carbonisants historiques~\cite{clark1972,ewing2013}. Elles ne
+justifient cependant pas les nombres précis pour un phénolique inconnu. La NASA
+utilise la TGA pour la perte de masse et le rendement en char, la DSC pour
+\(c_p\) et les enthalpies, et la LFA pour la diffusivité/conductivité
+thermique~\cite{nasa-testing}.
+
+\subsubsection{Code MAPDL}
+\label{sec:apdl-code}
+
+Le bloc MAPDL suivant est le fichier réellement associé au matériau interne. Il
+crée neuf points de \code{TB,USER}, onze propriétés à chaque température, puis
+deux variables d'état : \code{SVAR1}=\(\alpha\) et
+\code{SVAR2}=\(\dot\alpha\). La variable \code{matid} est résolue par le
+contexte de la commande Mechanical; elle ne doit pas être remplacée en dur sans
+vérifier l'identifiant produit par l'export.
+
+\medskip
+\noindent\textbf{Listing MAPDL complet --- fichier
+\code{phenolic_pyrolysis_native.apdl}.}
+\lstinputlisting[language={}]{code/phenolic_pyrolysis_native.apdl}
+
+\subsubsection{Code Fortran \code{UserMatTh}}
+
+La routine native ci-dessous est celle compilée dans
+\code{usermatthLib.dll}. Elle interpole les propriétés \code{TB,USER}, intègre
+analytiquement la cinétique, met à jour les deux variables d'état, renvoie
+\(\vect q=-k\vect\nabla T\), \(\pd u/\pd T=c_p\), la densité et la génération
+massique \(-\Delta H_p\dot\alpha\). Selon la documentation ANSYS, \code{hgen}
+est bien une source par unité de masse pour les éléments purement
+thermiques~\cite{ansys-usermatth}.
+
+\medskip
+\noindent\textbf{Listing Fortran complet --- fichier \code{usermatth.F}.}
+\lstinputlisting[language=Fortran]{code/usermatth.F}
+
+La construction Windows x64 utilise Visual Studio 2022 C++ et Intel oneAPI
+Classic Fortran 2023.1. Le script \code{build_usermatth_x64.cmd} compile avec
+\code{/O2 /MD}, lie les bibliothèques personnalisées ANSYS v261 et contrôle que
+le symbole \code{USERMATTH} est exporté. Cette chaîne de compilation doit rester
+alignée avec la version du solveur.
+
+\subsubsection{Préparation Pas à Pas de la Simulation}
+
+\begin{enumerate}[leftmargin=2.2em,label=\textbf{\arabic*.}]
+  \item \textbf{Identifier les matériaux physiques.} Relever le fabricant, le
+  grade, la fraction et l'orientation des renforts du phénolique, le système
+  époxy et l'alliage d'aluminium. Sans ces informations, conserver explicitement
+  l'étiquette « données préliminaires ».
+
+  \item \textbf{Caractériser le phénolique.} Réaliser une TGA sous atmosphère
+  inerte à plusieurs vitesses de chauffage pour obtenir \(\rho(T)\), le rendement
+  en char et la cinétique; effectuer une DSC pour \(c_p(T)\) et
+  \(\Delta H_p\), une LFA pour \(k(T)\), puis mesurer la densité apparente du
+  char. Ajuster d'abord \(A,E_a,n\) sur toutes les courbes TGA et valider sur une
+  vitesse de chauffage non utilisée par l'ajustement. Une cinétique à plusieurs
+  réactions sera préférable si une seule loi ne reproduit pas les pics.
+
+  \item \textbf{Compléter Engineering Data.} Saisir les tables vierge et char
+  jusqu'à au moins la température gazeuse maximale, avec unités explicites.
+  Ajouter les courbes de l'époxy et de l'aluminium sur leur domaine effectivement
+  atteint. Ne pas extrapoler aveuglément un polymère jusqu'à \SI{2750}{K}.
+
+  \item \textbf{Affecter les corps.} Dans Mechanical, vérifier
+  \code{phe0}=\code{PHENOLIC_PYROLYSIS},
+  \code{phe1}=\code{PHENOLIC_VIRGIN}, \code{epo}=époxy et
+  \code{alu}=aluminium. Contrôler l'affectation dans l'export \code{ds.dat}, pas
+  uniquement par la couleur de l'interface.
+
+  \item \textbf{Préparer les sélections nommées.} Conserver les quatre corps,
+  les trois paires d'interface, la face interne chaude et la face externe. Des
+  noms stables empêchent les commandes MAPDL d'être attachées à une sélection
+  géométrique fragile.
+
+  \item \textbf{Définir les contacts.} Pour cette simulation, utiliser des
+  contacts thermiques liés et vérifier que chaque paire est fermée. Si un
+  adhésif est maillé comme volume, ne pas ajouter en plus une résistance de
+  contact qui compterait deux fois le même effet.
+
+  \item \textbf{Mailler et tester l'indépendance.} Conserver au moins huit
+  niveaux à travers \code{phe0} pour le calcul de référence, puis comparer la
+  température de paroi et la profondeur \(\alpha=0{,}5\) avec un maillage radial
+  plus fin. L'indépendance doit porter sur ces observables, pas seulement sur la
+  température maximale.
+
+  \item \textbf{Construire la DLL.} Depuis une invite x64 correctement
+  initialisée, lancer \code{build_usermatth_x64.cmd}; vérifier le code retour,
+  \code{compile.log}, \code{link.log} et l'export \code{USERMATTH}. Copier ou
+  rendre accessible la DLL au répertoire du solveur avant le lancement.
+
+  \item \textbf{Insérer le bloc MAPDL.} Sous la branche de l'analyse thermique,
+  insérer une commande qui applique le contenu de la
+  section~\ref{sec:apdl-code} au
+  matériau de \code{phe0}. Après génération de l'entrée solveur, vérifier la
+  présence de \code{TB,USER}, \code{TB,STATE} et de neuf \code{TBTEMP}.
+
+  \item \textbf{Définir le chargement.} Imposer \SI{295.15}{K} au départ, la
+  convection chaude de l'équation~\eqref{eq:inner-bc}, puis la convection et le
+  rayonnement externes. Remplacer à terme \(T_g(t)\) et \(h(t)\) par des profils
+  issus d'un essai ou d'un calcul de chambre. Faire aussi varier \(h\) au moins
+  entre 500 et \SI{2000}{W.m^{-2}.K^{-1}} pour quantifier sa dominance.
+
+  \item \textbf{Régler le temps et la convergence.} Utiliser le pas automatique
+  entre \SI{0.001}{s} et \SI{0.05}{s}, garder la limite
+  \(\Delta\alpha\le0{,}05\), et enregistrer \code{SVAR}. Un unique pas de
+  \SI{7}{s} supprimerait la résolution du front et ne serait pas physiquement
+  acceptable, même si la loi locale est intégrée analytiquement.
+
+  \item \textbf{Vérifier le démarrage.} Dans la sortie solveur, confirmer le
+  chargement de la bibliothèque utilisateur, le nombre de processus souhaité,
+  l'absence d'erreur \code{UserMatTh} et la présence des variables d'état.
+  Lancer d'abord un coupon ou un secteur très réduit de \SI{0.1}{s}.
+
+  \item \textbf{Valider par bilans.} À chaque résultat, contrôler
+  \(0\le\alpha\le1\), la monotonie temporelle de \(\alpha\), le bilan de chaleur
+  et la masse volatile intégrée à partir de l'équation~\eqref{eq:gas-source}.
+  Comparer enfin un cas sans pyrolyse et un cas adiabatique simplifié à une
+  solution analytique de conduction.
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[font=\sffamily\small,>=Latex,node distance=9mm and 10mm,
+  block/.style={draw=B,very thick,rounded corners=7pt,fill=b!10,
+    align=center,text width=35mm,minimum height=12mm},
+  state/.style={draw=phenolicA,very thick,rounded corners=7pt,fill=phenolicB!18,
+    align=center,text width=35mm,minimum height=12mm},
+  arr/.style={-Latex,very thick,draw=black!60}]
+  \node[block] (temp) {température locale\\\(T,\Delta T,\Delta t\)};
+  \node[block,right=of temp] (arrh) {Arrhenius\\\(k_r=Ae^{-E_a/(RT)}\)};
+  \node[state,right=of arrh] (alpha) {état local\\\(\alpha,\dot\alpha\)};
+  \node[block,below=25mm of alpha] (mix) {mélange vierge/char\\\(k,c_p,\rho\)};
+  \node[block,below left=10mm and 10mm of alpha] (source) {source endothermique\\\(-\Delta H_p\dot\alpha\)};
+  \node[block,left=of source] (fem) {équation EF\\\(\vect C\dot{\vect T}+\vect K\vect T=\vect f\)};
+  \draw[arr] (temp)--(arrh); \draw[arr] (arrh)--(alpha);
+  \draw[arr] (alpha)--(mix); \draw[arr] (alpha)--(source.north east);
+  \draw[arr] (mix)-|(fem); \draw[arr] (source)--(fem);
+  \draw[arr] (fem.west) -- ++(-7mm,0) |- (temp.west);
+\end{tikzpicture}
+\caption{Couplage local de la simulation 1. La conversion modifie à la fois la
+source thermique et les propriétés au sous-pas suivant.}
+\label{fig:sim1-coupling}
+\end{figure}
+
+\subsection{Résultats de la simulation 1 (à compléter)}
+
+\placeholder{Sous-section réservée aux résultats : températures, SVAR1,
+SVAR2, profondeur de pyrolyse, bilans d'énergie et étude d'indépendance.}
+
+% ============================================================================
+\clearpage
+\section{Simulation 2 : Dégazage et Suppression d'Éléments dans Mechanical}
+
+\subsection{Théorie Proposée et Dérivation}
+
+\subsubsection{Bilan de Masse du Solide et Génération de Gaz}
+
+La simulation 2 conserve la cinétique de la simulation 1, mais distingue le
+résidu solide des produits gazeux. Sur un volume initial, la diminution de masse
+condensée est la source de gaz :
+\begin{equation}
+  \frac{\pd\rho_s}{\pd t}=-\dot\omega'''_g,
+  \qquad
+  \dot\omega'''_g=(\rho_v-\rho_c)\dot\alpha.
+  \label{eq:solid-mass-sim2}
+\end{equation}
+Le rendement gazeux final du modèle à une réaction vaut donc
+\begin{equation}
+  Y_g=\frac{\rho_v-\rho_c}{\rho_v}=1-\frac{\rho_c}{\rho_v}.
+  \label{eq:gas-yield}
+\end{equation}
+Avec les tables actuelles, \(Y_g\) varie de 0,44 à 0,48; une valeur nominale
+\(Y_g=0{,}47\) est cohérente avec le modèle, mais doit être confirmée par la
+masse résiduelle TGA.
+
+Dans un modèle complet d'ablateur poreux, la conservation de masse du gaz est
+\begin{equation}
+  \frac{\pd(\phi\rho_g)}{\pd t}
+  +\vect\nabla\cdot(\rho_g\vect u_g)=\dot\omega'''_g,
+  \label{eq:gas-mass-full}
+\end{equation}
+où \(\phi\) est la porosité et \(\vect u_g\) la vitesse superficielle. Pour un
+écoulement lent dans le char, la loi de Darcy et le gaz parfait donnent
+\begin{equation}
+  \vect u_g=-\frac{K(\alpha,T)}{\mu_g}\vect\nabla p_g,
+  \qquad
+  \rho_g=\frac{p_g M_g}{R T_g}.
+  \label{eq:darcy-ideal}
+\end{equation}
+Les codes de réponse de matériaux ablatifs tels que CHAR résolvent des versions
+couplées de ces bilans de masse et d'énergie~\cite{amar2010,amar2016,ewing2013}.
+Un élément thermique standard de Mechanical n'a toutefois aucun degré de liberté
+de pression. \code{UserMatTh} ne peut donc pas, à elle seule, résoudre
+l'équation~\eqref{eq:gas-mass-full}. Rester dans Mechanical impose soit un
+élément utilisateur multiphysique beaucoup plus lourd, soit un modèle réduit.
+
+\subsubsection{Fermeture radiale réduite compatible avec Mechanical}
+
+Le modèle proposé considère que les gaz formés dans \code{phe0} s'évacuent
+rapidement vers la paroi chaude et que leur stockage est négligeable. En
+axisymétrie cylindrique, le flux massique de gaz atteignant la surface de rayon
+\(r_s\) est alors obtenu directement par intégration de la source :
+\begin{equation}
+  \boxed{\dot m''_g(r_s)=\frac{1}{r_s}
+  \int_{r_s}^{R_0}\dot\omega'''_g(r)\,r\,\dd r,}
+  \label{eq:radial-gas-flux}
+\end{equation}
+où \(R_0\) est la limite externe de \code{phe0}. Cette expression provient du
+bilan \(2\pi r_sL\dot m''_g=\int_{r_s}^{R_0}2\pi rL
+\dot\omega'''_g\dd r\). Elle conserve la masse gazeuse globale même sans
+pression résolue.
+
+Le gaz emporte une enthalpie sensible. Une fermeture locale minimale ajoute à
+l'équation du solide
+\begin{equation}
+  \dot q_{m,g}=-\frac{\dot\omega'''_g}{\rho_s}
+  c_{p,g}(T-T_\mathrm{ref}).
+  \label{eq:gas-local-sink}
+\end{equation}
+Ce terme ne doit être utilisé que si \(\Delta H_p\) ne contient pas déjà cette
+enthalpie; sinon il y aurait double comptage. Une formulation plus fidèle ajoute
+\(-\vect\nabla\cdot(\dot m''_g h_g)\) au bilan d'énergie, comme dans les modèles
+de réponse matériau~\cite{ewing2013,amar2010}.
+
+\subsubsection{Réduction du flux convectif par soufflage}
+
+Le dégazage vers la chambre crée un soufflage opposé au transfert de chaleur.
+Dans un film gazeux plan, stationnaire, à propriétés constantes, l'équation
+d'énergie sans source s'écrit
+\begin{equation}
+  \dot m''_g c_{p,g}\frac{\dd T}{\dd y}
+  =k_g\frac{\dd^2T}{\dd y^2}.
+\end{equation}
+En intégrant entre la paroi et le bord du film puis en exprimant l'épaisseur par
+le coefficient sans soufflage \(h_0=k_g/\delta\), on obtient la correction
+classique sous la forme
+\begin{equation}
+  B_h=\frac{\dot m''_g c_{p,g}}{h_0},\qquad
+  F(B_h)=\frac{B_h}{\exp(B_h)-1},
+\end{equation}
+\begin{equation}
+  \boxed{q''_\mathrm{conv}=h_0F(B_h)(T_g-T_s).}
+  \label{eq:blowing}
+\end{equation}
+Comme \(F(0)=1\) et \(F(B_h)<1\) pour \(B_h>0\), le modèle revient à la
+convection actuelle sans dégazage et réduit progressivement le flux lorsque la
+production de gaz augmente. Cette loi est une fermeture d'ingénierie; elle ne
+remplace pas un calcul de couche limite et doit être calibrée sur pression,
+composition du propergol et essai.
+
+\subsubsection{Bilan de surface, récession et critère de suppression}
+
+La pyrolyse produit du char; elle ne retire pas automatiquement ce char. La
+récession demande un second mécanisme --- oxydation, sublimation ou érosion
+mécanique --- et un bilan à la surface :
+\begin{equation}
+  q''_\mathrm{conv}+q''_\mathrm{rad}
+  =q''_\mathrm{cond}+\dot m''_g\Delta h_g
+   +\dot m''_\mathrm{abl}H_\mathrm{eff}.
+  \label{eq:surface-balance}
+\end{equation}
+En l'absence de données chimiques suffisantes, une loi énergétique bornée est
+proposée :
+\begin{equation}
+  \dot m''_\mathrm{abl}=
+  \max\left[0,
+  \frac{q''_\mathrm{conv}+q''_\mathrm{rad}-q''_\mathrm{cond}
+  -\dot m''_g\Delta h_g}{H_\mathrm{eff}}\right],
+  \qquad
+  \dot s=\frac{\dot m''_\mathrm{abl}}{\rho_c}.
+  \label{eq:recession}
+\end{equation}
+La profondeur récessée est \(s(t)=\int_0^t\dot s\dd t\). Les éléments de
+\code{phe0} sont organisés en bandes radiales; une bande n'est supprimée que
+lorsque \(s\) franchit son épaisseur cumulée. Le critère est donc la récession
+intégrée, éventuellement assortie de \(\alpha\ge0{,}99\), mais jamais
+\(\alpha=1\) seul.
+
+Dans MAPDL, \code{EKILL} multiplie la contribution d'un élément par un facteur
+quasi nul; l'élément reste dans le maillage. Un élément thermique mort n'apporte
+plus de capacité ni de charge, et ses variables d'état sont remises à zéro lors
+de la mort~\cite{ansys-birthdeath,ansys-ekill}. Toute énergie et masse résiduelles
+doivent donc être enregistrées avant \code{EKILL} et incluses dans un bilan.
+Après chaque mort de bande, la convection chaude et les éléments surfaciques
+doivent être transférés à la nouvelle face exposée. Avec seulement huit couches
+dans \code{phe0}, la récession progresserait par sauts d'environ
+\SI{0.318}{mm}; une étude de retrait crédible devrait viser 20 à 40 bandes
+radiales, ou démontrer que cette marche est suffisamment petite.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[font=\sffamily\small,>=Latex,node distance=8mm and 9mm,
+  block/.style={draw=B,very thick,rounded corners=7pt,fill=b!10,
+    align=center,text width=34mm,minimum height=13mm},
+  special/.style={draw=phenolicA,very thick,rounded corners=7pt,fill=phenolicB!20,
+    align=center,text width=34mm,minimum height=13mm},
+  kill/.style={draw=r,very thick,rounded corners=7pt,fill=red!8,
+    align=center,text width=34mm,minimum height=13mm},
+  arr/.style={-Latex,very thick,draw=black!60}]
+  \node[block] (pyro) {pyrolyse locale\\\(\alpha,\dot\omega'''_g\)};
+  \node[block,right=of pyro] (gas) {flux gazeux radial\\\(\dot m''_g\)};
+  \node[special,right=of gas] (blow) {soufflage et enthalpie\\\(F(B_h),\Delta h_g\)};
+  \node[block,below=of blow] (surface) {bilan de surface\\\(\dot m''_\mathrm{abl}\)};
+  \node[special,left=of surface] (recession) {récession intégrée\\\(s(t)\)};
+  \node[kill,left=of recession] (ekill) {franchissement de bande\\\code{EKILL}};
+  \draw[arr] (pyro)--(gas); \draw[arr] (gas)--(blow);
+  \draw[arr] (blow)--(surface); \draw[arr] (surface)--(recession);
+  \draw[arr] (recession)--(ekill);
+  \draw[arr] (ekill.west) -- ++(-6mm,0) |- (pyro.west)
+    node[pos=.25,left,align=right] {nouvelle face\\chaude};
+\end{tikzpicture}
+\caption{Chaîne physique proposée pour la simulation 2 dans Mechanical. La
+suppression est pilotée par la récession, non directement par SVAR1.}
+\label{fig:sim2-chain}
+\end{figure}
+
+\subsubsection{Valeurs initiales proposées et études de sensibilité}
+
+Le tableau~\ref{tab:sim2-values} fournit un jeu de départ destiné au prototypage,
+pas à la qualification. Les perméabilités sont tirées du modèle PICA de CHAR et
+sont seulement des substituts pour un phénolique dense~\cite{amar2016}. Les
+produits d'une résine phénolique incluent notamment \(\mathrm{H_2}\), vapeur
+d'eau et hydrocarbures aromatiques, avec une dépendance à la vitesse de
+chauffage~\cite{bessire2023}; une pseudo-espèce unique est donc une forte
+simplification.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{L{0.18\textwidth}M{0.16\textwidth}M{0.18\textwidth}L{0.38\textwidth}}
+\toprule
+\textbf{Quantité} & \textbf{Nominal proposé} & \textbf{Plage de sensibilité} & \textbf{Justification / mesure requise} \\
+\midrule
+Rendement gazeux \(Y_g\) & 0,47 & 0,44--0,50 & Déduit des densités vierge/char actuelles par l'équation~\eqref{eq:gas-yield}; à remplacer par TGA. \\
+Porosité vierge \(\phi_v\) & 0,13 & 0,05--0,20 & Déduite de \(1-\rho_v/\rho_\mathrm{squelette}\) avec \(\rho_\mathrm{squelette}=\SI{1430}{kg.m^{-3}}\), valeur historique phénolique-nylon~\cite{clark1972}. \\
+Porosité char \(\phi_c\) & 0,55 & 0,45--0,65 & Même calcul avec \(\rho_c=\SIrange{600}{700}{kg.m^{-3}}\); à mesurer par pycnométrie/porosimétrie. \\
+Perméabilité vierge \(K_v\) & \(10^{-12}\ \mathrm{m^2}\) & \(10^{-14}\)--\(10^{-11}\ \mathrm{m^2}\) & Valeur PICA « Model A » utilisée comme substitut~\cite{amar2016}; non transférable sans essai. \\
+Perméabilité char \(K_c\) & \(10^{-10}\ \mathrm{m^2}\) & \(10^{-12}\)--\(10^{-9}\ \mathrm{m^2}\) & Même source; interpolation logarithmique en \(\alpha\) recommandée. \\
+Viscosité gaz \(\mu_g\) & \(4\times10^{-5}\ \mathrm{Pa\,s}\) & \(2\)--\(6\times10^{-5}\ \mathrm{Pa\,s}\) & Pseudo-gaz chaud provisoire; calcul de mélange requis. \\
+Masse molaire \(M_g\) & \(\SI{0.024}{kg.mol^{-1}}\) & 0,018--0,030 & Pseudo-espèce couvrant gaz légers et vapeur; à calculer avec la composition mesurée. \\
+Capacité gaz \(c_{p,g}\) & \(\SI{1.5}{kJ.kg^{-1}.K^{-1}}\) & 1,2--2,0 & Valeur de départ de pseudo-gaz; utiliser une table \(c_p(T,p)\) après identification. \\
+Émissivité du char \(\varepsilon_c\) & 0,80 & 0,70--0,90 & Point de départ historique phénolique-nylon~\cite{clark1972}; mesure haute température requise. \\
+Enthalpie d'ablation \(H_\mathrm{eff}\) & \(\SI{35}{MJ.kg^{-1}}\) & 20, 35 et \(\SI{50}{MJ.kg^{-1}}\) & Paramètre effectif de récession. \SI{50}{MJ.kg^{-1}} est un ancrage historique de sublimation~\cite{clark1972}; calibrer sur perte d'épaisseur. \\
+Température de référence \(T_\mathrm{ref}\) & \(\SI{295.15}{K}\) & fixée & Cohérente avec l'état initial. \\
+Pas de récession & \(\dot s\Delta t\le0{,}2\Delta r\) & 0,1--0,25 \(\Delta r\) & Critère numérique pour éviter de franchir plusieurs bandes en un sous-pas. \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Paramètres de départ proposés pour la simulation 2. Ils doivent être
+traités comme variables d'incertitude tant qu'ils ne sont pas caractérisés.}
+\label{tab:sim2-values}
+\end{table}
+
+Avant une simulation moteur complète, trois validations séparées sont
+nécessaires : (i) coupon TGA/DSC/LFA pour la décomposition, (ii) perméabilité et
+pression de gaz dans un coupon chauffé pour le dégazage, (iii) essai de flamme ou
+de moteur instrumenté pour \(h_0\), le soufflage et la récession. Le modèle ne
+doit pas compenser une mauvaise condition de chambre en ajustant artificiellement
+\(H_\mathrm{eff}\).
+
+\subsection{Implémentation dans Mechanical (à compléter)}
+
+\placeholder{Sous-section réservée à l'implémentation future : architecture des
+bandes, commandes MAPDL, transfert des charges, logique de redémarrage et
+vérifications de conservation.}
+
+\subsection{Résultats de la simulation 2 (à compléter)}
+
+\placeholder{Sous-section réservée aux résultats : débit de dégazage, facteur de
+soufflage, récession, chronologie des bandes supprimées et bilans masse-énergie.}
+
+% ============================================================================
+\clearpage
+\begin{thebibliography}{99}
+
+\bibitem{ansys-usermatth}
+ANSYS, Inc., \emph{UserMatTh --- User-Defined Thermal Material Model},
+Mechanical APDL Programmer's Reference, version 2026 R1,
+\url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_prog/Z7K4r1e5lcd.html},
+consulté le 15 juillet 2026.
+
+\bibitem{ansys-birthdeath}
+ANSYS, Inc., \emph{Using Element Birth and Death}, Mechanical APDL Advanced
+Analysis Guide,
+\url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v251/en/ans_adv/Hlp_G_ADV6_2.html},
+consulté le 15 juillet 2026.
+
+\bibitem{ansys-ekill}
+ANSYS, Inc., \emph{EKILL --- Deactivates an element}, Mechanical APDL Command
+Reference,
+\url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v242/en/ans_cmd/Hlp_C_EKILL.html},
+consulté le 15 juillet 2026.
+
+\bibitem{ewing2013}
+M. E. Ewing, T. S. Laker et D. T. Walker, \emph{Numerical Modeling of
+Ablation Heat Transfer}, NASA NTRS 20140008557, 2013,
+\url{https://ntrs.nasa.gov/citations/20140008557}.
+
+\bibitem{amar2010}
+A. J. Amar, N. D. Calvert et B. S. Kirk, \emph{Development and Verification of
+the Charring Ablating Thermal Protection Implicit System Solver}, NASA NTRS
+20110000471, 2010,
+\url{https://ntrs.nasa.gov/citations/20110000471}.
+
+\bibitem{amar2016}
+A. J. Amar, A. B. Oliver, B. S. Kirk, G. Salazar et J. Droba,
+\emph{Overview of the CHarring Ablator Response (CHAR) Code}, NASA NTRS
+20160005889, 2016,
+\url{https://ntrs.nasa.gov/citations/20160005889}.
+
+\bibitem{clark1972}
+R. K. Clark, \emph{A Numerical Analysis of the Transient Response of an
+Ablation System Including Effects of Thermal Nonequilibrium, Mass Transfer and
+Chemical Kinetics}, NASA-TM-X-68853, NASA NTRS 19730002381, 1972,
+\url{https://ntrs.nasa.gov/citations/19730002381}.
+
+\bibitem{bessire2023}
+B. K. Bessire, \emph{Analysis of Pyrolysis Products from Ablative TPS}, NASA
+NTRS 20230000843, 2023,
+\url{https://ntrs.nasa.gov/citations/20230000843}.
+
+\bibitem{nasa-testing}
+NASA Ames Research Center, \emph{Thermal Protection Materials Branch ---
+Testing and Fabrication}, description des mesures TGA, DSC et LFA,
+\url{https://www.nasa.gov/thermal-protection-materials-branch-testing-and-fabrication/},
+consulté le 15 juillet 2026.
+
+\bibitem{local-step}
+MIT Rocket Team, \code{motoren.stp}, géométrie STEP AP214 du projet, fichier
+local analysé le 15 juillet 2026.
+
+\bibitem{local-model}
+MIT Rocket Team, \code{EngineeringData.xml}, \code{ds.dat},
+\code{phenolic_pyrolysis_native.apdl} et \code{usermatth.F}, artefacts locaux de
+la simulation ANSYS Mechanical 2026 R1, état analysé le 15 juillet 2026.
+
+\end{thebibliography}
+
+\clearpage
+\listoffigures
+\listoftables
+
+\vfill
+\section*{Déclaration d'Utilisation de l'IA}
+
+L'IA a été utilisé pour générer une partie de ce document et pour une partie de la conception du contenu.
+\end{document}
