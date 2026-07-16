@@ -4,11 +4,14 @@ The script is read-only with respect to the ANSYS result files. For the saved
 state nearest each integer second from 1 s through 6 s, it:
 
 1. reads elemental-nodal SVAR1 and SVAR2 from every DMP partition;
-2. averages all elemental contributions sharing the same global node ID;
-3. computes a maximum envelope in 100 radial bands through ``phe0``;
-4. computes a maximum envelope in 100 axial bands measured from the lower
-   cut plane of the 50 mm Mechanical slice; and
-5. writes separate long-form CSV files for the radial and axial profiles.
+2. uses the original elemental averaging for the radial study, matching the
+   existing report data exactly;
+3. uses DPF's native elemental-nodal to nodal averaging for the axial study,
+   then averages duplicate global nodes shared by DMP partitions;
+4. computes a maximum envelope in 100 radial bands through ``phe0``;
+5. computes the hot-inner-surface maximum in 100 axial bands measured from
+   the lower cut plane of the 50 mm Mechanical slice; and
+6. writes separate long-form CSV files for the radial and axial profiles.
 
 Run with the ANSYS 2026 R1 CPython interpreter on Windows.
 """
@@ -32,6 +35,7 @@ from ansys.dpf import core as dpf
 
 PHE0_INNER_RADIUS_M = 0.133350
 PHE0_THICKNESS_M = 0.002540
+HOT_FACE_TOLERANCE_M = 1.0e-5
 AXIAL_ORIGIN_M = 0.914400
 AXIAL_LENGTH_M = 0.050000
 TARGET_TIMES_S = (1.0, 2.0, 3.0, 4.0, 5.0, 6.0)
@@ -53,6 +57,25 @@ def state_variable_fields(model, set_id):
     except (AttributeError, RuntimeError):
         return {}
 
+    selected = {}
+    for field_index, field in enumerate(fields):
+        label_space = fields.get_label_space(field_index)
+        svar_index = int(label_space.get("SVAR", -1))
+        if svar_index in SVAR_INDICES:
+            selected[svar_index] = field
+    return selected
+
+
+def nodal_state_variable_fields(model, set_id):
+    """Return SVAR1 and SVAR2 after DPF's native nodal averaging."""
+    try:
+        source = model.results.state_variable(time_scoping=set_id).eval()
+    except (AttributeError, RuntimeError):
+        return {}
+
+    operator = dpf.operators.averaging.to_nodal_fc()
+    operator.inputs.fields_container.connect(source)
+    fields = operator.outputs.fields_container.get_data()
     selected = {}
     for field_index, field in enumerate(fields):
         label_space = fields.get_label_space(field_index)
@@ -139,11 +162,13 @@ def profile_rows(
     coordinate_extent,
     value_sums,
     contribution_counts,
+    selection_mask_by_node=None,
 ):
     """Yield one hundred profile rows for each time and state variable."""
-    node_ids = np.flatnonzero(
-        (contribution_counts > 0) & np.isfinite(coordinate_by_node)
-    )
+    selected = (contribution_counts > 0) & np.isfinite(coordinate_by_node)
+    if selection_mask_by_node is not None:
+        selected &= selection_mask_by_node
+    node_ids = np.flatnonzero(selected)
     coordinate_fraction = (
         (coordinate_by_node[node_ids] - coordinate_origin) / coordinate_extent
     )
@@ -225,6 +250,7 @@ def write_output(
     coordinate_extent,
     value_sums,
     contribution_counts,
+    selection_mask_by_node=None,
 ):
     """Write a long-form CSV for one spatial direction."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -255,6 +281,7 @@ def write_output(
                 coordinate_extent,
                 value_sums,
                 contribution_counts,
+                selection_mask_by_node,
             )
         )
 
@@ -281,6 +308,11 @@ def main():
     axial_coordinate_by_node = np.full(1, np.nan, dtype=float)
     contribution_counts = np.zeros(1, dtype=np.int64)
     value_sums = np.zeros(
+        (len(SVAR_INDICES), len(time_mappings), 1),
+        dtype=float,
+    )
+    nodal_partition_counts = np.zeros(1, dtype=np.int64)
+    nodal_value_sums = np.zeros(
         (len(SVAR_INDICES), len(time_mappings), 1),
         dtype=float,
     )
@@ -330,15 +362,54 @@ def main():
             required_size,
             0,
         )
+        nodal_partition_counts = ensure_capacity(
+            nodal_partition_counts,
+            required_size,
+            0,
+        )
         value_sums = ensure_capacity(
             value_sums,
             required_size,
             0.0,
         )
-        radius_by_node[coordinate_ids] = np.hypot(
+        nodal_value_sums = ensure_capacity(
+            nodal_value_sums,
+            required_size,
+            0.0,
+        )
+        partition_radii = np.hypot(
             coordinates[:, 0],
             coordinates[:, 2],
         )
+        existing = np.isfinite(axial_coordinate_by_node[coordinate_ids])
+        if np.any(existing):
+            axial_difference = np.abs(
+                axial_coordinate_by_node[coordinate_ids[existing]]
+                - coordinates[existing, 1]
+            )
+            radial_difference = np.abs(
+                radius_by_node[coordinate_ids[existing]]
+                - partition_radii[existing]
+            )
+            conflict = (axial_difference > 1.0e-10) | (
+                radial_difference > 1.0e-10
+            )
+            print(
+                "  coordinate-ID overlap: {} nodes, {} conflicts, "
+                "max axial difference={:.6g} m, "
+                "max radial difference={:.6g} m".format(
+                    int(np.count_nonzero(existing)),
+                    int(np.count_nonzero(conflict)),
+                    float(axial_difference.max()),
+                    float(radial_difference.max()),
+                )
+            )
+            if np.any(conflict):
+                raise RuntimeError(
+                    "DMP node IDs are not globally coordinate-consistent."
+                )
+
+        radius_by_node[coordinate_ids] = partition_radii
         axial_coordinate_by_node[coordinate_ids] = coordinates[:, 1]
 
         first_fields = state_variable_fields(model, time_mappings[0][1])
@@ -357,13 +428,33 @@ def main():
         contributing_partitions += 1
         flat_node_ids = elemental_node_ids(mesh, first_fields[1])
         np.add.at(contribution_counts, flat_node_ids, 1)
+        first_nodal_fields = nodal_state_variable_fields(
+            model,
+            time_mappings[0][1],
+        )
+        missing_nodal = set(SVAR_INDICES) - set(first_nodal_fields)
+        if missing_nodal:
+            raise RuntimeError(
+                "Missing nodally averaged state variables {} in {}.".format(
+                    sorted(missing_nodal),
+                    result_file,
+                )
+            )
+        nodal_node_ids = np.asarray(
+            first_nodal_fields[1].scoping.ids,
+            dtype=np.int64,
+        )
+        np.add.at(nodal_partition_counts, nodal_node_ids, 1)
         print(
-            "  node IDs: coordinates=[{}, {}], state variables=[{}, {}]"
+            "  node IDs: coordinates=[{}, {}], elemental=[{}, {}], "
+            "DPF nodal=[{}, {}]"
             .format(
                 int(coordinate_ids.min()),
                 int(coordinate_ids.max()),
                 int(flat_node_ids.min()),
                 int(flat_node_ids.max()),
+                int(nodal_node_ids.min()),
+                int(nodal_node_ids.max()),
             )
         )
 
@@ -397,9 +488,44 @@ def main():
                     flat_node_ids,
                     values,
                 )
+            nodal_fields = (
+                first_nodal_fields
+                if time_offset == 0
+                else nodal_state_variable_fields(model, set_id)
+            )
+            for svar_offset, svar_index in enumerate(SVAR_INDICES):
+                nodal_field = nodal_fields.get(svar_index)
+                if nodal_field is None:
+                    raise RuntimeError(
+                        "Nodally averaged SVAR{} is missing from {} at set {}."
+                        .format(svar_index, result_file, set_id)
+                    )
+                current_nodal_ids = np.asarray(
+                    nodal_field.scoping.ids,
+                    dtype=np.int64,
+                )
+                if not np.array_equal(current_nodal_ids, nodal_node_ids):
+                    raise RuntimeError(
+                        "Nodal SVAR{} topology changed in {} at set {}."
+                        .format(svar_index, result_file, set_id)
+                    )
+                np.add.at(
+                    nodal_value_sums[svar_offset, time_offset],
+                    nodal_node_ids,
+                    np.asarray(
+                        nodal_field.data,
+                        dtype=float,
+                    ).reshape(-1),
+                )
             print(
-                "  set {} at {:.12g} s: {} elemental-nodal values per SVAR"
-                .format(set_id, saved_time, flat_node_ids.size)
+                "  set {} at {:.12g} s: {} elemental-nodal and {} "
+                "DPF-nodal values per SVAR"
+                .format(
+                    set_id,
+                    saved_time,
+                    flat_node_ids.size,
+                    nodal_node_ids.size,
+                )
             )
 
     if contributing_partitions == 0:
@@ -415,6 +541,29 @@ def main():
         value_sums,
         contribution_counts,
     )
+    phe0_hot_face_nodes = (
+        np.isfinite(radius_by_node)
+        & (radius_by_node >= PHE0_INNER_RADIUS_M - 1.0e-8)
+        & (
+            radius_by_node
+            <= PHE0_INNER_RADIUS_M + HOT_FACE_TOLERANCE_M
+        )
+    )
+    selected_hot_nodes = int(
+        np.count_nonzero(
+            phe0_hot_face_nodes & (nodal_partition_counts > 0)
+        )
+    )
+    if selected_hot_nodes == 0:
+        raise RuntimeError("No hot-inner-surface phe0 node was selected.")
+    print(
+        "  axial hot-face selection: {} nodes within {:.6g} m of "
+        "r={:.6g} m".format(
+            selected_hot_nodes,
+            HOT_FACE_TOLERANCE_M,
+            PHE0_INNER_RADIUS_M,
+        )
+    )
     write_output(
         args.axial_output_csv.resolve(),
         "axial_distance",
@@ -422,8 +571,9 @@ def main():
         axial_coordinate_by_node,
         AXIAL_ORIGIN_M,
         AXIAL_LENGTH_M,
-        value_sums,
-        contribution_counts,
+        nodal_value_sums,
+        nodal_partition_counts,
+        phe0_hot_face_nodes,
     )
     print(
         "Wrote {} and {} using {} contributing partitions.".format(

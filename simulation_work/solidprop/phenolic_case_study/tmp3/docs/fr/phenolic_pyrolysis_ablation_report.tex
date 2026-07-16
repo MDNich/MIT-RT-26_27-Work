@@ -903,7 +903,128 @@ locale maximale suggérée pour la simulation 2 serait
 Le puits thermique massique déjà appliqué par la simulation 1 vaut localement
 \(-\Delta H_p\dot\alpha\simeq-\SI{136.5}{kW.kg^{-1}}\). La génération de gaz
 est donc potentiellement importante, mais son transport, sa pression et son
-échange de chaleur ne sont pas résolus dans le modèle courant.
+échange de chaleur ne sont pas résolus dans le modèle courant.~\\
+\subsubsection{Évolution temporelle de la vitesse locale}
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/svar2_radial_time_profiles_1pct_fr.pdf}
+\caption{Évolution du maximum radial de \code{SVAR2} dans \code{phe0}, pour les
+états sauvegardés les plus proches de 1 à \SI{6}{s}. Chaque panneau utilise la
+même échelle verticale; les rubans hachurés ne contiennent aucun nœud de
+résultat et sont interpolés linéairement.}
+\label{fig:sim1-svar2-time-fr}
+\end{figure}
+\clearpage
+
+La figure~\ref{fig:sim1-svar2-time-fr} applique à \code{SVAR2} la même étude
+temporelle que la figure~\ref{fig:sim1-svar1-time-fr}. Le tableau
+\ref{tab:sim1-svar2-time} montre simultanément la décroissance du maximum de
+vitesse et son déplacement vers l'intérieur. Entre les états proches de 1 et
+\SI{6}{s}, le maximum passe de \SI{0.9120}{s^{-1}} à
+\SI{0.3367}{s^{-1}}, soit une diminution de 63,1\,\%, tandis que sa profondeur
+passe de \SI{0.140}{mm} à \SI{1.333}{mm}.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{M{0.18\textwidth}M{0.22\textwidth}M{0.25\textwidth}M{0.25\textwidth}}
+\toprule
+\textbf{Temps cible (s)} &
+\textbf{Temps sauvegardé (s)} &
+\textbf{\(\dot\alpha_\mathrm{max}\) (\si{s^{-1}})} &
+\textbf{Profondeur du maximum (mm)} \\
+\midrule
+1 & 0,9856 & 0,9120 & 0,140 \\
+2 & 1,9856 & 0,6351 & 0,419 \\
+3 & 2,9856 & 0,5094 & 0,699 \\
+4 & 3,9856 & 0,4325 & 0,927 \\
+5 & 4,9856 & 0,3755 & 1,105 \\
+6 & 5,9856 & 0,3367 & 1,333 \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Migration temporelle du maximum radial de vitesse de pyrolyse.}
+\label{tab:sim1-svar2-time}
+\end{table}
+
+La trajectoire n'est pas une récession géométrique. Elle repère le lieu où le
+produit du facteur d'Arrhenius et de la fraction vierge restante est maximal.
+La face chaude se sature rapidement, donc \(1-\alpha\) y devient presque nul;
+le maximum de \(\dot\alpha\) se déplace alors vers du matériau plus profond,
+encore partiellement vierge mais suffisamment chaud. Le ralentissement du
+maximum traduit l'atténuation thermique avec la profondeur et non l'arrêt de
+la pyrolyse. Il explique aussi pourquoi la source de gaz de la simulation 2
+devra être volumique et mobile : l'emploi du seul taux à la surface
+sous-estimerait fortement la production dans la zone de transition après les
+premières secondes.
+
+\subsubsection{Dépendance axiale sur la face intérieure chaude}
+
+La coordonnée axiale est mesurée depuis le plan inférieur du tronçon maillé,
+\(y=\SI{0.9144}{m}\), sur sa longueur de \SI{50}{mm}. Dans chaque ruban axial
+de 1\,\%, les figures suivantes retiennent le maximum des nœuds de la face
+intérieure chaude de \code{phe0}. Cette restriction évite de remplacer un
+ruban sans nœud de surface par un nœud froid situé plus profondément. Les
+valeurs sont obtenues par le moyennage élémentaire-nodal natif de DPF, puis par
+fusion des nœuds globaux dupliqués aux frontières DMP. Quatre-vingt-trois
+rubans sur 100 sont directement échantillonnés; les 17 autres sont clairement
+hachurés et interpolés entre leurs voisins.
+
+\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/svar1_axial_time_profiles_1pct_fr.pdf}
+\caption{Dépendance axiale de \code{SVAR1} sur la face intérieure chaude de
+\code{phe0}, depuis le plan inférieur du tronçon maillé. Les six panneaux
+emploient la même échelle \(0\leq\alpha\leq1\).}
+\label{fig:sim1-svar1-axial-fr}
+\end{figure}
+\clearpage
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/svar2_axial_time_profiles_1pct_fr.pdf}
+\caption{Dépendance axiale de \code{SVAR2} sur la face intérieure chaude de
+\code{phe0}. L'échelle verticale est indépendante dans chaque panneau afin de
+rendre visibles les faibles taux tardifs; les valeurs absolues, et non les
+hauteurs relatives des barres entre panneaux, doivent être comparées.}
+\label{fig:sim1-svar2-axial-fr}
+\end{figure}
+\clearpage
+
+La figure~\ref{fig:sim1-svar1-axial-fr} montre une conversion de surface
+presque uniforme. À \SI{0.9856}{s}, \(\alpha\) varie de 0,79156 à 0,81114,
+soit une étendue relative de 2,41\,\%. À \SI{1.9856}{s}, la plage se resserre
+à 0,99474--0,99560; à \SI{2.9856}{s}, elle vaut
+0,999959--0,999968. La face chaude est numériquement entièrement convertie à
+partir de l'état proche de \SI{4}{s}. Cela signifie « char complètement
+formé » selon la variable d'état, pas « matière enlevée ».
+
+La figure~\ref{fig:sim1-svar2-axial-fr} apporte l'information complémentaire.
+Le taux sur la face chaude vaut encore
+\(\SIrange{0.7161}{0.7516}{s^{-1}}\) près de \SI{1}{s}, mais tombe à
+\(\SIrange{0.03382}{0.04025}{s^{-1}}\) près de \SI{2}{s}, puis à
+\(\SIrange{3.79e-4}{4.87e-4}{s^{-1}}\) près de \SI{3}{s}. Il devient inférieur
+à \SI{2.3e-6}{s^{-1}} près de \SI{4}{s} et pratiquement nul ensuite. Cette
+chute abrupte est la conséquence attendue du facteur \(1-\alpha\) : la surface
+n'a presque plus de matière vierge à convertir, alors que la figure
+\ref{fig:sim1-svar2-time-fr} confirme que le front volumique reste actif plus
+profondément.
+
+L'étendue axiale relative de \code{SVAR2} augmente de 4,72\,\% à \SI{1}{s} à
+36,39\,\% à \SI{6}{s}, mais cette croissance est trompeuse si elle est lue
+seule : le dénominateur a diminué d'environ onze ordres de grandeur. Les
+variations tardives sont donc négligeables en valeur absolue et reflètent
+surtout le maillage, le lissage nodal et la saturation numérique. Sous les
+conditions aux limites uniformes de ce tronçon central, les deux figures
+valident l'hypothèse d'une réponse axialement quasi uniforme. Elles soutiennent
+l'emploi futur d'un modèle axisymétrique beaucoup moins coûteux pour la zone
+centrale, mais ne disent rien des extrémités, de la tuyère, des joints ou des
+variations réelles du flux de combustion.
 
 \subsubsection{Encadrement de la conversion et du dégazage potentiel}
 

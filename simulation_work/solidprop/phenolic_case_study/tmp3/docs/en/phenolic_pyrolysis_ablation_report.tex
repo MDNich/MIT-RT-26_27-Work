@@ -897,6 +897,123 @@ The mass-specific thermal sink already applied by Simulation 1 is locally
 therefore potentially significant, but its transport, pressure, and heat
 exchange are not solved in the current model.
 
+\clearpage
+\subsubsection{Time Evolution of the Local Rate}
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/svar2_radial_time_profiles_1pct_en.pdf}
+\caption{Evolution of the maximum radial \code{SVAR2} in \code{phe0}, for the
+saved states nearest 1 to \SI{6}{s}. Every panel uses the same vertical scale;
+hatched bands contain no result node and are linearly interpolated.}
+\label{fig:sim1-svar2-time-en}
+\end{figure}
+\clearpage
+
+Figure~\ref{fig:sim1-svar2-time-en} applies to \code{SVAR2} the same time study
+as Figure~\ref{fig:sim1-svar1-time-en}. Table
+\ref{tab:sim1-svar2-time} shows both the decrease of the maximum rate and its
+motion inwards. Between the states near 1 and \SI{6}{s}, the maximum drops from
+\SI{0.9120}{s^{-1}} to \SI{0.3367}{s^{-1}}, a 63.1\% decrease, while its depth
+increases from \SI{0.140}{mm} to \SI{1.333}{mm}.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{M{0.18\textwidth}M{0.22\textwidth}M{0.25\textwidth}M{0.25\textwidth}}
+\toprule
+\textbf{Target time (s)} &
+\textbf{Saved time (s)} &
+\textbf{\(\dot\alpha_\mathrm{max}\) (\si{s^{-1}})} &
+\textbf{Depth of maximum (mm)} \\
+\midrule
+1 & 0.9856 & 0.9120 & 0.140 \\
+2 & 1.9856 & 0.6351 & 0.419 \\
+3 & 2.9856 & 0.5094 & 0.699 \\
+4 & 3.9856 & 0.4325 & 0.927 \\
+5 & 4.9856 & 0.3755 & 1.105 \\
+6 & 5.9856 & 0.3367 & 1.333 \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Time migration of the maximum radial pyrolysis rate.}
+\label{tab:sim1-svar2-time}
+\end{table}
+
+The trajectory is not a geometric recession. It identifies the location where
+the product of the Arrhenius factor and the remaining virgin fraction is
+largest. The hot face saturates rapidly, so \(1-\alpha\) becomes nearly zero
+there; the maximum of \(\dot\alpha\) then moves towards deeper material that is
+still partly virgin but sufficiently hot. The decrease of the maximum reflects
+thermal attenuation with depth, not the cessation of pyrolysis. It also
+explains why the gas source in Simulation 2 must be volumetric and mobile:
+using only the surface rate would strongly underestimate production in the
+transition zone after the first seconds.
+
+\subsubsection{Axial Dependence on the Hot Inner Surface}
+
+The axial coordinate is measured from the lower plane of the meshed slice,
+\(y=\SI{0.9144}{m}\), over its \SI{50}{mm} length. In every one-percent axial
+band, the following figures retain the maximum over nodes on the hot inner
+surface of \code{phe0}. This restriction avoids replacing a band with no
+surface node by a cold node located deeper in the material. Values are
+obtained with DPF's native elemental-nodal averaging and then by merging
+duplicate global nodes at DMP boundaries. Eighty-three of the 100 bands are
+sampled directly; the other 17 are clearly hatched and interpolated between
+their neighbours.
+
+\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/svar1_axial_time_profiles_1pct_en.pdf}
+\caption{Axial dependence of \code{SVAR1} on the hot inner surface of
+\code{phe0}, measured from the lower plane of the meshed slice. All six panels
+use the same \(0\leq\alpha\leq1\) scale.}
+\label{fig:sim1-svar1-axial-en}
+\end{figure}
+\clearpage
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/svar2_axial_time_profiles_1pct_en.pdf}
+\caption{Axial dependence of \code{SVAR2} on the hot inner surface of
+\code{phe0}. The vertical scale is independent in every panel so that the
+small late rates remain visible; absolute values, not relative bar heights
+between panels, must be compared.}
+\label{fig:sim1-svar2-axial-en}
+\end{figure}
+\clearpage
+
+Figure~\ref{fig:sim1-svar1-axial-en} shows nearly uniform surface conversion.
+At \SI{0.9856}{s}, \(\alpha\) ranges from 0.79156 to 0.81114, a 2.41\%
+relative span. At \SI{1.9856}{s}, the range narrows to 0.99474--0.99560; at
+\SI{2.9856}{s}, it is 0.999959--0.999968. The hot face is numerically fully
+converted from the state near \SI{4}{s}. This means ``char fully formed''
+according to the state variable, not ``material removed''.
+
+Figure~\ref{fig:sim1-svar2-axial-en} provides the complementary information.
+The hot-face rate is still \(\SIrange{0.7161}{0.7516}{s^{-1}}\) near
+\SI{1}{s}, but drops to \(\SIrange{0.03382}{0.04025}{s^{-1}}\) near
+\SI{2}{s}, then to \(\SIrange{3.79e-4}{4.87e-4}{s^{-1}}\) near \SI{3}{s}.
+It falls below \SI{2.3e-6}{s^{-1}} near \SI{4}{s} and is practically zero
+afterwards. This sharp drop is the expected consequence of the
+\(1-\alpha\) factor: the surface has almost no virgin material left to
+convert, while Figure~\ref{fig:sim1-svar2-time-en} confirms that the volumetric
+front remains active deeper in the material.
+
+The relative axial span of \code{SVAR2} increases from 4.72\% at \SI{1}{s} to
+36.39\% at \SI{6}{s}, but this increase is misleading if read alone: the
+denominator has fallen by about eleven orders of magnitude. Late variations
+are therefore negligible in absolute value and mostly reflect mesh, nodal
+smoothing, and numerical saturation. Under the uniform boundary conditions of
+this central slice, both figures validate the assumption of a nearly
+axially-uniform response. They support the future use of a much cheaper
+axisymmetric model for the central region, but say nothing about the ends, the
+nozzle, joints, or real combustion-flux variations.
+
 \subsubsection{Bracket on Conversion and Potential Outgassing}
 
 Two simple reconstructions provide an order-of-magnitude bracket without
