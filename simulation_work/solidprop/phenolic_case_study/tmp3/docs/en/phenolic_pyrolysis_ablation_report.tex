@@ -80,7 +80,7 @@
 \title{~\\[-2em]\sc Thermochemical Modeling of a Phenolic Liner\\
 in a Solid Rocket Motor Using ANSYS Mechanical}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Solid Propulsion Simulations}
-\date{\sc July 15, 2026}
+\date{\sc July 16, 2026}
 
 \begin{document}
 \selectlanguage{english}
@@ -644,10 +644,412 @@ source and the properties at the following substep.}
 \label{fig:sim1-coupling}
 \end{figure}
 
-\subsection{Simulation 1 Results (to be completed)}
+\subsection{Simulation 1 Results}
 
-\placeholder{Subsection reserved for results: temperatures, SVAR1, SVAR2,
-pyrolysis depth, energy balances, and mesh-independence study.}
+\subsubsection{Data Scope and Numerical Convergence}
+
+The analyzed results come from the eight DMP partitions
+\code{file0.rth}--\code{file7.rth}, the \code{file.nlh} history, and the
+\code{solve.out} output~\cite{local-results}. The last saved and readable state
+is set 140 at
+\[
+  t=\SI{6.38561694}{s}.
+\]
+The requested solution was intended to reach \SI{7}{s}; the values below
+therefore describe a converged intermediate state rather than the final
+seven-second result. Any linear extrapolation to \SI{7}{s} is not a substitute
+for the missing \SI{0.614}{s} of computation.
+
+At this time, the solver has accepted 140 substeps and accumulated 293
+equilibrium iterations. The last substep is \SI{0.05}{s}, converges in two
+iterations, and ends with a heat-flow norm of \(0.01694\), well below the
+\(0.6255\) criterion. The reported wall time is approximately
+\num{90883} seconds, or \SI{25.2}{h}, on eight DMP processes. These indicators
+show good \emph{numerical} convergence of the saved state; they are neither a
+validation of the material properties nor evidence of mesh independence.
+
+\subsubsection{Temperature Field}
+
+Table~\ref{tab:sim1-temperature-results} collects the robust extrema obtained
+by scanning the partitions. Interface nodes can be duplicated by contact
+elements; partition-wise nodal averages are therefore not used as volume
+averages.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.34\textwidth}M{0.25\textwidth}M{0.22\textwidth}}
+\toprule
+\textbf{Observable at \(t=\SI{6.3856}{s}\)} &
+\textbf{Temperature (\si{\degreeCelsius})} &
+\textbf{Temperature (K)} \\
+\midrule
+Hot inner face, nodal range &
+\numrange{1754.06}{1755.39} & \numrange{2027.21}{2028.54} \\
+Maximum in \code{phe0} & 1755.39 & 2028.54 \\
+Maximum in the epoxy & 453.41 & 726.56 \\
+Maximum in \code{phe1} & 208.05 & 481.20 \\
+Maximum in the aluminum & 22.0012 & 295.1512 \\
+Maximum on the outer aluminum face & 22.000005 & 295.150005 \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Temperatures extracted from the last converged state.}
+\label{tab:sim1-temperature-results}
+\end{table}
+
+The hot face is nearly isothermal and reaches
+\SI{1755.39}{\degreeCelsius}, or \SI{2028.54}{K}. It remains approximately
+\SI{475.5}{K} below the imposed gas temperature. The prescribed convection
+therefore corresponds at this instant to an inward heat flux of only
+\(\SIrange{0.475}{0.477}{MW.m^{-2}}\), compared with approximately
+\(\SI{2.21}{MW.m^{-2}}\) immediately after the hot condition is applied as a
+step. This flux is a direct consequence of \(h_\mathrm{in}\) and \(T_g\), not
+an independent prediction of combustion.
+
+The most concerning design point is not yet the aluminum, which remains
+essentially at its initial temperature, but the epoxy: its maximum of
+\SI{453.41}{\degreeCelsius} is \SI{726.56}{K}, beyond the final material
+property point currently defined at \SI{600}{K}. Its temperature is therefore
+computed using constant extrapolation of a generic material, while
+decomposition and loss of adhesion are not represented. The maximum in
+\code{phe1}, \SI{208.05}{\degreeCelsius}, shows that the thermal wave has
+crossed the epoxy but has not traversed the \SI{6.35}{mm} second phenolic
+layer. The nearly ambient aluminum temperature must not be extrapolated to the
+head-end, nozzle, or attachment regions absent from the \SI{50}{mm} slice, nor
+to the heat-soak phase after motor shutdown.
+
+\subsubsection{Pyrolysis Conversion \code{SVAR1}}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]{../analysis/svar1_radial_profile_1pct_en.pdf}
+\caption{Maximum \code{SVAR1} in one-percent radial bands of \code{phe0} at the
+last converged state. Hatched bands contain no result node and are filled by
+linear interpolation.}
+\label{fig:sim1-svar1-radial-en}
+\end{figure}
+
+Figure~\ref{fig:sim1-svar1-radial-en} shows the maximum radial envelope of the
+globally averaged elemental-nodal field. The global maximum reaches
+\(\alpha=1\): the zone near the hot face is fully converted according to the
+kinetic law. This does not mean that the char has been removed or that a void
+has been created.
+
+The isoconversion depths are given in
+Table~\ref{tab:sim1-front-results}. The region with at least 95\% conversion
+reaches \SI{1.098}{mm}, or 43.2\% of the \code{phe0} thickness; the 80\% level
+reaches almost exactly half of the layer.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{M{0.15\textwidth}M{0.22\textwidth}M{0.22\textwidth}M{0.24\textwidth}}
+\toprule
+\textbf{Threshold \(\alpha_c\)} &
+\textbf{Depth \(d_{\alpha_c}\) (mm)} &
+\textbf{Fraction of \code{phe0}} &
+\textbf{Apparent speed \(d_{\alpha_c}/t\) (\si{mm.s^{-1}})} \\
+\midrule
+0.80 & 1.26845 & 49.94\% & 0.19864 \\
+0.90 & 1.16440 & 45.84\% & 0.18235 \\
+0.95 & 1.09800 & 43.23\% & 0.17195 \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Depth and apparent mean speed of the conversion fronts.}
+\label{tab:sim1-front-results}
+\end{table}
+
+The speeds in the last column are only the ratios \(d_{\alpha_c}/t\). They
+assume that the contour starts at the hot face at \(t=0\) and provide a mean
+penetration speed since ignition. They are not instantaneous front speeds. A
+rigorous front speed in \si{mm.s^{-1}} must be calculated by differencing the
+positions of the same contour at several saved times.
+
+One band in the figure is \SI{25.4}{\micro m} wide, whereas the mean radial
+thickness of one \code{phe0} element is \SI{0.318}{mm}. The 100 bars improve
+profile readability and integration, but do not create a physical resolution
+of 100 cells. Sixteen bands without a node had to be interpolated; the
+front-location uncertainty remains on the order of a fraction of an element
+and must be measured through mesh refinement.
+
+\clearpage
+\subsubsection{Time Evolution of Conversion}
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/svar1_time_profiles_1pct_en.pdf}
+\caption{Evolution of the maximum radial \code{SVAR1} in \code{phe0} for the
+saved states closest to 1 through \SI{6}{s}. The six plots are stacked
+vertically and use identical axes. The dotted lines and points mark the depths
+of the 0.80, 0.90, and 0.95 isoconversion levels when they are reached.}
+\label{fig:sim1-svar1-time-en}
+\end{figure}
+\clearpage
+
+Figure~\ref{fig:sim1-svar1-time-en} complements, without replacing, the
+last-converged-state profile in Figure~\ref{fig:sim1-svar1-radial-en}. It
+applies exactly the same elemental-nodal averaging and the same one-percent
+radial bands to the six saved states closest to
+\(t=1,\ldots,6~\si{s}\). The available outputs precede each integer second by
+\SI{0.014383}{s}; the time actually read is shown in every panel so that a
+temporal interpolation is not presented as an ANSYS result.
+
+Table~\ref{tab:sim1-svar1-time} collects the values used in the annotations. At
+\SI{0.9856}{s}, the maximum value is still only \(\alpha=0.811\), and the 0.80
+contour barely enters the layer: the 0.90 and 0.95 levels have not yet been
+reached. This is a thermal initiation phase, not an already established front.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.12}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{M{0.12\textwidth}M{0.16\textwidth}M{0.14\textwidth}
+                M{0.15\textwidth}M{0.15\textwidth}M{0.15\textwidth}}
+\toprule
+\textbf{Target time (s)} &
+\textbf{Saved time (s)} &
+\textbf{\(\alpha_\mathrm{max}\)} &
+\textbf{\(d_{0.80}\) (mm)} &
+\textbf{\(d_{0.90}\) (mm)} &
+\textbf{\(d_{0.95}\) (mm)} \\
+\midrule
+1 & 0.9856 & 0.81114 & 0.01691 & --- & --- \\
+2 & 1.9856 & 0.99560 & 0.30979 & 0.23605 & 0.17200 \\
+3 & 2.9856 & 0.99997 & 0.57818 & 0.49786 & 0.42106 \\
+4 & 3.9856 & 1.00000 & 0.79069 & 0.70892 & 0.63735 \\
+5 & 4.9856 & 1.00000 & 1.00433 & 0.91446 & 0.83788 \\
+6 & 5.9856 & 1.00000 & 1.20013 & 1.09392 & 1.01716 \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Time progression of the isoconversion depths computed from the
+maximum radial envelope.}
+\label{tab:sim1-svar1-time}
+\end{table}
+
+Between the states near 1 and \SI{2}{s}, the 0.80 contour advances at an
+incremental mean speed of \SI{0.293}{mm.s^{-1}}. This speed subsequently falls
+to \SI{0.268}{mm.s^{-1}}, then approximately
+\SI{0.213}{mm.s^{-1}}, \SI{0.214}{mm.s^{-1}}, and
+\SI{0.196}{mm.s^{-1}} over the successive intervals. Once it has appeared, the
+0.95 contour slows in a similar manner, from \SI{0.249}{mm.s^{-1}} between 2
+and \SI{3}{s} to \SI{0.179}{mm.s^{-1}} between 5 and \SI{6}{s}. The general
+trend is therefore a slowing front, with a small non-monotonic variation
+consistent with the substeps, nodal smoothing, and radial mesh resolution.
+
+The profiles also show that there is no infinitely thin pyrolysis interface: a
+broad transition zone separates the almost fully converted char from material
+that is still virgin. Near \SI{6}{s}, the 0.95 contour is at
+\SI{1.017}{mm}, the 0.80 contour is at \SI{1.200}{mm}, and measurable
+conversion extends substantially farther. At the last available state,
+\SI{6.3856}{s}, these depths reach \SI{1.098}{mm} and \SI{1.268}{mm},
+respectively, extending the trend of the six panels without a discontinuity.
+
+For design, a single \(d/t\) speed therefore hides both the initiation delay
+and the subsequent slowing. Any extrapolation to the end of firing must state
+the chosen conversion threshold and use at least a recent incremental speed,
+rather than conflating conversion, char depth, and geometric recession.
+Finally, because every curve is a maximum radial envelope, it remains
+conservative for reconstructed conversion but represents neither a volume
+average nor a directly measured ablation depth.
+
+\subsubsection{Local Pyrolysis Rate \code{SVAR2}}
+
+\code{SVAR2} is a local conversion rate in \si{s^{-1}}, distinct from the
+geometric speed in Table~\ref{tab:sim1-front-results}. The global maximum over
+the partitions containing \code{phe0} is
+\[
+  \boxed{\dot\alpha_\mathrm{max}=\SI{0.326660}{s^{-1}}.}
+\]
+It occurs \SI{1.44221}{mm} from the hot face, or 56.78\% through the
+thickness, where \(\alpha=0.54721\) and
+\(T=\SI{956.67}{\degreeCelsius}=\SI{1229.82}{K}\). This position is physically
+consistent: near the surface, the \(1-\alpha\) factor is almost zero because
+the material is already converted; farther into the material, the temperature
+is too low to activate the Arrhenius law rapidly. The maximum rate therefore
+lies in the transition zone.
+
+Over the last \SI{0.05}{s} substep, this maximum corresponds to
+\(\Delta\alpha\simeq0.01633\), well below the numerical limit of 0.05. The
+\code{UserMatTh} criterion therefore does not force an additional reduction of
+the last increment. At this point,
+\[
+  k_r=\frac{\dot\alpha}{1-\alpha}=\SI{0.7214}{s^{-1}},
+  \qquad \tau_r=k_r^{-1}=\SI{1.386}{s}.
+\]
+If the temperature were held artificially constant, it would take
+approximately \SI{3.05}{s} to progress from \(\alpha=0.547\) to
+\(\alpha=0.95\). The local temperature is still changing in reality, so this
+characteristic time is not an extrapolation to the end of the firing.
+
+With \(\rho_v-\rho_c\simeq\SI{550}{kg.m^{-3}}\) at this temperature, the
+maximum local source suggested for Simulation 2 would be
+\[
+  \dot\omega'''_{g,\max}\simeq
+  (\rho_v-\rho_c)\dot\alpha_\mathrm{max}
+  =\SI{180}{kg.m^{-3}.s^{-1}}.
+\]
+The mass-specific thermal sink already applied by Simulation 1 is locally
+\(-\Delta H_p\dot\alpha\simeq-\SI{136.5}{kW.kg^{-1}}\). Gas generation is
+therefore potentially significant, but its transport, pressure, and heat
+exchange are not solved in the current model.
+
+\subsubsection{Bracket on Conversion and Potential Outgassing}
+
+Two simple reconstructions provide an order-of-magnitude bracket without
+claiming a statistical uncertainty. The lower reconstruction sets
+\(\alpha=0.95\) between the hot face and the contour at \SI{1.098}{mm}, then
+\(\alpha=0\) beyond it. Accounting for cylindrical geometry gives
+\(\bar\alpha_\mathrm{low}=0.408\). Integration of the maximum envelope of the
+100 bands gives
+\(\bar\alpha_\mathrm{high}=0.581\). Table~\ref{tab:sim1-mass-bracket} then uses
+the nominal gas yield \(Y_g=0.47\).
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.31\textwidth}M{0.20\textwidth}M{0.20\textwidth}M{0.18\textwidth}}
+\toprule
+\textbf{Reconstruction} &
+\(\boldsymbol{\bar\alpha}\) &
+\textbf{Equivalent converted thickness} &
+\textbf{Potential gas} \\
+\midrule
+Lower: 95\% step front & 0.408 & \SI{1.04}{mm} &
+\SI{0.943}{kg} full motor; \SI{25.8}{g} slice \\
+Upper: maximum radial envelope & 0.581 & \SI{1.48}{mm} &
+\SI{1.340}{kg} full motor; \SI{36.6}{g} slice \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Engineering bracket on conversion and potential gas mass at
+\(t=\SI{6.3856}{s}\).}
+\label{tab:sim1-mass-bracket}
+\end{table}
+
+These values assume that the profile is representative over the full
+circumference and length, then use the complete \code{phe0} mass of
+\SI{4.911}{kg}. In the meshed model, the length is only \SI{50}{mm} and the
+corresponding initial mass is approximately \SI{0.134}{kg}. The upper
+reconstruction uses radial maxima and is intentionally conservative for an
+average. The lower reconstruction is not a mathematical bound on the 3D
+solution because the figure does not contain circumferential and axial minima.
+Finally, ``potential gas mass'' is the mass that would be released according to
+the density law; the solver does not demonstrate that this mass has actually
+left the solid.
+
+\subsubsection{Physical and Motor-Design Consequences}
+
+\begin{enumerate}[leftmargin=2.2em,label=\textbf{\arabic*.}]
+  \item \textbf{Inner-liner margin.} A thickness of approximately
+  \SIrange{1.10}{1.27}{mm} is already 80--95\% converted, and the maximum
+  \code{SVAR2} lies at \SI{1.44}{mm}. The front remains active and is advancing
+  toward the epoxy. The difference \(2.54-d_{\alpha_c}\) cannot be treated
+  directly as an ablation margin, but it shows that the first layer is heavily
+  loaded before the intended end of the firing.
+
+  \item \textbf{Critical epoxy condition.} The model predicts
+  \SI{453}{\degreeCelsius} in an epoxy layer that is nevertheless assumed
+  inert and bonded. This value lies beyond the range of its thermal-property
+  table. The model therefore cannot establish that either the
+  \code{phe0--epo} or \code{epo--phe1} bond survives. Characterization of the
+  epoxy, a thicker thermal barrier, or a high-temperature adhesive must be
+  considered before the bond can be treated as safe.
+
+  \item \textbf{Aluminum protected only over the short term.} The ideal central
+  slice keeps the aluminum near \SI{22}{\degreeCelsius} at \SI{6.39}{s}. This
+  is favorable, but does not cover delayed heating after shutdown, thermal
+  bridges, or nozzle and end regions. A transient cooldown phase must be added
+  to search for the delayed maximum aluminum temperature.
+
+  \item \textbf{Non-negligible outgassing.} The \code{SVAR2} value implies a
+  high local gas source. Without porous transport, the simulation cannot
+  predict internal char pressure, blowing cooling, or gas-assisted
+  delamination risk. These phenomena directly motivate Simulation 2.
+
+  \item \textbf{Front resolution.} Eight elements over \SI{2.54}{mm} provide
+  only three to four element layers across the main transition zone. Runs with
+  16 and then 24 radial layers should compare \(d_{0.8}\), \(d_{0.95}\),
+  \(\dot\alpha_\mathrm{max}\), and the epoxy temperature.
+
+  \item \textbf{Central-slice limitation.} The \SI{50}{mm} mesh represents a
+  uniform mid-length region, but not end-region flux concentrations or
+  conduction paths. The masses in Table~\ref{tab:sim1-mass-bracket} can be
+  scaled to the full motor only if axial uniformity is verified.
+\end{enumerate}
+
+\subsubsection{Comparison with Reality and Direction of the Bounds}
+
+There is currently no TGA/DSC/LFA curve for the phenolic actually manufactured,
+no thermocouple record from a motor firing, and no post-fire measurement of
+mass, char depth, or recession. It would therefore be incorrect to claim
+quantitative agreement with reality. The available comparison concerns the
+mechanisms: NASA-verified charring-ablator models include conduction,
+decomposition, pyrolysis-gas flow, gas-solid heat exchange, thermochemical
+erosion, and surface motion~\cite{ewing2013,amar2010,amar2016}. Simulation 1
+represents only conduction, local kinetics, virgin/char properties, and the
+endothermic sink.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.18}
+\begin{tabular}{L{0.25\textwidth}L{0.34\textwidth}L{0.31\textwidth}}
+\toprule
+\textbf{Assumption or omission} & \textbf{Missing physical effect} &
+\textbf{Likely bias} \\
+\midrule
+Constant \(T_g\) and \(h_\mathrm{in}\) from \(t=0\) &
+No ignition ramp or pressure decay &
+High tendency if the real firing has ramps; unknown direction if the actual
+flux or particulate radiation is higher. \\
+No mobile pyrolysis gas &
+No wall blowing, advected enthalpy, or pore pressure &
+Often a high tendency for net penetrating heat flux, but not a one-sided bound
+for internal temperature. \\
+No oxidation, erosion, or particles &
+No thermochemical or mechanical char consumption &
+Lower bound for recession and geometric mass loss. \\
+Char retained and no elements removed &
+The surface never recedes &
+Exactly zero computed recession: a model-imposed lower bound. \\
+Perfectly bonded contacts &
+No gap, delamination, or evolving resistance &
+High tendency for ideal heat transmission, but an overly optimistic view of
+adhesive integrity. \\
+Uncalibrated properties and kinetics &
+Unknown grade, fibers, char yield, and multiple reactions &
+No defensible bias direction; this uncertainty can dominate all others. \\
+Maximum radial profile &
+Envelope rather than volume average &
+Engineering upper bound for reconstructed mean conversion. \\
+\bottomrule
+\end{tabular}~\\[1em]
+\caption{Expected direction of the main biases relative to a real firing.}
+\label{tab:sim1-reality-bounds}
+\end{table}
+
+For \emph{geometric recession}, the lower bound of the current model is
+therefore \SI{0}{mm}. A simple upper bound assumes that the entire equivalent
+converted thickness, approximately \SIrange{1.0}{1.5}{mm}, is also stripped
+away; it is intentionally severe because 52--56\% of the condensed mass
+remains as char according to the current tables. Reality may lie between these
+values if the char remains partly attached, but strong oxidation or mechanical
+erosion can invalidate this bracket. Only an instrumented firing and post-fire
+measurement can close it.
+
+The validation priorities are therefore to: (i) characterize the actual
+phenolic and epoxy by TGA, DSC, and LFA, methods explicitly used by NASA for
+residual mass, heat capacity, and thermal diffusivity
+measurements~\cite{nasa-testing}; (ii) measure \(T_g(t)\), pressure, and
+temperatures at the interfaces and on the aluminum during a firing; (iii)
+measure mass, residual thickness, and char depth after the firing; (iv) extend
+the computation to \SI{7}{s} and then through cooldown; and (v) perform
+sensitivity studies on \(h_\mathrm{in}\), \(A\), \(E_a\), \(\Delta H_p\), char
+properties, contacts, time step, and mesh.
 
 % ============================================================================
 \clearpage
@@ -936,6 +1338,13 @@ analyzed July 15, 2026.
 MIT Rocket Team, \code{EngineeringData.xml}, \code{ds.dat},
 \code{phenolic_pyrolysis_native.apdl}, and \code{usermatth.F}, local artifacts
 from the ANSYS Mechanical 2026 R1 simulation, state analyzed July 15, 2026.
+
+\bibitem{local-results}
+MIT Rocket Team, \code{file0.rth}--\code{file7.rth}, \code{file.nlh},
+\code{file.mntr}, \code{solve.out}, and
+\code{svar1_radial_profile_1pct.csv}, local outputs from the ANSYS Mechanical
+2026 R1 simulation, last converged state at \(t=\SI{6.38561694}{s}\), analyzed
+July 16, 2026.
 
 \end{thebibliography}
 
