@@ -1,0 +1,471 @@
+SIMULATION 2 TARGETED INVENTORY
+OBJECT Dimensionnement de la face | Ansys.ACT.Automation.Mechanical.MeshControls.Sizing | id=156
+  ATTR NumberOfDivisions = 1
+  ATTR ElementSize = 0.0003 [m]
+  ATTR Type = ElementSize
+  ATTR Behavior = Soft
+  ATTR BiasType = NoBias
+  ATTR BiasFactor = 0.0
+  ATTR Geometry = <BaseException>
+  ATTR Location = <Ansys.ACT.Mechanical.MechanicalSelectionInfo object at 0x000000000000002B [Ansys.ACT.Mechanical.MechanicalSelectionInfo]>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = <BaseException>
+OBJECT Dimensionnement de la face 3 | Ansys.ACT.Automation.Mechanical.MeshControls.Sizing | id=177
+  ATTR NumberOfDivisions = 1
+  ATTR ElementSize = 0.001 [m]
+  ATTR Type = ElementSize
+  ATTR Behavior = Soft
+  ATTR BiasType = NoBias
+  ATTR BiasFactor = 0.0
+  ATTR Geometry = <BaseException>
+  ATTR Location = <Ansys.ACT.Mechanical.MechanicalSelectionInfo object at 0x000000000000002C [Ansys.ACT.Mechanical.MechanicalSelectionInfo]>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = <BaseException>
+OBJECT Simulation 2 - UserMatTh et outgassing | Ansys.ACT.Automation.Mechanical.CommandSnippet | id=199
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = <BaseException>
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <BaseException>
+  ATTR Input = ! Native Fortran UserMatTh for phe0, including local gas diagnostics.
+! Solver units: m, kg, s, W, degree C.
+
+/COM,Simulation 2: pyrolysis and local outgassing requested
+
+PYRA   = 333.0
+PYREA  = 64081.0
+PYRN   = 1.0
+PYRDH  = 418000.0
+TO_K   = 273.15
+PYRGCP = 1600.0
+PYRGT0 = 300.0
+PYRGEF = 1.0
+PYRGY  = 1.0
+
+! TB,USER properties:
+!  1..11: original virgin/char model and Arrhenius law
+! 12: gas cp; 13: gas reference T; 14: sensible-energy fraction
+! 15: released-gas yield multiplier
+
+TB,USER,matid,9,15,THERM
+
+TBTEMP,26.85
+TBDATA,1,0.25,0.30,900,800,1250,700
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,326.85
+TBDATA,1,0.32,0.35,1100,900,1200,650
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,626.85
+TBDATA,1,0.36,0.40,1300,1000,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,776.85
+TBDATA,1,0.36,0.44,1300,1250,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,926.85
+TBDATA,1,0.36,0.49,1300,1550,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,1226.85
+TBDATA,1,0.36,0.68,1300,1950,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,1426.85
+TBDATA,1,0.36,0.81,1300,2060,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,1926.85
+TBDATA,1,0.36,1.24,1300,2085,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+TBTEMP,2476.85
+TBDATA,1,0.36,1.73,1300,2090,1150,600
+TBDATA,7,PYRA,PYREA,PYRN,PYRDH,TO_K,PYRGCP
+TBDATA,13,PYRGT0,PYRGEF,PYRGY
+
+! SVAR1 alpha, SVAR2 alphaDot, SVAR3 gas source,
+! SVAR4 cumulative gas density, SVAR5 gas sensible sink.
+TB,STATE,matid,,5
+TBDATA,1,0.0,0.0,0.0,0.0,0.0
+
+  ATTR IssueSolveCommand = True
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = <BaseException>
+OBJECT Simulation 2 - soufflage et ablation | Ansys.ACT.Automation.Mechanical.CommandSnippet | id=200
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = <BaseException>
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <BaseException>
+  ATTR Input = ! ----------------------------------------------------------------------
+! Simulation 2 controller: local outgassing, blowing correction and
+! radial layer removal in a single Mechanical/MAPDL launch.
+!
+! The Mechanical Commands object must have Issue Solve Command = No.
+! Solver units: m, kg, s, W, degree C.
+! ----------------------------------------------------------------------
+
+/COM,SIM2 controller started
+
+SIM2_NLAY = 8
+SIM2_RIN  = 0.133350
+SIM2_THK  = 0.002540
+SIM2_LAX  = 0.050000
+SIM2_DT   = 0.050000
+SIM2_NMAC = 140
+
+SIM2_H0   = 1000.0
+SIM2_HMIN = 200.0
+SIM2_TGAS = 2230.85
+SIM2_GCP  = 1600.0
+
+SIM2_RHOC = 600.0
+SIM2_HEFF = 3.50E7
+SIM2_ACUT = 0.99
+SIM2_AMIN = 0.90
+
+! Optional two-step parser/coupon mode.  Leave undefined in Mechanical.
+*IF,SIM2_TESTMODE,EQ,1,THEN
+  SIM2_NLAY = 2
+  SIM2_DT   = 0.001
+  SIM2_NMAC = 2
+*ENDIF
+
+SIM2_DR   = SIM2_THK/SIM2_NLAY
+SIM2_TOL  = 0.05*SIM2_DR
+SIM2_ILAY = 0
+SIM2_HFILM = SIM2_H0
+SIM2_RECESS = 0.0
+
+! Birth/death must be announced before the first solve.
+NROPT,FULL
+ESTIF,1.0E-6
+THOPT,FULL
+OUTRES,SVAR,ALL
+RESCONTROL,DEFINE,ALL,3,-1,,2
+DMPOPTION,RNNN,YES
+
+! Remove only the original hot-side SURF152 convection overlay (type 11).
+! Outer convection (type 12) and radiation (type 13) remain unchanged.
+ESEL,NONE
+ESEL,A,TYPE,,11
+*GET,SIM2_NSURF,ELEM,0,COUNT
+*IF,SIM2_NSURF,GT,0,THEN
+  EKILL,ALL
+*ENDIF
+ALLSEL,ALL
+
+! CSYS 5 is cylindrical about global Y, the motor axis.
+CSYS,5
+SELTOL,SIM2_TOL
+SIM2_RSURF = SIM2_RIN
+NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+SFDELE,ALL,CONV
+SF,ALL,CONV,SIM2_HFILM,SIM2_TGAS
+CSYS,0
+ALLSEL,ALL
+
+*CFOPEN,simulation2_history,csv
+*VWRITE
+('time_s layer hot_radius_m alpha_avg alpha_min gas_kg_s gas_kg_m2_s h_W_m2_K Ts_max_C recession_m')
+
+*DO,SIM2_ISTEP,1,SIM2_NMAC
+
+  /SOLU
+  ALLSEL,ALL
+  SIM2_TIME = SIM2_ISTEP*SIM2_DT
+  TIME,SIM2_TIME
+  DELTIM,SIM2_DT,0.001,SIM2_DT,OFF
+  SOLVE
+
+  FINISH
+  /POST1
+  SET,LAST
+
+  ! Total gas production in all currently active phe0 elements.
+  ESEL,S,MAT,,3
+  ESEL,R,LIVE
+  ETABLE,ERATE,SVAR,3
+  ETABLE,EVOL,VOLU
+  SMULT,GMASS,ERATE,EVOL
+  SSUM
+  *GET,SIM2_GMDOT,SSUM,0,ITEM,GMASS
+
+  SIM2_RSURF = SIM2_RIN+SIM2_ILAY*SIM2_DR
+  SIM2_AREA = 2.0*ACOS(-1.0)*SIM2_RSURF*SIM2_LAX
+  SIM2_GFLUX = SIM2_GMDOT/SIM2_AREA
+  SIM2_BLOW = SIM2_GFLUX*SIM2_GCP/SIM2_H0
+  SIM2_HFILM = SIM2_H0/(1.0+SIM2_BLOW)
+  SIM2_HFILM = MAX(SIM2_HMIN,SIM2_HFILM)
+
+  ! Maximum hot-interface temperature for the conservative recession law.
+  CSYS,5
+  SELTOL,SIM2_TOL
+  NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+  *GET,SIM2_NHOT,NODE,0,COUNT
+  SIM2_TSMAX = 22.0
+  *IF,SIM2_NHOT,GT,0,THEN
+    NSORT,TEMP,,0,0
+    *GET,SIM2_TSMAX,SORT,0,MAX
+    NUSORT
+  *ENDIF
+  CSYS,0
+
+  SIM2_QNET = SIM2_HFILM*MAX(SIM2_TGAS-SIM2_TSMAX,0.0)
+  SIM2_RECESS = SIM2_RECESS+SIM2_QNET*SIM2_DT/(SIM2_RHOC*SIM2_HEFF)
+
+  ! Conversion statistics in the current radial band.
+  SIM2_RLO = SIM2_RIN+SIM2_ILAY*SIM2_DR
+  SIM2_RHI = SIM2_RLO+SIM2_DR
+  CSYS,5
+  NSEL,S,LOC,X,SIM2_RLO-SIM2_TOL,SIM2_RHI+SIM2_TOL
+  ESLN,S,1
+  ESEL,R,MAT,,3
+  ESEL,R,LIVE
+  *GET,SIM2_NEL,ELEM,0,COUNT
+  SIM2_AAVG = 0.0
+  SIM2_AMINL = 0.0
+  *IF,SIM2_NEL,GT,0,THEN
+    ETABLE,LALPHA,SVAR,1
+    ETABLE,LVOL,VOLU
+    SMULT,ALVOL,LALPHA,LVOL
+    SSUM
+    *GET,SIM2_ASUM,SSUM,0,ITEM,ALVOL
+    *GET,SIM2_VSUM,SSUM,0,ITEM,LVOL
+    SIM2_AAVG = SIM2_ASUM/MAX(SIM2_VSUM,1.0E-30)
+    ESORT,ETAB,LALPHA,1,0
+    *GET,SIM2_AMINL,SORT,0,MIN
+    EUSORT
+  *ENDIF
+  CSYS,0
+
+  *VWRITE,SIM2_TIME,SIM2_ILAY,SIM2_RSURF,SIM2_AAVG,SIM2_AMINL,SIM2_GMDOT,SIM2_GFLUX,SIM2_HFILM,SIM2_TSMAX,SIM2_RECESS
+  (E16.8,1X,I4,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8)
+
+  FINISH
+  /SOLU
+
+  ! Remove at most one fully converted band per 0.05-s macro increment.
+  SIM2_KILL = 0
+  SIM2_DEPTH = (SIM2_ILAY+1)*SIM2_DR
+  *IF,SIM2_ILAY,LT,SIM2_NLAY,THEN
+    *IF,SIM2_AAVG,GE,SIM2_ACUT,THEN
+      *IF,SIM2_AMINL,GE,SIM2_AMIN,THEN
+        *IF,SIM2_RECESS,GE,SIM2_DEPTH,THEN
+          SIM2_KILL = 1
+        *ENDIF
+      *ENDIF
+    *ENDIF
+  *ENDIF
+
+  ! Delete the previous nodal convection face before moving it.
+  CSYS,5
+  NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+  SFDELE,ALL,CONV
+
+  *IF,SIM2_KILL,EQ,1,THEN
+    SIM2_RLO = SIM2_RIN+SIM2_ILAY*SIM2_DR
+    SIM2_RHI = SIM2_RLO+SIM2_DR
+    NSEL,S,LOC,X,SIM2_RLO-SIM2_TOL,SIM2_RHI+SIM2_TOL
+    ESLN,S,1
+    ESEL,R,MAT,,3
+    ESEL,R,LIVE
+    EKILL,ALL
+    SIM2_ILAY = SIM2_ILAY+1
+    /COM,SIM2 radial layer killed at time %SIM2_TIME%
+  *ENDIF
+
+  ! Apply convection, corrected for blowing, on the newly exposed radius.
+  SIM2_RSURF = SIM2_RIN+SIM2_ILAY*SIM2_DR
+  NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+  SF,ALL,CONV,SIM2_HFILM,SIM2_TGAS
+  CSYS,0
+  ALLSEL,ALL
+
+*ENDDO
+
+*CFCLOSE
+FINISH
+/COM,SIM2 controller completed
+
+  ATTR IssueSolveCommand = False
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = <BaseException>
+OBJECT Réglages de l'analyse | Ansys.ACT.Automation.Mechanical.AnalysisSettings.ANSYSAnalysisSettings | id=110
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = <BaseException>
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <BaseException>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = <BaseException>
+  ATTR NumberOfSteps = 1
+  ATTR InitialTimeStep = 0.05 [sec]
+  ATTR MinimumTimeStep = 0.001 [sec]
+  ATTR MaximumTimeStep = 0.05 [sec]
+  ATTR StepEndTime = 7 [sec]
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = <BaseException>
+OBJECT Thermique transitoire | Ansys.ACT.Automation.Mechanical.Analysis | id=104
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = <BaseException>
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <BaseException>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = <BaseException>
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = <BaseException>
+OBJECT Convection | Ansys.ACT.Automation.Mechanical.BoundaryConditions.Convection | id=189
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = <BaseException>
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <Ansys.ACT.Automation.Mechanical.NamedSelection object at 0x000000000000002D [Ansys.ACT.Automation.Mechanical.NamedSelection]>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = [1000 [W m^-1 m^-1 K^-1]]
+  ATTR AmbientTemperature = [2504 [K]]
+  ATTR Expression = <BaseException>
+OBJECT Convection 2 | Ansys.ACT.Automation.Mechanical.BoundaryConditions.Convection | id=191
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = <BaseException>
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <Ansys.ACT.Automation.Mechanical.NamedSelection object at 0x000000000000002E [Ansys.ACT.Automation.Mechanical.NamedSelection]>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = [8 [W m^-1 m^-1 K^-1]]
+  ATTR AmbientTemperature = [295.15 [K]]
+  ATTR Expression = <BaseException>
+OBJECT Taux de pyrolyse alpha | Ansys.ACT.Automation.Mechanical.Results.UserDefinedResult | id=201
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = 
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <Ansys.ACT.Mechanical.MechanicalSelectionInfo object at 0x000000000000002F [Ansys.ACT.Mechanical.MechanicalSelectionInfo]>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = SVAR1
+OBJECT Vitesse de pyrolyse | Ansys.ACT.Automation.Mechanical.Results.UserDefinedResult | id=202
+  ATTR NumberOfDivisions = <BaseException>
+  ATTR ElementSize = <BaseException>
+  ATTR Type = 
+  ATTR Behavior = <BaseException>
+  ATTR BiasType = <BaseException>
+  ATTR BiasFactor = <BaseException>
+  ATTR Geometry = <BaseException>
+  ATTR Location = <Ansys.ACT.Mechanical.MechanicalSelectionInfo object at 0x0000000000000030 [Ansys.ACT.Mechanical.MechanicalSelectionInfo]>
+  ATTR Input = <BaseException>
+  ATTR IssueSolveCommand = <BaseException>
+  ATTR Suppressed = False
+  ATTR NumberOfSteps = <BaseException>
+  ATTR InitialTimeStep = <BaseException>
+  ATTR MinimumTimeStep = <BaseException>
+  ATTR MaximumTimeStep = <BaseException>
+  ATTR StepEndTime = <BaseException>
+  ATTR FilmCoefficient = <BaseException>
+  ATTR AmbientTemperature = <BaseException>
+  ATTR Expression = SVAR2
+SOLUTION EXPRESSIONS
+  Taux de pyrolyse alpha = SVAR1
+  Vitesse de pyrolyse = SVAR2
+  Source massique de gaz (SVAR3) = SVAR3
+  Gaz libere cumule (SVAR4) = SVAR4
+  Puits energetique sensible des gaz (SVAR5) = SVAR5
+SOLVE CONFIGURATIONS
+  Mon poste de travail default=True distributed=True cores=14
+  Mon poste de travail, Arrière-plan default=False distributed=True cores=14

@@ -1,0 +1,265 @@
+! ----------------------------------------------------------------------
+! Simulation 2 controller: local outgassing, blowing correction and
+! radial layer removal in a single Mechanical/MAPDL launch.
+!
+! MULTIFRAME CONTINUATION VERSION
+! The Mechanical Commands object must have Issue Solve Command = No.
+! Solver units: m, kg, s, W, degree C.
+! ----------------------------------------------------------------------
+
+/COM,SIM2 multiframe controller started
+
+SIM2_NLAY = 8
+SIM2_RIN  = 0.133350
+SIM2_THK  = 0.002540
+SIM2_LAX  = 0.050000
+SIM2_DT   = 0.050000
+SIM2_NMAC = 140
+
+SIM2_H0   = 1000.0
+SIM2_HMIN = 200.0
+SIM2_TGAS = 2230.85
+SIM2_GCP  = 1600.0
+
+SIM2_RHOC = 600.0
+SIM2_HEFF = 3.50E7
+SIM2_ACUT = 0.99
+SIM2_AMIN = 0.90
+
+! Optional three-step parser/coupon mode. Leave undefined in Mechanical.
+! Three steps are necessary to prove that time and SVAR continue.
+*IF,SIM2_TESTMODE,EQ,1,THEN
+  SIM2_NLAY = 2
+  SIM2_DT   = 0.001
+  SIM2_NMAC = 3
+*ENDIF
+
+SIM2_DR      = SIM2_THK/SIM2_NLAY
+SIM2_TOL     = 0.05*SIM2_DR
+SIM2_ILAY    = 0
+SIM2_OLDILAY = 0
+SIM2_HFILM   = SIM2_H0
+SIM2_RECESS  = 0.0
+SIM2_PREVT   = -1.0
+SIM2_KILL    = 0
+
+! Birth/death and nonlinear material controls.
+NROPT,FULL
+ESTIF,1.0E-6
+THOPT,FULL
+AUTOTS,ON
+NEQIT,40
+KBC,0
+OUTRES,ALL,ALL
+OUTRES,SVAR,ALL
+
+! Keep distributed restart files separate. Every continuation solve must use
+! exactly the same DMP rank count as the preceding one.
+DMPOPTION,RNNN,NO
+
+! Save the last converged substep of every load step, retaining four restart
+! generations. This overrides Mechanical's default NORESTART instruction.
+RESCONTROL,DEFINE,ALL,LAST,-1,,4
+
+! This is the only new analysis start. All later intervals use ANTYPE,REST.
+ANTYPE,TRANS,NEW
+
+! Remove only the original hot-side SURF152 convection overlay (type 11).
+! Outer convection (type 12) and radiation (type 13) remain unchanged.
+ESEL,NONE
+ESEL,A,TYPE,,11
+*GET,SIM2_NSURF,ELEM,0,COUNT
+*IF,SIM2_NSURF,GT,0,THEN
+  EKILL,ALL
+*ENDIF
+ALLSEL,ALL
+
+! CSYS 5 is cylindrical about global Y, the motor axis.
+CSYS,5
+SELTOL,SIM2_TOL
+SIM2_RSURF = SIM2_RIN
+NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+SFDELE,ALL,CONV
+SF,ALL,CONV,SIM2_HFILM,SIM2_TGAS
+CSYS,0
+ALLSEL,ALL
+
+! Flush the history after each completed macro-step. The file remains usable
+! if the solve is stopped or Mechanical closes unexpectedly.
+*CFOPEN,simulation2_history,csv
+*VWRITE
+('time_s layer hot_radius_m alpha_avg alpha_min gas_kg_s gas_kg_m2_s h_W_m2_K Ts_max_C recession_m killed_for_next_step')
+*CFCLOSE
+
+*DO,SIM2_ISTEP,1,SIM2_NMAC
+
+  /SOLU
+
+  *IF,SIM2_ISTEP,GT,1,THEN
+    ! The restart database also contains the APDL loop index from the previous
+    ! load step. Preserve the intended current index before restoring it.
+    *CFOPEN,simulation2_iteration,txt
+    *VWRITE,SIM2_ISTEP
+    (E24.16)
+    *CFCLOSE
+
+    ! Restore temperature, UserMatTh SVARs and element status from the last
+    ! converged substep. CONTINUE permits added/changed loads at the new time.
+    ANTYPE,,REST,,,CONTINUE
+
+    ! ANTYPE,REST reloads the old database, including its old parameters.
+    ! Restore the controller state calculated after the preceding SOLVE.
+    PARRES,CHANGE,simulation2_state,parm
+
+    ! Restore the current *DO index last, after PARRES has restored the prior
+    ! value. Without this step the target time would repeat the first interval.
+    *DEL,SIM2_ITERBUF
+    *DIM,SIM2_ITERBUF,ARRAY,1
+    *VREAD,SIM2_ITERBUF(1),simulation2_iteration,txt
+    (E24.16)
+    SIM2_ISTEP = SIM2_ITERBUF(1)
+
+    ! The topology/boundary update must happen after ANTYPE,REST, otherwise
+    ! the restart database would silently overwrite it.
+    SIM2_OLD_RSURF = SIM2_RIN+SIM2_OLDILAY*SIM2_DR
+    ALLSEL,ALL
+    CSYS,5
+    SELTOL,SIM2_TOL
+    NSEL,S,LOC,X,SIM2_OLD_RSURF-SIM2_TOL,SIM2_OLD_RSURF+SIM2_TOL
+    SFDELE,ALL,CONV
+    ALLSEL,ALL
+
+    *IF,SIM2_KILL,EQ,1,THEN
+      SIM2_RLO = SIM2_RIN+SIM2_OLDILAY*SIM2_DR
+      SIM2_RHI = SIM2_RLO+SIM2_DR
+      NSEL,S,LOC,X,SIM2_RLO-SIM2_TOL,SIM2_RHI+SIM2_TOL
+      ESLN,S,1
+      ESEL,R,MAT,,3
+      ESEL,R,LIVE
+      EKILL,ALL
+      /COM,SIM2 radial layer removed after restart restore
+      ALLSEL,ALL
+    *ENDIF
+
+    SIM2_RSURF = SIM2_RIN+SIM2_ILAY*SIM2_DR
+    NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+    SF,ALL,CONV,SIM2_HFILM,SIM2_TGAS
+    CSYS,0
+    ALLSEL,ALL
+  *ENDIF
+
+  SIM2_TIME = SIM2_ISTEP*SIM2_DT
+  ALLSEL,ALL
+  TIME,SIM2_TIME
+  DELTIM,SIM2_DT,0.001,SIM2_DT,OFF
+  SOLVE
+
+  FINISH
+  /POST1
+  SET,LAST
+
+  ! Hard guard against the former failure: every SOLVE must advance from the
+  ! preceding saved time, never integrate again from t=0.
+  *GET,SIM2_SOLVED_TIME,ACTIVE,0,SET,TIME
+  SIM2_TERR = ABS(SIM2_SOLVED_TIME-SIM2_TIME)
+  *IF,SIM2_TERR,GT,1.0E-8,THEN
+    /COM,SIM2_FATAL_SOLVED_TIME_DOES_NOT_MATCH_TARGET
+    /EXIT,NOSAVE
+  *ENDIF
+  *IF,SIM2_ISTEP,GT,1,THEN
+    *IF,SIM2_SOLVED_TIME,LE,SIM2_PREVT+1.0E-10,THEN
+      /COM,SIM2_FATAL_TIME_DID_NOT_ADVANCE
+      /EXIT,NOSAVE
+    *ENDIF
+  *ENDIF
+
+  ! Total gas production in all currently active phe0 elements.
+  ESEL,S,MAT,,3
+  ESEL,R,LIVE
+  ETABLE,ERATE,SVAR,3
+  ETABLE,EVOL,VOLU
+  SMULT,GMASS,ERATE,EVOL
+  SSUM
+  *GET,SIM2_GMDOT,SSUM,0,ITEM,GMASS
+
+  SIM2_RSURF = SIM2_RIN+SIM2_ILAY*SIM2_DR
+  SIM2_AREA = 2.0*ACOS(-1.0)*SIM2_RSURF*SIM2_LAX
+  SIM2_GFLUX = SIM2_GMDOT/SIM2_AREA
+  SIM2_BLOW = SIM2_GFLUX*SIM2_GCP/SIM2_H0
+  SIM2_HFILM = SIM2_H0/(1.0+SIM2_BLOW)
+  SIM2_HFILM = MAX(SIM2_HMIN,SIM2_HFILM)
+
+  ! Maximum hot-interface temperature for the conservative recession law.
+  CSYS,5
+  SELTOL,SIM2_TOL
+  NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+  *GET,SIM2_NHOT,NODE,0,COUNT
+  SIM2_TSMAX = 22.0
+  *IF,SIM2_NHOT,GT,0,THEN
+    NSORT,TEMP,,0,0
+    *GET,SIM2_TSMAX,SORT,0,MAX
+    NUSORT
+  *ENDIF
+  CSYS,0
+
+  SIM2_QNET = SIM2_HFILM*MAX(SIM2_TGAS-SIM2_TSMAX,0.0)
+  SIM2_RECESS = SIM2_RECESS+SIM2_QNET*SIM2_DT/(SIM2_RHOC*SIM2_HEFF)
+
+  ! Conversion statistics in the current radial band.
+  SIM2_RLO = SIM2_RIN+SIM2_ILAY*SIM2_DR
+  SIM2_RHI = SIM2_RLO+SIM2_DR
+  CSYS,5
+  NSEL,S,LOC,X,SIM2_RLO-SIM2_TOL,SIM2_RHI+SIM2_TOL
+  ESLN,S,1
+  ESEL,R,MAT,,3
+  ESEL,R,LIVE
+  *GET,SIM2_NEL,ELEM,0,COUNT
+  SIM2_AAVG = 0.0
+  SIM2_AMINL = 0.0
+  *IF,SIM2_NEL,GT,0,THEN
+    ETABLE,LALPHA,SVAR,1
+    ETABLE,LVOL,VOLU
+    SMULT,ALVOL,LALPHA,LVOL
+    SSUM
+    *GET,SIM2_ASUM,SSUM,0,ITEM,ALVOL
+    *GET,SIM2_VSUM,SSUM,0,ITEM,LVOL
+    SIM2_AAVG = SIM2_ASUM/MAX(SIM2_VSUM,1.0E-30)
+    ESORT,ETAB,LALPHA,1,0
+    *GET,SIM2_AMINL,SORT,0,MIN
+    EUSORT
+  *ENDIF
+  CSYS,0
+
+  ! Decide the layer change to apply after the next restart restore.
+  SIM2_KILL = 0
+  SIM2_OLDILAY = SIM2_ILAY
+  SIM2_DEPTH = (SIM2_ILAY+1)*SIM2_DR
+  *IF,SIM2_ILAY,LT,SIM2_NLAY,THEN
+    *IF,SIM2_AAVG,GE,SIM2_ACUT,THEN
+      *IF,SIM2_AMINL,GE,SIM2_AMIN,THEN
+        *IF,SIM2_RECESS,GE,SIM2_DEPTH,THEN
+          SIM2_KILL = 1
+          SIM2_ILAY = SIM2_ILAY+1
+        *ENDIF
+      *ENDIF
+    *ENDIF
+  *ENDIF
+
+  ! Append and close immediately to guarantee an on-disk progress record.
+  *CFOPEN,simulation2_history,csv,,APPEND
+  *VWRITE,SIM2_SOLVED_TIME,SIM2_OLDILAY,SIM2_RSURF,SIM2_AAVG,SIM2_AMINL,SIM2_GMDOT,SIM2_GFLUX,SIM2_HFILM,SIM2_TSMAX,SIM2_RECESS,SIM2_KILL
+  (E16.8,1X,I4,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,I2)
+  *CFCLOSE
+
+  SIM2_PREVT = SIM2_SOLVED_TIME
+
+  ! Persist controller scalars outside the restart database. They are restored
+  ! after ANTYPE,REST at the start of the following macro-step.
+  PARSAV,SCALAR,simulation2_state,parm
+
+  FINISH
+
+*ENDDO
+
+ALLSEL,ALL
+/COM,SIM2 multiframe controller completed

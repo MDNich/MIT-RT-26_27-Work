@@ -1,0 +1,219 @@
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+ You have already entered solution.  The /SOLUTION command is ignored.   
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . . 0.10000E-02
+   AUTOMATIC TIME STEPPING . . . . . . . . . . . .    ON
+      STARTING TIME STEP SIZE. . . . . . . . . . . 0.10000E-02
+      MINIMUM TIME STEP SIZE . . . . . . . . . . . 0.10000E-02
+      MAXIMUM TIME STEP SIZE . . . . . . . . . . . 0.10000E-02
+   MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS. . . .    15
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .   YES
+   TRANSIENT (INERTIA) EFFECTS
+      THERMAL DOFS . . . . . . . . . . . . . . . .    ON
+   TRANSIENT INTEGRATION PARAMETERS
+      THETA. . . . . . . . . . . . . . . . . . . .  1.0000    
+      OSCILLATION LIMIT CRITERION. . . . . . . . . 0.50000    
+      TOLERANCE. . . . . . . . . . . . . . . . . .  0.0000    
+   TERMINATE ANALYSIS IF NOT CONVERGED . . . . . .YES (EXIT)  
+   CONVERGENCE CONTROLS. . . . . . . . . . . . . .USE DEFAULTS
+   COPY INTEGRATION POINT VALUES TO NODE . . . . .YES, FOR ELEMENTS WITH
+                                                  ACTIVE MAT. NONLINEARITIES
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL        ALL               
+      SVAR        ALL               
+
+
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     3  0.107357E-03
+ AN AVERAGE OF THE X-, Y-, AND Z-DIRECTION MASS TERMS ARE USED
+     HT FLOW CONVERGENCE VALUE=   41.21      CRITERION=  0.6660E-01
+
+
+  Memory allocated on only this MPI rank (rank     1)
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =     0.151 MB
+  Equation solver memory required for in-core mode     =     0.144 MB
+  Equation solver memory required for out-of-core mode =     0.144 MB
+  Total (solver and non-solver) memory allocated       =   115.237 MB
+
+ *** NOTE ***                            ELAPSED TIME =      19.726   TIME= 19:12:53
+ The Distributed Sparse Matrix Solver is currently running in the        
+ in-core memory mode.  This memory mode uses the most amount of memory   
+ in order to avoid using the hard drive as much as possible, which most  
+ often results in the fastest solution time.  This mode is recommended   
+ if enough physical memory is present to accommodate all of the solver   
+ data.                                                                   
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.9077    
+     HT FLOW CONVERGENCE VALUE=  0.7286E-01  CRITERION=  0.3088E-01
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1883E-02
+     HT FLOW CONVERGENCE VALUE=  0.1416E-03  CRITERION=  0.3094E-01 <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        3         2  SOLID278          0.0007   0.000357562
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        3         2  SOLID278          0.0003   0.000153521
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+ *** TIME =  0.100000E-02     TIME INC =  0.100000E-02
+ *** RESPONSE EIGENVALUE =  1.191       OSCILLATION LIMIT = 0.1191E-02
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        0.062 MB WRITTEN ON ELEMENT SAVED DATA FILE: verify_controller1.esav
+        0.062 MB WRITTEN ON ASSEMBLED MATRIX FILE: verify_controller1.full
+        0.312 MB WRITTEN ON RESULTS FILE: verify_controller1.rth
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =        20.113
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+ You have already entered solution.  The /SOLUTION command is ignored.   
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . . 0.20000E-02
+   AUTOMATIC TIME STEPPING . . . . . . . . . . . .    ON
+      STARTING TIME STEP SIZE. . . . . . . . . . . 0.10000E-02
+      MINIMUM TIME STEP SIZE . . . . . . . . . . . 0.10000E-02
+      MAXIMUM TIME STEP SIZE . . . . . . . . . . . 0.10000E-02
+   MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS. . . .    15
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .   YES
+   TRANSIENT (INERTIA) EFFECTS
+      THERMAL DOFS . . . . . . . . . . . . . . . .    ON
+   TRANSIENT INTEGRATION PARAMETERS
+      THETA. . . . . . . . . . . . . . . . . . . .  1.0000    
+      OSCILLATION LIMIT CRITERION. . . . . . . . . 0.50000    
+      TOLERANCE. . . . . . . . . . . . . . . . . .  0.0000    
+   TERMINATE ANALYSIS IF NOT CONVERGED . . . . . .YES (EXIT)  
+   CONVERGENCE CONTROLS. . . . . . . . . . . . . .USE DEFAULTS
+   COPY INTEGRATION POINT VALUES TO NODE . . . . .YES, FOR ELEMENTS WITH
+                                                  ACTIVE MAT. NONLINEARITIES
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL        ALL               
+      SVAR        ALL               
+
+
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     3  0.107357E-03
+ AN AVERAGE OF THE X-, Y-, AND Z-DIRECTION MASS TERMS ARE USED
+     HT FLOW CONVERGENCE VALUE=   41.15      CRITERION=  0.6647E-01
+
+
+  Memory allocated on only this MPI rank (rank     1)
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =     0.151 MB
+  Equation solver memory required for in-core mode     =     0.144 MB
+  Equation solver memory required for out-of-core mode =     0.144 MB
+  Total (solver and non-solver) memory allocated       =   123.366 MB
+
+ *** NOTE ***                            ELAPSED TIME =      20.854   TIME= 19:12:54
+ The Distributed Sparse Matrix Solver is currently running in the        
+ in-core memory mode.  This memory mode uses the most amount of memory   
+ in order to avoid using the hard drive as much as possible, which most  
+ often results in the fastest solution time.  This mode is recommended   
+ if enough physical memory is present to accommodate all of the solver   
+ data.                                                                   
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.9051    
+     HT FLOW CONVERGENCE VALUE=  0.7274E-01  CRITERION=  0.3082E-01
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1876E-02
+     HT FLOW CONVERGENCE VALUE=  0.1411E-03  CRITERION=  0.3088E-01 <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        3         2  SOLID278          0.0003   0.000156646
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        3         2  SOLID278          0.0001   0.000037063
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      2
+ *** TIME =  0.100000E-02     TIME INC =  0.100000E-02
+ *** RESPONSE EIGENVALUE =  1.188       OSCILLATION LIMIT = 0.1188E-02
+ *** AUTO STEP TIME:  NEXT TIME INC = 0.10000E-02  UNCHANGED
+
+     HT FLOW CONVERGENCE VALUE=   41.05      CRITERION=  0.6643E-01
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.9029    
+     HT FLOW CONVERGENCE VALUE=  0.7261E-01  CRITERION=  0.3087E-01
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1876E-02
+     HT FLOW CONVERGENCE VALUE=  0.1413E-03  CRITERION=  0.3092E-01 <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP     1   SUBSTEP     2  COMPLETED.    CUM ITER =      4
+ *** TIME =  0.200000E-02     TIME INC =  0.100000E-02
+ *** RESPONSE EIGENVALUE =  1.189       OSCILLATION LIMIT = 0.1189E-02
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+        0.062 MB WRITTEN ON ELEMENT SAVED DATA FILE: verify_controller1.esav
+        0.062 MB WRITTEN ON ASSEMBLED MATRIX FILE: verify_controller1.full
+        0.312 MB WRITTEN ON RESULTS FILE: verify_controller1.rth
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =        21.354
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =        21.412
+
+
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2026 R1.02      Build 26.1         UP20260202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)     1 MB     Scratch Memory Requested       192 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used     48 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          5.906       Time  =  19:12:55          |
+ |        Elapsed Time (sec) =         21.417       Date  =  07/16/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

@@ -1,0 +1,908 @@
+
+ Ansys Mechanical Enterprise                       
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.02       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.02  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ BladeModeler 2026 R1
+ BladeModeler 2026 R1.01 
+ BladeModeler 2026 R1.02 
+ CFX (includes CFD-Post) 2026 R1 
+ CFX (includes CFD-Post) 2026 R1.01  
+ CFX (includes CFD-Post) 2026 R1.02  
+ CFD-Post only 2026 R1   
+ CFD-Post only 2026 R1.01
+ CFD-Post only 2026 R1.02
+ Chemkin 2026 R1 
+ Chemkin 2026 R1.01  
+ Chemkin 2026 R1.02  
+ EnSight 2026 R1 
+ EnSight 2026 R1.01  
+ EnSight 2026 R1.02  
+ FENSAP-ICE 2026 R1  
+ FENSAP-ICE 2026 R1.01   
+ FENSAP-ICE 2026 R1.02   
+ Fluent (includes CFD-Post) 2026 R1  
+ Fluent (includes CFD-Post) 2026 R1.01   
+ Fluent (includes CFD-Post) 2026 R1.02   
+ Polyflow (includes CFD-Post) 2026 R1
+ Polyflow (includes CFD-Post) 2026 R1.01 
+ Polyflow (includes CFD-Post) 2026 R1.02 
+ Forte (includes EnSight) 2026 R1
+ Forte (includes EnSight) 2026 R1.01 
+ Forte (includes EnSight) 2026 R1.02 
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ RBF Morph Fluids UDF 2026 R1
+ RBF Morph Fluids UDF 2026 R1.01 
+ RBF Morph Fluids UDF 2026 R1.02 
+ RBF Morph Libraries 2026 R1 
+ RBF Morph Libraries 2026 R1.01  
+ RBF Morph Libraries 2026 R1.02  
+ Rocky 2026 R1   
+ Rocky 2026 R1.01
+ Rocky 2026 R1.02
+ Thermal Desktop: AutoCAD 2026 R1
+ Thermal Desktop: AutoCAD 2026 R1.01 
+ Thermal Desktop: AutoCAD 2026 R1.02 
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1   
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.01
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.02
+ Thermal Desktop: Sinda Solver 2026 R1   
+ Thermal Desktop: Sinda Solver 2026 R1.01
+ Thermal Desktop: Sinda Solver 2026 R1.02
+ TurboGrid 2026 R1   
+ TurboGrid 2026 R1.01
+ TurboGrid 2026 R1.02
+ Granta EduPack 2026 R1  
+ Granta EduPack 2026 R1.01   
+ Granta EduPack 2026 R1.02   
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Designer 2026 R1   
+ Material Designer 2026 R1.01
+ Material Designer 2026 R1.02
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  DISTRIBUTED MEMORY PARALLEL REQUESTED
+      10 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF    10 CORES REQUESTED
+  INPUT FILE NAME              = CONIN$
+  OUTPUT FILE NAME             = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\solidprop\phenolic_case_study\tmp3_sim2\_ProjectScratch\ScrAEC7\file6.out
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+
+ User Link path (ANS_USER_PATH): Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\solidprop\phenolic_case_study\tmp3_sim2\                                                                                                                                             
+
+ RELEASE= 2026 R1.02           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file6  13:39:21  JUL 17, 2026  Elapsed Time=       4.531
+ Note - This MAPDL version was linked by Licensee
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ PRINTOUT RESUMED BY /GOP
+ You have already entered solution.  The /SOLUTION command is ignored.   
+
+ *** NOTE ***                            ELAPSED TIME =     116.566   TIME= 13:41:12
+ The initial memory allocation (-m) has been exceeded.                   
+  Supplemental memory allocations are being used.                        
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   TIME AT END OF THE LOAD STEP. . . . . . . . . . 0.50000E-01
+   AUTOMATIC TIME STEPPING . . . . . . . . . . . .    ON
+      STARTING TIME STEP SIZE. . . . . . . . . . . 0.50000E-01
+      MINIMUM TIME STEP SIZE . . . . . . . . . . . 0.10000E-02
+      MAXIMUM TIME STEP SIZE . . . . . . . . . . . 0.50000E-01
+   MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS. . . .    40
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   TRANSIENT (INERTIA) EFFECTS
+      THERMAL DOFS . . . . . . . . . . . . . . . .    ON
+   TRANSIENT INTEGRATION PARAMETERS
+      THETA. . . . . . . . . . . . . . . . . . . .  1.0000    
+      OSCILLATION LIMIT CRITERION. . . . . . . . . 0.50000    
+      TOLERANCE. . . . . . . . . . . . . . . . . .  0.0000    
+   TERMINATE ANALYSIS IF NOT CONVERGED . . . . . .YES (EXIT)  
+   CONVERGENCE CONTROLS
+      LABEL   REFERENCE    TOLERANCE  NORM     MINREF
+       HEAT    0.000       0.1000E-02   2     0.1000E-05
+   COPY INTEGRATION POINT VALUES TO NODE . . . . .YES, FOR ELEMENTS WITH
+                                                  ACTIVE MAT. NONLINEARITIES
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL       NONE               
+      NSOL        ALL               
+      RSOL        ALL               
+      EANG        ALL               
+      VENG        ALL               
+      FFLU        ALL               
+      CONT        ALL               
+      NLOA        ALL               
+      MISC        ALL               
+       ALL        ALL               
+      SVAR        ALL               
+
+
+ *** NOTE ***                            ELAPSED TIME =     130.326   TIME= 13:41:26
+ Deformable-deformable contact pair identified by real constant set 14   
+ and contact element type 5 has been set up.                             
+ The current pair was split from a base pair (real ID 5).                
+ Pure thermal contact is activated.
+ The emissivity is defined through the material property.
+ Thermal convection coefficient, environment temperature, and
+  heat flux are defined using the SFE command.
+ Target temperature is used for convection/radiation calculation
+  for near field contact.
+ Small sliding logic is assumed
+ Contact detection at: Gauss integration point
+ Average contact surface length               0.27279E-02
+ Average contact pair depth                   0.89316E-03
+ Average target surface length                0.26224E-02
+ Default pinball region factor PINB           0.25000    
+ The resulting pinball region                 0.22329E-03
+ Initial penetration/gap is excluded.
+ Bonded contact (always) is defined.
+ Thermal contact conductance coef. TCC        0.38484E+07
+ Heat radiation is excluded.
+
+ *** NOTE ***                            ELAPSED TIME =     130.327   TIME= 13:41:26
+ Max.  Initial penetration 9.077438276E-11 was detected between contact  
+ element 747235 and target element 774380.                               
+ ****************************************
+  
+
+ *** NOTE ***                            ELAPSED TIME =     130.330   TIME= 13:41:26
+ Deformable-deformable contact pair identified by real constant set 15   
+ and contact element type 5 has been set up.                             
+ The current pair was split from a base pair (real ID 5).                
+ Pure thermal contact is activated.
+ The emissivity is defined through the material property.
+ Thermal convection coefficient, environment temperature, and
+  heat flux are defined using the SFE command.
+ Target temperature is used for convection/radiation calculation
+  for near field contact.
+ Small sliding logic is assumed
+ Contact detection at: Gauss integration point
+ Average contact surface length               0.27279E-02
+ Average contact pair depth                   0.89316E-03
+ Average target surface length                0.26247E-02
+ Default pinball region factor PINB           0.25000    
+ The resulting pinball region                 0.22329E-03
+ Initial penetration/gap is excluded.
+ Bonded contact (always) is defined.
+ Thermal contact conductance coef. TCC        0.38484E+07
+ Heat radiation is excluded.
+
+ *** NOTE ***                            ELAPSED TIME =     130.347   TIME= 13:41:26
+ Max.  Initial penetration 1.016078576E-10 was detected between contact  
+ element 739906 and target element 768088.                               
+ ****************************************
+  
+
+  
+ *************************************************
+  SUMMARY FOR CONTACT PAIR IDENTIFIED BY REAL CONSTANT SET          14
+ Max.  Penetration of -5.928294399E-17 has been detected between contact 
+ element 756425 and target element 776846.                               
+  
+ Max.  Geometrical gap of 1.10870809E-10 has been detected between       
+ contact element 739906 and target element 768088.                       
+  
+ Max.  Geometrical penetration of -1.016078857E-10 has been detected     
+ between contact element 739906 and target element 768088.               
+ Contacting area 1.422827428E-02.                                        
+ Max.  Pinball distance 2.232899784E-04.                                 
+ One of the contact searching regions contains at least 28 target        
+ elements.                                                               
+ *************************************************
+  
+ *************************************************
+  SUMMARY FOR CONTACT PAIR IDENTIFIED BY REAL CONSTANT SET          15
+ Max.  Penetration of -5.928294399E-17 has been detected between contact 
+ element 756425 and target element 776846.                               
+  
+ Max.  Geometrical gap of 1.10870809E-10 has been detected between       
+ contact element 739906 and target element 768088.                       
+  
+ Max.  Geometrical penetration of -1.016078857E-10 has been detected     
+ between contact element 739906 and target element 768088.               
+ Contacting area 1.421123052E-02.                                        
+ Max.  Pinball distance 2.232899784E-04.                                 
+ One of the contact searching regions contains at least 32 target        
+ elements.                                                               
+ *************************************************
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     2  0.584065    
+ AN AVERAGE OF THE X-, Y-, AND Z-DIRECTION MASS TERMS ARE USED
+     HT FLOW CONVERGENCE VALUE=   616.1      CRITERION=  0.6223    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   704.0    
+     HT FLOW CONVERGENCE VALUE=   127.4      CRITERION=  0.4522    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -122.4    
+     HT FLOW CONVERGENCE VALUE=   13.50      CRITERION=  0.4524    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   13.93    
+     HT FLOW CONVERGENCE VALUE=   1.650      CRITERION=  0.4527    
+    EQUIL ITER   4 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.670    
+     HT FLOW CONVERGENCE VALUE=  0.2037      CRITERION=  0.4526     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   4
+
+   *** ELEMENT RESULT CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1      9516  SOLID279          1.5420   0.000162041
+        2     98820  SOLID279         17.2043   0.000174097
+        3    315536  SOLID279        135.4944   0.000429410
+        4     59028  SOLID279          9.9493   0.000168552
+        5     35248  CONTA174         14.2317   0.000403758
+        7      9192  CONTA174          3.6121   0.000392966
+        9     10392  CONTA174          4.1436   0.000398733
+       12     10248   SURF152          0.9575   0.000093435
+       13     10248   SURF152          0.9704   0.000094691
+
+   *** NODAL LOAD CALCULATION TIMES
+     TYPE    NUMBER     ENAME   TOTAL ELAPSED   AVG ELAPSED
+
+        1      9516  SOLID279          0.4864   0.000051115
+        2     98820  SOLID279          5.0803   0.000051409
+        3    315536  SOLID279         19.7877   0.000062711
+        4     59028  SOLID279          2.9485   0.000049951
+        5     35248  CONTA174          0.7268   0.000020619
+        7      9192  CONTA174          0.1994   0.000021691
+        9     10392  CONTA174          0.1690   0.000016265
+       12     10248   SURF152          0.0933   0.000009100
+       13     10248   SURF152          0.0714   0.000006965
+ *** LOAD STEP     1   SUBSTEP     1  COMPLETED.    CUM ITER =      4
+ *** TIME =  0.500000E-01     TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  28.11       OSCILLATION LIMIT =  1.406    
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+      181.750 MB WRITTEN ON ELEMENT SAVED DATA FILE: file6.esav
+       82.750 MB WRITTEN ON RESULTS FILE: file6.rth
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      1143.612
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   13:59:16  JUL 17, 2026 Elapsed Time=   1200.920
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   498.0      CRITERION=  0.6152    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   245.2    
+     HT FLOW CONVERGENCE VALUE=   40.52      CRITERION=  0.5228    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -33.67    
+     HT FLOW CONVERGENCE VALUE=   2.639      CRITERION=  0.5252    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   4.055    
+     HT FLOW CONVERGENCE VALUE=  0.1746      CRITERION=  0.5251     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     2   SUBSTEP     1  COMPLETED.    CUM ITER =      8
+ *** TIME =  0.100000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  6.252       OSCILLATION LIMIT = 0.3126    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      1789.577
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   14:09:57  JUL 17, 2026 Elapsed Time=   1841.967
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   426.8      CRITERION=  0.6080    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   142.3    
+     HT FLOW CONVERGENCE VALUE=   32.41      CRITERION=  0.5424    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -15.86    
+     HT FLOW CONVERGENCE VALUE=   2.397      CRITERION=  0.5440    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.954    
+     HT FLOW CONVERGENCE VALUE=  0.1807      CRITERION=  0.5438     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     3   SUBSTEP     1  COMPLETED.    CUM ITER =     12
+ *** TIME =  0.150000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  3.670       OSCILLATION LIMIT = 0.1835    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      2445.069
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   14:20:55  JUL 17, 2026 Elapsed Time=   2499.298
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   363.5      CRITERION=  0.5946    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   105.1    
+     HT FLOW CONVERGENCE VALUE=   26.96      CRITERION=  0.5455    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -13.58    
+     HT FLOW CONVERGENCE VALUE=   2.350      CRITERION=  0.5486    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.723    
+     HT FLOW CONVERGENCE VALUE=  0.2160      CRITERION=  0.5482     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     4   SUBSTEP     1  COMPLETED.    CUM ITER =     16
+ *** TIME =  0.200000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  2.605       OSCILLATION LIMIT = 0.1303    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      3168.628
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   14:32:50  JUL 17, 2026 Elapsed Time=   3214.435
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   317.0      CRITERION=  0.5803    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   82.90    
+     HT FLOW CONVERGENCE VALUE=   21.78      CRITERION=  0.5434    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -11.96    
+     HT FLOW CONVERGENCE VALUE=   2.099      CRITERION=  0.5467    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.634    
+     HT FLOW CONVERGENCE VALUE=  0.2217      CRITERION=  0.5462     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     5   SUBSTEP     1  COMPLETED.    CUM ITER =     20
+ *** TIME =  0.250000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  2.059       OSCILLATION LIMIT = 0.1030    
+
+ *** NOTE ***                            ELAPSED TIME =    3831.232   TIME= 14:43:07
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      3928.949
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   14:45:39  JUL 17, 2026 Elapsed Time=   3983.836
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   281.7      CRITERION=  0.5665    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   67.80    
+     HT FLOW CONVERGENCE VALUE=   17.76      CRITERION=  0.5386    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -10.72    
+     HT FLOW CONVERGENCE VALUE=   1.880      CRITERION=  0.5418    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.633    
+     HT FLOW CONVERGENCE VALUE=  0.2212      CRITERION=  0.5413     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     6   SUBSTEP     1  COMPLETED.    CUM ITER =     24
+ *** TIME =  0.300000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  1.739       OSCILLATION LIMIT = 0.8693E-01
+
+ *** NOTE ***                            ELAPSED TIME =    4688.629   TIME= 14:57:24
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      4786.469
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   14:59:44  JUL 17, 2026 Elapsed Time=   4828.288
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   254.0      CRITERION=  0.5540    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   57.48    
+     HT FLOW CONVERGENCE VALUE=   16.15      CRITERION=  0.5329    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -9.866    
+     HT FLOW CONVERGENCE VALUE=   1.892      CRITERION=  0.5362    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.549    
+     HT FLOW CONVERGENCE VALUE=  0.2493      CRITERION=  0.5355     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     7   SUBSTEP     1  COMPLETED.    CUM ITER =     28
+ *** TIME =  0.350000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  1.525       OSCILLATION LIMIT = 0.7626E-01
+
+ *** NOTE ***                            ELAPSED TIME =    5461.303   TIME= 15:10:17
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      5601.798
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   15:13:49  JUL 17, 2026 Elapsed Time=   5673.366
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   231.6      CRITERION=  0.5431    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   49.85    
+     HT FLOW CONVERGENCE VALUE=   15.13      CRITERION=  0.5273    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -8.627    
+     HT FLOW CONVERGENCE VALUE=   1.902      CRITERION=  0.5306    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.559    
+     HT FLOW CONVERGENCE VALUE=  0.2720      CRITERION=  0.5300     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     8   SUBSTEP     1  COMPLETED.    CUM ITER =     32
+ *** TIME =  0.400000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  1.375       OSCILLATION LIMIT = 0.6873E-01
+
+ *** NOTE ***                            ELAPSED TIME =    6298.124   TIME= 15:24:13
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      6434.437
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   15:27:24  JUL 17, 2026 Elapsed Time=   6489.118
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   213.3      CRITERION=  0.5339    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   43.80    
+     HT FLOW CONVERGENCE VALUE=   14.13      CRITERION=  0.5223    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -8.122    
+     HT FLOW CONVERGENCE VALUE=   1.867      CRITERION=  0.5255    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.576    
+     HT FLOW CONVERGENCE VALUE=  0.2827      CRITERION=  0.5248     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP     9   SUBSTEP     1  COMPLETED.    CUM ITER =     36
+ *** TIME =  0.450000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  1.261       OSCILLATION LIMIT = 0.6304E-01
+
+ *** NOTE ***                            ELAPSED TIME =    7198.033   TIME= 15:39:13
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      7349.454
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   15:42:54  JUL 17, 2026 Elapsed Time=   7418.240
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   198.0      CRITERION=  0.5263    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   38.95    
+     HT FLOW CONVERGENCE VALUE=   13.16      CRITERION=  0.5179    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -7.600    
+     HT FLOW CONVERGENCE VALUE=   1.797      CRITERION=  0.5210    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.493    
+     HT FLOW CONVERGENCE VALUE=  0.2829      CRITERION=  0.5203     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    10   SUBSTEP     1  COMPLETED.    CUM ITER =     40
+ *** TIME =  0.500000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  1.171       OSCILLATION LIMIT = 0.5854E-01
+
+ *** NOTE ***                            ELAPSED TIME =    8246.865   TIME= 15:56:42
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      8431.480
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   16:00:49  JUL 17, 2026 Elapsed Time=   8493.547
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   185.2      CRITERION=  0.5201    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   35.20    
+     HT FLOW CONVERGENCE VALUE=   12.29      CRITERION=  0.5141    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -6.678    
+     HT FLOW CONVERGENCE VALUE=   1.715      CRITERION=  0.5170    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.389    
+     HT FLOW CONVERGENCE VALUE=  0.2775      CRITERION=  0.5164     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    11   SUBSTEP     1  COMPLETED.    CUM ITER =     44
+ *** TIME =  0.550000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  1.096       OSCILLATION LIMIT = 0.5482E-01
+
+ *** NOTE ***                            ELAPSED TIME =    9090.904   TIME= 16:10:46
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      9345.159
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   16:16:02  JUL 17, 2026 Elapsed Time=   9406.887
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   174.1      CRITERION=  0.5151    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   32.13    
+     HT FLOW CONVERGENCE VALUE=   11.56      CRITERION=  0.5110    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -6.000    
+     HT FLOW CONVERGENCE VALUE=   1.644      CRITERION=  0.5137    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.278    
+     HT FLOW CONVERGENCE VALUE=  0.2706      CRITERION=  0.5131     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    12   SUBSTEP     1  COMPLETED.    CUM ITER =     48
+ *** TIME =  0.600000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE =  1.032       OSCILLATION LIMIT = 0.5161E-01
+
+ *** NOTE ***                            ELAPSED TIME =    9904.589   TIME= 16:24:20
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     10082.479
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   16:28:17  JUL 17, 2026 Elapsed Time=  10141.359
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   164.6      CRITERION=  0.5111    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   29.52    
+     HT FLOW CONVERGENCE VALUE=   11.04      CRITERION=  0.5084    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -5.624    
+     HT FLOW CONVERGENCE VALUE=   1.586      CRITERION=  0.5110    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.207    
+     HT FLOW CONVERGENCE VALUE=  0.2632      CRITERION=  0.5104     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    13   SUBSTEP     1  COMPLETED.    CUM ITER =     52
+ *** TIME =  0.650000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.9736       OSCILLATION LIMIT = 0.4868E-01
+
+ *** NOTE ***                            ELAPSED TIME =   10775.587   TIME= 16:38:51
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     10987.087
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   16:43:29  JUL 17, 2026 Elapsed Time=  11053.149
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   156.2      CRITERION=  0.5079    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   27.32    
+     HT FLOW CONVERGENCE VALUE=   10.59      CRITERION=  0.5064    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -5.178    
+     HT FLOW CONVERGENCE VALUE=   1.528      CRITERION=  0.5089    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.138    
+     HT FLOW CONVERGENCE VALUE=  0.2542      CRITERION=  0.5083     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    14   SUBSTEP     1  COMPLETED.    CUM ITER =     56
+ *** TIME =  0.700000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.9207       OSCILLATION LIMIT = 0.4604E-01
+
+ *** NOTE ***                            ELAPSED TIME =   11681.556   TIME= 16:53:57
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     11947.376
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   16:59:33  JUL 17, 2026 Elapsed Time=  12017.967
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   148.9      CRITERION=  0.5055    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   25.43    
+     HT FLOW CONVERGENCE VALUE=   10.20      CRITERION=  0.5049    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -4.847    
+     HT FLOW CONVERGENCE VALUE=   1.469      CRITERION=  0.5073    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   1.060    
+     HT FLOW CONVERGENCE VALUE=  0.2438      CRITERION=  0.5067     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    15   SUBSTEP     1  COMPLETED.    CUM ITER =     60
+ *** TIME =  0.750000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.8733       OSCILLATION LIMIT = 0.4367E-01
+
+ *** NOTE ***                            ELAPSED TIME =   12777.601   TIME= 17:12:13
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     13190.327
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise                       
+ 00000000  VERSION=WINDOWS x64   17:20:53  JUL 17, 2026 Elapsed Time=  13297.650
+
+                                                                               
+
+ Note - This MAPDL version was linked by Licensee
+
+     HT FLOW CONVERGENCE VALUE=   142.4      CRITERION=  0.5037    
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   23.73    
+     HT FLOW CONVERGENCE VALUE=   9.858      CRITERION=  0.5039    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -4.512    
+     HT FLOW CONVERGENCE VALUE=   1.408      CRITERION=  0.5061    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.9783    
+     HT FLOW CONVERGENCE VALUE=  0.2319      CRITERION=  0.5055     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    16   SUBSTEP     1  COMPLETED.    CUM ITER =     64
+ *** TIME =  0.800000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.8303       OSCILLATION LIMIT = 0.4152E-01
+
+ *** NOTE ***                            ELAPSED TIME =   13953.159   TIME= 17:31:49
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   13960.475   TIME= 17:31:56
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING

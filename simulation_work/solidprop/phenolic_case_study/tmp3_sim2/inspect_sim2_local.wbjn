@@ -1,0 +1,13 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+Open(FilePath=r"C:\ansys_sim2\testbed2.wbpj")
+system1 = GetSystem(Name="SYS 3")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit(Interactive=False)
+setup1.SendCommand(
+    Language="Python",
+    Command="execfile(r'C:\\ansys_sim2\\inspect_mechanical_sim2.py')",
+)
+setup1.Exit()
+Save(Overwrite=True)
