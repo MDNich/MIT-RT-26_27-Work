@@ -1,0 +1,283 @@
+! ----------------------------------------------------------------------
+! Simulation 2 recovery driver. 
+!   
+! The saved external controller state is coherent through t=0.75 s. 
+! Distributed restart files contain converged load step 16 at t=0.80 s. 
+! This driver restores step 16, reconstructs its post-processing state, 
+! then continues with step 17 (t=0.85 s) through step 140 (t=7.00 s).   
+!   
+! Run with jobname=file and exactly 10 DMP ranks.   
+! ----------------------------------------------------------------------
+    
+/COM,SIM2 recovery driver started   
+    
+! Restore the converged finite-element state at load step 16.   
+/SOLU   
+DMPOPTION,RNNN,NO   
+ANTYPE,TRANS,REST,16,1,CONTINUE 
+    
+! Recover controller values accumulated through t=0.75 s.  The restart  
+! database contains the FE solution at t=0.80 s, while this parameter file  
+! supplies the preceding film coefficient and recession integral.   
+PARRES,CHANGE,simulation2_state,parm
+SIM2_ISTEP = 16 
+SIM2_TIME = 16*SIM2_DT  
+FINISH  
+    
+! Reconstruct the post-processing that was interrupted after step 16.   
+/POST1  
+SET,LAST
+*GET,SIM2_SOLVED_TIME,ACTIVE,0,SET,TIME 
+SIM2_TERR = ABS(SIM2_SOLVED_TIME-SIM2_TIME) 
+*IF,SIM2_TERR,GT,1.0E-8,THEN
+  /COM,SIM2_FATAL_RESTART_TIME_IS_NOT_0P80  
+  /EXIT,NOSAVE  
+*ENDIF  
+    
+ESEL,S,MAT,,3   
+ESEL,R,LIVE 
+ETABLE,ERATE,SVAR,3 
+ETABLE,EVOL,VOLU
+SMULT,GMASS,ERATE,EVOL  
+SSUM
+*GET,SIM2_GMDOT,SSUM,0,ITEM,GMASS   
+    
+SIM2_RSURF = SIM2_RIN+SIM2_ILAY*SIM2_DR 
+SIM2_AREA = 2.0*ACOS(-1.0)*SIM2_RSURF*SIM2_LAX  
+SIM2_GFLUX = SIM2_GMDOT/SIM2_AREA   
+SIM2_BLOW = SIM2_GFLUX*SIM2_GCP/SIM2_H0 
+SIM2_HFILM = SIM2_H0/(1.0+SIM2_BLOW)
+SIM2_HFILM = MAX(SIM2_HMIN,SIM2_HFILM)  
+    
+CSYS,5  
+SELTOL,SIM2_TOL 
+NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL
+*GET,SIM2_NHOT,NODE,0,COUNT 
+SIM2_TSMAX = 22.0   
+*IF,SIM2_NHOT,GT,0,THEN 
+  NSORT,TEMP,,0,0   
+  *GET,SIM2_TSMAX,SORT,0,MAX
+  NUSORT
+*ENDIF  
+CSYS,0  
+    
+SIM2_QNET = SIM2_HFILM*MAX(SIM2_TGAS-SIM2_TSMAX,0.0)
+SIM2_RECESS = SIM2_RECESS+SIM2_QNET*SIM2_DT/(SIM2_RHOC*SIM2_HEFF)   
+    
+SIM2_RLO = SIM2_RIN+SIM2_ILAY*SIM2_DR   
+SIM2_RHI = SIM2_RLO+SIM2_DR 
+CSYS,5  
+NSEL,S,LOC,X,SIM2_RLO-SIM2_TOL,SIM2_RHI+SIM2_TOL
+ESLN,S,1
+ESEL,R,MAT,,3   
+ESEL,R,LIVE 
+*GET,SIM2_NEL,ELEM,0,COUNT  
+SIM2_AAVG = 0.0 
+SIM2_AMINL = 0.0
+*IF,SIM2_NEL,GT,0,THEN  
+  ETABLE,LALPHA,SVAR,1  
+  ETABLE,LVOL,VOLU  
+  SMULT,ALVOL,LALPHA,LVOL   
+  SSUM  
+  *GET,SIM2_ASUM,SSUM,0,ITEM,ALVOL  
+  *GET,SIM2_VSUM,SSUM,0,ITEM,LVOL   
+  SIM2_AAVG = SIM2_ASUM/MAX(SIM2_VSUM,1.0E-30)  
+  ESORT,ETAB,LALPHA,1,0 
+  *GET,SIM2_AMINL,SORT,0,MIN
+  EUSORT
+*ENDIF  
+CSYS,0  
+    
+SIM2_KILL = 0   
+SIM2_OLDILAY = SIM2_ILAY
+SIM2_DEPTH = (SIM2_ILAY+1)*SIM2_DR  
+*IF,SIM2_ILAY,LT,SIM2_NLAY,THEN 
+  *IF,SIM2_AAVG,GE,SIM2_ACUT,THEN   
+    *IF,SIM2_AMINL,GE,SIM2_AMIN,THEN
+      *IF,SIM2_RECESS,GE,SIM2_DEPTH,THEN
+        SIM2_KILL = 1   
+        SIM2_ILAY = SIM2_ILAY+1 
+      *ENDIF
+    *ENDIF  
+  *ENDIF
+*ENDIF  
+    
+*CFOPEN,simulation2_history,csv,,APPEND 
+*VWRITE,SIM2_SOLVED_TIME,SIM2_OLDILAY,SIM2_RSURF,SIM2_AAVG,SIM2_AMINL,SIM2_GMDOT,SIM2_GFLUX,SIM2_HFILM,SIM2_TSMAX,SIM2_RECESS,SIM2_KILL 
+(E16.8,1X,I4,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,I2) 
+*CFCLOSE
+    
+SIM2_PREVT = SIM2_SOLVED_TIME   
+PARSAV,SCALAR,simulation2_state,parm
+FINISH  
+    
+/COM,SIM2 step 16 controller state reconstructed
+    
+! Continue with the first not-yet-solved physical interval. 
+*DO,SIM2_ISTEP,17,SIM2_NMAC 
+    
+  ! A persistent stop request prevents the custom loop from starting another
+  ! SOLVE after MAPDL has honored file.abt at the end of a converged step.  
+  /INQUIRE,SIM2_STOP_REQUEST,EXIST,simulation2_stop,request 
+  *IF,SIM2_STOP_REQUEST,EQ,1,THEN   
+    /COM,SIM2 controlled stop request honored before next load step 
+    /EXIT,NOSAVE
+  *ENDIF
+    
+  /SOLU 
+    
+  *CFOPEN,simulation2_iteration,txt 
+  *VWRITE,SIM2_ISTEP
+  (E24.16)  
+  *CFCLOSE  
+    
+  ANTYPE,TRANS,REST,,,CONTINUE  
+  PARRES,CHANGE,simulation2_state,parm  
+    
+  *DEL,SIM2_ITERBUF 
+  *DIM,SIM2_ITERBUF,ARRAY,1 
+  *VREAD,SIM2_ITERBUF(1),simulation2_iteration,txt  
+  (E24.16)  
+  SIM2_ISTEP = SIM2_ITERBUF(1)  
+    
+  SIM2_OLD_RSURF = SIM2_RIN+SIM2_OLDILAY*SIM2_DR
+  ALLSEL,ALL
+  CSYS,5
+  SELTOL,SIM2_TOL   
+  NSEL,S,LOC,X,SIM2_OLD_RSURF-SIM2_TOL,SIM2_OLD_RSURF+SIM2_TOL  
+  SFDELE,ALL,CONV   
+  ALLSEL,ALL
+    
+  *IF,SIM2_KILL,EQ,1,THEN   
+    SIM2_RLO = SIM2_RIN+SIM2_OLDILAY*SIM2_DR
+    SIM2_RHI = SIM2_RLO+SIM2_DR 
+    NSEL,S,LOC,X,SIM2_RLO-SIM2_TOL,SIM2_RHI+SIM2_TOL
+    ESLN,S,1
+    ESEL,R,MAT,,3   
+    ESEL,R,LIVE 
+    EKILL,ALL   
+    /COM,SIM2 radial layer removed after restart restore
+    ALLSEL,ALL  
+  *ENDIF
+    
+  SIM2_RSURF = SIM2_RIN+SIM2_ILAY*SIM2_DR   
+  NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL  
+  SF,ALL,CONV,SIM2_HFILM,SIM2_TGAS  
+  CSYS,0
+  ALLSEL,ALL
+    
+  ! Reassert restart controls in case a future database revision changes them.  
+  NROPT,FULL
+  ESTIF,1.0E-6  
+  THOPT,FULL
+  AUTOTS,ON 
+  NEQIT,40  
+  KBC,0 
+  OUTRES,ALL,ALL
+  OUTRES,SVAR,ALL   
+  DMPOPTION,RNNN,NO 
+  RESCONTROL,DEFINE,ALL,LAST,-1,,4  
+    
+  SIM2_TIME = SIM2_ISTEP*SIM2_DT
+  ALLSEL,ALL
+  TIME,SIM2_TIME
+  DELTIM,SIM2_DT,0.001,SIM2_DT,OFF  
+  SOLVE 
+    
+  FINISH
+  /POST1
+  SET,LAST  
+    
+  *GET,SIM2_SOLVED_TIME,ACTIVE,0,SET,TIME   
+  SIM2_TERR = ABS(SIM2_SOLVED_TIME-SIM2_TIME)   
+  *IF,SIM2_TERR,GT,1.0E-8,THEN  
+    /COM,SIM2_FATAL_SOLVED_TIME_DOES_NOT_MATCH_TARGET   
+    /EXIT,NOSAVE
+  *ENDIF
+  *IF,SIM2_SOLVED_TIME,LE,SIM2_PREVT+1.0E-10,THEN   
+    /COM,SIM2_FATAL_TIME_DID_NOT_ADVANCE
+    /EXIT,NOSAVE
+  *ENDIF
+    
+  ESEL,S,MAT,,3 
+  ESEL,R,LIVE   
+  ETABLE,ERATE,SVAR,3   
+  ETABLE,EVOL,VOLU  
+  SMULT,GMASS,ERATE,EVOL
+  SSUM  
+  *GET,SIM2_GMDOT,SSUM,0,ITEM,GMASS 
+    
+  SIM2_RSURF = SIM2_RIN+SIM2_ILAY*SIM2_DR   
+  SIM2_AREA = 2.0*ACOS(-1.0)*SIM2_RSURF*SIM2_LAX
+  SIM2_GFLUX = SIM2_GMDOT/SIM2_AREA 
+  SIM2_BLOW = SIM2_GFLUX*SIM2_GCP/SIM2_H0   
+  SIM2_HFILM = SIM2_H0/(1.0+SIM2_BLOW)  
+  SIM2_HFILM = MAX(SIM2_HMIN,SIM2_HFILM)
+    
+  CSYS,5
+  SELTOL,SIM2_TOL   
+  NSEL,S,LOC,X,SIM2_RSURF-SIM2_TOL,SIM2_RSURF+SIM2_TOL  
+  *GET,SIM2_NHOT,NODE,0,COUNT   
+  SIM2_TSMAX = 22.0 
+  *IF,SIM2_NHOT,GT,0,THEN   
+    NSORT,TEMP,,0,0 
+    *GET,SIM2_TSMAX,SORT,0,MAX  
+    NUSORT  
+  *ENDIF
+  CSYS,0
+    
+  SIM2_QNET = SIM2_HFILM*MAX(SIM2_TGAS-SIM2_TSMAX,0.0)  
+  SIM2_RECESS = SIM2_RECESS+SIM2_QNET*SIM2_DT/(SIM2_RHOC*SIM2_HEFF) 
+    
+  SIM2_RLO = SIM2_RIN+SIM2_ILAY*SIM2_DR 
+  SIM2_RHI = SIM2_RLO+SIM2_DR   
+  CSYS,5
+  NSEL,S,LOC,X,SIM2_RLO-SIM2_TOL,SIM2_RHI+SIM2_TOL  
+  ESLN,S,1  
+  ESEL,R,MAT,,3 
+  ESEL,R,LIVE   
+  *GET,SIM2_NEL,ELEM,0,COUNT
+  SIM2_AAVG = 0.0   
+  SIM2_AMINL = 0.0  
+  *IF,SIM2_NEL,GT,0,THEN
+    ETABLE,LALPHA,SVAR,1
+    ETABLE,LVOL,VOLU
+    SMULT,ALVOL,LALPHA,LVOL 
+    SSUM
+    *GET,SIM2_ASUM,SSUM,0,ITEM,ALVOL
+    *GET,SIM2_VSUM,SSUM,0,ITEM,LVOL 
+    SIM2_AAVG = SIM2_ASUM/MAX(SIM2_VSUM,1.0E-30)
+    ESORT,ETAB,LALPHA,1,0   
+    *GET,SIM2_AMINL,SORT,0,MIN  
+    EUSORT  
+  *ENDIF
+  CSYS,0
+    
+  SIM2_KILL = 0 
+  SIM2_OLDILAY = SIM2_ILAY  
+  SIM2_DEPTH = (SIM2_ILAY+1)*SIM2_DR
+  *IF,SIM2_ILAY,LT,SIM2_NLAY,THEN   
+    *IF,SIM2_AAVG,GE,SIM2_ACUT,THEN 
+      *IF,SIM2_AMINL,GE,SIM2_AMIN,THEN  
+        *IF,SIM2_RECESS,GE,SIM2_DEPTH,THEN  
+          SIM2_KILL = 1 
+          SIM2_ILAY = SIM2_ILAY+1   
+        *ENDIF  
+      *ENDIF
+    *ENDIF  
+  *ENDIF
+    
+  *CFOPEN,simulation2_history,csv,,APPEND   
+  *VWRITE,SIM2_SOLVED_TIME,SIM2_OLDILAY,SIM2_RSURF,SIM2_AAVG,SIM2_AMINL,SIM2_GMDOT,SIM2_GFLUX,SIM2_HFILM,SIM2_TSMAX,SIM2_RECESS,SIM2_KILL   
+  (E16.8,1X,I4,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,E16.8,1X,I2)   
+  *CFCLOSE  
+    
+  SIM2_PREVT = SIM2_SOLVED_TIME 
+  PARSAV,SCALAR,simulation2_state,parm  
+  FINISH
+    
+*ENDDO  
+    
+ALLSEL,ALL  
+/COM,SIM2 recovery driver completed 
+/EXIT,NOSAVE

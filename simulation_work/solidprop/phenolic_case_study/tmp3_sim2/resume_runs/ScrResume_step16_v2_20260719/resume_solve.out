@@ -1,0 +1,4122 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.02       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.02  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ BladeModeler 2026 R1
+ BladeModeler 2026 R1.01 
+ BladeModeler 2026 R1.02 
+ CFX (includes CFD-Post) 2026 R1 
+ CFX (includes CFD-Post) 2026 R1.01  
+ CFX (includes CFD-Post) 2026 R1.02  
+ CFD-Post only 2026 R1   
+ CFD-Post only 2026 R1.01
+ CFD-Post only 2026 R1.02
+ Chemkin 2026 R1 
+ Chemkin 2026 R1.01  
+ Chemkin 2026 R1.02  
+ EnSight 2026 R1 
+ EnSight 2026 R1.01  
+ EnSight 2026 R1.02  
+ FENSAP-ICE 2026 R1  
+ FENSAP-ICE 2026 R1.01   
+ FENSAP-ICE 2026 R1.02   
+ Fluent (includes CFD-Post) 2026 R1  
+ Fluent (includes CFD-Post) 2026 R1.01   
+ Fluent (includes CFD-Post) 2026 R1.02   
+ Polyflow (includes CFD-Post) 2026 R1
+ Polyflow (includes CFD-Post) 2026 R1.01 
+ Polyflow (includes CFD-Post) 2026 R1.02 
+ Forte (includes EnSight) 2026 R1
+ Forte (includes EnSight) 2026 R1.01 
+ Forte (includes EnSight) 2026 R1.02 
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ RBF Morph Fluids UDF 2026 R1
+ RBF Morph Fluids UDF 2026 R1.01 
+ RBF Morph Fluids UDF 2026 R1.02 
+ RBF Morph Libraries 2026 R1 
+ RBF Morph Libraries 2026 R1.01  
+ RBF Morph Libraries 2026 R1.02  
+ Rocky 2026 R1   
+ Rocky 2026 R1.01
+ Rocky 2026 R1.02
+ Thermal Desktop: AutoCAD 2026 R1
+ Thermal Desktop: AutoCAD 2026 R1.01 
+ Thermal Desktop: AutoCAD 2026 R1.02 
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1   
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.01
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.02
+ Thermal Desktop: Sinda Solver 2026 R1   
+ Thermal Desktop: Sinda Solver 2026 R1.01
+ Thermal Desktop: Sinda Solver 2026 R1.02
+ TurboGrid 2026 R1   
+ TurboGrid 2026 R1.01
+ TurboGrid 2026 R1.02
+ Granta EduPack 2026 R1  
+ Granta EduPack 2026 R1.01   
+ Granta EduPack 2026 R1.02   
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Designer 2026 R1   
+ Material Designer 2026 R1.01
+ Material Designer 2026 R1.02
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  INITIAL JOBNAME              = file                                                                                                                                                                                                                                                    
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  DISTRIBUTED MEMORY PARALLEL REQUESTED
+      10 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF    10 CORES REQUESTED
+  MPI OPTION                   = INTELMPI
+  INPUT FILE NAME              = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\solidprop\phenolic_case_study\tmp3_sim2\resume_runs\ScrResume_step16_v2_20260719\simulation2_resume_step16.apdl
+  OUTPUT FILE NAME             = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\solidprop\phenolic_case_study\tmp3_sim2\resume_runs\ScrResume_step16_v2_20260719\resume_solve.out
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+  INITIAL DIRECTORY = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\solidprop\phenolic_case_study\tmp3_sim2\resume_runs\ScrResume_step16_v2_20260719
+
+ User Link path (ANS_USER_PATH): Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\solidprop\phenolic_case_study\tmp3_sim2                                                                                                                                              
+
+ RELEASE= 2026 R1.02           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file0  18:08:15  JUL 19, 2026  Elapsed Time=       0.250
+ Note - This MAPDL version was linked by Licensee
+ SIM2 recovery driver started
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+
+ PERFORM A TRANSIENT ANALYSIS
+  RESTART PREVIOUSLY RUN ANALYSIS FROM LOADSTEP    16
+   AND FROM SUBSTEP      1
+  RESTART WILL BE CONTINUED WITH EXISTING LOADSTEP
+  RESTART WILL BE PERFORMED BASED ON INFO FROM- FILENAME: file0.r001                                                                                                                                                                                                                                                          
+   PREVIOUS LOADSTEP =     16 SUBSTEP =      1
+
+ RESUME ANSYS DATA FROM FILE NAME=file.rdb                                                                                                                                                                                                                                                            
+     DO NOT PLOT ANYTHING
+
+ *** NOTE ***                            ELAPSED TIME =      11.284   TIME= 18:08:20
+ The initial memory allocation (-m) has been exceeded.                   
+  Supplemental memory allocations are being used.                        
+
+ Memory resident data base increased from      1024 MB to      2048 MB.
+
+ *** MAPDL GLOBAL STATUS *** 
+
+ TITLE = testbed2--Thermique transitoire (B5)                                  
+ ANALYSIS TYPE =  TRANSIENT            
+        13 ELEM TYPES DEFINED    MAX ELEM TYPE NUMBER =            13
+    630881 ELEMENTS DEFINED      MAX ELEMENT NUMBER =          935624
+   2242327 NODES DEFINED         MAX NODE NUMBER =            2242327
+         5 MATERIALS DEFINED     MAX MATERIAL NUMBER =             13
+         9 REAL CONSTS DEFINED   MAX REAL CONST NUMBER =           15
+         0 SECTIONS DEFINED      MAX SECTION NUMBER =               0
+         0 COORD SYS DEFINED     MAX COORD SYS NUMBER =             0
+ 
+ ACTIVE COORDINATE SYSTEM             =          0  (CARTESIAN)
+ NUMBER OF DEFINED NODAL CONSTRAINTS  =          1
+ NUMBER OF DEFINED NODAL LOADS        =          0
+ NUMBER OF DEFINED COMPONENTS         =          9
+ NUMBER OF DEFINED ELEM SURFACE LOADS =      97224
+ NUMBER OF DEFINED ELEM BODY LOADS    =          0
+ NUMBER OF DEFINED NODE BODY FORCES   =          0
+ CURRENT LOAD CASE =      0 OF      0
+ LOAD SET   =       1
+ SUBSTEP    =       1
+ TIME/FREQ  =   0.50000E-01
+
+ INITIAL JOBNAME = file0
+ CURRENT JOBNAME = file0
+
+ RESTART PROCEDURE RE-BUILDS BOUNDARY CONDITIONS
+ AND LOADING INFO UPTO THE CURRENT LOADSTEP 
+
+ READ ANSYS LOADS DATA FROM FILE= file.ldhi                                                                                                                                                                                                                                                           
+
+ DELETE SOLID MODEL BOUNDARY CONDITIONS
+ 
+ NUMBER OF NODAL CONSTRAINTS DELETED                       =         1
+ NUMBER OF ELEMENT CONVECTIONS/HEAT FLUXES DELETED         =     97224
+
+ *** NOTE ***                            ELAPSED TIME =      20.782   TIME= 18:08:30
+ The number of results set on the restart command is the last set on the 
+ RTH file.  No updating for the RTH file is required.                    
+
+ *** NOTE ***                            ELAPSED TIME =      20.909   TIME= 18:08:30
+ Restore MAPDL parameters from file= simulation2_state.parm.             
+
+ /INPUT FILE= simulation2_state.parm  LINE=       0
+
+ PARAMETER SIM2_ISTEP =     16.00000000    
+
+ PARAMETER SIM2_TIME =    0.8000000000    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =        20.917
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:08:30  JUL 19, 2026 Elapsed Time=     20.951
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ *** NOTE ***                            ELAPSED TIME =      20.952   TIME= 18:08:30
+ Reading results into the database (SET command) will update the current 
+ displacement and force boundary conditions in the database with the     
+ values from the results file for that load set.  Note that any          
+ subsequent solutions will use these values unless action is taken to    
+ either SAVE the current values or not overwrite them (/EXIT,NOSAVE).    
+
+
+ USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
+
+ Memory resident data base increased from      2048 MB to      4096 MB.
+
+ SET COMMAND GOT LOAD STEP=    16  SUBSTEP=     1  CUMULATIVE ITERATION=    64
+   TIME/FREQUENCY= 0.80000    
+ TITLE= testbed2--Thermique transitoire (B5)                                    
+
+ *GET  SIM2_SOLVED_TIME  FROM  ACTI  ITEM=SET  TIME  VALUE= 0.800000000    
+
+ PARAMETER SIM2_TERR =     0.000000000    
+
+ *IF  SIM2_TERR  ( =   0.00000     )  GT  
+      1.0E-8  ( =  0.100000E-07 )  THEN    
+
+ *ENDIF
+
+ SELECT       FOR ITEM=MAT  COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+     315536  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ RESELECT     FOR ITEM=LIVE COMPONENT=    
+  IN RANGE         1 TO     935624 STEP          1
+
+     315536  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ STORE ERATE    FROM ITEM=SVAR COMP=3     FOR ALL SELECTED ELEMENTS
+
+ STORE EVOL     FROM ITEM=VOLU  FOR ALL SELECTED ELEMENTS
+
+ OPERATION SMUL  RESULT= GMASS     OPERAND1= ERATE     OPERAND2= EVOL    
+  FACTOR1=  1.0000       FACTOR2=  1.0000       CONSTANT=  0.0000    
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.153401E+08
+ EVOL      0.107422E-03
+ GMASS     0.413851E-02
+
+ *GET  SIM2_GMDOT  FROM  SSUM  ITEM=ITEM GMASS     VALUE= 0.413851191E-02
+
+ PARAMETER SIM2_RSURF =    0.1333500000    
+
+ PARAMETER SIM2_AREA =    0.4189313804E-01
+
+ PARAMETER SIM2_GFLUX =    0.9878734572E-01
+
+ PARAMETER SIM2_BLOW =    0.1580597532    
+
+ PARAMETER SIM2_HFILM =     863.5133008    
+
+ PARAMETER SIM2_HFILM =     863.5133008    
+
+ ACTIVE COORDINATE SYSTEM SET TO          5  (CYLINDRICAL) Y- CYL. AXIS
+
+ SELECT TOLERANCE= 0.15875E-04
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN 0.13333     AND  0.13337    
+   KABS=  0.  TOLERANCE= 0.158750E-04
+
+     135900  NODES (OF    2242327  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ *GET  SIM2_NHOT  FROM  NODE  ITEM=COUN       VALUE=  135900.000     
+
+ PARAMETER SIM2_TSMAX =     22.00000000    
+
+ *IF  SIM2_NHOT  ( =   135900.     )  GT  
+      0  ( =   0.00000     )  THEN    
+
+ SORT ON ITEM=TEMP  COMPONENT=      ORDER= 0  KABS= 0  NMAX= 2242327
+
+ SORT COMPLETED FOR  135900 VALUES.
+
+ *GET  SIM2_TSMAX  FROM  SORT  ITEM=MAX        VALUE=  1229.17091    
+
+ NODE SORT REMOVED
+
+ *ENDIF
+
+ ACTIVE COORDINATE SYSTEM SET TO          0  (CARTESIAN)  
+
+ PARAMETER SIM2_QNET =     864963.2207    
+
+ PARAMETER SIM2_RECESS =    0.4053945273E-04
+
+ PARAMETER SIM2_RLO =    0.1333500000    
+
+ PARAMETER SIM2_RHI =    0.1336675000    
+
+ ACTIVE COORDINATE SYSTEM SET TO          5  (CYLINDRICAL) Y- CYL. AXIS
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN 0.13333     AND  0.13368    
+   KABS=  0.  TOLERANCE= 0.158750E-04
+
+     315073  NODES (OF    2242327  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SELECT      ONLY ELEMENTS COMPLETELY CONTAINED WITHIN NODE SET.
+
+      83296 ELEMENTS (OF     630881  DEFINED) SELECTED FROM
+   315073 SELECTED NODES BY  ESLN COMMAND.
+
+ RESELECT     FOR ITEM=MAT  COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+      39808  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ RESELECT     FOR ITEM=LIVE COMPONENT=    
+  IN RANGE         1 TO     935624 STEP          1
+
+      39808  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *GET  SIM2_NEL  FROM  ELEM  ITEM=COUN           VALUE=  39808.0000    
+
+ PARAMETER SIM2_AAVG =     0.000000000    
+
+ PARAMETER SIM2_AMINL =     0.000000000    
+
+ *IF  SIM2_NEL  ( =   39808.0     )  GT  
+      0  ( =   0.00000     )  THEN    
+
+ STORE LALPHA   FROM ITEM=SVAR COMP=1     FOR ALL SELECTED ELEMENTS
+
+ STORE LVOL     FROM ITEM=VOLU  FOR ALL SELECTED ELEMENTS
+
+ OPERATION SMUL  RESULT= ALVOL     OPERAND1= LALPHA    OPERAND2= LVOL    
+  FACTOR1=  1.0000       FACTOR2=  1.0000       CONSTANT=  0.0000    
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.121235E+08
+ EVOL      0.106147E-04
+ GMASS     0.318885E-02
+ LALPHA     12457.2    
+ LVOL      0.106147E-04
+ ALVOL     0.327636E-05
+
+ *GET  SIM2_ASUM  FROM  SSUM  ITEM=ITEM ALVOL     VALUE= 0.327636194E-05
+
+ *GET  SIM2_VSUM  FROM  SSUM  ITEM=ITEM LVOL      VALUE= 0.106146855E-04
+
+ PARAMETER SIM2_AAVG =    0.3086631185    
+
+ SORT ON ITEM=ETAB  COMPONENT=LALP  ORDER= 1  KABS= 0  NMAX=  935624
+
+ SORT COMPLETED FOR   39808 VALUES.
+
+ *GET  SIM2_AMINL  FROM  SORT  ITEM=MIN        VALUE= 0.554180567E-01
+
+ ELEMENT SORT REMOVED
+
+ *ENDIF
+
+ ACTIVE COORDINATE SYSTEM SET TO          0  (CARTESIAN)  
+
+ PARAMETER SIM2_KILL =     0.000000000    
+
+ PARAMETER SIM2_OLDILAY =     0.000000000    
+
+ PARAMETER SIM2_DEPTH =    0.3175000000E-03
+
+ *IF  SIM2_ILAY  ( =   0.00000     )  LT  
+      SIM2_NLAY  ( =   8.00000     )  THEN    
+
+ *IF  SIM2_AAVG  ( =  0.308663     )  GE  
+      SIM2_ACUT  ( =  0.990000     )  THEN    
+
+ *ENDIF
+
+ *ENDIF
+
+ OPENED FILE= simulation2_history.csv FOR COMMAND FILE DATA 
+
+  FILE OPENED FOR APPEND
+
+  COMMAND FILE CLOSED 
+
+
+ PARAMETER SIM2_PREVT =    0.8000000000    
+
+ *** NOTE ***                            ELAPSED TIME =      29.250   TIME= 18:08:38
+ Write parameters to file= simulation2_state.parm.                       
+
+ *** NOTE ***                            ELAPSED TIME =      29.251   TIME= 18:08:38
+ Parameters written.  Lines= 76.                                         
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =        29.253
+
+
+ SIM2 step 16 controller state reconstructed
+
+ *DO LOOP ON PARAMETER= SIM2_ISTEP FROM  17.000     TO  140.00     BY  1.0000    
+
+ PARAMETER SIM2_STOP_REQUEST =         0.000000
+
+ *IF  SIM2_STOP_REQUEST  ( =   0.00000     )  EQ  
+      1  ( =   1.00000     )  THEN    
+
+ *ENDIF
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ OPENED FILE= simulation2_iteration.txt FOR COMMAND FILE DATA 
+
+
+  COMMAND FILE CLOSED 
+
+
+
+ PERFORM A TRANSIENT ANALYSIS
+  RESTART PREVIOUSLY RUN ANALYSIS TO ADD ADDITIONAL LOAD STEPS
+  RESTART WILL BE CONTINUED WITH EXISTING LOADSTEP
+  RESTART WILL BE PERFORMED BASED ON: 
+   PREVIOUS LOADSTEP =     16 SUBSTEP =      1
+
+ RESUME ANSYS DATA FROM FILE NAME=file.rdb                                                                                                                                                                                                                                                            
+     DO NOT PLOT ANYTHING
+
+ *** MAPDL GLOBAL STATUS *** 
+
+ TITLE = testbed2--Thermique transitoire (B5)                                  
+ ANALYSIS TYPE =  TRANSIENT            
+        13 ELEM TYPES DEFINED    MAX ELEM TYPE NUMBER =            13
+    630881 ELEMENTS DEFINED      MAX ELEMENT NUMBER =          935624
+   2242327 NODES DEFINED         MAX NODE NUMBER =            2242327
+         5 MATERIALS DEFINED     MAX MATERIAL NUMBER =             13
+         9 REAL CONSTS DEFINED   MAX REAL CONST NUMBER =           15
+         0 SECTIONS DEFINED      MAX SECTION NUMBER =               0
+         0 COORD SYS DEFINED     MAX COORD SYS NUMBER =             0
+ 
+ ACTIVE COORDINATE SYSTEM             =          0  (CARTESIAN)
+ NUMBER OF DEFINED NODAL CONSTRAINTS  =          1
+ NUMBER OF DEFINED NODAL LOADS        =          0
+ NUMBER OF DEFINED COMPONENTS         =          9
+ NUMBER OF DEFINED ELEM SURFACE LOADS =      97224
+ NUMBER OF DEFINED ELEM BODY LOADS    =          0
+ NUMBER OF DEFINED NODE BODY FORCES   =          0
+ CURRENT LOAD CASE =      0 OF      0
+ LOAD SET   =       1
+ SUBSTEP    =       1
+ TIME/FREQ  =   0.50000E-01
+
+ INITIAL JOBNAME = file0
+ CURRENT JOBNAME = file0
+
+ RESTART PROCEDURE RE-BUILDS BOUNDARY CONDITIONS
+ AND LOADING INFO UPTO THE CURRENT LOADSTEP 
+
+ READ ANSYS LOADS DATA FROM FILE= file.ldhi                                                                                                                                                                                                                                                           
+
+ DELETE SOLID MODEL BOUNDARY CONDITIONS
+ 
+ NUMBER OF NODAL CONSTRAINTS DELETED                       =         1
+ NUMBER OF ELEMENT CONVECTIONS/HEAT FLUXES DELETED         =     97224
+
+ *** NOTE ***                            ELAPSED TIME =      40.951   TIME= 18:08:50
+ The number of results set on the restart command is the last set on the 
+ RTH file.  No updating for the RTH file is required.                    
+
+ *** NOTE ***                            ELAPSED TIME =      41.062   TIME= 18:08:50
+ Restore MAPDL parameters from file= simulation2_state.parm.             
+
+ /INPUT FILE= simulation2_state.parm  LINE=       0
+
+ SET PARAMETER DIMENSIONS ON  SIM2_ITERBUF
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ VECTOR READ OPERATION  *VREAD  
+  SIM2_ITE READ FROM FILE simulation2_iteration.txt
+ VECTOR LENGTH=      1
+ LOOP DIRECTIONS=IJK   COUNTS=       1       1       1
+ FORMAT=(E24.16)                                                              
+
+ PARAMETER SIM2_ISTEP =     17.00000000    
+
+ PARAMETER SIM2_OLD_RSURF =    0.1333500000    
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ ACTIVE COORDINATE SYSTEM SET TO          5  (CYLINDRICAL) Y- CYL. AXIS
+
+ SELECT TOLERANCE= 0.15875E-04
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN 0.13333     AND  0.13337    
+   KABS=  0.  TOLERANCE= 0.158750E-04
+
+     135900  NODES (OF    2242327  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ DELETE SURFACE LOAD CONV ON SURFACE DEFINED BY ALL SELECTED NODES
+
+ NUMBER OF CONV SURFACE LOADS DELETED=   86976
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ *IF  SIM2_KILL  ( =   0.00000     )  EQ  
+      1  ( =   1.00000     )  THEN    
+
+ *ENDIF
+
+ PARAMETER SIM2_RSURF =    0.1333500000    
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN 0.13333     AND  0.13337    
+   KABS=  0.  TOLERANCE= 0.158750E-04
+
+     135900  NODES (OF    2242327  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ GENERATE SURFACE LOAD CONV ON SURFACE DEFINED BY ALL SELECTED NODES
+ VALUES=  863.513301      2230.85000    
+
+ NUMBER OF CONV ELEMENT FACE LOADS STORED =      86976
+
+ ACTIVE COORDINATE SYSTEM SET TO          0  (CARTESIAN)  
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ USE THE FULL NEWTON-RAPHSON OPTION FOR  ALL DEGREES OF FREEDOM
+   AND USE THE DEFAULT ADAPTIVE DESCENT OPTION
+
+ DEAD ELEMENT STIFFNESS MULTIPLIER= 0.10000E-05
+
+ Use Full Nonlinear Thermal Transient Solution
+
+ USE AUTOMATIC TIME STEPPING THIS LOAD STEP
+
+ USE A MAXIMUM OF    40 EQUILIBRIUM ITERATIONS EACH SUBSTEP
+
+ STEP BOUNDARY CONDITION KEY= 0
+
+ WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE SVAR ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =      42.257   TIME= 18:08:51
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ PARAMETER SIM2_TIME =    0.8500000000    
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+
+ TIME= 0.85000    
+
+ USE INITIAL TIME STEP SIZE OF 0.5000000E-01 FOR ALL  DEGREES OF FREEDOM
+ FOR AUTOMATIC TIME STEPPING:
+   USE 0.1000000E-02 AS THE MINIMUM TIME STEP SIZE
+   USE 0.5000000E-01 AS THE MAXIMUM TIME STEP SIZE
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:08:52  JUL 19, 2026 Elapsed Time=     42.877
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . TEMP
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .TRANSIENT            
+      RESTART. . . . . . . . . . . . . . . . . . .ON
+      SOLUTION METHOD. . . . . . . . . . . . . . .FULL                 
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
+   EQUATION SOLVER OPTION. . . . . . . . . . . . .PCG                
+      TOLERANCE. . . . . . . . . . . . . . . . . . 1.00000E-08
+   USER DEFINED THERMAL MATERIAL INCLUDED. . . . .YES
+   NEWTON-RAPHSON OPTION . . . . . . . . . . . . .FULL             
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+
+ *** NOTE ***                            ELAPSED TIME =      43.235   TIME= 18:08:52
+ Property KXX of material 1 is defined over a temperature range from     
+ 26.85 to 326.85 which does not include the uniform temperature (22).    
+ Change either temperature range or the uniform temperature.  Checking   
+ for this condition discontinues.                                        
+
+ *** NOTE ***                            ELAPSED TIME =      43.902   TIME= 18:08:53
+ The conditions for direct assembly have been met.  No .emat or .erot    
+ files will be produced.                                                 
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:09:06  JUL 19, 2026 Elapsed Time=     57.196
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .    17
+   TIME AT END OF THE LOAD STEP. . . . . . . . . . 0.85000    
+   AUTOMATIC TIME STEPPING . . . . . . . . . . . .    ON
+      STARTING TIME STEP SIZE. . . . . . . . . . . 0.50000E-01
+      MINIMUM TIME STEP SIZE . . . . . . . . . . . 0.10000E-02
+      MAXIMUM TIME STEP SIZE . . . . . . . . . . . 0.50000E-01
+   MAXIMUM NUMBER OF EQUILIBRIUM ITERATIONS. . . .    40
+   STEP CHANGE BOUNDARY CONDITIONS . . . . . . . .    NO
+   TRANSIENT (INERTIA) EFFECTS
+      THERMAL DOFS . . . . . . . . . . . . . . . .    ON
+   TRANSIENT INTEGRATION PARAMETERS
+      THETA. . . . . . . . . . . . . . . . . . . .  1.0000    
+      OSCILLATION LIMIT CRITERION. . . . . . . . . 0.50000    
+      TOLERANCE. . . . . . . . . . . . . . . . . .  0.0000    
+   TERMINATE ANALYSIS IF NOT CONVERGED . . . . . .YES (EXIT)  
+   CONVERGENCE CONTROLS
+      LABEL   REFERENCE    TOLERANCE  NORM     MINREF
+       HEAT    0.000       0.1000E-02   2     0.1000E-05
+   COPY INTEGRATION POINT VALUES TO NODE . . . . .YES, FOR ELEMENTS WITH
+                                                  ACTIVE MAT. NONLINEARITIES
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL       NONE               
+      NSOL        ALL               
+      RSOL        ALL               
+      EANG        ALL               
+      VENG        ALL               
+      FFLU        ALL               
+      CONT        ALL               
+      NLOA        ALL               
+      MISC        ALL               
+       ALL        ALL               
+      SVAR        ALL               
+
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+ *** WARNING ***                         ELAPSED TIME =      69.897   TIME= 18:09:19
+ Material property DENS of material 3 of element 376496 is evaluated at  
+ a temperature of 22.2494785, which is below the supplied temperature    
+ range.  Temperature range checking terminates.                          
+
+ *** WARNING ***                         ELAPSED TIME =      81.330   TIME= 18:09:30
+ Material property DENS of material 3 of element 390924 is evaluated at  
+ a temperature of 1025.34905, which is above the supplied temperature    
+ range.  Temperature range checking terminates.                          
+
+ *** WARNING ***                         ELAPSED TIME =      81.334   TIME= 18:09:30
+ Material property KXX of material 1 of element 1956 is evaluated at a   
+ temperature of 22.013804, which is below the supplied temperature       
+ range.  Temperature range checking terminates.                          
+
+ *** WARNING ***                         ELAPSED TIME =      81.342   TIME= 18:09:30
+ Material property DENS of material 3 of element 418192 is evaluated at  
+ a temperature of 988.056055, which is above the supplied temperature    
+ range.  Temperature range checking terminates.                          
+
+ *** WARNING ***                         ELAPSED TIME =      81.348   TIME= 18:09:30
+ Material property DENS of material 4 of element 470241 is evaluated at  
+ a temperature of 21.9999999, which is below the supplied temperature    
+ range.  Temperature range checking terminates.                          
+
+ *** WARNING ***                         ELAPSED TIME =      81.350   TIME= 18:09:30
+ Material property DENS of material 3 of element 369233 is evaluated at  
+ a temperature of 22.2094554, which is below the supplied temperature    
+ range.  Temperature range checking terminates.                          
+
+ *** WARNING ***                         ELAPSED TIME =      81.356   TIME= 18:09:30
+ Material property DENS of material 3 of element 371072 is evaluated at  
+ a temperature of 22.2140106, which is below the supplied temperature    
+ range.  Temperature range checking terminates.                          
+
+ *** WARNING ***                         ELAPSED TIME =      81.362   TIME= 18:09:30
+ Material property DENS of material 3 of element 364591 is evaluated at  
+ a temperature of 22.2280675, which is below the supplied temperature    
+ range.  Temperature range checking terminates.                          
+
+
+ *** NOTE ***                            ELAPSED TIME =      91.105   TIME= 18:09:40
+ The PCG solver has automatically set the level of difficulty for this   
+ model to 3.                                                             
+     HT FLOW CONVERGENCE VALUE=   136.7      CRITERION=  0.5024    
+ Iteration=     5 Ratio=  8.433688E-02 Limit=  1.000000E-08 Wall=     0.7
+ Iteration=    45 Ratio=  5.144794E-04 Limit=  1.000000E-08 Wall=     9.2
+ Iteration=     5 Ratio=  0.910555     Limit=  1.000711E-03 Wall=     0.4
+ Iteration=    10 Ratio=  0.751068     Limit=  1.000711E-03 Wall=     1.5
+ Iteration=   210 Ratio=  0.281196     Limit=  1.000711E-03 Wall=    27.3
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   22.32    
+     HT FLOW CONVERGENCE VALUE=   9.527      CRITERION=  0.5032    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -4.278    
+     HT FLOW CONVERGENCE VALUE=   1.348      CRITERION=  0.5053    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.9252    
+     HT FLOW CONVERGENCE VALUE=  0.2194      CRITERION=  0.5048     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    17   SUBSTEP     1  COMPLETED.    CUM ITER =     68
+ *** TIME =  0.850000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.7909       OSCILLATION LIMIT = 0.3955E-01
+
+ *** NOTE ***                            ELAPSED TIME =     789.700   TIME= 18:21:19
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =     798.894   TIME= 18:21:28
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      1172.498
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:27:42  JUL 19, 2026 Elapsed Time=   1172.564
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+
+ USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
+
+ SET COMMAND GOT LOAD STEP=    17  SUBSTEP=     1  CUMULATIVE ITERATION=    68
+   TIME/FREQUENCY= 0.85000    
+ TITLE= testbed2--Thermique transitoire (B5)                                    
+
+ *GET  SIM2_SOLVED_TIME  FROM  ACTI  ITEM=SET  TIME  VALUE= 0.850000000    
+
+ PARAMETER SIM2_TERR =     0.000000000    
+
+ *IF  SIM2_TERR  ( =   0.00000     )  GT  
+      1.0E-8  ( =  0.100000E-07 )  THEN    
+
+ *ENDIF
+
+ *IF  SIM2_SOLVED_TIME  ( =  0.850000     )  LE  
+      SIM2_PREVT+1.0E-10  ( =  0.800000     )  THEN    
+
+ *ENDIF
+
+ SELECT       FOR ITEM=MAT  COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+     315536  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ RESELECT     FOR ITEM=LIVE COMPONENT=    
+  IN RANGE         1 TO     935624 STEP          1
+
+     315536  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ STORE ERATE    FROM ITEM=SVAR COMP=3     FOR ALL SELECTED ELEMENTS
+
+ STORE EVOL     FROM ITEM=VOLU  FOR ALL SELECTED ELEMENTS
+
+ OPERATION SMUL  RESULT= GMASS     OPERAND1= ERATE     OPERAND2= EVOL    
+  FACTOR1=  1.0000       FACTOR2=  1.0000       CONSTANT=  0.0000    
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.155939E+08
+ EVOL      0.107422E-03
+ GMASS     0.421017E-02
+
+ *GET  SIM2_GMDOT  FROM  SSUM  ITEM=ITEM GMASS     VALUE= 0.421017411E-02
+
+ PARAMETER SIM2_RSURF =    0.1333500000    
+
+ PARAMETER SIM2_AREA =    0.4189313804E-01
+
+ PARAMETER SIM2_GFLUX =    0.1004979410    
+
+ PARAMETER SIM2_BLOW =    0.1607967056    
+
+ PARAMETER SIM2_HFILM =     861.4772899    
+
+ PARAMETER SIM2_HFILM =     861.4772899    
+
+ ACTIVE COORDINATE SYSTEM SET TO          5  (CYLINDRICAL) Y- CYL. AXIS
+
+ SELECT TOLERANCE= 0.15875E-04
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN 0.13333     AND  0.13337    
+   KABS=  0.  TOLERANCE= 0.158750E-04
+
+     135900  NODES (OF    2242327  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ *GET  SIM2_NHOT  FROM  NODE  ITEM=COUN       VALUE=  135900.000     
+
+ PARAMETER SIM2_TSMAX =     22.00000000    
+
+ *IF  SIM2_NHOT  ( =   135900.     )  GT  
+      0  ( =   0.00000     )  THEN    
+
+ SORT ON ITEM=TEMP  COMPONENT=      ORDER= 0  KABS= 0  NMAX= 2242327
+
+ SORT COMPLETED FOR  135900 VALUES.
+
+ *GET  SIM2_TSMAX  FROM  SORT  ITEM=MAX        VALUE=  1238.05733    
+
+ NODE SORT REMOVED
+
+ *ENDIF
+
+ ACTIVE COORDINATE SYSTEM SET TO          0  (CARTESIAN)  
+
+ PARAMETER SIM2_QNET =     855268.3357    
+
+ PARAMETER SIM2_RECESS =    0.4257580591E-04
+
+ PARAMETER SIM2_RLO =    0.1333500000    
+
+ PARAMETER SIM2_RHI =    0.1336675000    
+
+ ACTIVE COORDINATE SYSTEM SET TO          5  (CYLINDRICAL) Y- CYL. AXIS
+
+ SELECT       FOR ITEM=LOC  COMPONENT=X     BETWEEN 0.13333     AND  0.13368    
+   KABS=  0.  TOLERANCE= 0.158750E-04
+
+     315073  NODES (OF    2242327  DEFINED) SELECTED BY  NSEL  COMMAND.
+
+ SELECT      ONLY ELEMENTS COMPLETELY CONTAINED WITHIN NODE SET.
+
+      83296 ELEMENTS (OF     630881  DEFINED) SELECTED FROM
+   315073 SELECTED NODES BY  ESLN COMMAND.
+
+ RESELECT     FOR ITEM=MAT  COMPONENT=    
+  IN RANGE         3 TO          3 STEP          1
+
+      39808  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ RESELECT     FOR ITEM=LIVE COMPONENT=    
+  IN RANGE         1 TO     935624 STEP          1
+
+      39808  ELEMENTS (OF     630881  DEFINED) SELECTED BY  ESEL  COMMAND.
+
+ *GET  SIM2_NEL  FROM  ELEM  ITEM=COUN           VALUE=  39808.0000    
+
+ PARAMETER SIM2_AAVG =     0.000000000    
+
+ PARAMETER SIM2_AMINL =     0.000000000    
+
+ *IF  SIM2_NEL  ( =   39808.0     )  GT  
+      0  ( =   0.00000     )  THEN    
+
+ STORE LALPHA   FROM ITEM=SVAR COMP=1     FOR ALL SELECTED ELEMENTS
+
+ STORE LVOL     FROM ITEM=VOLU  FOR ALL SELECTED ELEMENTS
+
+ OPERATION SMUL  RESULT= ALVOL     OPERAND1= LALPHA    OPERAND2= LVOL    
+  FACTOR1=  1.0000       FACTOR2=  1.0000       CONSTANT=  0.0000    
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.120519E+08
+ EVOL      0.106147E-04
+ GMASS     0.317053E-02
+ LALPHA     13552.8    
+ LVOL      0.106147E-04
+ ALVOL     0.356459E-05
+
+ *GET  SIM2_ASUM  FROM  SSUM  ITEM=ITEM ALVOL     VALUE= 0.356459224E-05
+
+ *GET  SIM2_VSUM  FROM  SSUM  ITEM=ITEM LVOL      VALUE= 0.106146855E-04
+
+ PARAMETER SIM2_AAVG =    0.3358170367    
+
+ SORT ON ITEM=ETAB  COMPONENT=LALP  ORDER= 1  KABS= 0  NMAX=  935624
+
+ SORT COMPLETED FOR   39808 VALUES.
+
+ *GET  SIM2_AMINL  FROM  SORT  ITEM=MIN        VALUE= 0.673596257E-01
+
+ ELEMENT SORT REMOVED
+
+ *ENDIF
+
+ ACTIVE COORDINATE SYSTEM SET TO          0  (CARTESIAN)  
+
+ PARAMETER SIM2_KILL =     0.000000000    
+
+ PARAMETER SIM2_OLDILAY =     0.000000000    
+
+ PARAMETER SIM2_DEPTH =    0.3175000000E-03
+
+ *IF  SIM2_ILAY  ( =   0.00000     )  LT  
+      SIM2_NLAY  ( =   8.00000     )  THEN    
+
+ *IF  SIM2_AAVG  ( =  0.335817     )  GE  
+      SIM2_ACUT  ( =  0.990000     )  THEN    
+
+ *ENDIF
+
+ *ENDIF
+
+ OPENED FILE= simulation2_history.csv FOR COMMAND FILE DATA 
+
+  FILE OPENED FOR APPEND
+
+  COMMAND FILE CLOSED 
+
+
+ PARAMETER SIM2_PREVT =    0.8500000000    
+
+ *** NOTE ***                            ELAPSED TIME =    1182.433   TIME= 18:27:51
+ Write parameters to file= simulation2_state.parm.                       
+
+ *** NOTE ***                            ELAPSED TIME =    1182.434   TIME= 18:27:51
+ Parameters written.  Lines= 76.                                         
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      1182.435
+
+
+
+ *ENDDO  INDEX= SIM2_ISTEP                      
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =    1198.100   TIME= 18:28:07
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:28:09  JUL 19, 2026 Elapsed Time=   1200.110
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:28:55  JUL 19, 2026 Elapsed Time=   1246.407
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   131.5      CRITERION=  0.5016    
+ Iteration=     5 Ratio=  8.501320E-02 Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    45 Ratio=  5.360046E-04 Limit=  1.000000E-08 Wall=     8.2
+ Iteration=     5 Ratio=  0.856220     Limit=  1.009183E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.707701     Limit=  1.009183E-03 Wall=     2.0
+ Iteration=   185 Ratio=  0.300631     Limit=  1.009183E-03 Wall=    37.1
+ Iteration=   585 Ratio=  7.390516E-03 Limit=  1.009183E-03 Wall=   114.0
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   21.06    
+     HT FLOW CONVERGENCE VALUE=   9.209      CRITERION=  0.5029    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -4.065    
+     HT FLOW CONVERGENCE VALUE=   1.289      CRITERION=  0.5048    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.8724    
+     HT FLOW CONVERGENCE VALUE=  0.2065      CRITERION=  0.5043     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    18   SUBSTEP     1  COMPLETED.    CUM ITER =     72
+ *** TIME =  0.900000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.7546       OSCILLATION LIMIT = 0.3773E-01
+
+ *** NOTE ***                            ELAPSED TIME =    2075.579   TIME= 18:42:45
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =    2085.532   TIME= 18:42:55
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      2478.428
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:49:27  JUL 19, 2026 Elapsed Time=   2478.508
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.158141E+08
+ EVOL      0.107422E-03
+ GMASS     0.427354E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.119368E+08
+ EVOL      0.106147E-04
+ GMASS     0.314098E-02
+ LALPHA     14638.0    
+ LVOL      0.106147E-04
+ ALVOL     0.385014E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      2487.794
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =    2503.926   TIME= 18:49:53
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:49:55  JUL 19, 2026 Elapsed Time=   2505.882
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:50:41  JUL 19, 2026 Elapsed Time=   2552.202
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   126.9      CRITERION=  0.5010    
+ Iteration=     5 Ratio=  8.585412E-02 Limit=  1.000000E-08 Wall=     0.5
+ Iteration=    45 Ratio=  5.485454E-04 Limit=  1.000000E-08 Wall=     8.1
+ Iteration=     5 Ratio=  0.863537     Limit=  1.006182E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.715993     Limit=  1.006182E-03 Wall=     1.7
+ Iteration=   195 Ratio=  0.308244     Limit=  1.006182E-03 Wall=    38.7
+ Iteration=   500 Ratio=  1.429165E-02 Limit=  1.006182E-03 Wall=   100.0
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   19.95    
+     HT FLOW CONVERGENCE VALUE=   8.900      CRITERION=  0.5028    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -3.845    
+     HT FLOW CONVERGENCE VALUE=   1.229      CRITERION=  0.5045    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.8109    
+     HT FLOW CONVERGENCE VALUE=  0.1935      CRITERION=  0.5041     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    19   SUBSTEP     1  COMPLETED.    CUM ITER =     76
+ *** TIME =  0.950000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.7216       OSCILLATION LIMIT = 0.3608E-01
+
+ *** NOTE ***                            ELAPSED TIME =    3378.764   TIME= 19:04:28
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =    3386.601   TIME= 19:04:36
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      3753.874
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:10:43  JUL 19, 2026 Elapsed Time=   3753.958
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.160070E+08
+ EVOL      0.107422E-03
+ GMASS     0.433035E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.117856E+08
+ EVOL      0.106147E-04
+ GMASS     0.310216E-02
+ LALPHA     15709.4    
+ LVOL      0.106147E-04
+ ALVOL     0.413215E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      3763.089
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =    3779.383   TIME= 19:11:08
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:11:10  JUL 19, 2026 Elapsed Time=   3781.226
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:11:54  JUL 19, 2026 Elapsed Time=   3825.259
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   122.7      CRITERION=  0.5008    
+ Iteration=     5 Ratio=  8.690501E-02 Limit=  1.000000E-08 Wall=     0.7
+ Iteration=    45 Ratio=  5.536394E-04 Limit=  1.000000E-08 Wall=     8.9
+ Iteration=     5 Ratio=  0.839530     Limit=  1.017831E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.738555     Limit=  1.017831E-03 Wall=     1.7
+ Iteration=   160 Ratio=  0.319344     Limit=  1.017831E-03 Wall=    34.5
+ Iteration=   465 Ratio=  1.519604E-02 Limit=  1.017831E-03 Wall=    95.9
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   18.98    
+     HT FLOW CONVERGENCE VALUE=   8.602      CRITERION=  0.5029    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -3.670    
+     HT FLOW CONVERGENCE VALUE=   1.169      CRITERION=  0.5045    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.7614    
+     HT FLOW CONVERGENCE VALUE=  0.1805      CRITERION=  0.5041     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    20   SUBSTEP     1  COMPLETED.    CUM ITER =     80
+ *** TIME =   1.00000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.6916       OSCILLATION LIMIT = 0.3458E-01
+
+ *** NOTE ***                            ELAPSED TIME =    4652.800   TIME= 19:25:42
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =    4661.361   TIME= 19:25:50
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      5100.676
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:33:10  JUL 19, 2026 Elapsed Time=   5100.714
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.161776E+08
+ EVOL      0.107422E-03
+ GMASS     0.438197E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.116048E+08
+ EVOL      0.106147E-04
+ GMASS     0.305575E-02
+ LALPHA     16764.4    
+ LVOL      0.106147E-04
+ ALVOL     0.440995E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      5110.051
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =    5125.882   TIME= 19:33:35
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:33:37  JUL 19, 2026 Elapsed Time=   5127.768
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:34:26  JUL 19, 2026 Elapsed Time=   5177.081
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   118.9      CRITERION=  0.5008    
+ Iteration=     5 Ratio=  8.818657E-02 Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    45 Ratio=  5.542937E-04 Limit=  1.000000E-08 Wall=     8.3
+ Iteration=     5 Ratio=  0.837187     Limit=  1.040271E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.735270     Limit=  1.040271E-03 Wall=     2.1
+ Iteration=   150 Ratio=  0.319508     Limit=  1.040271E-03 Wall=    32.4
+ Iteration=   570 Ratio=  6.829840E-03 Limit=  1.040271E-03 Wall=   122.1
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   18.16    
+     HT FLOW CONVERGENCE VALUE=   8.312      CRITERION=  0.5031    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -3.497    
+     HT FLOW CONVERGENCE VALUE=   1.109      CRITERION=  0.5047    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.7185    
+     HT FLOW CONVERGENCE VALUE=  0.1673      CRITERION=  0.5043     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    21   SUBSTEP     1  COMPLETED.    CUM ITER =     84
+ *** TIME =   1.05000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.6646       OSCILLATION LIMIT = 0.3323E-01
+
+ *** NOTE ***                            ELAPSED TIME =    6073.262   TIME= 19:49:22
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =    6086.569   TIME= 19:49:36
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      6590.590
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:58:00  JUL 19, 2026 Elapsed Time=   6590.682
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.163298E+08
+ EVOL      0.107422E-03
+ GMASS     0.442946E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.113996E+08
+ EVOL      0.106147E-04
+ GMASS     0.300312E-02
+ LALPHA     17800.7    
+ LVOL      0.106147E-04
+ ALVOL     0.468296E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      6600.703
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =    6618.342   TIME= 19:58:27
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:58:30  JUL 19, 2026 Elapsed Time=   6621.021
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:59:36  JUL 19, 2026 Elapsed Time=   6686.847
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   115.4      CRITERION=  0.5010    
+ Iteration=     5 Ratio=  8.970673E-02 Limit=  1.000000E-08 Wall=     0.4
+ Iteration=    45 Ratio=  5.553329E-04 Limit=  1.000000E-08 Wall=     8.2
+ Iteration=   410 Ratio=  1.260960E-05 Limit=  1.000000E-08 Wall=    80.5
+ Iteration=     5 Ratio=  0.852521     Limit=  1.031134E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.724005     Limit=  1.031134E-03 Wall=     1.6
+ Iteration=   160 Ratio=  0.307250     Limit=  1.031134E-03 Wall=    30.1
+ Iteration=   680 Ratio=  2.767525E-03 Limit=  1.031134E-03 Wall=   123.3
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   17.43    
+     HT FLOW CONVERGENCE VALUE=   8.035      CRITERION=  0.5036    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -3.357    
+     HT FLOW CONVERGENCE VALUE=   1.050      CRITERION=  0.5050    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.6830    
+     HT FLOW CONVERGENCE VALUE=  0.1546      CRITERION=  0.5046     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    22   SUBSTEP     1  COMPLETED.    CUM ITER =     88
+ *** TIME =   1.10000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.6402       OSCILLATION LIMIT = 0.3201E-01
+
+ *** NOTE ***                            ELAPSED TIME =    7559.220   TIME= 20:14:08
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =    7571.002   TIME= 20:14:20
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      8067.479
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   20:22:37  JUL 19, 2026 Elapsed Time=   8067.526
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.164666E+08
+ EVOL      0.107422E-03
+ GMASS     0.447362E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.111743E+08
+ EVOL      0.106147E-04
+ GMASS     0.294543E-02
+ LALPHA     18816.6    
+ LVOL      0.106147E-04
+ ALVOL     0.495072E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      8075.872
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =    8092.453   TIME= 20:23:01
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   20:23:03  JUL 19, 2026 Elapsed Time=   8093.720
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   20:23:44  JUL 19, 2026 Elapsed Time=   8134.571
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   112.3      CRITERION=  0.5013    
+ Iteration=     5 Ratio=  9.146350E-02 Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    45 Ratio=  5.635112E-04 Limit=  1.000000E-08 Wall=     8.8
+ Iteration=     5 Ratio=  0.891778     Limit=  1.000280E-03 Wall=     0.9
+ Iteration=    10 Ratio=  0.730215     Limit=  1.000280E-03 Wall=     2.0
+ Iteration=   165 Ratio=  0.305645     Limit=  1.000280E-03 Wall=    35.2
+ Iteration=   495 Ratio=  1.465015E-02 Limit=  1.000280E-03 Wall=   101.9
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   16.74    
+     HT FLOW CONVERGENCE VALUE=   7.775      CRITERION=  0.5041    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -3.222    
+     HT FLOW CONVERGENCE VALUE=  0.9942      CRITERION=  0.5054    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.6461    
+     HT FLOW CONVERGENCE VALUE=  0.1426      CRITERION=  0.5051     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    23   SUBSTEP     1  COMPLETED.    CUM ITER =     92
+ *** TIME =   1.15000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.6182       OSCILLATION LIMIT = 0.3091E-01
+
+ *** NOTE ***                            ELAPSED TIME =    9113.517   TIME= 20:40:03
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =    9128.052   TIME= 20:40:17
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      9664.982
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   20:49:14  JUL 19, 2026 Elapsed Time=   9665.103
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.165904E+08
+ EVOL      0.107422E-03
+ GMASS     0.451510E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.109326E+08
+ EVOL      0.106147E-04
+ GMASS     0.288364E-02
+ LALPHA     19810.4    
+ LVOL      0.106147E-04
+ ALVOL     0.521287E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =      9673.584
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =    9690.860   TIME= 20:49:40
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   20:49:41  JUL 19, 2026 Elapsed Time=   9691.917
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   20:50:35  JUL 19, 2026 Elapsed Time=   9745.851
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   109.3      CRITERION=  0.5018    
+ Iteration=     5 Ratio=  9.343410E-02 Limit=  1.000000E-08 Wall=     1.2
+ Iteration=    45 Ratio=  5.865033E-04 Limit=  1.000000E-08 Wall=     7.8
+ Iteration=   355 Ratio=  2.972339E-05 Limit=  1.000000E-08 Wall=    69.1
+ Iteration=     5 Ratio=  0.891840     Limit=  1.011184E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.710034     Limit=  1.011184E-03 Wall=     1.8
+ Iteration=   165 Ratio=  0.304264     Limit=  1.011184E-03 Wall=    32.1
+ Iteration=   650 Ratio=  3.629985E-03 Limit=  1.011184E-03 Wall=   108.8
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   16.18    
+     HT FLOW CONVERGENCE VALUE=   7.541      CRITERION=  0.5047    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -3.074    
+     HT FLOW CONVERGENCE VALUE=  0.9452      CRITERION=  0.5059    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.6075    
+     HT FLOW CONVERGENCE VALUE=  0.1321      CRITERION=  0.5056     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    24   SUBSTEP     1  COMPLETED.    CUM ITER =     96
+ *** TIME =   1.20000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.5981       OSCILLATION LIMIT = 0.2990E-01
+
+ *** NOTE ***                            ELAPSED TIME =   10593.016   TIME= 21:04:42
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   10603.347   TIME= 21:04:52
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     11126.499
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   21:13:36  JUL 19, 2026 Elapsed Time=  11126.536
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.167024E+08
+ EVOL      0.107422E-03
+ GMASS     0.455423E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.106771E+08
+ EVOL      0.106147E-04
+ GMASS     0.281845E-02
+ LALPHA     20781.1    
+ LVOL      0.106147E-04
+ ALVOL     0.546909E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     11135.291
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   11152.509   TIME= 21:14:01
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   21:14:04  JUL 19, 2026 Elapsed Time=  11154.741
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   21:15:00  JUL 19, 2026 Elapsed Time=  11211.214
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   106.7      CRITERION=  0.5023    
+ Iteration=     5 Ratio=  9.560102E-02 Limit=  1.000000E-08 Wall=     0.7
+ Iteration=    45 Ratio=  6.322272E-04 Limit=  1.000000E-08 Wall=     9.3
+ Iteration=   330 Ratio=  4.314611E-05 Limit=  1.000000E-08 Wall=    70.7
+ Iteration=     5 Ratio=  0.839347     Limit=  1.037797E-03 Wall=     1.0
+ Iteration=    10 Ratio=  0.699116     Limit=  1.037797E-03 Wall=     2.0
+ Iteration=   165 Ratio=  0.295962     Limit=  1.037797E-03 Wall=    34.8
+ Iteration=   510 Ratio=  1.618563E-02 Limit=  1.037797E-03 Wall=   106.9
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   15.66    
+     HT FLOW CONVERGENCE VALUE=   7.335      CRITERION=  0.5054    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.913    
+     HT FLOW CONVERGENCE VALUE=  0.9017      CRITERION=  0.5066    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5676    
+     HT FLOW CONVERGENCE VALUE=  0.1228      CRITERION=  0.5063     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    25   SUBSTEP     1  COMPLETED.    CUM ITER =    100
+ *** TIME =   1.25000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.5794       OSCILLATION LIMIT = 0.2897E-01
+
+ *** NOTE ***                            ELAPSED TIME =   12167.114   TIME= 21:30:56
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   12179.320   TIME= 21:31:08
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     12744.708
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   21:40:34  JUL 19, 2026 Elapsed Time=  12744.754
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.168034E+08
+ EVOL      0.107422E-03
+ GMASS     0.459116E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.104102E+08
+ EVOL      0.106147E-04
+ GMASS     0.275042E-02
+ LALPHA     21727.5    
+ LVOL      0.106147E-04
+ ALVOL     0.571913E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     12753.333
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   12770.941   TIME= 21:41:00
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   21:41:02  JUL 19, 2026 Elapsed Time=  12772.992
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   21:41:55  JUL 19, 2026 Elapsed Time=  12825.585
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   104.2      CRITERION=  0.5029    
+ Iteration=     5 Ratio=  9.793704E-02 Limit=  1.000000E-08 Wall=     0.7
+ Iteration=    45 Ratio=  7.064097E-04 Limit=  1.000000E-08 Wall=     8.8
+ Iteration=   495 Ratio=  1.026271E-05 Limit=  1.000000E-08 Wall=   102.2
+ Iteration=     5 Ratio=  0.861871     Limit=  1.028993E-03 Wall=     0.8
+ Iteration=    10 Ratio=  0.713001     Limit=  1.028993E-03 Wall=     2.2
+ Iteration=   165 Ratio=  0.316120     Limit=  1.028993E-03 Wall=    33.3
+ Iteration=   515 Ratio=  1.522268E-02 Limit=  1.028993E-03 Wall=   105.0
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   15.18    
+     HT FLOW CONVERGENCE VALUE=   7.139      CRITERION=  0.5062    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.800    
+     HT FLOW CONVERGENCE VALUE=  0.8609      CRITERION=  0.5072    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5356    
+     HT FLOW CONVERGENCE VALUE=  0.1141      CRITERION=  0.5070     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    26   SUBSTEP     1  COMPLETED.    CUM ITER =    104
+ *** TIME =   1.30000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.5621       OSCILLATION LIMIT = 0.2811E-01
+
+ *** NOTE ***                            ELAPSED TIME =   13742.864   TIME= 21:57:12
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   13755.369   TIME= 21:57:24
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     14365.116
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:07:34  JUL 19, 2026 Elapsed Time=  14365.189
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.168938E+08
+ EVOL      0.107422E-03
+ GMASS     0.462597E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.101338E+08
+ EVOL      0.106147E-04
+ GMASS     0.268002E-02
+ LALPHA     22648.7    
+ LVOL      0.106147E-04
+ ALVOL     0.596277E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     14379.879
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   14397.487   TIME= 22:08:06
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:08:09  JUL 19, 2026 Elapsed Time=  14400.175
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:09:06  JUL 19, 2026 Elapsed Time=  14457.496
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   101.9      CRITERION=  0.5036    
+ Iteration=     5 Ratio=  0.100405     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    45 Ratio=  8.098974E-04 Limit=  1.000000E-08 Wall=     8.1
+ Iteration=     5 Ratio=  0.843839     Limit=  1.022710E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.738849     Limit=  1.022710E-03 Wall=     1.8
+ Iteration=   170 Ratio=  0.300609     Limit=  1.022710E-03 Wall=    32.7
+ Iteration=   630 Ratio=  4.813331E-03 Limit=  1.022710E-03 Wall=   120.9
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   14.74    
+     HT FLOW CONVERGENCE VALUE=   6.951      CRITERION=  0.5070    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.693    
+     HT FLOW CONVERGENCE VALUE=  0.8221      CRITERION=  0.5080    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.5083    
+     HT FLOW CONVERGENCE VALUE=  0.1060      CRITERION=  0.5077     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    27   SUBSTEP     1  COMPLETED.    CUM ITER =    108
+ *** TIME =   1.35000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.5462       OSCILLATION LIMIT = 0.2731E-01
+
+ *** NOTE ***                            ELAPSED TIME =   15370.769   TIME= 22:24:20
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   15380.846   TIME= 22:24:30
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     15966.183
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:34:15  JUL 19, 2026 Elapsed Time=  15966.217
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.169740E+08
+ EVOL      0.107422E-03
+ GMASS     0.465868E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.984950E+07
+ EVOL      0.106147E-04
+ GMASS     0.260768E-02
+ LALPHA     23544.1    
+ LVOL      0.106147E-04
+ ALVOL     0.619983E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     15974.870
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   15993.793   TIME= 22:34:43
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:34:45  JUL 19, 2026 Elapsed Time=  15996.026
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:35:38  JUL 19, 2026 Elapsed Time=  16049.396
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   99.75      CRITERION=  0.5044    
+ Iteration=     5 Ratio=  0.102967     Limit=  1.000000E-08 Wall=     0.7
+ Iteration=    45 Ratio=  9.375582E-04 Limit=  1.000000E-08 Wall=     9.1
+ Iteration=   375 Ratio=  4.877744E-05 Limit=  1.000000E-08 Wall=    76.1
+ Iteration=     5 Ratio=  0.824794     Limit=  1.003015E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.709506     Limit=  1.003015E-03 Wall=     1.7
+ Iteration=   165 Ratio=  0.313886     Limit=  1.003015E-03 Wall=    38.7
+ Iteration=   640 Ratio=  4.037222E-03 Limit=  1.003015E-03 Wall=   141.7
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   14.32    
+     HT FLOW CONVERGENCE VALUE=   6.761      CRITERION=  0.5078    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.567    
+     HT FLOW CONVERGENCE VALUE=  0.7838      CRITERION=  0.5088    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4766    
+     HT FLOW CONVERGENCE VALUE=  0.9836E-01  CRITERION=  0.5085     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    28   SUBSTEP     1  COMPLETED.    CUM ITER =    112
+ *** TIME =   1.40000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.5315       OSCILLATION LIMIT = 0.2658E-01
+
+ *** NOTE ***                            ELAPSED TIME =   17016.419   TIME= 22:51:45
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   17027.889   TIME= 22:51:57
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     17639.795
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:02:09  JUL 19, 2026 Elapsed Time=  17639.828
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.170440E+08
+ EVOL      0.107422E-03
+ GMASS     0.468926E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.955877E+07
+ EVOL      0.106147E-04
+ GMASS     0.253373E-02
+ LALPHA     24413.1    
+ LVOL      0.106147E-04
+ ALVOL     0.643017E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     17648.709
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   17666.968   TIME= 23:02:36
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:02:38  JUL 19, 2026 Elapsed Time=  17668.778
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:03:32  JUL 19, 2026 Elapsed Time=  17722.847
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   97.77      CRITERION=  0.5052    
+ Iteration=     5 Ratio=  0.105591     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    50 Ratio=  9.116171E-04 Limit=  1.000000E-08 Wall=     9.3
+ Iteration=   415 Ratio=  3.385327E-05 Limit=  1.000000E-08 Wall=    81.2
+ Iteration=     5 Ratio=  0.857146     Limit=  1.001929E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.737658     Limit=  1.001929E-03 Wall=     1.8
+ Iteration=   175 Ratio=  0.309594     Limit=  1.001929E-03 Wall=    34.0
+ Iteration=   690 Ratio=  2.938465E-03 Limit=  1.001929E-03 Wall=   136.6
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   13.92    
+     HT FLOW CONVERGENCE VALUE=   6.572      CRITERION=  0.5087    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.462    
+     HT FLOW CONVERGENCE VALUE=  0.7466      CRITERION=  0.5096    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4483    
+     HT FLOW CONVERGENCE VALUE=  0.9110E-01  CRITERION=  0.5094     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    29   SUBSTEP     1  COMPLETED.    CUM ITER =    116
+ *** TIME =   1.45000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.5181       OSCILLATION LIMIT = 0.2590E-01
+
+ *** NOTE ***                            ELAPSED TIME =   18649.246   TIME= 23:18:58
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   18659.584   TIME= 23:19:09
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     19280.235
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:29:29  JUL 19, 2026 Elapsed Time=  19280.285
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.171037E+08
+ EVOL      0.107422E-03
+ GMASS     0.471761E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.926283E+07
+ EVOL      0.106147E-04
+ GMASS     0.245846E-02
+ LALPHA     25255.2    
+ LVOL      0.106147E-04
+ ALVOL     0.665367E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     19288.657
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   19308.261   TIME= 23:29:57
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:29:59  JUL 19, 2026 Elapsed Time=  19309.965
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:31:00  JUL 19, 2026 Elapsed Time=  19370.717
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   95.93      CRITERION=  0.5060    
+ Iteration=     5 Ratio=  0.108273     Limit=  1.000000E-08 Wall=     0.7
+ Iteration=    60 Ratio=  9.719217E-04 Limit=  1.000000E-08 Wall=    11.5
+ Iteration=   370 Ratio=  6.307923E-05 Limit=  1.000000E-08 Wall=    78.3
+ Iteration=     5 Ratio=  0.831906     Limit=  1.033186E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.747344     Limit=  1.033186E-03 Wall=     1.9
+ Iteration=   165 Ratio=  0.313097     Limit=  1.033186E-03 Wall=    34.3
+ Iteration=   570 Ratio=  7.700465E-03 Limit=  1.033186E-03 Wall=   116.3
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   13.60    
+     HT FLOW CONVERGENCE VALUE=   6.390      CRITERION=  0.5096    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.366    
+     HT FLOW CONVERGENCE VALUE=  0.7108      CRITERION=  0.5104    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.4219    
+     HT FLOW CONVERGENCE VALUE=  0.8434E-01  CRITERION=  0.5102     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    30   SUBSTEP     1  COMPLETED.    CUM ITER =    120
+ *** TIME =   1.50000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.5057       OSCILLATION LIMIT = 0.2528E-01
+
+ *** NOTE ***                            ELAPSED TIME =   20363.192   TIME= 23:47:32
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   20373.759   TIME= 23:47:43
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     21008.776
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:58:18  JUL 19, 2026 Elapsed Time=  21008.831
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.171529E+08
+ EVOL      0.107422E-03
+ GMASS     0.474363E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.896275E+07
+ EVOL      0.106147E-04
+ GMASS     0.238211E-02
+ LALPHA     26070.0    
+ LVOL      0.106147E-04
+ ALVOL     0.687022E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     21017.494
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   21036.504   TIME= 23:58:45
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:58:47  JUL 19, 2026 Elapsed Time=  21038.268
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:59:42  JUL 19, 2026 Elapsed Time=  21093.216
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   94.21      CRITERION=  0.5068    
+ Iteration=     5 Ratio=  0.111007     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    65 Ratio=  8.302200E-04 Limit=  1.000000E-08 Wall=    12.7
+ Iteration=   380 Ratio=  6.409237E-05 Limit=  1.000000E-08 Wall=    74.3
+ Iteration=     5 Ratio=  0.803398     Limit=  1.007972E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.735924     Limit=  1.007972E-03 Wall=     1.8
+ Iteration=   170 Ratio=  0.304597     Limit=  1.007972E-03 Wall=    33.7
+ Iteration=   565 Ratio=  8.273231E-03 Limit=  1.007972E-03 Wall=   110.5
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   13.32    
+     HT FLOW CONVERGENCE VALUE=   6.212      CRITERION=  0.5106    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.272    
+     HT FLOW CONVERGENCE VALUE=  0.6764      CRITERION=  0.5113    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3982    
+     HT FLOW CONVERGENCE VALUE=  0.7804E-01  CRITERION=  0.5111     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    31   SUBSTEP     1  COMPLETED.    CUM ITER =    124
+ *** TIME =   1.55000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4942       OSCILLATION LIMIT = 0.2471E-01
+
+ *** NOTE ***                            ELAPSED TIME =   22036.207   TIME= 09:30:41
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   22044.880   TIME= 09:30:50
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     22544.014
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   09:39:09  JUL 20, 2026 Elapsed Time=  22544.116
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.171916E+08
+ EVOL      0.107422E-03
+ GMASS     0.476719E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.865947E+07
+ EVOL      0.106147E-04
+ GMASS     0.230490E-02
+ LALPHA     26857.2    
+ LVOL      0.106147E-04
+ ALVOL     0.707976E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     22559.268
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   22606.212   TIME= 09:40:11
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   09:40:13  JUL 20, 2026 Elapsed Time=  22608.038
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   09:41:23  JUL 20, 2026 Elapsed Time=  22678.294
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   92.60      CRITERION=  0.5077    
+ Iteration=     5 Ratio=  0.113783     Limit=  1.000000E-08 Wall=     0.7
+ Iteration=    65 Ratio=  9.673795E-04 Limit=  1.000000E-08 Wall=    12.8
+ Iteration=   435 Ratio=  3.966321E-05 Limit=  1.000000E-08 Wall=    84.7
+ Iteration=     5 Ratio=  0.808219     Limit=  1.017938E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.763119     Limit=  1.017938E-03 Wall=     1.7
+ Iteration=   175 Ratio=  0.310695     Limit=  1.017938E-03 Wall=    32.8
+ Iteration=   550 Ratio=  1.432577E-02 Limit=  1.017938E-03 Wall=   107.3
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   13.05    
+     HT FLOW CONVERGENCE VALUE=   6.040      CRITERION=  0.5115    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.182    
+     HT FLOW CONVERGENCE VALUE=  0.6436      CRITERION=  0.5122    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3759    
+     HT FLOW CONVERGENCE VALUE=  0.7226E-01  CRITERION=  0.5120     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    32   SUBSTEP     1  COMPLETED.    CUM ITER =    128
+ *** TIME =   1.60000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4836       OSCILLATION LIMIT = 0.2418E-01
+
+ *** NOTE ***                            ELAPSED TIME =   23590.732   TIME= 09:56:36
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   23599.496   TIME= 09:56:45
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     24165.750
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   10:06:11  JUL 20, 2026 Elapsed Time=  24165.909
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.172193E+08
+ EVOL      0.107422E-03
+ GMASS     0.478817E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.835385E+07
+ EVOL      0.106147E-04
+ GMASS     0.222701E-02
+ LALPHA     27616.7    
+ LVOL      0.106147E-04
+ ALVOL     0.728222E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     24173.771
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   24193.485   TIME= 10:06:39
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   10:06:40  JUL 20, 2026 Elapsed Time=  24195.046
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   10:07:38  JUL 20, 2026 Elapsed Time=  24252.634
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   91.08      CRITERION=  0.5086    
+ Iteration=     5 Ratio=  0.116602     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    70 Ratio=  9.671205E-04 Limit=  1.000000E-08 Wall=    13.9
+ Iteration=   320 Ratio=  1.167459E-04 Limit=  1.000000E-08 Wall=    76.4
+ Iteration=     5 Ratio=  0.785620     Limit=  1.015074E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.735952     Limit=  1.015074E-03 Wall=     1.8
+ Iteration=   165 Ratio=  0.308363     Limit=  1.015074E-03 Wall=    32.8
+ Iteration=   495 Ratio=  1.704615E-02 Limit=  1.015074E-03 Wall=   100.0
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   12.82    
+     HT FLOW CONVERGENCE VALUE=   5.880      CRITERION=  0.5125    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.093    
+     HT FLOW CONVERGENCE VALUE=  0.6135      CRITERION=  0.5131    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3536    
+     HT FLOW CONVERGENCE VALUE=  0.6700E-01  CRITERION=  0.5130     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    33   SUBSTEP     1  COMPLETED.    CUM ITER =    132
+ *** TIME =   1.65000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4738       OSCILLATION LIMIT = 0.2369E-01
+
+ *** NOTE ***                            ELAPSED TIME =   25229.365   TIME= 10:23:54
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   25237.548   TIME= 10:24:03
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     25883.121
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   10:34:48  JUL 20, 2026 Elapsed Time=  25883.237
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.172360E+08
+ EVOL      0.107422E-03
+ GMASS     0.480644E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.804664E+07
+ EVOL      0.106147E-04
+ GMASS     0.214862E-02
+ LALPHA     28348.2    
+ LVOL      0.106147E-04
+ ALVOL     0.747755E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     25891.930
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   25910.978   TIME= 10:35:16
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   10:35:18  JUL 20, 2026 Elapsed Time=  25912.610
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   10:36:11  JUL 20, 2026 Elapsed Time=  25965.697
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   89.66      CRITERION=  0.5095    
+ Iteration=     5 Ratio=  0.119468     Limit=  1.000000E-08 Wall=     0.4
+ Iteration=    85 Ratio=  9.317144E-04 Limit=  1.000000E-08 Wall=    16.7
+ Iteration=   480 Ratio=  3.079060E-05 Limit=  1.000000E-08 Wall=   100.8
+ Iteration=     5 Ratio=  0.799133     Limit=  1.012502E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.768263     Limit=  1.012502E-03 Wall=     1.8
+ Iteration=   170 Ratio=  0.316288     Limit=  1.012502E-03 Wall=    32.4
+ Iteration=   515 Ratio=  1.554272E-02 Limit=  1.012502E-03 Wall=   104.2
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   12.61    
+     HT FLOW CONVERGENCE VALUE=   5.743      CRITERION=  0.5135    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -2.023    
+     HT FLOW CONVERGENCE VALUE=  0.5862      CRITERION=  0.5140    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3328    
+     HT FLOW CONVERGENCE VALUE=  0.6231E-01  CRITERION=  0.5139     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    34   SUBSTEP     1  COMPLETED.    CUM ITER =    136
+ *** TIME =   1.70000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4647       OSCILLATION LIMIT = 0.2324E-01
+
+ *** NOTE ***                            ELAPSED TIME =   26940.996   TIME= 10:52:26
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   26949.271   TIME= 10:52:34
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     27889.608
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   11:08:15  JUL 20, 2026 Elapsed Time=  27889.698
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.172415E+08
+ EVOL      0.107422E-03
+ GMASS     0.482189E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.773859E+07
+ EVOL      0.106147E-04
+ GMASS     0.206988E-02
+ LALPHA     29051.7    
+ LVOL      0.106147E-04
+ ALVOL     0.766572E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     27903.606
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   27923.361   TIME= 11:08:48
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   11:08:50  JUL 20, 2026 Elapsed Time=  27924.863
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   11:09:46  JUL 20, 2026 Elapsed Time=  27981.052
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   88.31      CRITERION=  0.5105    
+ Iteration=     5 Ratio=  0.122397     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=    90 Ratio=  9.218171E-04 Limit=  1.000000E-08 Wall=    17.5
+ Iteration=   515 Ratio=  2.335416E-05 Limit=  1.000000E-08 Wall=    99.7
+ Iteration=     5 Ratio=  0.856108     Limit=  1.000022E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.713765     Limit=  1.000022E-03 Wall=     1.3
+ Iteration=   170 Ratio=  0.315081     Limit=  1.000022E-03 Wall=    33.2
+ Iteration=   485 Ratio=  2.220949E-02 Limit=  1.000022E-03 Wall=    95.3
+ Iteration=   795 Ratio=  1.112456E-03 Limit=  1.000022E-03 Wall=   157.1
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   12.40    
+     HT FLOW CONVERGENCE VALUE=   5.614      CRITERION=  0.5145    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.947    
+     HT FLOW CONVERGENCE VALUE=  0.5608      CRITERION=  0.5150    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.3131    
+     HT FLOW CONVERGENCE VALUE=  0.5807E-01  CRITERION=  0.5148     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    35   SUBSTEP     1  COMPLETED.    CUM ITER =    140
+ *** TIME =   1.75000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4562       OSCILLATION LIMIT = 0.2281E-01
+
+ *** NOTE ***                            ELAPSED TIME =   28981.672   TIME= 11:26:27
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   28991.736   TIME= 11:26:37
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     29674.234
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   11:37:59  JUL 20, 2026 Elapsed Time=  29674.286
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.172356E+08
+ EVOL      0.107422E-03
+ GMASS     0.483440E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.743034E+07
+ EVOL      0.106147E-04
+ GMASS     0.199093E-02
+ LALPHA     29727.2    
+ LVOL      0.106147E-04
+ ALVOL     0.784671E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     29684.067
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   29704.211   TIME= 11:38:29
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   11:38:31  JUL 20, 2026 Elapsed Time=  29706.061
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   11:39:48  JUL 20, 2026 Elapsed Time=  29782.695
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   87.05      CRITERION=  0.5114    
+ Iteration=     5 Ratio=  0.125376     Limit=  1.000000E-08 Wall=     0.8
+ Iteration=    90 Ratio=  9.680668E-04 Limit=  1.000000E-08 Wall=    19.5
+ Iteration=   370 Ratio=  1.048731E-04 Limit=  1.000000E-08 Wall=    86.4
+ Iteration=     5 Ratio=  0.838794     Limit=  1.000639E-03 Wall=     0.9
+ Iteration=    10 Ratio=  0.732952     Limit=  1.000639E-03 Wall=     1.9
+ Iteration=   170 Ratio=  0.310509     Limit=  1.000639E-03 Wall=    38.3
+ Iteration=   390 Ratio=  4.441574E-02 Limit=  1.000639E-03 Wall=   101.7
+ Iteration=   700 Ratio=  2.226057E-03 Limit=  1.000639E-03 Wall=   163.2
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   12.23    
+     HT FLOW CONVERGENCE VALUE=   5.490      CRITERION=  0.5155    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.867    
+     HT FLOW CONVERGENCE VALUE=  0.5371      CRITERION=  0.5159    
+    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.2945    
+     HT FLOW CONVERGENCE VALUE=  0.5418E-01  CRITERION=  0.5158     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   3
+ *** LOAD STEP    36   SUBSTEP     1  COMPLETED.    CUM ITER =    144
+ *** TIME =   1.80000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4481       OSCILLATION LIMIT = 0.2241E-01
+
+ *** NOTE ***                            ELAPSED TIME =   30892.161   TIME= 11:58:17
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   30903.469   TIME= 11:58:29
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     31761.799
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   12:12:47  JUL 20, 2026 Elapsed Time=  31761.839
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.172183E+08
+ EVOL      0.107422E-03
+ GMASS     0.484392E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.712257E+07
+ EVOL      0.106147E-04
+ GMASS     0.191193E-02
+ LALPHA     30374.7    
+ LVOL      0.106147E-04
+ ALVOL     0.802052E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     31773.803
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   31795.292   TIME= 12:13:20
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   12:13:23  JUL 20, 2026 Elapsed Time=  31797.360
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   12:14:24  JUL 20, 2026 Elapsed Time=  31859.032
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   85.85      CRITERION=  0.5124    
+ Iteration=     5 Ratio=  0.128394     Limit=  1.000000E-08 Wall=     0.8
+ Iteration=   110 Ratio=  9.859689E-04 Limit=  1.000000E-08 Wall=    26.5
+ Iteration=   450 Ratio=  5.166692E-05 Limit=  1.000000E-08 Wall=    99.1
+ Iteration=     5 Ratio=  0.815812     Limit=  1.001799E-03 Wall=     0.9
+ Iteration=    10 Ratio=  0.745976     Limit=  1.001799E-03 Wall=     2.2
+ Iteration=   165 Ratio=  0.305215     Limit=  1.001799E-03 Wall=    34.5
+ Iteration=   490 Ratio=  2.115642E-02 Limit=  1.001799E-03 Wall=   101.4
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   12.06    
+     HT FLOW CONVERGENCE VALUE=   5.375      CRITERION=  0.5165    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.790    
+     HT FLOW CONVERGENCE VALUE=  0.5149      CRITERION=  0.5169     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    37   SUBSTEP     1  COMPLETED.    CUM ITER =    147
+ *** TIME =   1.85000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4480       OSCILLATION LIMIT = 0.2240E-01
+
+ *** NOTE ***                            ELAPSED TIME =   32703.033   TIME= 12:28:28
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   32714.675   TIME= 12:28:40
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     33566.946
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   12:42:52  JUL 20, 2026 Elapsed Time=  33567.023
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.171766E+08
+ EVOL      0.107422E-03
+ GMASS     0.484674E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.681036E+07
+ EVOL      0.106147E-04
+ GMASS     0.183152E-02
+ LALPHA     30993.8    
+ LVOL      0.106147E-04
+ ALVOL     0.818702E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     33576.963
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   33601.232   TIME= 12:43:26
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   12:43:28  JUL 20, 2026 Elapsed Time=  33602.924
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   12:44:26  JUL 20, 2026 Elapsed Time=  33661.346
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   84.66      CRITERION=  0.5134    
+ Iteration=     5 Ratio=  0.132410     Limit=  1.000000E-08 Wall=     0.5
+ Iteration=   130 Ratio=  9.911526E-04 Limit=  1.000000E-08 Wall=    23.7
+ Iteration=     5 Ratio=  0.776942     Limit=  1.042457E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.750785     Limit=  1.042457E-03 Wall=     1.6
+ Iteration=   165 Ratio=  0.304300     Limit=  1.042457E-03 Wall=    32.7
+ Iteration=   690 Ratio=  2.541331E-03 Limit=  1.042457E-03 Wall=   134.7
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.89    
+     HT FLOW CONVERGENCE VALUE=   5.261      CRITERION=  0.5175    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.723    
+     HT FLOW CONVERGENCE VALUE=  0.4936      CRITERION=  0.5178     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    38   SUBSTEP     1  COMPLETED.    CUM ITER =    150
+ *** TIME =   1.90000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4318       OSCILLATION LIMIT = 0.2159E-01
+
+ *** NOTE ***                            ELAPSED TIME =   34487.444   TIME= 12:58:13
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   34498.847   TIME= 12:58:24
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     35363.431
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   13:12:49  JUL 20, 2026 Elapsed Time=  35363.495
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.171316E+08
+ EVOL      0.107422E-03
+ GMASS     0.484865E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.650426E+07
+ EVOL      0.106147E-04
+ GMASS     0.175252E-02
+ LALPHA     31585.1    
+ LVOL      0.106147E-04
+ ALVOL     0.834634E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     35372.996
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   35396.879   TIME= 13:13:22
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   13:13:24  JUL 20, 2026 Elapsed Time=  35398.589
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   13:14:29  JUL 20, 2026 Elapsed Time=  35463.584
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   83.60      CRITERION=  0.5144    
+ Iteration=     5 Ratio=  0.135756     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=   140 Ratio=  9.626024E-04 Limit=  1.000000E-08 Wall=    30.5
+ Iteration=   510 Ratio=  3.262366E-05 Limit=  1.000000E-08 Wall=   112.3
+ Iteration=     5 Ratio=  0.794405     Limit=  1.001631E-03 Wall=     0.9
+ Iteration=    10 Ratio=  0.746055     Limit=  1.001631E-03 Wall=     2.0
+ Iteration=   170 Ratio=  0.302846     Limit=  1.001631E-03 Wall=    36.4
+ Iteration=   465 Ratio=  2.647499E-02 Limit=  1.001631E-03 Wall=    98.1
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.73    
+     HT FLOW CONVERGENCE VALUE=   5.161      CRITERION=  0.5185    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.659    
+     HT FLOW CONVERGENCE VALUE=  0.4745      CRITERION=  0.5188     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    39   SUBSTEP     1  COMPLETED.    CUM ITER =    153
+ *** TIME =   1.95000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4245       OSCILLATION LIMIT = 0.2123E-01
+
+ *** NOTE ***                            ELAPSED TIME =   36322.046   TIME= 13:28:47
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   36333.072   TIME= 13:28:58
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     37201.533
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   13:43:27  JUL 20, 2026 Elapsed Time=  37201.615
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.170779E+08
+ EVOL      0.107422E-03
+ GMASS     0.484815E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.620179E+07
+ EVOL      0.106147E-04
+ GMASS     0.167425E-02
+ LALPHA     32148.9    
+ LVOL      0.106147E-04
+ ALVOL     0.849855E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     37214.337
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   37236.481   TIME= 13:44:02
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   13:44:03  JUL 20, 2026 Elapsed Time=  37238.163
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   13:45:09  JUL 20, 2026 Elapsed Time=  37303.406
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   82.61      CRITERION=  0.5154    
+ Iteration=     5 Ratio=  0.138975     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=   145 Ratio=  9.403186E-04 Limit=  1.000000E-08 Wall=    28.8
+ Iteration=   445 Ratio=  6.383246E-05 Limit=  1.000000E-08 Wall=    90.4
+ Iteration=     5 Ratio=  0.781936     Limit=  1.018326E-03 Wall=     0.9
+ Iteration=    10 Ratio=  0.787681     Limit=  1.018326E-03 Wall=     1.8
+ Iteration=   165 Ratio=  0.313513     Limit=  1.018326E-03 Wall=    32.7
+ Iteration=   530 Ratio=  1.473204E-02 Limit=  1.018326E-03 Wall=   104.7
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.57    
+     HT FLOW CONVERGENCE VALUE=   5.065      CRITERION=  0.5195    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.601    
+     HT FLOW CONVERGENCE VALUE=  0.4571      CRITERION=  0.5198     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    40   SUBSTEP     1  COMPLETED.    CUM ITER =    156
+ *** TIME =   2.00000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4188       OSCILLATION LIMIT = 0.2094E-01
+
+ *** NOTE ***                            ELAPSED TIME =   38123.709   TIME= 13:58:49
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   38134.444   TIME= 13:59:00
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     38950.678
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   14:12:36  JUL 20, 2026 Elapsed Time=  38950.746
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.170157E+08
+ EVOL      0.107422E-03
+ GMASS     0.484524E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.590329E+07
+ EVOL      0.106147E-04
+ GMASS     0.159680E-02
+ LALPHA     32685.6    
+ LVOL      0.106147E-04
+ ALVOL     0.864371E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     38961.809
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   38985.880   TIME= 14:13:11
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   14:13:12  JUL 20, 2026 Elapsed Time=  38986.685
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   14:14:17  JUL 20, 2026 Elapsed Time=  39051.705
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   81.65      CRITERION=  0.5164    
+ Iteration=     5 Ratio=  0.142155     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=   150 Ratio=  9.635163E-04 Limit=  1.000000E-08 Wall=    34.3
+ Iteration=   510 Ratio=  3.588958E-05 Limit=  1.000000E-08 Wall=   116.1
+ Iteration=     5 Ratio=  0.809819     Limit=  1.001043E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.785793     Limit=  1.001043E-03 Wall=     1.8
+ Iteration=   170 Ratio=  0.297442     Limit=  1.001043E-03 Wall=    33.9
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.41    
+     HT FLOW CONVERGENCE VALUE=   4.973      CRITERION=  0.5205    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.540    
+     HT FLOW CONVERGENCE VALUE=  0.4411      CRITERION=  0.5207     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    41   SUBSTEP     1  COMPLETED.    CUM ITER =    159
+ *** TIME =   2.05000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4137       OSCILLATION LIMIT = 0.2069E-01
+
+ *** NOTE ***                            ELAPSED TIME =   39865.202   TIME= 14:27:50
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   39875.113   TIME= 14:28:00
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     40906.183
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   14:45:11  JUL 20, 2026 Elapsed Time=  40906.238
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.169452E+08
+ EVOL      0.107422E-03
+ GMASS     0.483995E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.560921E+07
+ EVOL      0.106147E-04
+ GMASS     0.152027E-02
+ LALPHA     33195.5    
+ LVOL      0.106147E-04
+ ALVOL     0.878192E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     40919.004
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   40946.233   TIME= 14:45:51
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   14:45:53  JUL 20, 2026 Elapsed Time=  40948.071
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   14:47:56  JUL 20, 2026 Elapsed Time=  41070.976
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   80.74      CRITERION=  0.5174    
+ Iteration=     5 Ratio=  0.145335     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=   155 Ratio=  9.824204E-04 Limit=  1.000000E-08 Wall=    34.5
+ Iteration=   405 Ratio=  1.057339E-04 Limit=  1.000000E-08 Wall=    96.1
+ Iteration=     5 Ratio=  0.753153     Limit=  1.005464E-03 Wall=     1.1
+ Iteration=    10 Ratio=  0.780236     Limit=  1.005464E-03 Wall=     2.7
+ Iteration=   160 Ratio=  0.314574     Limit=  1.005464E-03 Wall=    42.4
+ Iteration=   445 Ratio=  2.920252E-02 Limit=  1.005464E-03 Wall=   115.0
+ Iteration=   785 Ratio=  1.094241E-03 Limit=  1.005464E-03 Wall=   187.7
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.24    
+     HT FLOW CONVERGENCE VALUE=   4.886      CRITERION=  0.5215    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.482    
+     HT FLOW CONVERGENCE VALUE=  0.4262      CRITERION=  0.5217     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    42   SUBSTEP     1  COMPLETED.    CUM ITER =    162
+ *** TIME =   2.10000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4090       OSCILLATION LIMIT = 0.2045E-01
+
+ *** NOTE ***                            ELAPSED TIME =   41963.444   TIME= 15:02:49
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   41975.182   TIME= 15:03:00
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     43004.397
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   15:20:10  JUL 20, 2026 Elapsed Time=  43004.479
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.168669E+08
+ EVOL      0.107422E-03
+ GMASS     0.483240E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.532005E+07
+ EVOL      0.106147E-04
+ GMASS     0.144479E-02
+ LALPHA     33679.1    
+ LVOL      0.106147E-04
+ ALVOL     0.891326E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     43016.042
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   43091.573   TIME= 15:21:37
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   15:21:39  JUL 20, 2026 Elapsed Time=  43093.898
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   15:23:06  JUL 20, 2026 Elapsed Time=  43180.940
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   79.87      CRITERION=  0.5184    
+ Iteration=     5 Ratio=  0.148534     Limit=  1.000000E-08 Wall=     0.5
+ Iteration=   160 Ratio=  9.850360E-04 Limit=  1.000000E-08 Wall=    21.5
+ Iteration=     5 Ratio=  0.826295     Limit=  1.005055E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.689909     Limit=  1.005055E-03 Wall=     1.9
+ Iteration=   155 Ratio=  0.317781     Limit=  1.005055E-03 Wall=    22.1
+ Iteration=   440 Ratio=  2.848183E-02 Limit=  1.005055E-03 Wall=    85.3
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   11.09    
+     HT FLOW CONVERGENCE VALUE=   4.802      CRITERION=  0.5225    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.424    
+     HT FLOW CONVERGENCE VALUE=  0.4122      CRITERION=  0.5227     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    43   SUBSTEP     1  COMPLETED.    CUM ITER =    165
+ *** TIME =   2.15000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4046       OSCILLATION LIMIT = 0.2023E-01
+
+ *** NOTE ***                            ELAPSED TIME =   43971.688   TIME= 15:36:17
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   43984.329   TIME= 15:36:29
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     44977.665
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   15:53:03  JUL 20, 2026 Elapsed Time=  44977.706
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.167815E+08
+ EVOL      0.107422E-03
+ GMASS     0.482274E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.503634E+07
+ EVOL      0.106147E-04
+ GMASS     0.137052E-02
+ LALPHA     34137.0    
+ LVOL      0.106147E-04
+ ALVOL     0.903785E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     44990.675
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   45016.808   TIME= 15:53:42
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   15:53:44  JUL 20, 2026 Elapsed Time=  45018.532
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   15:55:03  JUL 20, 2026 Elapsed Time=  45097.923
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   79.03      CRITERION=  0.5194    
+ Iteration=     5 Ratio=  0.151763     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=   165 Ratio=  8.869834E-04 Limit=  1.000000E-08 Wall=    43.0
+ Iteration=   405 Ratio=  1.208438E-04 Limit=  1.000000E-08 Wall=   104.4
+ Iteration=     5 Ratio=  0.801417     Limit=  1.024736E-03 Wall=     1.5
+ Iteration=    10 Ratio=  0.771387     Limit=  1.024736E-03 Wall=     3.5
+ Iteration=   160 Ratio=  0.314013     Limit=  1.024736E-03 Wall=    41.6
+ Iteration=   465 Ratio=  2.537829E-02 Limit=  1.024736E-03 Wall=   113.7
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   10.95    
+     HT FLOW CONVERGENCE VALUE=   4.723      CRITERION=  0.5234    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.368    
+     HT FLOW CONVERGENCE VALUE=  0.3997      CRITERION=  0.5236     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    44   SUBSTEP     1  COMPLETED.    CUM ITER =    168
+ *** TIME =   2.20000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.4004       OSCILLATION LIMIT = 0.2002E-01
+
+ *** NOTE ***                            ELAPSED TIME =   46021.866   TIME= 16:10:27
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   46033.802   TIME= 16:10:39
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     47161.032
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   16:29:26  JUL 20, 2026 Elapsed Time=  47161.168
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.166896E+08
+ EVOL      0.107422E-03
+ GMASS     0.481112E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.475862E+07
+ EVOL      0.106147E-04
+ GMASS     0.129758E-02
+ LALPHA     34569.6    
+ LVOL      0.106147E-04
+ ALVOL     0.915582E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     47172.941
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   47204.368   TIME= 16:30:10
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   16:30:11  JUL 20, 2026 Elapsed Time=  47205.681
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   16:31:18  JUL 20, 2026 Elapsed Time=  47272.975
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   78.22      CRITERION=  0.5203    
+ Iteration=     5 Ratio=  0.155031     Limit=  1.000000E-08 Wall=     0.7
+ Iteration=   165 Ratio=  9.338282E-04 Limit=  1.000000E-08 Wall=    38.6
+ Iteration=   415 Ratio=  1.095564E-04 Limit=  1.000000E-08 Wall=   100.4
+ Iteration=     5 Ratio=  0.793558     Limit=  1.011467E-03 Wall=     0.9
+ Iteration=    10 Ratio=  0.755416     Limit=  1.011467E-03 Wall=     1.9
+ Iteration=   160 Ratio=  0.318309     Limit=  1.011467E-03 Wall=    39.5
+ Iteration=   505 Ratio=  1.875280E-02 Limit=  1.011467E-03 Wall=   116.5
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   10.82    
+     HT FLOW CONVERGENCE VALUE=   4.650      CRITERION=  0.5244    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.316    
+     HT FLOW CONVERGENCE VALUE=  0.3883      CRITERION=  0.5246     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    45   SUBSTEP     1  COMPLETED.    CUM ITER =    171
+ *** TIME =   2.25000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.3964       OSCILLATION LIMIT = 0.1982E-01
+
+ *** NOTE ***                            ELAPSED TIME =   48198.175   TIME= 16:46:43
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   48211.336   TIME= 16:46:56
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     49262.769
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   17:04:28  JUL 20, 2026 Elapsed Time=  49262.876
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.165920E+08
+ EVOL      0.107422E-03
+ GMASS     0.479774E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.448741E+07
+ EVOL      0.106147E-04
+ GMASS     0.122612E-02
+ LALPHA     34977.5    
+ LVOL      0.106147E-04
+ ALVOL     0.926728E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     49274.629
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   49302.099   TIME= 17:05:07
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   17:05:08  JUL 20, 2026 Elapsed Time=  49302.936
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   17:06:24  JUL 20, 2026 Elapsed Time=  49378.855
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   77.45      CRITERION=  0.5213    
+ Iteration=     5 Ratio=  0.158342     Limit=  1.000000E-08 Wall=     0.6
+ Iteration=   165 Ratio=  9.836400E-04 Limit=  1.000000E-08 Wall=    33.8
+ Iteration=     5 Ratio=  0.819042     Limit=  1.000724E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.759533     Limit=  1.000724E-03 Wall=     1.8
+ Iteration=   165 Ratio=  0.304460     Limit=  1.000724E-03 Wall=    37.1
+ Iteration=   605 Ratio=  6.936693E-03 Limit=  1.000724E-03 Wall=   139.9
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   10.68    
+     HT FLOW CONVERGENCE VALUE=   4.579      CRITERION=  0.5254    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.264    
+     HT FLOW CONVERGENCE VALUE=  0.3779      CRITERION=  0.5255     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    46   SUBSTEP     1  COMPLETED.    CUM ITER =    174
+ *** TIME =   2.30000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.3926       OSCILLATION LIMIT = 0.1963E-01
+
+ *** NOTE ***                            ELAPSED TIME =   50282.589   TIME= 17:21:28
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   50294.611   TIME= 17:21:40
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     51353.466
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   17:39:19  JUL 20, 2026 Elapsed Time=  51353.550
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.164894E+08
+ EVOL      0.107422E-03
+ GMASS     0.478281E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.422322E+07
+ EVOL      0.106147E-04
+ GMASS     0.115630E-02
+ LALPHA     35361.4    
+ LVOL      0.106147E-04
+ ALVOL     0.937240E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     51365.288
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   51405.170   TIME= 17:40:10
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   17:40:11  JUL 20, 2026 Elapsed Time=  51406.197
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   17:41:32  JUL 20, 2026 Elapsed Time=  51486.967
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   76.70      CRITERION=  0.5222    
+ Iteration=     5 Ratio=  0.161706     Limit=  1.000000E-08 Wall=     0.8
+ Iteration=   170 Ratio=  9.682072E-04 Limit=  1.000000E-08 Wall=    42.8
+ Iteration=   425 Ratio=  1.080539E-04 Limit=  1.000000E-08 Wall=   104.8
+ Iteration=   680 Ratio=  1.111700E-05 Limit=  1.000000E-08 Wall=   172.4
+ Iteration=     5 Ratio=  0.806938     Limit=  1.016538E-03 Wall=     0.9
+ Iteration=    10 Ratio=  0.802860     Limit=  1.016538E-03 Wall=     2.3
+ Iteration=   165 Ratio=  0.312688     Limit=  1.016538E-03 Wall=    40.1
+ Iteration=   550 Ratio=  1.220146E-02 Limit=  1.016538E-03 Wall=   127.4
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   10.54    
+     HT FLOW CONVERGENCE VALUE=   4.511      CRITERION=  0.5263    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.215    
+     HT FLOW CONVERGENCE VALUE=  0.3680      CRITERION=  0.5264     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    47   SUBSTEP     1  COMPLETED.    CUM ITER =    177
+ *** TIME =   2.35000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.3889       OSCILLATION LIMIT = 0.1944E-01
+
+ *** NOTE ***                            ELAPSED TIME =   52456.833   TIME= 17:57:42
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   52470.292   TIME= 17:57:55
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     53603.245
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:16:48  JUL 20, 2026 Elapsed Time=  53603.341
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.163827E+08
+ EVOL      0.107422E-03
+ GMASS     0.476655E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.396655E+07
+ EVOL      0.106147E-04
+ GMASS     0.108824E-02
+ LALPHA     35722.0    
+ LVOL      0.106147E-04
+ ALVOL     0.947133E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     53615.061
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   53645.365   TIME= 18:17:31
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:17:31  JUL 20, 2026 Elapsed Time=  53646.333
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:19:12  JUL 20, 2026 Elapsed Time=  53746.354
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   75.98      CRITERION=  0.5231    
+ Iteration=     5 Ratio=  0.165118     Limit=  1.000000E-08 Wall=     1.0
+ Iteration=   175 Ratio=  9.304662E-04 Limit=  1.000000E-08 Wall=    41.9
+ Iteration=   475 Ratio=  6.965303E-05 Limit=  1.000000E-08 Wall=   113.7
+ Iteration=     5 Ratio=  0.788821     Limit=  1.000283E-03 Wall=     0.7
+ Iteration=    10 Ratio=  0.793316     Limit=  1.000283E-03 Wall=     2.0
+ Iteration=   165 Ratio=  0.303844     Limit=  1.000283E-03 Wall=    39.0
+ Iteration=   480 Ratio=  2.207843E-02 Limit=  1.000283E-03 Wall=   111.1
+ Iteration=   750 Ratio=  1.323185E-03 Limit=  1.000283E-03 Wall=   178.1
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   10.40    
+     HT FLOW CONVERGENCE VALUE=   4.443      CRITERION=  0.5272    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.172    
+     HT FLOW CONVERGENCE VALUE=  0.3586      CRITERION=  0.5273     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    48   SUBSTEP     1  COMPLETED.    CUM ITER =    180
+ *** TIME =   2.40000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.3854       OSCILLATION LIMIT = 0.1927E-01
+
+ *** NOTE ***                            ELAPSED TIME =   54670.121   TIME= 18:34:35
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   54684.524   TIME= 18:34:50
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     56110.426
+
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:58:36  JUL 20, 2026 Elapsed Time=  56110.476
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.162728E+08
+ EVOL      0.107422E-03
+ GMASS     0.474919E-02
+
+ SUM ALL THE ACTIVE ENTRIES IN THE ELEMENT TABLE 
+
+ TABLE LABEL     TOTAL
+ ERATE     0.371785E+07
+ EVOL      0.106147E-04
+ GMASS     0.102208E-02
+ LALPHA     36060.0    
+ LVOL      0.106147E-04
+ ALVOL     0.956425E-05
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =     56121.016
+
+
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ DO NOT COMBINE RESTART FILES (.Rnnn) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ *** WARNING ***                         ELAPSED TIME =   56149.823   TIME= 18:59:15
+ The RESCONTROL command is invalid with action = DEFINE when restarting  
+ an analysis.  The RESCONTROL command is ignored.                        
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:59:16  JUL 20, 2026 Elapsed Time=  56150.664
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   19:00:32  JUL 20, 2026 Elapsed Time=  56227.163
+
+ testbed2--Thermique transitoire (B5)                                          
+
+ Note - This MAPDL version was linked by Licensee
+
+ SOLUTION MONITORING INFO IS WRITTEN TO FILE= file.mntr                                                                                                                                                                                                                                                           
+
+     HT FLOW CONVERGENCE VALUE=   75.28      CRITERION=  0.5240    
+ Iteration=     5 Ratio=  0.168559     Limit=  1.000000E-08 Wall=     0.7
+ Iteration=   175 Ratio=  9.567275E-04 Limit=  1.000000E-08 Wall=    35.8
+ Iteration=   525 Ratio=  4.628419E-05 Limit=  1.000000E-08 Wall=   112.9
+ Iteration=     5 Ratio=  0.788568     Limit=  1.003782E-03 Wall=     0.6
+ Iteration=    10 Ratio=  0.782575     Limit=  1.003782E-03 Wall=     1.8
+ Iteration=   165 Ratio=  0.306943     Limit=  1.003782E-03 Wall=    34.1
+ Iteration=   505 Ratio=  1.782981E-02 Limit=  1.003782E-03 Wall=   116.5
+    EQUIL ITER   1 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=   10.25    
+     HT FLOW CONVERGENCE VALUE=   4.375      CRITERION=  0.5280    
+    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  -1.128    
+     HT FLOW CONVERGENCE VALUE=  0.3496      CRITERION=  0.5281     <<< CONVERGED
+    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2
+ *** LOAD STEP    49   SUBSTEP     1  COMPLETED.    CUM ITER =    183
+ *** TIME =   2.45000         TIME INC =  0.500000E-01
+ *** RESPONSE EIGENVALUE = 0.3820       OSCILLATION LIMIT = 0.1910E-01
+
+ *** NOTE ***                            ELAPSED TIME =   57142.628   TIME= 19:15:48
+ The number of multiframe restart files exceeds 4, a user specified      
+ limit.  The .Rnnn file numbering will be reset to 1.                    
+
+ *** NOTE ***                            ELAPSED TIME =   57153.396   TIME= 19:15:59
+ During this loadstep the PCG iterative solver took more than 1000       
+ iterations to solve the system of equations.  In the future it may be   
+ more efficient to choose a direct solver, such as the SPARSE solver,    
+ for this analysis.                                                      
+
+ FINISH SOLUTION PROCESSING

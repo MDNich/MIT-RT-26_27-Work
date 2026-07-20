@@ -1,0 +1,33 @@
+! Non-destructive validation of the distributed multiframe restart.
+! Must be run from a clone of the stopped scratch with jobname=file and np=10.
+
+/COM,SIM2 restart probe started
+
+/SOLU
+DMPOPTION,RNNN,NO
+ANTYPE,TRANS,REST,16,1,CONTINUE
+FINISH
+
+/POST1
+SET,LAST
+*GET,SIM2_PROBE_TIME,ACTIVE,0,SET,TIME
+*GET,SIM2_PROBE_LSTEP,ACTIVE,0,SET,LSTP
+*GET,SIM2_PROBE_SSTEP,ACTIVE,0,SET,SBST
+
+ESEL,S,MAT,,3
+ESEL,R,LIVE
+*GET,SIM2_PROBE_NEL,ELEM,0,COUNT
+ETABLE,SIM2_PROBE_ALPHA,SVAR,1
+ESORT,ETAB,SIM2_PROBE_ALPHA,1,0
+*GET,SIM2_PROBE_AMAX,SORT,0,MAX
+*GET,SIM2_PROBE_AMIN,SORT,0,MIN
+EUSORT
+ALLSEL,ALL
+
+*CFOPEN,simulation2_restart_probe,txt
+*VWRITE,SIM2_PROBE_TIME,SIM2_PROBE_LSTEP,SIM2_PROBE_SSTEP,SIM2_PROBE_NEL,SIM2_PROBE_AMIN,SIM2_PROBE_AMAX
+('time=',E24.16,' load_step=',F8.0,' substep=',F8.0,' live_phe0=',F12.0,' alpha_min=',E24.16,' alpha_max=',E24.16)
+*CFCLOSE
+
+/COM,SIM2 restart probe completed
+/EXIT,NOSAVE
