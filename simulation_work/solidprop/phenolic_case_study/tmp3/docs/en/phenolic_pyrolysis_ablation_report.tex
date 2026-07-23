@@ -1724,22 +1724,31 @@ reach approximately 35\%, but only for absolute values of order
 \caption{Signed radial separation between the virtual-recession line and the
 99\%, 95\%, and 90\% pyrolysis-conversion contours. The separation is defined
 as \(\Delta d_\alpha=d_\alpha-s\): a positive value places the contour deeper
-into the wall than recession.}
+into the wall than recession. The vertical dotted line marks the first state
+at which virtual recession reaches \SI{1}{\micro m}.}
 \label{fig:sim2-recession-contour-distance-en}
 \end{figure}
 
 The contours are obtained by spatial interpolation of the radial
-\code{SVAR1} envelope; no temporal interpolation is introduced. A line starts
-only once its threshold has actually been reached, so missing observations
-are not replaced by artificial zeros. The 90\% contour appears at
-\SI{2}{s}, almost coincident with recession
-\((\Delta d_{0.90}=\SI{0.0080}{mm})\), while the 95\% contour is still
-upstream \((\Delta d_{0.95}=\SI{-0.0439}{mm})\). The 99\% contour is first
-resolved at \SI{3}{s}. At the latest extracted state, \SI{6.15}{s}, the
-separations reach \SI{0.4263}{mm}, \SI{0.5543}{mm}, and
-\SI{0.6294}{mm} for the 99\%, 95\%, and 90\% contours, respectively. The
-growth of all three separations shows that the conversion front advances
-through the thickness faster than virtual recession.
+\code{SVAR1} envelope at all 124 synchronized states, spaced by
+\SI{0.05}{s} from \SI{0.05}{s} to \SI{6.20}{s}; no temporal
+interpolation is introduced. The vertical line at \SI{0.05}{s} identifies
+the first state for which \(s\geq\SI{1}{\micro m}\), with
+\(s=\SI{3.802}{\micro m}\). This micrometre-scale threshold avoids treating
+round-off residue as front onset while remaining far below the radial
+resolution of the model. A curve starts only once its conversion threshold
+has actually been reached, so missing observations are not replaced by
+artificial zeros. The 90\%, 95\%, and 99\% contours first appear at
+\SI{1.50}{s}, \SI{1.75}{s}, and \SI{2.30}{s}, respectively, initially
+upstream of recession with
+\(\Delta d_\alpha=\SI{-0.0497}{mm}\), \SI{-0.0611}{mm}, and
+\SI{-0.0803}{mm}. They then pass the recession line at \SI{2.00}{s},
+\SI{2.35}{s}, and \SI{3.05}{s}. At the latest extracted state,
+\SI{6.20}{s}, the separations reach \SI{0.4324}{mm},
+\SI{0.5639}{mm}, and \SI{0.6314}{mm} for the 99\%, 95\%, and 90\%
+contours, respectively. The growth of all three separations shows that the
+conversion front advances through the thickness faster than virtual
+recession.
 
 \subsubsection{Provisional Interpretation and Remaining Work}
 

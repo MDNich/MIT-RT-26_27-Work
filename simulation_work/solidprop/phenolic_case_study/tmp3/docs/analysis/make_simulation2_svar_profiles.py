@@ -47,6 +47,7 @@ DEFAULT_CONTOUR_DISTANCE_CSV = (
 )
 TARGET_TIMES_S = tuple(range(1, 7))
 PHE0_THICKNESS_MM = 2.540
+RECESSION_ONSET_MM = 0.001
 
 OUTPUTS = {
     ("last_radial", 1, "fr"): ROOT / "simulation2_svar1_radial_profile_1pct_fr.pdf",
@@ -83,6 +84,7 @@ CONTOUR_DISTANCE_STYLES = {
     0.95: {"color": "#A04A00", "marker": "s", "linestyle": "--"},
     0.90: {"color": "#2F6B3D", "marker": "^", "linestyle": "-."},
 }
+RECESSION_ONSET_COLOR = "#7A0101"
 
 TEXT = {
     "fr": {
@@ -144,7 +146,12 @@ TEXT = {
         ),
         "distance_legend": r"Contour $\alpha={threshold}\,\%$",
         "distance_note": (
-            r"Positif : contour plus profond que la récession."
+            r"{count} états exacts, $\Delta t={interval}\,\mathrm{{s}}$. "
+            r"Positif : contour plus profond."
+        ),
+        "recession_onset": (
+            r"Début de récession ($s\geq 1\,\mathrm{{\mu m}}$) : "
+            r"$t={time}\,\mathrm{{s}}$"
         ),
     },
     "en": {
@@ -204,7 +211,12 @@ TEXT = {
         ),
         "distance_legend": r"$\alpha={threshold}\,\%$ contour",
         "distance_note": (
-            r"Positive: contour deeper than recession."
+            r"{count} exact states, $\Delta t={interval}\,\mathrm{{s}}$. "
+            r"Positive: deeper contour."
+        ),
+        "recession_onset": (
+            r"Recession onset ($s\geq 1\,\mathrm{{\mu m}}$): "
+            r"$t={time}\,\mathrm{{s}}$"
         ),
     },
 }
@@ -215,6 +227,11 @@ def parse_args():
     parser.add_argument("--radial-csv", type=Path, default=DEFAULT_RADIAL_CSV)
     parser.add_argument("--axial-csv", type=Path, default=DEFAULT_AXIAL_CSV)
     parser.add_argument("--history-csv", type=Path, default=DEFAULT_HISTORY_CSV)
+    parser.add_argument(
+        "--contour-only",
+        action="store_true",
+        help="Regenerate only the bilingual contour-separation figures.",
+    )
     return parser.parse_args()
 
 
@@ -417,10 +434,45 @@ def write_contour_distance_csv(path, rows):
     temporary_path.replace(path)
 
 
-def plot_contour_distances(output, rows, language):
+def read_contour_distance_csv(path):
+    rows = []
+    with path.open(newline="", encoding="utf-8-sig") as stream:
+        for source in csv.DictReader(stream):
+            row = {
+                "saved_time_s": float(source["saved_time_s"]),
+                "recession_depth_mm": float(source["recession_depth_mm"]),
+            }
+            for threshold in (0.99, 0.95, 0.90):
+                key = "{:03d}".format(round(100.0 * threshold))
+                for source_name in (
+                    "contour_{}_depth_mm".format(key),
+                    "signed_distance_{}_mm".format(key),
+                ):
+                    row[source_name] = (
+                        float(source[source_name])
+                        if source.get(source_name, "")
+                        else math.nan
+                    )
+            rows.append(row)
+    if not rows:
+        raise RuntimeError("The contour-distance CSV is empty.")
+    return sorted(rows, key=lambda row: row["saved_time_s"])
+
+
+def recession_onset_time(history):
+    recession_mm = 1000.0 * np.asarray(history["recession_m"], dtype=float)
+    reached = np.flatnonzero(recession_mm >= RECESSION_ONSET_MM)
+    if reached.size == 0:
+        return math.nan
+    return float(history["time_s"][int(reached[0])])
+
+
+def plot_contour_distances(output, rows, history, language):
     text = TEXT[language]
     fig, ax = plt.subplots(figsize=(8.8, 5.2))
     times = np.asarray([row["saved_time_s"] for row in rows], dtype=float)
+    marker_interval = max(1, int(round(len(rows) / 14.0)))
+    time_interval = float(np.median(np.diff(times))) if len(times) > 1 else math.nan
 
     for threshold in (0.99, 0.95, 0.90):
         key = "{:03d}".format(round(100.0 * threshold))
@@ -437,6 +489,7 @@ def plot_contour_distances(output, rows, language):
             linestyle=style["linestyle"],
             linewidth=1.8,
             markersize=5.2,
+            markevery=marker_interval,
             label=text["distance_legend"].format(
                 threshold=localized_number(100.0 * threshold, 0, language)
             ),
@@ -444,15 +497,39 @@ def plot_contour_distances(output, rows, language):
         )
 
     ax.axhline(0.0, color="#555555", linewidth=0.9, zorder=1)
-    ax.set_xlim(0.85, max(times) + 0.15)
+    onset_time = recession_onset_time(history)
+    if math.isfinite(onset_time):
+        ax.axvline(
+            onset_time,
+            color=RECESSION_ONSET_COLOR,
+            linestyle=":",
+            linewidth=1.6,
+            label=text["recession_onset"].format(
+                time=localized_number(onset_time, 2, language)
+            ),
+            zorder=2,
+        )
+    ax.set_xlim(0.0, max(times) + 0.15)
     ax.set_xlabel(text["distance_xlabel"])
     ax.set_ylabel(text["distance_ylabel"])
     ax.set_title(text["distance_title"], pad=12)
-    ax.legend(loc="upper left", frameon=True, framealpha=0.94)
+    ax.legend(
+        loc="upper left",
+        frameon=True,
+        framealpha=0.94,
+        fontsize=8.0,
+    )
     ax.text(
         0.985,
         0.035,
-        text["distance_note"],
+        text["distance_note"].format(
+            count=len(rows),
+            interval=(
+                localized_number(time_interval, 2, language)
+                if math.isfinite(time_interval)
+                else "---"
+            ),
+        ),
         transform=ax.transAxes,
         ha="right",
         va="bottom",
@@ -809,6 +886,24 @@ def main():
     args = parse_args()
     configure_matplotlib()
     history = read_history(args.history_csv)
+    if args.contour_only:
+        contour_rows = read_contour_distance_csv(DEFAULT_CONTOUR_DISTANCE_CSV)
+        for language in ("fr", "en"):
+            plot_contour_distances(
+                OUTPUTS[("contour_distance", 1, language)],
+                contour_rows,
+                history,
+                language,
+            )
+        print("Read {}".format(DEFAULT_CONTOUR_DISTANCE_CSV))
+        for language in ("fr", "en"):
+            print(
+                "Wrote {}".format(
+                    OUTPUTS[("contour_distance", 1, language)]
+                )
+            )
+        return
+
     radial_loaded = {
         index: load_profiles(args.radial_csv, "radial", index, history)
         for index in (1, 2)
@@ -823,8 +918,15 @@ def main():
     }
     axial = {index: loaded[0] for index, loaded in axial_loaded.items()}
     contour_profiles = radial[1] + [radial_latest[1]]
-    contour_rows = contour_distance_rows(contour_profiles)
-    write_contour_distance_csv(DEFAULT_CONTOUR_DISTANCE_CSV, contour_rows)
+    sparse_contour_rows = contour_distance_rows(contour_profiles)
+    if DEFAULT_CONTOUR_DISTANCE_CSV.exists():
+        contour_rows = read_contour_distance_csv(DEFAULT_CONTOUR_DISTANCE_CSV)
+    else:
+        contour_rows = sparse_contour_rows
+        write_contour_distance_csv(
+            DEFAULT_CONTOUR_DISTANCE_CSV,
+            contour_rows,
+        )
 
     for language in ("fr", "en"):
         plot_last_radial(
@@ -844,6 +946,7 @@ def main():
         plot_contour_distances(
             OUTPUTS[("contour_distance", 1, language)],
             contour_rows,
+            history,
             language,
         )
     print("Wrote {}".format(DEFAULT_CONTOUR_DISTANCE_CSV))

@@ -1749,20 +1749,29 @@ l'unité; les variations relatives tardives de \code{SVAR2} atteignent environ
 \caption{Écart radial signé entre la ligne de récession virtuelle et les
 contours de conversion pyrolytique à 99\,\%, 95\,\% et 90\,\%.
 L'écart est défini par \(\Delta d_\alpha=d_\alpha-s\) : une valeur positive
-place le contour plus profondément dans la paroi que la récession.}
+place le contour plus profondément dans la paroi que la récession. La ligne
+verticale pointillée marque le premier état où la récession virtuelle atteint
+\SI{1}{\micro m}.}
 \label{fig:sim2-recession-contour-distance-fr}
 \end{figure}
 
 Les contours sont calculés par interpolation spatiale de l'enveloppe radiale
-de \code{SVAR1}; aucune interpolation temporelle n'est ajoutée. Une ligne ne
-commence que lorsque son seuil est effectivement atteint : aucun zéro
-artificiel ne remplace les données absentes. Le contour à 90\,\% apparaît à
-\SI{2}{s}, presque confondu avec la récession
-\((\Delta d_{0.90}=\SI{0.0080}{mm})\), tandis que celui à 95\,\% se trouve
-encore en amont \((\Delta d_{0.95}=\SI{-0.0439}{mm})\). Le contour à 99\,\%
-n'est résolu qu'à partir de \SI{3}{s}. Au dernier état extrait,
-\SI{6.15}{s}, les séparations atteignent respectivement
-\SI{0.4263}{mm}, \SI{0.5543}{mm} et \SI{0.6294}{mm} pour les contours à
+de \code{SVAR1} sur les 124 états synchronisés, espacés de
+\SI{0.05}{s} entre \SI{0.05}{s} et \SI{6.20}{s}; aucune interpolation
+temporelle n'est ajoutée. La ligne verticale à \SI{0.05}{s} indique le
+premier état où \(s\geq\SI{1}{\micro m}\), avec
+\(s=\SI{3.802}{\micro m}\). Ce seuil micrométrique évite d'assimiler un
+résidu d'arrondi à l'apparition du front tout en restant très inférieur à la
+résolution radiale du modèle. Une courbe ne commence que lorsque son seuil de
+conversion est effectivement atteint : aucun zéro artificiel ne remplace les
+données absentes. Les contours à 90\,\%, 95\,\% et 99\,\% apparaissent
+respectivement à \SI{1.50}{s}, \SI{1.75}{s} et \SI{2.30}{s}, initialement en
+amont de la récession, avec
+\(\Delta d_\alpha=\SI{-0.0497}{mm}\), \SI{-0.0611}{mm} et
+\SI{-0.0803}{mm}. Ils dépassent ensuite la ligne de récession à
+\SI{2.00}{s}, \SI{2.35}{s} et \SI{3.05}{s}. Au dernier état extrait,
+\SI{6.20}{s}, les séparations atteignent respectivement
+\SI{0.4324}{mm}, \SI{0.5639}{mm} et \SI{0.6314}{mm} pour les contours à
 99\,\%, 95\,\% et 90\,\%. La croissance de ces trois écarts montre que le
 front de conversion progresse plus rapidement dans l'épaisseur que la
 récession virtuelle.
