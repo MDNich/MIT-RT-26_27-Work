@@ -80,7 +80,7 @@
 \title{~\\[-2em]\sc Modélisation Thermochimique d'un Liner Phénolique\\
 dans un Moteur-fusée Solide avec ANSYS Mechanical}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Simulations/Propulsion Solide}
-\date{\sc 16 juillet 2026}
+\date{\sc 23 juillet 2026}
 
 \begin{document}
 \selectlanguage{french}
@@ -97,14 +97,17 @@ dans un Moteur-fusée Solide avec ANSYS Mechanical}
 \begin{center}
 \begin{minipage}{1\textwidth}
 \small
-\textbf{Objet du document.} \it Ce rapport décrit d'abord le modèle thermique
-transitoire actuellement exécuté, limité à la pyrolyse volumique de la couche
-phénolique interne \code{phe0}. Il propose ensuite une extension qui reste dans
-ANSYS Mechanical pour représenter le dégazage et une récession discrète par
-suppression d'éléments. Fluent et la combustion du propergol ne font pas partie
-du périmètre. Les valeurs marquées \emph{provisoires} doivent être remplacées ou
-validées par des mesures du matériau effectivement fabriqué avant toute décision
-de dimensionnement ou de sécurité.
+\textbf{Objet du document.} \it Ce rapport décrit le modèle thermique transitoire
+de pyrolyse du liner phénolique, puis son extension effectivement mise en oeuvre
+dans ANSYS Mechanical pour représenter le dégazage, le soufflage et une
+récession discrète par suppression d'éléments. La section consacrée à la
+simulation 2 présente l'architecture numérique et un premier bilan de
+performance arrêté à \(t=\SI{6.15}{s}\) sur les \SI{7}{s} prévues. Ces résultats
+sont provisoires tant que le calcul n'est pas terminé. Fluent et la combustion
+du propergol ne font pas partie du périmètre. Les valeurs marquées
+\emph{provisoires} doivent être remplacées ou validées par des mesures du
+matériau effectivement fabriqué avant toute décision de dimensionnement ou de
+sécurité.
 \end{minipage}
 \end{center}
 \vfill
@@ -1397,16 +1400,390 @@ de moteur instrumenté pour \(h_0\), le soufflage et la récession. Le modèle n
 doit pas compenser une mauvaise condition de chambre en ajustant artificiellement
 \(H_\mathrm{eff}\).
 
-\subsection{Implémentation dans Mechanical (à compléter)}
+\subsection{Implémentation dans Mechanical}
 
-\placeholder{Sous-section réservée à l'implémentation future : architecture des
-bandes, commandes MAPDL, transfert des charges, logique de redémarrage et
-vérifications de conservation.}
+\subsubsection{Architecture du calcul}
 
-\subsection{Résultats de la simulation 2 (à compléter)}
+La simulation 2 est désormais implémentée et exécutée avec ANSYS Mechanical
+APDL 2026 R1.02. Elle réutilise le maillage tridimensionnel validé de la
+simulation 1 et la bibliothèque native \code{UserMatTh}. Les cinq variables
+d'état enregistrées dans \code{phe0} sont :
+\begin{equation}
+  \mathrm{SVAR1}=\alpha,\quad
+  \mathrm{SVAR2}=\dot\alpha,\quad
+  \mathrm{SVAR3}=\dot\omega'''_g,\quad
+  \mathrm{SVAR4}=\int\dot\omega'''_g\dd t,\quad
+  \mathrm{SVAR5}=\dot q_{m,g}.
+\end{equation}
+Le premier objet de commandes Mechanical configure le matériau utilisateur; le
+second pilote la boucle transitoire. Chaque macro-pas suit la séquence
+\[
+  \code{SOLVE}\ \longrightarrow\ \text{bilan gaz et énergie}\
+  \longrightarrow\ \text{mise à jour du soufflage et de la récession}\
+  \longrightarrow\ \text{redémarrage multi-trame}.
+\]
+Après le premier macro-pas, \code{ANTYPE,,REST,,,CONTINUE} reprend explicitement
+le dernier état convergé. La température et les SVAR ne sont donc pas
+recalculées depuis \(t=0\).
 
-\placeholder{Sous-section réservée aux résultats : débit de dégazage, facteur de
-soufflage, récession, chronologie des bandes supprimées et bilans masse-énergie.}
+Le calcul cible \SI{7}{s} avec 140 macro-pas uniformes de
+\(\Delta t=\SI{0.05}{s}\). La couche interne \code{phe0}, épaisse de
+\SI{2.54}{mm}, est divisée en huit bandes radiales de \SI{0.3175}{mm}. Le
+contrôleur utilise \(T_g=\SI{2230.85}{\celsius}\),
+\(h_0=\SI{1000}{W.m^{-2}.K^{-1}}\), \(c_{p,g}=\SI{1600}{J.kg^{-1}.K^{-1}}\),
+\(\rho_c=\SI{600}{kg.m^{-3}}\) et
+\(H_\mathrm{eff}=\SI{35}{MJ.kg^{-1}}\). Une bande n'est désactivée que si les
+trois conditions suivantes sont simultanément vraies :
+\[
+  \bar\alpha\ge0{,}99,\qquad
+  \alpha_\mathrm{min}\ge0{,}90,\qquad
+  s\ge(i+1)\Delta r.
+\]
+Le modèle courant contient environ \(2{,}24\) millions de noeuds et
+\(7{,}15\times10^5\) éléments après installation des éléments surfaciques.
+La face interne comprend 135\,900 noeuds et 43\,488 éléments surfaciques; la
+première bande candidate à la suppression comprend 39\,808 éléments.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.38\textwidth}L{0.50\textwidth}}
+\toprule
+\textbf{Paramètre numérique} & \textbf{Valeur exécutée} \\
+\midrule
+Version et solveur & MAPDL 2026 R1.02, thermique transitoire non linéaire \\
+Parallélisme & mémoire distribuée, Intel MPI, 10 rangs, un thread par rang \\
+Horizon temporel & \SI{7}{s}, 140 macro-pas de \SI{0.05}{s} \\
+Maillage global & 2\,242\,327 noeuds; environ 714\,676 éléments après configuration \\
+Surface chaude & 135\,900 noeuds; 43\,488 éléments surfaciques \\
+Bandes de \code{phe0} & 8 bandes de \SI{0.3175}{mm} \\
+Persistance & historique CSV à chaque pas et redémarrages distribués conservés sur les 10 rangs \\
+\bottomrule
+\end{tabular}
+\caption{Configuration numérique de la simulation 2 exécutée.}
+\label{tab:sim2-implementation}
+\end{table}
+
+\subsubsection{Persistance, reprise et contrôles de cohérence}
+
+Le fichier \codepath{simulation2_history.csv} est fermé puis rouvert en ajout après
+chaque macro-pas. Un fichier \codepath{simulation2_state.parm} enregistre le dernier
+temps résolu, les bilans, la récession et la bande active. Les fichiers de
+redémarrage restent distribués; une reprise n'est valide que si les dix jeux de
+rang, l'historique et l'état paramétrique désignent le même load step.
+
+La première campagne a été arrêtée proprement après le load step 15,
+\(t=\SI{0.75}{s}\), puis reprise à partir du load step 16. La continuation
+actuelle a restauré le résultat à \SI{0.80}{s} et a poursuivi sans
+réinitialisation des températures ni des SVAR. Cette reprise constitue une
+vérification importante de robustesse, car un calcul complet représente
+plusieurs jours de temps mur.
+
+Les statistiques de vitesse de récession sont extraites en lecture seule avec
+DPF à partir des dix fichiers \code{file0.rth} à \code{file9.rth}. Pour chaque
+état, l'extraction vérifie les 135\,900 noeuds de la surface interne et
+l'identité des temps avec l'historique. Les figures sont publiées seulement
+après stabilisation des fichiers de résultats distribués.
+
+\subsection{Résultats et performance de la simulation 2}
+
+\subsubsection{État du calcul et performance numérique}
+
+Les résultats de cette sous-section constituent un \emph{instantané provisoire}
+arrêté le 23 juillet 2026. Le dernier état entièrement synchronisé est le load
+step 123 à \(t=\SI{6.15}{s}\), soit 87,9\,\% de la durée physique visée. Le
+calcul reste actif et aucune extrapolation des \SI{0.85}{s} restantes n'est
+utilisée comme résultat final.
+
+La continuation observée du load step 17 au load step 123 comprend 107
+macro-pas convergés et aucune erreur MAPDL. Parmi eux, 87 ont convergé en deux
+itérations d'équilibre et 20 en trois; tous les pas à partir du load step 50 ont
+convergé en deux itérations d'équilibre. Le temps mur médian par macro-pas est
+de 41,7 minutes sur l'ensemble de la continuation. Il augmente toutefois avec
+la taille des résultats : sur les 24 derniers pas disponibles, la médiane est
+de 58,9 minutes, soit environ \SI{0.051}{s} simulée par heure. Les dix derniers
+pas demandent 58 à 63 minutes chacun.
+
+Le coût n'est pas dominé uniquement par la résolution thermique. Après chaque
+convergence, MAPDL agrège et interprète les résultats distribués; cette phase
+peut actuellement demander environ 40 minutes. La base résidente a dû être
+augmentée automatiquement de 1 à 4~Go. Le solveur PCG signale en outre plus de
+1\,000 itérations linéaires par load step; le message suggère le solveur direct
+SPARSE, mais un changement de solveur ne doit être évalué que dans un essai
+comparatif séparé, avec le même maillage et le même stockage de résultats.
+
+Le journal de la continuation contient zéro erreur. L'avertissement
+\code{RESCONTROL,DEFINE} ignoré lors d'une reprise se répète à chaque
+macro-pas, sans perte de checkpoint observée. Huit avertissements initiaux
+concernent l'évaluation de tables de propriétés légèrement hors de leur domaine
+tabulé; ces domaines devront être étendus avant toute qualification, même si
+ces messages n'ont pas empêché la convergence.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.43\textwidth}L{0.43\textwidth}}
+\toprule
+\textbf{Indicateur de performance} & \textbf{Valeur provisoire} \\
+\midrule
+Avancement synchronisé & 123/140 pas; \SI{6.15}{s}/\SI{7}{s}; 87,9\,\% \\
+Continuation analysée & 107 pas, du load step 17 au load step 123 \\
+Convergence non linéaire & 87 pas à 2 itérations; 20 pas à 3 itérations \\
+Temps médian par pas, continuation & 41,7 min \\
+Temps médian par pas, 24 derniers pas & 58,9 min \\
+Cadence récente & environ \SI{0.051}{s} simulée par heure \\
+Parallélisme observé & 10 rangs ANSYS, 1 \code{mpiexec}, 1 \code{hydra_pmi_proxy} \\
+Diagnostics & 0 erreur; avertissements de reprise non bloquants \\
+\bottomrule
+\end{tabular}
+\caption{Performance numérique observée avant la fin du calcul.}
+\label{tab:sim2-performance}
+\end{table}
+
+\subsubsection{Évolution thermochimique et dégazage}
+
+Le tableau~\ref{tab:sim2-results-snapshot} montre les grandeurs enregistrées par
+le contrôleur. La conversion moyenne atteint 0,50 à environ
+\SI{1.20}{s}, 0,90 à \SI{2.40}{s} et 0,99 à \SI{3.50}{s}. Le minimum spatial
+atteint 0,90 à \SI{3.00}{s} et 0,99 à \SI{4.00}{s}. À
+\SI{6.15}{s}, la couche active est pratiquement entièrement convertie :
+\(\bar\alpha=0{,}99999867\) et
+\(\alpha_\mathrm{min}=0{,}99999256\).
+
+Le débit gazeux croît d'abord avec l'activation de la pyrolyse, atteint
+\SI{4.849}{g.s^{-1}} à \SI{1.90}{s}, puis décroît lentement à
+\SI{3.809}{g.s^{-1}} à \SI{6.15}{s}. Une intégration trapézoïdale des valeurs
+échantillonnées donne environ \SI{25.34}{g} de gaz produits jusqu'à cet instant.
+Cette masse est un bilan du modèle réduit; elle ne constitue pas une mesure de
+la composition, de la pression interstitielle ou du débit instantané réel en
+chambre.
+
+Le coefficient convectif effectif suit le soufflage. Il atteint un minimum de
+\SI{843.75}{W.m^{-2}.K^{-1}} au pic de dégazage, soit une réduction maximale de
+15,6\,\% par rapport à \(h_0\). Il remonte ensuite à
+\SI{873.01}{W.m^{-2}.K^{-1}}, encore 12,7\,\% sous la valeur sans soufflage.
+Malgré cette réduction, la température maximale de la surface chaude continue
+d'augmenter et atteint \SI{1633.23}{\celsius} à \SI{6.15}{s}; le régime
+thermique final n'est donc pas encore démontré.
+
+\begin{table}[H]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.16}
+\begin{tabular}{rrrrrrr}
+\toprule
+\(t\) [s] & \(\bar\alpha\) & \(\alpha_\mathrm{min}\) &
+\(\dot m_g\) [g/s] & \(h\) [W/m$^2$/K] &
+\(T_{s,\max}\) [$^\circ$C] & \(s\) [$\mu$m] \\
+\midrule
+0,05 & 0,002295 & 0,00000002 & 0,293 & 988,95 & 615,97 & 3,80 \\
+1,00 & 0,415457 & 0,110712 & 4,382 & 856,64 & 1262,14 & 48,56 \\
+1,90 & 0,786302 & 0,523440 & 4,849 & 843,75 & 1366,28 & 81,67 \\
+3,00 & 0,968921 & 0,906589 & 4,527 & 852,58 & 1466,32 & 117,62 \\
+4,00 & 0,997463 & 0,990541 & 4,276 & 859,62 & 1532,90 & 147,31 \\
+5,00 & 0,999894 & 0,999518 & 4,021 & 866,89 & 1585,39 & 174,83 \\
+6,15 & 0,999999 & 0,999993 & 3,809 & 873,01 & 1633,23 & 204,36 \\
+\bottomrule
+\end{tabular}
+\caption{Instantanés de la simulation 2. Les valeurs à \SI{6.15}{s} sont
+provisoires tant que le calcul complet n'est pas terminé.}
+\label{tab:sim2-results-snapshot}
+\end{table}
+
+\subsubsection{Récession virtuelle et critère de suppression}
+
+La récession énergétique cumulée atteint \SI{204.36}{\micro m} à
+\SI{6.15}{s}. Elle représente 64,4\,\% de l'épaisseur de la première bande,
+\(\Delta r=\SI{317.5}{\micro m}\). Les critères de conversion sont déjà
+satisfaits, mais le critère géométrique ne l'est pas; aucune bande n'a donc été
+supprimée. Ce résultat est physiquement cohérent avec la logique du contrôleur :
+la pyrolyse complète n'est pas assimilée automatiquement à une perte de
+matière. La masse de char équivalente associée à cette récession virtuelle vaut
+environ \SI{5.14}{g} sur la surface modélisée, mais elle reste présente dans le
+maillage tant que le seuil de bande n'est pas franchi.
+
+L'extraction DPF disponible jusqu'à \SI{6.10}{s} confirme une surface chaude
+presque uniforme : température moyenne \SI{1630.98}{\celsius}, écart-type
+\SI{0.058}{\celsius} et étendue \SIrange{1630.61}{1631.37}{\celsius}. La
+vitesse moyenne de récession décroît de
+\SI{78.21}{\micro m.s^{-1}} à \SI{0.05}{s} à
+\SI{24.930}{\micro m.s^{-1}} à \SI{6.10}{s}. À ce dernier instant,
+l'écart-type spatial vaut seulement
+\SI{0.0024}{\micro m.s^{-1}}, ce qui indique une forte uniformité spatiale dans
+le modèle tronqué. Cette uniformité ne doit pas être extrapolée aux extrémités,
+aux joints ni au moteur complet sans un modèle géométrique correspondant.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation2_recession_vs_time_fr.pdf}
+\caption{Récession virtuelle cumulée en fonction du temps physique. La courbe
+est mise à jour à partir des états entièrement synchronisés.}
+\label{fig:sim2-recession-time}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation2_recession_rate_vs_time_fr.pdf}
+\caption{Vitesse moyenne de récession sur les 135\,900 noeuds de la surface
+interne. Les barres représentent \(\pm1\sigma\) spatial.}
+\label{fig:sim2-rate-time}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation2_recession_vs_alpha_avg_fr.pdf}
+\caption{Récession virtuelle en fonction de la conversion moyenne. La courbe
+montre que la récession continue après la quasi-saturation de \(\bar\alpha\).}
+\label{fig:sim2-recession-alpha}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation2_recession_rate_vs_alpha_avg_fr.pdf}
+\caption{Vitesse de récession en fonction de la conversion moyenne, avec
+\(\pm1\sigma\) spatial.}
+\label{fig:sim2-rate-alpha}
+\end{figure}
+
+\subsubsection{Profils spatiaux de conversion et de vitesse de pyrolyse}
+
+Afin de permettre une comparaison directe avec la simulation 1, les mêmes
+cinq familles de profils ont été reconstruites à partir des dix partitions
+DMP de la simulation 2. Les états sauvegardés à
+\(t=1,\ldots,6~\si{s}\) sont présents exactement; aucune interpolation
+temporelle n'est donc employée. En revanche, le maillage radial ne fournit pas
+un nœud dans chacun des cent rubans de 1\,\%. Les rubans sans observation sont
+hachurés et seule l'enveloppe tracée y est interpolée linéairement. Cette
+convention améliore la continuité visuelle sans créer de résolution physique
+supplémentaire.
+
+Les graphes radiaux montrent aussi la ligne verticale
+\(d=s(t)\), où \(s(t)\) est la récession cumulée calculée par le bilan
+énergétique du contrôleur. À ce stade, aucune bande n'a été supprimée : cette
+ligne est donc une position de récession \emph{virtuelle} à l'intérieur de la
+première couche encore maillée, et non une frontière géométrique déjà déplacée.
+Elle ne doit pas être confondue avec un contour de conversion \(\alpha\).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.98\textwidth]
+{../analysis/simulation2_svar1_radial_profile_1pct_fr.pdf}
+\caption{Profil radial du maximum de \code{SVAR1} au dernier état commun
+extrait, avec les contours de conversion et la ligne de récession virtuelle.
+Les rubans hachurés ne contiennent aucun nœud de résultat.}
+\label{fig:sim2-svar1-radial-fr}
+\end{figure}
+
+\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/simulation2_svar1_radial_time_profiles_1pct_fr.pdf}
+\caption{Évolution du maximum radial de \code{SVAR1} dans la simulation 2.
+La ligne verte discontinue indique, dans chaque panneau, la position cumulée
+de la récession virtuelle.}
+\label{fig:sim2-svar1-radial-time-fr}
+\end{figure}
+
+\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/simulation2_svar2_radial_time_profiles_1pct_fr.pdf}
+\caption{Évolution du maximum radial de \code{SVAR2}. Le déplacement du
+maximum de vitesse de pyrolyse et la progression de la ligne de récession
+virtuelle sont représentés sur la même coordonnée radiale.}
+\label{fig:sim2-svar2-radial-time-fr}
+\end{figure}
+
+\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/simulation2_svar1_axial_time_profiles_1pct_fr.pdf}
+\caption{Dépendance axiale de \code{SVAR1} sur la face intérieure chaude de la
+simulation 2. L'axe axial ne porte pas de ligne de récession, car celle-ci est
+définie suivant la coordonnée radiale.}
+\label{fig:sim2-svar1-axial-time-fr}
+\end{figure}
+
+\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.80\textheight,width=0.96\textwidth,keepaspectratio]
+{../analysis/simulation2_svar2_axial_time_profiles_1pct_fr.pdf}
+\caption{Dépendance axiale de \code{SVAR2} sur la face intérieure chaude de la
+simulation 2. Une échelle verticale propre à chaque panneau rend visibles les
+faibles valeurs après saturation de la surface.}
+\label{fig:sim2-svar2-axial-time-fr}
+\end{figure}
+\clearpage
+
+Les données conservent 16 rubans radiaux et 17 rubans axiaux sans nœud,
+exactement signalés par les hachures. À \SI{1}{s}, le maximum radial de
+conversion vaut \(\alpha_\mathrm{max}=0{,}7173\); il atteint numériquement
+l'unité à \SI{6}{s}. Le maximum de vitesse de pyrolyse diminue simultanément
+de \SI{0.6747}{s^{-1}} à \SI{0.2812}{s^{-1}} et migre de
+\SI{0.0127}{mm} à \SI{1.0033}{mm} de la face chaude. Au dernier état extrait,
+\SI{6.15}{s}, il vaut \SI{0.2766}{s^{-1}} à
+\SI{1.0287}{mm}.
+
+La ligne de récession passe de \SI{0.0486}{mm} à \SI{1}{s} à
+\SI{0.2006}{mm} à \SI{6}{s}, puis \SI{0.2044}{mm} à
+\SI{6.15}{s}. À partir de \SI{2}{s}, elle demeure nettement en amont du
+maximum de \code{SVAR2}. Les figures séparent ainsi visuellement deux
+mécanismes différents : la zone volumique où la pyrolyse est la plus active et
+la position cumulée de matière que le bilan énergétique permettrait de
+récessionner. Sur la face chaude, \code{SVAR1} devient axialement uniforme à
+l'unité; les variations relatives tardives de \code{SVAR2} atteignent environ
+35\,\%, mais seulement sur des valeurs absolues de l'ordre de
+\(10^{-8}~\si{s^{-1}}\), donc négligeables physiquement.
+
+\clearpage
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.94\textwidth]
+{../analysis/simulation2_recession_to_pyrolysis_contours_vs_time_fr.pdf}
+\caption{Écart radial signé entre la ligne de récession virtuelle et les
+contours de conversion pyrolytique à 99\,\%, 95\,\% et 90\,\%.
+L'écart est défini par \(\Delta d_\alpha=d_\alpha-s\) : une valeur positive
+place le contour plus profondément dans la paroi que la récession.}
+\label{fig:sim2-recession-contour-distance-fr}
+\end{figure}
+
+Les contours sont calculés par interpolation spatiale de l'enveloppe radiale
+de \code{SVAR1}; aucune interpolation temporelle n'est ajoutée. Une ligne ne
+commence que lorsque son seuil est effectivement atteint : aucun zéro
+artificiel ne remplace les données absentes. Le contour à 90\,\% apparaît à
+\SI{2}{s}, presque confondu avec la récession
+\((\Delta d_{0.90}=\SI{0.0080}{mm})\), tandis que celui à 95\,\% se trouve
+encore en amont \((\Delta d_{0.95}=\SI{-0.0439}{mm})\). Le contour à 99\,\%
+n'est résolu qu'à partir de \SI{3}{s}. Au dernier état extrait,
+\SI{6.15}{s}, les séparations atteignent respectivement
+\SI{0.4263}{mm}, \SI{0.5543}{mm} et \SI{0.6294}{mm} pour les contours à
+99\,\%, 95\,\% et 90\,\%. La croissance de ces trois écarts montre que le
+front de conversion progresse plus rapidement dans l'épaisseur que la
+récession virtuelle.
+
+\subsubsection{Interprétation provisoire et travaux restants}
+
+Le résultat principal à ce stade est double. D'une part, la chaîne numérique
+\code{UserMatTh} -- dégazage -- soufflage -- récession -- redémarrage distribué
+fonctionne sur plus de cent macro-pas sans perte de continuité. D'autre part,
+avec \(H_\mathrm{eff}=\SI{35}{MJ.kg^{-1}}\), la récession reste inférieure à une
+bande à \SI{6.15}{s}; le pilote ne prédit donc encore aucun déplacement
+discret de la frontière chaude.
+
+La fin à \SI{7}{s} devra remplacer cet instantané par le bilan final et vérifier
+si la première bande est franchie. Le rapport devra ensuite être complété par :
+(i) les bilans massique et énergétique fermés; (ii) une comparaison PCG/SPARSE
+incluant mémoire et temps mur; (iii) une étude de convergence avec 20 à 40
+bandes radiales; (iv) des sensibilités à \(H_\mathrm{eff}\), \(h_0\), au pas de
+temps et aux propriétés du char; et (v) la comparaison avec un essai
+instrumenté. En l'absence de ces étapes, la récession calculée demeure un
+indicateur de performance du modèle, pas une prédiction qualifiée du moteur.
 
 % ============================================================================
 \clearpage
