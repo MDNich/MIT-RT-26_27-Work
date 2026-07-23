@@ -136,13 +136,28 @@ cannot be derived from first principles: the current hot-side boundary condition
 remains an input that must be calibrated against a motor firing or supplied by a
 separate internal-flow model.
 
-\subsection{Dimensions Extracted from the 3D Model}
+\subsection{Dimensions and Mesh Characteristics}
 
-The AP214 STEP file uses meters. Its cylindrical surfaces define the interface
-radii listed in Table~\ref{tab:geometry}. The model is a straight cylinder of
-length \(L=\SI{1.8288}{m}\), exactly \SI{72}{in}; its bore diameter is
-\SI{266.7}{mm} (\SI{10.5}{in}), and its outside diameter is \SI{304.8}{mm}
-(\SI{12}{in}). The layers have a combined thickness of \SI{19.05}{mm}.
+The dimensional review identified a factor-of-two error in the interpretation
+of the radial dimensions. Interface values from 133.350 to \SI{152.400}{mm}
+are \emph{nominal diameters}, not radii. The corrected motor is therefore a
+straight cylinder of length \(L=\SI{1.8288}{m}\), exactly \SI{72}{in}, with a
+\SI{133.35}{mm} (\SI{5.25}{in}) bore and a \SI{152.40}{mm} (\SI{6}{in})
+outside diameter. The total radial buildup is \SI{9.525}{mm}.
+
+\begin{center}
+\fbox{\begin{minipage}{0.92\textwidth}
+\textbf{Difference between the design and the executed model.}
+The AP214 STEP file and MAPDL database currently use these same values as
+\emph{radii}; MAPDL confirms, in particular,
+\(R_\mathrm{in}=\SI{0.13335}{m}\). Simulations 1 and 2 were therefore executed
+with a numerical bore of \SI{266.7}{mm} and a numerical outside diameter of
+\SI{304.8}{mm}, i.e. a geometry that is twice too large radially. Existing
+results remain results for this numerical geometry and must not be presented as
+quantitative predictions for the nominal motor until the model is corrected
+and rerun.
+\end{minipage}}
+\end{center}
 
 \begin{figure}[H]
 \centering
@@ -163,14 +178,14 @@ length \(L=\SI{1.8288}{m}\), exactly \SI{72}{in}; its bore diameter is
     node[midway,above] {convection};
   \draw[->,very thick,r] (11.55,0.85) -- (14.8,0.85)
     node[midway,below] {radiation};
-  \draw[<->] (2.4,-0.40) -- (3.7,-0.40) node[midway,below] {\SI{2.540}{mm}};
-  \draw[<->] (3.7,-1.05) -- (4.35,-1.05) node[midway,below] {\SI{0.635}{mm}};
-  \draw[<->] (4.35,-0.40) -- (7.25,-0.40) node[midway,below] {\SI{6.350}{mm}};
-  \draw[<->] (7.25,-1.05) -- (11.35,-1.05) node[midway,below] {\SI{9.525}{mm}};
+  \draw[<->] (2.4,-0.40) -- (3.7,-0.40) node[midway,below] {\SI{1.270}{mm}};
+  \draw[<->] (3.7,-1.05) -- (4.35,-1.05) node[midway,below] {\SI{0.3175}{mm}};
+  \draw[<->] (4.35,-0.40) -- (7.25,-0.40) node[midway,below] {\SI{3.175}{mm}};
+  \draw[<->] (7.25,-1.05) -- (11.35,-1.05) node[midway,below] {\SI{4.7625}{mm}};
   \node[anchor=west] at (0,-2.45) {\it radial direction: inside \(\longrightarrow\) outside};
 \end{tikzpicture}
-\caption{Radial layup extracted from the 3D model. Layer widths are schematic;
-the stated dimensions are exact.}
+\caption{Corrected nominal radial layup. Layer widths are schematic; the stated
+dimensions are radial thicknesses.}
 \label{fig:stack}
 \end{figure}
 
@@ -178,25 +193,73 @@ the stated dimensions are exact.}
 \centering
 \small
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{L{0.18\textwidth}M{0.14\textwidth}M{0.14\textwidth}M{0.15\textwidth}M{0.16\textwidth}}
+\begin{tabular}{L{0.22\textwidth}M{0.20\textwidth}M{0.20\textwidth}M{0.20\textwidth}}
 \toprule
-\textbf{Body} & \textbf{Inner radius} & \textbf{Outer radius} & \textbf{Thickness} & \textbf{Estimated initial mass} \\
- & (mm) & (mm) & (mm) & (kg) \\
+\textbf{Body} & \textbf{Inner diameter} & \textbf{Outer diameter} & \textbf{Radial thickness} \\
+ & (mm) & (mm) & (mm) \\
 \midrule
-\code{phe0} & 133.350 & 135.890 & 2.540 & 4.911 \\
-\code{epo}  & 135.890 & 136.525 & 0.635 & 1.143 \\
-\code{phe1} & 136.525 & 142.875 & 6.350 & 12.742 \\
-\code{alu}  & 142.875 & 152.400 & 9.525 & 43.629 \\
+\code{phe0} & 133.350 & 135.890 & 1.2700 \\
+\code{epo}  & 135.890 & 136.525 & 0.3175 \\
+\code{phe1} & 136.525 & 142.875 & 3.1750 \\
+\code{alu}  & 142.875 & 152.400 & 4.7625 \\
 \bottomrule
 \end{tabular}~\\[1em]
-\caption{Motor geometry. Masses are calculated using the model's initial
-densities and exclude end closures, seals, interfaces, and propellant.}
+\caption{Corrected nominal motor dimensions. A radial thickness is half the
+difference between the outside and inside diameters.}
 \label{tab:geometry}
 \end{table}
 
-The hot-side cylindrical area is \(2\pi r_i L=\SI{1.5323}{m^2}\), and the
-outside area is \(2\pi r_o L=\SI{1.7512}{m^2}\). These values will be useful
-for solver-independent energy and mass balances.
+For the nominal motor, the hot-side cylindrical area is
+\(2\pi r_i L=\SI{0.7662}{m^2}\), and the outside area is
+\SI{0.8756}{m^2}. In the numerical model that was actually executed, these
+areas are \SI{1.5323}{m^2} and \SI{1.7512}{m^2}, respectively. At unchanged
+length and density, tube masses in the oversized numerical model are four
+times those of the nominal geometry.
+
+Mechanical meshes a complete \SI{50}{mm} central axial slice, or 2.73\% of the
+nominal length. Table~\ref{tab:mesh-dimensions} summarizes dimensions and mesh
+characteristics verified against the \code{ds.dat} export, the restart
+database, and the Simulation~2 state. The topology can be retained when the
+geometry is corrected, but every radial dimension and radial element size must
+be divided by two.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{L{0.34\textwidth}L{0.56\textwidth}}
+\toprule
+\textbf{Characteristic} & \textbf{Verified value} \\
+\midrule
+Current meshed domain &
+\SI{50}{mm} slice, full circumference; \(r=\SI{133.350}{mm}\) to
+\SI{152.400}{mm} in the numerical database \\
+Corrected nominal domain &
+\(r=\SI{66.675}{mm}\) to \SI{76.200}{mm}; same axial slice if the mesh is
+regenerated without any other change \\
+Element type and organization &
+Three-dimensional thermal \code{SOLID279} elements; four coaxial volumes and
+three bonded thermal contacts \\
+Radial divisions in \code{phe0/epo/phe1/alu} &
+8 / 1 / 6 / 9 layers; current mean sizes
+\SI{0.3175}{mm} / \SI{0.6350}{mm} / \SI{1.0583}{mm} /
+\SI{1.0583}{mm} \\
+Radial sizes after correction &
+\SI{0.15875}{mm} / \SI{0.3175}{mm} / \SI{0.5292}{mm} /
+\SI{0.5292}{mm}, with unchanged topology \\
+Exported volume mesh &
+\num{482900} solid elements and \num{2242327} nodes \\
+MAPDL restart database &
+\num{630881} elements defined after adding contacts and other auxiliary
+elements \\
+Simulation~2 hot surface &
+\num{135900} nodes and \num{43488} surface-effect elements; first \code{phe0}
+band: \num{39808} elements \\
+\bottomrule
+\end{tabular}
+\caption{Dimensions and principal characteristics of the numerical mesh.}
+\label{tab:mesh-dimensions}
+\end{table}
 
 \subsection{Materials and Interfaces}
 

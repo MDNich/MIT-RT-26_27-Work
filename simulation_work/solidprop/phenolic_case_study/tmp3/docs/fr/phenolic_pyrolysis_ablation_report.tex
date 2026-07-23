@@ -139,13 +139,29 @@ documentés dans le modèle actuel. Il est donc impossible d'en déduire un flux
 pariétal de premier principe : la condition chaude actuelle demeure une donnée
 d'entrée à calibrer par essai moteur ou par un modèle interne séparé.
 
-\subsection{Dimensions Extraites du Modèle 3D}
+\subsection{Dimensions et Caractéristiques du Maillage}
 
-Le fichier STEP AP214 utilise le mètre. Les surfaces cylindriques donnent les
-rayons d'interface du tableau~\ref{tab:geometry}. Le modèle est un cylindre droit
-de longueur \(L=\SI{1.8288}{m}\), soit exactement \SI{72}{in}; son alésage vaut
-\SI{266.7}{mm} (\SI{10.5}{in}) et son diamètre extérieur \SI{304.8}{mm}
-(\SI{12}{in}). Les épaisseurs totalisent \SI{19.05}{mm}.
+La revue dimensionnelle a mis en évidence un facteur deux dans l'interprétation
+des cotes radiales. Les valeurs d'interface 133,350 à \SI{152.400}{mm} sont des
+\emph{diamètres nominaux}, et non des rayons. Le moteur corrigé est donc un
+cylindre droit de longueur \(L=\SI{1.8288}{m}\), soit exactement \SI{72}{in},
+avec un alésage de \SI{133.35}{mm} (\SI{5.25}{in}) et un diamètre extérieur de
+\SI{152.40}{mm} (\SI{6}{in}). L'empilement radial total vaut
+\SI{9.525}{mm}.
+
+\begin{center}
+\fbox{\begin{minipage}{0.92\textwidth}
+\textbf{Écart entre la conception et le calcul exécuté.}
+Le STEP AP214 et la base MAPDL emploient actuellement ces mêmes valeurs comme
+des \emph{rayons}; MAPDL confirme notamment
+\(R_\mathrm{in}=\SI{0.13335}{m}\). Les simulations 1 et 2 déjà exécutées ont
+donc un alésage numérique de \SI{266.7}{mm} et un diamètre extérieur numérique
+de \SI{304.8}{mm}, soit une géométrie deux fois trop grande radialement.
+Les résultats existants restent ceux de cette géométrie numérique et ne doivent
+pas être présentés comme des prédictions quantitatives du moteur nominal avant
+correction du modèle et nouveau calcul.
+\end{minipage}}
+\end{center}
 
 \begin{figure}[H]
 \centering
@@ -166,14 +182,14 @@ de longueur \(L=\SI{1.8288}{m}\), soit exactement \SI{72}{in}; son alésage vaut
     node[midway,above] {convection};
   \draw[->,very thick,r] (11.55,0.85) -- (14.8,0.85)
     node[midway,below] {rayonnement};
-  \draw[<->] (2.4,-0.40) -- (3.7,-0.40) node[midway,below] {\SI{2.540}{mm}};
-  \draw[<->] (3.7,-1.05) -- (4.35,-1.05) node[midway,below] {\SI{0.635}{mm}};
-  \draw[<->] (4.35,-0.40) -- (7.25,-0.40) node[midway,below] {\SI{6.350}{mm}};
-  \draw[<->] (7.25,-1.05) -- (11.35,-1.05) node[midway,below] {\SI{9.525}{mm}};
+  \draw[<->] (2.4,-0.40) -- (3.7,-0.40) node[midway,below] {\SI{1.270}{mm}};
+  \draw[<->] (3.7,-1.05) -- (4.35,-1.05) node[midway,below] {\SI{0.3175}{mm}};
+  \draw[<->] (4.35,-0.40) -- (7.25,-0.40) node[midway,below] {\SI{3.175}{mm}};
+  \draw[<->] (7.25,-1.05) -- (11.35,-1.05) node[midway,below] {\SI{4.7625}{mm}};
   \node[anchor=west] at (0,-2.45) {\it direction radiale : intérieur \(\longrightarrow\) extérieur};
 \end{tikzpicture}
-\caption{Empilement radial extrait du modèle 3D. La largeur des couches est
-schématique; les cotes indiquées sont exactes.}
+\caption{Empilement radial nominal corrigé. La largeur des couches est
+schématique; les cotes indiquées sont les épaisseurs radiales.}
 \label{fig:stack}
 \end{figure}
 
@@ -181,25 +197,73 @@ schématique; les cotes indiquées sont exactes.}
 \centering
 \small
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{L{0.18\textwidth}M{0.14\textwidth}M{0.14\textwidth}M{0.15\textwidth}M{0.16\textwidth}}
+\begin{tabular}{L{0.22\textwidth}M{0.20\textwidth}M{0.20\textwidth}M{0.20\textwidth}}
 \toprule
-\textbf{Corps} & \textbf{Rayon intérieur} & \textbf{Rayon extérieur} & \textbf{Épaisseur} & \textbf{Masse initiale estimée} \\
- & (mm) & (mm) & (mm) & (kg) \\
+\textbf{Corps} & \textbf{Diamètre intérieur} & \textbf{Diamètre extérieur} & \textbf{Épaisseur radiale} \\
+ & (mm) & (mm) & (mm) \\
 \midrule
-\code{phe0} & 133,350 & 135,890 & 2,540 & 4,911 \\
-\code{epo}  & 135,890 & 136,525 & 0,635 & 1,143 \\
-\code{phe1} & 136,525 & 142,875 & 6,350 & 12,742 \\
-\code{alu}  & 142,875 & 152,400 & 9,525 & 43,629 \\
+\code{phe0} & 133,350 & 135,890 & 1,2700 \\
+\code{epo}  & 135,890 & 136,525 & 0,3175 \\
+\code{phe1} & 136,525 & 142,875 & 3,1750 \\
+\code{alu}  & 142,875 & 152,400 & 4,7625 \\
 \bottomrule
 \end{tabular}~\\[1em]
-\caption{Géométrie du moteur. Les masses sont calculées avec les
-densités initiales du modèle, sans fonds, joints, interfaces ni propergol.}
+\caption{Dimensions nominales corrigées du moteur. Une épaisseur radiale est
+la moitié de la différence entre les diamètres extérieur et intérieur.}
 \label{tab:geometry}
 \end{table}
 
-L'aire cylindrique chaude est \(2\pi r_i L=\SI{1.5323}{m^2}\) et l'aire
-extérieure \(2\pi r_o L=\SI{1.7512}{m^2}\). Ces valeurs seront utiles pour les
-bilans d'énergie et de masse indépendants du solveur.
+Pour le moteur nominal, l'aire cylindrique chaude est
+\(2\pi r_i L=\SI{0.7662}{m^2}\) et l'aire extérieure vaut
+\SI{0.8756}{m^2}. Dans le modèle numérique actuellement exécuté, elles valent
+respectivement \SI{1.5323}{m^2} et \SI{1.7512}{m^2}. À longueur et densité
+inchangées, les masses des tubes du calcul surdimensionné sont quatre fois
+celles de la géométrie nominale.
+
+Mechanical maille une tranche centrale complète de \SI{50}{mm} suivant l'axe,
+soit 2,73\,\% de la longueur nominale. Le tableau~\ref{tab:mesh-dimensions}
+rassemble les dimensions et les caractéristiques vérifiées dans l'export
+\code{ds.dat}, la base de redémarrage et l'état de Simulation~2. La topologie
+est conservée lors de la correction géométrique, mais toutes les dimensions
+radiales et tailles d'élément radiales devront être divisées par deux.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{L{0.34\textwidth}L{0.56\textwidth}}
+\toprule
+\textbf{Caractéristique} & \textbf{Valeur vérifiée} \\
+\midrule
+Domaine maillé actuel &
+Tranche de \SI{50}{mm}, circonférence complète; \(r=\SI{133.350}{mm}\) à
+\SI{152.400}{mm} dans la base numérique \\
+Domaine nominal corrigé &
+\(r=\SI{66.675}{mm}\) à \SI{76.200}{mm}; même tranche axiale si le maillage
+est régénéré sans autre modification \\
+Type et organisation &
+Éléments thermiques 3D \code{SOLID279}; quatre volumes coaxiaux et trois
+contacts thermiques liés \\
+Découpage radial \code{phe0/epo/phe1/alu} &
+8 / 1 / 6 / 9 couches; tailles moyennes actuelles
+\SI{0.3175}{mm} / \SI{0.6350}{mm} / \SI{1.0583}{mm} /
+\SI{1.0583}{mm} \\
+Tailles radiales après correction &
+\SI{0.15875}{mm} / \SI{0.3175}{mm} / \SI{0.5292}{mm} /
+\SI{0.5292}{mm}, à topologie identique \\
+Maillage volumique exporté &
+\num{482900} éléments solides et \num{2242327} nœuds \\
+Base MAPDL de redémarrage &
+\num{630881} éléments définis après ajout des contacts et autres éléments
+auxiliaires \\
+Face chaude de Simulation~2 &
+\num{135900} nœuds et \num{43488} éléments surfaciques; première bande de
+\code{phe0}: \num{39808} éléments \\
+\bottomrule
+\end{tabular}
+\caption{Dimensions et principales caractéristiques du maillage numérique.}
+\label{tab:mesh-dimensions}
+\end{table}
 
 \subsection{Matériaux et Interfaces}
 
