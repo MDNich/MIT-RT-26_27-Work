@@ -80,7 +80,7 @@
 \title{~\\[-2em]\sc Modélisation Thermochimique d'un Liner Phénolique\\
 dans un Moteur-fusée Solide avec ANSYS Mechanical}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Simulations/Propulsion Solide}
-\date{\sc 23 juillet 2026}
+\date{\sc 24 juillet 2026}
 
 \begin{document}
 \selectlanguage{french}
@@ -101,13 +101,14 @@ dans un Moteur-fusée Solide avec ANSYS Mechanical}
 de pyrolyse du liner phénolique, puis son extension effectivement mise en oeuvre
 dans ANSYS Mechanical pour représenter le dégazage, le soufflage et une
 récession discrète par suppression d'éléments. La section consacrée à la
-simulation 2 présente l'architecture numérique et un premier bilan de
-performance arrêté à \(t=\SI{6.15}{s}\) sur les \SI{7}{s} prévues. Ces résultats
-sont provisoires tant que le calcul n'est pas terminé. Fluent et la combustion
-du propergol ne font pas partie du périmètre. Les valeurs marquées
-\emph{provisoires} doivent être remplacées ou validées par des mesures du
-matériau effectivement fabriqué avant toute décision de dimensionnement ou de
-sécurité.
+simulation 2 présente l'architecture numérique et le bilan final de la
+campagne, arrêtée volontairement au dernier état entièrement synchronisé,
+\(t=\SI{6.45}{s}\), soit 129 des 140 macro-pas prévus. Aucune extrapolation
+jusqu'à \SI{7}{s} n'est utilisée. Fluent et la combustion du propergol ne font
+pas partie du périmètre. Les grandeurs calculées restent des résultats de
+modèle : elles doivent être confrontées aux mesures du matériau effectivement
+fabriqué et la géométrie radiale doit être corrigée avant toute décision de
+dimensionnement ou de sécurité.
 \end{minipage}
 \end{center}
 \vfill
@@ -1538,11 +1539,15 @@ redémarrage restent distribués; une reprise n'est valide que si les dix jeux d
 rang, l'historique et l'état paramétrique désignent le même load step.
 
 La première campagne a été arrêtée proprement après le load step 15,
-\(t=\SI{0.75}{s}\), puis reprise à partir du load step 16. La continuation
-actuelle a restauré le résultat à \SI{0.80}{s} et a poursuivi sans
-réinitialisation des températures ni des SVAR. Cette reprise constitue une
-vérification importante de robustesse, car un calcul complet représente
-plusieurs jours de temps mur.
+\(t=\SI{0.75}{s}\), puis reprise à partir du load step 16. La continuation a
+restauré le résultat à \SI{0.80}{s} et a poursuivi sans réinitialisation des
+températures ni des SVAR. Cette reprise constitue une vérification importante
+de robustesse, car un calcul complet représente plusieurs jours de temps mur.
+La campagne a ensuite été arrêtée volontairement le 23 juillet 2026. Le load
+step 130 avait convergé à \SI{6.50}{s}, mais son assemblage global était encore
+en cours : l'historique et l'état paramétrique sont restés synchronisés au load
+step 129, à \SI{6.45}{s}. Par prudence, toutes les statistiques et figures
+finales excluent donc l'état non synchronisé à \SI{6.50}{s}.
 
 Les statistiques de vitesse de récession sont extraites en lecture seule avec
 DPF à partir des dix fichiers \code{file0.rth} à \code{file9.rth}. Pour chaque
@@ -1554,20 +1559,21 @@ après stabilisation des fichiers de résultats distribués.
 
 \subsubsection{État du calcul et performance numérique}
 
-Les résultats de cette sous-section constituent un \emph{instantané provisoire}
-arrêté le 23 juillet 2026. Le dernier état entièrement synchronisé est le load
-step 123 à \(t=\SI{6.15}{s}\), soit 87,9\,\% de la durée physique visée. Le
-calcul reste actif et aucune extrapolation des \SI{0.85}{s} restantes n'est
-utilisée comme résultat final.
+La campagne est terminée par décision de l'utilisateur. Le dernier état
+entièrement synchronisé est le load step 129 à \(t=\SI{6.45}{s}\), soit
+92,1\,\% de la durée physique visée. Les \SI{0.55}{s} restantes n'ont pas été
+calculées et aucune extrapolation n'est présentée comme résultat.
 
-La continuation observée du load step 17 au load step 123 comprend 107
-macro-pas convergés et aucune erreur MAPDL. Parmi eux, 87 ont convergé en deux
-itérations d'équilibre et 20 en trois; tous les pas à partir du load step 50 ont
-convergé en deux itérations d'équilibre. Le temps mur médian par macro-pas est
-de 41,7 minutes sur l'ensemble de la continuation. Il augmente toutefois avec
-la taille des résultats : sur les 24 derniers pas disponibles, la médiane est
-de 58,9 minutes, soit environ \SI{0.051}{s} simulée par heure. Les dix derniers
-pas demandent 58 à 63 minutes chacun.
+La continuation observée du load step 17 au load step 129 comprend 113
+macro-pas synchronisés et aucune erreur MAPDL. Parmi eux, 93 ont convergé en
+deux itérations d'équilibre et 20 en trois. Le load step 130 a également
+convergé en deux itérations, mais reste hors du bilan faute de synchronisation.
+Le temps mur médian par macro-pas est de 45,1 minutes sur la continuation
+synchronisée. Il augmente avec la taille des résultats : sur les 24 derniers
+pas, la médiane est de 60,3 minutes, soit environ
+\SI{0.050}{s} simulée par heure. Sur les dix derniers pas, la médiane atteint
+67,1 minutes et l'intervalle observé va de 59,1 à 125,8 minutes, les valeurs
+les plus élevées correspondant surtout aux phases d'assemblage des résultats.
 
 Le coût n'est pas dominé uniquement par la résolution thermique. Après chaque
 convergence, MAPDL agrège et interprète les résultats distribués; cette phase
@@ -1590,19 +1596,21 @@ ces messages n'ont pas empêché la convergence.
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{L{0.43\textwidth}L{0.43\textwidth}}
 \toprule
-\textbf{Indicateur de performance} & \textbf{Valeur provisoire} \\
+\textbf{Indicateur de performance} & \textbf{Valeur finale observée} \\
 \midrule
-Avancement synchronisé & 123/140 pas; \SI{6.15}{s}/\SI{7}{s}; 87,9\,\% \\
-Continuation analysée & 107 pas, du load step 17 au load step 123 \\
-Convergence non linéaire & 87 pas à 2 itérations; 20 pas à 3 itérations \\
-Temps médian par pas, continuation & 41,7 min \\
-Temps médian par pas, 24 derniers pas & 58,9 min \\
-Cadence récente & environ \SI{0.051}{s} simulée par heure \\
+Avancement synchronisé & 129/140 pas; \SI{6.45}{s}/\SI{7}{s}; 92,1\,\% \\
+Continuation analysée & 113 pas, du load step 17 au load step 129 \\
+Convergence non linéaire & 93 pas à 2 itérations; 20 pas à 3 itérations \\
+Temps médian par pas, continuation & 45,1 min \\
+Temps médian par pas, 24 derniers pas & 60,3 min \\
+Cadence récente & environ \SI{0.050}{s} simulée par heure \\
 Parallélisme observé & 10 rangs ANSYS, 1 \code{mpiexec}, 1 \code{hydra_pmi_proxy} \\
-Diagnostics & 0 erreur; avertissements de reprise non bloquants \\
+Arrêt final & volontaire; dernier checkpoint cohérent à \SI{6.45}{s} \\
+Diagnostics & 0 erreur MAPDL; avertissements de reprise non bloquants \\
 \bottomrule
 \end{tabular}
-\caption{Performance numérique observée avant la fin du calcul.}
+\caption{Performance numérique finale de la campagne arrêtée à
+\SI{6.45}{s}.}
 \label{tab:sim2-performance}
 \end{table}
 
@@ -1612,14 +1620,15 @@ Le tableau~\ref{tab:sim2-results-snapshot} montre les grandeurs enregistrées pa
 le contrôleur. La conversion moyenne atteint 0,50 à environ
 \SI{1.20}{s}, 0,90 à \SI{2.40}{s} et 0,99 à \SI{3.50}{s}. Le minimum spatial
 atteint 0,90 à \SI{3.00}{s} et 0,99 à \SI{4.00}{s}. À
-\SI{6.15}{s}, la couche active est pratiquement entièrement convertie :
-\(\bar\alpha=0{,}99999867\) et
-\(\alpha_\mathrm{min}=0{,}99999256\).
+\SI{6.45}{s}, la couche active est pratiquement entièrement convertie :
+\(\bar\alpha=0{,}99999962\) et
+\(\alpha_\mathrm{min}=0{,}99999779\).
 
 Le débit gazeux croît d'abord avec l'activation de la pyrolyse, atteint
 \SI{4.849}{g.s^{-1}} à \SI{1.90}{s}, puis décroît lentement à
-\SI{3.809}{g.s^{-1}} à \SI{6.15}{s}. Une intégration trapézoïdale des valeurs
-échantillonnées donne environ \SI{25.34}{g} de gaz produits jusqu'à cet instant.
+\SI{3.756}{g.s^{-1}} à \SI{6.45}{s}. Une intégration trapézoïdale des valeurs
+échantillonnées, complétée par une rampe linéaire depuis un débit nul à
+\(t=0\), donne environ \SI{26.47}{g} de gaz produits jusqu'à cet instant.
 Cette masse est un bilan du modèle réduit; elle ne constitue pas une mesure de
 la composition, de la pression interstitielle ou du débit instantané réel en
 chambre.
@@ -1627,9 +1636,9 @@ chambre.
 Le coefficient convectif effectif suit le soufflage. Il atteint un minimum de
 \SI{843.75}{W.m^{-2}.K^{-1}} au pic de dégazage, soit une réduction maximale de
 15,6\,\% par rapport à \(h_0\). Il remonte ensuite à
-\SI{873.01}{W.m^{-2}.K^{-1}}, encore 12,7\,\% sous la valeur sans soufflage.
+\SI{874.53}{W.m^{-2}.K^{-1}}, encore 12,5\,\% sous la valeur sans soufflage.
 Malgré cette réduction, la température maximale de la surface chaude continue
-d'augmenter et atteint \SI{1633.23}{\celsius} à \SI{6.15}{s}; le régime
+d'augmenter et atteint \SI{1644.11}{\celsius} à \SI{6.45}{s}; le régime
 thermique final n'est donc pas encore démontré.
 
 \begin{table}[H]
@@ -1649,33 +1658,34 @@ thermique final n'est donc pas encore démontré.
 4,00 & 0,997463 & 0,990541 & 4,276 & 859,62 & 1532,90 & 147,31 \\
 5,00 & 0,999894 & 0,999518 & 4,021 & 866,89 & 1585,39 & 174,83 \\
 6,15 & 0,999999 & 0,999993 & 3,809 & 873,01 & 1633,23 & 204,36 \\
+6,45 & 1,000000 & 0,999998 & 3,756 & 874,53 & 1644,11 & 211,74 \\
 \bottomrule
 \end{tabular}
-\caption{Instantanés de la simulation 2. Les valeurs à \SI{6.15}{s} sont
-provisoires tant que le calcul complet n'est pas terminé.}
+\caption{Instantanés de la simulation 2 jusqu'au dernier état entièrement
+synchronisé à \SI{6.45}{s}.}
 \label{tab:sim2-results-snapshot}
 \end{table}
 
 \subsubsection{Récession virtuelle et critère de suppression}
 
-La récession énergétique cumulée atteint \SI{204.36}{\micro m} à
-\SI{6.15}{s}. Elle représente 64,4\,\% de l'épaisseur de la première bande,
+La récession énergétique cumulée atteint \SI{211.74}{\micro m} à
+\SI{6.45}{s}. Elle représente 66,7\,\% de l'épaisseur de la première bande,
 \(\Delta r=\SI{317.5}{\micro m}\). Les critères de conversion sont déjà
 satisfaits, mais le critère géométrique ne l'est pas; aucune bande n'a donc été
 supprimée. Ce résultat est physiquement cohérent avec la logique du contrôleur :
 la pyrolyse complète n'est pas assimilée automatiquement à une perte de
 matière. La masse de char équivalente associée à cette récession virtuelle vaut
-environ \SI{5.14}{g} sur la surface modélisée, mais elle reste présente dans le
+environ \SI{5.32}{g} sur la surface modélisée, mais elle reste présente dans le
 maillage tant que le seuil de bande n'est pas franchi.
 
-L'extraction DPF disponible jusqu'à \SI{6.10}{s} confirme une surface chaude
-presque uniforme : température moyenne \SI{1630.98}{\celsius}, écart-type
-\SI{0.058}{\celsius} et étendue \SIrange{1630.61}{1631.37}{\celsius}. La
+L'extraction DPF finale jusqu'à \SI{6.45}{s} confirme une surface chaude
+presque uniforme : température moyenne \SI{1643.67}{\celsius}, écart-type
+\SI{0.069}{\celsius} et étendue \SIrange{1643.25}{1644.11}{\celsius}. La
 vitesse moyenne de récession décroît de
 \SI{78.21}{\micro m.s^{-1}} à \SI{0.05}{s} à
-\SI{24.930}{\micro m.s^{-1}} à \SI{6.10}{s}. À ce dernier instant,
+\SI{24.453}{\micro m.s^{-1}} à \SI{6.45}{s}. À ce dernier instant,
 l'écart-type spatial vaut seulement
-\SI{0.0024}{\micro m.s^{-1}}, ce qui indique une forte uniformité spatiale dans
+\SI{0.0029}{\micro m.s^{-1}}, ce qui indique une forte uniformité spatiale dans
 le modèle tronqué. Cette uniformité ne doit pas être extrapolée aux extrémités,
 aux joints ni au moteur complet sans un modèle géométrique correspondant.
 
@@ -1791,12 +1801,13 @@ conversion vaut \(\alpha_\mathrm{max}=0{,}7173\); il atteint numériquement
 l'unité à \SI{6}{s}. Le maximum de vitesse de pyrolyse diminue simultanément
 de \SI{0.6747}{s^{-1}} à \SI{0.2812}{s^{-1}} et migre de
 \SI{0.0127}{mm} à \SI{1.0033}{mm} de la face chaude. Au dernier état extrait,
-\SI{6.15}{s}, il vaut \SI{0.2766}{s^{-1}} à
-\SI{1.0287}{mm}.
+\SI{6.45}{s}, il vaut \SI{0.2703}{s^{-1}} à
+\SI{1.0795}{mm}.
 
 La ligne de récession passe de \SI{0.0486}{mm} à \SI{1}{s} à
 \SI{0.2006}{mm} à \SI{6}{s}, puis \SI{0.2044}{mm} à
-\SI{6.15}{s}. À partir de \SI{2}{s}, elle demeure nettement en amont du
+\SI{6.15}{s} et \SI{0.2117}{mm} à \SI{6.45}{s}. À partir de
+\SI{2}{s}, elle demeure nettement en amont du
 maximum de \code{SVAR2}. Les figures séparent ainsi visuellement deux
 mécanismes différents : la zone volumique où la pyrolyse est la plus active et
 la position cumulée de matière que le bilan énergétique permettrait de
@@ -1820,8 +1831,8 @@ verticale pointillée marque le premier état où la récession virtuelle attein
 \end{figure}
 
 Les contours sont calculés par interpolation spatiale de l'enveloppe radiale
-de \code{SVAR1} sur les 124 états synchronisés, espacés de
-\SI{0.05}{s} entre \SI{0.05}{s} et \SI{6.20}{s}; aucune interpolation
+de \code{SVAR1} sur les 129 états synchronisés, espacés de
+\SI{0.05}{s} entre \SI{0.05}{s} et \SI{6.45}{s}; aucune interpolation
 temporelle n'est ajoutée. La ligne verticale à \SI{0.05}{s} indique le
 premier état où \(s\geq\SI{1}{\micro m}\), avec
 \(s=\SI{3.802}{\micro m}\). Ce seuil micrométrique évite d'assimiler un
@@ -1834,27 +1845,32 @@ amont de la récession, avec
 \(\Delta d_\alpha=\SI{-0.0497}{mm}\), \SI{-0.0611}{mm} et
 \SI{-0.0803}{mm}. Ils dépassent ensuite la ligne de récession à
 \SI{2.00}{s}, \SI{2.35}{s} et \SI{3.05}{s}. Au dernier état extrait,
-\SI{6.20}{s}, les séparations atteignent respectivement
-\SI{0.4324}{mm}, \SI{0.5639}{mm} et \SI{0.6314}{mm} pour les contours à
+\SI{6.45}{s}, les séparations atteignent respectivement
+\SI{0.4693}{mm}, \SI{0.5843}{mm} et \SI{0.6610}{mm} pour les contours à
 99\,\%, 95\,\% et 90\,\%. La croissance de ces trois écarts montre que le
 front de conversion progresse plus rapidement dans l'épaisseur que la
 récession virtuelle.
 
-\subsubsection{Interprétation provisoire et travaux restants}
+\subsubsection{Conclusion de la campagne et travaux restants}
 
-Le résultat principal à ce stade est double. D'une part, la chaîne numérique
+Le résultat principal de la campagne est double. D'une part, la chaîne numérique
 \code{UserMatTh} -- dégazage -- soufflage -- récession -- redémarrage distribué
-fonctionne sur plus de cent macro-pas sans perte de continuité. D'autre part,
+fonctionne sur 129 macro-pas synchronisés sans perte de continuité. D'autre part,
 avec \(H_\mathrm{eff}=\SI{35}{MJ.kg^{-1}}\), la récession reste inférieure à une
-bande à \SI{6.15}{s}; le pilote ne prédit donc encore aucun déplacement
-discret de la frontière chaude.
+bande à \SI{6.45}{s}; le pilote n'a donc prédit aucun déplacement discret de
+la frontière chaude avant l'arrêt volontaire. La conversion progresse plus
+profondément que la récession virtuelle, tandis que le dégazage et le soufflage
+diminuent après leur maximum.
 
-La fin à \SI{7}{s} devra remplacer cet instantané par le bilan final et vérifier
-si la première bande est franchie. Le rapport devra ensuite être complété par :
-(i) les bilans massique et énergétique fermés; (ii) une comparaison PCG/SPARSE
-incluant mémoire et temps mur; (iii) une étude de convergence avec 20 à 40
-bandes radiales; (iv) des sensibilités à \(H_\mathrm{eff}\), \(h_0\), au pas de
-temps et aux propriétés du char; et (v) la comparaison avec un essai
+Cette conclusion est strictement limitée à l'intervalle calculé
+\SIrange{0}{6.45}{s}. Elle ne préjuge pas du franchissement de la première
+bande pendant les \SI{0.55}{s} non simulées. Surtout, la géométrie exécutée
+emploie les diamètres nominaux comme rayons; les valeurs quantitatives ne
+décrivent donc pas le moteur nominal. Avant qualification, il faut corriger la
+géométrie et répéter le calcul, fermer les bilans massique et énergétique,
+comparer PCG et SPARSE, mener une convergence de maillage avec 20 à 40 bandes
+radiales, étudier les sensibilités à \(H_\mathrm{eff}\), \(h_0\), au pas de
+temps et aux propriétés du char, puis comparer le modèle à un essai
 instrumenté. En l'absence de ces étapes, la récession calculée demeure un
 indicateur de performance du modèle, pas une prédiction qualifiée du moteur.
 

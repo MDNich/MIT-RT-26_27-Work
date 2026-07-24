@@ -80,7 +80,7 @@
 \title{~\\[-2em]\sc Thermochemical Modeling of a Phenolic Liner\\
 in a Solid Rocket Motor Using ANSYS Mechanical}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Solid Propulsion Simulations}
-\date{\sc July 23, 2026}
+\date{\sc July 24, 2026}
 
 \begin{document}
 \selectlanguage{english}
@@ -101,12 +101,13 @@ in a Solid Rocket Motor Using ANSYS Mechanical}
 thermal model for phenolic-liner pyrolysis and its extension, now implemented in
 ANSYS Mechanical, to represent outgassing, blowing, and discrete recession by
 element deactivation. The Simulation 2 section presents the numerical
-architecture and an initial performance assessment frozen at
-\(t=\SI{6.15}{s}\) out of the planned \SI{7}{s}. These results remain
-provisional until the computation is complete. Fluent and propellant combustion
-are outside the scope of this study. Values marked \emph{provisional} must be
-replaced or validated using measurements of the material actually manufactured
-before any design or safety decision is made.
+architecture and the final campaign assessment, intentionally stopped at the
+last fully synchronized state, \(t=\SI{6.45}{s}\), after 129 of the 140 planned
+macro-steps. No extrapolation to \SI{7}{s} is used. Fluent and propellant
+combustion are outside the scope of this study. Computed quantities remain
+model results: they must be compared with measurements of the material
+actually manufactured, and the radial geometry must be corrected before any
+design or safety decision is made.
 \end{minipage}
 \end{center}
 \vfill
@@ -1518,10 +1519,15 @@ distributed; a recovery is valid only when the ten rank-specific sets, the
 history, and the parameter state point to the same load step.
 
 The first campaign was stopped cleanly after load step 15 at
-\(t=\SI{0.75}{s}\), then resumed from load step 16. The current continuation
-restored the result at \SI{0.80}{s} and proceeded without reinitializing
-temperature or the SVARs. This recovery is an important robustness check
-because a complete computation requires several days of wall-clock time.
+\(t=\SI{0.75}{s}\), then resumed from load step 16. The continuation restored
+the result at \SI{0.80}{s} and proceeded without reinitializing temperature or
+the SVARs. This recovery is an important robustness check because a complete
+computation requires several days of wall-clock time. The campaign was then
+stopped intentionally on July 23, 2026. Load step 130 had converged at
+\SI{6.50}{s}, but global result assembly was still in progress: the history
+and parameter state remained synchronized at load step 129, \SI{6.45}{s}.
+Accordingly, all final statistics and figures exclude the unsynchronized
+\SI{6.50}{s} state.
 
 Recession-rate statistics are extracted read-only with DPF from the ten
 \code{file0.rth} through \code{file9.rth} files. For each state, the extraction
@@ -1533,20 +1539,21 @@ stabilized.
 
 \subsubsection{Run Status and Numerical Performance}
 
-The results in this subsection form a \emph{provisional snapshot} frozen on
-July 23, 2026. The last fully synchronized state is load step 123 at
-\(t=\SI{6.15}{s}\), or 87.9\% of the target physical duration. The computation
-is still running, and no extrapolation over the remaining \SI{0.85}{s} is used
-as a final result.
+The campaign is complete by user decision. The last fully synchronized state
+is load step 129 at \(t=\SI{6.45}{s}\), or 92.1\% of the target physical
+duration. The remaining \SI{0.55}{s} was not computed, and no extrapolation is
+presented as a result.
 
-The observed continuation from load step 17 through load step 123 contains 107
-converged macro-steps and no MAPDL errors. Of these steps, 87 converged in two
-equilibrium iterations and 20 in three; every step from load step 50 onward
-converged in two equilibrium iterations. The median wall time per macro-step is
-41.7 minutes over the full continuation. It increases as the result files grow:
-over the latest 24 available steps, the median is 58.9 minutes, corresponding
-to approximately \SI{0.051}{s} of simulated time per wall-clock hour. The latest
-ten steps each require 58 to 63 minutes.
+The observed continuation from load step 17 through load step 129 contains 113
+synchronized macro-steps and no MAPDL errors. Of these steps, 93 converged in
+two equilibrium iterations and 20 in three. Load step 130 also converged in two
+iterations, but is excluded from the balance because it was not synchronized.
+The median wall time per macro-step is 45.1 minutes over the synchronized
+continuation. It increases as the result files grow: over the latest 24 steps,
+the median is 60.3 minutes, corresponding to approximately
+\SI{0.050}{s} of simulated time per wall-clock hour. Over the latest ten steps,
+the median reaches 67.1 minutes, with an observed range of 59.1 to 125.8
+minutes; the largest values are primarily associated with result assembly.
 
 Thermal solution time is not the only dominant cost. After every convergence,
 MAPDL assembles and interprets the distributed results; this phase can
@@ -1569,19 +1576,21 @@ qualification, even though the warnings did not prevent convergence.
 \renewcommand{\arraystretch}{1.15}
 \begin{tabular}{L{0.43\textwidth}L{0.43\textwidth}}
 \toprule
-\textbf{Performance indicator} & \textbf{Provisional value} \\
+\textbf{Performance indicator} & \textbf{Final observed value} \\
 \midrule
-Synchronized progress & 123/140 steps; \SI{6.15}{s}/\SI{7}{s}; 87.9\% \\
-Analyzed continuation & 107 steps, from load step 17 through load step 123 \\
-Nonlinear convergence & 87 steps at 2 iterations; 20 steps at 3 iterations \\
-Median time per step, full continuation & 41.7 min \\
-Median time per step, latest 24 steps & 58.9 min \\
-Recent throughput & approximately \SI{0.051}{s} simulated per wall-clock hour \\
+Synchronized progress & 129/140 steps; \SI{6.45}{s}/\SI{7}{s}; 92.1\% \\
+Analyzed continuation & 113 steps, from load step 17 through load step 129 \\
+Nonlinear convergence & 93 steps at 2 iterations; 20 steps at 3 iterations \\
+Median time per step, full continuation & 45.1 min \\
+Median time per step, latest 24 steps & 60.3 min \\
+Recent throughput & approximately \SI{0.050}{s} simulated per wall-clock hour \\
 Observed parallel chain & 10 ANSYS ranks, 1 \code{mpiexec}, 1 \code{hydra_pmi_proxy} \\
-Diagnostics & 0 errors; non-blocking restart warnings \\
+Final stop & intentional; last coherent checkpoint at \SI{6.45}{s} \\
+Diagnostics & 0 MAPDL errors; non-blocking restart warnings \\
 \bottomrule
 \end{tabular}
-\caption{Numerical performance observed before completion of the run.}
+\caption{Final numerical performance of the campaign stopped at
+\SI{6.45}{s}.}
 \label{tab:sim2-performance}
 \end{table}
 
@@ -1590,23 +1599,24 @@ Diagnostics & 0 errors; non-blocking restart warnings \\
 Table~\ref{tab:sim2-results-snapshot} lists the values recorded by the
 controller. Mean conversion reaches 0.50 at approximately \SI{1.20}{s}, 0.90
 at \SI{2.40}{s}, and 0.99 at \SI{3.50}{s}. The spatial minimum reaches 0.90 at
-\SI{3.00}{s} and 0.99 at \SI{4.00}{s}. At \SI{6.15}{s}, the active layer is
-almost fully converted, with \(\bar\alpha=0.99999867\) and
-\(\alpha_\mathrm{min}=0.99999256\).
+\SI{3.00}{s} and 0.99 at \SI{4.00}{s}. At \SI{6.45}{s}, the active layer is
+almost fully converted, with \(\bar\alpha=0.99999962\) and
+\(\alpha_\mathrm{min}=0.99999779\).
 
 The gas flow rate first rises as pyrolysis activates, reaches
 \SI{4.849}{g.s^{-1}} at \SI{1.90}{s}, then slowly decreases to
-\SI{3.809}{g.s^{-1}} at \SI{6.15}{s}. Trapezoidal integration of the sampled
-values gives approximately \SI{25.34}{g} of gas generated by that time. This
+\SI{3.756}{g.s^{-1}} at \SI{6.45}{s}. Trapezoidal integration of the sampled
+values, completed by a linear ramp from zero flow at \(t=0\), gives
+approximately \SI{26.47}{g} of gas generated by that time. This
 mass is a balance from the reduced-order model; it is not a measurement of
 composition, pore pressure, or the actual instantaneous chamber flow rate.
 
 The effective convection coefficient follows the blowing correction. It
 reaches a minimum of \SI{843.75}{W.m^{-2}.K^{-1}} at the outgassing peak, a
 maximum reduction of 15.6\% relative to \(h_0\). It then recovers to
-\SI{873.01}{W.m^{-2}.K^{-1}}, still 12.7\% below the no-blowing value. Despite
+\SI{874.53}{W.m^{-2}.K^{-1}}, still 12.5\% below the no-blowing value. Despite
 this reduction, the maximum hot-surface temperature continues to rise and
-reaches \SI{1633.23}{\celsius} at \SI{6.15}{s}; a final thermal steady regime
+reaches \SI{1644.11}{\celsius} at \SI{6.45}{s}; a final thermal steady regime
 has therefore not yet been demonstrated.
 
 \begin{table}[H]
@@ -1626,32 +1636,33 @@ has therefore not yet been demonstrated.
 4.00 & 0.997463 & 0.990541 & 4.276 & 859.62 & 1532.90 & 147.31 \\
 5.00 & 0.999894 & 0.999518 & 4.021 & 866.89 & 1585.39 & 174.83 \\
 6.15 & 0.999999 & 0.999993 & 3.809 & 873.01 & 1633.23 & 204.36 \\
+6.45 & 1.000000 & 0.999998 & 3.756 & 874.53 & 1644.11 & 211.74 \\
 \bottomrule
 \end{tabular}
-\caption{Simulation 2 snapshots. Values at \SI{6.15}{s} remain provisional
-until the full computation is complete.}
+\caption{Simulation 2 snapshots through the last fully synchronized state at
+\SI{6.45}{s}.}
 \label{tab:sim2-results-snapshot}
 \end{table}
 
 \subsubsection{Virtual Recession and Deactivation Criterion}
 
-The accumulated energy-based recession reaches \SI{204.36}{\micro m} at
-\SI{6.15}{s}. This is 64.4\% of the first-band thickness,
+The accumulated energy-based recession reaches \SI{211.74}{\micro m} at
+\SI{6.45}{s}. This is 66.7\% of the first-band thickness,
 \(\Delta r=\SI{317.5}{\micro m}\). The conversion criteria are already
 satisfied, but the geometric criterion is not; no band has therefore been
 deactivated. This result is physically consistent with the controller logic:
 complete pyrolysis is not automatically treated as material removal. The
 equivalent char mass associated with this virtual recession is approximately
-\SI{5.14}{g} over the modeled surface, but it remains present in the mesh until
+\SI{5.32}{g} over the modeled surface, but it remains present in the mesh until
 the band threshold is crossed.
 
-The DPF extraction available through \SI{6.10}{s} confirms an almost uniform
-hot surface: mean temperature \SI{1630.98}{\celsius}, standard deviation
-\SI{0.058}{\celsius}, and range
-\SIrange{1630.61}{1631.37}{\celsius}. Mean recession rate decreases from
+The final DPF extraction through \SI{6.45}{s} confirms an almost uniform hot
+surface: mean temperature \SI{1643.67}{\celsius}, standard deviation
+\SI{0.069}{\celsius}, and range
+\SIrange{1643.25}{1644.11}{\celsius}. Mean recession rate decreases from
 \SI{78.21}{\micro m.s^{-1}} at \SI{0.05}{s} to
-\SI{24.930}{\micro m.s^{-1}} at \SI{6.10}{s}. At the latter time, the spatial
-standard deviation is only \SI{0.0024}{\micro m.s^{-1}}, indicating strong
+\SI{24.453}{\micro m.s^{-1}} at \SI{6.45}{s}. At the latter time, the spatial
+standard deviation is only \SI{0.0029}{\micro m.s^{-1}}, indicating strong
 spatial uniformity in the truncated model. This uniformity must not be
 extrapolated to ends, joints, or the full motor without a corresponding
 geometric model.
@@ -1766,12 +1777,13 @@ explicitly marked by hatching. At \SI{1}{s}, the maximum radial conversion is
 \SI{6}{s}. At the same time, the maximum pyrolysis rate decreases from
 \SI{0.6747}{s^{-1}} to \SI{0.2812}{s^{-1}} and migrates from
 \SI{0.0127}{mm} to \SI{1.0033}{mm} from the hot face. At the latest extracted
-state, \SI{6.15}{s}, it is \SI{0.2766}{s^{-1}} at
-\SI{1.0287}{mm}.
+state, \SI{6.45}{s}, it is \SI{0.2703}{s^{-1}} at
+\SI{1.0795}{mm}.
 
 The recession line progresses from \SI{0.0486}{mm} at \SI{1}{s} to
 \SI{0.2006}{mm} at \SI{6}{s}, and then to \SI{0.2044}{mm} at
-\SI{6.15}{s}. From \SI{2}{s} onward, it remains well upstream of the SVAR2
+\SI{6.15}{s} and \SI{0.2117}{mm} at \SI{6.45}{s}. From \SI{2}{s}
+onward, it remains well upstream of the SVAR2
 maximum. The figures thus distinguish two different mechanisms visually: the
 volumetric zone where pyrolysis is most active and the cumulative material
 position that the energy balance would allow to recede. On the hot surface,
@@ -1793,8 +1805,8 @@ at which virtual recession reaches \SI{1}{\micro m}.}
 \end{figure}
 
 The contours are obtained by spatial interpolation of the radial
-\code{SVAR1} envelope at all 124 synchronized states, spaced by
-\SI{0.05}{s} from \SI{0.05}{s} to \SI{6.20}{s}; no temporal
+\code{SVAR1} envelope at all 129 synchronized states, spaced by
+\SI{0.05}{s} from \SI{0.05}{s} to \SI{6.45}{s}; no temporal
 interpolation is introduced. The vertical line at \SI{0.05}{s} identifies
 the first state for which \(s\geq\SI{1}{\micro m}\), with
 \(s=\SI{3.802}{\micro m}\). This micrometre-scale threshold avoids treating
@@ -1807,29 +1819,33 @@ upstream of recession with
 \(\Delta d_\alpha=\SI{-0.0497}{mm}\), \SI{-0.0611}{mm}, and
 \SI{-0.0803}{mm}. They then pass the recession line at \SI{2.00}{s},
 \SI{2.35}{s}, and \SI{3.05}{s}. At the latest extracted state,
-\SI{6.20}{s}, the separations reach \SI{0.4324}{mm},
-\SI{0.5639}{mm}, and \SI{0.6314}{mm} for the 99\%, 95\%, and 90\%
+\SI{6.45}{s}, the separations reach \SI{0.4693}{mm},
+\SI{0.5843}{mm}, and \SI{0.6610}{mm} for the 99\%, 95\%, and 90\%
 contours, respectively. The growth of all three separations shows that the
 conversion front advances through the thickness faster than virtual
 recession.
 
-\subsubsection{Provisional Interpretation and Remaining Work}
+\subsubsection{Campaign Conclusion and Remaining Work}
 
-The main result at this stage is twofold. First, the
+The main result of the campaign is twofold. First, the
 \code{UserMatTh}--outgassing--blowing--recession--distributed-restart chain has
-operated over more than one hundred macro-steps without loss of continuity.
+operated over 129 synchronized macro-steps without loss of continuity.
 Second, with \(H_\mathrm{eff}=\SI{35}{MJ.kg^{-1}}\), recession remains below one
-band at \SI{6.15}{s}; the pilot therefore does not yet predict a discrete
-movement of the hot boundary.
+band at \SI{6.45}{s}; the pilot therefore predicted no discrete movement of
+the hot boundary before the intentional stop. Conversion advances deeper than
+virtual recession, while outgassing and blowing decrease after their peak.
 
-The endpoint at \SI{7}{s} must replace this snapshot with the final balance and
-determine whether the first band is crossed. The report must then be completed
-with: (i) closed mass and energy balances; (ii) a PCG/SPARSE comparison
-including memory and wall time; (iii) a mesh-convergence study using 20 to 40
-radial bands; (iv) sensitivities to \(H_\mathrm{eff}\), \(h_0\), time step, and
-char properties; and (v) comparison with an instrumented test. Without these
-steps, computed recession remains a model-performance indicator, not a
-qualified motor prediction.
+This conclusion is strictly limited to the computed
+\SIrange{0}{6.45}{s} interval. It does not determine whether the first band
+would be crossed during the uncomputed \SI{0.55}{s}. More importantly, the
+executed geometry uses nominal diameters as radii, so the quantitative values
+do not describe the nominal motor. Before qualification, the geometry must be
+corrected and the analysis repeated; mass and energy balances must be closed;
+PCG and SPARSE must be compared; mesh convergence with 20 to 40 radial bands
+must be demonstrated; sensitivity to \(H_\mathrm{eff}\), \(h_0\), the time
+step, and char properties must be evaluated; and the model must be compared
+with an instrumented test. Without these steps, computed recession remains a
+model-performance indicator, not a qualified motor prediction.
 
 % ============================================================================
 \clearpage
