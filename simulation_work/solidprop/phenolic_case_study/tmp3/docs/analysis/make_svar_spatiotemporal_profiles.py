@@ -46,6 +46,9 @@ OUTPUTS = {
     ("axial", 1, "en"): ROOT / "svar1_axial_time_profiles_1pct_en.pdf",
     ("axial", 2, "fr"): ROOT / "svar2_axial_time_profiles_1pct_fr.pdf",
     ("axial", 2, "en"): ROOT / "svar2_axial_time_profiles_1pct_en.pdf",
+    ("radial", 2, "de"): ROOT / "svar2_radial_time_profiles_1pct_de.pdf",
+    ("axial", 1, "de"): ROOT / "svar1_axial_time_profiles_1pct_de.pdf",
+    ("axial", 2, "de"): ROOT / "svar2_axial_time_profiles_1pct_de.pdf",
 }
 
 STYLE = {
@@ -148,6 +151,46 @@ TEXT = {
             r"[$\mathrm{s^{-1}}$]"
         ),
     },
+    "de": {
+        "sampled": r"Abgetastetes Maximum je 1\%-Band",
+        "interpolated": r"Interpoliertes Band (kein Ergebnisknoten)",
+        "radial_profile": r"Maximale radiale Hüllkurve",
+        "axial_profile": r"Axiale Hüllkurve auf der heißen Fläche",
+        "panel_time": (
+            r"Ziel: ${target}\,\mathrm{{s}}$; "
+            r"gespeicherter Zustand: ${saved}\,\mathrm{{s}}$"
+        ),
+        "radial_summary": (
+            r"$\max={maximum}\,\mathrm{{s^{{-1}}}}$ bei "
+            r"$d={position}\,\mathrm{{mm}}$"
+        ),
+        "axial_summary_svar1": (
+            r"axialer Bereich: ${minimum}$--${maximum}$; "
+            r"relative Spannweite: ${spread}\,\%$"
+        ),
+        "axial_summary_svar2": (
+            r"axialer Bereich: ${minimum}$--${maximum}\,\mathrm{{s^{{-1}}}}$; "
+            r"relative Spannweite: ${spread}\,\%$"
+        ),
+        "radial_xlabel": r"Tiefe in \texttt{phe0} ab der heißen Innenfläche [\%]",
+        "radial_secondary": r"Radiale Tiefe ab der heißen Fläche [$\mathrm{mm}$]",
+        "axial_xlabel": (
+            r"Abstand von der unteren Ebene des vernetzten Segments "
+            r"[$\mathrm{mm}$]"
+        ),
+        "axial_secondary": r"Position entlang des Segments [\%]",
+        "radial_ylabel_svar2": (
+            r"Radiales Maximum von SVAR2, $\dot{\alpha}$ "
+            r"[$\mathrm{s^{-1}}$]"
+        ),
+        "axial_ylabel_svar1": (
+            r"Axiales SVAR1-Maximum auf der heißen Fläche, $\alpha$"
+        ),
+        "axial_ylabel_svar2": (
+            r"Axiales SVAR2-Maximum auf der heißen Fläche, $\dot{\alpha}$ "
+            r"[$\mathrm{s^{-1}}$]"
+        ),
+    },
 }
 
 
@@ -185,7 +228,7 @@ def configure_matplotlib():
 def localized_number(value, decimals, language):
     """Format a number for a localized LaTeX label."""
     text = ("{:.%df}" % decimals).format(value)
-    return text.replace(".", ",") if language == "fr" else text
+    return text.replace(".", ",") if language in ("fr", "de") else text
 
 
 def localized_physical_value(value, language):
@@ -576,6 +619,9 @@ def main():
         ("axial", 1, "en"),
         ("axial", 2, "fr"),
         ("axial", 2, "en"),
+        ("radial", 2, "de"),
+        ("axial", 1, "de"),
+        ("axial", 2, "de"),
     )
     common_arguments = (
         "--radial-csv",

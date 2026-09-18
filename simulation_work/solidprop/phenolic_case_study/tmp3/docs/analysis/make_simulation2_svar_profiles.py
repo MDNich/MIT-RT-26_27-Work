@@ -48,6 +48,7 @@ DEFAULT_CONTOUR_DISTANCE_CSV = (
 TARGET_TIMES_S = tuple(range(1, 7))
 PHE0_THICKNESS_MM = 2.540
 RECESSION_ONSET_MM = 0.001
+LANGUAGES = ("fr", "en", "de")
 
 OUTPUTS = {
     ("last_radial", 1, "fr"): ROOT / "simulation2_svar1_radial_profile_1pct_fr.pdf",
@@ -65,6 +66,14 @@ OUTPUTS = {
     ),
     ("contour_distance", 1, "en"): (
         ROOT / "simulation2_recession_to_pyrolysis_contours_vs_time_en.pdf"
+    ),
+    ("last_radial", 1, "de"): ROOT / "simulation2_svar1_radial_profile_1pct_de.pdf",
+    ("radial", 1, "de"): ROOT / "simulation2_svar1_radial_time_profiles_1pct_de.pdf",
+    ("radial", 2, "de"): ROOT / "simulation2_svar2_radial_time_profiles_1pct_de.pdf",
+    ("axial", 1, "de"): ROOT / "simulation2_svar1_axial_time_profiles_1pct_de.pdf",
+    ("axial", 2, "de"): ROOT / "simulation2_svar2_axial_time_profiles_1pct_de.pdf",
+    ("contour_distance", 1, "de"): (
+        ROOT / "simulation2_recession_to_pyrolysis_contours_vs_time_de.pdf"
     ),
 }
 
@@ -219,6 +228,71 @@ TEXT = {
             r"$t={time}\,\mathrm{{s}}$"
         ),
     },
+    "de": {
+        "sampled": r"Abgetastetes Maximum je 1\%-Band",
+        "interpolated": r"Interpoliertes Band (kein Ergebnisknoten)",
+        "profile": r"Maximale Hüllkurve",
+        "recession": r"Virtuelle Rezessionslinie",
+        "panel_time": (
+            r"Ziel: ${target}\,\mathrm{{s}}$; "
+            r"gespeicherter Zustand: ${saved}\,\mathrm{{s}}$"
+        ),
+        "recession_value": r"$s={value}\,\mathrm{{mm}}$",
+        "radial_summary": (
+            r"$\max={maximum}$ bei $d={position}\,\mathrm{{mm}}$; "
+            r"$s={recession}\,\mathrm{{mm}}$"
+        ),
+        "axial_summary": (
+            r"Bereich: ${minimum}$--${maximum}$; "
+            r"relative Spannweite: ${spread}\,\%$"
+        ),
+        "radial_xlabel": (
+            r"Tiefe in \texttt{phe0} ab der heißen Fläche "
+            r"[$\mathrm{mm}$]"
+        ),
+        "radial_secondary": r"Tiefe in \texttt{phe0} [\%]",
+        "axial_xlabel": (
+            r"Abstand von der unteren Ebene des vernetzten Segments "
+            r"[$\mathrm{mm}$]"
+        ),
+        "axial_secondary": r"Position entlang des Segments [\%]",
+        "ylabel_svar1_radial": r"Radiales Maximum von SVAR1, $\alpha$",
+        "ylabel_svar2_radial": (
+            r"Radiales Maximum von SVAR2, $\dot{\alpha}$ [$\mathrm{s^{-1}}$]"
+        ),
+        "ylabel_svar1_axial": (
+            r"Axiales SVAR1-Maximum auf der heißen Fläche, $\alpha$"
+        ),
+        "ylabel_svar2_axial": (
+            r"Axiales SVAR2-Maximum auf der heißen Fläche, "
+            r"$\dot{\alpha}$ [$\mathrm{s^{-1}}$]"
+        ),
+        "last_title": (
+            r"Simulation 2: radiales SVAR1-Profil im letzten extrahierten Zustand"
+            "\n"
+            r"$t={time}\,\mathrm{{s}}$; Rezessionslinie "
+            r"$s={recession}\,\mathrm{{mm}}$"
+        ),
+        "contour": r"Kontur $\alpha={threshold}$",
+        "contour_value": r"$d_{{{threshold}}}={depth}\,\mathrm{{mm}}$",
+        "not_reached": r"$\alpha={threshold}$ nicht erreicht",
+        "distance_title": (
+            r"Simulation 2: radialer Abstand zwischen virtueller Rezession"
+            "\n"
+            r"und Pyrolyse-Umsatzkonturen"
+        ),
+        "distance_xlabel": r"Physikalische Zeit [$\mathrm{s}$]",
+        "distance_ylabel": r"Vorzeichenbehafteter Abstand $d_{\alpha}-s$ [$\mathrm{mm}$]",
+        "distance_legend": r"Kontur $\alpha={threshold}\,\%$",
+        "distance_note": (
+            r"{count} exakte Zustände, $\Delta t={interval}\,\mathrm{{s}}$. "
+            r"Positiv: tiefere Kontur."
+        ),
+        "recession_onset": (
+            r"Beginn der Rezession ($s\geq 1\,\mathrm{{\mu m}}$): "
+            r"$t={time}\,\mathrm{{s}}$"
+        ),
+    },
 }
 
 
@@ -268,7 +342,7 @@ def configure_matplotlib():
 
 def localized_number(value, decimals, language):
     result = ("{:.%df}" % decimals).format(value)
-    return result.replace(".", ",") if language == "fr" else result
+    return result.replace(".", ",") if language in ("fr", "de") else result
 
 
 def localized_value(value, language):
@@ -888,7 +962,7 @@ def main():
     history = read_history(args.history_csv)
     if args.contour_only:
         contour_rows = read_contour_distance_csv(DEFAULT_CONTOUR_DISTANCE_CSV)
-        for language in ("fr", "en"):
+        for language in LANGUAGES:
             plot_contour_distances(
                 OUTPUTS[("contour_distance", 1, language)],
                 contour_rows,
@@ -896,7 +970,7 @@ def main():
                 language,
             )
         print("Read {}".format(DEFAULT_CONTOUR_DISTANCE_CSV))
-        for language in ("fr", "en"):
+        for language in LANGUAGES:
             print(
                 "Wrote {}".format(
                     OUTPUTS[("contour_distance", 1, language)]
@@ -928,7 +1002,7 @@ def main():
             contour_rows,
         )
 
-    for language in ("fr", "en"):
+    for language in LANGUAGES:
         plot_last_radial(
             OUTPUTS[("last_radial", 1, language)],
             radial_latest[1],

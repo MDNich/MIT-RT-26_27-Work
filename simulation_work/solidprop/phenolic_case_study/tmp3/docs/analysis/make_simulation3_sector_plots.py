@@ -69,6 +69,29 @@ TEXT = {
         "gas_title": "Outgassing, blowing, and surface temperature",
         "history_note": "Finite difference of the converged controller history",
     },
+    "de": {
+        "time": r"Physikalische Zeit, $t$ [$\mathrm{s}$]",
+        "alpha": r"Mittlerer Umsatz, $\overline{\alpha}$",
+        "rec": r"Kumulierte virtuelle Rezession [$\mu\mathrm{m}$]",
+        "rate": r"Rezessionsgeschwindigkeit je Makroschritt [$\mu\mathrm{m}\,\mathrm{s}^{-1}$]",
+        "rec_t": "Virtuelle Rezession des Dünnsektors über der Zeit",
+        "rate_t": "Rezessionsgeschwindigkeit des Dünnsektors über der Zeit",
+        "rec_a": "Virtuelle Rezession über dem mittleren Umsatz",
+        "rate_a": "Rezessionsgeschwindigkeit über dem mittleren Umsatz",
+        "onset": r"Erster Zustand mit $s\geq1\,\mu\mathrm{m}$",
+        "deactivation": "Deaktivierung einer Radialreihe",
+        "latest": r"Letzter konvergierter Zustand: $t={t}\,\mathrm{{s}}$, $s={s}\,\mu\mathrm{{m}}$",
+        "mean": r"$\overline{\alpha}$",
+        "minimum": r"$\alpha_{\min}$",
+        "conversion_title": "Umsatz der ersten Phenolharzschicht",
+        "conversion_y": "Lokaler Umsatz der aktiven Schicht",
+        "flux": r"Gasmassenflussdichte [$\mathrm{kg}\,\mathrm{m}^{-2}\,\mathrm{s}^{-1}$]",
+        "flow": r"Massenstrom des Sektors [$\mathrm{mg}\,\mathrm{s}^{-1}$]",
+        "h": r"Effektiver Konvektionskoeffizient [$\mathrm{W}\,\mathrm{m}^{-2}\,\mathrm{K}^{-1}$]",
+        "temp": r"Maximaltemperatur [$^\circ\mathrm{C}$]",
+        "gas_title": "Ausgasung, Blowing und Oberflächentemperatur",
+        "history_note": "Finite Differenz der konvergierten Reglerhistorie",
+    },
 }
 
 
@@ -125,7 +148,7 @@ def load_history():
 
 def local(value, decimals, lang):
     answer = f"{value:.{decimals}f}"
-    return answer.replace(".", ",") if lang == "fr" else answer
+    return answer.replace(".", ",") if lang in ("fr", "de") else answer
 
 
 def formatter(lang, decimals=1):
@@ -282,13 +305,13 @@ def plot_thermal_gas(data, lang):
 def main():
     setup_style()
     data = load_history()
-    for lang in ("fr", "en"):
+    for lang in ("fr", "en", "de"):
         for x_kind in ("time", "alpha"):
             plot_recession(data, lang, x_kind)
             plot_rate(data, lang, x_kind)
         plot_conversion(data, lang)
         plot_thermal_gas(data, lang)
-    print(f"Generated 12 figures from {data.size} converged states through t={data['time_s'][-1]:.2f} s")
+    print(f"Generated 18 figures from {data.size} converged states through t={data['time_s'][-1]:.2f} s")
 
 
 if __name__ == "__main__":

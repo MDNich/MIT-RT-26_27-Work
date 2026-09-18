@@ -41,6 +41,7 @@ from matplotlib.ticker import FuncFormatter  # noqa: E402
 ROOT = Path(__file__).resolve().parent
 DEFAULT_PDF_FR = ROOT / "svar1_radial_profile_1pct_fr.pdf"
 DEFAULT_PDF_EN = ROOT / "svar1_radial_profile_1pct_en.pdf"
+DEFAULT_PDF_DE = ROOT / "svar1_radial_profile_1pct_de.pdf"
 DEFAULT_CSV = ROOT / "svar1_radial_profile_1pct.csv"
 
 RESULT_TIME_S = 6.3856169387672
@@ -204,6 +205,26 @@ TEXT = {
         "hot_face": r"face chaude",
         "outer_face": r"\texttt{phe0} / époxy",
     },
+    "de": {
+        "sampled": r"Abgetastetes Maximum je 1\%-Band",
+        "interpolated": r"Interpoliertes Band (kein Ergebnisknoten)",
+        "profile": r"Maximales SVAR1-Profil",
+        "contour": r"Kontur SVAR1 $= {threshold}$",
+        "annotation": r"SVAR1 $= {threshold}$: ${depth}\,\mathrm{{mm}}$",
+        "xlabel": (
+            r"Tiefe in \texttt{phe0} ab der heißen Innenfläche [\%]"
+        ),
+        "ylabel": r"Maximaler Pyrolyseumsatz, SVAR1 ($\alpha$)",
+        "title": (
+            r"Maximales SVAR1 in radialen 1\%-Bändern von \texttt{{phe0}}"
+            "\n"
+            r"Global gemitteltes elementknotenbezogenes Feld bei "
+            r"$t = {time}\,\mathrm{{s}}$"
+        ),
+        "secondary_xlabel": r"Radiale Tiefe ab der heißen Fläche [$\mathrm{mm}$]",
+        "hot_face": r"heiße Fläche",
+        "outer_face": r"\texttt{phe0} / Epoxid",
+    },
 }
 
 
@@ -303,7 +324,7 @@ def write_csv(path, indices, raw, plotted, counts):
 def localized_number(value, decimals, language):
     """Format a number for use in a localized LaTeX label."""
     text = ("{:.%df}" % decimals).format(value)
-    return text.replace(".", ",") if language == "fr" else text
+    return text.replace(".", ",") if language in ("fr", "de") else text
 
 
 def plot_profile(path, indices, centers, raw, plotted, language):
@@ -477,6 +498,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--pdf-fr", type=Path, default=DEFAULT_PDF_FR)
     parser.add_argument("--pdf-en", type=Path, default=DEFAULT_PDF_EN)
+    parser.add_argument("--pdf-de", type=Path, default=DEFAULT_PDF_DE)
     parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
     parser.add_argument(
         "--language",
@@ -495,7 +517,11 @@ def main():
     if args.language:
         configure_matplotlib()
         indices, centers, raw, plotted, _ = load_profile()
-        target = args.pdf_fr if args.language == "fr" else args.pdf_en
+        target = {
+            "fr": args.pdf_fr,
+            "en": args.pdf_en,
+            "de": args.pdf_de,
+        }[args.language]
         target.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(
             prefix=".svar1_pdf_",
@@ -522,10 +548,12 @@ def main():
         str(args.pdf_fr),
         "--pdf-en",
         str(args.pdf_en),
+        "--pdf-de",
+        str(args.pdf_de),
         "--csv",
         str(args.csv),
     )
-    for language in ("fr", "en"):
+    for language in ("fr", "en", "de"):
         subprocess.run(
             (
                 sys.executable,

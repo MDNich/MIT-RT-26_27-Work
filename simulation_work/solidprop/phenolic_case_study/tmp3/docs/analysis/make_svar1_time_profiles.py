@@ -35,6 +35,7 @@ ROOT = Path(__file__).resolve().parent
 DEFAULT_CSV = ROOT / "svar1_time_profiles_1pct.csv"
 DEFAULT_PDF_FR = ROOT / "svar1_time_profiles_1pct_fr.pdf"
 DEFAULT_PDF_EN = ROOT / "svar1_time_profiles_1pct_en.pdf"
+DEFAULT_PDF_DE = ROOT / "svar1_time_profiles_1pct_de.pdf"
 
 PHE0_THICKNESS_MM = 2.540
 TARGET_TIMES_S = tuple(range(1, 7))
@@ -76,6 +77,21 @@ TEXT = {
         "xlabel": r"Depth through \texttt{phe0} from the hot inner face [\%]",
         "ylabel": r"Maximum SVAR1, $\alpha$",
         "secondary_xlabel": r"Radial depth from the hot face [$\mathrm{mm}$]",
+    },
+    "de": {
+        "sampled": r"Abgetastetes Maximum je 1\%-Band",
+        "interpolated": r"Interpoliertes Band (kein Ergebnisknoten)",
+        "profile": r"Maximale radiale Hüllkurve",
+        "contour": r"Tiefe der Kontur $\alpha={threshold}$",
+        "panel_time": (
+            r"Ziel: ${target}\,\mathrm{{s}}$; "
+            r"gespeicherter Zustand: ${saved}\,\mathrm{{s}}$"
+        ),
+        "depth": r"$d_{{{threshold}}}={depth}\,\mathrm{{mm}}$",
+        "not_reached": r"$\alpha={threshold}$ nicht erreicht",
+        "xlabel": r"Tiefe in \texttt{phe0} ab der heißen Innenfläche [\%]",
+        "ylabel": r"Maximum von SVAR1, $\alpha$",
+        "secondary_xlabel": r"Radiale Tiefe ab der heißen Fläche [$\mathrm{mm}$]",
     },
 }
 
@@ -121,7 +137,7 @@ def configure_matplotlib():
 def localized_number(value, decimals, language):
     """Format a number for a localized LaTeX label."""
     text = ("{:.%df}" % decimals).format(value)
-    return text.replace(".", ",") if language == "fr" else text
+    return text.replace(".", ",") if language in ("fr", "de") else text
 
 
 def load_profiles(path):
@@ -389,6 +405,7 @@ def parse_args():
     parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
     parser.add_argument("--pdf-fr", type=Path, default=DEFAULT_PDF_FR)
     parser.add_argument("--pdf-en", type=Path, default=DEFAULT_PDF_EN)
+    parser.add_argument("--pdf-de", type=Path, default=DEFAULT_PDF_DE)
     parser.add_argument(
         "--language",
         choices=tuple(TEXT),
@@ -402,7 +419,11 @@ def main():
     if args.language:
         configure_matplotlib()
         profiles = load_profiles(args.csv)
-        target = args.pdf_fr if args.language == "fr" else args.pdf_en
+        target = {
+            "fr": args.pdf_fr,
+            "en": args.pdf_en,
+            "de": args.pdf_de,
+        }[args.language]
         with tempfile.TemporaryDirectory(
             prefix=".svar1_time_pdf_",
             dir=target.parent,
@@ -424,8 +445,10 @@ def main():
         str(args.pdf_fr),
         "--pdf-en",
         str(args.pdf_en),
+        "--pdf-de",
+        str(args.pdf_de),
     )
-    for language in ("fr", "en"):
+    for language in ("fr", "en", "de"):
         subprocess.run(
             (
                 sys.executable,

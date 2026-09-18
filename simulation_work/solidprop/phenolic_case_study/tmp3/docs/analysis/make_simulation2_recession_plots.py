@@ -79,6 +79,25 @@ TEXT = {
         "rate_population": r"Bars: spatial $\pm1\sigma$ over "
         r"$N={count}$ inner-surface nodes",
     },
+    "de": {
+        "time_xlabel": r"Physikalische Zeit, $t$ [$\mathrm{s}$]",
+        "alpha_xlabel": r"Mittlerer Phenolharzumsatz, $\overline{\alpha}$",
+        "ylabel": r"Kumulierte virtuelle Rezession [$\mu\mathrm{m}$]",
+        "time_title": r"Virtuelle Rezession über der Zeit",
+        "alpha_title": r"Virtuelle Rezession über dem mittleren Umsatz",
+        "rate_ylabel": r"Mittlere Rezessionsgeschwindigkeit, $\langle\dot{s}\rangle$ "
+        r"[$\mu\mathrm{m}\,\mathrm{s}^{-1}$]",
+        "rate_time_title": r"Rezessionsgeschwindigkeit über der Zeit",
+        "rate_alpha_title": r"Rezessionsgeschwindigkeit über dem mittleren Umsatz",
+        "latest": r"Letzter Zustand: $t={time}\,\mathrm{{s}}$, "
+        r"$\overline{{\alpha}}={alpha}$, $s={recession}\,\mu\mathrm{{m}}$",
+        "latest_rate": r"Letztes Intervall: $t={time}\,\mathrm{{s}}$, "
+        r"$\overline{{\alpha}}={alpha}$, "
+        r"$\langle\dot{{s}}\rangle={rate}\pm{std}\,"
+        r"\mu\mathrm{{m}}\,\mathrm{{s}}^{{-1}}$",
+        "rate_population": r"Balken: räumlich $\pm1\sigma$ über "
+        r"$N={count}$ Knoten der Innenfläche",
+    },
 }
 
 
@@ -142,7 +161,7 @@ def load_history(path):
 def localized(value, decimals, language):
     """Format a number for a localized LaTeX annotation."""
     value_text = ("{:.%df}" % decimals).format(value)
-    return value_text.replace(".", ",") if language == "fr" else value_text
+    return value_text.replace(".", ",") if language in ("fr", "de") else value_text
 
 
 def decimal_formatter(language, decimals=1):
@@ -404,7 +423,7 @@ def main():
             "Surface-rate statistics and controller history are not synchronized."
         )
 
-    for language in ("fr", "en"):
+    for language in ("fr", "en", "de"):
         draw_plot(
             args.output_dir
             / "simulation2_recession_vs_time_{}.pdf".format(language),

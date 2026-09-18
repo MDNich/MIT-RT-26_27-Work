@@ -16,21 +16,22 @@ core.DEFAULT_AXIAL_CSV = HERE / "simulation3_sector_svar_axial_time_profiles_1pc
 core.DEFAULT_HISTORY_CSV = HERE / "simulation3_sector_history_snapshot.csv"
 core.DEFAULT_CONTOUR_DISTANCE_CSV = HERE / "simulation3_sector_recession_to_pyrolysis_contours_vs_time.csv"
 core.PHE0_THICKNESS_MM = 1.270
+core.LANGUAGES = ("fr", "en", "de")
 core.OUTPUTS = {
     ("last_radial", 1, lang): HERE / f"simulation3_sector_svar1_radial_profile_1pct_{lang}.pdf"
-    for lang in ("fr", "en")
+    for lang in core.LANGUAGES
 }
 core.OUTPUTS.update({
     ("radial", idx, lang): HERE / f"simulation3_sector_svar{idx}_radial_time_profiles_1pct_{lang}.pdf"
-    for idx in (1, 2) for lang in ("fr", "en")
+    for idx in (1, 2) for lang in core.LANGUAGES
 })
 core.OUTPUTS.update({
     ("axial", idx, lang): HERE / f"simulation3_sector_svar{idx}_axial_time_profiles_1pct_{lang}.pdf"
-    for idx in (1, 2) for lang in ("fr", "en")
+    for idx in (1, 2) for lang in core.LANGUAGES
 })
 core.OUTPUTS.update({
     ("contour_distance", 1, lang): HERE / f"simulation3_sector_recession_to_pyrolysis_contours_vs_time_{lang}.pdf"
-    for lang in ("fr", "en")
+    for lang in core.LANGUAGES
 })
 core.TEXT["fr"]["last_title"] = (
     r"Simulation 3 : profil radial de SVAR1 au dernier état extrait"
@@ -51,6 +52,16 @@ core.TEXT["en"]["distance_title"] = (
     r"Simulation 3: radial separation between virtual recession"
     "\n"
     r"and pyrolysis-conversion contours"
+)
+core.TEXT["de"]["last_title"] = (
+    r"Simulation 3: radiales SVAR1-Profil im letzten extrahierten Zustand"
+    "\n"
+    r"$t={time}\,\mathrm{{s}}$; Rezessionslinie $s={recession}\,\mathrm{{mm}}$"
+)
+core.TEXT["de"]["distance_title"] = (
+    r"Simulation 3: radialer Abstand zwischen virtueller Rezession"
+    "\n"
+    r"und Pyrolyse-Umsatzkonturen"
 )
 
 
