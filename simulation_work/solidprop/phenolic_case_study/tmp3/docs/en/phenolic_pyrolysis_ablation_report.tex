@@ -80,7 +80,7 @@
 \title{~\\[-2em]\sc Thermochemical Modeling of a Phenolic Liner\\
 in a Solid Rocket Motor Using ANSYS Mechanical}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Solid Propulsion Simulations}
-\date{\sc July 24, 2026}
+\date{\sc September 18, 2026}
 
 \begin{document}
 \selectlanguage{english}
@@ -107,7 +107,10 @@ macro-steps. No extrapolation to \SI{7}{s} is used. Fluent and propellant
 combustion are outside the scope of this study. Computed quantities remain
 model results: they must be compared with measurements of the material
 actually manufactured, and the radial geometry must be corrected before any
-design or safety decision is made.
+design or safety decision is made. A third simulation uses the corrected
+radii and a \(0.10^\circ\) angular sector. It reached its \SI{7}{s} horizon
+normally; its section presents all 140 converged states, both deleted
+phenolic rows, and the final spatial analysis.
 \end{minipage}
 \end{center}
 \vfill
@@ -1447,7 +1450,7 @@ condition by artificially adjusting \(H_\mathrm{eff}\).
 
 \subsubsection{Computational Architecture}
 
-Simulation 2 is now implemented and running with ANSYS Mechanical APDL 2026
+Simulation 2 was implemented and executed with ANSYS Mechanical APDL 2026
 R1.02. It reuses the validated three-dimensional mesh from Simulation 1 and the
 native \code{UserMatTh} library. The five state variables stored in
 \code{phe0} are:
@@ -1846,6 +1849,285 @@ must be demonstrated; sensitivity to \(H_\mathrm{eff}\), \(h_0\), the time
 step, and char properties must be evaluated; and the model must be compared
 with an instrumented test. Without these steps, computed recession remains a
 model-performance indicator, not a qualified motor prediction.
+
+% ============================================================================
+\clearpage
+\section{Simulation 3: Corrected Thin Sector and Refined Radial Mesh}
+
+\subsection{Objective and Executed Configuration}
+
+Simulation 3 transfers the Simulation 2 thermochemical chain to a corrected
+geometry that is strongly reduced in the circumferential direction. The model
+represents a \(0.10^\circ\) sector with an axial length of \SI{50}{mm}. It
+retains the four coaxial layers at their actual radii: \code{phe0} from
+\SIrange{66.675}{67.945}{mm}, epoxy from
+\SIrange{67.945}{68.2625}{mm}, \code{phe1} from
+\SIrange{68.2625}{71.4375}{mm}, and aluminum from
+\SIrange{71.4375}{76.2}{mm}. A full ring contains 3,600 such sectors; only
+extensive quantities are multiplied by this factor. Temperatures,
+conversions, surface fluxes, and recession depths are not rescaled.
+
+The sector is discretized with 35,200 linear eight-node hexahedra and 54,540
+nodes. The mesh contains 100 axial divisions, two circumferential divisions,
+and 64, 16, 64, and 32 radial divisions in \code{phe0}, epoxy, \code{phe1},
+and aluminum, respectively. The nominal radial pitch of the first layer is
+therefore
+\[
+  \Delta r_\mathrm{phe0}=\frac{\SI{1.27}{mm}}{64}
+  =\SI{19.84375}{\micro m},
+\]
+which is sixteen times finer than the \SI{317.5}{\micro m} bands used in
+Simulation 2. Three bonded interfaces provide thermal continuity between the
+four bodies.
+
+The nonlinear transient thermal solve was executed in Mechanical/MAPDL 2026
+R1.02 on ten DMP ranks. Its horizon remains \SI{7}{s}, divided into 140
+macro-steps of \SI{0.05}{s}. The controller appends one history row after
+every converged macro-step and retains four restart generations. This design
+supports a controlled stop without losing already converged states.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.43\textwidth}L{0.43\textwidth}}
+\toprule
+\textbf{Parameter} & \textbf{Executed Simulation 3 value} \\
+\midrule
+Sector and length & \(0.10^\circ\); \SI{50}{mm} \\
+Hot / outer radius & \SI{66.675}{mm} / \SI{76.2}{mm} \\
+Mesh & 54,540 nodes; 35,200 linear hexahedra \\
+\(z/\theta\) divisions & 100 / 2 \\
+Radial divisions & 64 / 16 / 64 / 32 \\
+Radial pitch in \code{phe0} & \SI{19.84375}{\micro m} \\
+Contacts & 3 bonded interfaces \\
+Parallel execution & 10 DMP ranks \\
+Time horizon & \SI{7}{s}; 140 steps of \SI{0.05}{s} \\
+Full-ring scale factor & 3,600, for extensive quantities only \\
+\bottomrule
+\end{tabular}
+\caption{Geometry and mesh of the executed Simulation 3.}
+\label{tab:sim3-configuration}
+\end{table}
+
+\subsection{Final Status and Performance}
+
+The run completed normally on September 18, 2026. All 140 macro-steps
+converged through \(t=\SI{7.00}{s}\), and the 140 history rows are uniformly
+spaced by \SI{0.05}{s}, with no missing or duplicated time. MAPDL explicitly
+reports \code{RUN COMPLETED}; no \code{ANSYS.exe}, \code{mpiexec.exe}, or
+\code{hydra\_pmi\_proxy.exe} process remains after completion.
+
+Total elapsed time is \SI{5188.519}{s}, or 86 min 28.5 s, corresponding to an
+average of 37.1 s per macro-step. Solution computation accounts for
+\SI{984.3}{s} (19.0\%), while solution post-processing accounts for
+\SI{3765.9}{s} (72.6\%). This distribution shows that result writing and
+assembly dominate the cost of the thin-sector run. The ten ranks wrote
+\SI{396.2}{GB} and read \SI{82.5}{GB}; working files occupy
+\SI{7656.1}{MB}. Aggregate memory use reached \SI{828}{MB}, with
+\SI{4032}{MB} allocated.
+
+The log contains no error and twelve warnings. They concern disabled element
+shape checking, the standard \code{USERCK} implementation, evaluation at
+\SI{22}{\celsius} below the first tabulated temperature of several material
+properties, and one ignored \code{CEWRITE} command after the solve. None of
+these messages prevented convergence, production of all ten RTH partitions,
+or recording of the 140 states.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.49\textwidth}L{0.37\textwidth}}
+\toprule
+\textbf{Metric} & \textbf{Final value} \\
+\midrule
+Converged states & 140 of 140; \SIrange{0.05}{7.00}{s} \\
+Parallel execution & 10 DMP ranks, sparse direct solver \\
+Elapsed / aggregate CPU time & \SI{5188.519}{s} / \SI{5882.922}{s} \\
+Solution computation time & \SI{984.3}{s} \\
+Solution post-processing time & \SI{3765.9}{s} \\
+Disk I/O read / written & \SI{82.5}{GB} / \SI{396.2}{GB} \\
+Errors / warnings & 0 / 12 \\
+MAPDL outcome & \code{RUN COMPLETED} \\
+\bottomrule
+\end{tabular}
+\caption{Final Simulation 3 performance summary.}
+\label{tab:sim3-performance}
+\end{table}
+
+\subsection{Final Thermochemical Results}
+
+The first active row crosses the \(\alpha=0.99\) threshold at
+\SI{2.60}{s}, with \(\alpha=0.99050948\); the controller then deactivates 200
+\code{phe0} hexahedra. The second row crosses the same threshold at
+\SI{2.95}{s}, with \(\alpha=0.99021488\), and another 200 hexahedra are
+deactivated. In total, 400 phenolic elements are deleted and no epoxy,
+\code{phe1}, or aluminum element is removed. The discrete hot radius advances
+from \SI{66.675}{mm} to \SI{66.714688}{mm}, or two radial pitches. The third
+row remains active: its conversion is 0.98643222 at \SI{3.00}{s} and
+0.98962501 at \SI{7.00}{s}, just below the deletion criterion. Equality of
+the mean and minimum history values is consistent with sector symmetry and is
+checked below by the spatial DPF extraction.
+
+The wall gas mass flux peaks at \SI{0.1220}{kg.m^{-2}.s^{-1}} at
+\SI{1.80}{s}, then decreases to \SI{0.001636}{kg.m^{-2}.s^{-1}} at
+\SI{7.00}{s}. Sector flow peaks at \SI{0.7099}{mg.s^{-1}} and ends at
+\SI{0.009522}{mg.s^{-1}}. Its time integral is \SI{1.689}{mg} for the sector,
+or \SI{6.080}{g} for the complete ring by the simple factor of 3,600. The
+effective convection coefficient reaches a minimum of
+\SI{836.67}{W.m^{-2}.K^{-1}} at peak outgassing and recovers to
+\SI{997.39}{W.m^{-2}.K^{-1}}. Maximum temperature peaks at
+\SI{1400.50}{\celsius} at \SI{2.60}{s}, then falls to
+\SI{435.36}{\celsius} at completion as inner rows are exposed.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_conversion_vs_time_en.pdf}
+\caption{Mean and minimum conversion recorded in the thin sector's active
+layer over all 140 converged states. Vertical lines mark the two radial-row
+deactivations.}
+\label{fig:sim3-conversion-time-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_thermal_gas_overview_en.pdf}
+\caption{Evolution of outgassing, effective convection coefficient, and
+maximum hot-surface temperature. Total flow is for the \(0.10^\circ\) sector.}
+\label{fig:sim3-thermal-gas-en}
+\end{figure}
+
+\subsection{Virtual Recession and Element Deactivation}
+
+Accumulated energy-based recession reaches \SI{446.254}{\micro m} at
+\SI{7.00}{s}. The discrete surface has moved by only
+\SI{39.6875}{\micro m}, because deletion requires both the geometric threshold
+and \(\alpha\geq0.99\). Virtual recession therefore exceeds the third-row
+threshold of \SI{59.53125}{\micro m}, but that row's final conversion remains
+at 0.98962501, so the controller correctly keeps it active. The final state
+confirms \code{SIM2\_ILAY=2} and \code{SIM2\_NEL=200}. The history's narrow
+integer fields display \code{****} and \code{**}; the plots ignore only those
+two unreadable fields and retain every valid physical column.
+
+Numerically significant recession onset is defined as
+\(s\ge\SI{1}{\micro m}\). It occurs in the first recorded macro-step at
+\SI{0.05}{s}, where \(s=\SI{3.918}{\micro m}\). The time plots mark this
+instant with a vertical line; two dotted lines mark deactivations at
+\SI{2.60}{s} and \SI{2.95}{s}. The rate shown below is the finite difference
+of accumulated recession between successive macro-steps; it is
+\SI{78.37}{\micro m.s^{-1}} over the first interval and
+\SI{85.28}{\micro m.s^{-1}} over the final interval. Plots against
+\(\overline{\alpha}\) preserve the discontinuities caused by switching from
+one active row to the next.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_vs_time_en.pdf}
+\caption{Accumulated virtual recession versus time for Simulation 3. The
+vertical lines mark numerical onset of the recession front and both radial-row
+deactivations.}
+\label{fig:sim3-recession-time-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_rate_vs_time_en.pdf}
+\caption{Macro-step recession rate. This is a temporal derivative of the
+controller history, without a spatial standard-deviation bar.}
+\label{fig:sim3-rate-time-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_vs_alpha_avg_en.pdf}
+\caption{Accumulated virtual recession versus active-layer mean conversion.}
+\label{fig:sim3-recession-alpha-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_rate_vs_alpha_avg_en.pdf}
+\caption{Macro-step recession rate versus mean conversion.}
+\label{fig:sim3-rate-alpha-en}
+\end{figure}
+
+\subsection{Final Spatial Analysis of State Variables}
+
+After normal completion, the ten \code{file0.rth} through \code{file9.rth}
+partitions were read in strictly non-destructive mode. All 140 DPF times match
+the 140 history times exactly. Element--node contributions sharing a global
+node identifier are averaged across elements and partitions, then grouped in
+100 radial bands of 1\%. The extractor handles each state's topology
+separately so that profiles remain valid after both deletion events.
+
+The 90\%, 95\%, and 99\% contours first appear at \SI{1.80}{s},
+\SI{2.05}{s}, and \SI{2.55}{s}, respectively. At \SI{7.00}{s}, their depths
+from the initial hot face are \SI{0.223066}{mm}, \SI{0.156483}{mm}, and
+\SI{0.048842}{mm}. The signed separations \(d_\alpha-s\) are therefore
+\SI{-0.223188}{mm}, \SI{-0.289771}{mm}, and \SI{-0.397412}{mm}. The
+energy-based virtual-recession coordinate is thus deeper than all three
+conversion fronts, confirming that it must not be interpreted as a
+\code{SVAR1} contour.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_svar1_radial_profile_1pct_en.pdf}
+\caption{Final radial \code{SVAR1} profile at \SI{7}{s}, including conversion
+contours and the virtual-recession line.}
+\label{fig:sim3-svar1-radial-final-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar1_radial_time_profiles_1pct_en.pdf}
+\caption{Evolution of radial \code{SVAR1} profiles from 1 to \SI{6}{s}. The
+recession line is shown in every panel.}
+\label{fig:sim3-svar1-radial-time-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar2_radial_time_profiles_1pct_en.pdf}
+\caption{Evolution of radial \code{SVAR2} profiles; the maximum identifies the
+region where pyrolysis remains active.}
+\label{fig:sim3-svar2-radial-time-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar1_axial_time_profiles_1pct_en.pdf}
+\caption{Axial uniformity of \code{SVAR1} along the thin sector's hot face.}
+\label{fig:sim3-svar1-axial-time-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar2_axial_time_profiles_1pct_en.pdf}
+\caption{Axial uniformity of \code{SVAR2} along the thin sector's hot face.}
+\label{fig:sim3-svar2-axial-time-en}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_to_pyrolysis_contours_vs_time_en.pdf}
+\caption{Signed separation between the recession line and the 99\%, 95\%, and
+90\% conversion contours over all 140 states. Positive values place the
+contour deeper into the wall. The vertical line marks the first numerically
+significant recession.}
+\label{fig:sim3-recession-contour-distance-en}
+\end{figure}
+
+\subsection{Scope and Reproducibility}
+
+The Simulation 3 campaign is closed at \SI{7}{s}. Temporal results come from
+the synchronized final history and spatial results from the ten stable RTH
+partitions. Conclusions remain conditional on the material laws, low-
+temperature property extrapolation, and the numerical criteria
+\(\alpha_c=0.99\) and \(\Delta r=\SI{19.84375}{\micro m}\). They do not, by
+themselves, constitute experimental validation of ablation. All CSV files and
+bilingual figures in this section can be reproduced from the preserved final
+result files.
 
 % ============================================================================
 \clearpage

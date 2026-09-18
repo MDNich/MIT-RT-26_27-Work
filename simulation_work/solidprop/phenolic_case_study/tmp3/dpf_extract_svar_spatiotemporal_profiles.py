@@ -165,38 +165,39 @@ def profile_rows(
     selection_mask_by_node=None,
 ):
     """Yield one hundred profile rows for each time and state variable."""
-    selected = (contribution_counts > 0) & np.isfinite(coordinate_by_node)
-    if selection_mask_by_node is not None:
-        selected &= selection_mask_by_node
-    node_ids = np.flatnonzero(selected)
-    coordinate_fraction = (
-        (coordinate_by_node[node_ids] - coordinate_origin) / coordinate_extent
-    )
-    in_interval = (
-        (coordinate_fraction >= -1.0e-5)
-        & (coordinate_fraction <= 1.0 + 1.0e-5)
-    )
-    node_ids = node_ids[in_interval]
-    coordinate_fraction = np.clip(
-        coordinate_fraction[in_interval],
-        0.0,
-        1.0,
-    )
-    bin_indices = np.minimum(
-        np.floor(100.0 * coordinate_fraction).astype(int),
-        99,
-    )
-    counts = np.bincount(bin_indices, minlength=100)
-
     for svar_offset, svar_index in enumerate(SVAR_INDICES):
         for time_offset, (
             target_time,
             set_id,
             saved_time,
         ) in enumerate(time_mappings):
+            counts_by_node = contribution_counts[time_offset]
+            selected = (counts_by_node > 0) & np.isfinite(coordinate_by_node)
+            if selection_mask_by_node is not None:
+                selected &= selection_mask_by_node
+            node_ids = np.flatnonzero(selected)
+            coordinate_fraction = (
+                (coordinate_by_node[node_ids] - coordinate_origin)
+                / coordinate_extent
+            )
+            in_interval = (
+                (coordinate_fraction >= -1.0e-5)
+                & (coordinate_fraction <= 1.0 + 1.0e-5)
+            )
+            node_ids = node_ids[in_interval]
+            coordinate_fraction = np.clip(
+                coordinate_fraction[in_interval],
+                0.0,
+                1.0,
+            )
+            bin_indices = np.minimum(
+                np.floor(100.0 * coordinate_fraction).astype(int),
+                99,
+            )
+            counts = np.bincount(bin_indices, minlength=100)
             nodal_values = (
                 value_sums[svar_offset, time_offset, node_ids]
-                / contribution_counts[node_ids].astype(float)
+                / counts_by_node[node_ids].astype(float)
             )
             finite = np.isfinite(nodal_values)
             raw = np.full(100, -np.inf, dtype=float)
@@ -306,12 +307,18 @@ def main():
 
     radius_by_node = np.full(1, np.nan, dtype=float)
     axial_coordinate_by_node = np.full(1, np.nan, dtype=float)
-    contribution_counts = np.zeros(1, dtype=np.int64)
+    contribution_counts = np.zeros(
+        (len(time_mappings), 1),
+        dtype=np.int16,
+    )
     value_sums = np.zeros(
         (len(SVAR_INDICES), len(time_mappings), 1),
         dtype=float,
     )
-    nodal_partition_counts = np.zeros(1, dtype=np.int64)
+    nodal_partition_counts = np.zeros(
+        (len(time_mappings), 1),
+        dtype=np.int16,
+    )
     nodal_value_sums = np.zeros(
         (len(SVAR_INDICES), len(time_mappings), 1),
         dtype=float,
@@ -426,8 +433,6 @@ def main():
             )
 
         contributing_partitions += 1
-        flat_node_ids = elemental_node_ids(mesh, first_fields[1])
-        np.add.at(contribution_counts, flat_node_ids, 1)
         first_nodal_fields = nodal_state_variable_fields(
             model,
             time_mappings[0][1],
@@ -440,21 +445,20 @@ def main():
                     result_file,
                 )
             )
-        nodal_node_ids = np.asarray(
-            first_nodal_fields[1].scoping.ids,
-            dtype=np.int64,
+        first_flat_node_ids = elemental_node_ids(mesh, first_fields[1])
+        first_nodal_node_ids = np.asarray(
+            first_nodal_fields[1].scoping.ids, dtype=np.int64
         )
-        np.add.at(nodal_partition_counts, nodal_node_ids, 1)
         print(
             "  node IDs: coordinates=[{}, {}], elemental=[{}, {}], "
             "DPF nodal=[{}, {}]"
             .format(
                 int(coordinate_ids.min()),
                 int(coordinate_ids.max()),
-                int(flat_node_ids.min()),
-                int(flat_node_ids.max()),
-                int(nodal_node_ids.min()),
-                int(nodal_node_ids.max()),
+                int(first_flat_node_ids.min()),
+                int(first_flat_node_ids.max()),
+                int(first_nodal_node_ids.min()),
+                int(first_nodal_node_ids.max()),
             )
         )
 
@@ -463,6 +467,12 @@ def main():
                 first_fields
                 if time_offset == 0
                 else state_variable_fields(model, set_id)
+            )
+            flat_node_ids = elemental_node_ids(mesh, fields[1])
+            np.add.at(
+                contribution_counts[time_offset],
+                flat_node_ids,
+                1,
             )
             for svar_offset, svar_index in enumerate(SVAR_INDICES):
                 field = fields.get(svar_index)
@@ -477,7 +487,7 @@ def main():
                 values = np.asarray(field.data, dtype=float).reshape(-1)
                 if values.size != flat_node_ids.size:
                     raise RuntimeError(
-                        "SVAR{} topology changed in {} at set {}.".format(
+                        "SVAR{} data/scoping mismatch in {} at set {}.".format(
                             svar_index,
                             result_file,
                             set_id,
@@ -493,6 +503,15 @@ def main():
                 if time_offset == 0
                 else nodal_state_variable_fields(model, set_id)
             )
+            nodal_node_ids = np.asarray(
+                nodal_fields[1].scoping.ids,
+                dtype=np.int64,
+            )
+            np.add.at(
+                nodal_partition_counts[time_offset],
+                nodal_node_ids,
+                1,
+            )
             for svar_offset, svar_index in enumerate(SVAR_INDICES):
                 nodal_field = nodal_fields.get(svar_index)
                 if nodal_field is None:
@@ -506,7 +525,7 @@ def main():
                 )
                 if not np.array_equal(current_nodal_ids, nodal_node_ids):
                     raise RuntimeError(
-                        "Nodal SVAR{} topology changed in {} at set {}."
+                        "Nodal SVAR{} scoping differs from SVAR1 in {} at set {}."
                         .format(svar_index, result_file, set_id)
                     )
                 np.add.at(
@@ -551,7 +570,8 @@ def main():
     )
     selected_hot_nodes = int(
         np.count_nonzero(
-            phe0_hot_face_nodes & (nodal_partition_counts > 0)
+            phe0_hot_face_nodes
+            & np.any(nodal_partition_counts > 0, axis=0)
         )
     )
     if selected_hot_nodes == 0:

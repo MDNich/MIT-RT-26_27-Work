@@ -235,7 +235,13 @@ def main():
         (len(mappings), maximum_node_id + 1),
         dtype=np.float32,
     )
-    contribution_counts = np.zeros(maximum_node_id + 1, dtype=np.int32)
+    # Element death may change the elemental-nodal SVAR topology between
+    # saved sets.  Keep a count field for every time instead of assuming the
+    # first set's topology remains valid throughout the run.
+    contribution_counts = np.zeros(
+        (len(mappings), maximum_node_id + 1),
+        dtype=np.int16,
+    )
     contributing_partitions = 0
 
     for partition_index, (result_file, model) in enumerate(
@@ -253,52 +259,61 @@ def main():
         if not fields:
             print("  no SVAR1 field in this partition")
             continue
-        flat_node_ids = base.elemental_node_ids(
-            model.metadata.meshed_region,
-            fields[0],
-        )
-        np.add.at(contribution_counts, flat_node_ids, 1)
+        value_counts = []
         for time_index, field in enumerate(fields):
+            flat_node_ids = base.elemental_node_ids(
+                model.metadata.meshed_region,
+                field,
+            )
             values = np.asarray(field.data, dtype=np.float32).reshape(-1)
             if values.size != flat_node_ids.size:
                 raise RuntimeError(
-                    "SVAR1 topology changed in {} at set {}.".format(
+                    "SVAR1 data/scoping mismatch in {} at set {}.".format(
                         result_file,
                         set_ids[time_index],
                     )
                 )
+            np.add.at(contribution_counts[time_index], flat_node_ids, 1)
             np.add.at(value_sums[time_index], flat_node_ids, values)
+            value_counts.append(values.size)
         contributing_partitions += 1
         print(
-            "  accumulated {} states and {} elemental-nodal values per state"
-            .format(len(fields), flat_node_ids.size)
+            "  accumulated {} states; {}--{} elemental-nodal values per state"
+            .format(len(fields), min(value_counts), max(value_counts))
         )
         del fields
 
     if contributing_partitions == 0:
         raise RuntimeError("No partition contained SVAR1.")
 
-    node_ids = np.flatnonzero(
-        (contribution_counts > 0) & np.isfinite(radius_by_node)
-    )
-    depths = radius_by_node[node_ids] - base.PHE0_INNER_RADIUS_M
-    in_layer = (
-        (depths >= -1.0e-8)
-        & (depths <= base.PHE0_THICKNESS_M + 1.0e-8)
-    )
-    node_ids = node_ids[in_layer]
-    depths = np.clip(depths[in_layer], 0.0, base.PHE0_THICKNESS_M)
-    bin_indices = np.minimum(
-        np.floor(100.0 * depths / base.PHE0_THICKNESS_M).astype(int),
-        99,
-    )
-    if node_ids.size == 0:
-        raise RuntimeError("No phe0 node was selected.")
-    print("Selected {} phe0 nodes.".format(node_ids.size))
-
     contour_rows = []
-    denominators = contribution_counts[node_ids].astype(np.float32)
+    selected_counts = []
     for time_index, (_, saved_time) in enumerate(mappings):
+        node_ids = np.flatnonzero(
+            (contribution_counts[time_index] > 0)
+            & np.isfinite(radius_by_node)
+        )
+        depths = radius_by_node[node_ids] - base.PHE0_INNER_RADIUS_M
+        in_layer = (
+            (depths >= -1.0e-8)
+            & (depths <= base.PHE0_THICKNESS_M + 1.0e-8)
+        )
+        node_ids = node_ids[in_layer]
+        depths = np.clip(depths[in_layer], 0.0, base.PHE0_THICKNESS_M)
+        if node_ids.size == 0:
+            raise RuntimeError(
+                "No phe0 node was selected at set {}.".format(
+                    set_ids[time_index]
+                )
+            )
+        selected_counts.append(node_ids.size)
+        bin_indices = np.minimum(
+            np.floor(100.0 * depths / base.PHE0_THICKNESS_M).astype(int),
+            99,
+        )
+        denominators = contribution_counts[time_index, node_ids].astype(
+            np.float32
+        )
         nodal_values = value_sums[time_index, node_ids] / denominators
         raw = np.full(100, -np.inf, dtype=float)
         np.maximum.at(raw, bin_indices, nodal_values)
@@ -318,6 +333,13 @@ def main():
                 ),
             )
         )
+
+    print(
+        "Selected {}--{} phe0 nodes per state.".format(
+            min(selected_counts),
+            max(selected_counts),
+        )
+    )
 
     write_output(args.output_csv.resolve(), history, mappings, contour_rows)
     print(

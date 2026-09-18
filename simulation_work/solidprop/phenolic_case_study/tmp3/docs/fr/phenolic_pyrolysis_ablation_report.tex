@@ -80,7 +80,7 @@
 \title{~\\[-2em]\sc Modélisation Thermochimique d'un Liner Phénolique\\
 dans un Moteur-fusée Solide avec ANSYS Mechanical}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Simulations/Propulsion Solide}
-\date{\sc 24 juillet 2026}
+\date{\sc 18 septembre 2026}
 
 \begin{document}
 \selectlanguage{french}
@@ -108,7 +108,10 @@ jusqu'à \SI{7}{s} n'est utilisée. Fluent et la combustion du propergol ne font
 pas partie du périmètre. Les grandeurs calculées restent des résultats de
 modèle : elles doivent être confrontées aux mesures du matériau effectivement
 fabriqué et la géométrie radiale doit être corrigée avant toute décision de
-dimensionnement ou de sécurité.
+dimensionnement ou de sécurité. Une troisième simulation emploie les rayons
+corrigés et un secteur angulaire de \(0{,}10^\circ\). Elle a atteint
+normalement son horizon de \SI{7}{s}; sa section présente les 140 états
+convergés, les deux rangées phénoliques supprimées et l'analyse spatiale finale.
 \end{minipage}
 \end{center}
 \vfill
@@ -1873,6 +1876,291 @@ radiales, étudier les sensibilités à \(H_\mathrm{eff}\), \(h_0\), au pas de
 temps et aux propriétés du char, puis comparer le modèle à un essai
 instrumenté. En l'absence de ces étapes, la récession calculée demeure un
 indicateur de performance du modèle, pas une prédiction qualifiée du moteur.
+
+% ============================================================================
+\clearpage
+\section{Simulation 3 : Secteur Fin Corrigé et Maillage Radial Raffiné}
+
+\subsection{Objectif et configuration exécutée}
+
+La simulation 3 reprend la chaîne thermochimique de la simulation 2 sur une
+géométrie corrigée et fortement réduite en direction circonférentielle. Le
+modèle représente un secteur de \(0{,}10^\circ\), de longueur axiale
+\SI{50}{mm}. Il conserve les quatre couches coaxiales et leurs véritables
+rayons : \code{phe0} de \SIrange{66.675}{67.945}{mm}, l'époxy de
+\SIrange{67.945}{68.2625}{mm}, \code{phe1} de
+\SIrange{68.2625}{71.4375}{mm}, puis l'aluminium de
+\SIrange{71.4375}{76.2}{mm}. Un anneau complet contient 3,600 secteurs de
+cette taille; seules les grandeurs extensives doivent être multipliées par ce
+facteur. Les températures, conversions, flux surfaciques et profondeurs de
+récession ne sont pas remis à l'échelle.
+
+Le secteur est maillé avec 35,200 éléments hexaédriques linéaires à huit
+noeuds et 54,540 noeuds. La discrétisation comprend 100 divisions axiales,
+deux divisions circonférentielles, puis respectivement 64, 16, 64 et 32
+divisions radiales dans \code{phe0}, l'époxy, \code{phe1} et l'aluminium. Le
+pas radial nominal de la première couche vaut donc
+\[
+  \Delta r_\mathrm{phe0}=\frac{\SI{1.27}{mm}}{64}
+  =\SI{19.84375}{\micro m},
+\]
+soit une résolution seize fois plus fine que les bandes de
+\SI{317.5}{\micro m} de la simulation 2. Trois interfaces collées assurent la
+continuité thermique entre les quatre corps.
+
+Le calcul thermique transitoire a été exécuté dans Mechanical/MAPDL 2026 R1.02
+avec dix rangs DMP. L'horizon reste \SI{7}{s}, discrétisé en 140 macro-pas de
+\SI{0.05}{s}. Le contrôleur écrit un historique après chaque macro-pas
+convergé et maintient quatre générations de redémarrage. Cette organisation
+permet un arrêt contrôlé sans perdre les états déjà convergés.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.43\textwidth}L{0.43\textwidth}}
+\toprule
+\textbf{Paramètre} & \textbf{Simulation 3 exécutée} \\
+\midrule
+Secteur et longueur & \(0{,}10^\circ\); \SI{50}{mm} \\
+Rayon chaud / rayon extérieur & \SI{66.675}{mm} / \SI{76.2}{mm} \\
+Maillage & 54,540 noeuds; 35,200 hexaèdres linéaires \\
+Divisions \(z/\theta\) & 100 / 2 \\
+Divisions radiales & 64 / 16 / 64 / 32 \\
+Pas radial dans \code{phe0} & \SI{19.84375}{\micro m} \\
+Contacts & 3 interfaces collées \\
+Parallélisme & 10 rangs DMP \\
+Horizon temporel & \SI{7}{s}; 140 pas de \SI{0.05}{s} \\
+Facteur d'anneau complet & 3,600, pour les grandeurs extensives seulement \\
+\bottomrule
+\end{tabular}
+\caption{Géométrie et maillage de la simulation 3 exécutée.}
+\label{tab:sim3-configuration}
+\end{table}
+
+\subsection{État final et performance}
+
+Le calcul s'est terminé normalement le 18 septembre 2026. Les 140 macro-pas
+ont convergé jusqu'à \(t=\SI{7.00}{s}\) et les 140 lignes de l'historique sont
+espacées de \SI{0.05}{s}, sans lacune ni doublon. MAPDL signale explicitement
+\code{RUN COMPLETED}; aucun processus \code{ANSYS.exe}, \code{mpiexec.exe} ou
+\code{hydra\_pmi\_proxy.exe} ne subsiste après la fin.
+
+Le temps mur total est de \SI{5188.519}{s}, soit 86 min 28,5 s et une moyenne
+de 37,1 s par macro-pas. Le calcul de la solution représente
+\SI{984.3}{s} (19,0\,\%), tandis que le post-traitement de solution représente
+\SI{3765.9}{s} (72,6\,\%). Cette répartition montre que l'écriture et
+l'assemblage des résultats dominent le coût du secteur fin. Les dix rangs ont
+écrit \SI{396.2}{GB} et lu \SI{82.5}{GB}; les fichiers de travail occupent
+\SI{7656.1}{MB}. La mémoire cumulée utilisée atteint \SI{828}{MB} pour
+\SI{4032}{MB} alloués.
+
+Le journal ne contient aucune erreur et douze avertissements. Ils concernent
+la désactivation du contrôle de forme, l'implémentation standard de
+\code{USERCK}, l'évaluation à \SI{22}{\celsius} sous la première température
+tabulée de certaines propriétés, puis une commande \code{CEWRITE} ignorée
+après le solve. Aucun de ces messages n'a empêché la convergence, la production
+des dix partitions RTH ou l'enregistrement des 140 états.
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{L{0.49\textwidth}L{0.37\textwidth}}
+\toprule
+\textbf{Indicateur} & \textbf{Valeur finale} \\
+\midrule
+États convergés & 140 sur 140; \SIrange{0.05}{7.00}{s} \\
+Exécution parallèle & 10 rangs DMP, solveur direct creux \\
+Temps mur / temps CPU cumulé & \SI{5188.519}{s} / \SI{5882.922}{s} \\
+Temps de calcul de solution & \SI{984.3}{s} \\
+Temps de post-traitement de solution & \SI{3765.9}{s} \\
+E/S disque lues / écrites & \SI{82.5}{GB} / \SI{396.2}{GB} \\
+Erreurs / avertissements & 0 / 12 \\
+Issue MAPDL & \code{RUN COMPLETED} \\
+\bottomrule
+\end{tabular}
+\caption{Bilan de performance final de la simulation 3.}
+\label{tab:sim3-performance}
+\end{table}
+
+\subsection{Résultats thermochimiques finaux}
+
+La première rangée active franchit le seuil \(\alpha=0{,}99\) à
+\SI{2.60}{s}, avec \(\alpha=0{,}99050948\); le contrôleur désactive alors 200
+hexaèdres \code{phe0}. La deuxième rangée franchit le même seuil à
+\SI{2.95}{s}, avec \(\alpha=0{,}99021488\), et 200 hexaèdres supplémentaires
+sont désactivés. Au total, 400 éléments phénoliques et aucune maille d'époxy,
+de \code{phe1} ou d'aluminium sont supprimés. Le rayon chaud discret passe de
+\SI{66.675}{mm} à \SI{66.714688}{mm}, soit deux pas radiaux. La troisième
+rangée reste active : sa conversion vaut 0,98643222 à \SI{3.00}{s} et
+0,98962501 à \SI{7.00}{s}, juste sous le critère de suppression. L'égalité de
+la moyenne et du minimum dans l'historique est cohérente avec la symétrie du
+secteur; elle est contrôlée ci-dessous par l'extraction spatiale DPF.
+
+Le flux gazeux pariétal atteint \SI{0.1220}{kg.m^{-2}.s^{-1}} à
+\SI{1.80}{s}, puis décroît jusqu'à \SI{0.001636}{kg.m^{-2}.s^{-1}} à
+\SI{7.00}{s}. Le débit du secteur passe par un maximum de
+\SI{0.7099}{mg.s^{-1}} et termine à \SI{0.009522}{mg.s^{-1}}. L'intégrale
+temporelle vaut \SI{1.689}{mg} pour le secteur, soit \SI{6.080}{g} pour
+l'anneau complet par simple facteur 3600. Le coefficient convectif effectif
+atteint son minimum de \SI{836.67}{W.m^{-2}.K^{-1}} au pic de dégazage et
+remonte à \SI{997.39}{W.m^{-2}.K^{-1}}. La température maximale culmine à
+\SI{1400.50}{\celsius} à \SI{2.60}{s}, puis tombe à
+\SI{435.36}{\celsius} en fin de calcul après exposition des rangées internes.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_conversion_vs_time_fr.pdf}
+\caption{Conversion moyenne et minimale enregistrées dans la couche active du
+secteur fin sur les 140 états convergés. Les lignes verticales marquent les
+deux désactivations de rangées.}
+\label{fig:sim3-conversion-time-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_thermal_gas_overview_fr.pdf}
+\caption{Évolution du dégazage, du coefficient convectif effectif et de la
+température maximale de la surface chaude. Le débit total représenté est celui
+du secteur de \(0{,}10^\circ\).}
+\label{fig:sim3-thermal-gas-fr}
+\end{figure}
+
+\subsection{Récession virtuelle et suppressions d'éléments}
+
+La récession énergétique cumulée atteint \SI{446.254}{\micro m} à
+\SI{7.00}{s}. La surface discrète ne s'est déplacée que de
+\SI{39.6875}{\micro m}, car la suppression exige simultanément le franchissement
+du seuil géométrique et \(\alpha\geq0{,}99\). La récession virtuelle dépasse
+donc le seuil de la troisième rangée, fixé à \SI{59.53125}{\micro m}, mais la
+conversion finale de cette rangée reste à 0,98962501; le contrôleur la conserve
+correctement. Le fichier d'état final confirme \code{SIM2\_ILAY=2} et
+\code{SIM2\_NEL=200}. Les champs entiers trop étroits de l'historique affichent
+\code{****} et \code{**}; les graphes ignorent seulement ces deux champs
+illisibles et conservent toutes les colonnes physiques valides.
+
+Le premier état numériquement significatif de récession est défini par
+\(s\ge\SI{1}{\micro m}\). Il apparaît dès le premier macro-pas enregistré,
+à \SI{0.05}{s}, avec \(s=\SI{3.918}{\micro m}\). Les graphes temporels
+marquent cet instant par une ligne verticale; deux lignes pointillées repèrent
+les désactivations à \SI{2.60}{s} et \SI{2.95}{s}. La vitesse présentée
+ci-dessous est la différence finie de la récession cumulée entre deux
+macro-pas; elle vaut \SI{78.37}{\micro m.s^{-1}} sur le premier intervalle et
+\SI{85.28}{\micro m.s^{-1}} sur le dernier. Les graphes en fonction de
+\(\overline{\alpha}\) conservent les discontinuités dues au passage d'une
+rangée active à la suivante.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_vs_time_fr.pdf}
+\caption{Récession virtuelle cumulée en fonction du temps pour la simulation
+3. Les lignes verticales repèrent l'apparition numérique du front de récession
+et les deux désactivations de rangées.}
+\label{fig:sim3-recession-time-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_rate_vs_time_fr.pdf}
+\caption{Vitesse moyenne de récession par macro-pas. Il s'agit d'une dérivée
+temporelle de l'historique du contrôleur, sans barre d'écart-type spatial.}
+\label{fig:sim3-rate-time-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_vs_alpha_avg_fr.pdf}
+\caption{Récession virtuelle cumulée en fonction de la conversion moyenne de
+la couche active.}
+\label{fig:sim3-recession-alpha-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_rate_vs_alpha_avg_fr.pdf}
+\caption{Vitesse de récession par macro-pas en fonction de la conversion
+moyenne.}
+\label{fig:sim3-rate-alpha-fr}
+\end{figure}
+
+\subsection{Analyse spatiale finale des variables d'état}
+
+Après la fin normale du solveur, les dix partitions \code{file0.rth} à
+\code{file9.rth} ont été lues en mode strictement non destructif. Les 140 temps
+DPF correspondent exactement aux 140 temps de l'historique. Les contributions
+élément--nœud partageant le même identifiant global sont moyennées entre les
+éléments et les partitions, puis regroupées dans 100 bandes radiales de 1\,\%.
+L'extracteur traite séparément la topologie de chaque état afin de conserver
+la validité des profils après les deux suppressions.
+
+Les contours à 90\,\%, 95\,\% et 99\,\% apparaissent respectivement à
+\SI{1.80}{s}, \SI{2.05}{s} et \SI{2.55}{s}. À \SI{7.00}{s}, leurs profondeurs
+depuis la face chaude initiale valent \SI{0.223066}{mm}, \SI{0.156483}{mm} et
+\SI{0.048842}{mm}. Les écarts signés \(d_\alpha-s\) sont donc
+\SI{-0.223188}{mm}, \SI{-0.289771}{mm} et \SI{-0.397412}{mm}. La récession
+virtuelle énergétique se trouve ainsi plus profondément que les trois fronts
+de conversion; cette différence confirme qu'elle ne doit pas être interprétée
+comme un contour de \code{SVAR1}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_svar1_radial_profile_1pct_fr.pdf}
+\caption{Profil radial final de \code{SVAR1} à \SI{7}{s}, avec les contours de
+conversion et la ligne de récession virtuelle.}
+\label{fig:sim3-svar1-radial-final-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar1_radial_time_profiles_1pct_fr.pdf}
+\caption{Évolution des profils radiaux de \code{SVAR1} entre 1 et
+\SI{6}{s}. La ligne de récession est indiquée dans chaque panneau.}
+\label{fig:sim3-svar1-radial-time-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar2_radial_time_profiles_1pct_fr.pdf}
+\caption{Évolution des profils radiaux de \code{SVAR2}; le maximum localise la
+zone de pyrolyse encore active.}
+\label{fig:sim3-svar2-radial-time-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar1_axial_time_profiles_1pct_fr.pdf}
+\caption{Uniformité axiale de \code{SVAR1} sur la face chaude du secteur fin.}
+\label{fig:sim3-svar1-axial-time-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{../analysis/simulation3_sector_svar2_axial_time_profiles_1pct_fr.pdf}
+\caption{Uniformité axiale de \code{SVAR2} sur la face chaude du secteur fin.}
+\label{fig:sim3-svar2-axial-time-fr}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.96\textwidth]{../analysis/simulation3_sector_recession_to_pyrolysis_contours_vs_time_fr.pdf}
+\caption{Écart signé entre la ligne de récession et les contours de conversion
+à 99\,\%, 95\,\% et 90\,\% sur les 140 états. Une valeur positive place le
+contour plus profondément dans la paroi. La ligne verticale marque la première
+récession numériquement significative.}
+\label{fig:sim3-recession-contour-distance-fr}
+\end{figure}
+
+\subsection{Portée et reproductibilité}
+
+La campagne de simulation 3 est close à \SI{7}{s}. Les résultats temporels
+proviennent de l'historique final synchronisé et les résultats spatiaux des dix
+partitions RTH stables. Les conclusions restent conditionnées par les lois de
+matériau, les propriétés extrapolées à basse température et les critères
+numériques \(\alpha_c=0{,}99\) et \(\Delta r=\SI{19.84375}{\micro m}\). Elles
+ne constituent pas à elles seules une validation expérimentale de l'ablation.
+Tous les CSV et les figures bilingues de cette section sont reproductibles à
+partir des fichiers finaux conservés.
 
 % ============================================================================
 \clearpage
