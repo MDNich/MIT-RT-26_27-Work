@@ -81,6 +81,20 @@ def test_workspaces_render_at_minimum_size_and_daylight(qtbot, tmp_path):
         assert window.pages.currentWidget().height() > 400
     for area in window.pages.widget(2).findChildren(QScrollArea):
         assert area.widget().width() <= area.viewport().width()
+    window.pages.setCurrentIndex(4)
+    window.task_done(
+        "simulation",
+        ValueError(
+            "OpenRocket: Missing motor thrust curve: MITRT N8406. In Mission & wind, use Select custom motor files "
+            "to add the matching .eng or .rse file."
+        ),
+    )
+    qtbot.wait(80)
+    area = window.simulation_scroll
+    position = window.sim_status.mapTo(area.viewport(), QPoint(0, 0))
+    assert position.y() >= 0
+    assert position.y() + window.sim_status.height() <= area.viewport().height()
+    assert area.widget().width() <= area.viewport().width()
     window.controller.switch_mode("REPLAY")
     window.controller.pointer_sent = (123, 45)
     window.last_ui = 0

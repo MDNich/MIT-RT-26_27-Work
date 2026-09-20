@@ -55,6 +55,7 @@ class Mission:
     site_configured: bool = False
     launch_location_format: str = "latlon"
     launch_location_code: str = ""
+    launch_site_name: str = ""
     legacy_altitude: str = "unknown"
     canard_count: int = 4
     pointer_latitude: float = 0.0
@@ -83,6 +84,8 @@ class Mission:
     low_battery: float = 9.0
 
     def validate(self):
+        if not isinstance(self.launch_site_name, str) or len(self.launch_site_name) > 80:
+            raise ValueError("Invalid launch site name")
         if self.launch_location_format not in {"latlon", "mgrs", "pluscode"}:
             raise ValueError("Unsupported launch location format")
         if not isinstance(self.launch_location_code, str) or len(self.launch_location_code) > 80:

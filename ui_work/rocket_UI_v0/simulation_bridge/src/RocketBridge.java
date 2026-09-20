@@ -12,6 +12,8 @@ import info.openrocket.swing.startup.GuiModule;
 import info.openrocket.core.file.GeneralRocketLoader;
 import info.openrocket.core.file.motor.GeneralMotorLoader;
 import info.openrocket.core.motor.ThrustCurveMotor;
+import info.openrocket.core.motor.MotorConfiguration;
+import info.openrocket.core.logging.Warning;
 import info.openrocket.core.document.OpenRocketDocument;
 import info.openrocket.core.document.Simulation;
 import info.openrocket.core.simulation.*;
@@ -48,6 +50,7 @@ public class RocketBridge {
     }
     static double number(JsonObject object, String key) { return object.getJsonNumber(key).doubleValue(); }
     public static void main(String[] args) {
+        Path output=null;
         try {
             if (args.length == 1 && args[0].equals("--probe")) {
                 System.out.println("RocketBridge v1 / Java " + System.getProperty("java.version"));
@@ -60,7 +63,7 @@ public class RocketBridge {
             }
             if(request.getInt("schema_version")!=1 || !request.getBoolean("nominal"))
                 throw new IllegalArgumentException("Only v1 nominal simulation is supported");
-            Path output=Path.of(request.getString("output"));
+            output=Path.of(request.getString("output"));
             Files.createDirectories(output);
             Locale.setDefault(Locale.US);
             GuiModule module=new GuiModule();
@@ -91,10 +94,33 @@ public class RocketBridge {
             NewControlStepListener.WIND_EVENT_3_GUST=0;
             GeneralRocketLoader loader=new GeneralRocketLoader(new File(request.getString("model")));
             OpenRocketDocument document=loader.load();
+            List<String> missingMotors=new ArrayList<>();
+            for(Warning warning:loader.getWarnings()) {
+                if(warning instanceof Warning.MissingMotor missing)
+                    missingMotors.add((missing.getManufacturer()==null ? "" : missing.getManufacturer()+" ")
+                        +missing.getDesignation());
+            }
+            if(!missingMotors.isEmpty())
+                throw new IOException("Missing motor thrust curve: "+String.join(", ",missingMotors)
+                    +". In Mission & wind, use Select custom motor files to add the matching .eng or .rse file.");
             int index=request.getInt("simulation_index",0);
             if(index<0 || index>=document.getSimulationCount())
                 throw new IllegalArgumentException("Model needs a saved simulation with a motor; index is out of range");
             Simulation saved=document.getSimulation(index);
+            Collection<MotorConfiguration> activeMotors=document.getRocket()
+                .getFlightConfiguration(saved.getFlightConfigurationId()).getActiveMotors();
+            if(activeMotors.isEmpty())
+                throw new IOException("The selected simulation '"+saved.getName()
+                    +"' has no active motor. Assign a motor to an active stage in OpenRocket and save the model.");
+            JsonArrayBuilder resolvedMotors=Json.createArrayBuilder();
+            for(MotorConfiguration motor:activeMotors) {
+                JsonObjectBuilder entry=Json.createObjectBuilder()
+                    .add("designation",motor.getMotor().getDesignation())
+                    .add("digest",motor.getMotor().getDigest());
+                if(motor.getMotor() instanceof ThrustCurveMotor curve)
+                    entry.add("manufacturer",curve.getManufacturer().getDisplayName());
+                resolvedMotors.add(entry);
+            }
             Simulation simulation=new Simulation(document.getRocket());
             simulation.setFlightConfigurationId(saved.getFlightConfigurationId());
             simulation.getSimulationExtensions().clear();
@@ -140,12 +166,15 @@ public class RocketBridge {
                     previous=t;written++;
                 }
             }
-            if(written<2) throw new IOException("No usable trajectory; check motor/configuration");
+            if(written<2) throw new IOException("Simulation ended before producing a flight trajectory. "
+                +"Check ignition and active stages. OpenRocket warnings: "+data.getWarningSet()
+                +"; events: "+branch.getEvents());
             JsonArrayBuilder origin=Json.createArrayBuilder().add(number(request,"latitude"))
                 .add(number(request,"longitude")).add(number(request,"origin_ellipsoid_altitude"));
             JsonObject result=Json.createObjectBuilder().add("schema_version",1).add("frame","ENU")
                 .add("units","m,s").add("altitude_datum","launch_relative").add("origin",origin)
                 .add("name","OpenRocket nominal · "+document.getRocket().getName())
+                .add("motors",resolvedMotors).add("saved_simulation",saved.getName())
                 .add("branch",0).add("branch_count",data.getBranchCount()).add("synthetic",false)
                 .add("controlled_model_validated",false).add("inertia_override",false)
                 .add("solver","ModifiedEventSimulationEngine / useRK6=false")
@@ -161,6 +190,14 @@ public class RocketBridge {
             System.exit(0); // Shut down engine background resource-loader threads.
         } catch(Throwable error) {
             error.printStackTrace(System.err);
+            if(output!=null) {
+                try(JsonWriter writer=Json.createWriter(Files.newOutputStream(output.resolve("error.json")))) {
+                    writer.writeObject(Json.createObjectBuilder().add("schema_version",1)
+                        .add("message",error.getMessage()==null ? error.toString() : error.getMessage()).build());
+                } catch(Exception reportError) {
+                    reportError.printStackTrace(System.err);
+                }
+            }
             System.exit(1);
         }
     }

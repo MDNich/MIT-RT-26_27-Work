@@ -18,7 +18,7 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 - One-click Start/Stop Logging writes both original 43-column good/bad-packet CSVs alongside the richer session recording.
 - Configurable canard channels and four fin tabs. Legacy Zephyrus supplies four servo drives only; unavailable new demands/feedback remain blank.
 - Manual/imported wind profiles and Open-Meteo profiles for a selected place/time, with cached provider response.
-- Private Java/OpenRocket worker, custom `.eng`/`.rse` motors, reproducible nominal simulation, normalized ENU reference and same-time position comparison.
+- Private Java/OpenRocket worker, bundled MITRT N8406 for the Zephyrus test model, additional `.eng`/`.rse` motors, reproducible nominal simulation, normalized ENU reference and same-time position comparison.
 - Indexed SQLite replay, exact serial capture with CRCs, event timeline, legacy CSV import/export, video seek/offset, incomplete-session recovery, dark/daylight themes and acknowledged alerts.
 
 ## Develop and build
@@ -47,6 +47,6 @@ Original planning baseline: [development plan](DEVELOPMENT_PLAN.md), [antenna de
 
 ## Built artifacts and validation
 
-The September 20 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. All 58 regression tests pass. Packaged Live startup, all three recorded demos/video, and OpenRocket checks are included in `make verify-package`.
+The September 20 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. All 62 regression tests pass. Packaged Live startup, all three recorded demos/video, and OpenRocket checks are included in `make verify-package`.
 
 The Windows ZIP remains the September 18 build (30 tests passed, one POSIX-only test skipped, in the Windows 11 ARM VM under x64 emulation). It has **not** been rebuilt for this revision; current work and validation target Mac only.

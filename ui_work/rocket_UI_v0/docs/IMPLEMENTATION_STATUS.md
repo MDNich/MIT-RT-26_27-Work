@@ -11,7 +11,8 @@
 - Lucida Grande Regular/Bold is bundled for both platform builds and applied throughout widgets, plots, dialogs and antenna labels.
 - Launch location accepts lat/lon, MGRS and Plus Codes offline. Short codes require a nearby reference; mission persistence retains entry format and canonical coordinates.
 - DEMO uses the exact GS1/GS2/GS3 Zephyrus test-flight CSVs, compressed losslessly and hashed. GS2 is default, with a five-second prelaunch cue, full-recording access, pause/seek/speed, original legacy readouts and source provenance. No fictional telemetry or actuator feedback is generated.
-- **58 regression tests passed** on Mac, including 118 captured rocket-packet cases, all original shortcuts exercised through actual Qt key events, original decoder/CSV values, two pseudo-terminal connections, confirmation paths, and recording/replay. Python static checks passed.
+- Zephyrus `.ork` simulations automatically resolve the bundled MITRT N8406 curve by its exact engine digest. Missing curves/unpowered configurations produce named, actionable errors. The supplied unmodified model is checked through the packaged worker.
+- **62 regression tests passed** on Mac, including 118 captured rocket-packet cases, all original shortcuts exercised through actual Qt key events, original decoder/CSV values, two pseudo-terminal connections, confirmation paths, and recording/replay. Python static checks passed.
 - Minimum-size 1120×800 screens, all restored tabs and dark/daylight themes are checked. Mac package verification checks LIVE startup, all three bundled Zephyrus recordings with synthetic video, and the bundled OpenRocket worker with a minimal system PATH.
 - Windows was not rebuilt for this revision. The following September 18 results describe the prior baseline. Actual board/camera/mount acceptance remains outstanding.
 

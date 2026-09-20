@@ -83,6 +83,7 @@ class SessionRecorder:
                 CREATE TABLE events(id INTEGER PRIMARY KEY, elapsed REAL, data TEXT);
                 CREATE INDEX event_time ON events(elapsed);
                 CREATE TABLE raw_index(id INTEGER PRIMARY KEY, elapsed REAL, role TEXT, offset INTEGER, length INTEGER);
+                CREATE TABLE snapshot_state(id INTEGER PRIMARY KEY CHECK(id=1), data TEXT);
             """)
             connection.commit()
             last_commit = time.monotonic()
@@ -142,6 +143,25 @@ class SessionRecorder:
                             os.fsync(handle.fileno())
                         raw.flush()
                         os.fsync(raw.fileno())
+                        # The online SQLite backup carries matching immutable file-prefix lengths.
+                        # Saving a flight can then copy committed data while acquisition continues.
+                        state = dict(
+                            lengths={
+                                "raw.bin": raw.tell(),
+                                "telemetry.csv": telemetry.buffer.tell(),
+                                "telemetry_badpackets.csv": rejected.buffer.tell(),
+                            },
+                            manifest={
+                                **self.manifest,
+                                "duration": time.monotonic() - self.start,
+                                "dropped": self.dropped,
+                                "error": self.error,
+                            },
+                        )
+                        connection.execute(
+                            "INSERT OR REPLACE INTO snapshot_state VALUES(1,?)",
+                            (json.dumps(state, allow_nan=False),),
+                        )
                         connection.commit()
                         last_commit = time.monotonic()
             connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")

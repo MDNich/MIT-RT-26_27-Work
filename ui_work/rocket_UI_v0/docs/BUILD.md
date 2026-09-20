@@ -46,6 +46,8 @@ dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --simulation-smoke /pa
 
 `make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` checks the bundled Lucida Grande family and both coordinate decoders, then runs explicit demo/video and engine checks.
 
+`scripts/verify_package.py --model /path/to/zephy_testlaunch.ork` additionally runs the supplied model using the packaged motor library and records its resolved motor digest. The N8406 curve is bundled in `resources/motors`; rebuild the bridge with `make bridge` after changing its Java source.
+
 Demo smoke mode uses bundled Zephyrus CSV telemetry plus a synthetic video test pattern, writes `smoke-report.json` and exits. `--demo-station GS1` (or `GS2`/`GS3`) selects a receiver log. The verification script exercises all three recordings from the packaged resources. It never opens serial devices. `make clean` removes only this application's generated `build`/`dist` folders.
 
 Development Mac packages use ad-hoc signing. For release, set `MAC_SIGN_IDENTITY` to the team's Developer ID Application identity before packaging, then notarize/staple the DMG using team credentials. Sign Windows releases with the team's Authenticode certificate. No credentials are included. Camera permission and hardware-specific drivers remain OS/device requirements.

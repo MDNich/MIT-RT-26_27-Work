@@ -145,6 +145,9 @@ class MissionDialog(QDialog):
             for key, title, kind in fields:
                 if kind == "location":
                     self.location = LaunchLocation(mission)
+                    self.location.preset_selected.connect(
+                        lambda: self.fields["site_configured"].setChecked(True)
+                    )
                     form.addRow(title, self.location)
                     continue
                 value = getattr(mission, key)
@@ -207,6 +210,7 @@ class MissionDialog(QDialog):
             self.mission.latitude, self.mission.longitude = location.latitude, location.longitude
             self.mission.launch_location_format = self.location.format.currentData()
             self.mission.launch_location_code = location.code
+            self.mission.launch_site_name = self.location.preset.currentData()
             self.mission.validate()
         except ValueError as exc:
             QMessageBox.warning(self, "Mission settings", str(exc))
@@ -856,7 +860,8 @@ class MainWindow(QMainWindow):
         self.model_path.setPlaceholderText("Select the team's .ork file")
         column.addWidget(self.model_path)
         column.addWidget(button("Choose OpenRocket model…", self.choose_model))
-        self.motor_status = label("Bundled motor database", "muted")
+        self.motor_status = label("Bundled motor database + MITRT N8406", "muted")
+        self.motor_status.setWordWrap(True)
         column.addWidget(self.motor_status)
         column.addWidget(button("Select custom motor files…", self.choose_motors))
         column.addWidget(button("Run nominal simulation", lambda: self.guard(self.start_simulation), True))
@@ -870,7 +875,17 @@ class MainWindow(QMainWindow):
         self.sim_status.setWordWrap(True)
         column.addWidget(self.sim_status)
         column.addStretch()
-        body.addWidget(panel, 1)
+        self.simulation_scroll = QScrollArea()
+        self.simulation_scroll.setWidgetResizable(True)
+        self.simulation_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        self.simulation_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.simulation_scroll.setWidget(panel)
+        self.simulation_failed = False
+        scroll_bar = self.simulation_scroll.verticalScrollBar()
+        scroll_bar.rangeChanged.connect(
+            lambda minimum, maximum: scroll_bar.setValue(maximum) if self.simulation_failed else None
+        )
+        body.addWidget(self.simulation_scroll, 1)
         layout.addLayout(body, 1)
         return page
 
@@ -1065,7 +1080,7 @@ class MainWindow(QMainWindow):
                 self.model_path.setText(mission.model)
                 self.wind_to_table()
                 self.weather_msl.setValue(mission.altitude_msl)
-                self.motor_status.setText(f"{len(mission.motor_files)} custom motor files")
+                self.motor_status.setText(f"Bundled motors + {len(mission.motor_files)} custom files")
 
     def save_mission(self):
         path, _ = QFileDialog.getSaveFileName(self, "Save mission", "mission.json", "JSON (*.json)")
@@ -1159,9 +1174,10 @@ class MainWindow(QMainWindow):
         )
         if paths:
             self.controller.mission.motor_files = paths
-            self.motor_status.setText(f"{len(paths)} custom motor files · saved with mission")
+            self.motor_status.setText(f"Bundled motors + {len(paths)} custom files · saved with mission")
 
     def start_simulation(self):
+        self.simulation_failed = False
         self.controller.mission.model = self.model_path.text()
         self.controller.run_simulation()
         self.sim_status.setText("Running isolated OpenRocket job…")
@@ -1235,11 +1251,15 @@ class MainWindow(QMainWindow):
             self.controller.replay_video()
 
     def task_done(self, name, result):
+        if name == "simulation":
+            self.simulation_failed = isinstance(result, Exception)
         if isinstance(result, Exception):
             if name == "weather":
                 self.wind_status.setText(str(result))
             elif name == "simulation":
-                self.sim_status.setText(str(result)[-500:])
+                self.sim_status.setText(str(result))
+                scroll_bar = self.simulation_scroll.verticalScrollBar()
+                scroll_bar.setValue(scroll_bar.maximum())
             return
         if name == "cameras":
             self.camera.clear()

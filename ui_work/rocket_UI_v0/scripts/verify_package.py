@@ -15,6 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--package", type=Path)
+    parser.add_argument(
+        "--model", type=Path, help="Also verify a supplied .ork with the packaged motor library"
+    )
     parser.add_argument("--output", type=Path, default=ROOT / "build" / "package-verification")
     args = parser.parse_args()
     package = (
@@ -57,6 +60,18 @@ def main():
         ),
         ("simulation", ["--simulation-smoke", str(model), "--data-dir", str(output / "simulation")]),
     ]
+    if args.model:
+        commands.append(
+            (
+                "selected-model",
+                [
+                    "--simulation-smoke",
+                    str(args.model.resolve()),
+                    "--data-dir",
+                    str(output / "selected-model"),
+                ],
+            )
+        )
     for name, arguments in commands:
         run = subprocess.run(
             [str(executable), *arguments], cwd=package, env=environment, capture_output=True, timeout=150
@@ -109,9 +124,25 @@ def main():
         raise SystemExit("Packaged simulation did not produce a usable example trajectory")
     if simulation["manifest"]["name"] != "OpenRocket nominal · A simple model rocket":
         raise SystemExit("Packaged simulation returned a damaged model label; check UTF-8 encoding")
+    selected_model = None
+    if args.model:
+        selected_model = json.loads((output / "selected-model" / "simulation-smoke-report.json").read_text())
+        if (
+            selected_model["rows"] < 2
+            or not math.isfinite(selected_model["apogee_m"])
+            or selected_model["apogee_m"] <= 0
+        ):
+            raise SystemExit("Packaged simulation did not produce a usable trajectory for the supplied model")
     (output / "report.json").write_text(
         json.dumps(
-            dict(package=str(package), minimal_path=True, startup=startup, demo=demo, simulation=simulation),
+            dict(
+                package=str(package),
+                minimal_path=True,
+                startup=startup,
+                demo=demo,
+                simulation=simulation,
+                selected_model=selected_model,
+            ),
             indent=2,
         )
     )

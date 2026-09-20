@@ -160,6 +160,18 @@ def runtime_root():
     return Path(__file__).resolve().parents[2] / "vendor"
 
 
+def bundled_motor_files():
+    directory = runtime_root().parent / "resources" / "motors"
+    manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
+    files = []
+    for name, metadata in manifest.items():
+        path = directory / name
+        if hashlib.sha256(path.read_bytes()).hexdigest() != metadata["sha256"]:
+            raise ValueError(f"Bundled motor curve failed its integrity check: {name}")
+        files.append(path)
+    return files
+
+
 class SimulationJob:
     def __init__(self, mission, directory):
         self.mission, self.directory = mission, Path(directory)
@@ -195,7 +207,8 @@ class SimulationJob:
         shutil.copyfile(model, self.directory / "model.ork")
         motors = []
         motor_hashes = {}
-        for i, filename in enumerate(self.mission.motor_files):
+        bundled = bundled_motor_files()
+        for i, filename in enumerate([*bundled, *self.mission.motor_files]):
             source = Path(filename)
             if (
                 not source.is_file()
@@ -211,6 +224,7 @@ class SimulationJob:
             schema_version=1,
             model=str((self.directory / "model.ork").resolve()),
             motor_files=motors,
+            bundled_motor_count=len(bundled),
             simulation_index=self.mission.simulation_index,
             latitude=self.mission.latitude,
             longitude=self.mission.longitude,
@@ -237,6 +251,9 @@ class SimulationJob:
             "RocketBridge",
             str((self.directory / "request.json").resolve()),
         ]
+        # A repeated job directory must not report a previous run's error.
+        error_path = self.directory / "error.json"
+        error_path.unlink(missing_ok=True)
         with (self.directory / "worker.log").open("wb") as log:
             self.process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, **popen_options())
             started = time.monotonic()
@@ -256,6 +273,14 @@ class SimulationJob:
         if self.cancelled.is_set():
             raise ValueError("Simulation cancelled")
         if self.process.returncode:
+            if error_path.is_file():
+                try:
+                    error = json.loads(error_path.read_text(encoding="utf-8"))
+                    message = error.get("message")
+                except (ValueError, OSError):
+                    message = None
+                if isinstance(message, str) and message.strip():
+                    raise ValueError("OpenRocket: " + message[:2000])
             tail = (self.directory / "worker.log").read_text(errors="replace")[-1200:]
             raise ValueError("OpenRocket failed: " + tail)
         result = Trajectory.load(self.directory / "trajectory.csv")

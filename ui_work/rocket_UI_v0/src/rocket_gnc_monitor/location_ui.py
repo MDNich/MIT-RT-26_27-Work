@@ -1,5 +1,6 @@
 """Three interchangeable launch-location entry forms with offline conversion."""
 
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -15,6 +16,8 @@ from .location import Location, coordinates, decode_mgrs, decode_plus_code, enco
 
 
 class LaunchLocation(QWidget):
+    preset_selected = Signal()
+
     def __init__(self, mission, parent=None):
         super().__init__(parent)
         self._location = coordinates(mission.latitude, mission.longitude)
@@ -22,6 +25,15 @@ class LaunchLocation(QWidget):
         self._filling = True
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
+        self.preset = QComboBox()
+        self.preset.addItem("Custom launch site", "")
+        self.preset.addItem("URRG · 18TUN2061530290", "URRG")
+        self.preset.setAccessibleName("Launch site preset")
+        self.preset.setCurrentIndex(max(0, self.preset.findData(mission.launch_site_name)))
+        root.addWidget(self.preset)
+        note = QLabel("Site presets set coordinates only. Set launch elevations separately below.")
+        note.setWordWrap(True)
+        root.addWidget(note)
         self.format = QComboBox()
         for title, key in [("Latitude / longitude", "latlon"), ("MGRS", "mgrs"), ("Plus Code", "pluscode")]:
             self.format.addItem(title, key)
@@ -84,6 +96,21 @@ class LaunchLocation(QWidget):
             self._location = Location(mission.latitude, mission.longitude, mission.launch_location_code)
             self._filling = False
         self.update_preview()
+        self.preset.currentIndexChanged.connect(self.choose_preset)
+
+    def choose_preset(self):
+        if self.preset.currentData() != "URRG":
+            return
+        self._location = decode_mgrs("18TUN2061530290")
+        self.format.setCurrentIndex(self.format.findData("mgrs"))
+        self.change_format()
+        self._filling = True
+        self.mgrs.setText("18TUN2061530290")
+        self._location = decode_mgrs("18TUN2061530290")
+        self._editing = False
+        self._filling = False
+        self.update_preview()
+        self.preset_selected.emit()
 
     def number(self, low, high, name):
         field = QDoubleSpinBox()
@@ -117,6 +144,7 @@ class LaunchLocation(QWidget):
 
     def edited(self):
         if not self._filling:
+            self.preset.setCurrentIndex(0)
             self._editing = True
             self.update_preview()
 
