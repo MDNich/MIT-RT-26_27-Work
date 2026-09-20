@@ -1,0 +1,75 @@
+SIMULATION 2 SECTOR 0.10 DEG MECHANICAL INVENTORY
+Version: <unavailable>
+
+GEOMETRY
+Assembly count: 1
+Assembly C:\ansys_sector_sim2\simulation2_sector_0p10deg.step | parts=4
+  Part Open CASCADE STEP translator 7.8 1.1 | bodies=1
+    Body Open CASCADE STEP translator 7.8 1.1|Solid | id=259 | volume=7.4598 | material=None | type=GeoBodySolid
+  Part Open CASCADE STEP translator 7.8 1.2 | bodies=1
+    Body Open CASCADE STEP translator 7.8 1.2|Solid | id=286 | volume=1.8869 | material=None | type=GeoBodySolid
+  Part Open CASCADE STEP translator 7.8 1.3 | bodies=1
+    Body Open CASCADE STEP translator 7.8 1.3|Solid | id=313 | volume=19.3534 | material=None | type=GeoBodySolid
+  Part Open CASCADE STEP translator 7.8 1.4 | bodies=1
+    Body Open CASCADE STEP translator 7.8 1.4|Solid | id=340 | volume=30.6796 | material=None | type=GeoBodySolid
+Total geometry bodies: 4
+
+MODEL TREE
+Modèle | Ansys.ACT.Automation.Mechanical.Model | id=17 | suppressed=n/a
+  Importations de géométrie | Ansys.ACT.Automation.Mechanical.GeometryImportGroup | id=18 | suppressed=n/a
+    Importation de géométrie | Ansys.ACT.Automation.Mechanical.GeometryImport | id=19 | suppressed=n/a
+  Géométrie | Ansys.ACT.Automation.Mechanical.Geometry | id=20 | suppressed=n/a
+    Open CASCADE STEP translator 7.8 1.1 | Ansys.ACT.Automation.Mechanical.Part | id=212 | suppressed=False
+      Open CASCADE STEP translator 7.8 1.1|Solid | Ansys.ACT.Automation.Mechanical.Body | id=213 | suppressed=False
+    Open CASCADE STEP translator 7.8 1.2 | Ansys.ACT.Automation.Mechanical.Part | id=215 | suppressed=False
+      Open CASCADE STEP translator 7.8 1.2|Solid | Ansys.ACT.Automation.Mechanical.Body | id=216 | suppressed=False
+    Open CASCADE STEP translator 7.8 1.3 | Ansys.ACT.Automation.Mechanical.Part | id=218 | suppressed=False
+      Open CASCADE STEP translator 7.8 1.3|Solid | Ansys.ACT.Automation.Mechanical.Body | id=219 | suppressed=False
+    Open CASCADE STEP translator 7.8 1.4 | Ansys.ACT.Automation.Mechanical.Part | id=221 | suppressed=False
+      Open CASCADE STEP translator 7.8 1.4|Solid | Ansys.ACT.Automation.Mechanical.Body | id=222 | suppressed=False
+  Matériaux | Ansys.ACT.Automation.Mechanical.Materials | id=23 | suppressed=n/a
+    PHENOLIC_VIRGIN | Ansys.ACT.Automation.Mechanical.Material | id=10 | suppressed=n/a
+    PHENOLIC_CHAR | Ansys.ACT.Automation.Mechanical.Material | id=11 | suppressed=n/a
+    EPOXY | Ansys.ACT.Automation.Mechanical.Material | id=12 | suppressed=n/a
+    ALUMINUM | Ansys.ACT.Automation.Mechanical.Material | id=13 | suppressed=n/a
+    Air | Ansys.ACT.Automation.Mechanical.Material | id=14 | suppressed=n/a
+    Air 2 | Ansys.ACT.Automation.Mechanical.Material | id=15 | suppressed=n/a
+    Air 3 | Ansys.ACT.Automation.Mechanical.Material | id=16 | suppressed=n/a
+    PHENOLIC_PYROLYSIS | Ansys.ACT.Automation.Mechanical.MaterialCombination | id=198 | suppressed=False
+  Tableaux | Ansys.ACT.Automation.Mechanical.TableGroup | id=206 | suppressed=n/a
+  Systèmes de coordonnées | Ansys.ACT.Automation.Mechanical.CoordinateSystems | id=44 | suppressed=n/a
+    Système de coordonnées global | Ansys.ACT.Automation.Mechanical.CoordinateSystem | id=45 | suppressed=False
+  Points distants | Ansys.ACT.Automation.Mechanical.RemotePoints | id=22 | suppressed=n/a
+  Connexions | Ansys.ACT.Automation.Mechanical.Connections.Connections | id=43 | suppressed=n/a
+    Contacts | Ansys.ACT.Automation.Mechanical.Connections.ConnectionGroup | id=46 | suppressed=False
+      Lié totalement - phe0_ext Vers epo_int | Ansys.ACT.Automation.Mechanical.Connections.ContactRegion | id=180 | suppressed=False
+      Lié totalement - epo_ext Vers phe1_int | Ansys.ACT.Automation.Mechanical.Connections.ContactRegion | id=183 | suppressed=False
+      Lié totalement - phe1_ext Vers alu_int | Ansys.ACT.Automation.Mechanical.Connections.ContactRegion | id=186 | suppressed=False
+      Zone de contact | Ansys.ACT.Automation.Mechanical.Connections.ContactRegion | id=224 | suppressed=False
+      Zone de contact 2 | Ansys.ACT.Automation.Mechanical.Connections.ContactRegion | id=227 | suppressed=False
+      Zone de contact 3 | Ansys.ACT.Automation.Mechanical.Connections.ContactRegion | id=230 | suppressed=False
+  Maillage | Ansys.ACT.Automation.Mechanical.MeshControls.Mesh | id=21 | suppressed=n/a
+    Dimensionnement de la face | Ansys.ACT.Automation.Mechanical.MeshControls.Sizing | id=156 | suppressed=False
+    Dimensionnement de la face 3 | Ansys.ACT.Automation.Mechanical.MeshControls.Sizing | id=177 | suppressed=False
+  Sélections nommées | Ansys.ACT.Automation.Mechanical.NamedSelections | id=83 | suppressed=n/a
+  Thermique transitoire | Ansys.ACT.Automation.Mechanical.Analysis | id=104 | suppressed=n/a
+    Température initiale | Ansys.ACT.Automation.Mechanical.InitialCondition | id=109 | suppressed=False
+    Réglages de l'analyse | Ansys.ACT.Automation.Mechanical.AnalysisSettings.ANSYSAnalysisSettings | id=110 | suppressed=n/a
+    Convection | Ansys.ACT.Automation.Mechanical.BoundaryConditions.Convection | id=189 | suppressed=False
+    Convection 2 | Ansys.ACT.Automation.Mechanical.BoundaryConditions.Convection | id=191 | suppressed=False
+    Rayonnement | Ansys.ACT.Automation.Mechanical.BoundaryConditions.Radiation | id=193 | suppressed=False
+    Simulation 2 - soufflage et ablation | Ansys.ACT.Automation.Mechanical.CommandSnippet | id=200 | suppressed=False
+    Solution | Ansys.ACT.Automation.Mechanical.Solution | id=105 | suppressed=n/a
+      Informations sur la solution | Ansys.ACT.Automation.Mechanical.SolutionInformation | id=106 | suppressed=n/a
+        Température - Maximum global | Ansys.ACT.Automation.Mechanical.Results.ResultTrackers.TemperatureTracker | id=107 | suppressed=False
+        Température - Minimum global | Ansys.ACT.Automation.Mechanical.Results.ResultTrackers.TemperatureTracker | id=108 | suppressed=False
+      Sonde de flux de chaleur | Ansys.ACT.Automation.Mechanical.Results.ProbeResults.HeatFluxProbe | id=204 | suppressed=False
+      Taux de pyrolyse alpha | Ansys.ACT.Automation.Mechanical.Results.UserDefinedResult | id=201 | suppressed=False
+      Vitesse de pyrolyse | Ansys.ACT.Automation.Mechanical.Results.UserDefinedResult | id=202 | suppressed=False
+      Source massique de gaz (SVAR3) | Ansys.ACT.Automation.Mechanical.Results.UserDefinedResult | id=209 | suppressed=False
+      Gaz libere cumule (SVAR4) | Ansys.ACT.Automation.Mechanical.Results.UserDefinedResult | id=210 | suppressed=False
+      Puits energetique sensible des gaz (SVAR5) | Ansys.ACT.Automation.Mechanical.Results.UserDefinedResult | id=211 | suppressed=False
+
+SOLVE CONFIGURATIONS
+Mon poste de travail | default=True | distributed=True | cores=10
+Mon poste de travail, Arrière-plan | default=False | distributed=True | cores=10

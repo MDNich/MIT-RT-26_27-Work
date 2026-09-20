@@ -1,0 +1,35 @@
+! Resume only a verified paused state.
+*DO,S4_LOOP,1,100000
+  /DELETE,step_control,inp
+  /SYS,C:\ansys_sector_iter4\couple.cmd prepare
+  S4_OK=0
+  /INPUT,step_control,inp
+  *IF,S4_OK,NE,1,THEN
+    /COM,ITER4_PREPARE_FAILED_OR_MISSING
+    /EXIT,NOSAVE
+  *ENDIF
+  *IF,S4_DONE,EQ,1,THEN
+    *EXIT
+  *ENDIF
+  /SOLU
+  *IF,S4_INDEX,GT,1,THEN
+    ANTYPE,,REST,S4_PREVIOUS,,CONTINUE
+  *ENDIF
+  ! Restart restores old parameters. Read the external authoritative state again.
+  /INPUT,step_control,inp
+  /INPUT,apply_loads,inp
+  TIME,S4_TARGET
+  DELTIM,S4_DT,0.0001,S4_DT,OFF
+  SOLVE
+  /INPUT,export_fields,mac
+  /DELETE,accepted,inp
+  /SYS,C:\ansys_sector_iter4\couple.cmd accept
+  S4_OK=0
+  /INPUT,accepted,inp
+  *IF,S4_OK,NE,1,THEN
+    /COM,ITER4_POSTPROCESS_OR_BALANCE_FAILED
+    /EXIT,NOSAVE
+  *ENDIF
+*ENDDO
+/COM,ITER4_CONTROLLER_STOPPED_CHECK_STATUS_JSON
+/EXIT,NOSAVE

@@ -1,0 +1,20 @@
+# encoding: utf-8
+# ANSYS Workbench 2026 R1
+SetScriptVersion(Version="26.1.175")
+system1 = GetSystem(Name="SYS 3")
+setup1 = system1.GetContainer(ComponentName="Setup")
+setup1.Edit(Interactive=False)
+setup1.SendCommand(
+    Language="Python",
+    Command="execfile(r'C:\\ansys_sector_sim2\\mesh_sector_mechanical.py')",
+)
+setup1.Exit()
+Save(Overwrite=True)
+Archive(
+    FilePath=r"C:\ansys_sector_sim2\sector_0p10deg_meshed.wbpz",
+    IncludeUserFiles=True,
+    IncludeSkippedFiles=False,
+    IncludeExternalImportedFiles=True,
+    FailIfMissingFiles=False,
+)
+

@@ -1,0 +1,32 @@
+{
+  "iteration": "Simulation 4 - coupled sector",
+  "qualification": "EXPLORATORY_NOT_CALIBRATED",
+  "known_propellant_information": "AP (ammonium perchlorate) oxidizer only; binder, chamber pressure and gas composition unknown",
+  "windows_root": "C:\\ansys_sector_iter4",
+  "end_time_s": 7.0,
+  "macro_dt_s": 0.025,
+  "minimum_dt_s": 0.0001,
+  "ranks": 10,
+  "initial_temperature_C": 22.0,
+  "geometry": {"inner_radius_m": 0.066675, "phe0_thickness_m": 0.00127, "outer_radius_m": 0.0762, "length_m": 0.05, "angle_deg": 0.1, "radial_rows": 64, "faces_per_row": 200},
+  "heating": {"gas_temperature_C": 2230.85, "h0_W_m2_K": 1000.0, "gas_cp_J_kg_K": 1600.0, "hot_effective_emissivity": 0.0, "radiative_temperature_C": 2230.85, "outer_h_W_m2_K": 8.0, "outer_emissivity": 0.25, "ambient_temperature_C": 22.0},
+  "material": {"virgin_reference_density_kg_m3": 1250.0, "char_reference_density_kg_m3": 600.0, "pyrolysis_enthalpy_J_kg": 418000.0},
+  "char_law": {
+    "mode": "effective_exploratory",
+    "calibrated": false,
+    "pressure_Pa": null,
+    "pressure_reference_Pa": 100000.0,
+    "exploratory_pressure_ratio": 1.0,
+    "reactive_activity": 1.0,
+    "reference_temperature_K": 1500.0,
+    "reference_rate_kg_m2_s": 0.01,
+    "activation_energy_J_mol": 100000.0,
+    "pressure_exponent": 0.5,
+    "mass_transfer_cap_kg_m2_s": 0.05,
+    "effective_endothermic_cost_J_kg": 35000000.0,
+    "species": [],
+    "notes": "All char kinetic coefficients are numerical exploration assumptions, not AP combustion predictions. In species mode, supply mole fractions and calibrated kinetics for each reactant; no composition is inferred from AP. The positive effective energy cost includes unresolved chemistry; exothermic chemistry is not represented."
+  },
+  "numerics": {"max_char_fraction_per_step": 0.2, "row_residual_mass_fraction": 0.001, "energy_relative_tolerance": 0.05, "hot_power_relative_tolerance": 0.02, "coupling_temperature_warning_K": 50.0, "stop_on_balance_error": true, "max_steps": 100000},
+  "output": {"save_restart_generations": 4, "field_output": "last_of_each_macro_step"}
+}

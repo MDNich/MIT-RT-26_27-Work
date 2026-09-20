@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-20",
+  "host": "macOS-26.5-arm64-arm-64bit",
+  "architecture": "arm64",
+  "tests": 35,
+  "test_result": "passed",
+  "static_checks": "passed",
+  "physical_hardware_tested": false,
+  "windows_tested": false,
+  "engine": {
+    "engine_sha256": "7f4817a35f5d8461e14730e153572c15c6d650b8b30f000dd2eb407934f0aff8",
+    "bridge_sha256": "c2ffcf382a08e2247191c9d6be92ff66b333835954f5d2eee363e958001d54ce",
+    "source_match": "Supplied engine binary; source revision must be verified before production redistribution",
+    "contract_version": 1,
+    "nominal_only": true,
+    "inertia_override": false
+  },
+  "java": {
+    "version": {
+      "build": 1,
+      "major": 17,
+      "minor": 0,
+      "openjdk_version": "17.0.20.1+1",
+      "patch": 1,
+      "security": 20,
+      "semver": "17.0.20+101"
+    },
+    "source": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.20.1%2B1/OpenJDK17U-jre_aarch64_mac_hotspot_17.0.20.1_1.tar.gz",
+    "sha256": "190480874ccceb358cbc840393207f77ac3e63a4c5f8129d0e23e9518b96ad05",
+    "os": "mac",
+    "arch": "aarch64"
+  },
+  "initial_packaged_demo": {
+    "samples": 69,
+    "mode": "DEMO",
+    "video_frames": 136,
+    "video_error": "",
+    "hardware_open": false
+  },
+  "packaged_simulation": {
+    "rows": 1551,
+    "apogee_m": 51.19043072,
+    "model": "resources/examples/simple.ork"
+  },
+  "model_sha256": "c0fa223c6677950915abeafc6720e3653093985e4ddefc576e5934c50f0b332e",
+  "limitations": [
+    "Development host, not a clean machine",
+    "USB camera/boards not connected",
+    "Controlled-vehicle model unqualified",
+    "Mac development signature; no release notarization",
+    "Windows tested under x64 emulation; physical x64 machine acceptance pending"
+  ],
+  "windows": {
+    "host": "Windows 11 ARM64 VM; x64 executable under emulation",
+    "tests_passed": 30,
+    "tests_skipped": 1,
+    "executable_machine": "0x8664",
+    "demo": {
+      "samples": 32,
+      "mode": "DEMO",
+      "video_frames": 73,
+      "video_error": "",
+      "hardware_open": false
+    },
+    "simulation_rows": 1551,
+    "apogee_m": 51.19043072,
+    "minimal_path": true,
+    "installed_in_path_with_spaces": true,
+    "validation_date": "2026-09-18",
+    "applies_to_current_revision": false
+  },
+  "revision_scope": "Mac: shared-beam geometry, camera orbit, Live startup, ground connection interlocks and rocket-link panel",
+  "current_checks": [
+    "35 Mac tests passed",
+    "Static checks passed",
+    "Default Live startup with no samples/video/device opens",
+    "Pseudo-serial corrupt/valid/stale/reconnect UI states",
+    "Ground loss clears pending manual commands",
+    "Camera orbit leaves antenna pose unchanged"
+  ],
+  "package_verification_directory": "build/mac-revision-20260920/package-verification"
+}

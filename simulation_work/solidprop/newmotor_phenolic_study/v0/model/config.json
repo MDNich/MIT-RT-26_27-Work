@@ -1,0 +1,80 @@
+{
+  "study": "New motor phenolic consumption - v0",
+  "qualification": "EXPLORATORY_NOT_CALIBRATED",
+  "windows_root": "C:\\ansys_newmotor_phenolic_v0",
+  "license": "1055@localhost",
+  "end_time_s": 20.0,
+  "macro_dt_s": 0.05,
+  "minimum_dt_s": 0.0005,
+  "ranks": 10,
+  "initial_temperature_C": 22.0,
+  "geometry": {
+    "aluminium_outer_diameter_in": 6.0,
+    "aluminium_inner_diameter_in": 5.625,
+    "phenolic_outer_diameter_in": 5.625,
+    "phenolic_inner_diameter_in": 5.25,
+    "inner_radius_m": 0.066675,
+    "phenolic_outer_radius_m": 0.0714375,
+    "outer_radius_m": 0.0762,
+    "phenolic_thickness_m": 0.0047625,
+    "aluminium_thickness_m": 0.0047625,
+    "length_m": 0.05,
+    "angle_deg": 0.1,
+    "full_ring_scale_factor": 3600.0,
+    "phenolic_radial_rows": 240,
+    "aluminium_radial_rows": 64,
+    "angular_divisions": 2,
+    "axial_divisions": 100,
+    "faces_per_row": 200
+  },
+  "heating": {
+    "gas_temperature_C": 2230.85,
+    "h0_W_m2_K": 1000.0,
+    "gas_cp_J_kg_K": 1600.0,
+    "hot_effective_emissivity": 0.0,
+    "radiative_temperature_C": 2230.85,
+    "outer_h_W_m2_K": 8.0,
+    "outer_emissivity": 0.25,
+    "ambient_temperature_C": 22.0
+  },
+  "material": {
+    "virgin_reference_density_kg_m3": 1250.0,
+    "char_reference_density_kg_m3": 600.0,
+    "pyrolysis_enthalpy_J_kg": 418000.0,
+    "aluminium_density_kg_m3": 2700.0,
+    "aluminium_conductivity_W_m_K": 167.0,
+    "aluminium_heat_capacity_J_kg_K": 896.0
+  },
+  "char_law": {
+    "mode": "effective_exploratory",
+    "calibrated": false,
+    "pressure_Pa": null,
+    "pressure_reference_Pa": 100000.0,
+    "exploratory_pressure_ratio": 1.0,
+    "reactive_activity": 1.0,
+    "reference_temperature_K": 1500.0,
+    "reference_rate_kg_m2_s": 0.01,
+    "activation_energy_J_mol": 100000.0,
+    "pressure_exponent": 0.5,
+    "mass_transfer_cap_kg_m2_s": 0.05,
+    "effective_endothermic_cost_J_kg": 35000000.0,
+    "species": [],
+    "notes": "Exploratory closure inherited from the previous study; replace with calibrated chamber pressure, gas composition and kinetics before predictive use."
+  },
+  "numerics": {
+    "max_char_fraction_per_step": 0.2,
+    "row_residual_mass_fraction": 0.001,
+    "energy_relative_tolerance": 0.05,
+    "hot_power_relative_tolerance": 0.02,
+    "coupling_temperature_warning_K": 50.0,
+    "stop_on_balance_error": true,
+    "max_steps": 20000
+  },
+  "output": {
+    "save_restart_generations": 6,
+    "field_output": "last_of_each_macro_step",
+    "history_file": "newmotor_v0_history.csv",
+    "checkpoint_every_macro_step": true
+  }
+}
+

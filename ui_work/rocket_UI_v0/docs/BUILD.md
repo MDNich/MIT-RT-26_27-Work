@@ -1,0 +1,59 @@
+# Build and distribution
+
+September 20 revision: Mac only. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
+
+Use Python 3.12–3.13 (64 bit; x64 Python on Windows), JDK 17+ (`javac` and `jar` on PATH), and GNU Make on the build machine. Build Mac arm64 on Apple Silicon, Mac x86_64 on Intel, and Windows x64 on Windows x64. PyInstaller does not cross-compile. Production users need only the resulting complete package.
+
+```sh
+# Mac
+make -f Makefile.macos setup PYTHON=python3.12
+make -f Makefile.macos all OPENROCKET_JAR="/absolute/path/to/swing-24.12.RC.01-all.jar"
+# Windows with GNU Make
+make -f Makefile.windows setup
+make -f Makefile.windows all OPENROCKET_JAR="C:/OpenRocket/swing-24.12.RC.01-all.jar"
+```
+
+Equivalent Windows PowerShell steps without Make:
+
+```powershell
+py -3.12 scripts/build.py setup
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe scripts/build.py runtime
+.venv\Scripts\python.exe scripts/build.py bridge --engine "C:\OpenRocket\swing-24.12.RC.01-all.jar"
+.venv\Scripts\python.exe scripts/build.py package --platform Windows
+```
+
+Mac outputs: `dist/RocketGNCMonitor.app` and an architecture-labeled DMG. Windows outputs: `dist/RocketGNCMonitor/` and an architecture-labeled ZIP. SHA-256 sidecars accompany distributable archives. Do not copy only the Windows executable; retain its entire folder.
+
+`make setup` uses exact versions in `requirements-build.txt`, exported from `uv.lock`. Developers with uv can run `uv sync --locked`. Internet is needed for initial dependencies/runtime download. Stage dependencies and vendor files in advance for offline builds; never reuse `.venv` or `vendor/java` across OS/CPU architectures.
+
+The bridge requires the **team fork's complete `swing-*-all.jar`**, including its motor/resources database. It references fork-specific control fields, so an arbitrary upstream JAR is not interchangeable. `make bridge OPENROCKET_JAR=...` stages it; later `make bridge` can reuse it. Bundled manifests record engine/bridge hashes, Java runtime download/hash, Python versions and FFmpeg configuration. Every simulation job copies model/motor inputs, request, hashes, log and output. Java preferences are private and volatile; desktop OpenRocket settings are not read.
+
+Validation:
+
+```sh
+make test
+make lint
+make smoke
+make verify-package
+# Headless tests/rendering:
+QT_QPA_PLATFORM=offscreen make test
+# Packaged smoke without a developer PATH:
+PATH=/usr/bin:/bin dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --smoke-test --data-dir build/package-smoke
+# Packaged engine test at a synthetic zero-coordinate launch site:
+dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --simulation-smoke /path/to/model.ork --data-dir build/package-simulation
+```
+
+`make run` starts the default locked LIVE view; `make demo` selects simulation explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` runs that check before explicit demo/video and engine checks.
+
+Demo smoke mode uses only synthetic inputs, writes `smoke-report.json` and exits. It never opens serial devices. `make clean` removes only this application's generated `build`/`dist` folders.
+
+Development Mac packages use ad-hoc signing. For release, set `MAC_SIGN_IDENTITY` to the team's Developer ID Application identity before packaging, then notarize/staple the DMG using team credentials. Sign Windows releases with the team's Authenticode certificate. No credentials are included. Camera permission and hardware-specific drivers remain OS/device requirements.
+
+The local development engine is an existing team-supplied binary; its exact corresponding source-to-binary match is unverified. Rebuild from a recorded source revision and retain source/dependency redistribution materials for a release. macOS metadata targets 13+, but only the recorded host is qualified. Windows 10/11 x64 is intended; the Windows x64 package has been built and tested in the supplied Windows 11 ARM VM under x64 emulation. Physical Windows x64 hardware remains a separate acceptance target.
+
+References: [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html), [Qt packaging](https://doc.qt.io/qtforpython-6/deployment/deployment-pyinstaller.html), [Temurin](https://adoptium.net/).
+
+The tested Windows VM used its existing Python 3.13 installation; for setup there, use `make setup PYTHON="py -3.13"`. All subsequent targets use the isolated `.venv`. If building offline, set `PIP_NO_INDEX=1` and `PIP_FIND_LINKS` to a staged wheel folder, including the locked packages plus `hatchling` and `editables` build dependencies. Stage a checksum-verified **Windows x64** JRE in `vendor/java` with its `java-runtime.json`, and make a JDK available on the build process PATH. The VM build and package validation did not require internet access.
+
+The Windows tests use the native Qt Windows platform. Qt's headless `offscreen` platform on Windows needs an explicit font directory and is not equivalent to checking the native window. Mac/Linux CI may use the documented offscreen setting.
