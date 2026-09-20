@@ -663,7 +663,7 @@ class MainWindow(QMainWindow):
         row.addWidget(button("Import reference…", self.load_reference))
         column.addLayout(row)
         self.trajectory_plot = plot("North (m)", "East", "m")
-        self.trajectory_plot.addLegend(offset=(10, 10))
+        self.trajectory_legend = self.trajectory_plot.addLegend(offset=(10, 10))
         self.reference_curve = self.trajectory_plot.plot(
             pen=pg.mkPen(COLORS["muted"], width=1.5, style=Qt.PenStyle.DashLine), name="Reference"
         )
@@ -1645,7 +1645,7 @@ class MainWindow(QMainWindow):
         x, y = project(list(c.track))
         self.actual_curve.setData(x, y)
         self.actual_marker.setData(x[-1:] if len(x) else [], y[-1:] if len(y) else [])
-        self.trajectory_plot.legend.setVisible(c.reference is not None)
+        self.trajectory_legend.setVisible(c.reference is not None)
         if c.reference:
             reference = c.reference
             x, y = project(reference.points[:, 1:])
