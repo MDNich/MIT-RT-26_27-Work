@@ -1,0 +1,14 @@
+! Native ANSYS geometry export only; no mesh and no SOLVE.
+/BATCH
+/PREP7
+/TITLE,New motor phenolic v0 - two-body sector geometry
+! CYL4 axis is global Z in this exchange-only model.
+CYL4,0,0,0.066675,-0.05,0.0714375,0.05,0.050
+CYL4,0,0,0.0714375,-0.05,0.0762,0.05,0.050
+VGLUE,ALL
+NUMMRG,ALL
+ALLSEL,ALL
+SAVE,newmotor_phenolic_v0,db
+FINISH
+/COM,NEWMOTOR_GEOMETRY_EXPORT_COMPLETE_NO_SOLVE
+/EXIT,NOSAVE
