@@ -119,40 +119,157 @@ progressive removal. The sector cannot represent large-scale circumferential
 nonuniformity. It is appropriate for a local axisymmetric response; any crack,
 joint, or localized jet requires a wider angular domain.
 
-\section{Planned thermochemical model}
-\subsection{Phenolic pyrolysis}
-The UserMatTh law retains conversion state variables and returns, for every
-live element, conversion \(\alpha\), gas production, and energy terms. Virgin
-and char reference densities are \SI{1250}{kg.m^{-3}} and
-\SI{600}{kg.m^{-3}}; the provisional pyrolysis enthalpy is
-\SI{418}{kJ.kg^{-1}}. Thermal properties depend on temperature and conversion.
+\section{Physics and thermochemical model}
+\subsection{Energy conservation in the solids}
+The model solves transient heat conduction in the phenolic and aluminium. In
+the reactive phenolic, the local equation is
+\begin{equation}
+ \rho(\alpha)c_p(T,\alpha)\frac{\partial T}{\partial t}
+ =\nabla\!\cdot\!\left[k(T,\alpha)\nabla T\right]
+ -\rho\Delta H_p\dot\alpha-\rho\dot q_{g,s},
+ \label{eq:v0-energy}
+\end{equation}
+where \(\Delta H_p>0\) is the endothermic pyrolysis enthalpy and
+\(\dot q_{g,s}\) is sensible cooling by released gas. In aluminium the last
+two terms vanish and the properties are
+\(k=\SI{167}{W.m^{-1}.K^{-1}}\),
+\(c_p=\SI{896}{J.kg^{-1}.K^{-1}}\), and
+\(\rho=\SI{2700}{kg.m^{-3}}\). The conformal interface enforces continuity of
+temperature and normal heat flux; no thermal contact resistance is added.
 
-The hot face defaults to \(T_g=\SI{2230.85}{\degreeCelsius}\) and
-\(h_0=\SI{1000}{W.m^{-2}.K^{-1}}\). Blowing continuously reduces the film
-coefficient as gas flux increases. The outer face exchanges with a
-\SI{22}{\degreeCelsius} ambient by convection
-(\(h=\SI{8}{W.m^{-2}.K^{-1}}\)) and radiation
-(\(\varepsilon=0.25\)).
+\subsection{Pyrolysis kinetics and evolving properties}
+The state variable \(0\leq\alpha\leq1\) is zero in virgin material and one in
+the char residue. The single reaction follows
+\begin{equation}
+ \dot\alpha=A\exp\!\left(-\frac{E_a}{RT}\right)(1-\alpha)^n,
+ \qquad
+ A=\SI{333}{s^{-1}},\quad E_a=\SI{64081}{J.mol^{-1}},\quad n=1.
+ \label{eq:v0-arrhenius}
+\end{equation}
+\code{UserMatTh} integrates this law analytically at the increment midpoint
+temperature:
+\begin{equation}
+ \alpha_{j+1}=1-(1-\alpha_j)\exp[-k_r(T_{j+1/2})\Delta t].
+\end{equation}
+It requests a MAPDL cutback when \(\Delta\alpha>0.05\). Density and thermal
+properties are interpolated between virgin and char states,
+\begin{equation}
+ X(T,\alpha)=(1-\alpha)X_v(T)+\alpha X_c(T),
+ \qquad X\in\{\rho,k,c_p\}.
+ \label{eq:v0-mixture}
+\end{equation}
+The reference densities are \(\rho_v=\SI{1250}{kg.m^{-3}}\) and
+\(\rho_c=\SI{600}{kg.m^{-3}}\), while the provisional pyrolysis enthalpy is
+\(\Delta H_p=\SI{418}{kJ.kg^{-1}}\). The \(k\) and \(c_p\) tables vary with
+temperature and must ultimately be replaced or validated with measurements of
+the manufactured material.
+
+\subsection{Gas generation and reduced evacuation model}
+Local condensed-mass loss generates pyrolysis gas:
+\begin{equation}
+ \dot\omega'''_g=Y_g(\rho_v-\rho_c)\dot\alpha,
+ \qquad Y_g=1\ \text{in v0}.
+ \label{eq:v0-gas-source}
+\end{equation}
+Gas mass is integrated over all live elements and retained in the balance. The
+model solves neither porosity, pore pressure, nor Darcy flow; it assumes that
+gas reaches the hot surface rapidly. Its sensible enthalpy is nevertheless
+removed from the solid through
+\begin{equation}
+ \dot q_{g,s}=f_g\,\frac{\dot\omega'''_g}{\rho}
+ c_{p,g}\max(T-T_{g,\mathrm{ref}},0),
+\end{equation}
+where \(f_g=1\), \(c_{p,g}=\SI{1600}{J.kg^{-1}.K^{-1}}\), and
+\(T_{g,\mathrm{ref}}=\SI{300}{K}\).
+
+The total gas flow reduces convective transfer through a blowing correction:
+\begin{equation}
+ B_h=\frac{\dot m''_g c_{p,g}}{h_0},\qquad
+ h_{\mathrm{eff}}=h_0\frac{B_h}{\exp(B_h)-1},\qquad
+ q''_{\mathrm{conv}}=h_{\mathrm{eff}}(T_g-T_s).
+ \label{eq:v0-blowing}
+\end{equation}
+The limit \(B_h\rightarrow0\) recovers \(h_{\mathrm{eff}}=h_0\). This closure
+retains the protective effect of outgassing without claiming to resolve pore
+flow or the chamber boundary layer.
+
+\subsection{Boundary conditions and chamber pressure}
+The hot face receives \(T_g=\SI{2230.85}{\degreeCelsius}\) and
+\(h_0=\SI{1000}{W.m^{-2}.K^{-1}}\). The framework includes
+\begin{equation}
+ q''_{\mathrm{rad}}=\varepsilon_h\sigma
+ \left(T_{g,\mathrm{rad}}^4-T_s^4\right),
+\end{equation}
+but \(\varepsilon_h=0\) in v0 so that an uncharacterized hot-side radiation
+load is not introduced. The outer face exchanges with a
+\SI{22}{\degreeCelsius} ambient through convection
+\(h=\SI{8}{W.m^{-2}.K^{-1}}\) and radiation
+\(\varepsilon=0.25\). Axial and lateral sector faces are adiabatic, representing
+a uniform local periodic slice.
+
+The specified nominal internal pressure is
+\(p_c=800\pm200\,\mathrm{psi}\), or
+\(\SI{5.52}{MPa}\pm\SI{1.38}{MPa}\), with a
+\SIrange{600}{1000}{psi} (\SIrange{4.14}{6.89}{MPa}) envelope. The nominal
+value is explicit in the configuration; the two bounds are sensitivity cases
+to be run once the other inputs are frozen.
+
+\subsection{Char consumption and recession}
+Pyrolysis creates char but does not automatically remove material. A second law
+acts only on the hot face. Its provisional kinetic rate is placed in series
+with a mass-transfer limit:
+\begin{align}
+ \dot m''_{\mathrm{kin}}&=\dot m''_{\mathrm{ref}}
+ \exp\!\left[-\frac{E_c}{R}\left(\frac1{T_s}-\frac1{T_{\mathrm{ref}}}\right)\right]
+ \left(a_r\frac{p_c}{p_{\mathrm{ref}}}\right)^{m},\\
+ \dot m''_{\mathrm{tr}}&=\dot m''_{\mathrm{cap}}
+ a_r\frac{p_c}{p_{\mathrm{ref}}},\qquad
+ \dot m''_c=\left(\frac1{\dot m''_{\mathrm{kin}}}
+ +\frac1{\dot m''_{\mathrm{tr}}}\right)^{-1}.
+ \label{eq:v0-char}
+\end{align}
+The exploratory values are \(E_c=\SI{100}{kJ.mol^{-1}}\),
+\(T_{\mathrm{ref}}=\SI{1500}{K}\), \(m=0.5\),
+\(\dot m''_{\mathrm{ref}}=\SI{0.01}{kg.m^{-2}.s^{-1}}\), and
+\(\dot m''_{\mathrm{cap}}=\SI{0.05}{kg.m^{-2}.s^{-1}}\). The applied rate is
+also bounded by the amount of char actually formed, by 20\,\% of char mass per
+macro-step, and by available net power:
+\begin{equation}
+ \dot m''_{c,\mathrm{applied}}\leq
+ \frac{\max(q''_{\mathrm{conv}}+q''_{\mathrm{rad}}-q''_{\mathrm{cond}},0)}
+ {H_{\mathrm{eff}}},\qquad H_{\mathrm{eff}}=\SI{35}{MJ.kg^{-1}}.
+ \label{eq:v0-energy-cap}
+\end{equation}
+Recession is therefore driven by disappearance of solid mass, not by
+\(\alpha=1\) alone.
+
+\subsection{Row removal and numerical coupling}
+Every macro-step restores the last accepted state, computes loads on the
+currently exposed face, solves the MAPDL thermal problem, exports converged
+fields, checks balances, and only then accepts a checkpoint. A row is scheduled
+for \code{EKILL} only when its residual solid mass falls below 0.1\,\% of its
+initial virgin mass. The row is deactivated at the next macro-step and hot-side
+conditions move to the newly exposed face. Residual mass and energy are logged
+before the topology changes.
+
+The nominal step is \SI{0.05}{s}, reducible to \SI{0.0005}{s}; the reference
+horizon is \SI{7}{s}. After each converged state the controller closes
+\begin{equation}
+ m_0=m_{\mathrm{solid}}+m_g+m_c+m_{\mathrm{ejected\ residue}}
+\end{equation}
+and audits energy using native element terms. A mass error above
+\(10^{-6}m_0\), an energy error above 5\,\%, or a hot-load discrepancy above
+2\,\% blocks the next solve.
 
 \begin{center}\fbox{\begin{minipage}{0.92\textwidth}\small
-\textbf{Qualification limit.} Chamber pressure, gas composition, and carbon
-oxidation kinetics are not yet available. The char-consumption law is therefore
-explicitly marked \code{EXPLORATORY_NOT_CALIBRATED}. Results may compare
-variants and verify balances, but become predictive only after calibration to
-the actual material and motor.
+\textbf{Validity domain.} Chamber pressure is now known, but gas composition,
+reactive fractions, and char-oxidation kinetics are not. The consumption law
+therefore remains \code{EXPLORATORY_NOT_CALIBRATED}. The calculation represents
+3D conduction, pyrolysis, evolving properties, enthalpy sinks, blowing,
+surface consumption, and discrete element removal. It does not represent the
+chamber flow, resolved porous transport, mechanical erosion, cracking,
+delamination, thermal expansion, or structural stress.
 \end{minipage}}\end{center}
-
-\subsection{Row removal}
-A row is deactivated only after its residual solid mass, following pyrolysis
-and carbon consumption, falls below 0.1\,\% of its initial virgin mass. Removal
-occurs after acceptance of a converged step and is reapplied after checkpoint
-restoration. This replaces the fragile decision based only on average
-conversion.
-
-The nominal coupling step is \SI{0.05}{s}; the solver may reduce it to
-\SI{0.0005}{s}. The \SI{7}{s} reference horizon is inherited solely for
-comparison with the earlier study. A new version must replace it before launch
-if the new motor has a different actual burn duration.
 
 \section{Primary quantities and balances}
 \subsection{Remaining thickness}
@@ -222,17 +339,17 @@ Two-volume geometry & created and archived in a native MAPDL database\\
 Structured mesh & validated: 229,665 nodes, 152,000 hexahedra\\
 Windows preflight & complete, 0 warnings, 0 errors, no solve\\
 Solver inputs & sealed with SHA-256\\
+Chamber pressure & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
 Pause/resume & prepared at accepted checkpoints\\
 French/English reports & compiled from the same parameters\\
 Transient calculation & not started; explicit authorization still required\\\bottomrule
 \end{tabular}
 \end{table}
 
-Before launch, the actual burn duration, chamber pressure, gas composition,
-and measured phenolic properties remain desirable. Without them, v0 is
+Before launch, the actual burn duration, gas composition, and measured
+phenolic properties remain desirable. Without them, v0 is
 deliberately a seven-second exploratory reference. Its structure is nonetheless
 ready to answer the primary question: how much phenolic was transformed or
 removed, and how much sound thickness remains at each time?
 
 \end{document}
-

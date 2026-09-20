@@ -11,6 +11,11 @@ The resulting radial thicknesses are 4.7625 mm for both phenolic and
 aluminium.  The analysis uses a 0.10° sector, a 50 mm axial coupon, and a
 full-ring scale factor of 3600.
 
+The chamber-pressure input is 800 ± 200 psi: 5.52 MPa nominal, with a
+600–1000 psi (4.14–6.89 MPa) sensitivity envelope. Pressure is explicit in
+the configuration; gas composition and carbon-oxidation kinetics remain
+exploratory until calibrated data are supplied.
+
 ## Directory policy
 
 - `model/`: version-controlled generators, controller, UserMatTh source and
@@ -54,4 +59,3 @@ accompanied by removed thickness, removed initial-equivalent mass, pyrolysis
 gas mass, oxidized-char mass, mass residual, and the energy audit.  This keeps
 "removed phenolic", "pyrolysis gas", and "burned char" separate instead of
 combining physically different quantities.
-

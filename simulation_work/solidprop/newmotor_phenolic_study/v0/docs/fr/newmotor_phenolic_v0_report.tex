@@ -124,43 +124,163 @@ représenter une non-uniformité circonférentielle à grande échelle. Il convi
 donc pour une réponse axisymétrique locale; toute fissure, joint ou jet local
 impose un domaine angulaire plus large.
 
-\section{Modèle thermochimique prévu}
-\subsection{Pyrolyse du phénolique}
-La loi UserMatTh conserve les états internes de conversion et fournit, pour
-chaque élément vivant, la conversion \(\alpha\), la production gazeuse et les
-termes énergétiques. Les densités de référence vierge et carbonisée valent
-respectivement \SI{1250}{kg.m^{-3}} et \SI{600}{kg.m^{-3}}; l'enthalpie de
-pyrolyse provisoire vaut \SI{418}{kJ.kg^{-1}}. Les propriétés thermiques
-dépendent de la température et de la conversion.
+\section{Physique et modèle thermochimique}
+\subsection{Conservation de l'énergie dans les solides}
+Le modèle résout la conduction thermique transitoire dans le phénolique et
+l'aluminium. Pour le phénolique réactif, l'équation locale est
+\begin{equation}
+ \rho(\alpha)c_p(T,\alpha)\frac{\partial T}{\partial t}
+ =\nabla\!\cdot\!\left[k(T,\alpha)\nabla T\right]
+ -\rho\Delta H_p\dot\alpha-\rho\dot q_{g,s},
+ \label{eq:v0-energy}
+\end{equation}
+où \(\Delta H_p>0\) est l'enthalpie endothermique de pyrolyse et
+\(\dot q_{g,s}\) le refroidissement sensible dû au gaz libéré. Dans
+l'aluminium, les deux derniers termes sont nuls et les propriétés sont
+\(k=\SI{167}{W.m^{-1}.K^{-1}}\),
+\(c_p=\SI{896}{J.kg^{-1}.K^{-1}}\) et
+\(\rho=\SI{2700}{kg.m^{-3}}\). L'interface conforme impose la continuité de la
+température et du flux normal; aucune résistance de contact n'est introduite.
 
-La face chaude reçoit par défaut \(T_g=\SI{2230.85}{\degreeCelsius}\) et
-\(h_0=\SI{1000}{W.m^{-2}.K^{-1}}\). Le soufflage réduit le coefficient par une
-fonction continue du flux gazeux. La face externe échange avec l'ambiance à
+\subsection{Cinétique de pyrolyse et propriétés évolutives}
+La variable d'état \(0\leq\alpha\leq1\) vaut zéro pour le matériau vierge et
+un pour le résidu carbonisé. La réaction unique suit
+\begin{equation}
+ \dot\alpha=A\exp\!\left(-\frac{E_a}{RT}\right)(1-\alpha)^n,
+ \qquad
+ A=\SI{333}{s^{-1}},\quad E_a=\SI{64081}{J.mol^{-1}},\quad n=1.
+ \label{eq:v0-arrhenius}
+\end{equation}
+\code{UserMatTh} intègre cette loi analytiquement à la température médiane de
+l'incrément :
+\begin{equation}
+ \alpha_{j+1}=1-(1-\alpha_j)\exp[-k_r(T_{j+1/2})\Delta t].
+\end{equation}
+Une demande de réduction du pas est renvoyée à MAPDL si
+\(\Delta\alpha>0{,}05\). La densité et les propriétés thermiques sont mélangées
+entre états vierge et carbonisé,
+\begin{equation}
+ X(T,\alpha)=(1-\alpha)X_v(T)+\alpha X_c(T),
+ \qquad X\in\{\rho,k,c_p\}.
+ \label{eq:v0-mixture}
+\end{equation}
+Les densités de référence sont \(\rho_v=\SI{1250}{kg.m^{-3}}\) et
+\(\rho_c=\SI{600}{kg.m^{-3}}\); la valeur provisoire de l'enthalpie de
+pyrolyse est \(\Delta H_p=\SI{418}{kJ.kg^{-1}}\). Les tables de \(k\) et
+\(c_p\) varient avec la température et doivent finalement être remplacées ou
+validées par des mesures du matériau réellement fabriqué.
+
+\subsection{Production et évacuation réduite des gaz}
+La perte locale de masse condensée produit un gaz de pyrolyse :
+\begin{equation}
+ \dot\omega'''_g=Y_g(\rho_v-\rho_c)\dot\alpha,
+ \qquad Y_g=1\ \text{dans v0}.
+ \label{eq:v0-gas-source}
+\end{equation}
+La masse gazeuse est intégrée sur tous les éléments vivants et conservée dans
+le bilan. Le modèle ne résout ni porosité, ni pression interstitielle, ni loi de
+Darcy : il suppose que le gaz rejoint rapidement la surface chaude. Son
+enthalpie sensible est toutefois retirée du solide par
+\begin{equation}
+ \dot q_{g,s}=f_g\,\frac{\dot\omega'''_g}{\rho}
+ c_{p,g}\max(T-T_{g,\mathrm{ref}},0),
+\end{equation}
+avec \(f_g=1\), \(c_{p,g}=\SI{1600}{J.kg^{-1}.K^{-1}}\) et
+\(T_{g,\mathrm{ref}}=\SI{300}{K}\).
+
+Le débit gazeux total réduit le transfert convectif par une correction de
+soufflage :
+\begin{equation}
+ B_h=\frac{\dot m''_g c_{p,g}}{h_0},\qquad
+ h_{\mathrm{eff}}=h_0\frac{B_h}{\exp(B_h)-1},\qquad
+ q''_{\mathrm{conv}}=h_{\mathrm{eff}}(T_g-T_s).
+ \label{eq:v0-blowing}
+\end{equation}
+La limite \(B_h\rightarrow0\) redonne \(h_{\mathrm{eff}}=h_0\). Cette
+fermeture conserve l'effet protecteur du dégazage sans prétendre résoudre
+l'écoulement poreux ou la couche limite de chambre.
+
+\subsection{Conditions aux limites et pression de chambre}
+La face chaude reçoit \(T_g=\SI{2230.85}{\degreeCelsius}\) et
+\(h_0=\SI{1000}{W.m^{-2}.K^{-1}}\). Le cadre inclut
+\begin{equation}
+ q''_{\mathrm{rad}}=\varepsilon_h\sigma
+ \left(T_{g,\mathrm{rad}}^4-T_s^4\right),
+\end{equation}
+mais \(\varepsilon_h=0\) dans la configuration v0 afin de ne pas ajouter un
+rayonnement chaud non caractérisé. La face externe échange avec l'ambiance à
 \SI{22}{\degreeCelsius} par convection
-(\(h=\SI{8}{W.m^{-2}.K^{-1}}\)) et rayonnement
-(\(\varepsilon=0{,}25\)).
+\(h=\SI{8}{W.m^{-2}.K^{-1}}\) et rayonnement
+\(\varepsilon=0{,}25\). Les faces axiales et latérales du secteur sont
+adiabatiques, ce qui représente une tranche locale périodique uniforme.
+
+La pression interne nominale fournie est
+\(p_c=800\pm200\,\mathrm{psi}\), soit
+\(\SI{5.52}{MPa}\pm\SI{1.38}{MPa}\), avec une enveloppe
+\SIrange{600}{1000}{psi} (\SIrange{4.14}{6.89}{MPa}). La valeur nominale est
+enregistrée explicitement dans la configuration; les deux bornes constituent
+les cas de sensibilité à exécuter lorsque les autres entrées seront figées.
+
+\subsection{Consommation du charbon et récession}
+La pyrolyse crée du charbon mais ne retire pas automatiquement la matière. Une
+deuxième loi agit uniquement sur la face chaude. Son taux cinétique provisoire
+est mis en série avec une limite de transfert de masse :
+\begin{align}
+ \dot m''_{\mathrm{kin}}&=\dot m''_{\mathrm{ref}}
+ \exp\!\left[-\frac{E_c}{R}\left(\frac1{T_s}-\frac1{T_{\mathrm{ref}}}\right)\right]
+ \left(a_r\frac{p_c}{p_{\mathrm{ref}}}\right)^{m},\\
+ \dot m''_{\mathrm{tr}}&=\dot m''_{\mathrm{cap}}
+ a_r\frac{p_c}{p_{\mathrm{ref}}},\qquad
+ \dot m''_c=\left(\frac1{\dot m''_{\mathrm{kin}}}
+ +\frac1{\dot m''_{\mathrm{tr}}}\right)^{-1}.
+ \label{eq:v0-char}
+\end{align}
+Les valeurs exploratoires sont \(E_c=\SI{100}{kJ.mol^{-1}}\),
+\(T_{\mathrm{ref}}=\SI{1500}{K}\), \(m=0{,}5\),
+\(\dot m''_{\mathrm{ref}}=\SI{0.01}{kg.m^{-2}.s^{-1}}\) et
+\(\dot m''_{\mathrm{cap}}=\SI{0.05}{kg.m^{-2}.s^{-1}}\). Le taux appliqué est
+encore borné par la fraction de charbon réellement produite, par 20\,\% de la
+masse de charbon par macro-pas et par la puissance nette disponible :
+\begin{equation}
+ \dot m''_{c,\mathrm{appl}}\leq
+ \frac{\max(q''_{\mathrm{conv}}+q''_{\mathrm{rad}}-q''_{\mathrm{cond}},0)}
+ {H_{\mathrm{eff}}},\qquad H_{\mathrm{eff}}=\SI{35}{MJ.kg^{-1}}.
+ \label{eq:v0-energy-cap}
+\end{equation}
+La récession est donc pilotée par la disparition de masse solide, non par
+\(\alpha=1\) seul.
+
+\subsection{Suppression de rangées et couplage numérique}
+Chaque macro-pas suit la séquence : restauration du dernier état accepté,
+calcul des charges sur la face actuellement exposée, résolution thermique
+MAPDL, export des champs convergés, vérification des bilans, puis acceptation du
+checkpoint. Une rangée n'est programmée pour \code{EKILL} que lorsque sa masse
+solide résiduelle tombe sous 0,1\,\% de sa masse vierge initiale. La rangée est
+désactivée au macro-pas suivant et les conditions chaudes sont transférées à la
+nouvelle face. Toute masse et énergie résiduelles sont enregistrées avant la
+modification topologique.
+
+Le pas nominal est \SI{0.05}{s}, réductible jusqu'à \SI{0.0005}{s}; l'horizon
+de référence est \SI{7}{s}. Après chaque état convergé, le contrôleur ferme le
+bilan de masse
+\begin{equation}
+ m_0=m_{\mathrm{solide}}+m_g+m_c+m_{\mathrm{residu\ ejecte}}
+\end{equation}
+et audite le bilan d'énergie à partir des termes natifs des éléments. Une
+erreur de masse supérieure à \(10^{-6}m_0\), une erreur énergétique relative
+supérieure à 5\,\%, ou un écart de charge chaude supérieur à 2\,\% bloque le
+pas suivant.
 
 \begin{center}\fbox{\begin{minipage}{0.92\textwidth}\small
-\textbf{Limite de qualification.} La pression de chambre, la composition des
-gaz et la cinétique d'oxydation du carbone ne sont pas encore disponibles. La
-loi de consommation du charbon est donc explicitement marquée
-\code{EXPLORATORY_NOT_CALIBRATED}. Les résultats peuvent comparer des variantes
-et vérifier les bilans, mais ne deviennent prédictifs qu'après calibration sur
-le matériau et le moteur réels.
+\textbf{Domaine de validité.} La pression de chambre est maintenant connue,
+mais la composition des gaz, les fractions réactives et la cinétique
+d'oxydation du charbon ne le sont pas. La loi de consommation reste donc
+\code{EXPLORATORY_NOT_CALIBRATED}. Le calcul représente la conduction 3D, la
+pyrolyse, les propriétés évolutives, les puits enthalpiques, le soufflage, la
+consommation surfacique et la suppression discrète. Il ne représente pas
+l'écoulement de chambre, le transport poreux résolu, l'érosion mécanique, la
+fissuration, la délamination, la dilatation ou la mécanique des contraintes.
 \end{minipage}}\end{center}
-
-\subsection{Suppression d'une rangée}
-Une rangée n'est désactivée que lorsque sa masse solide résiduelle, après
-pyrolyse et consommation du carbone, tombe sous 0,1\,\% de sa masse vierge
-initiale. La suppression a lieu après acceptation du pas convergé et est
-réappliquée après restauration du checkpoint. Cette règle remplace la décision
-fragile fondée uniquement sur une moyenne de conversion.
-
-Le pas de couplage nominal est \SI{0.05}{s}; le solveur peut descendre à
-\SI{0.0005}{s}. L'horizon de référence est \SI{7}{s}, repris uniquement pour
-permettre la comparaison avec l'étude précédente. Il devra être remplacé dans
-une nouvelle version, avant tout lancement, si la durée de combustion réelle
-du nouveau moteur diffère.
 
 \section{Grandeurs principales et bilans}
 \subsection{Épaisseur restante}
@@ -234,6 +354,7 @@ Géométrie à deux volumes & créée et archivée dans une base MAPDL native\\
 Maillage structuré & validé : 229,665 nœuds, 152,000 hexaèdres\\
 Précontrôle Windows & terminé, 0 avertissement, 0 erreur, aucun solve\\
 Entrées de calcul & scellées par SHA-256\\
+Pression de chambre & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
 Pause/reprise & préparée au checkpoint accepté\\
 Rapports FR/EN & compilés à partir des mêmes paramètres\\
 Calcul transitoire & non lancé; autorisation explicite encore nécessaire\\\bottomrule
@@ -241,11 +362,10 @@ Calcul transitoire & non lancé; autorisation explicite encore nécessaire\\\bot
 \end{table}
 
 Avant de lancer, il reste souhaitable de fournir la durée de combustion réelle,
-la pression de chambre, la composition gazeuse et les propriétés mesurées du
-phénolique. Sans ces données, le calcul v0 est volontairement une référence
+la composition gazeuse et les propriétés mesurées du phénolique. Sans ces
+données, le calcul v0 est volontairement une référence
 exploratoire de sept secondes. Sa structure est néanmoins prête à répondre à
 la question principale : combien de phénolique a été transformé ou retiré, et
 quelle épaisseur saine reste à chaque instant ?
 
 \end{document}
-

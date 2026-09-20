@@ -48,9 +48,13 @@
   "char_law": {
     "mode": "effective_exploratory",
     "calibrated": false,
-    "pressure_Pa": null,
+    "pressure_nominal_psi": 800.0,
+    "pressure_uncertainty_psi": 200.0,
+    "pressure_min_Pa": 4136854.3759008,
+    "pressure_Pa": 5515805.8345344,
+    "pressure_max_Pa": 6894757.293168,
     "pressure_reference_Pa": 100000.0,
-    "exploratory_pressure_ratio": 1.0,
+    "exploratory_pressure_ratio": 55.158058345344,
     "reactive_activity": 1.0,
     "reference_temperature_K": 1500.0,
     "reference_rate_kg_m2_s": 0.01,
@@ -59,7 +63,7 @@
     "mass_transfer_cap_kg_m2_s": 0.05,
     "effective_endothermic_cost_J_kg": 35000000.0,
     "species": [],
-    "notes": "Exploratory closure inherited from the previous study; replace with calibrated chamber pressure, gas composition and kinetics before predictive use."
+    "notes": "Nominal chamber pressure is 800 +/- 200 psi. The pressure is now explicit, but gas composition and oxidation kinetics remain exploratory and require calibration before predictive use."
   },
   "numerics": {
     "max_char_fraction_per_step": 0.2,
