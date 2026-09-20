@@ -260,16 +260,20 @@ désactivée au macro-pas suivant et les conditions chaudes sont transférées �
 nouvelle face. Toute masse et énergie résiduelles sont enregistrées avant la
 modification topologique.
 
-Le pas nominal est \SI{0.025}{s}, réductible jusqu'à \SI{0.0005}{s}; l'horizon
+Le pas nominal est \SI{0.0125}{s}, réductible jusqu'à \SI{0.0005}{s}; l'horizon
 de référence est \SI{7}{s}. Après chaque état convergé, le contrôleur ferme le
 bilan de masse
 \begin{equation}
  m_0=m_{\mathrm{solide}}+m_g+m_c+m_{\mathrm{residu\ ejecte}}
 \end{equation}
-et audite le bilan d'énergie à partir des termes natifs des éléments. Une
-erreur de masse supérieure à \(10^{-6}m_0\), une erreur énergétique relative
-supérieure à 5\,\%, ou un écart de charge chaude supérieur à 2\,\% bloque le
-pas suivant.
+et audite le bilan d'énergie à partir des termes natifs des éléments et des
+puits internes imposés par \code{UserMatTh}. Dans MAPDL 2026 R1,
+\code{SOLID278/NMISC,39} reste nul pour ces sources utilisateur : le contrôleur
+reconstruit donc indépendamment le puits de pyrolyse à partir de
+\(\Delta\alpha\) et le puits sensible du gaz à partir de la variable d'état 5,
+tout en conservant le canal natif comme diagnostic. Une erreur de masse
+supérieure à \(10^{-6}m_0\), une erreur énergétique relative supérieure à
+5\,\%, ou un écart de charge chaude supérieur à 2\,\% bloque le pas suivant.
 
 \begin{center}\fbox{\begin{minipage}{0.92\textwidth}\small
 \textbf{Domaine de validité.} La pression de chambre est maintenant connue,

@@ -252,14 +252,18 @@ initial virgin mass. The row is deactivated at the next macro-step and hot-side
 conditions move to the newly exposed face. Residual mass and energy are logged
 before the topology changes.
 
-The nominal step is \SI{0.025}{s}, reducible to \SI{0.0005}{s}; the reference
+The nominal step is \SI{0.0125}{s}, reducible to \SI{0.0005}{s}; the reference
 horizon is \SI{7}{s}. After each converged state the controller closes
 \begin{equation}
  m_0=m_{\mathrm{solid}}+m_g+m_c+m_{\mathrm{ejected\ residue}}
 \end{equation}
-and audits energy using native element terms. A mass error above
-\(10^{-6}m_0\), an energy error above 5\,\%, or a hot-load discrepancy above
-2\,\% blocks the next solve.
+and audits energy using native element terms and the internal sinks imposed by
+\code{UserMatTh}. In MAPDL 2026 R1, \code{SOLID278/NMISC,39} remains zero for
+these user sources; the controller therefore reconstructs the pyrolysis sink
+independently from \(\Delta\alpha\) and the gas sensible sink from state
+variable 5, while retaining the native channel as a diagnostic. A mass error
+above \(10^{-6}m_0\), an energy error above 5\,\%, or a hot-load discrepancy
+above 2\,\% blocks the next solve.
 
 \begin{center}\fbox{\begin{minipage}{0.92\textwidth}\small
 \textbf{Validity domain.} Chamber pressure is now known, but gas composition,

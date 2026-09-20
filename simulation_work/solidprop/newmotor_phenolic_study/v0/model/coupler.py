@@ -224,8 +224,14 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
     remaining=live_mesh_mass-pending_char
     mass_residual=s['mass_initial_kg']-remaining-s['gas_cumulative_kg']-s['char_cumulative_kg']-s['residual_ejected_kg']
     if abs(mass_residual)>max(1e-13,1e-6*s['mass_initial_kg']): raise ValueError('Phe0 mass balance not closed')
-    cap,gen,conv,hfx,rad=[sum(v[i] for v in energy.values()) for i in range(5)]
+    cap,gen_solver,conv,hfx,rad=[sum(v[i] for v in energy.values()) for i in range(5)]
     nodal=sum(float(x) for x in p['forces'].values())
+    # In MAPDL 2026 R1, SOLID278/NMISC,39 remains zero for the hgen sink
+    # supplied by UserMatTh.  The same two internal sinks are independently
+    # reconstructed from the accepted conversion increment and SVAR 5, so use
+    # their negative sum in the global audit and retain the raw solver channel
+    # as a diagnostic.
+    gen=-(pyro_power+gas_power)
     energy_residual=cap+conv+rad-hfx-gen-nodal
     scale=max(abs(cap),abs(conv)+abs(rad),abs(hfx)+abs(gen)+abs(nodal),1e-6)
     erel=abs(energy_residual)/scale
@@ -290,6 +296,8 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
                 alpha_min=min(alpha_values),
                 h_W_m2_K=p['faces'][0]['h'],hot_power_expected_W=hot_expected,hot_power_actual_W=hot_actual,
                 hot_power_relative_error=hrel,storage_W=cap,body_generation_W=gen,
+                body_generation_solver_W=gen_solver,
+                pyrolysis_sink_W=pyro_power,gas_sensible_sink_W=gas_power,
                 convection_out_W=conv,nodal_net_W=nodal,ablation_sink_W=p['totals']['ablation_sink_W'],
                 hot_radiation_W=p['totals']['hot_radiation_W'],outer_radiation_W=p['totals']['outer_radiation_W'],
                 energy_residual_W=energy_residual,energy_relative_error=erel,
@@ -343,6 +351,7 @@ def main():
             if (root/'PAUSE_REQUESTED').exists():
                 s['status']='PAUSED_AT_CHECKPOINT'; save(root/'state.json',s)
             atomic(root/'step_control.inp','V0_OK=1\nV0_DONE=1\n'); return
+        s['status']='RUNNING'
         p,commands=prepare_step(mesh,c,s)
         save(root/'pending.json',p)
         atomic(root/'apply_loads.inp',commands)
