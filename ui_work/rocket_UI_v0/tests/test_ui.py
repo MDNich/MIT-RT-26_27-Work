@@ -3,9 +3,69 @@ from rocket_gnc_monitor.widgets import DARK_COLORS, COLORS
 from PySide6.QtWidgets import QScrollArea
 from PySide6.QtCore import Qt, QPoint
 from rocket_gnc_monitor.widgets import MountView
+from rocket_gnc_monitor.widgets import MOUNT_COMPASS, mount_rotations
+import numpy as np
 import os
 import time
 import pytest
+
+
+def test_mount_compass_chirality_and_command_headings():
+    north, east, up = np.array(MOUNT_COMPASS["N"]), np.array(MOUNT_COMPASS["E"]), np.array([0, 1, 0])
+    assert np.array_equal(np.cross(east, north), up)
+    for azimuth, cardinal in [(0, "N"), (90, "E"), (180, "S"), (270, "W"), (360, "N")]:
+        for elevation in (0, 35, 80):
+            rotation, tilt = mount_rotations(azimuth, elevation)
+            boresight = rotation @ tilt @ north
+            horizontal = boresight - np.dot(boresight, up) * up
+            assert horizontal / np.linalg.norm(horizontal) == pytest.approx(
+                MOUNT_COMPASS[cardinal], abs=1e-12
+            )
+            assert np.dot(boresight, up) == pytest.approx(np.sin(np.radians(elevation)))
+            assert np.linalg.det(rotation @ tilt) == pytest.approx(1)  # No reflection in the model.
+
+
+def test_recorded_demo_controls_and_legacy_readouts(qtbot, tmp_path):
+    window = MainWindow(tmp_path)
+    qtbot.addWidget(window)
+    window.resize(1120, 800)
+    window.show()
+    c = window.controller
+    c.timer.stop()
+
+    def refresh():
+        window.last_ui = window.last_table = 0
+        window.refresh()
+
+    window.mode.setCurrentText("DEMO")
+    refresh()
+    assert window.demo_bar.isVisible() and not window.serial_bar.isVisible()
+    assert window.demo_station.currentText() == "GS2"
+    assert "RECORDED TELEMETRY" in window.connection_tiles["rocket"].text()
+    qtbot.mouseClick(window.demo_play, Qt.MouseButton.LeftButton)
+    assert not c.demo_playing
+    qtbot.mouseClick(window.demo_start, Qt.MouseButton.LeftButton)
+    assert c.demo_playing and c.demo_time == 0
+    assert c.latest.sequence == 9814
+    window.demo_speed.setCurrentIndex(4)
+    assert c.demo_speed == 4
+    window.demo_station.setCurrentText("GS3")
+    refresh()
+    assert c.latest.details["demo_station"] == "GS3"
+    assert not window.track_button.isEnabled()
+    panel = window.rocket_panel
+    assert panel.power.item(1, 2).text() == "True"
+    assert panel.pyros.item(0, 2).text() == "CONNECTED"
+    window.pages.setCurrentIndex(1)
+    qtbot.wait(30)
+    assert window.size().toTuple() == (1120, 800)
+    assert window.pages.currentWidget().height() > 500
+    assert window.demo_slider.width() > 150
+    window.mode.setCurrentText("LIVE")
+    refresh()
+    assert not window.demo_bar.isVisible() and window.serial_bar.isVisible()
+    assert not window.record_button.isEnabled() and not window.point_button.isEnabled()
+    window.close()
 
 
 def test_workspaces_render_at_minimum_size_and_daylight(qtbot, tmp_path):
@@ -14,7 +74,7 @@ def test_workspaces_render_at_minimum_size_and_daylight(qtbot, tmp_path):
     window.resize(1120, 800)
     window.show()
     qtbot.wait(300)
-    for index in range(7):
+    for index in range(8):
         window.pages.setCurrentIndex(index)
         qtbot.wait(40)
         assert not window.grab().isNull()
@@ -80,6 +140,9 @@ def test_live_panel_tracks_valid_packets_and_relocks_on_disconnect(qtbot, tmp_pa
         qtbot.waitUntil(lambda: c.ground_connected)
         refresh()
         assert window.record_button.isEnabled() and not window.point_button.isEnabled()
+        assert c.rocket_link_state() == ("PAUSED", None)
+        c.set_polling(True)
+        refresh()
         assert window.connection_headline.text() == "Waiting for the rocket"
         bad = bytearray(frame())
         bad[12] ^= 1
@@ -92,7 +155,6 @@ def test_live_panel_tracks_valid_packets_and_relocks_on_disconnect(qtbot, tmp_pa
         assert window.connection_headline.text() == "Rocket telemetry live"
         c.connect("pointer", os.ttyname(pairs[1][1]))
         qtbot.waitUntil(lambda: c.states["pointer"] == "Connected")
-        c.mission.pointer_calibrated = c.mission.pointer_full_rotation = True
         refresh()
         assert window.point_button.isEnabled() and window.zero_button.isEnabled()
         c.last_live_received = c.latest.received = time.monotonic() - 10
@@ -103,12 +165,14 @@ def test_live_panel_tracks_valid_packets_and_relocks_on_disconnect(qtbot, tmp_pa
         assert "lost / stale" in window.connection_headline.text()
         c.disconnect("telemetry")
         refresh()
-        assert not window.record_button.isEnabled() and not window.point_button.isEnabled()
-        assert not window.zero_button.isEnabled() and not window.track_button.isEnabled()
-        with pytest.raises(ValueError, match="ground station"):
-            c.point(90, 30)
+        assert not window.record_button.isEnabled() and window.point_button.isEnabled()
+        assert window.zero_button.isEnabled() and not window.track_button.isEnabled()
+        c.point(90, 30)
+        qtbot.waitUntil(lambda: c.pointer_pending is None)
         c.connect("telemetry", os.ttyname(pairs[0][1]))
         qtbot.waitUntil(lambda: c.ground_connected)
+        assert c.rocket_link_state() == ("PAUSED", None)
+        c.set_polling(True)
         assert c.rocket_link_state() == ("WAITING", None)
         refresh()
         assert window.connection_headline.text() == "Waiting for the rocket"

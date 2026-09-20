@@ -25,12 +25,12 @@ def test_startup_is_live_without_data_and_requires_ground_connection(controller,
         c.start_tracking,
         lambda: c.start_recording(tmp_path),
     ]:
-        with pytest.raises(ValueError, match="ground station"):
+        with pytest.raises(ValueError, match="(?i)(ground station|antenna pointer)"):
             action()
     assert c.pointer_pending is None and c.recorder is None
 
 
-def test_ground_loss_discards_pending_manual_command(controller):
+def test_ground_loss_discards_pending_tracking_command(controller):
     import queue
 
     c = controller
@@ -39,10 +39,11 @@ def test_ground_loss_discards_pending_manual_command(controller):
     c.workers["pointer"] = SimpleNamespace(commands=commands)
     c.pointer_pending = ("pending", (100, 20))
     c.dispatched_commands["pending"] = (100, 20)
+    c.tracking = True
     try:
         c.disconnect("telemetry")
         assert commands.empty() and not c.dispatched_commands and c.pointer_pending is None
-        assert "controls locked" in c.pointer_status
+        assert "Tracking off" in c.pointer_status
     finally:
         c.workers["pointer"] = None
 
@@ -146,7 +147,7 @@ def test_hold_retains_a_command_already_dispatched(controller):
     try:
         c.tick()
         assert c.pointer_sent == (100, 30) and not c.tracking
-        assert "Hold" in c.pointer_status
+        assert "Tracking off" in c.pointer_status
     finally:
         c.workers["pointer"] = None
 

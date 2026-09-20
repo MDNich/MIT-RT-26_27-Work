@@ -5,6 +5,9 @@ Bundled dependency versions/hashes are in `vendor/build-manifest.json`. Python p
 | Component | License/source reference |
 | --- | --- |
 | Qt, PySide6 Essentials, Shiboken | https://www.qt.io/licensing/ ; LGPLv3/GPL/commercial per component, dynamic Qt libraries |
+| Lucida Grande | User-designated macOS font collection for the internal team build; proprietary; provenance in `resources/fonts/README.md` |
+| mgrs / GeoTrans conversion | https://github.com/hobuinc/mgrs ; MIT license retained in `licenses/mgrs` |
+| Open Location Code | https://github.com/google/open-location-code ; Apache-2.0, `licenses/openlocationcode/LICENSE` |
 | PyQtGraph | https://github.com/pyqtgraph/pyqtgraph ; MIT |
 | NumPy | https://numpy.org/doc/stable/license.html ; BSD-style and included dependency notices |
 | pyserial | https://github.com/pyserial/pyserial ; BSD |

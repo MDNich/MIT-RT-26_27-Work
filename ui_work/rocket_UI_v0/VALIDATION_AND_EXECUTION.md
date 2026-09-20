@@ -1,5 +1,6 @@
 # Plan validation and execution readiness
 
+> Historical planning baseline. Current serial/control behavior follows the original UI as documented in [Legacy feature parity](docs/LEGACY_PARITY.md) and the [Operator guide](docs/OPERATOR_GUIDE.md).
 Reviewed 18 September 2026. **Decision: ready to start M0 implementation.** Python/PySide6 remains the recommended desktop stack, with an isolated Java 17 OpenRocket worker. This is an architecture and source review; it does not certify hardware operation, distribution packages, video latency, or flight-model accuracy.
 
 ## What the review established

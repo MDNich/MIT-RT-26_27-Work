@@ -12,7 +12,7 @@ import time
 import numpy as np
 import pyqtgraph as pg
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction, QImage, QPixmap, QIcon
+from PySide6.QtGui import QAction, QImage, QPixmap, QIcon, QKeySequence, QFont
 from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
@@ -43,6 +43,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QAbstractItemView,
     QTextBrowser,
+    QApplication,
 )
 from .controller import Controller
 from .domain import Mission, finite, validate_wind, wind_from
@@ -50,6 +51,10 @@ from .devices import ports
 from .media import WIDTH, HEIGHT, camera_devices
 from .trajectory import Trajectory, weather_profile
 from .widgets import STYLE, COLORS, AttitudeView, MountView
+from .rocket_panel import RocketPanel
+from .zephyrus import legacy_values
+from .fonts import FONT_FAMILY, configure_fonts
+from .location_ui import LaunchLocation
 
 
 def label(text, name=None):
@@ -89,20 +94,22 @@ def table(headers):
 
 def plot(ylabel, xlabel="Flight time", unit="s"):
     item = pg.PlotWidget(background=COLORS["panel"])
-    item.setLabel("left", ylabel, color=COLORS["muted"])
-    item.setLabel("bottom", xlabel, units=unit, color=COLORS["muted"])
+    item.setLabel("left", ylabel, color=COLORS["muted"], **{"font-family": f"'{FONT_FAMILY}'"})
+    item.setLabel("bottom", xlabel, units=unit, color=COLORS["muted"], **{"font-family": f"'{FONT_FAMILY}'"})
     item.showGrid(x=True, y=True, alpha=0.12)
     item.getPlotItem().setMenuEnabled(False)
     for axis in ("left", "bottom"):
         item.getAxis(axis).setTextPen(COLORS["muted"])
         item.getAxis(axis).setPen(COLORS["line"])
+        item.getAxis(axis).setTickFont(QFont(FONT_FAMILY, 10))
     return item
 
 
 class MissionDialog(QDialog):
     def __init__(self, mission, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Mission and mount configuration")
+        configure_fonts(QApplication.instance())
+        self.setWindowTitle("Mission configuration")
         self.resize(690, 760)
         self.mission = copy.deepcopy(mission)
         root = QVBoxLayout(self)
@@ -115,12 +122,11 @@ class MissionDialog(QDialog):
                 [
                     ("name", "Mission name", "text"),
                     ("site_configured", "Launch origin established", "bool"),
-                    ("latitude", "Launch latitude (°)", (-90, 90, 7)),
-                    ("longitude", "Launch longitude (°)", (-180, 180, 7)),
+                    ("launch_location", "Launch location", "location"),
                     ("altitude", "Launch altitude, WGS84 ellipsoid (m)", (-1000, 10000, 2)),
                     ("altitude_msl", "Launch elevation, mean sea level (m)", (-1000, 10000, 2)),
                     ("legacy_altitude", "Legacy height interpretation", "altitude"),
-                    ("canard_count", "Canards in vehicle profile / demo", (0, 16, 0)),
+                    ("canard_count", "Canards in vehicle profile", (0, 16, 0)),
                     ("freshness", "Maximum target age (s)", (0.1, 60, 1)),
                     ("low_battery", "Low battery alert (V)", (0, 100, 2)),
                     ("rail_length", "Launch rail length (m)", (0.1, 100, 2)),
@@ -131,32 +137,16 @@ class MissionDialog(QDialog):
                     ("video_offset", "Replay video offset, positive delays video (s)", (-600, 600, 2)),
                 ],
             ),
-            (
-                "Antenna mount",
-                [
-                    ("pointer_latitude", "Pivot latitude (°)", (-90, 90, 7)),
-                    ("pointer_longitude", "Pivot longitude (°)", (-180, 180, 7)),
-                    ("pointer_altitude", "Pivot altitude, WGS84 ellipsoid (m)", (-1000, 10000, 2)),
-                    ("pointer_az_offset", "Geographic → board azimuth offset (°)", (-360, 360, 2)),
-                    ("pointer_el_offset", "Elevation alignment offset (°)", (-90, 90, 2)),
-                    ("pointer_az_min", "Allowed azimuth minimum (°)", (0, 359, 1)),
-                    ("pointer_az_max", "Allowed azimuth maximum (°)", (1, 360, 1)),
-                    ("pointer_el_min", "Allowed elevation minimum (°)", (-90, 89, 1)),
-                    ("pointer_el_max", "Allowed elevation maximum (°)", (-89, 90, 1)),
-                    ("pointer_full_rotation", "Continuous rotation / cable route verified", "bool"),
-                    (
-                        "pointer_calibrated",
-                        "Mount physically aligned with configured zero; envelope verified",
-                        "bool",
-                    ),
-                ],
-            ),
         ]
-        for title, fields in definitions:
+        for page_title, fields in definitions:
             page = QWidget()
             form = QFormLayout(page)
             form.setSpacing(11)
             for key, title, kind in fields:
+                if kind == "location":
+                    self.location = LaunchLocation(mission)
+                    form.addRow(title, self.location)
+                    continue
                 value = getattr(mission, key)
                 if kind == "text":
                     editor = QLineEdit(value)
@@ -166,7 +156,7 @@ class MissionDialog(QDialog):
                 elif kind == "altitude":
                     editor = QComboBox()
                     for title_, key_ in [
-                        ("Unknown — tracking unavailable", "unknown"),
+                        ("Unknown — trajectory position unavailable", "unknown"),
                         ("GPS zeroed at launch origin", "gps_agl"),
                         ("Filtered barometer relative to launch", "barometric_agl"),
                         ("GPS absolute ellipsoid altitude", "ellipsoid"),
@@ -186,14 +176,9 @@ class MissionDialog(QDialog):
             scroll = QScrollArea()
             scroll.setWidgetResizable(True)
             scroll.setWidget(page)
-            tabs.addTab(
-                scroll,
-                title
-                if title in {"Mission", "Antenna mount"}
-                else ("Mission" if fields[0][0] == "name" else "Antenna mount"),
-            )
+            tabs.addTab(scroll, page_title)
         note = label(
-            "Legacy firmware has no measured pose or confirmed stop. Reference zero resets counters at the current physical position.",
+            "Set the launch origin for trajectory display. Antenna tracking uses Send to AntPtr on the antenna page.",
             "muted",
         )
         note.setWordWrap(True)
@@ -218,6 +203,10 @@ class MissionDialog(QDialog):
                     else editor.value()
                 )
                 setattr(self.mission, key, value)
+            location = self.location.value()
+            self.mission.latitude, self.mission.longitude = location.latitude, location.longitude
+            self.mission.launch_location_format = self.location.format.currentData()
+            self.mission.launch_location_code = location.code
             self.mission.validate()
         except ValueError as exc:
             QMessageBox.warning(self, "Mission settings", str(exc))
@@ -228,6 +217,7 @@ class MissionDialog(QDialog):
 class MainWindow(QMainWindow):
     def __init__(self, data_dir):
         super().__init__()
+        configure_fonts(QApplication.instance())
         self.setWindowTitle("Rocket GNC Monitor")
         self.resource_root = (
             Path(sys._MEIPASS) if getattr(sys, "frozen", False) else Path(__file__).resolve().parents[2]
@@ -241,6 +231,8 @@ class MainWindow(QMainWindow):
         self.last_ui = 0
         self.last_table = 0
         self.port_widgets = {}
+        self.disconnect_buttons = {}
+        self.refresh_buttons = {}
         self.live_controls = []
         self.pointer_controls = []
         self.metrics = {}
@@ -265,30 +257,82 @@ class MainWindow(QMainWindow):
         self.mode.setAccessibleName("Data source mode")
         self.mode.currentTextChanged.connect(lambda value: self.guard(lambda: c.switch_mode(value)))
         header.addWidget(self.mode)
-        self.record_button = button("Record session", self.record, True)
+        self.poll_button = button("Start Polling", self.toggle_polling)
+        header.addWidget(self.poll_button)
+        self.record_button = button("Start Logging", self.record, True)
         header.addWidget(self.record_button)
         outer.addLayout(header)
-        connections = QHBoxLayout()
+        self.serial_bar = QWidget()
+        connections = QHBoxLayout(self.serial_bar)
+        connections.setContentsMargins(0, 0, 0, 0)
         for role, title in [("telemetry", "Ground station"), ("pointer", "Antenna pointer")]:
             panel, layout = card()
-            row = QHBoxLayout()
-            column = QVBoxLayout()
-            column.addWidget(label(title, "section"))
+            heading = QHBoxLayout()
+            heading.addWidget(label(title, "section"))
+            heading.addStretch()
             status = label("Disconnected", "muted")
-            column.addWidget(status)
-            row.addLayout(column)
+            heading.addWidget(status)
+            layout.addLayout(heading)
+            row = QHBoxLayout()
             combo = QComboBox()
-            combo.setMinimumWidth(150)
+            combo.setMinimumWidth(110)
             combo.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
             combo.setAccessibleName(f"{title} serial port")
             row.addWidget(combo, 1)
+            refresh = button("Refresh", self.refresh_ports)
             action = button("Connect", lambda checked=False, r=role: self.connect_role(r))
-            row.addWidget(action)
+            disconnect = button("Disconnect", lambda checked=False, r=role: self.disconnect_role(r))
+            for control in [refresh, action, disconnect]:
+                row.addWidget(control)
             layout.addLayout(row)
             connections.addWidget(panel, 1)
             self.port_widgets[role] = (combo, action, status)
-        connections.addWidget(button("Rescan ports", self.refresh_ports))
-        outer.addLayout(connections)
+            self.disconnect_buttons[role] = disconnect
+            self.refresh_buttons[role] = refresh
+        outer.addWidget(self.serial_bar)
+        self.demo_bar = QWidget()
+        demo_row = QHBoxLayout(self.demo_bar)
+        demo_row.setContentsMargins(0, 0, 0, 0)
+        demo_row.addWidget(label("Zephyrus test flight", "section"))
+        self.demo_station = QComboBox()
+        self.demo_station.addItems(["GS1", "GS2", "GS3"])
+        self.demo_station.setCurrentText(c.demo_station)
+        self.demo_station.setAccessibleName("Demo ground-station recording")
+        self.demo_station.currentTextChanged.connect(
+            lambda station: self.guard(lambda: c.select_demo(station))
+        )
+        demo_row.addWidget(self.demo_station)
+        self.demo_play = button("Pause", lambda: self.guard(c.play_demo))
+        demo_row.addWidget(self.demo_play)
+        self.demo_launch = button("Launch −5s", lambda: self.restart_demo(True))
+        self.demo_start = button("Full start", lambda: self.restart_demo(False))
+        demo_row.addWidget(self.demo_launch)
+        demo_row.addWidget(self.demo_start)
+        self.demo_speed = QComboBox()
+        for speed in (0.25, 0.5, 1, 2, 4):
+            self.demo_speed.addItem(f"{speed:g}×", speed)
+        self.demo_speed.setCurrentIndex(2)
+        self.demo_speed.setAccessibleName("Demo playback speed")
+        self.demo_speed.currentIndexChanged.connect(
+            lambda: setattr(c, "demo_speed", self.demo_speed.currentData())
+        )
+        demo_row.addWidget(self.demo_speed)
+        self.demo_slider = QSlider(Qt.Orientation.Horizontal)
+        self.demo_slider.setSingleStep(1000)
+        self.demo_slider.setPageStep(10000)
+        self.demo_slider.setAccessibleName("Zephyrus recording position")
+        self.demo_slider.sliderReleased.connect(
+            lambda: self.guard(lambda: c.seek_demo(self.demo_slider.value() / 1000))
+        )
+        self.demo_slider.valueChanged.connect(
+            lambda value: (
+                None if self.demo_slider.isSliderDown() else self.guard(lambda: c.seek_demo(value / 1000))
+            )
+        )
+        demo_row.addWidget(self.demo_slider, 1)
+        self.demo_clock = label("", "muted")
+        demo_row.addWidget(self.demo_clock)
+        outer.addWidget(self.demo_bar)
         body = QHBoxLayout()
         navigation = QListWidget()
         navigation.setObjectName("navigation")
@@ -301,6 +345,7 @@ class MainWindow(QMainWindow):
                 "Mission & wind",
                 "Sessions & replay",
                 "Diagnostics",
+                "Rocket controls",
             ]
         )
         navigation.setFixedWidth(155)
@@ -316,6 +361,7 @@ class MainWindow(QMainWindow):
             self.mission_page,
             self.sessions_page,
             self.diagnostics_page,
+            self.rocket_page,
         ):
             self.pages.addWidget(builder())
         navigation.currentRowChanged.connect(self.pages.setCurrentIndex)
@@ -324,12 +370,15 @@ class MainWindow(QMainWindow):
         self.banner = label("LIVE · Controls locked · connect the ground station", "muted")
         outer.addWidget(self.banner)
         self.statusBar().showMessage("Ready · offline-capable")
+        self.wall_clock = label("", "muted")
+        self.statusBar().addPermanentWidget(self.wall_clock)
         c.event.connect(self.add_event)
         c.changed.connect(self.refresh)
         c.frame.connect(self.show_frame)
         c.task_done.connect(self.task_done)
         self.refresh_ports()
         self.wind_to_table()
+        self.install_shortcuts()
         menu = self.menuBar().addMenu("Mission")
         for title, callback in [
             ("Configure…", self.edit_mission),
@@ -348,6 +397,7 @@ class MainWindow(QMainWindow):
         help_menu = self.menuBar().addMenu("Help")
         for title, filename in [
             ("Operator guide", "OPERATOR_GUIDE.md"),
+            ("Legacy feature parity and shortcuts", "LEGACY_PARITY.md"),
             ("Implementation status", "IMPLEMENTATION_STATUS.md"),
             ("Wire protocol", "PROTOCOL.md"),
             ("Third-party notices", "THIRD_PARTY_NOTICES.md"),
@@ -356,6 +406,53 @@ class MainWindow(QMainWindow):
             action.triggered.connect(lambda checked=False, f=filename: self.show_help(f))
             help_menu.addAction(action)
         self.refresh()
+
+    def restart_demo(self, launch):
+        def restart():
+            c = self.controller
+            if c.demo:
+                c.seek_demo(c.demo.cue if launch else 0)
+                c.play_demo(True)
+
+        self.guard(restart)
+
+    def rocket_page(self):
+        self.rocket_panel = RocketPanel(self.controller, self.guard)
+        return self.rocket_panel
+
+    def install_shortcuts(self):
+        menu = self.menuBar().addMenu("Serial controls")
+        self.legacy_actions = {}
+        definitions = [
+            ("refresh", "Refresh ports", "Ctrl+R", self.refresh_ports),
+            ("ground", "Connect Ground Station", "Ctrl+Alt+C", lambda: self.toggle_connection("telemetry")),
+            (
+                "pointer",
+                "Connect Antenna Pointer",
+                "Shift+Ctrl+Alt+C",
+                lambda: self.toggle_connection("pointer"),
+            ),
+            ("poll", "Start Polling", "Ctrl+Return", self.toggle_polling),
+            ("log", "Start Logging", "Ctrl+L", self.record),
+            ("up", "Pointer UP", "Ctrl+Up", lambda: self.guard(lambda: self.controller.jog(0, 5))),
+            ("down", "Pointer DOWN", "Ctrl+Down", lambda: self.guard(lambda: self.controller.jog(0, -5))),
+            ("right", "Pointer RIGHT", "Ctrl+Right", lambda: self.guard(lambda: self.controller.jog(5, 0))),
+            ("left", "Pointer LEFT", "Ctrl+Left", lambda: self.guard(lambda: self.controller.jog(-5, 0))),
+            ("zero", "Pointer ZERO", "Ctrl+0", lambda: self.guard(self.controller.reference_zero)),
+        ]
+        for key, title, shortcut, callback in definitions:
+            action = QAction(title, self)
+            action.setShortcut(QKeySequence(shortcut))
+            action.setShortcutContext(Qt.ShortcutContext.WindowShortcut)
+            action.triggered.connect(callback)
+            menu.addAction(action)
+            self.legacy_actions[key] = action
+
+    def toggle_connection(self, role):
+        if self.controller.states[role] in {"Connected", "Connecting"}:
+            self.disconnect_role(role)
+        else:
+            self.connect_role(role)
 
     def show_help(self, filename):
         dialog = QDialog(self)
@@ -490,7 +587,7 @@ class MainWindow(QMainWindow):
         self.control_readiness.setWordWrap(True)
         column.addWidget(self.control_readiness)
         note = label(
-            "Live capture and recording require the ground board. Antenna commands also require the pointer board and mount calibration; tracking requires fresh rocket position.",
+            "Connect the ground station for telemetry and recording. Connect the antenna pointer for manual control. Start polling to receive rocket telemetry.",
             "muted",
         )
         note.setWordWrap(True)
@@ -580,7 +677,7 @@ class MainWindow(QMainWindow):
             pen=None, symbol="d", symbolBrush=COLORS["gold"], symbolSize=8
         )
         column.addWidget(self.trajectory_plot, 1)
-        self.reference_label = label("Illustrative demo trajectory", "muted")
+        self.reference_label = label("No reference selected", "muted")
         self.reference_label.setWordWrap(True)
         column.addWidget(self.reference_label)
         middle.addWidget(panel, 1)
@@ -622,35 +719,24 @@ class MainWindow(QMainWindow):
         layout.addWidget(panel, 3)
         panel, column = card("Pointing control")
         panel.setMaximumWidth(390)
-        self.pointer_pose = label("PREVIEW · NOT MEASURED", "eyebrow")
+        self.pointer_pose = label("MANUAL CONTROL", "eyebrow")
         column.addWidget(self.pointer_pose)
-        self.azimuth = QDoubleSpinBox()
-        self.azimuth.setRange(0, 359.99)
-        self.azimuth.setDecimals(2)
-        self.azimuth.setValue(32)
-        self.azimuth.setSuffix(" °")
-        self.elevation = QDoubleSpinBox()
-        self.elevation.setRange(-90, 90)
-        self.elevation.setDecimals(2)
-        self.elevation.setValue(12)
-        self.elevation.setSuffix(" °")
-        for title, control in [("Board azimuth", self.azimuth), ("Board elevation", self.elevation)]:
+        self.azimuth = QLineEdit("0.0")
+        self.elevation = QLineEdit("0.0")
+        for title, control in [("Azimuth (deg)", self.azimuth), ("Elevation (deg)", self.elevation)]:
             column.addWidget(label(title, "muted"))
             column.addWidget(control)
-            control.valueChanged.connect(
-                lambda: self.mount.set_pose(self.azimuth.value(), self.elevation.value())
-            )
         self.point_button = button(
-            "Point antenna",
+            "Send",
             lambda: self.guard(
-                lambda: self.controller.manual_point(self.azimuth.value(), self.elevation.value())
+                lambda: self.controller.manual_point(float(self.azimuth.text()), float(self.elevation.text()))
             ),
             True,
         )
         column.addWidget(self.point_button)
         self.pointer_controls.extend([self.azimuth, self.elevation, self.point_button])
         row = QHBoxLayout()
-        for title, az, el in [("Az −5°", -5, 0), ("Az +5°", 5, 0), ("El −5°", 0, -5), ("El +5°", 0, 5)]:
+        for title, az, el in [("←", -5, 0), ("→", 5, 0), ("↓", 0, -5), ("↑", 0, 5)]:
             control = button(
                 title, lambda checked=False, a=az, e=el: self.guard(lambda: self.controller.jog(a, e))
             )
@@ -659,29 +745,23 @@ class MainWindow(QMainWindow):
         column.addLayout(row)
         self.track_button = button("Track live rocket", lambda: self.guard(self.controller.start_tracking))
         column.addWidget(self.track_button)
-        self.hold_button = button("Hold tracking", lambda: self.controller.hold())
+        self.hold_button = button("Stop tracking", lambda: self.controller.hold())
         column.addWidget(self.hold_button)
-        note = label("Hold stops new targets. The legacy board may continue its last move.", "muted")
-        note.setWordWrap(True)
-        column.addWidget(note)
-        column.addWidget(button("Mount configuration…", self.edit_mission))
-        self.zero_button = button(
-            "Set current position as zero", lambda: self.guard(self.controller.reference_zero)
-        )
+        self.zero_button = button("ZERO", lambda: self.guard(self.controller.reference_zero))
         column.addWidget(self.zero_button)
-        note = label(
-            "Align physically first. This resets software coordinates; it does not home the mount.", "muted"
-        )
-        note.setWordWrap(True)
-        column.addWidget(note)
         self.pointer_sent = label("Last sent: —", "section")
         column.addWidget(self.pointer_sent)
-        column.addWidget(label("Measured angles: unavailable", "muted"))
-        self.pointer_status = label("Controls locked · connect the ground station", "muted")
+        self.pointer_status = label("Disconnected", "muted")
         self.pointer_status.setWordWrap(True)
         column.addWidget(self.pointer_status)
+        column.addWidget(label("Ground station GPS", "section"))
+        self.ground_gps = label("Awaiting telemetry", "muted")
+        self.ground_gps.setWordWrap(True)
+        column.addWidget(self.ground_gps)
+        self.freeze_gps = button("Send to AntPtr", lambda: self.guard(self.controller.freeze_ground_station))
+        column.addWidget(self.freeze_gps)
         column.addStretch()
-        panel.setMinimumHeight(710)
+        panel.setMinimumHeight(535)
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setWidget(panel)
@@ -882,22 +962,31 @@ class MainWindow(QMainWindow):
 
     def refresh_ports(self):
         devices = ports()
-        for combo, _, _ in self.port_widgets.values():
+        for role, (combo, _, _) in self.port_widgets.items():
+            if self.controller.states[role] in {"Connected", "Connecting"}:
+                continue
             selected = combo.currentData()
             combo.clear()
             for device in devices:
-                combo.addItem(f"{device['device']} · {device['description']}", device["device"])
+                combo.addItem(device["device"], device["device"])
             if not devices:
                 combo.addItem("No serial devices", "")
             if selected:
                 combo.setCurrentIndex(max(0, combo.findData(selected)))
 
     def connect_role(self, role):
-        c = self.controller
-        if c.workers[role] and c.states[role] in {"Connected", "Connecting"}:
-            c.disconnect(role)
-        else:
-            self.guard(lambda: c.connect(role, self.port_widgets[role][0].currentData()))
+        if self.controller.states[role] not in {"Connected", "Connecting"}:
+            self.guard(lambda: self.controller.connect(role, self.port_widgets[role][0].currentData()))
+        self.last_ui = 0
+        self.refresh()
+
+    def disconnect_role(self, role):
+        self.controller.disconnect(role)
+        self.last_ui = 0
+        self.refresh()
+
+    def toggle_polling(self):
+        self.guard(lambda: self.controller.set_polling(not self.controller.polling))
         self.last_ui = 0
         self.refresh()
 
@@ -936,13 +1025,11 @@ class MainWindow(QMainWindow):
         if c.recorder:
             c.stop_recording()
         else:
-            path = QFileDialog.getExistingDirectory(
-                self, "Parent folder for recorded sessions", str(c.data_dir)
-            )
-            if path:
-                result = self.guard(lambda: c.start_recording(path))
-                if result:
-                    self.add_event(f"Session: {result}")
+            result = self.guard(lambda: c.start_recording(c.data_dir / "sessions"))
+            if result:
+                self.add_event(f"Session: {result}")
+        self.last_ui = 0
+        self.refresh()
 
     def edit_mission(self):
         if self.controller.recorder:
@@ -1188,18 +1275,21 @@ class MainWindow(QMainWindow):
         state, age = c.rocket_link_state(now)
         simulated = c.mode == "DEMO"
         live_ready = simulated or c.ground_connected
-        pointer_ready = simulated or (
-            c.ground_connected and c.states["pointer"] == "Connected" and c.mission.pointer_calibrated
-        )
+        pointer_ready = simulated or c.pointer_connected
         descriptions = {
             "DISCONNECTED": (
                 "Ground station disconnected",
-                "Connect the ground station using the serial selector above. Live operating controls are locked.",
+                "Select the ground-station port and click Connect.",
                 "muted",
+            ),
+            "PAUSED": (
+                "Ground station connected",
+                "Click Start Polling to receive rocket telemetry.",
+                "gold",
             ),
             "WAITING": (
                 "Waiting for the rocket",
-                "Ground station USB is connected. No valid rocket telemetry has arrived on this connection yet.",
+                "Polling · waiting for rocket telemetry.",
                 "gold",
             ),
             "RECEIVING": (
@@ -1209,17 +1299,17 @@ class MainWindow(QMainWindow):
             ),
             "STALE": (
                 "Rocket telemetry lost / stale",
-                "No fresh valid telemetry. Check rocket power, the radio link and antenna alignment. Automatic tracking is held.",
+                "Rocket telemetry has stopped arriving.",
                 "red",
             ),
             "DEMO": (
-                "Demo rehearsal",
-                "Synthetic telemetry and simulated commands. No physical board connections.",
+                "Zephyrus test flight · " + c.demo_station,
+                "Recorded telemetry; simulated commands and video test pattern. No physical board connections.",
                 "gold",
             ),
             "REPLAY": (
                 "Recorded session",
-                "Reviewing saved data. Physical operating controls are locked.",
+                "Reviewing saved telemetry and video.",
                 "muted",
             ),
         }
@@ -1248,9 +1338,10 @@ class MainWindow(QMainWindow):
             "● "
             + {
                 "RECEIVING": "TELEMETRY LIVE",
+                "PAUSED": "POLLING STOPPED",
                 "WAITING": "AWAITING TELEMETRY",
                 "STALE": "LOST / STALE",
-                "DEMO": "SIMULATED",
+                "DEMO": "RECORDED TELEMETRY",
                 "REPLAY": "RECORDED",
                 "DISCONNECTED": "NOT CONNECTED",
             }[state]
@@ -1261,21 +1352,19 @@ class MainWindow(QMainWindow):
         self.link_metrics["rssi"].setText(f"{rssi:.0f} dBm" if finite(rssi) else "—")
         for key in ["accepted", "rejected"]:
             self.link_metrics[key].setText(str(c.stats[key]) if c.mode == "LIVE" else "—")
-        self.radio_explanation.setText(
-            f"Live means a valid packet within {c.mission.freshness:g} s. Radio status is inferred from reception; Zephyrus provides no separate connection handshake."
-        )
+        self.radio_explanation.setText("Polling started" if c.polling else "Polling stopped")
         readiness = (
-            "DEMO · simulated controls enabled"
+            "Demo controls enabled"
             if simulated
-            else "LOCKED · replay is read-only"
+            else "Replay"
             if c.mode == "REPLAY"
-            else "LOCKED · connect the ground station"
-            if not c.ground_connected
-            else "ENABLED · capture and recording · connect the pointer for antenna control"
-            if c.states["pointer"] != "Connected"
-            else "ENABLED · capture and recording · establish mount calibration for motion"
-            if not c.mission.pointer_calibrated
-            else "ENABLED · ground station and calibrated pointer connected"
+            else "Ground station connected · Antenna pointer connected"
+            if c.ground_connected and c.pointer_connected
+            else "Antenna pointer connected"
+            if c.pointer_connected
+            else "Ground station connected"
+            if c.ground_connected
+            else "Select a serial port to connect"
         )
         self.control_readiness.setText(readiness)
         self.control_readiness.setStyleSheet(f"color: {COLORS['accent' if live_ready else 'gold']};")
@@ -1286,24 +1375,55 @@ class MainWindow(QMainWindow):
             )
         for control in self.pointer_controls:
             control.setEnabled(pointer_ready and not c.pointer_pending)
-            control.setToolTip(
-                ""
-                if pointer_ready
-                else "Connect the ground station and pointer, then establish mount calibration."
-            )
-        self.zero_button.setEnabled(c.mode == "LIVE" and pointer_ready and not c.pointer_pending)
+            control.setToolTip("" if pointer_ready else "Connect the antenna pointer.")
+        self.zero_button.setEnabled(pointer_ready and not c.pointer_pending)
         can_track = False
-        if pointer_ready and (simulated or c.mission.pointer_full_rotation):
+        if pointer_ready and (simulated or (c.ground_connected and c.polling)):
             try:
                 c.tracking_target()
                 can_track = True
             except ValueError:
                 pass
-        self.track_button.setText("Track demo rocket" if simulated else "Track live rocket")
+        self.track_button.setText("Start tracking")
         self.track_button.setEnabled(can_track and not c.tracking and not c.pointer_pending)
         # Hold remains available to cancel queued work even while other controls relock.
-        self.hold_button.setEnabled(pointer_ready or c.tracking or c.pointer_pending is not None)
+        self.hold_button.setEnabled(c.tracking or c.pointer_pending is not None)
+        self.poll_button.setEnabled(c.ground_connected)
+        self.poll_button.setText("Stop Polling" if c.polling else "Start Polling")
         self.record_button.setEnabled(bool(c.recorder) or (c.mode != "REPLAY" and live_ready))
+        self.freeze_gps.setEnabled(
+            c.mode == "LIVE" and c.ground_connected and c.pointer_connected and c.latest is not None
+        )
+        self.freeze_gps.setText("Unfreeze GPS" if c.frozen_ground else "Send to AntPtr")
+        if c.frozen_ground:
+            gps = c.frozen_ground
+            self.ground_gps.setText(
+                f"FROZEN · {'FIX' if gps['gnd_fix'] else 'NO FIX'}\n{gps['gnd_lat']:.5f}°, {gps['gnd_lon']:.5f}°\nAltitude {gps['gnd_alt']} m"
+            )
+        elif c.latest:
+            gps = legacy_values(c.latest)
+            self.ground_gps.setText(
+                f"{'FIX' if gps['gnd_fix'] else 'NO FIX'}\n{gps['gnd_lat']}°, {gps['gnd_lon']}°\nAltitude {gps['gnd_alt']} m"
+            )
+        else:
+            self.ground_gps.setText("Awaiting telemetry")
+        self.rocket_panel.set_controls_enabled()
+        if hasattr(self, "legacy_actions"):
+            for key, role in [("ground", "telemetry"), ("pointer", "pointer")]:
+                active = c.states[role] in {"Connected", "Connecting"}
+                self.legacy_actions[key].setEnabled(
+                    c.mode == "LIVE" and (active or bool(self.port_widgets[role][0].currentData()))
+                )
+                self.legacy_actions[key].setText(
+                    ("Disconnect " if active else "Connect ")
+                    + ("Ground Station" if key == "ground" else "Antenna Pointer")
+                )
+            self.legacy_actions["refresh"].setEnabled(c.mode == "LIVE")
+            for key, control in [("poll", self.poll_button), ("log", self.record_button)]:
+                self.legacy_actions[key].setEnabled(control.isEnabled())
+                self.legacy_actions[key].setText(control.text())
+            for key in ("up", "down", "left", "right", "zero"):
+                self.legacy_actions[key].setEnabled(pointer_ready and not c.pointer_pending)
         self.align_time_button.setEnabled(c.latest is not None and (c.mode == "REPLAY" or live_ready))
         for control in [self.play, self.step_button, self.replay_slider, self.speed]:
             control.setEnabled(c.mode == "REPLAY" and c.reader is not None)
@@ -1315,16 +1435,36 @@ class MainWindow(QMainWindow):
         self.last_ui = now
         c = self.controller
         s = c.latest
+        self.wall_clock.setText(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-4])
         self.mission_label.setText(c.mission.name)
         self.mode.blockSignals(True)
         self.mode.setCurrentText(c.mode)
         self.mode.blockSignals(False)
+        self.demo_bar.setVisible(c.mode == "DEMO")
+        self.serial_bar.setVisible(c.mode != "DEMO")
+        if c.demo:
+            self.demo_station.blockSignals(True)
+            self.demo_station.setCurrentText(c.demo_station)
+            self.demo_station.blockSignals(False)
+            self.demo_play.setText("Pause" if c.demo_playing else "Play")
+            for control in (self.demo_station, self.demo_launch, self.demo_start, self.demo_slider):
+                control.setEnabled(c.recorder is None)
+                control.setToolTip("Stop logging to seek or change recordings" if c.recorder else "")
+            self.demo_slider.blockSignals(True)
+            self.demo_slider.setMaximum(math.ceil(c.demo.duration * 1000))
+            if not self.demo_slider.isSliderDown():
+                self.demo_slider.setValue(round(c.demo_time * 1000))
+            self.demo_slider.blockSignals(False)
+            self.demo_clock.setText(f"{c.demo_time:.1f} / {c.demo.duration:.1f} s")
         for role, (combo, action, status) in self.port_widgets.items():
+            active = c.states[role] in {"Connected", "Connecting"}
             status.setText(c.states[role])
-            combo.setEnabled(c.mode == "LIVE" and c.states[role] != "Connected")
-            action.setEnabled(c.mode == "LIVE")
-            action.setText("Disconnect" if c.states[role] in {"Connected", "Connecting"} else "Connect")
-        self.record_button.setText("Stop recording" if c.recorder else "Record session")
+            status.setStyleSheet("color: " + COLORS["accent" if c.states[role] == "Connected" else "muted"])
+            combo.setEnabled(c.mode == "LIVE" and not active)
+            action.setEnabled(c.mode == "LIVE" and not active and bool(combo.currentData()))
+            self.disconnect_buttons[role].setEnabled(c.mode == "LIVE" and active)
+            self.refresh_buttons[role].setEnabled(c.mode == "LIVE" and not active)
+        self.record_button.setText("Stop Logging" if c.recorder else "Start Logging")
         self.refresh_connections(now)
         age = max(0, now - s.received) if s else None
         values = dict(
@@ -1339,14 +1479,20 @@ class MainWindow(QMainWindow):
             self.metrics[key].setText(f"{value:,.1f}" if finite(value) else "—")
         issues = []
         if c.mode == "DEMO":
-            issues.append("DEMO · synthetic data / simulated pointer")
+            state = "PLAYING" if c.demo_playing else "ENDED" if c.demo_time >= c.demo.duration else "PAUSED"
+            issues.append(f"DEMO · Zephyrus {c.demo_station} · {state} · simulated commands")
+            if s and s.details.get("position_warning"):
+                issues.append(s.details["position_warning"])
         elif c.mode == "REPLAY":
             issues.append("REPLAY · physical pointer disabled")
         else:
             issues.append("LIVE · " + (s.phase if s else "awaiting telemetry"))
             if not c.ground_connected:
-                issues.append("CONTROLS LOCKED · GROUND STATION DISCONNECTED")
-        if age is None or (age > c.mission.freshness and c.mode != "REPLAY"):
+                issues.append("GROUND STATION DISCONNECTED")
+        if (c.mode != "LIVE" or c.polling) and (
+            age is None
+            or (age > c.mission.freshness and c.mode != "REPLAY" and (c.mode != "DEMO" or c.demo_playing))
+        ):
             issues.append("TELEMETRY STALE / ABSENT")
         if s and s.battery is not None and s.battery < c.mission.low_battery:
             issues.append("LOW BATTERY")
@@ -1367,28 +1513,28 @@ class MainWindow(QMainWindow):
             + (COLORS["red"] if any(not a["acknowledged"] for a in c.alerts.values()) else COLORS["muted"])
         )
         self.pointer_sent.setText(
-            "Last sent: " + (" / ".join(f"{v:.1f}°" for v in c.pointer_sent) if c.pointer_sent else "—")
+            "Last target: " + (" / ".join(f"{v:.1f}°" for v in c.pointer_sent) if c.pointer_sent else "—")
         )
         self.pointer_status.setText(c.pointer_status)
         if (c.tracking or c.mode == "REPLAY") and c.pointer_sent:
             self.azimuth.blockSignals(True)
             self.elevation.blockSignals(True)
-            self.azimuth.setValue(c.pointer_sent[0])
-            self.elevation.setValue(c.pointer_sent[1])
+            self.azimuth.setText(str(c.pointer_sent[0]))
+            self.elevation.setText(str(c.pointer_sent[1]))
             self.azimuth.blockSignals(False)
             self.elevation.blockSignals(False)
             self.mount.set_pose(*c.pointer_sent)
-        self.pointer_pose.setText("TRACKING · COMMANDED" if c.tracking else "PREVIEW · NOT MEASURED")
+        self.pointer_pose.setText("TRACKING" if c.tracking else "MANUAL CONTROL")
+        if c.pointer_sent is not None:
+            self.mount.set_pose(*c.pointer_sent)
         if c.mode == "REPLAY":
-            self.pointer_pose.setText(
-                "RECORDED · COMMANDED" if c.pointer_sent else "REPLAY · POSE UNAVAILABLE"
-            )
+            self.pointer_pose.setText("REPLAY")
             if not c.pointer_sent:
                 self.mount.set_pose(0, 0)
         if c.video:
             frame_age = now - c.video.last_frame if c.video.last_frame else None
             state = c.video.error or (
-                f"{c.video.kind.upper()} · frame age {frame_age:.1f}s"
+                f"{'VIDEO TEST PATTERN' if c.video.kind == 'demo' else c.video.kind.upper()} · frame age {frame_age:.1f}s"
                 if frame_age is not None
                 else "Starting video…"
             )
@@ -1410,6 +1556,7 @@ class MainWindow(QMainWindow):
         if now - self.last_table > 0.5:
             self.last_table = now
             self.refresh_actuators()
+            self.rocket_panel.refresh()
             self.details.setPlainText(json.dumps(s.to_dict() if s else {}, indent=2))
         self.link_stats.setText("  ·  ".join(f"{k.title()}: {v}" for k, v in c.stats.items()))
         m = c.mission
@@ -1444,7 +1591,13 @@ class MainWindow(QMainWindow):
             cells = [name] + [
                 f"{values[k]:.2f}" if finite(values.get(k)) else "—" for k in ("demand", "measured", "drive")
             ]
-            cells.append("DEMO" if c.mode == "DEMO" else "Drive only" if "drive" in values else "Unavailable")
+            cells.append(
+                "Recorded drive"
+                if c.mode == "DEMO" and "drive" in values
+                else "Drive only"
+                if "drive" in values
+                else "Unavailable"
+            )
             for col, text in enumerate(cells):
                 self.actuators.setItem(row, col, QTableWidgetItem(text))
 
@@ -1455,6 +1608,7 @@ class MainWindow(QMainWindow):
         key = (
             c.mode,
             c.latest.sequence if c.latest else None,
+            c.latest.utc if c.latest else None,
             c.flight_zero,
             id(c.reference),
             self.view.currentIndex(),
@@ -1491,6 +1645,7 @@ class MainWindow(QMainWindow):
         x, y = project(list(c.track))
         self.actual_curve.setData(x, y)
         self.actual_marker.setData(x[-1:] if len(x) else [], y[-1:] if len(y) else [])
+        self.trajectory_plot.legend.setVisible(c.reference is not None)
         if c.reference:
             reference = c.reference
             x, y = project(reference.points[:, 1:])
@@ -1511,7 +1666,9 @@ class MainWindow(QMainWindow):
             self.reference_marker.setData([], [])
             self.altitude_reference.setData([], [])
             self.reference_label.setText(
-                "No reference selected · actual position requires a verified origin and altitude convention"
+                "Recorded GPS offsets from launch + reported barometric altitude · no simulation reference"
+                if c.latest and c.latest.details.get("demo_station")
+                else "No reference selected · actual position requires a verified origin and altitude convention"
             )
 
     def closeEvent(self, event):

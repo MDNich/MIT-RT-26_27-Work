@@ -9,7 +9,8 @@ from .domain import Sample, finite
 class ZephyrusDecoder:
     FRAME_SIZE = 144
 
-    def __init__(self):
+    def __init__(self, on_rejected=None):
+        self.on_rejected = on_rejected
         self.buffer = bytearray()
         self.accepted = self.rejected = self.discarded = self.gaps = 0
         self.last_sequence = None
@@ -35,6 +36,8 @@ class ZephyrusDecoder:
             payload = bytes(self.buffer[2:130])
             if sum(payload[:127]) % 256 != payload[127]:
                 self.rejected += 1
+                if self.on_rejected:
+                    self.on_rejected(payload, bytes(self.buffer[130:144]), self.rejected)
                 del self.buffer[0]  # Rescan; never discard a potentially overlapping valid sync.
                 continue
             trailer = bytes(self.buffer[130:144])
@@ -45,6 +48,7 @@ class ZephyrusDecoder:
                 self.rejected += 1
                 continue
             self.accepted += 1
+            sample.details["bad_packets"] = self.rejected
             output.append(sample)
         return output
 
@@ -78,6 +82,7 @@ class ZephyrusDecoder:
         attitude = [number("f", i) for i in (64, 68, 72)]
         gyro = [unpack("h", 25 + 2 * i) * 0.03051757812 * (-1 if i == 1 else 1) for i in range(3)]
         details = {
+            "state_code": p[63],
             "schema_version": 1,
             "boot_index": self.boot,
             "device_ticks_raw": ticks,
@@ -87,7 +92,7 @@ class ZephyrusDecoder:
             "receiver_fix": g[1],
             "receiver_latitude": struct.unpack_from("<i", g, 2)[0] * 1e-7,
             "receiver_longitude": struct.unpack_from("<i", g, 6)[0] * 1e-7,
-            "receiver_height_wire": struct.unpack_from("<I", g, 10)[0],
+            "receiver_height_wire": struct.unpack_from("<i", g, 10)[0],
             "receiver_height_note": "Located receiver firmware sends integer metres; old UI divides by 1000. Not used as mount origin.",
             "gps_horizontal_accuracy": unpack("I", 44) / 1000,
             "gps_vertical_accuracy": unpack("I", 48) / 1000,
@@ -144,8 +149,6 @@ def pointer_packet(azimuth=0.0, elevation=0.0, opcode=0):
         raise ValueError("Unsupported pointer command")
     if not all(finite(v) for v in (azimuth, elevation)):
         raise ValueError("Pointer angles must be finite")
-    if not 0 <= azimuth < 360 or not -90 <= elevation <= 90:
-        raise ValueError("Pointer angles outside protocol range")
     payload = bytes([opcode]) + (struct.pack("<ff", azimuth, elevation) if opcode == 0 else bytes(8))
     return b"\xaa" + payload + bytes([sum(payload) % 256])
 

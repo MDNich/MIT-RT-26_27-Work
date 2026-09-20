@@ -1,15 +1,16 @@
 from pathlib import Path
 import os
 import sys
+import mgrs.core
 from PyInstaller.utils.hooks import collect_data_files, copy_metadata
 
 root = Path(SPECPATH).parent
 datas = collect_data_files("imageio_ffmpeg")
 datas += [(str(root / "vendor"), "vendor"), (str(root / "docs"), "docs"), (str(root / "resources"), "resources")]
-for package in ("numpy", "pyserial", "imageio-ffmpeg", "PySide6-Essentials", "pyqtgraph"):
+for package in ("numpy", "pyserial", "imageio-ffmpeg", "PySide6-Essentials", "pyqtgraph", "mgrs", "openlocationcode"):
     datas += copy_metadata(package)
 a = Analysis([str(root / "packaging" / "launcher.py")], pathex=[str(root / "src")],
-    binaries=[], datas=datas, hiddenimports=["serial.tools.list_ports", "PySide6.QtSvg"],
+    binaries=[(str(Path(mgrs.core.rt._name).resolve()), ".")], datas=datas, hiddenimports=["serial.tools.list_ports", "PySide6.QtSvg"],
     excludes=["PyQt5", "PyQt6", "PySide2", "matplotlib", "scipy", "pandas", "IPython",
               "PySide6.QtQml", "PySide6.QtQuick", "PySide6.QtWebEngineCore", "PySide6.QtWebEngineWidgets"],
     noarchive=False)

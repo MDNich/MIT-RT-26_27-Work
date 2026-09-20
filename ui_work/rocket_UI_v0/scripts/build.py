@@ -202,6 +202,8 @@ def package(target):
         "pyserial",
         "imageio-ffmpeg",
         "pyinstaller",
+        "mgrs",
+        "openlocationcode",
     ):
         dist = importlib.metadata.distribution(name)
         for file in dist.files or []:

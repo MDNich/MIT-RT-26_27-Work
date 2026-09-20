@@ -9,12 +9,14 @@ from pathlib import Path
 import time
 import uuid
 from PySide6.QtCore import QObject, QTimer, Signal
-from .domain import Mission, demo_sample, pointing, target_position, to_enu
+from .domain import Mission, pointing, target_position, to_enu, finite
+from .demo import DemoFlight
 from .devices import SerialWorker
-from .protocol import pointer_packet, validate_route
+from .protocol import pointer_packet
 from .recording import SessionReader, SessionRecorder
 from .trajectory import Trajectory, SimulationJob
 from .media import VideoWorker
+from .zephyrus import rocket_packet, legacy_values
 
 
 class Controller(QObject):
@@ -36,6 +38,7 @@ class Controller(QObject):
         self.workers = {"telemetry": None, "pointer": None}
         self.states = {"telemetry": "Disconnected", "pointer": "Disconnected"}
         self.last_live_received = None
+        self.polling = False
         self.messages = queue.Queue(maxsize=16000)
         self.executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="gnc")
         self.video_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="video-lifecycle")
@@ -54,18 +57,27 @@ class Controller(QObject):
         self.pointer_requested = None
         self.pointer_pending = None
         self.dispatched_commands = {}
-        self.pointer_status = "Controls locked · connect the ground station"
+        self.command_names = {}
+        self.pointer_last_command = "—"
+        self.rocket_commands = {}
+        self.frozen_ground = None
+        self.pointer_status = "Disconnected"
         self.tracking = False
         self.last_tracking = 0
         self.demo_time = 0
-        self.demo_sequence = 0
+        self.demo = None
+        self.demo_station = "GS2"
+        self.demo_index = 0
+        self.demo_replayed_rows = 0
+        self.demo_playing = False
+        self.demo_speed = 1.0
+        self._reference_before_demo = None
         self.replay_time = 0
         self.replay_playing = False
         self.replay_speed = 1.0
         self.flight_zero = 0
         self.time_aligned = False
         self.last_tick = time.monotonic()
-        self._last_sample = 0
         self.alerts = {}
         self.alert_since = {}
         self.timer = QTimer(self)
@@ -90,9 +102,27 @@ class Controller(QObject):
             and self.states["telemetry"] == "Connected"
         )
 
+    @property
+    def pointer_connected(self):
+        return (
+            self.mode == "LIVE"
+            and self.workers["pointer"] is not None
+            and self.states["pointer"] == "Connected"
+        )
+
+    def set_polling(self, enabled):
+        self.require_ground_station()
+        self.polling = bool(enabled)
+        self.workers["telemetry"].set_polling(self.polling)
+        self.last_live_received = None
+        if not enabled and self.tracking:
+            self.hold("Polling stopped")
+        self.log("Polling started" if enabled else "Polling stopped")
+        self.changed.emit()
+
     def require_ground_station(self):
         if self.mode == "LIVE" and not self.ground_connected:
-            raise ValueError("Controls locked: connect the ground station first")
+            raise ValueError("Ground station is disconnected")
 
     def rocket_link_state(self, now=None):
         """Radio reception evidence; the protocol has no bidirectional handshake."""
@@ -100,6 +130,8 @@ class Controller(QObject):
             return self.mode, None
         if not self.ground_connected:
             return "DISCONNECTED", None
+        if not self.polling:
+            return "PAUSED", None
         if self.last_live_received is None:
             return "WAITING", None
         age = max(0, (time.monotonic() if now is None else now) - self.last_live_received)
@@ -110,6 +142,13 @@ class Controller(QObject):
             raise ValueError("Unknown source mode")
         if mode == self.mode:
             return
+        # Verify resources before altering the current source or closing a recording.
+        demo = DemoFlight(self.demo_station) if mode == "DEMO" else None
+        if self.mode == "DEMO":
+            self.reference = self._reference_before_demo
+        if mode == "DEMO":
+            self._reference_before_demo = self.reference
+            self.reference = None
         self.stop_recording()
         self.tracking = False
         for role in self.workers:
@@ -121,25 +160,87 @@ class Controller(QObject):
         self.track.clear()
         self.pointer_sent = self.pointer_pending = self.pointer_requested = None
         self.dispatched_commands.clear()
+        self.command_names.clear()
+        self.pointer_last_command = "—"
         self.alerts.clear()
         self.alert_since.clear()
         self.mission.pointer_calibrated = False
         self.states = {r: "Simulated" if mode == "DEMO" else "Disconnected" for r in self.workers}
-        self.pointer_status = "Demo · no hardware" if mode == "DEMO" else "No measured feedback"
+        self.pointer_status = "Demo" if mode == "DEMO" else "Disconnected"
         self.replay_playing = False
         self.flight_zero = 0
         self.time_aligned = mode != "LIVE"
-        self.demo_time = self.demo_sequence = 0
+        self.demo = demo
+        self.demo_playing = False
         self.stats = dict(accepted=0, rejected=0, discarded=0, gaps=0)
         if mode != "DEMO" and self.reference and self.reference.manifest.get("synthetic"):
             self.reference = None
-        elif mode == "DEMO":
-            self.reference = Trajectory.demo()
         self.stop_video()
         if mode == "DEMO":
+            self.seek_demo(self.demo.cue)
+            self.demo_playing = True
             self.start_video("demo")
         self.log(f"Source changed to {mode}; physical pointer transport closed")
         self.changed.emit()
+
+    def select_demo(self, station):
+        if self.mode != "DEMO" or station == self.demo_station:
+            return
+        if self.recorder:
+            raise ValueError("Stop logging before changing demo recordings")
+        demo = DemoFlight(station)
+        self.demo, self.demo_station = demo, station
+        self.seek_demo(demo.cue)
+        self.demo_playing = True
+        self.log(f"Zephyrus test flight · {station} selected")
+
+    def seek_demo(self, elapsed):
+        if self.mode != "DEMO" or self.demo is None:
+            return
+        if self.recorder:
+            raise ValueError("Stop logging before seeking the demo")
+        self.demo_time = max(0.0, min(float(elapsed), self.demo.duration))
+        self.demo_index = self.demo.index_at(self.demo_time) + 1
+        self.history.clear()
+        self.track.clear()
+        self.latest = None
+        self.tracking = False
+        self.pointer_sent = self.pointer_requested = None
+        self.pointer_status = "Demo · simulated pointer"
+        self.flight_zero, self.time_aligned = self.demo.flight_zero, True
+        now = time.monotonic()
+        for index in range(max(0, self.demo_index - self.history.maxlen), self.demo_index):
+            sample = self.demo.sample(index, received=now - (self.demo_time - self.demo.times[index]))
+            self.accept(sample)
+        self.demo_replayed_rows = 0
+        self.last_tick = time.monotonic()
+        self.changed.emit()
+
+    def play_demo(self, playing=None):
+        if self.mode != "DEMO":
+            return
+        target = not self.demo_playing if playing is None else playing
+        if target and self.demo_time >= self.demo.duration:
+            self.seek_demo(self.demo.cue)
+        self.demo_playing = bool(target)
+        self.last_tick = time.monotonic()
+        if not self.demo_playing:
+            self.hold("Demo paused")
+        self.log("Demo playing" if self.demo_playing else "Demo paused")
+        self.changed.emit()
+
+    def advance_demo(self, seconds, now):
+        if not self.demo_playing or self.demo is None:
+            return
+        self.demo_time = min(self.demo.duration, self.demo_time + seconds * self.demo_speed)
+        while self.demo_index < len(self.demo.rows) and self.demo.times[self.demo_index] <= self.demo_time:
+            self.accept(self.demo.sample(self.demo_index, received=now), record=True)
+            self.demo_index += 1
+            self.demo_replayed_rows += 1
+        if self.demo_time >= self.demo.duration:
+            self.demo_playing = False
+            self.hold("Recording ended")
+            self.log("Zephyrus recording ended; final received sample retained")
 
     def disconnect(self, role):
         worker = self.workers.get(role)
@@ -152,11 +253,17 @@ class Controller(QObject):
             self.tracking = False
             self.pointer_pending = self.pointer_sent = None
             self.dispatched_commands.clear()
+            self.command_names.clear()
+            self.pointer_last_command = "—"
+            self.pointer_status = "Disconnected"
             self.mission.pointer_calibrated = False
         elif role == "telemetry":
+            self.rocket_commands.clear()
+            self.frozen_ground = None
+            self.polling = False
             self.last_live_received = None
-            if self.tracking or self.pointer_pending:
-                self.hold("Ground station disconnected; controls locked")
+            if self.tracking:
+                self.hold("Ground station disconnected")
 
     def connect(self, role, device):
         if self.mode != "LIVE":
@@ -182,7 +289,7 @@ class Controller(QObject):
 
     def enqueue(self, generation, role, kind, data):
         worker = self.workers.get(role)
-        if worker and worker.generation == generation and kind == "sample" and self.recorder:
+        if worker and worker.generation == generation and kind == "sample" and self.polling and self.recorder:
             self.recorder.sample(data)
         try:
             self.messages.put_nowait((generation, role, kind, data))
@@ -190,9 +297,9 @@ class Controller(QObject):
             self.ui_drops += 1
 
     def accept(self, sample, record=False):
-        if self.ground_connected and sample.source == "LIVE":
+        if self.ground_connected and self.polling and sample.source == "LIVE":
             self.last_live_received = sample.received
-        if sample.enu is None and self.mission.site_configured:
+        if sample.enu is None and self.mission.site_configured and not sample.details.get("demo_station"):
             try:
                 sample.enu = to_enu(
                     *target_position(sample, self.mission),
@@ -232,47 +339,71 @@ class Controller(QObject):
         self.time_aligned = True
         self.log("Flight time manually aligned", {"flight_zero": self.flight_zero})
 
-    def point(self, azimuth, elevation):
-        packet = pointer_packet(azimuth, elevation)
-        self.pointer_requested = (azimuth, elevation)
+    def dispatch_pointer(self, packet, angles, command):
         if self.mode == "REPLAY":
             raise ValueError("Replay cannot transmit pointer commands")
         if self.mode == "DEMO":
-            self.pointer_sent = (azimuth, elevation)
-            self.pointer_status = "Demo command applied · measured pose unavailable"
-            self.log("Pointer command sent", {"angles": self.pointer_sent, "source": "DEMO"})
+            self.pointer_sent = angles
+            self.pointer_last_command = command
+            self.pointer_status = "Sent " + command
+            self.log("Pointer command sent", {"angles": angles, "command": command, "source": "DEMO"})
             return
-        self.require_ground_station()
-        if not self.mission.pointer_calibrated:
-            raise ValueError("Establish the mount reference and confirm its operating envelope first")
+        if not self.pointer_connected:
+            raise ValueError("Antenna pointer is disconnected")
         if self.pointer_pending:
             raise ValueError("Previous pointer command is awaiting dispatch")
-        validate_route(self.pointer_sent, (azimuth, elevation), self.mission)
-        worker = self.workers["pointer"]
-        if not worker or self.states["pointer"] != "Connected":
-            raise ValueError("Pointer board is disconnected")
         command_id = uuid.uuid4().hex
-        self.dispatched_commands[command_id] = (azimuth, elevation)
-        worker.send(packet, command_id)
-        self.pointer_pending = (command_id, (azimuth, elevation))
-        self.pointer_status = "Queued · not measured"
-        self.log("Pointer command requested", {"id": command_id, "azimuth": azimuth, "elevation": elevation})
+        self.workers["pointer"].send(packet, command_id)
+        self.dispatched_commands[command_id] = angles
+        self.command_names[command_id] = command
+        self.pointer_pending = (command_id, angles)
+        self.pointer_status = "Sending " + command
+        self.log("Pointer command requested", {"id": command_id, "command": command, "angles": angles})
+
+    def send_rocket(self, command, value=None):
+        if self.mode == "REPLAY":
+            raise ValueError("Replay is read-only")
+        self.require_ground_station()
+        if command == "advance_state":
+            value = (self.latest.details.get("state_code", 0) if self.latest else 0) + 1
+        packet = rocket_packet(command, value)
+        if self.mode == "DEMO":
+            self.log("Rocket command simulated", {"command": command, "value": value})
+            return
+        command_id = uuid.uuid4().hex
+        self.workers["telemetry"].send(packet, command_id)
+        self.rocket_commands[command_id] = {"command": command, "value": value}
+        self.log("Rocket command requested", self.rocket_commands[command_id])
+
+    def freeze_ground_station(self):
+        if self.frozen_ground is not None:
+            self.frozen_ground = None
+            if self.tracking:
+                self.hold("Ground GPS released")
+            return
+        self.require_ground_station()
+        if not self.pointer_connected or self.latest is None:
+            raise ValueError("Connect both boards and start polling first")
+        values = legacy_values(self.latest)
+        lat, lon = values["gnd_lat"], values["gnd_lon"]
+        if (
+            not finite(lat)
+            or not finite(lon)
+            or not -90 <= lat <= 90
+            or not -180 <= lon <= 180
+            or (lat == 0 and lon == 0)
+        ):
+            raise ValueError("Ground station GPS position is not available")
+        self.frozen_ground = {key: values[key] for key in ("gnd_lat", "gnd_lon", "gnd_alt", "gnd_fix")}
+        self.log("Ground GPS fixed for antenna pointer", self.frozen_ground)
+
+    def point(self, azimuth, elevation):
+        packet = pointer_packet(azimuth, elevation)
+        self.pointer_requested = (azimuth, elevation)
+        self.dispatch_pointer(packet, (azimuth, elevation), "manual azimuth/elevation")
 
     def reference_zero(self):
-        self.require_ground_station()
-        if self.mode != "LIVE" or self.states["pointer"] != "Connected":
-            raise ValueError("Connect the pointer in LIVE mode first")
-        if self.pointer_pending:
-            raise ValueError("A command is still awaiting dispatch")
-        if not self.mission.pointer_calibrated:
-            raise ValueError("Confirm that the mount is physically aligned with the configured zero")
-        self.hold("Setting reference zero")
-        command_id = uuid.uuid4().hex
-        self.dispatched_commands[command_id] = (0.0, 0.0)
-        self.workers["pointer"].send(pointer_packet(opcode=5), command_id)
-        self.pointer_pending = (command_id, (0.0, 0.0))
-        self.pointer_status = "Reference reset queued; no acknowledgment available"
-        self.log("Pointer software reference reset requested")
+        self.dispatch_pointer(pointer_packet(opcode=5), (0.0, 0.0), "ZERO")
 
     def hold(self, reason="Operator hold"):
         self.tracking = False
@@ -281,21 +412,27 @@ class Controller(QObject):
             try:
                 _, _, command_id = worker.commands.get_nowait()
                 self.dispatched_commands.pop(command_id, None)
+                self.command_names.pop(command_id, None)
             except queue.Empty:
                 pass
         self.pointer_pending = None
-        self.pointer_status = f"Hold: {reason}. Last commanded movement may continue."
+        self.pointer_status = f"Tracking off · {reason}"
         self.log(self.pointer_status)
 
     def jog(self, azimuth_delta=0, elevation_delta=0):
-        if self.pointer_sent is None:
-            raise ValueError("Send an absolute target or establish software zero before jogging")
-        az, el = self.pointer_sent
-        self.manual_point((az + azimuth_delta) % 360, el + elevation_delta)
+        # These are the same firmware opcodes used by pointer.py in the old UI.
+        commands = {(0, 5): (1, "UP"), (0, -5): (2, "DOWN"), (-5, 0): (3, "LEFT"), (5, 0): (4, "RIGHT")}
+        try:
+            opcode, name = commands[(azimuth_delta, elevation_delta)]
+        except KeyError:
+            raise ValueError("Use one 5-degree direction command at a time")
+        angles = None
+        if self.pointer_sent is not None:
+            azimuth, elevation = self.pointer_sent
+            angles = ((azimuth + azimuth_delta) % 360, elevation + elevation_delta)
+        self.dispatch_pointer(pointer_packet(opcode=opcode), angles, name)
 
     def manual_point(self, azimuth, elevation):
-        if self.tracking:
-            self.hold("Manual pointing")
         self.point(azimuth, elevation)
 
     def start_tracking(self):
@@ -303,13 +440,11 @@ class Controller(QObject):
             raise ValueError("Replay cannot drive tracking")
         if self.mode == "LIVE":
             self.require_ground_station()
+            if not self.pointer_connected:
+                raise ValueError("Antenna pointer is disconnected")
+            if not self.polling:
+                raise ValueError("Start polling first")
             self.tracking_target()
-            if not self.mission.pointer_calibrated or self.states["pointer"] != "Connected":
-                raise ValueError("Connect and calibrate the pointer first")
-            if not self.mission.pointer_full_rotation:
-                raise ValueError(
-                    "Automatic tracking requires a verified continuous azimuth cable route; this board has no measured position"
-                )
         self.tracking = True
         self.log("Tracking started" if self.mode == "LIVE" else "Demo tracking started")
 
@@ -317,21 +452,31 @@ class Controller(QObject):
         if not self.latest or time.monotonic() - self.latest.received > self.mission.freshness:
             raise ValueError("Rocket position is stale")
         if self.mode == "DEMO":
-            e, n, u = self.latest.enu
-            import math
-
-            return math.degrees(math.atan2(e, n)) % 360, min(
-                80, math.degrees(math.atan2(u, max(10, math.hypot(e, n))))
+            if not self.demo_playing:
+                raise ValueError("Demo playback is paused")
+            values = legacy_values(self.latest)
+            if (
+                not self.latest.enu
+                or not values["gnd_fix"]
+                or not all(finite(values[key]) for key in ("gnd_lat", "gnd_lon"))
+            ):
+                raise ValueError("Recording has no usable rocket / ground-station GPS")
+            return pointing(
+                (self.latest.latitude, self.latest.longitude, self.latest.altitude),
+                (values["gnd_lat"], values["gnd_lon"], 0.0),
             )
         if self.latest.source != "LIVE":
             raise ValueError("Tracking needs a live source")
-        origin = (
-            self.mission.pointer_latitude,
-            self.mission.pointer_longitude,
-            self.mission.pointer_altitude,
-        )
-        az, el = pointing(target_position(self.latest, self.mission), origin)
-        return (az + self.mission.pointer_az_offset) % 360, el + self.mission.pointer_el_offset
+        if self.frozen_ground is None:
+            raise ValueError("Set the ground station GPS with Send to AntPtr first")
+        if not self.latest.gps_fix or not all(
+            finite(v) for v in (self.latest.latitude, self.latest.longitude, self.latest.altitude)
+        ):
+            raise ValueError("Rocket GPS position is not available")
+        # Preserve pointer.py: receiver lat/lon frozen at 5 decimals; pointer altitude 0;
+        # rocket barometric altitude is the target height used by the original UI.
+        origin = (self.frozen_ground["gnd_lat"], self.frozen_ground["gnd_lon"], 0.0)
+        return pointing((self.latest.latitude, self.latest.longitude, self.latest.altitude), origin)
 
     def start_recording(self, parent):
         self.require_ground_station()
@@ -340,6 +485,13 @@ class Controller(QObject):
         if self.recorder:
             raise ValueError("Already recording")
         self.recorder = SessionRecorder(parent, self.mission, self.mode, self.flight_zero, self.time_aligned)
+        if self.mode == "DEMO":
+            self.recorder.manifest.update(
+                demo_recording=dict(station=self.demo.station, **self.demo.metadata),
+                demo_start_offset=self.demo_time,
+                raw_packets_available=False,
+                demo_video="Synthetic test pattern; no launch video supplied",
+            )
         if self.reference:
             self.reference.save(self.recorder.path / "reference.csv")
         self.log("Recording started", {"mode": self.mode})
@@ -407,8 +559,10 @@ class Controller(QObject):
             self.flight_zero = event["data"]["flight_zero"]
             self.time_aligned = True
         if event["name"] == "Pointer command sent":
-            self.pointer_sent = tuple(event["data"]["angles"])
-            self.pointer_status = "Recorded command · measured pose unavailable"
+            angles = event["data"].get("angles")
+            self.pointer_sent = tuple(angles) if angles is not None else None
+            self.pointer_last_command = event["data"].get("command", "azimuth/elevation")
+            self.pointer_status = "Replay · " + self.pointer_last_command
 
     def acknowledge_alerts(self):
         for key, alert in self.alerts.items():
@@ -425,7 +579,7 @@ class Controller(QObject):
         battery = self.latest.battery if self.latest else None
         threshold = self.mission.low_battery + (0.3 if "battery" in self.alerts else 0)
         conditions = {
-            "telemetry": (stale, "Telemetry stale / absent", 0),
+            "telemetry": (self.ground_connected and self.polling and stale, "Telemetry stale / absent", 0),
             "battery": (not stale and battery is not None and battery < threshold, "Low battery", 1),
             "recording": (bool(self.recorder and self.recorder.error), "Recording fault / loss", 0),
             "video": (
@@ -541,42 +695,55 @@ class Controller(QObject):
             worker = self.workers.get(role)
             if not worker or worker.generation != generation or self.mode != "LIVE":
                 continue
-            if kind == "sample" and self.states[role] == "Connected":
+            if kind == "sample" and self.polling and self.states[role] == "Connected":
                 self.accept(data)
             elif kind == "stats":
                 self.stats = data
             elif kind == "connected":
                 self.states[role] = "Connected"
+                if role == "pointer":
+                    self.pointer_status = "Connected"
                 self.log(f"{role.title()} connected")
             elif kind in {"error", "disconnected"}:
                 self.states[role] = "Disconnected"
                 self.log(f"{role.title()}: {data}")
                 if role == "telemetry":
+                    self.rocket_commands.clear()
+                    self.frozen_ground = None
+                    self.polling = False
                     self.last_live_received = None
-                if self.tracking or self.pointer_pending:
+                if self.tracking or (role == "pointer" and self.pointer_pending):
                     self.hold(f"{role} unavailable")
                 if role == "pointer":
                     self.pointer_sent = self.pointer_pending = None
                     self.mission.pointer_calibrated = False
+                    self.pointer_status = "Disconnected"
+            elif kind == "sent" and role == "telemetry":
+                command = self.rocket_commands.pop(data, None)
+                if command:
+                    self.log("Rocket command sent", command)
+            elif kind == "expired" and role == "telemetry":
+                command = self.rocket_commands.pop(data, None)
+                if command:
+                    self.log("Rocket command expired; not sent", command)
             elif kind == "sent" and data in self.dispatched_commands:
                 self.pointer_sent = self.dispatched_commands.pop(data)
+                self.pointer_last_command = self.command_names.pop(data, "azimuth/elevation")
                 if self.pointer_pending and data == self.pointer_pending[0]:
                     self.pointer_pending = None
-                    self.pointer_status = "Sent · acknowledgment / measured pose unavailable"
-                self.log("Pointer command sent", {"id": data, "angles": self.pointer_sent})
+                    self.pointer_status = "Sent " + self.pointer_last_command
+                self.log(
+                    "Pointer command sent",
+                    {"id": data, "angles": self.pointer_sent, "command": self.pointer_last_command},
+                )
             elif kind == "expired":
                 self.dispatched_commands.pop(data, None)
+                self.command_names.pop(data, None)
                 self.hold("Queued command expired")
             elif kind == "rx":
-                self.log("Pointer RX (unstructured): " + data[:140])
+                self.log("Pointer RX: " + data[:140])
         if self.mode == "DEMO":
-            self.demo_time += dt
-            if now - self._last_sample >= 0.05:
-                self.demo_sequence += 1
-                self.accept(
-                    demo_sample(self.demo_time, self.demo_sequence, self.mission.canard_count), record=True
-                )
-                self._last_sample = now
+            self.advance_demo(dt, now)
         elif self.mode == "REPLAY" and self.reader and self.replay_playing:
             begin = self.replay_time
             self.replay_time = min(self.reader.duration, begin + dt * self.replay_speed)
@@ -652,6 +819,9 @@ class Controller(QObject):
         self.changed.emit()
 
     def shutdown(self):
+        if getattr(self, "_shutdown", False):
+            return
+        self._shutdown = True
         self.timer.stop()
         for role in self.workers:
             worker = self.workers[role]

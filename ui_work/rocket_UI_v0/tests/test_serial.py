@@ -27,6 +27,7 @@ def test_two_concurrent_serial_roles_and_exact_pointer_bytes():
         while sum(e[2] == "connected" for e in events) < 2 and time.monotonic() < deadline:
             time.sleep(0.01)
         assert sum(e[2] == "connected" for e in events) == 2
+        workers[0].set_polling(True)
         packet = frame(7)
         os.write(pairs[0][0], packet[:19])
         os.write(pairs[0][0], packet[19:])

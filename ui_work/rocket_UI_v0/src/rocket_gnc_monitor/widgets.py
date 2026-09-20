@@ -6,6 +6,7 @@ import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPen, QPolygonF, QRegion
 from PySide6.QtWidgets import QWidget
+from .fonts import FONT_FAMILY
 
 COLORS = dict(
     bg="#0b111a",
@@ -34,7 +35,7 @@ LIGHT_COLORS = dict(
 )
 
 STYLE = """
-QWidget { background: #0b111a; color: #e8eff7; font-family: 'Arial'; font-size: 13px; }
+QWidget { background: #0b111a; color: #e8eff7; font-family: 'Lucida Grande'; font-size: 13px; }
 QMainWindow { background: #0b111a; }
 QFrame#card, QGroupBox { background: #121d2a; border: 1px solid #2a3b4f; border-radius: 9px; }
 QFrame#card QLabel, QFrame#card QWidget#transparent { background: transparent; }
@@ -46,6 +47,7 @@ QLabel#section { font-size: 16px; font-weight: 600; }
 QPushButton { background: #1a293a; border: 1px solid #34485e; border-radius: 5px; padding: 7px 12px; }
 QPushButton:hover { background: #23374b; border-color: #79d4c8; }
 QPushButton:pressed { background: #34485e; }
+QPushButton:checked { background: #24464a; border-color: #79d4c8; color: #79d4c8; }
 QPushButton:disabled { color: #617287; border-color: #263344; }
 QPushButton#primary { background: #79d4c8; color: #091715; border-color: #79d4c8; font-weight: 600; }
 QPushButton#primary:disabled { background: #1a293a; color: #617287; border-color: #263344; }
@@ -63,6 +65,8 @@ QTableWidget::item { padding: 5px; }
 QSlider::groove:horizontal { height: 5px; background: #34485e; border-radius: 2px; }
 QSlider::handle:horizontal { background: #79d4c8; width: 14px; margin: -5px 0; border-radius: 7px; }
 QCheckBox { spacing: 7px; }
+QCheckBox::indicator { width: 15px; height: 15px; border: 1px solid #617287; border-radius: 3px; }
+QCheckBox::indicator:checked { background: #79d4c8; border-color: #79d4c8; }
 QScrollArea { border: none; }
 QScrollBar:vertical { background: #0b111a; width: 10px; margin: 0; }
 QScrollBar::handle:vertical { background: #34485e; min-height: 30px; border-radius: 5px; }
@@ -117,12 +121,24 @@ class AttitudeView(QWidget):
             )
 
 
+# Renderer coordinates: +Y is up and +Z is north, so east must be -X.
+# E × N = U; positive azimuth turns north toward east when viewed from above.
+MOUNT_COMPASS = {"N": (0, 0, 1), "E": (-1, 0, 0), "S": (0, 0, -1), "W": (1, 0, 0)}
+
+
+def mount_rotations(azimuth, elevation):
+    az, el = math.radians(azimuth), math.radians(elevation)
+    rotation = np.array([[math.cos(az), 0, -math.sin(az)], [0, 1, 0], [math.sin(az), 0, math.cos(az)]])
+    tilt = np.array([[1, 0, 0], [0, math.cos(el), math.sin(el)], [0, -math.sin(el), math.cos(el)]])
+    return rotation, tilt
+
+
 class MountView(QWidget):
     """The photo-informed model shares real attachment transforms across camera views."""
 
     def __init__(self):
         super().__init__()
-        self.azimuth, self.elevation = 32.0, 12.0
+        self.azimuth, self.elevation = 0.0, 0.0
         self.camera = "Perspective"
         self.camera_yaw, self.camera_pitch = 72.0, 20.0
         self.zoom = 1.0
@@ -132,7 +148,7 @@ class MountView(QWidget):
         self.setToolTip(
             "Drag to orbit the camera. Scroll to zoom. Double-click to reset the view. Viewing does not move the antenna."
         )
-        self.setAccessibleName("Interactive antenna mount preview; drag to orbit; no measured pose")
+        self.setAccessibleName("Antenna assembly; drag to orbit")
 
     def set_camera(self, name):
         self.camera_yaw, self.camera_pitch = {
@@ -187,9 +203,7 @@ class MountView(QWidget):
         p = QPainter(self)
         p.setRenderHint(QPainter.RenderHint.Antialiasing)
         p.fillRect(self.rect(), QColor(COLORS["panel"]))
-        az, el = math.radians(self.azimuth), math.radians(self.elevation)
-        rotation = np.array([[math.cos(az), 0, math.sin(az)], [0, 1, 0], [-math.sin(az), 0, math.cos(az)]])
-        tilt = np.array([[1, 0, 0], [0, math.cos(el), math.sin(el)], [0, -math.sin(el), math.cos(el)]])
+        rotation, tilt = mount_rotations(self.azimuth, self.elevation)
 
         def identity(v):
             return np.asarray(v, dtype=float)
@@ -302,7 +316,9 @@ class MountView(QWidget):
         for y in (-0.56, 0, 0.56):
             for x in np.linspace(-0.59, 0.59, 9)[:-1]:
                 rod(grid(x, y), grid(x + 1.18 / 8, y), 0.012, "grid", carrier, 3)
-        rod([-0.03, -0.40, 0.28], [-0.03, 0.02, 1.04], 0.03, "dark", carrier)
+        # The dish-colored feed arm and dashed boresight share the carrier's +Z axis.
+        feed_tip = [0, 0, 1.04]
+        rod([0, 0, 0.27], feed_tip, 0.03, "grid", carrier)
         box([1.03, 0, 0], [0.18, 0.14, 0.24], "dark", carrier)
         rod([1.03, 0, -0.35], [1.03, 0, 3.55], 0.025, "metal", carrier, 4)
         for k in range(21):
@@ -351,11 +367,11 @@ class MountView(QWidget):
             p.setBrush(color)
             p.drawPolygon(QPolygonF([project(v) for v in vertices]))
         p.setPen(QPen(QColor(COLORS["accent"]), 1.4, Qt.PenStyle.DashLine))
-        p.drawLine(project(carrier([0, 0, 1.03])), project(carrier([0, 0, 2.68])))
+        p.drawLine(project(carrier(feed_tip)), project(carrier([0, 0, 2.68])))
         p.setPen(QColor(COLORS["muted"]))
-        p.setFont(QFont("Arial", 10))
-        for name, x, z in [("N", 0, 2.27), ("E", 2.27, 0), ("S", 0, -2.27), ("W", -2.27, 0)]:
-            point = project([x, 0, z])
+        p.setFont(QFont(FONT_FAMILY, 10))
+        for name, direction in MOUNT_COMPASS.items():
+            point = project(np.asarray(direction) * 2.27)
             p.drawText(point, name)
         p.drawText(
             QRectF(8, self.height() - 24, self.width() - 16, 20),

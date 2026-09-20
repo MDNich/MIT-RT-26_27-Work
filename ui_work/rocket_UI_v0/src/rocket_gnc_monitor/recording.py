@@ -15,9 +15,11 @@ import uuid
 import zlib
 from . import __version__
 from .domain import Sample, write_json
+from .zephyrus import CSV_FIELDS, legacy_values
+from .protocol import ZephyrusDecoder
 
 RAW_HEADER = struct.Struct("<4sddBI")
-RAW_ROLES = {"telemetry_rx": 1, "pointer_rx": 2, "pointer_tx": 3}
+RAW_ROLES = {"telemetry_rx": 1, "pointer_rx": 2, "pointer_tx": 3, "telemetry_tx": 4}
 
 
 class SessionRecorder:
@@ -84,7 +86,23 @@ class SessionRecorder:
             """)
             connection.commit()
             last_commit = time.monotonic()
-            with (self.path / "raw.bin").open("wb") as raw:
+            with (
+                (self.path / "raw.bin").open("wb") as raw,
+                (self.path / "telemetry.csv").open("w", newline="", encoding="utf-8") as telemetry,
+                (self.path / "telemetry_badpackets.csv").open("w", newline="", encoding="utf-8") as rejected,
+            ):
+                good_csv, bad_csv = (
+                    csv.DictWriter(telemetry, CSV_FIELDS),
+                    csv.DictWriter(rejected, CSV_FIELDS),
+                )
+                good_csv.writeheader()
+                bad_csv.writeheader()
+
+                def bad_packet(payload, trailer, count):
+                    sample = ZephyrusDecoder().decode(payload, trailer)
+                    bad_csv.writerow(legacy_values(sample, count, rejected=True))
+
+                raw_decoder = ZephyrusDecoder(on_rejected=bad_packet)
                 while not self.closed or not self.queue.empty():
                     try:
                         kind, received, data = self.queue.get(timeout=0.1)
@@ -94,6 +112,8 @@ class SessionRecorder:
                         # Microsecond session timestamps avoid cancellation noise at seek boundaries.
                         elapsed = max(0.0, round(received - self.start, 6))
                         if kind == "sample":
+                            sample = Sample.from_dict(data)
+                            good_csv.writerow(legacy_values(sample, sample.details.get("bad_packets", 0)))
                             connection.execute(
                                 "INSERT INTO samples(elapsed,t,data) VALUES(?,?,?)",
                                 (elapsed, data["t"], json.dumps(data, allow_nan=False)),
@@ -105,6 +125,8 @@ class SessionRecorder:
                             )
                         elif kind == "raw":
                             role, payload, utc = data
+                            if role == "telemetry_rx":
+                                raw_decoder.feed(payload)
                             offset = raw.tell()
                             header = RAW_HEADER.pack(b"RGM1", elapsed, utc, RAW_ROLES[role], len(payload))
                             raw.write(header + payload + struct.pack("<I", zlib.crc32(header + payload)))
@@ -115,6 +137,9 @@ class SessionRecorder:
                         self.queue.task_done()
                     if time.monotonic() - last_commit >= 0.25 or (self.closed and self.queue.empty()):
                         # Data must reach disk before a committed index can point at it.
+                        for handle in (telemetry, rejected):
+                            handle.flush()
+                            os.fsync(handle.fileno())
                         raw.flush()
                         os.fsync(raw.fileno())
                         connection.commit()

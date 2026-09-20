@@ -1,17 +1,25 @@
 # Implementation and acceptance status
 
-## September 20 Mac revision
+## September 20 Mac revision — legacy feature parity
 
-- Default launch is LIVE on a new connection control panel. No synthetic samples/video are started unless DEMO is explicitly selected.
-- USB ground-board status, fresh rocket radio telemetry, and pointer-board status are shown separately. Corrupt packets cannot establish the radio indicator; reconnect requires new telemetry. Stale reception is explicit.
-- Live capture/record and physical motion controls enforce the ground-board prerequisite. Antenna motion also requires the calibrated pointer. Ground loss clears queued commands and relocks controls; hold/stop remain available when needed.
-- Dish, Yagi and enclosed Avenger XR18 attach directly to the same elevation beam through the support pivots. Full camera orbit, zoom and reset affect only the view, independent of commanded pose.
-- Mac checks: 35 tests passed, including a two-port OS pseudo-terminal UI integration test and orbit/pose isolation. Packaged verification covers default locked LIVE startup, explicit demo/video and the private OpenRocket worker.
-- Windows was not rebuilt or tested for this revision. The following September 18 results describe the prior baseline. Physical board/camera/mount acceptance remains outstanding.
+- All original operator functions and all ten keyboard shortcuts are restored. See [the complete inventory and reference tests](LEGACY_PARITY.md).
+- Default launch is LIVE on the connection control panel. No automatic camera, telemetry polling, or physical serial connection.
+- Ground and pointer connections operate independently, with the old serial settings. Start/Stop Polling is separate from connection. Rocket uplinks work with polling paused. Native pointer direction/ZERO packets match the original UI.
+- Rocket controls contains all original telemetry, GPS, servo, cell, power, BMS, pyro, VTX, state/zero and emergency recovery controls. Original state/ARM/FIRE/recovery confirmations are retained.
+- Start/Stop Logging immediately creates a session containing both original 43-column CSVs alongside raw serial/SQLite/video. Ground-GPS freeze and the original tracking calculation are restored.
+- All antennas share the elevation beam through the support pivots. The feed arm uses the dish material and shares the dashed boresight axis. The compass uses a right-handed E/N/Up frame, with 90° azimuth pointing East. Camera orbit, zoom and reset remain independent of commands.
+- Lucida Grande Regular/Bold is bundled for both platform builds and applied throughout widgets, plots, dialogs and antenna labels.
+- Launch location accepts lat/lon, MGRS and Plus Codes offline. Short codes require a nearby reference; mission persistence retains entry format and canonical coordinates.
+- DEMO uses the exact GS1/GS2/GS3 Zephyrus test-flight CSVs, compressed losslessly and hashed. GS2 is default, with a five-second prelaunch cue, full-recording access, pause/seek/speed, original legacy readouts and source provenance. No fictional telemetry or actuator feedback is generated.
+- **58 regression tests passed** on Mac, including 118 captured rocket-packet cases, all original shortcuts exercised through actual Qt key events, original decoder/CSV values, two pseudo-terminal connections, confirmation paths, and recording/replay. Python static checks passed.
+- Minimum-size 1120×800 screens, all restored tabs and dark/daylight themes are checked. Mac package verification checks LIVE startup, all three bundled Zephyrus recordings with synthetic video, and the bundled OpenRocket worker with a minimal system PATH.
+- Windows was not rebuilt for this revision. The following September 18 results describe the prior baseline. Actual board/camera/mount acceptance remains outstanding.
+
+## Historical September 18 baseline
 
 September 18, 2026. The folder contains an implemented desktop application; original planning files are retained as the design baseline.
 
-Implemented: native workspaces; independent Zephyrus connections; incremental decoding; USB/video-file capture; photo-informed articulated mount; guarded manual pointing/tracking/reference reset; normalized GNC channels with explicit legacy availability; manual/online wind; isolated nominal OpenRocket; raw/decoded/event/video recording; indexed replay and CSV export; diagnostics/alerts; native Makefiles and complete runtime packaging.
+Initial baseline implemented: native workspaces; independent Zephyrus connections; incremental decoding; USB/video-file capture; photo-informed articulated mount; guarded manual pointing/tracking/reference reset; normalized GNC channels with explicit legacy availability; manual/online wind; isolated nominal OpenRocket; raw/decoded/event/video recording; indexed replay and CSV export; diagnostics/alerts; native Makefiles and complete runtime packaging.
 
 Automated tests cover corrupt/split frames, rollover/reboot, coordinate/datum handling, pointer encoding/envelopes, mode isolation, stale tracking, dispatch races, alerts, raw CRCs, incomplete recordings, replay state and bundled FFmpeg recording. A real OpenRocket example generated 1,551 rows; two independent jobs matched exactly. A live Open-Meteo request returned eight wind layers. 
 
@@ -25,7 +33,7 @@ Remaining field/release acceptance:
 - Launch-day-duration soak, representative hardware traffic, disk-full/power-loss drills and each supported OS/CPU.
 - Signing/notarization and corresponding engine/dependency source redistribution materials.
 
-No rocket uplink/pyro control is implemented. Serial reconnection/tracking resumption are manual. The audited Zephyrus CSV layout has a tested converter; other layouts are rejected. Geometry is photo-informed, not surveyed CAD. Video synchronization uses host receipt plus manual offset, not exposure timestamps. Recovery cannot recreate uncommitted data/unfinalized video. Original source folders remain unchanged; application work is isolated under `rocket_UI_v0`.
+Rocket uplink and pyro/recovery controls were added in the September 20 parity revision. Serial reconnection/tracking resumption are manual. The audited Zephyrus CSV layout has a tested converter; other layouts are rejected. Geometry is photo-informed, not surveyed CAD. Video synchronization uses host receipt plus manual offset, not exposure timestamps. Recovery cannot recreate uncommitted data/unfinalized video. Original source folders remain unchanged; application work is isolated under `rocket_UI_v0`.
 
 ## Local validation completed
 

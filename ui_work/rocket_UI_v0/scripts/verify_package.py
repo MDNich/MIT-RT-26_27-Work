@@ -66,6 +66,14 @@ def main():
             raise SystemExit(f"{name} failed ({run.returncode}); see {output}")
     demo = json.loads((output / "demo" / "smoke-report.json").read_text())
     startup = json.loads((output / "startup" / "smoke-report.json").read_text())
+    if startup.get("font_family") != "Lucida Grande" or "Lucida Grande" not in startup.get(
+        "bundled_font_families", []
+    ):
+        raise SystemExit("Packaged Lucida Grande font was not loaded")
+    for name, expected in [("mgrs", (41.999997975128, -93)), ("pluscode", (47.3655625, 8.5249375))]:
+        actual = startup.get("location_checks", {}).get(name, [])
+        if len(actual) != 2 or any(not math.isclose(a, b, abs_tol=1e-7) for a, b in zip(actual, expected)):
+            raise SystemExit(f"Packaged {name} conversion failed")
     if (
         startup["mode"] != "LIVE"
         or not startup["controls_locked"]
@@ -75,8 +83,28 @@ def main():
     ):
         raise SystemExit("Packaged application did not start in locked Live mode")
     simulation = json.loads((output / "simulation" / "simulation-smoke-report.json").read_text())
-    if demo["hardware_open"] or demo["samples"] <= 20 or demo["video_frames"] <= 0:
+    if demo["hardware_open"] or demo["demo_progress_samples"] <= 20 or demo["video_frames"] <= 0:
         raise SystemExit("Packaged demo did not receive telemetry/video or opened hardware")
+    demo_manifest = json.loads((contents / "resources" / "demo" / "manifest.json").read_text())
+    if demo.get("demo_recording") != dict(station="GS2", **demo_manifest["GS2"]) or not demo.get(
+        "latest_demo_row"
+    ):
+        raise SystemExit("Packaged demo did not play the bundled Zephyrus GS2 recording")
+    # Exercise every receiver log in the actual packaged process, not the source tree.
+    for station in ("GS1", "GS3"):
+        result = subprocess.run(
+            [str(executable), "--smoke-test", "--demo-station", station, "--data-dir", str(output / station)],
+            cwd=package,
+            env=environment,
+            capture_output=True,
+            timeout=60,
+        )
+        (output / (station + ".log")).write_bytes(result.stdout + result.stderr)
+        if result.returncode:
+            raise SystemExit(f"Packaged {station} demo failed")
+        report = json.loads((output / station / "smoke-report.json").read_text())
+        if report.get("demo_recording") != dict(station=station, **demo_manifest[station]):
+            raise SystemExit(f"Packaged {station} recording identity mismatch")
     if simulation["rows"] < 2 or not math.isfinite(simulation["apogee_m"]) or simulation["apogee_m"] <= 0:
         raise SystemExit("Packaged simulation did not produce a usable example trajectory")
     if simulation["manifest"]["name"] != "OpenRocket nominal · A simple model rocket":

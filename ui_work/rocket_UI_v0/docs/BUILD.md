@@ -2,7 +2,7 @@
 
 September 20 revision: Mac only. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
 
-Use Python 3.12–3.13 (64 bit; x64 Python on Windows), JDK 17+ (`javac` and `jar` on PATH), and GNU Make on the build machine. Build Mac arm64 on Apple Silicon, Mac x86_64 on Intel, and Windows x64 on Windows x64. PyInstaller does not cross-compile. Production users need only the resulting complete package.
+Use Python 3.12–3.13 (64 bit; x64 Python on Windows), JDK 17+ (`javac` and `jar` on PATH), and GNU Make on the build machine. Build Mac arm64 on Apple Silicon, Mac x86_64 on Intel, and Windows x64 on Windows x64. PyInstaller does not cross-compile. Production users need only the resulting complete package. Lucida Grande is bundled in `resources/fonts/LucidaGrande.ttc` and registered through Qt on Mac and Windows. Preserve the font resource and its provenance notice. The MGRS native library and Open Location Code dependency are bundled for offline location conversion.
 
 ```sh
 # Mac
@@ -44,9 +44,9 @@ PATH=/usr/bin:/bin dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --s
 dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --simulation-smoke /path/to/model.ork --data-dir build/package-simulation
 ```
 
-`make run` starts the default locked LIVE view; `make demo` selects simulation explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` runs that check before explicit demo/video and engine checks.
+`make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` checks the bundled Lucida Grande family and both coordinate decoders, then runs explicit demo/video and engine checks.
 
-Demo smoke mode uses only synthetic inputs, writes `smoke-report.json` and exits. It never opens serial devices. `make clean` removes only this application's generated `build`/`dist` folders.
+Demo smoke mode uses bundled Zephyrus CSV telemetry plus a synthetic video test pattern, writes `smoke-report.json` and exits. `--demo-station GS1` (or `GS2`/`GS3`) selects a receiver log. The verification script exercises all three recordings from the packaged resources. It never opens serial devices. `make clean` removes only this application's generated `build`/`dist` folders.
 
 Development Mac packages use ad-hoc signing. For release, set `MAC_SIGN_IDENTITY` to the team's Developer ID Application identity before packaging, then notarize/staple the DMG using team credentials. Sign Windows releases with the team's Authenticode certificate. No credentials are included. Camera permission and hardware-specific drivers remain OS/device requirements.
 

@@ -64,7 +64,7 @@ def test_pointer_wire_compatibility():
     assert pointer_packet(90, 45) == bytes.fromhex("aa000000b442000034426c")
     for opcode in range(1, 6):
         assert pointer_packet(opcode=opcode) == bytes([0xAA, opcode]) + bytes(8) + bytes([opcode])
-    for az, el in [(float("nan"), 0), (360, 0), (0, 91)]:
+    for az, el in [(float("nan"), 0), (float("inf"), 0), (0, float("inf"))]:
         with pytest.raises(ValueError):
             pointer_packet(az, el)
 

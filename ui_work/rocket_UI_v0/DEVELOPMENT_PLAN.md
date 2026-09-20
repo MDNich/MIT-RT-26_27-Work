@@ -1,5 +1,6 @@
 # Rocket UI v0 — end-to-end development plan
 
+> Historical planning baseline. Current serial/control behavior follows the original UI as documented in [Legacy feature parity](docs/LEGACY_PARITY.md) and the [Operator guide](docs/OPERATOR_GUIDE.md).
 **Date:** 18 September 2026  
 **Status:** Reviewed implementation baseline, ready to begin M0; see [validation and execution readiness](VALIDATION_AND_EXECUTION.md). Application implementation and hardware/package qualification have not started.  
 **Location:** `ui_work/rocket_UI_v0/`  
