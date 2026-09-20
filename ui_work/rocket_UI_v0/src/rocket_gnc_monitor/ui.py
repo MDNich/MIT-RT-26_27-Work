@@ -425,6 +425,17 @@ class MainWindow(QMainWindow):
         return self.rocket_panel
 
     def install_shortcuts(self):
+        file_menu = self.menuBar().addMenu("File")
+        self.flight_actions = {}
+        for key, title, shortcut, callback in [
+            ("open", "Open flight…", QKeySequence.StandardKey.Open, self.open_flight),
+            ("save", "Save flight…", QKeySequence.StandardKey.Save, self.save_flight),
+        ]:
+            action = QAction(title, self)
+            action.setShortcut(QKeySequence(shortcut))
+            action.triggered.connect(callback)
+            file_menu.addAction(action)
+            self.flight_actions[key] = action
         menu = self.menuBar().addMenu("Serial controls")
         self.legacy_actions = {}
         definitions = [
@@ -816,6 +827,8 @@ class MainWindow(QMainWindow):
             ("Configure mission…", self.edit_mission),
             ("Open mission…", self.load_mission),
             ("Save mission…", self.save_mission),
+            ("Open flight…", self.open_flight),
+            ("Save flight…", self.save_flight),
         ]:
             row.addWidget(button(title, callback))
         row.addStretch()
@@ -893,6 +906,19 @@ class MainWindow(QMainWindow):
         page = QWidget()
         layout = QVBoxLayout(page)
         layout.setContentsMargins(0, 0, 0, 0)
+        panel, column = card("Flight files")
+        row = QHBoxLayout()
+        row.addWidget(button("Open flight…", self.open_flight))
+        row.addWidget(button("Save flight…", self.save_flight, True))
+        row.addStretch()
+        column.addLayout(row)
+        self.flight_file_status = label(
+            "One .rktflight file keeps mission settings, rocket model, simulation and available recordings together.",
+            "muted",
+        )
+        self.flight_file_status.setWordWrap(True)
+        column.addWidget(self.flight_file_status)
+        layout.addWidget(panel)
         panel, column = card("Session replay")
         row = QHBoxLayout()
         row.addWidget(button("Open recorded session…", self.open_session))
@@ -1087,6 +1113,44 @@ class MainWindow(QMainWindow):
         if path:
             self.guard(lambda: self.controller.mission.save(path))
 
+    def open_flight(self):
+        c = self.controller
+        if c.flight_busy or c.recorder:
+            message = (
+                "Wait for the current flight file operation"
+                if c.flight_busy
+                else "Stop logging before opening another flight"
+            )
+            return self.guard(lambda: (_ for _ in ()).throw(ValueError(message)))
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Open flight", str(c.last_flight_path or c.data_dir), "Rocket flight (*.rktflight)"
+        )
+        if path:
+            self.guard(lambda: c.open_flight(path))
+            if c.flight_busy:
+                self.flight_file_status.setText("Opening flight…")
+                self.statusBar().showMessage("Opening flight…")
+
+    def save_flight(self):
+        c = self.controller
+        if c.flight_busy:
+            return self.guard(
+                lambda: (_ for _ in ()).throw(ValueError("Wait for the current flight file operation"))
+            )
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save flight",
+            str(c.last_flight_path or c.data_dir / "flight.rktflight"),
+            "Rocket flight (*.rktflight)",
+        )
+        if path:
+            if not path.lower().endswith(".rktflight"):
+                path += ".rktflight"
+            self.guard(lambda: c.save_flight(path))
+            if c.flight_busy:
+                self.flight_file_status.setText("Saving flight… Logging continues while the file is written.")
+                self.statusBar().showMessage("Saving flight…")
+
     def add_wind_row(self, height, speed, direction):
         row = self.wind_table.rowCount()
         self.wind_table.insertRow(row)
@@ -1260,7 +1324,32 @@ class MainWindow(QMainWindow):
                 self.sim_status.setText(str(result))
                 scroll_bar = self.simulation_scroll.verticalScrollBar()
                 scroll_bar.setValue(scroll_bar.maximum())
+            elif name in {"flight_loaded", "flight_saved"}:
+                self.flight_file_status.setText(str(result))
+                self.statusBar().showMessage(str(result))
+                QMessageBox.warning(self, "Flight file", str(result))
             return
+        if name == "flight_loaded":
+            c = self.controller
+            self.model_path.setText(c.mission.model)
+            self.weather_msl.setValue(c.mission.altitude_msl)
+            self.motor_status.setText(f"Bundled motors + {len(c.mission.motor_files)} custom files")
+            self.wind_to_table()
+            self.sim_status.setText(
+                "Saved simulation reference restored" if c.reference else "No saved simulation reference"
+            )
+            self.flight_file_status.setText(f"Opened {result.path.name} · {result.metadata['scope']}")
+            self.statusBar().showMessage(f"Opened {result.path}")
+            self.setWindowTitle(f"Rocket GNC Monitor · {result.path.name}")
+            self.pages.setCurrentIndex(5 if c.reader else 4)
+            self.refresh_plots(force=True)
+        elif name == "flight_saved":
+            message = f"Saved {Path(result['path']).name} · {result['samples']:,} samples · {result['scope']}"
+            if result["video_scope"].startswith("Finalized"):
+                message += " · Video includes finished segments; stop logging and save again to include the last segment."
+            self.flight_file_status.setText(message)
+            self.statusBar().showMessage(f"Saved {result['path']}")
+            self.setWindowTitle(f"Rocket GNC Monitor · {Path(result['path']).name}")
         if name == "cameras":
             self.camera.clear()
             for description, source in result:
@@ -1455,6 +1544,9 @@ class MainWindow(QMainWindow):
         self.last_ui = now
         c = self.controller
         s = c.latest
+        if hasattr(self, "flight_actions"):
+            self.flight_actions["open"].setEnabled(not c.flight_busy and c.recorder is None)
+            self.flight_actions["save"].setEnabled(not c.flight_busy)
         self.wall_clock.setText(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-4])
         self.mission_label.setText(c.mission.name)
         self.mode.blockSignals(True)
@@ -1582,6 +1674,7 @@ class MainWindow(QMainWindow):
         m = c.mission
         self.mission_summary.setText(
             f"{m.name} · "
+            + (f"{m.launch_site_name} · " if m.launch_site_name else "")
             + (
                 f"Launch {m.latitude:.6f}°, {m.longitude:.6f}° / {m.altitude:.1f} m ellipsoid"
                 if m.site_configured
@@ -1596,7 +1689,13 @@ class MainWindow(QMainWindow):
             self.replay_clock.setText(f"{c.replay_time:.2f} / {c.reader.duration:.2f} s")
             self.session_status.setText(
                 f"{c.reader.path} · {c.reader.count} samples · "
-                + ("complete" if c.reader.manifest.get("complete") else "incomplete / recovered")
+                + (
+                    "recording snapshot"
+                    if c.reader.manifest.get("snapshot")
+                    else "complete"
+                    if c.reader.manifest.get("complete")
+                    else "incomplete / recovered"
+                )
             )
         self.refresh_plots()
 

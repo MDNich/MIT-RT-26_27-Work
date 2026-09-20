@@ -48,6 +48,10 @@ class Controller(QObject):
         self.generation = 0
         self.recorder = None
         self.reader = None
+        self.last_session_path = None
+        self.recording_close_future = None
+        self.flight_busy = False
+        self.last_flight_path = None
         self.video = None
         self.video_config = None
         self.simulation = None
@@ -93,6 +97,7 @@ class Controller(QObject):
         future = self.executor.submit(function)
         future.source_mode = self.mode
         self.futures.append((name, future))
+        return future
 
     @property
     def ground_connected(self):
@@ -137,10 +142,10 @@ class Controller(QObject):
         age = max(0, (time.monotonic() if now is None else now) - self.last_live_received)
         return ("RECEIVING" if age <= self.mission.freshness else "STALE"), age
 
-    def switch_mode(self, mode):
+    def switch_mode(self, mode, force=False):
         if mode not in {"LIVE", "DEMO", "REPLAY"}:
             raise ValueError("Unknown source mode")
-        if mode == self.mode:
+        if mode == self.mode and not force:
             return
         # Verify resources before altering the current source or closing a recording.
         demo = DemoFlight(self.demo_station) if mode == "DEMO" else None
@@ -150,6 +155,10 @@ class Controller(QObject):
             self._reference_before_demo = self.reference
             self.reference = None
         self.stop_recording()
+        if self.reader:
+            self.reader.close()
+            self.reader = None
+        self.last_session_path = None
         self.tracking = False
         for role in self.workers:
             self.disconnect(role)
@@ -190,6 +199,7 @@ class Controller(QObject):
             raise ValueError("Stop logging before changing demo recordings")
         demo = DemoFlight(station)
         self.demo, self.demo_station = demo, station
+        self.last_session_path = None
         self.seek_demo(demo.cue)
         self.demo_playing = True
         self.log(f"Zephyrus test flight · {station} selected")
@@ -485,6 +495,8 @@ class Controller(QObject):
         if self.recorder:
             raise ValueError("Already recording")
         self.recorder = SessionRecorder(parent, self.mission, self.mode, self.flight_zero, self.time_aligned)
+        self.last_session_path = self.recorder.path
+        self.recording_close_future = None
         if self.mode == "DEMO":
             self.recorder.manifest.update(
                 demo_recording=dict(station=self.demo.station, **self.demo.metadata),
@@ -514,26 +526,123 @@ class Controller(QObject):
                     video_close.result()
                 return recorder.close(), recorder.error, str(recorder.path)
 
-            self.submit("recording_closed", close_recording)
+            self.recording_close_future = self.submit("recording_closed", close_recording)
+
+    def save_flight(self, path):
+        from .flight import save_flight
+
+        if self.flight_busy:
+            raise ValueError("A flight file is already being opened or saved")
+        mission, reference = copy.deepcopy(self.mission), copy.deepcopy(self.reference)
+        session = (
+            self.recorder.path
+            if self.recorder
+            else self.reader.path
+            if self.reader
+            else self.last_session_path
+        )
+        active = self.recorder is not None
+        demo = self.demo if self.mode == "DEMO" and session is None else None
+        samples = copy.deepcopy(list(self.history)) if session is None and demo is None else []
+        elapsed = [max(0, s.received - samples[0].received) for s in samples]
+        position = (
+            self.replay_time if self.reader else self.demo_time if demo else elapsed[-1] if elapsed else 0
+        )
+        scope = (
+            "Recording snapshot"
+            if active
+            else "Recorded session"
+            if session
+            else f"Complete Zephyrus {demo.station} dataset"
+            if demo
+            else "Displayed telemetry buffer only (up to 6,000 samples)"
+            if samples
+            else "Mission and simulation"
+        )
+        mode, zero, aligned = self.mode, self.flight_zero, self.time_aligned
+        pending = (
+            self.recording_close_future if session is not None and not active and not self.reader else None
+        )
+        self.flight_busy = True
+        self.submit(
+            "flight_saved",
+            lambda: save_flight(
+                path,
+                mission,
+                reference,
+                session=session,
+                active=active,
+                samples=samples,
+                elapsed=elapsed,
+                mode=mode,
+                flight_zero=zero,
+                time_aligned=aligned,
+                position=position,
+                scope=scope,
+                demo=demo,
+                pending_close=pending,
+            ),
+        )
+        self.log("Saving flight · " + scope)
+
+    def open_flight(self, path):
+        from .flight import load_flight
+
+        if self.flight_busy:
+            raise ValueError("A flight file is already being opened or saved")
+        if self.recorder:
+            raise ValueError("Stop logging before opening another flight")
+        if self.simulation:
+            raise ValueError("Finish or cancel the simulation before opening another flight")
+        self.flight_busy = True
+        future = self.submit("flight_loaded", lambda: load_flight(path, self.data_dir / "flights"))
+        future.flight_context = (self.generation, copy.deepcopy(self.mission))
+        self.log("Opening flight file…")
+
+    def apply_flight(self, flight):
+        if flight.session:
+            self.open_replay(flight.session)
+        else:
+            self.switch_mode("LIVE", force=True)
+        self.mission = flight.mission
+        self.reference = flight.reference
+        if flight.session:
+            self.seek(flight.metadata.get("position", 0))
+        self.flight_zero = flight.metadata.get("flight_zero", self.flight_zero)
+        self.time_aligned = flight.metadata.get("time_aligned", self.time_aligned)
+        self.last_flight_path = flight.path
+        self.log(f"Flight opened: {flight.path.name} · {flight.metadata['scope']}")
+        self.changed.emit()
 
     def open_replay(self, path):
         reader = SessionReader(path)
-        self.switch_mode("REPLAY")
-        if self.reader:
-            self.reader.close()
+        try:
+            values = reader.manifest.get("mission", {})
+            mission = Mission(
+                **{k: v for k, v in values.items() if k in Mission.__dataclass_fields__}
+            ).validate()
+            mission.pointer_calibrated = False
+            ref = reader.path / "reference.csv"
+            reference = Trajectory.load(ref) if ref.exists() else None
+        except Exception:
+            reader.close()
+            raise
+        self.switch_mode("REPLAY", force=True)
         self.reader = reader
-        values = reader.manifest.get("mission", {})
-        self.mission = Mission(
-            **{k: v for k, v in values.items() if k in Mission.__dataclass_fields__}
-        ).validate()
-        self.mission.pointer_calibrated = False
+        self.last_session_path = reader.path
+        self.mission = mission
         self.flight_zero = reader.manifest.get("flight_zero", 0)
-        ref = reader.path / "reference.csv"
-        self.reference = Trajectory.load(ref) if ref.exists() else None
+        self.reference = reference
         self.seek(0)
         self.log(
             f"Replay loaded: {reader.count} samples; "
-            + ("complete" if reader.manifest.get("complete") else "recovered/incomplete")
+            + (
+                "recording snapshot"
+                if reader.manifest.get("snapshot")
+                else "complete"
+                if reader.manifest.get("complete")
+                else "recovered/incomplete"
+            )
         )
 
     def seek(self, elapsed):
@@ -809,8 +918,21 @@ class Controller(QObject):
                         token, worker = result
                         if token == self.video_generation:
                             self.video = worker
+                    if name == "flight_loaded":
+                        if self.recorder or future.flight_context != (self.generation, self.mission):
+                            raise ValueError(
+                                "Flight settings or source changed while opening; open the file again"
+                            )
+                        self.apply_flight(result)
+                    elif name == "flight_saved":
+                        self.last_flight_path = Path(result["path"])
+                        self.log(f"Flight saved: {result['path']} · {result['samples']} samples")
+                    if name in {"flight_loaded", "flight_saved"}:
+                        self.flight_busy = False
                     self.task_done.emit(name, result)
                 except Exception as exc:
+                    if name in {"flight_loaded", "flight_saved"}:
+                        self.flight_busy = False
                     self.log(f"{name}: {exc}")
                     self.task_done.emit(name, exc)
                 if name == "simulation":

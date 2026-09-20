@@ -45,6 +45,16 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     commands = [
         (
+            "flight",
+            [
+                "--flight-smoke",
+                "--data-dir",
+                str(output / "flight"),
+                "--screenshot",
+                str(output / "flight.png"),
+            ],
+        ),
+        (
             "startup",
             [
                 "--startup-smoke",
@@ -81,6 +91,17 @@ def main():
             raise SystemExit(f"{name} failed ({run.returncode}); see {output}")
     demo = json.loads((output / "demo" / "smoke-report.json").read_text())
     startup = json.loads((output / "startup" / "smoke-report.json").read_text())
+    flight = json.loads((output / "flight" / "flight-smoke-report.json").read_text())
+    if (
+        flight["mode"] != "REPLAY"
+        or not flight["paused"]
+        or flight["hardware_open"]
+        or flight["site"] != "URRG"
+        or flight["code"] != "18TUN2061530290"
+        or not flight["model_exists"]
+        or flight["reference_rows"] != 2
+    ):
+        raise SystemExit("Packaged flight-file / URRG round trip failed")
     if startup.get("font_family") != "Lucida Grande" or "Lucida Grande" not in startup.get(
         "bundled_font_families", []
     ):
@@ -139,6 +160,7 @@ def main():
                 package=str(package),
                 minimal_path=True,
                 startup=startup,
+                flight=flight,
                 demo=demo,
                 simulation=simulation,
                 selected_model=selected_model,

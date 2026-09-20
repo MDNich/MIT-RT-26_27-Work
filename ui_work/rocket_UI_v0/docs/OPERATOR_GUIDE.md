@@ -44,6 +44,8 @@ View → Daylight theme changes contrast. Choose plan, side or projected perspec
 
 Mission → Configure: choose **Latitude / longitude**, **MGRS**, or **Plus Code** for the launch location. All conversions work offline and display the resolved WGS84 coordinates before Save. MGRS accepts compact or spaced references, UTM and polar grids, and reports the supplied grid resolution; it uses the grid reference point. Full Plus Codes resolve directly to their area center. For a short Plus Code, enter nearby reference latitude/longitude; a named locality alone is not resolved. Saving retains the chosen format and code alongside canonical latitude/longitude. Switching formats alone preserves the existing coordinates.
 
+**Launch site preset → URRG** fills `18TUN2061530290`, selects MGRS and marks the launch origin established. The preset name and exact code survive mission/flight saves. Editing the coordinates changes the preset to Custom; switching coordinate display formats alone preserves the site. Presets do not supply elevation.
+
 Enter WGS84 **ellipsoid altitude**, separate **mean sea level elevation**, and mark the origin established. Geographic transforms use ellipsoid height; atmosphere/weather use MSL. Choose the verified legacy altitude interpretation. Firmware may zero GPS height preflight; select GPS relative to launch if that is the board configuration. This interpretation controls the trajectory comparison. Legacy pointer tracking continues to use its original GPS/barometric convention.
 
 Stop recording before changing the mission. Legacy pointer operation does not require a mission-calibration checkbox.
@@ -73,6 +75,21 @@ Select a `.ork` with a saved simulation/motor configuration; index 0 means the f
 The bridge uses the saved motor/flight configuration, specified rail/site/wind, ISA atmosphere, zero turbulence standard deviation, fixed seed and first output branch. Saved simulation extensions and the fork's global inertia override are disabled. Inspect `trajectory.json` warnings/branch count and `worker.log` in the job folder. Controlled canard/tab dynamics remain unqualified.
 
 An imported normalized reference needs a CSV with `time_s,east_m,north_m,up_m` and same-basename JSON declaring `schema_version:1`, `frame:"ENU"`, `units:"m,s"`, `origin:[latitude,longitude,ellipsoid_altitude]`. Up is launch-relative. Live origins must match. No reference-time extrapolation is performed.
+
+## Flight files
+
+Use **File → Save flight…** (⌘S on Mac, Ctrl+S on Windows) to write one portable `.rktflight` file. **File → Open flight…** (⌘O / Ctrl+O) restores it. Both buttons also appear in Mission & wind and Sessions & replay. These add to the original shortcuts and mission JSON/session-folder options.
+
+A flight file contains mission settings (including launch-site choice, wind and weather response), the selected rocket model/custom motor files, the current simulation reference, and available session telemetry, raw bytes, events, original CSVs and recorded video. Embedded model/motor files reopen from the application's flight cache, so their original paths are not required. Saving is atomic; a failed save leaves an existing file intact. Loading checks archive contents and checksums before replacing the current flight.
+
+- During logging: **Save flight** snapshots committed telemetry while logging continues. Video includes only finalized segments; the segment currently recording is omitted. **Stop Logging and save again** to include the final segment and telemetry. Active snapshots remain labeled as snapshots, with dropped-record/error information retained.
+- After stopping logging: Save includes the last session in the current source mode and waits for its video to finish closing.
+- In REPLAY: Save includes the opened session and current playback position.
+- In DEMO without a recorded session: Save includes the entire selected GS1/GS2/GS3 dataset and the displayed playback position. It does not create fictional launch video or raw radio bytes.
+- In LIVE without a recording: Save includes only the displayed telemetry buffer (up to 6,000 samples), explicitly labeled as such. Use **Start Logging** for a complete capture.
+- Before telemetry arrives: Save creates a planning flight containing mission/model/reference only.
+
+Stop logging before opening another flight. A flight containing a session opens in paused **REPLAY**, with both serial transports disconnected. A planning flight opens in disconnected **LIVE**. Pointer calibration and hardware connections are never restored. Existing mission JSON files and recorded-session folders remain supported by their original Open commands. Extracted flight assets remain under the application data directory's `flights` folder.
 
 ## Sessions
 

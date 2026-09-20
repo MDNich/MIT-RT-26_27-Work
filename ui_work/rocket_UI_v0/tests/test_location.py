@@ -134,3 +134,30 @@ def test_dialog_invalid_code_and_short_code_reference(qtbot, monkeypatch):
     invalid.location.mgrs.setText("invalid")
     invalid.accept()
     assert invalid.result() != QDialog.DialogCode.Accepted and "MGRS" in messages[-1]
+
+
+def test_urrg_preset_exact_coordinates_persist_and_manual_edits_clear_name(qtbot, tmp_path):
+    original = Mission(altitude=350, altitude_msl=310)
+    dialog = MissionDialog(original)
+    qtbot.addWidget(dialog)
+    dialog.location.preset.setCurrentIndex(dialog.location.preset.findData("URRG"))
+    assert dialog.location.format.currentData() == "mgrs"
+    assert dialog.location.mgrs.text() == "18TUN2061530290"
+    assert dialog.fields["site_configured"].isChecked()
+    dialog.accept()
+    mission = dialog.mission
+    point = decode_mgrs("18TUN2061530290")
+    assert (mission.latitude, mission.longitude) == (point.latitude, point.longitude)
+    assert mission.launch_site_name == "URRG" and mission.altitude == 350 and mission.altitude_msl == 310
+    assert original.launch_site_name == "" and not original.site_configured
+    path = tmp_path / "urrg.json"
+    mission.save(path)
+    reopened = MissionDialog(Mission.load(path))
+    qtbot.addWidget(reopened)
+    assert reopened.location.preset.currentData() == "URRG"
+    reopened.accept()
+    assert reopened.mission.launch_location_code == "18TUN2061530290"
+    reopened.location.format.setCurrentIndex(0)
+    assert reopened.location.preset.currentData() == "URRG"
+    reopened.location.latitude.setValue(42)
+    assert reopened.location.preset.currentData() == ""

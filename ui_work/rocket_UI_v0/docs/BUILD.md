@@ -44,7 +44,7 @@ PATH=/usr/bin:/bin dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --s
 dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --simulation-smoke /path/to/model.ork --data-dir build/package-simulation
 ```
 
-`make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` checks the bundled Lucida Grande family and both coordinate decoders, then runs explicit demo/video and engine checks.
+`make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` checks the bundled Lucida Grande family and both coordinate decoders, then runs portable flight/URRG round trips, explicit demo/video and engine checks. `--flight-smoke` exercises planning and recorded flight save/load, embedded assets, the exact URRG code and disconnected paused replay in the packaged process.
 
 `scripts/verify_package.py --model /path/to/zephy_testlaunch.ork` additionally runs the supplied model using the packaged motor library and records its resolved motor digest. The N8406 curve is bundled in `resources/motors`; rebuild the bridge with `make bridge` after changing its Java source.
 

@@ -8,7 +8,7 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 
 - Offline Zephyrus test-flight demo from GS1/GS2/GS3, with recorded receive timing, pause/seek/speed controls and launch cue; GS2 is the default.
 - Lucida Grande Regular/Bold bundled and loaded privately across the application, including plots and antenna annotations.
-- Launch-site entry in decimal latitude/longitude, MGRS, or Plus Codes, with offline conversion and a resolved-position readout.
+- Launch-site entry in decimal latitude/longitude, MGRS, or Plus Codes, with offline conversion, a resolved-position readout and a URRG preset (`18TUN2061530290`).
 - Eight workspaces: connection control panel, flight overview, antenna pointer, GNC/actuators, mission/wind, sessions/replay, diagnostics, and the full legacy rocket controls. USB board connection and rocket radio reception are shown independently.
 - Independent telemetry/pointer serial workers; incremental Zephyrus decoding, checksum recovery, loss counters, clock rollover/reboot detection.
 - USB camera discovery/capture, video-file input, and segmented recording through bundled FFmpeg.
@@ -19,6 +19,7 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 - Configurable canard channels and four fin tabs. Legacy Zephyrus supplies four servo drives only; unavailable new demands/feedback remain blank.
 - Manual/imported wind profiles and Open-Meteo profiles for a selected place/time, with cached provider response.
 - Private Java/OpenRocket worker, bundled MITRT N8406 for the Zephyrus test model, additional `.eng`/`.rse` motors, reproducible nominal simulation, normalized ENU reference and same-time position comparison.
+- Portable `.rktflight` Save/Open files (⌘S/⌘O), including mission, embedded model/motors, simulation and available recordings; saves can run during logging.
 - Indexed SQLite replay, exact serial capture with CRCs, event timeline, legacy CSV import/export, video seek/offset, incomplete-session recovery, dark/daylight themes and acknowledged alerts.
 
 ## Develop and build
@@ -47,6 +48,6 @@ Original planning baseline: [development plan](DEVELOPMENT_PLAN.md), [antenna de
 
 ## Built artifacts and validation
 
-The September 20 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. All 62 regression tests pass. Packaged Live startup, all three recorded demos/video, and OpenRocket checks are included in `make verify-package`.
+The September 20 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. All 71 regression tests pass. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
 
 The Windows ZIP remains the September 18 build (30 tests passed, one POSIX-only test skipped, in the Windows 11 ARM VM under x64 emulation). It has **not** been rebuilt for this revision; current work and validation target Mac only.

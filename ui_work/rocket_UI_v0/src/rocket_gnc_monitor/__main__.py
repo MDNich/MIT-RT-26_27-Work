@@ -13,6 +13,9 @@ def main():
     parser.add_argument("--demo-station", choices=["GS1", "GS2", "GS3"], default="GS2")
     startup.add_argument("--smoke-test", action="store_true", help="Exercise recorded demo playback and exit")
     startup.add_argument("--startup-smoke", action="store_true", help="Verify locked Live startup and exit")
+    startup.add_argument(
+        "--flight-smoke", action="store_true", help="Verify portable flight files and the URRG preset"
+    )
     parser.add_argument(
         "--screenshot", type=Path, help="Save a native window rendering during the smoke test"
     )
@@ -58,6 +61,68 @@ def main():
         window.controller.switch_mode("DEMO")
         window.pages.setCurrentIndex(1)
     window.show()
+    if args.flight_smoke:
+        from .flight import save_flight, load_flight
+        from .demo import DemoFlight
+        from .trajectory import Trajectory
+        from .ui import MissionDialog
+
+        c = window.controller
+        dialog = MissionDialog(c.mission)
+        dialog.location.preset.setCurrentIndex(dialog.location.preset.findData("URRG"))
+        dialog.accept()
+        mission = dialog.mission
+        mission.model = str(window.resource_root / "resources" / "examples" / "simple.ork")
+        reference = Trajectory(
+            [[0, 0, 0, 0], [1, 0, 0, 10]],
+            dict(schema_version=1, frame="ENU", units="m,s", origin=[mission.latitude, mission.longitude, 0]),
+        )
+        archive = data / "planning.rktflight"
+        save_flight(archive, mission, reference)
+        planning = load_flight(archive, data / "opened")
+        c.apply_flight(planning)
+        assert c.mode == "LIVE" and c.reader is None and c.reference is not None
+        assert c.mission.launch_location_code == "18TUN2061530290"
+        assert Path(c.mission.model).is_file()
+        demo = DemoFlight("GS2")
+        archive = data / "zephyrus.rktflight"
+        save_flight(
+            archive,
+            mission,
+            reference,
+            demo=demo,
+            position=demo.launch_time + 2,
+            mode="DEMO",
+            flight_zero=demo.flight_zero,
+            time_aligned=True,
+            scope="Complete Zephyrus GS2 dataset",
+        )
+        loaded = load_flight(archive, data / "opened")
+        c.apply_flight(loaded)
+        window.task_done("flight_loaded", loaded)
+        window.last_ui = 0
+        window.refresh()
+        report = dict(
+            mode=c.mode,
+            samples=c.reader.count,
+            paused=not c.replay_playing,
+            hardware_open=any(c.workers.values()),
+            site=c.mission.launch_site_name,
+            code=c.mission.launch_location_code,
+            model_exists=Path(c.mission.model).is_file(),
+            reference_rows=len(c.reference.points),
+            latest_row=c.latest.details["demo_row"],
+        )
+        (data / "flight-smoke-report.json").write_text(json.dumps(report, indent=2))
+        if args.screenshot:
+            args.screenshot.parent.mkdir(parents=True, exist_ok=True)
+            window.grab().save(str(args.screenshot))
+        window.close()
+        return (
+            0
+            if report["samples"] == len(demo.rows) and report["paused"] and not report["hardware_open"]
+            else 1
+        )
     if args.smoke_test or args.startup_smoke:
 
         def complete():
