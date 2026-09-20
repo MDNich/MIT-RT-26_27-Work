@@ -195,7 +195,7 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
     dead={str(f['element']) for row in mesh['rows'][:p['layer']] for f in row}
     expected=set(mesh['elements'])-dead
     if set(fields)!=expected or set(energy)!=expected: raise ValueError('Missing, duplicate or resurrected solid fields')
-    if any(len(v)!=4 for v in fields.values()) or any(len(v)!=5 for v in energy.values()):
+    if any(len(v)!=4 for v in fields.values()) or any(len(v)!=7 for v in energy.values()):
         raise ValueError('Truncated solver fields')
     used_nodes={str(nid) for f in mesh['rows'][p['layer']]+mesh['outer'] for nid in f['nodes']}
     if not used_nodes.issubset(temperatures): raise ValueError('Missing exposed-face nodal temperatures')
@@ -224,7 +224,7 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
     remaining=live_mesh_mass-pending_char
     mass_residual=s['mass_initial_kg']-remaining-s['gas_cumulative_kg']-s['char_cumulative_kg']-s['residual_ejected_kg']
     if abs(mass_residual)>max(1e-13,1e-6*s['mass_initial_kg']): raise ValueError('Phe0 mass balance not closed')
-    cap,gen_solver,conv,hfx,rad=[sum(v[i] for v in energy.values()) for i in range(5)]
+    cap,gen_solver,conv_solver,hfx,rad,hot_face_conv,outer_face_conv=[sum(v[i] for v in energy.values()) for i in range(7)]
     nodal=sum(float(x) for x in p['forces'].values())
     # In MAPDL 2026 R1, SOLID278/NMISC,39 remains zero for the hgen sink
     # supplied by UserMatTh.  The same two internal sinks are independently
@@ -232,11 +232,16 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
     # their negative sum in the global audit and retain the raw solver channel
     # as a diagnostic.
     gen=-(pyro_power+gas_power)
+    # SOLID278/NMISC,40 under-reports the applied convection when UserMatTh is
+    # active.  The documented face heat rates (face 5 hot side, face 3 outer
+    # side) reproduce the SFE loads, so use their sum in the balance and keep
+    # the aggregate channel only as a diagnostic.
+    conv=hot_face_conv+outer_face_conv
     energy_residual=cap+conv+rad-hfx-gen-nodal
     scale=max(abs(cap),abs(conv)+abs(rad),abs(hfx)+abs(gen)+abs(nodal),1e-6)
     erel=abs(energy_residual)/scale
     row=mesh['rows'][p['layer']]
-    hot_actual=-sum(energy[str(f['element'])][2] for f in row)
+    hot_actual=-sum(energy[str(f['element'])][5] for f in row)
     hot_expected=sum(f['area']*p['faces'][i]['h']*(c['heating']['gas_temperature_C']-
                      face_temperature(f,temperatures,c['initial_temperature_C'])) for i,f in enumerate(row))
     hrel=abs(hot_actual-hot_expected)/max(abs(hot_expected),1e-6)
@@ -295,10 +300,13 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
                 alpha_mean=sum(s['alpha'][str(f['element'])]*f['volume'] for f in row)/sum(f['volume'] for f in row),
                 alpha_min=min(alpha_values),
                 h_W_m2_K=p['faces'][0]['h'],hot_power_expected_W=hot_expected,hot_power_actual_W=hot_actual,
-                hot_power_relative_error=hrel,storage_W=cap,body_generation_W=gen,
+                hot_power_relative_error=hrel,
+                hot_power_actual_convrate_W=-sum(energy[str(f['element'])][2] for f in row),
+                storage_W=cap,body_generation_W=gen,
                 body_generation_solver_W=gen_solver,
                 pyrolysis_sink_W=pyro_power,gas_sensible_sink_W=gas_power,
-                convection_out_W=conv,nodal_net_W=nodal,ablation_sink_W=p['totals']['ablation_sink_W'],
+                convection_out_W=conv,convection_solver_W=conv_solver,
+                nodal_net_W=nodal,ablation_sink_W=p['totals']['ablation_sink_W'],
                 hot_radiation_W=p['totals']['hot_radiation_W'],outer_radiation_W=p['totals']['outer_radiation_W'],
                 energy_residual_W=energy_residual,energy_relative_error=erel,
                 gas_cumulative_kg=s['gas_cumulative_kg'],gas_cumulative_full_ring_kg=s['gas_cumulative_kg']*scale,

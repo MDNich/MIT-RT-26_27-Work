@@ -103,7 +103,8 @@ def export_macro(max_node: int, max_element: int) -> str:
             "ESEL,S,TYPE,,1,2", "ESEL,R,LIVE", "ETABLE,ERAS"]
     fields = [("ALP", "SVAR,1"), ("GAS", "SVAR,3"), ("GSEN", "SVAR,5"), ("QZ", "TF,Z"),
               ("CAP", "NMISC,38"), ("GEN", "NMISC,39"), ("CONV", "NMISC,40"),
-              ("HFX", "NMISC,41"), ("RAD", "NMISC,42")]
+              ("HFX", "NMISC,41"), ("RAD", "NMISC,42"),
+              ("HCONV", "NMISC,29"), ("OCONV", "NMISC,17")]
     for label, item in fields:
         out += [f"*DEL,V0_{label}", f"*DIM,V0_{label},ARRAY,{max_element}"]
         out += ["ESEL,S,MAT,,1"] if item.startswith("SVAR") else ["ESEL,S,TYPE,,1,2"]
@@ -112,8 +113,8 @@ def export_macro(max_node: int, max_element: int) -> str:
             "*VGET,V0_EM(1),ELEM,1,ESEL", "*CFOPEN,element_fields,txt", "*VMASK,V0_EM(1)",
             "*VWRITE,V0_E(1),V0_ALP(1),V0_GAS(1),V0_GSEN(1),V0_QZ(1)", "(F10.0,4(1X,E24.16))", "*CFCLOSE",
             "*CFOPEN,energy_fields,txt", "*VMASK,V0_EM(1)",
-            "*VWRITE,V0_E(1),V0_CAP(1),V0_GEN(1),V0_CONV(1),V0_HFX(1),V0_RAD(1)",
-            "(F10.0,5(1X,E22.14))", "*CFCLOSE", "ALLSEL,ALL", "FINISH"]
+            "*VWRITE,V0_E(1),V0_CAP(1),V0_GEN(1),V0_CONV(1),V0_HFX(1),V0_RAD(1),V0_HCONV(1),V0_OCONV(1)",
+            "(F10.0,7(1X,E22.14))", "*CFCLOSE", "ALLSEL,ALL", "FINISH"]
     return "\n".join(out) + "\n"
 
 

@@ -252,7 +252,7 @@ initial virgin mass. The row is deactivated at the next macro-step and hot-side
 conditions move to the newly exposed face. Residual mass and energy are logged
 before the topology changes.
 
-The nominal step is \SI{0.00625}{s}, reducible to \SI{0.0005}{s}; the reference
+The nominal step is \SI{0.0125}{s}, reducible to \SI{0.0005}{s}; the reference
 horizon is \SI{7}{s}. After each converged state the controller closes
 \begin{equation}
  m_0=m_{\mathrm{solid}}+m_g+m_c+m_{\mathrm{ejected\ residue}}
@@ -264,6 +264,10 @@ independently from \(\Delta\alpha\) and the gas sensible sink from state
 variable 5, while retaining the native channel as a diagnostic. A mass error
 above \(10^{-6}m_0\), an energy error above 5\,\%, or a hot-load discrepancy
 above 2\,\% blocks the next solve.
+Convection is integrated from the documented face heat rates
+\code{NMISC,29} (hot face 5) and \code{NMISC,17} (outer face 3). The aggregate
+\code{NMISC,40} rate, which under-reports the load here with \code{UserMatTh},
+is retained as a secondary diagnostic only.
 
 \begin{center}\fbox{\begin{minipage}{0.92\textwidth}\small
 \textbf{Validity domain.} Chamber pressure is now known, but gas composition,
