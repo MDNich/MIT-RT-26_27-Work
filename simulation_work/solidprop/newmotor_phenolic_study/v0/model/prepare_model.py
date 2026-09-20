@@ -99,7 +99,8 @@ def export_macro(max_node: int, max_element: int) -> str:
         out += [f"*DEL,{name}", f"*DIM,{name},ARRAY,{length}"]
     out += ["*VFILL,V0_N(1),RAMP,1,1", "*VGET,V0_T(1),NODE,1,TEMP", "*VGET,V0_M(1),NODE,1,NSEL",
             "*CFOPEN,node_temperatures,txt", "*VMASK,V0_M(1)", "*VWRITE,V0_N(1),V0_T(1)",
-            "(F10.0,1X,E24.16)", "*CFCLOSE", "*VFILL,V0_E(1),RAMP,1,1"]
+            "(F10.0,1X,E24.16)", "*CFCLOSE", "*VFILL,V0_E(1),RAMP,1,1",
+            "ESEL,S,TYPE,,1,2", "ESEL,R,LIVE", "ETABLE,ERAS"]
     fields = [("ALP", "SVAR,1"), ("GAS", "SVAR,3"), ("GSEN", "SVAR,5"), ("QZ", "TF,Z"),
               ("CAP", "NMISC,38"), ("GEN", "NMISC,39"), ("CONV", "NMISC,40"),
               ("HFX", "NMISC,41"), ("RAD", "NMISC,42")]
@@ -177,7 +178,7 @@ FINISH
 def write_model(cfg: dict, nodes: list, elements: list, output: Path) -> None:
     m = cfg["material"]
     lines = ["/BATCH", "/CONFIG,NOELDB,1", "/TITLE,New motor phenolic consumption v0", "/UNITS,MKS", "/PREP7",
-             "SHPP,ON", "ET,1,70", "ET,2,70", material_input(cfg).rstrip(),
+             "SHPP,ON", "ET,1,278", "ET,2,278", material_input(cfg).rstrip(),
              f"MP,KXX,2,{m['aluminium_conductivity_W_m_K']}", f"MP,C,2,{m['aluminium_heat_capacity_J_kg_K']}",
              f"MP,DENS,2,{m['aluminium_density_kg_m3']}", "! Nodes"]
     lines += [f"N,{nid},{x:.12e},{y:.12e},{z:.12e}" for nid, x, y, z in nodes]

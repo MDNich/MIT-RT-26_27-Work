@@ -40,7 +40,7 @@ V:\ansystmp\windows\launch_v0.ps1 -Preflight
 ```
 
 The preflight reads the complete native deck but contains no `SOLVE`.  The
-accepted package has 229,665 nodes and 152,000 linear SOLID70 hexahedra and
+accepted package has 229,665 nodes and 152,000 linear SOLID278 hexahedra and
 completed with zero MAPDL warnings and zero MAPDL errors.
 
 The simulation is not started by the preparation workflow.  Its first launch

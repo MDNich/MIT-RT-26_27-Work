@@ -342,11 +342,11 @@ def main():
         if stop:
             if (root/'PAUSE_REQUESTED').exists():
                 s['status']='PAUSED_AT_CHECKPOINT'; save(root/'state.json',s)
-            atomic(root/'step_control.inp','S4_OK=1\nS4_DONE=1\n'); return
+            atomic(root/'step_control.inp','V0_OK=1\nV0_DONE=1\n'); return
         p,commands=prepare_step(mesh,c,s)
         save(root/'pending.json',p)
         atomic(root/'apply_loads.inp',commands)
-        atomic(root/'step_control.inp',f'S4_OK=1\nS4_DONE=0\nS4_INDEX={p["index"]}\nS4_PREVIOUS={s["index"]}\nS4_TARGET={p["target"]:.16e}\nS4_DT={p["dt"]:.16e}\n')
+        atomic(root/'step_control.inp',f'V0_OK=1\nV0_DONE=0\nV0_INDEX={p["index"]}\nV0_PREVIOUS={s["index"]}\nV0_TARGET={p["target"]:.16e}\nV0_DT={p["dt"]:.16e}\n')
     else:
         p=load(root/'pending.json')
         time=float((root/'observed_time.txt').read_text().strip())
@@ -366,7 +366,7 @@ def main():
         import io
         buf=io.StringIO(); writer=csv.DictWriter(buf,fieldnames=list(record)); writer.writeheader(); writer.writerows(rows)
         atomic(root/c['output']['history_file'],buf.getvalue())
-        atomic(root/'accepted.inp','S4_OK=1\n')
+        atomic(root/'accepted.inp','V0_OK=1\n')
 
 
 if __name__=='__main__':
