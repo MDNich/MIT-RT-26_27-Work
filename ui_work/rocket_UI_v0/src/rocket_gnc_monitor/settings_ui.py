@@ -4,7 +4,6 @@ from pathlib import Path
 import json
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QComboBox,
     QDialog,
     QDialogButtonBox,
     QFileDialog,
@@ -18,6 +17,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 from .settings import AppSettings, runtime_root
+from .widgets import ComboBox as QComboBox
 
 
 class SettingsDialog(QDialog):

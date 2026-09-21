@@ -1,0 +1,16 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\node[box,text width=36mm] (reference) at (0,0) {OpenRocket reference\\ENU path + launch origin};
+\node[accentbox,text width=36mm] (frame) at (5.15,0) {Antenna-local direction\\ENU via ECEF};
+\node[box,text width=36mm] (pose) at (10.3,0) {Virtual pointer\\command + slew model};
+\node[box,text width=36mm] (mission) at (0,-2) {Mission profile\\antenna lat/lon/height};
+\node[box,text width=36mm] (clock) at (5.15,-2) {Independent clock\\play, pause, seek, speed};
+\node[box,text width=36mm] (display) at (10.3,-2) {Simulated pose + markers\\telemetry unchanged};
+\draw[flow] (reference) -- (frame);
+\draw[flow] (frame) -- (pose);
+\draw[flow] (mission.east) -- (frame.south west);
+\draw[flow] (clock) -- (frame);
+\draw[flow] (pose) -- (display);
+\end{tikzpicture}
+\caption{Virtual rehearsal uses the saved antenna position and its own clock. No physical serial transport participates in this path.}
+\end{figure}

@@ -15,7 +15,7 @@ not imply that an uplink command was acknowledged by the rocket.
 
 \begin{longtable}{@{}L{.13\linewidth}L{.38\linewidth}L{.42\linewidth}@{}}
 \toprule Mode & Source and controls & Persistence and transition behavior \\\midrule\endhead
-LIVE & Physical Zephyrus telemetry; ground commands require its board connection. Pointer manual controls require the pointer board independently. & Logging captures received data. Source changes close physical transports and clear displayed history. Reconnect and restart polling explicitly. \\
+LIVE & Physical Zephyrus telemetry; ground commands require its board connection. Pointer manual controls use an independent physical or virtual connection. & Logging captures received data. Source changes close physical transports and clear displayed history. Reconnect and restart polling explicitly. \\
 DEMO & One complete bundled GS1, GS2 or GS3 receiver log; synthetic video test pattern. Commands are simulated. & No physical serial transport. Can record a rehearsal or export the complete selected dataset. Returning to LIVE restores the prior reference and retains mission settings. \\
 REPLAY & Indexed session telemetry and recorded video, initially paused. Physical commands disabled. & Seek, step, change speed and export. Session files are read for replay; a new flight archive can preserve the session and displayed position. \\
 \bottomrule
@@ -313,6 +313,34 @@ loss stops host tracking; resume explicitly after correcting the condition.
 \statusnote{Stop tracking}{This stops new targets and removes an unsent queued
 target. A movement already commanded can continue. The old firmware has no
 motion-stop opcode, watchdog, measured-pose report or mechanical-homing contract.}
+
+\subsection{Virtual pointer connection and rehearsal}
+The pointer selector also offers \ui{Virtual antenna pointer} in LIVE.
+Alternatively, click \ui{Connect virtual pointer} on the antenna page.
+This creates an in-process simulator and needs no ground station or physical
+serial port. The connection, pose and banner explicitly identify simulated
+motion; rocket controls remain locked until the real ground station connects.
+
+Configure the mount under \ui{Mission > Configure > Antenna pointer}: WGS84
+latitude, longitude and ellipsoid altitude, plus \ui{Antenna location established}.
+Mission JSON and portable flight files retain the position. The physical-board
+tracking path continues using the frozen receiver GPS from \ui{Send to AntPtr}.
+
+Run OpenRocket or load a georeferenced, launch-relative ENU reference. Then use
+\ui{Follow trajectory} on the antenna page. Pause/resume, Rewind, a time slider
+and 0.25--4 times speed control an independent rehearsal clock. The gold target
+and purple antenna marker in Flight overview identify the simulated geometry;
+telemetry samples, flight counters and actual tracks are unchanged.
+
+Send, the four direction controls, ZERO and their original keyboard shortcuts
+actuate the simulated mount. Manual movement pauses playback. The displayed
+pose approaches its target at illustrative limits of 90 degrees/s in azimuth
+and 60 degrees/s in elevation. \ui{Hold virtual pointer} freezes the simulated
+motion and clock. These rates are visualization assumptions, not measured mount
+dynamics. Disconnect or a source-mode change closes the simulator. Editing the
+antenna location or replacing the reference stops rehearsal until an explicit
+restart. Connection and rehearsal state are not restored from a saved flight.
+\input{figures/virtual-pointer}
 
 \section{Rocket commands, power and recovery}\label{sec:rocket}
 \subsection{Telemetry subview}

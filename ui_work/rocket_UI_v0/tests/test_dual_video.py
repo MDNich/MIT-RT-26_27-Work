@@ -84,7 +84,7 @@ def test_choices_exclude_other_camera_and_connected_serial_aliases(qtbot, tmp_pa
         c.workers["telemetry"] = SimpleNamespace(device="/dev/cu.A")
         c.states["telemetry"] = "Connecting"
         update()
-        assert values(pointer) == ["/dev/cu.B"]
+        assert values(pointer) == ["/dev/cu.B", "virtual://antenna-pointer"]
         assert ground.currentData() == "/dev/cu.A"
         c.states["telemetry"] = "Connected"
         c.workers["pointer"] = SimpleNamespace(device="/dev/cu.B")
@@ -100,7 +100,8 @@ def test_choices_exclude_other_camera_and_connected_serial_aliases(qtbot, tmp_pa
         c.workers["pointer"] = None
         c.states["pointer"] = "Disconnected"
         update()
-        assert set(values(ground)) == set(values(pointer)) == {d["device"] for d in devices}
+        assert set(values(ground)) == {d["device"] for d in devices}
+        assert set(values(pointer)) == {d["device"] for d in devices} | {"virtual://antenna-pointer"}
 
         window.task_done("cameras", [("USB receiver", "0"), ("USB receiver", "1")])
         digital, analog = (window.video_widgets[n]["camera"] for n in ("digital", "analog"))

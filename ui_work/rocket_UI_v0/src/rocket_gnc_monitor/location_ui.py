@@ -5,7 +5,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QFormLayout,
-    QComboBox,
     QStackedWidget,
     QDoubleSpinBox,
     QLineEdit,
@@ -13,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 from openlocationcode import openlocationcode as olc
 from .location import Location, coordinates, decode_mgrs, decode_plus_code, encode_mgrs, encode_plus_code
+from .widgets import ComboBox as QComboBox
 
 
 class LaunchLocation(QWidget):

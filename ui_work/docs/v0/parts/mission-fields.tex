@@ -11,9 +11,10 @@
 \code{launch_site_name} & (empty) & Preset name, currently URRG or empty for Custom; up to 80 characters. \\
 \code{legacy_altitude} & unknown & unknown, ellipsoid, gps\_agl or barometric\_agl; selects trajectory height interpretation. \\
 \code{canard_count} & 4 & Number of UI canard slots, integer 0 to 16; four tabs are always added. \\
-\code{pointer_latitude} & 0.0 & Retained configuration field; not the current frozen legacy tracking origin. \\
-\code{pointer_longitude} & 0.0 & Retained configuration field; not the current frozen legacy tracking origin. \\
-\code{pointer_altitude} & 0.0 & Retained configuration field; legacy pointing uses ground height zero. \\
+\code{pointer_latitude} & 0.0 & Virtual antenna WGS84 latitude, degrees; physical tracking retains frozen receiver GPS. \\
+\code{pointer_longitude} & 0.0 & Virtual antenna WGS84 longitude, degrees. \\
+\code{pointer_altitude} & 0.0 & Virtual antenna WGS84 ellipsoid altitude, metres; physical legacy tracking retains height zero. \\
+\code{pointer_site_configured} & False & Boolean assertion that the antenna location is established; required for virtual trajectory tracking. \\
 \code{pointer_calibrated} & False & Retained assertion, always cleared by disk load and mode changes; not a manual-send prerequisite. \\
 \code{pointer_az_offset} & 0.0 & Retained offset field; not applied by current legacy manual/tracking dispatch. \\
 \code{pointer_el_offset} & 0.0 & Retained offset field; not applied by current legacy manual/tracking dispatch. \\

@@ -1,5 +1,14 @@
 # Implementation and acceptance status
 
+## September 21 Mac revision — virtual pointer and dropdown repair
+
+- Mission configuration includes an Antenna pointer tab with a persistent WGS84 location and an explicit location-established flag.
+- The virtual pointer connects independently in LIVE, decodes the legacy pointing/jog/ZERO commands, and animates an illustrative two-axis slew without a physical port.
+- Georeferenced OpenRocket references drive a separate rehearsal clock with play/pause, seek, rewind and speed controls. Reference ENU positions are transformed through ECEF into the antenna's local frame. The plot distinguishes the virtual target and mount from telemetry.
+- Manual input pauses rehearsal; Hold, mode/location/reference changes and disconnect stop simulation appropriately. Physical live tracking retains its legacy GPS workflow.
+- Mac dropdowns use a styled popup with widths measured after font/style application. Native Cocoa inspection covers mode, projection, Settings, location, serial and long camera labels in both themes.
+- **101 regression tests passed**; package verification includes virtual-pointer rehearsal. Windows has not been rebuilt for this revision.
+
 ## September 21 Mac revision — Digital and Analog video
 
 - Flight overview contains two independent USB camera/file inputs labeled Digital and Analog, each with start/stop, frame age, errors and a bounded frame queue.

@@ -20,7 +20,6 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QPushButton,
-    QComboBox,
     QFrame,
     QStackedWidget,
     QListWidget,
@@ -50,12 +49,13 @@ from .domain import Mission, finite, validate_wind, wind_from
 from .devices import ports, serial_device_key
 from .media import VIDEO_STREAMS, WIDTH, HEIGHT, camera_devices
 from .trajectory import Trajectory, weather_profile
-from .widgets import STYLE, COLORS, AttitudeView, MountView
+from .widgets import STYLE, COLORS, AttitudeView, MountView, ComboBox as QComboBox
 from .rocket_panel import RocketPanel
 from .zephyrus import legacy_values
 from .fonts import FONT_FAMILY, configure_fonts
 from .location_ui import LaunchLocation
 from .settings_ui import SettingsDialog
+from .virtual_pointer import VIRTUAL_POINTER_DEVICE
 
 
 def label(text, name=None):
@@ -147,6 +147,15 @@ class MissionDialog(QDialog):
                     ("video_offset", "Replay video offset, positive delays video (s)", (-600, 600, 2)),
                 ],
             ),
+            (
+                "Antenna pointer",
+                [
+                    ("pointer_site_configured", "Antenna location established", "bool"),
+                    ("pointer_latitude", "Antenna latitude (WGS84 degrees)", (-90, 90, 7)),
+                    ("pointer_longitude", "Antenna longitude (WGS84 degrees)", (-180, 180, 7)),
+                    ("pointer_altitude", "Antenna altitude, WGS84 ellipsoid (m)", (-1000, 10000, 2)),
+                ],
+            ),
         ]
         for page_title, fields in definitions:
             page = QWidget()
@@ -191,7 +200,7 @@ class MissionDialog(QDialog):
             scroll.setWidget(page)
             tabs.addTab(scroll, page_title)
         note = label(
-            "Set the launch origin for trajectory display. Antenna tracking uses Send to AntPtr on the antenna page.",
+            "Set the antenna location for virtual trajectory tracking. Physical-board tracking retains the ground GPS set with Send to AntPtr.",
             "muted",
         )
         note.setWordWrap(True)
@@ -587,6 +596,7 @@ class MainWindow(QMainWindow):
                 curve.setPen(pg.mkPen(COLORS[key], width=1.5))
         self.actual_marker.setSymbolBrush(COLORS["accent"])
         self.reference_marker.setSymbolBrush(COLORS["gold"])
+        self.virtual_mount_marker.setSymbolBrush(COLORS["violet"])
         self.mount.update()
         self.attitude.update()
 
@@ -768,6 +778,9 @@ class MainWindow(QMainWindow):
         self.reference_marker = self.trajectory_plot.plot(
             pen=None, symbol="d", symbolBrush=COLORS["gold"], symbolSize=8
         )
+        self.virtual_mount_marker = self.trajectory_plot.plot(
+            pen=None, symbol="t", symbolBrush=COLORS["violet"], symbolSize=11
+        )
         column.addWidget(self.trajectory_plot, 1)
         self.reference_label = label("No reference selected", "muted")
         self.reference_label.setWordWrap(True)
@@ -824,6 +837,47 @@ class MainWindow(QMainWindow):
         panel.setMaximumWidth(390)
         self.pointer_pose = label("MANUAL CONTROL", "eyebrow")
         column.addWidget(self.pointer_pose)
+        self.virtual_connect = button(
+            "Connect virtual pointer",
+            lambda: self.guard(lambda: self.controller.connect("pointer", VIRTUAL_POINTER_DEVICE)),
+        )
+        column.addWidget(self.virtual_connect)
+        self.virtual_panel = QWidget()
+        self.virtual_panel.setObjectName("transparent")
+        virtual = QVBoxLayout(self.virtual_panel)
+        virtual.setContentsMargins(0, 0, 0, 8)
+        self.virtual_location = label("Set the antenna location in Mission configuration", "muted")
+        self.virtual_location.setWordWrap(True)
+        virtual.addWidget(self.virtual_location)
+        virtual.addWidget(button("Configure antenna location…", self.edit_pointer_mission))
+        self.virtual_follow = button("Follow trajectory", self.toggle_virtual_trajectory, True)
+        virtual.addWidget(self.virtual_follow)
+        row = QHBoxLayout()
+        self.virtual_reset = button("Rewind", lambda: self.guard(self.rewind_virtual_trajectory))
+        row.addWidget(self.virtual_reset)
+        self.virtual_speed = QComboBox()
+        for rate in (0.25, 0.5, 1, 2, 4):
+            self.virtual_speed.addItem(f"{rate:g}×", rate)
+        self.virtual_speed.setCurrentIndex(2)
+        self.virtual_speed.currentIndexChanged.connect(self.set_virtual_speed)
+        row.addWidget(self.virtual_speed)
+        virtual.addLayout(row)
+        self.virtual_slider = QSlider(Qt.Orientation.Horizontal)
+        self.virtual_slider.setAccessibleName("Virtual trajectory time")
+        self.virtual_slider.sliderPressed.connect(lambda: self.controller.hold("Virtual trajectory paused"))
+        self.virtual_slider.valueChanged.connect(self.seek_virtual_slider)
+        self.virtual_slider.sliderReleased.connect(self.seek_virtual_slider)
+        virtual.addWidget(self.virtual_slider)
+        self.virtual_clock = label("Run OpenRocket or load a trajectory in Mission & wind", "muted")
+        self.virtual_clock.setWordWrap(True)
+        virtual.addWidget(self.virtual_clock)
+        self.virtual_pose = label("", "section")
+        self.virtual_pose.setWordWrap(True)
+        virtual.addWidget(self.virtual_pose)
+        description = label("SIMULATED POSE · illustrative slew: azimuth 90°/s, elevation 60°/s", "muted")
+        description.setWordWrap(True)
+        virtual.addWidget(description)
+        column.addWidget(self.virtual_panel)
         self.azimuth = QLineEdit("0.0")
         self.elevation = QLineEdit("0.0")
         for title, control in [("Azimuth (deg)", self.azimuth), ("Elevation (deg)", self.elevation)]:
@@ -857,7 +911,8 @@ class MainWindow(QMainWindow):
         self.pointer_status = label("Disconnected", "muted")
         self.pointer_status.setWordWrap(True)
         column.addWidget(self.pointer_status)
-        column.addWidget(label("Ground station GPS", "section"))
+        self.ground_gps_title = label("Ground station GPS", "section")
+        column.addWidget(self.ground_gps_title)
         self.ground_gps = label("Awaiting telemetry", "muted")
         self.ground_gps.setWordWrap(True)
         column.addWidget(self.ground_gps)
@@ -1110,12 +1165,16 @@ class MainWindow(QMainWindow):
             choices = [
                 d["device"] for d in self.serial_devices if serial_device_key(d["device"]) not in excluded
             ]
+            if role == "pointer":
+                choices.append(VIRTUAL_POINTER_DEVICE)
             if role in active and active[role] not in choices:
                 choices.insert(0, active[role])
             combo.blockSignals(True)
             combo.clear()
             for device in choices:
-                combo.addItem(device, device)
+                combo.addItem(
+                    "Virtual antenna pointer" if device == VIRTUAL_POINTER_DEVICE else device, device
+                )
             if not choices:
                 combo.addItem("No available serial devices", "")
             combo.setCurrentIndex(max(0, combo.findData(selected)))
@@ -1222,7 +1281,7 @@ class MainWindow(QMainWindow):
         self.last_ui = 0
         self.refresh()
 
-    def edit_mission(self):
+    def edit_mission(self, checked=False, *, pointer_tab=False):
         if self.controller.recorder:
             return self.guard(
                 lambda: (_ for _ in ()).throw(
@@ -1230,6 +1289,8 @@ class MainWindow(QMainWindow):
                 )
             )
         dialog = MissionDialog(self.controller.mission, self)
+        if pointer_tab:
+            dialog.findChild(QTabWidget).setCurrentIndex(1)
         if dialog.exec() == QDialog.DialogCode.Accepted:
             self.controller.hold("Mission configuration changed")
             self.controller.mission = dialog.mission
@@ -1238,6 +1299,89 @@ class MainWindow(QMainWindow):
             self.controller.log("Mission configuration changed", asdict(dialog.mission))
             self.wind_to_table()
             self.weather_msl.setValue(dialog.mission.altitude_msl)
+
+    def edit_pointer_mission(self):
+        self.edit_mission(pointer_tab=True)
+
+    def toggle_virtual_trajectory(self):
+        def toggle():
+            c = self.controller
+            if c.virtual_flight and c.virtual_flight.playing:
+                c.hold("Virtual trajectory paused")
+            else:
+                c.start_virtual_trajectory()
+                self.set_virtual_speed()
+
+        self.guard(toggle)
+
+    def rewind_virtual_trajectory(self):
+        flight = self.controller.prepare_virtual_flight()
+        self.controller.seek_virtual_trajectory(flight.start)
+        self.set_virtual_speed()
+
+    def set_virtual_speed(self):
+        if self.controller.virtual_flight:
+            self.controller.virtual_flight.speed = self.virtual_speed.currentData()
+
+    def seek_virtual_slider(self):
+        if not self.virtual_slider.isSliderDown():
+            self.guard(lambda: self.controller.seek_virtual_trajectory(self.virtual_slider.value() / 1000))
+
+    def refresh_virtual_pointer(self):
+        c = self.controller
+        worker, flight = c.virtual_pointer, c.virtual_flight
+        self.virtual_connect.setVisible(worker is None)
+        self.virtual_connect.setEnabled(c.mode == "LIVE" and not c.pointer_connected)
+        self.virtual_panel.setVisible(worker is not None)
+        for control in (self.ground_gps_title, self.ground_gps, self.freeze_gps, self.track_button):
+            control.setVisible(worker is None)
+        if worker is None:
+            return
+        m = c.mission
+        self.virtual_location.setText(
+            f"Antenna: {m.pointer_latitude:.7f}°, {m.pointer_longitude:.7f}°\n{m.pointer_altitude:.1f} m ellipsoid"
+            if m.pointer_site_configured
+            else "Set the antenna location in Mission configuration"
+        )
+        ready = bool(
+            c.pointer_connected
+            and m.pointer_site_configured
+            and c.reference
+            and not c.reference.manifest.get("synthetic")
+        )
+        self.virtual_follow.setEnabled(ready)
+        self.virtual_reset.setEnabled(ready)
+        self.virtual_speed.setEnabled(ready)
+        self.virtual_slider.setEnabled(ready)
+        self.virtual_follow.setText(
+            "Pause trajectory"
+            if flight and flight.playing
+            else "Replay trajectory"
+            if flight and flight.time >= flight.end
+            else "Resume trajectory"
+            if flight and flight.time > flight.start
+            else "Follow trajectory"
+        )
+        self.virtual_slider.blockSignals(True)
+        if c.reference:
+            self.virtual_slider.setRange(
+                round(c.reference.points[0, 0] * 1000), round(c.reference.points[-1, 0] * 1000)
+            )
+        if flight and not self.virtual_slider.isSliderDown():
+            self.virtual_slider.setValue(round(flight.time * 1000))
+        self.virtual_slider.blockSignals(False)
+        self.virtual_clock.setText(
+            f"{'PLAYING' if flight.playing else 'ENDED' if flight.time >= flight.end else 'PAUSED'} · "
+            f"{flight.time:.2f} / {flight.end:.2f} s\nRange {flight.distance:,.1f} m"
+            + (" · direction undefined at antenna origin" if flight.angles is None else "")
+            if flight
+            else "Ready to follow the reference trajectory"
+            if ready
+            else "Set the antenna location and run OpenRocket or load a trajectory in Mission & wind"
+        )
+        self.virtual_pose.setText(f"Simulated pose\nAZ {worker.pose[0]:.1f}° · EL {worker.pose[1]:.1f}°")
+        self.pointer_pose.setText("VIRTUAL ANTENNA POINTER")
+        self.mount.set_pose(*worker.pose)
 
     def load_mission(self):
         if self.controller.recorder:
@@ -1578,7 +1722,9 @@ class MainWindow(QMainWindow):
         self.connection_help.setText(detail)
         for key, role in [("ground", "telemetry"), ("pointer", "pointer")]:
             text = (
-                "SIMULATED"
+                "VIRTUAL / SIMULATED"
+                if role == "pointer" and c.virtual_pointer
+                else "SIMULATED"
                 if simulated
                 else "OFFLINE / REPLAY"
                 if c.mode == "REPLAY"
@@ -1588,7 +1734,7 @@ class MainWindow(QMainWindow):
                 "accent"
                 if text == "CONNECTED"
                 else "gold"
-                if text in {"CONNECTING", "SIMULATED"}
+                if text in {"CONNECTING", "SIMULATED", "VIRTUAL / SIMULATED"}
                 else "muted"
             )
             self.connection_tiles[key].setText("● " + text)
@@ -1613,7 +1759,9 @@ class MainWindow(QMainWindow):
             self.link_metrics[key].setText(str(c.stats[key]) if c.mode == "LIVE" else "—")
         self.radio_explanation.setText("Polling started" if c.polling else "Polling stopped")
         readiness = (
-            "Demo controls enabled"
+            "Virtual pointer connected" + (" · Ground station connected" if c.ground_connected else "")
+            if c.virtual_pointer
+            else "Demo controls enabled"
             if simulated
             else "Replay"
             if c.mode == "REPLAY"
@@ -1633,11 +1781,13 @@ class MainWindow(QMainWindow):
                 "" if live_ready else "Connect the ground station in Live mode to unlock this control."
             )
         for control in self.pointer_controls:
-            control.setEnabled(pointer_ready and not c.pointer_pending)
+            control.setEnabled(pointer_ready and (not c.pointer_pending or c.virtual_pointer is not None))
             control.setToolTip("" if pointer_ready else "Connect the antenna pointer.")
-        self.zero_button.setEnabled(pointer_ready and not c.pointer_pending)
+        self.zero_button.setEnabled(
+            pointer_ready and (not c.pointer_pending or c.virtual_pointer is not None)
+        )
         can_track = False
-        if pointer_ready and (simulated or (c.ground_connected and c.polling)):
+        if pointer_ready and not c.virtual_pointer and (simulated or (c.ground_connected and c.polling)):
             try:
                 c.tracking_target()
                 can_track = True
@@ -1646,7 +1796,10 @@ class MainWindow(QMainWindow):
         self.track_button.setText("Start tracking")
         self.track_button.setEnabled(can_track and not c.tracking and not c.pointer_pending)
         # Hold remains available to cancel queued work even while other controls relock.
-        self.hold_button.setEnabled(c.tracking or c.pointer_pending is not None)
+        self.hold_button.setEnabled(
+            c.tracking or c.pointer_pending is not None or c.virtual_pointer is not None
+        )
+        self.hold_button.setText("Hold virtual pointer" if c.virtual_pointer else "Stop tracking")
         self.poll_button.setEnabled(c.ground_connected)
         self.poll_button.setText("Stop Polling" if c.polling else "Start Polling")
         self.record_button.setEnabled(bool(c.recorder) or (c.mode != "REPLAY" and live_ready))
@@ -1682,7 +1835,9 @@ class MainWindow(QMainWindow):
                 self.legacy_actions[key].setEnabled(control.isEnabled())
                 self.legacy_actions[key].setText(control.text())
             for key in ("up", "down", "left", "right", "zero"):
-                self.legacy_actions[key].setEnabled(pointer_ready and not c.pointer_pending)
+                self.legacy_actions[key].setEnabled(
+                    pointer_ready and (not c.pointer_pending or c.virtual_pointer is not None)
+                )
         self.align_time_button.setEnabled(c.latest is not None and (c.mode == "REPLAY" or live_ready))
         for control in [self.play, self.step_button, self.replay_slider, self.speed]:
             control.setEnabled(c.mode == "REPLAY" and c.reader is not None)
@@ -1722,7 +1877,9 @@ class MainWindow(QMainWindow):
         self.update_camera_choices()
         for role, (combo, action, status) in self.port_widgets.items():
             active = c.states[role] in {"Connected", "Connecting"}
-            status.setText(c.states[role])
+            status.setText(
+                "Virtual / simulated" if role == "pointer" and c.virtual_pointer else c.states[role]
+            )
             status.setStyleSheet("color: " + COLORS["accent" if c.states[role] == "Connected" else "muted"])
             combo.setEnabled(c.mode == "LIVE" and not active)
             action.setEnabled(c.mode == "LIVE" and not active and bool(combo.currentData()))
@@ -1751,6 +1908,8 @@ class MainWindow(QMainWindow):
             issues.append("REPLAY · physical pointer disabled")
         else:
             issues.append("LIVE · " + (s.phase if s else "awaiting telemetry"))
+            if c.virtual_pointer:
+                issues.append("VIRTUAL POINTER · SIMULATED MOTION")
             if not c.ground_connected:
                 issues.append("GROUND STATION DISCONNECTED")
         if (c.mode != "LIVE" or c.polling) and (
@@ -1795,6 +1954,7 @@ class MainWindow(QMainWindow):
             self.pointer_pose.setText("REPLAY")
             if not c.pointer_sent:
                 self.mount.set_pose(0, 0)
+        self.refresh_virtual_pointer()
         for stream, channel in c.video_streams.items():
             widgets = self.video_widgets[stream]
             worker = channel.worker
@@ -1901,6 +2061,7 @@ class MainWindow(QMainWindow):
             c.latest.utc if c.latest else None,
             c.flight_zero,
             id(c.reference),
+            (id(c.virtual_flight), c.virtual_flight.time) if c.virtual_flight else None,
             self.view.currentIndex(),
         )
         if key == self.last_sample_key and not force:
@@ -1936,19 +2097,27 @@ class MainWindow(QMainWindow):
         self.actual_curve.setData(x, y)
         self.actual_marker.setData(x[-1:] if len(x) else [], y[-1:] if len(y) else [])
         self.trajectory_legend.setVisible(c.reference is not None)
+        self.virtual_mount_marker.setData([], [])
         if c.reference:
             reference = c.reference
             x, y = project(reference.points[:, 1:])
             self.reference_curve.setData(x, y)
             self.altitude_reference.setData(reference.points[:, 0], reference.points[:, 3])
             mark = reference.at(c.latest.t - c.flight_zero) if c.latest and c.time_aligned else None
+            virtual = c.virtual_flight if c.virtual_pointer else None
+            if virtual and virtual.reference is reference:
+                mark = virtual.position
+                px, py = project([virtual.mount_position])
+                self.virtual_mount_marker.setData(px, py)
             x, y = project([mark] if mark else [])
             self.reference_marker.setData(x, y)
             text = reference.manifest.get("name", "Reference")
-            if c.latest and c.latest.enu and mark:
+            if virtual and virtual.reference is reference:
+                text += f" · VIRTUAL {virtual.time:.2f} s · gold: target · purple: antenna"
+            if c.latest and c.latest.enu and mark and not virtual:
                 residual = np.linalg.norm(np.asarray(c.latest.enu) - np.asarray(mark))
                 text += f" · same-time position residual {residual:.1f} m"
-            if not c.time_aligned:
+            if not c.time_aligned and not virtual:
                 text += " · flight time not aligned"
             self.reference_label.setText(text)
         else:

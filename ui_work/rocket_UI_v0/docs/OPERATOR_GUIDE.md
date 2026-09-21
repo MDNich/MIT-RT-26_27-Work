@@ -8,6 +8,17 @@ Launch opens LIVE on the Control panel, with no automatic serial connection or c
 
 Connect each board independently at 115200 baud. Connecting the ground board opens its port; click **Start Polling** to receive telemetry. **Stop Polling** pauses reception while leaving the serial port and rocket commands available. **Start Logging** creates a session immediately. Ground commands/logging require the ground board; manual pointer controls require the pointer board independently. The control panel distinguishes connected/polling stopped, waiting, live reception, and stale reception.
 
+## Virtual antenna pointer and trajectory rehearsal
+
+1. Open **Mission → Configure… → Antenna pointer**. Enter the mount's WGS84 latitude, longitude and ellipsoid altitude, then check **Antenna location established** and save. The position persists in mission JSON and portable flight files.
+2. In **Mission & wind**, run OpenRocket or import a georeferenced, launch-relative ENU trajectory. The reference's stored origin is used for tracking; the antenna may be offset from the launch site.
+3. Stay in **LIVE**. Choose **Virtual antenna pointer** in the pointer connection dropdown and click **Connect**, or use **Connect virtual pointer** on the Antenna pointer page. No ground station is needed.
+4. Use Send, UP/DOWN/LEFT/RIGHT and ZERO to actuate the simulated mount. The original keyboard shortcuts work. The displayed pose slews toward the target at illustrative rates of 90°/s azimuth and 60°/s elevation.
+5. Choose **Follow trajectory**. Pause/resume, Rewind, the time slider and 0.25×–4× speed control the rehearsal. Manual movement pauses playback. **Hold virtual pointer** freezes the simulated motion and clock. The Flight overview shows the reference with a gold virtual target and purple antenna marker, separately from telemetry.
+6. Disconnect the virtual device when finished. Changing source mode closes it. Changing the antenna location or reference stops rehearsal and requires an explicit restart.
+
+The connection, pose and banner are labeled **VIRTUAL / SIMULATED**. Rehearsal never opens a serial port, generates telemetry or unlocks ground-station/rocket controls. Its kinematics illustrate motion, not calibrated hardware dynamics. At a coincident antenna/target position the direction is undefined; at exact zenith it retains the previous azimuth. Physical pointer tracking keeps the legacy **Send to AntPtr** ground-GPS workflow. Simulation playback/connection state is temporary and is not restored when loading a flight.
+
 ## Global settings
 
 Open **Rocket GNC Monitor → Settings…** or press **⌘,** on Mac. On Windows, use **File → Settings…** or **Ctrl+,**. Settings are available in every mode, including disconnected LIVE.

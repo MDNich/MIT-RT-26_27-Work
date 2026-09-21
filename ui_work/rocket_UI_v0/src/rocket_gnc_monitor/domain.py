@@ -61,6 +61,7 @@ class Mission:
     pointer_latitude: float = 0.0
     pointer_longitude: float = 0.0
     pointer_altitude: float = 0.0
+    pointer_site_configured: bool = False
     pointer_calibrated: bool = False
     pointer_az_offset: float = 0.0
     pointer_el_offset: float = 0.0
@@ -84,6 +85,8 @@ class Mission:
     low_battery: float = 9.0
 
     def validate(self):
+        if type(self.pointer_site_configured) is not bool:
+            raise ValueError("Antenna location established must be true or false")
         if not isinstance(self.launch_site_name, str) or len(self.launch_site_name) > 80:
             raise ValueError("Invalid launch site name")
         if self.launch_location_format not in {"latlon", "mgrs", "pluscode"}:

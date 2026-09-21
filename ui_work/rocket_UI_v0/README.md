@@ -24,6 +24,8 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 
 Open **Settings…** with **⌘,** (Windows: **Ctrl+,**) to select an OpenRocket JAR, simulation time limit, recording folder and display theme. Preferences persist on this computer. **Use bundled** restores the included engine.
 
+For hardware-free rehearsal, set **Mission → Configure → Antenna pointer**, connect **Virtual antenna pointer**, then use **Follow trajectory** after running OpenRocket or loading a reference. Manual controls and the original pointer shortcuts actuate the simulated mount.
+
 ## Develop and build
 
 From this folder, with Python 3.12, GNU Make and JDK 17+:
@@ -50,6 +52,6 @@ Original planning baseline: [development plan](DEVELOPMENT_PLAN.md), [antenna de
 
 ## Built artifacts and validation
 
-The September 21 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. The full Mac regression run passed 94 tests, including Settings persistence/shortcuts, local and release engine selection, download failure handling, both feeds, recording/replay and portable flights. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
+The September 21 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. The full Mac regression run passed 101 tests, including virtual-pointer motion/tracking, profile persistence, physical-transport isolation, Settings persistence/shortcuts, local and release engine selection, download failure handling, both feeds, recording/replay and portable flights. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
 
 The Windows ZIP remains the September 18 build (30 tests passed, one POSIX-only test skipped, in the Windows 11 ARM VM under x64 emulation). It has **not** been rebuilt for this revision; current work and validation target Mac only.

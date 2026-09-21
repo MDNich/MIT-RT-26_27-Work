@@ -14,6 +14,11 @@ def main():
     startup.add_argument("--smoke-test", action="store_true", help="Exercise recorded demo playback and exit")
     startup.add_argument("--startup-smoke", action="store_true", help="Verify locked Live startup and exit")
     startup.add_argument(
+        "--virtual-pointer-smoke",
+        type=Path,
+        help="Rehearse a georeferenced trajectory with the virtual pointer and exit",
+    )
+    startup.add_argument(
         "--flight-smoke", action="store_true", help="Verify portable flight files and the URRG preset"
     )
     parser.add_argument(
@@ -61,6 +66,61 @@ def main():
         window.controller.switch_mode("DEMO")
         window.pages.setCurrentIndex(1)
     window.show()
+    if args.virtual_pointer_smoke:
+        from .trajectory import Trajectory
+        from .virtual_pointer import VIRTUAL_POINTER_DEVICE
+
+        c = window.controller
+        c.timer.stop()
+        c.reference = Trajectory.load(args.virtual_pointer_smoke)
+        lat, lon, altitude = c.reference.manifest["origin"]
+        c.mission.pointer_latitude = lat - 0.001
+        c.mission.pointer_longitude = lon - 0.001
+        c.mission.pointer_altitude = altitude
+        c.mission.pointer_site_configured = True
+        c.connect("pointer", VIRTUAL_POINTER_DEVICE)
+        c.tick()
+        c.manual_point(90, 30)
+        c.tick()
+        c.virtual_pointer.advance(2)
+        assert c.virtual_pointer.pose == (90, 30)
+        c.start_virtual_trajectory()
+        c.advance_virtual_flight(1, 1e20)
+        assert c.virtual_flight.time > c.virtual_flight.start
+        c.seek_virtual_trajectory((c.virtual_flight.start + c.virtual_flight.end) / 2)
+        c.tick()
+        c.virtual_pointer.advance(4)
+        window.pages.setCurrentIndex(2)
+        window.last_ui = 0
+        window.refresh()
+        app.processEvents()
+        report = dict(
+            mode=c.mode,
+            virtual_connected=bool(c.virtual_pointer),
+            physical_ports_open=any(
+                worker and worker is not c.virtual_pointer for worker in c.workers.values()
+            ),
+            samples=len(c.history),
+            telemetry_locked=not window.record_button.isEnabled(),
+            pose=c.virtual_pointer.pose,
+            target=c.virtual_pointer.target,
+            trajectory_time=c.virtual_flight.time,
+            range_m=c.virtual_flight.distance,
+            paused=not c.virtual_flight.playing,
+            model_label=c.reference.manifest.get("name"),
+        )
+        (data / "virtual-pointer-smoke-report.json").write_text(json.dumps(report, indent=2))
+        if args.screenshot:
+            args.screenshot.parent.mkdir(parents=True, exist_ok=True)
+            window.grab().save(str(args.screenshot))
+        c.disconnect("pointer")
+        assert c.virtual_pointer is None and c.virtual_flight is None
+        window.close()
+        return (
+            0
+            if report["virtual_connected"] and not report["physical_ports_open"] and report["samples"] == 0
+            else 1
+        )
     if args.flight_smoke:
         from .flight import save_flight, load_flight
         from .demo import DemoFlight

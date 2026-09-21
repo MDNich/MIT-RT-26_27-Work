@@ -1,6 +1,6 @@
 # Build and distribution
 
-September 21 revision: Mac only, including Settings, bundled OpenRocket-MIT v6.2, and independent Digital and Analog USB video. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
+September 21 revision: Mac only, including virtual pointer rehearsal, corrected native dropdown sizing, Settings, bundled OpenRocket-MIT v6.2, and Digital/Analog USB video. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
 
 Use Python 3.12–3.13 (64 bit; x64 Python on Windows), JDK 17+ (`javac` and `jar` on PATH), and GNU Make on the build machine. Build Mac arm64 on Apple Silicon, Mac x86_64 on Intel, and Windows x64 on Windows x64. PyInstaller does not cross-compile. Production users need only the resulting complete package. Lucida Grande is bundled in `resources/fonts/LucidaGrande.ttc` and registered through Qt on Mac and Windows. Preserve the font resource and its provenance notice. The MGRS native library and Open Location Code dependency are bundled for offline location conversion.
 
@@ -76,3 +76,5 @@ References: [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html)
 The tested Windows VM used its existing Python 3.13 installation; for setup there, use `make setup PYTHON="py -3.13"`. All subsequent targets use the isolated `.venv`. If building offline, set `PIP_NO_INDEX=1` and `PIP_FIND_LINKS` to a staged wheel folder, including the locked packages plus `hatchling` and `editables` build dependencies. Stage a checksum-verified **Windows x64** JRE in `vendor/java` with its `java-runtime.json`, and make a JDK available on the build process PATH. The VM build and package validation did not require internet access.
 
 The Windows tests use the native Qt Windows platform. Qt's headless `offscreen` platform on Windows needs an explicit font directory and is not equivalent to checking the native window. Mac/Linux CI may use the documented offscreen setting.
+
+`--virtual-pointer-smoke /path/to/trajectory.csv` exercises virtual connection, manual actuation, trajectory playback/seek, and disconnect with no physical serial worker. `make verify-package` runs it against the packaged OpenRocket example output.

@@ -5,7 +5,7 @@ import math
 import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt
 from PySide6.QtGui import QColor, QFont, QPainter, QPen, QPolygonF, QRegion
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QComboBox, QStyle
 from .fonts import FONT_FAMILY
 
 COLORS = dict(
@@ -53,6 +53,8 @@ QPushButton#primary { background: #79d4c8; color: #091715; border-color: #79d4c8
 QPushButton#primary:disabled { background: #1a293a; color: #617287; border-color: #263344; }
 QPushButton#danger { color: #ef9294; }
 QComboBox, QLineEdit, QSpinBox, QDoubleSpinBox, QDateTimeEdit { background: #172333; border: 1px solid #34485e; border-radius: 5px; padding: 6px; selection-background-color: #2f716e; }
+/* Use the styled list: macOS menu popups mismeasure the checkmark gutter with this font and stylesheet. */
+QComboBox { combobox-popup: 0; }
 QComboBox:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled { color: #617287; border-color: #263344; }
 QComboBox QAbstractItemView { background: #172333; selection-background-color: #2f716e; }
 QListWidget#navigation { background: #0e1722; border: none; padding: 8px; outline: none; }
@@ -76,6 +78,24 @@ QToolTip { background: #203447; color: #e8eff7; border: 1px solid #52657a; paddi
 QStatusBar { background: #121d2a; color: #98abc0; }
 QSplitter::handle { background: #0b111a; }
 """
+
+
+class ComboBox(QComboBox):
+    """Measure the polished popup rows, including padding and a scrollbar gutter."""
+
+    def showPopup(self):
+        view = self.view()
+        view.ensurePolished()
+        width = max(
+            self.width(),
+            view.sizeHintForColumn(self.modelColumn())
+            + 16
+            + 2 * view.frameWidth()
+            + view.style().pixelMetric(QStyle.PixelMetric.PM_ScrollBarExtent, None, view),
+        )
+        screen = self.screen().availableGeometry()
+        view.setMinimumWidth(min(width, max(1, screen.width() - 24)))
+        super().showPopup()
 
 
 class AttitudeView(QWidget):

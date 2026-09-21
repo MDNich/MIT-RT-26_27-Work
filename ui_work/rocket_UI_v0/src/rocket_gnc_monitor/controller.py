@@ -19,6 +19,7 @@ from .trajectory import Trajectory, SimulationJob
 from .media import VIDEO_STREAMS, VideoWorker
 from .zephyrus import rocket_packet, legacy_values
 from .settings import AppSettings
+from .virtual_pointer import VirtualPointer, VirtualFlight, VIRTUAL_POINTER_DEVICE
 
 
 @dataclass
@@ -94,6 +95,9 @@ class Controller(QObject):
         self.rocket_commands = {}
         self.frozen_ground = None
         self.pointer_status = "Disconnected"
+        self.virtual_flight = None
+        self.virtual_context = None
+        self.last_virtual_command = 0.0
         self.tracking = False
         self.last_tracking = 0
         self.demo_time = 0
@@ -151,6 +155,73 @@ class Controller(QObject):
             and self.workers["pointer"] is not None
             and self.states["pointer"] == "Connected"
         )
+
+    @property
+    def virtual_pointer(self):
+        worker = self.workers["pointer"]
+        return worker if isinstance(worker, VirtualPointer) else None
+
+    def virtual_flight_context(self):
+        m = self.mission
+        return (
+            id(self.reference),
+            m.pointer_site_configured,
+            m.pointer_latitude,
+            m.pointer_longitude,
+            m.pointer_altitude,
+        )
+
+    def prepare_virtual_flight(self):
+        if not self.pointer_connected or not self.virtual_pointer:
+            raise ValueError("Connect the Virtual antenna pointer first")
+        context = self.virtual_flight_context()
+        if self.virtual_flight is None or context != self.virtual_context:
+            flight = VirtualFlight(self.reference, self.mission)
+            self.hold("Virtual trajectory loaded")
+            self.virtual_flight, self.virtual_context = flight, context
+        return self.virtual_flight
+
+    def start_virtual_trajectory(self):
+        flight = self.prepare_virtual_flight()
+        self.hold("Virtual trajectory selected")
+        if flight.time >= flight.end:
+            flight.seek(flight.start)
+        flight.playing = True
+        self.last_virtual_command = 0.0
+        self.last_tick = time.monotonic()
+        self.log("VIRTUAL · trajectory playback started", {"origin": flight.origin, "time": flight.time})
+        self.changed.emit()
+
+    def seek_virtual_trajectory(self, seconds):
+        flight = self.prepare_virtual_flight()
+        self.hold("Virtual trajectory paused")
+        flight.seek(seconds)
+        self.send_virtual_target()
+        self.changed.emit()
+
+    def send_virtual_target(self):
+        # A reference trajectory must never reach the physical serial transport.
+        if not self.virtual_pointer or not self.pointer_connected:
+            raise ValueError("Trajectory rehearsal requires the virtual pointer connection")
+        flight = self.virtual_flight
+        if flight and flight.angles and not self.pointer_pending:
+            self.dispatch_pointer(pointer_packet(*flight.angles), flight.angles, "virtual trajectory")
+
+    def advance_virtual_flight(self, seconds, now):
+        flight = self.virtual_flight
+        if flight is None or not self.virtual_pointer:
+            return
+        if self.virtual_context != self.virtual_flight_context():
+            self.hold("Mission location or reference changed; restart virtual playback")
+            self.virtual_flight = self.virtual_context = None
+            return
+        if flight.playing:
+            flight.advance(seconds)
+            if now - self.last_virtual_command >= 0.2 or not flight.playing:
+                self.last_virtual_command = now
+                self.send_virtual_target()
+            if not flight.playing:
+                self.log("VIRTUAL · trajectory playback completed")
 
     def set_polling(self, enabled):
         self.require_ground_station()
@@ -302,6 +373,7 @@ class Controller(QObject):
         self.states[role] = "Disconnected"
         if role == "pointer":
             self.tracking = False
+            self.virtual_flight = self.virtual_context = None
             self.pointer_pending = self.pointer_sent = None
             self.dispatched_commands.clear()
             self.command_names.clear()
@@ -321,6 +393,8 @@ class Controller(QObject):
             raise ValueError("Physical connections require LIVE mode")
         if not device:
             raise ValueError("Choose a serial device")
+        if device == VIRTUAL_POINTER_DEVICE and role != "pointer":
+            raise ValueError("The virtual device is an antenna pointer, not a ground station")
         for other, worker in self.workers.items():
             if other != role and worker and serial_device_key(worker.device) == serial_device_key(device):
                 raise ValueError("One serial device cannot serve both board roles")
@@ -334,7 +408,11 @@ class Controller(QObject):
             if worker and worker.generation == token and self.recorder:
                 self.recorder.raw(source, data)
 
-        self.workers[role] = SerialWorker(role, device, token, self.enqueue, raw)
+        self.workers[role] = (
+            VirtualPointer(token, self.enqueue, raw)
+            if device == VIRTUAL_POINTER_DEVICE
+            else SerialWorker(role, device, token, self.enqueue, raw)
+        )
         self.log(f"Connecting {role}: {device}")
 
     def enqueue(self, generation, role, kind, data):
@@ -408,7 +486,15 @@ class Controller(QObject):
         self.command_names[command_id] = command
         self.pointer_pending = (command_id, angles)
         self.pointer_status = "Sending " + command
-        self.log("Pointer command requested", {"id": command_id, "command": command, "angles": angles})
+        self.log(
+            "Pointer command requested",
+            {
+                "id": command_id,
+                "command": command,
+                "angles": angles,
+                "source": "VIRTUAL" if self.virtual_pointer else "LIVE",
+            },
+        )
 
     def send_rocket(self, command, value=None):
         if self.mode == "REPLAY":
@@ -453,10 +539,14 @@ class Controller(QObject):
         self.dispatch_pointer(packet, (azimuth, elevation), "manual azimuth/elevation")
 
     def reference_zero(self):
+        if self.virtual_pointer:
+            self.hold("Virtual ZERO")
         self.dispatch_pointer(pointer_packet(opcode=5), (0.0, 0.0), "ZERO")
 
     def hold(self, reason="Operator hold"):
         self.tracking = False
+        if self.virtual_flight:
+            self.virtual_flight.playing = False
         worker = self.workers.get("pointer")
         if worker:
             try:
@@ -465,11 +555,15 @@ class Controller(QObject):
                 self.command_names.pop(command_id, None)
             except queue.Empty:
                 pass
+        if self.virtual_pointer:
+            self.virtual_pointer.hold()
         self.pointer_pending = None
         self.pointer_status = f"Tracking off · {reason}"
         self.log(self.pointer_status)
 
     def jog(self, azimuth_delta=0, elevation_delta=0):
+        if self.virtual_pointer:
+            self.hold("Virtual manual movement")
         # These are the same firmware opcodes used by pointer.py in the old UI.
         commands = {(0, 5): (1, "UP"), (0, -5): (2, "DOWN"), (-5, 0): (3, "LEFT"), (5, 0): (4, "RIGHT")}
         try:
@@ -483,9 +577,13 @@ class Controller(QObject):
         self.dispatch_pointer(pointer_packet(opcode=opcode), angles, name)
 
     def manual_point(self, azimuth, elevation):
+        if self.virtual_pointer:
+            self.hold("Virtual manual movement")
         self.point(azimuth, elevation)
 
     def start_tracking(self):
+        if self.virtual_pointer:
+            raise ValueError("Use Follow trajectory for the virtual antenna pointer")
         if self.mode == "REPLAY":
             raise ValueError("Replay cannot drive tracking")
         if self.mode == "LIVE":
@@ -888,6 +986,8 @@ class Controller(QObject):
     def tick(self):
         now = time.monotonic()
         dt, self.last_tick = min(now - self.last_tick, 0.3), now
+        if self.virtual_pointer:
+            self.virtual_pointer.advance(dt)
         for _ in range(2000):
             try:
                 generation, role, kind, data = self.messages.get_nowait()
@@ -903,7 +1003,9 @@ class Controller(QObject):
             elif kind == "connected":
                 self.states[role] = "Connected"
                 if role == "pointer":
-                    self.pointer_status = "Connected"
+                    self.pointer_status = "Virtual pointer connected" if self.virtual_pointer else "Connected"
+                    if self.virtual_pointer:
+                        self.pointer_sent = self.virtual_pointer.target
                 self.log(f"{role.title()} connected")
             elif kind in {"error", "disconnected"}:
                 self.disconnect(role)
@@ -929,13 +1031,22 @@ class Controller(QObject):
                     self.log("Rocket command expired; not sent", command)
             elif kind == "sent" and data in self.dispatched_commands:
                 self.pointer_sent = self.dispatched_commands.pop(data)
+                if self.virtual_pointer:
+                    self.pointer_sent = self.virtual_pointer.target
                 self.pointer_last_command = self.command_names.pop(data, "azimuth/elevation")
                 if self.pointer_pending and data == self.pointer_pending[0]:
                     self.pointer_pending = None
-                    self.pointer_status = "Sent " + self.pointer_last_command
+                    self.pointer_status = (
+                        "VIRTUAL · " if self.virtual_pointer else "Sent "
+                    ) + self.pointer_last_command
                 self.log(
                     "Pointer command sent",
-                    {"id": data, "angles": self.pointer_sent, "command": self.pointer_last_command},
+                    {
+                        "id": data,
+                        "angles": self.pointer_sent,
+                        "command": self.pointer_last_command,
+                        "source": "VIRTUAL" if self.virtual_pointer else "LIVE",
+                    },
                 )
             elif kind == "expired":
                 self.dispatched_commands.pop(data, None)
@@ -960,6 +1071,7 @@ class Controller(QObject):
             elif now - self.last_replay_video >= 0.2:
                 self.last_replay_video = now
                 self.replay_video(force=False)
+        self.advance_virtual_flight(dt, now)
         if self.tracking and now - self.last_tracking >= 0.2:
             self.last_tracking = now
             try:

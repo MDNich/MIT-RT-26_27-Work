@@ -58,6 +58,7 @@ maintenance anchors.
 \src{src/rocket_gnc_monitor/recording.py} & Asynchronous \code{SessionRecorder}, indexed read-only \code{SessionReader}, raw capture CRC reader. \\
 \src{src/rocket_gnc_monitor/flight.py} & Portable archive snapshot, atomic save, validated extraction and \code{LoadedFlight}. \\
 \src{src/rocket_gnc_monitor/media.py} & FFmpeg location, camera discovery, process arguments, frame queue, recording and orderly stop. \\
+\src{src/rocket_gnc_monitor/virtual_pointer.py} & Port-free legacy packet simulator, bounded slew model and independent georeferenced \code{VirtualFlight} playback. \\
 \src{src/rocket_gnc_monitor/trajectory.py} & \code{Trajectory}, online wind normalization, motor resources and isolated \code{SimulationJob}. \\
 \src{src/rocket_gnc_monitor/__init__.py} & Package version identifier. \\
 \src{simulation_bridge/src/RocketBridge.java} & Fork-specific OpenRocket loading, motor resolution, nominal options, trajectory/error publication and private preferences. \\
@@ -726,6 +727,41 @@ full orbit and zoom, feed/boresight collinearity, and the compass tests.
 Hardware behavior belongs in the controller/protocol layers and requires
 separate regression evidence.
 
+\section{Virtual pointer transport and trajectory geometry}
+\code{VirtualPointer} satisfies the pointer worker's command interface without
+creating a serial object or worker thread. It accepts the same 11-byte packets,
+validates framing/checksum/opcode, queues one command and reports dispatch to the
+controller on the next tick. Absolute targets, four 5-degree jogs and ZERO update
+the simulated target. The model normalizes azimuth, bounds elevation to
+$[-90,90]$ degrees and advances along the shortest azimuth route with bounded
+angular speeds. Virtual bytes use the separate \code{virtual_pointer_tx} capture
+channel; command events include a \code{VIRTUAL} source.
+
+\code{VirtualFlight} owns its reference, independent clock, speed and antenna
+origin. For a launch-frame ENU point $p_l$, ECEF origins $o_l,o_a$ and ECEF-to-ENU
+rotation matrices $R_l,R_a$, the antenna-frame vector is
+\[
+p_a=R_a(o_l-o_a)+R_a R_l^{\mathsf T}p_l.
+\]
+Azimuth is $\operatorname{atan2}(E,N)$ modulo $360$ degrees; elevation is
+$\operatorname{atan2}(U,\sqrt{E^2+N^2})$. The trajectory's stored origin is
+authoritative, and both origins use ellipsoid height. Linear interpolation
+uses the existing trajectory contract. Coincident positions have no direction;
+exact zenith retains the preceding azimuth.
+
+\code{Controller} snapshots reference identity and antenna coordinates for each
+rehearsal. A mismatch stops motion and clears the old rehearsal. The follow path
+requires an actual \code{VirtualPointer} instance and cannot dispatch through a
+physical worker. Manual actions cancel virtual playback; source changes close
+both connection types. Rehearsal never populates the telemetry history or track,
+and does not satisfy the ground-station readiness predicate.
+
+\code{widgets.ComboBox} measures polished popup rows before opening, accounting
+for frame, padding and scrollbar space while bounding width to the screen.
+The stylesheet selects a list popup instead of the macOS menu-style checkmark
+delegate. This avoids the clipped mode/camera labels observed with Lucida Grande.
+The shared widget serves Settings, mission location and workspace selectors.
+
 \section{Settings storage and application}
 \code{AppSettings} is a frozen dataclass, independent of \code{Mission}.
 Schema version 1 contains \code{openrocket_jar} (empty means bundled),
@@ -888,6 +924,7 @@ licenses or credentials.
 \code{test_media.py} & FFmpeg arguments, capture/recording lifecycle and available runtime checks. \\
 \code{test_ui.py} & Workspace rendering, legacy values/readiness, orbit independence, compass chirality and pseudo-terminal radio status. \\
 \code{test_simulation.py} & Bundled N8406 identity, real engine trajectory, named missing-motor and unpowered errors. Engine-dependent cases skip if runtime/bridge is absent. \\
+\code{test_virtual_pointer.py} & Packet actuation, frame geometry, playback, manual takeover, physical isolation, profile/flight persistence and Qt controls. \\
 \code{test_settings.py} & Shortcut, persistence, cancel/defaults, invalid settings, recording destination and per-job snapshots. \\
 \code{test_build.py} & Runtime architecture; latest/pinned release selection, checksums, local JARs and failure preservation. \\
 \bottomrule
@@ -939,6 +976,7 @@ CLI smoke entry points are:
 \code{--demo} & Explicit recorded demo startup. \\
 \code{--demo-station GS1|GS2|GS3} & Receiver selection; default GS2. \\
 \code{--data-dir PATH} & Override per-user application data directory. \\
+\code{--virtual-pointer-smoke CSV} & Exercise virtual connection, actuation, reference playback/seek and disconnect without physical transport. \\
 \code{--startup-smoke} & Check disconnected/locked LIVE startup and exit. \\
 \code{--smoke-test} & Exercise recorded demo and synthetic video, write report, exit. \\
 \code{--flight-smoke} & Save/load planning and GS2 flights, URRG/assets/reference, paused isolated replay. \\
@@ -948,7 +986,7 @@ CLI smoke entry points are:
 \end{longtable}
 
 \subsection{Recorded results and their limits}
-The September 21 Settings/engine revision passed 94 Mac regression tests. Settings persistence, shortcut handling, bundled/custom simulations and local/latest/pinned build paths are covered. The earlier dual-video revision passed 77 tests. New checks
+The current virtual-pointer revision passed 101 Mac regression tests. Native Cocoa popup checks cover both themes and long device names. The previous Settings/engine revision passed 94 tests. Settings persistence, shortcut handling, bundled/custom simulations and local/latest/pinned build paths are covered. The earlier dual-video revision passed 77 tests. New checks
 cover camera reservations during open/close, reciprocal camera and serial
 dropdown exclusion, independent stream failure and frames, old single-video
 replay, two-feed flight archives and compact layouts. The refreshed package

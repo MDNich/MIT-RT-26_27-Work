@@ -11,7 +11,7 @@
 \section*{Document control and reading guide}
 \addcontentsline{toc}{section}{Document control and reading guide}
 This report documents the implemented desktop application in
-\code{ui_work/rocket_UI_v0}, including global Settings, bundled OpenRocket-MIT v6.2, Digital/Analog USB video, the portable flight-file workflow and
+\code{ui_work/rocket_UI_v0}, including virtual pointer rehearsal, global Settings, bundled OpenRocket-MIT v6.2, Digital/Analog USB video, the portable flight-file workflow and
 URRG launch-site preset. Part I explains the operator interface and its
 observable behavior. Part II describes the software architecture, contracts,
 source files, build process and extension points. Appendices provide configuration,
@@ -22,8 +22,8 @@ sample and file-field references.
 Documentation date & 21 September 2026. \\
 Software identity & Rocket GNC Monitor, Python package version 0.1.0, application generation v0. \\
 Implementation reviewed & Source files and checked-in resources under \code{rocket_UI_v0}; exact file hashes are recorded in \code{evidence/source-manifest.json}. \\
-Current distribution & macOS arm64 app and DMG, rebuilt for Settings, OpenRocket-MIT v6.2, Digital/Analog video, flight save/load and URRG. Windows makefiles remain available; the Windows ZIP predates these changes. \\
-Validation evidence & 94-test Mac regression run for Settings, engine selection and dual video and packaged startup/demo/flight/OpenRocket verification. Historical September 20 results are retained separately. Physical dual-camera acceptance remains outstanding. \\
+Current distribution & macOS arm64 app and DMG, rebuilt for virtual pointer rehearsal, dropdown sizing, Settings, OpenRocket-MIT v6.2, Digital/Analog video, flight save/load and URRG. Windows makefiles remain available; the Windows ZIP predates these changes. \\
+Validation evidence & 101-test Mac regression run for virtual pointer, Settings, engine selection and dual video and packaged startup/demo/flight/OpenRocket verification. Historical September 20 results are retained separately. Physical dual-camera acceptance remains outstanding. \\
 Report style & KOMA-Script, 10 pt Latin Modern, A4 with 18 mm margins, blue headings, shaded tables and code blocks, matching the supplied GenMAPS report. All diagrams are editable TikZ with LaTeX text. \\
 \bottomrule
 \end{longtable}

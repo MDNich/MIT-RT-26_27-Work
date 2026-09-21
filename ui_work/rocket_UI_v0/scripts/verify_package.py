@@ -69,6 +69,17 @@ def main():
             ["--smoke-test", "--data-dir", str(output / "demo"), "--screenshot", str(output / "window.png")],
         ),
         ("simulation", ["--simulation-smoke", str(model), "--data-dir", str(output / "simulation")]),
+        (
+            "virtual-pointer",
+            [
+                "--virtual-pointer-smoke",
+                str(output / "simulation" / "trajectory.csv"),
+                "--data-dir",
+                str(output / "virtual-pointer"),
+                "--screenshot",
+                str(output / "virtual-pointer.png"),
+            ],
+        ),
     ]
     if args.model:
         commands.append(
@@ -92,6 +103,14 @@ def main():
     demo = json.loads((output / "demo" / "smoke-report.json").read_text())
     startup = json.loads((output / "startup" / "smoke-report.json").read_text())
     flight = json.loads((output / "flight" / "flight-smoke-report.json").read_text())
+    virtual = json.loads((output / "virtual-pointer" / "virtual-pointer-smoke-report.json").read_text())
+    if (
+        not virtual["virtual_connected"]
+        or virtual["physical_ports_open"]
+        or virtual["samples"]
+        or not virtual["telemetry_locked"]
+    ):
+        raise SystemExit("Packaged virtual pointer rehearsal failed")
     if (
         not startup["settings"]["visible"]
         or startup["settings"]["shortcut"] != "Ctrl+,"
@@ -172,6 +191,7 @@ def main():
                 minimal_path=True,
                 startup=startup,
                 flight=flight,
+                virtual_pointer=virtual,
                 demo=demo,
                 simulation=simulation,
                 selected_model=selected_model,
