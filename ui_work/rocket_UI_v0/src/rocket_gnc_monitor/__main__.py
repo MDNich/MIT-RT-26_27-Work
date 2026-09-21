@@ -131,7 +131,16 @@ def main():
             c = window.controller
             mgrs_location = decode_mgrs("15TWG0000049776")
             plus_location = decode_plus_code("8FVC9G8F+6X")
+            window.open_settings()
+            settings_check = dict(
+                visible=window.settings_dialog.isVisible(),
+                shortcut=window.settings_action.shortcut().toString(),
+                bundled_engine=c.settings.engine_path.is_file(),
+                engine_status=window.settings_dialog.engine_status.text(),
+            )
+            window.settings_dialog.reject()
             report = dict(
+                settings=settings_check,
                 samples=len(c.history),
                 mode=c.mode,
                 video_frames=c.video.received_frames if c.video else 0,

@@ -1,6 +1,6 @@
 # Build and distribution
 
-September 21 revision: Mac only, including independent Digital and Analog USB video. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
+September 21 revision: Mac only, including Settings, bundled OpenRocket-MIT v6.2, and independent Digital and Analog USB video. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
 
 Use Python 3.12–3.13 (64 bit; x64 Python on Windows), JDK 17+ (`javac` and `jar` on PATH), and GNU Make on the build machine. Build Mac arm64 on Apple Silicon, Mac x86_64 on Intel, and Windows x64 on Windows x64. PyInstaller does not cross-compile. Production users need only the resulting complete package. Lucida Grande is bundled in `resources/fonts/LucidaGrande.ttc` and registered through Qt on Mac and Windows. Preserve the font resource and its provenance notice. The MGRS native library and Open Location Code dependency are bundled for offline location conversion.
 
@@ -12,6 +12,23 @@ make -f Makefile.macos all OPENROCKET_JAR="/absolute/path/to/swing-24.12.RC.01-a
 make -f Makefile.windows setup
 make -f Makefile.windows all OPENROCKET_JAR="C:/OpenRocket/swing-24.12.RC.01-all.jar"
 ```
+
+The engine can also be fetched at build time from the team's GitHub releases:
+
+```sh
+# Embed a local JAR (also prepares the private Java runtime):
+make package-macos OPENROCKET_JAR="/absolute/path/to/OpenRocket-MIT-v6.2.jar"
+# Resolve the latest published stable release and its OpenRocket-MIT-vX.Y.jar asset:
+make package-macos OPENROCKET_DOWNLOAD=latest
+# Pin a release for repeatable builds:
+make package-macos OPENROCKET_DOWNLOAD=v6.2
+# Stage/download the engine and rebuild the bridge without packaging:
+make bridge OPENROCKET_DOWNLOAD=latest
+```
+
+The same options work with `package`, `package-windows` and both native Makefiles' `all` targets. Select either `OPENROCKET_JAR` or `OPENROCKET_DOWNLOAD`; supplying both is an error. With neither, packaging reuses previously staged vendor files without a network download. A fresh build needs one of the engine options. Settings in a running monitor never trigger downloads.
+
+The downloader queries `MDNich/ActiveControl_MIT_RktTeam/releases/latest` (or `releases/tags/vX.Y`), finds the exact `OpenRocket-MIT-vX.Y.jar` asset, checks its size and published SHA-256 when present, and records release URL, tag, source archive URL, checksum and engine/bridge hashes in `vendor/engine.json`. A missing published digest is explicitly reported and the local hash is still recorded. The current v6.2 release supplies a verified SHA-256. Downloads and bridge compilation happen in a temporary folder; a download, checksum or compilation failure leaves the previously staged bundle intact. Network/rate-limit failures require a retry or a local JAR; there is no silent substitution of another release. Pin a tested release for production builds; a future incompatible release can fail bridge compilation.
 
 Equivalent Windows PowerShell steps without Make:
 
@@ -27,7 +44,7 @@ Mac outputs: `dist/RocketGNCMonitor.app` and an architecture-labeled DMG. Window
 
 `make setup` uses exact versions in `requirements-build.txt`, exported from `uv.lock`. Developers with uv can run `uv sync --locked`. Internet is needed for initial dependencies/runtime download. Stage dependencies and vendor files in advance for offline builds; never reuse `.venv` or `vendor/java` across OS/CPU architectures.
 
-The bridge requires the **team fork's complete `swing-*-all.jar`**, including its motor/resources database. It references fork-specific control fields, so an arbitrary upstream JAR is not interchangeable. `make bridge OPENROCKET_JAR=...` stages it; later `make bridge` can reuse it. Bundled manifests record engine/bridge hashes, Java runtime download/hash, Python versions and FFmpeg configuration. Every simulation job copies model/motor inputs, request, hashes, log and output. Java preferences are private and volatile; desktop OpenRocket settings are not read.
+The bridge requires the **team fork's complete `OpenRocket-MIT-vX.Y.jar` or development `swing-*-all.jar`**, including its motor/resources database. It references fork-specific control fields, so an arbitrary upstream JAR is not interchangeable. `make bridge OPENROCKET_JAR=...` stages it; later `make bridge` can reuse it. Bundled manifests record engine/bridge hashes, Java runtime download/hash, Python versions and FFmpeg configuration. Every simulation job copies model/motor inputs, request, hashes, log and output. Java preferences are private and volatile; desktop OpenRocket settings are not read.
 
 Validation:
 
@@ -44,7 +61,7 @@ PATH=/usr/bin:/bin dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --s
 dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --simulation-smoke /path/to/model.ork --data-dir build/package-simulation
 ```
 
-`make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` checks the bundled Lucida Grande family and both coordinate decoders, then runs portable flight/URRG round trips, explicit demo/both-video and engine checks. `--flight-smoke` exercises planning and recorded flight save/load, embedded assets, the exact URRG code and disconnected paused replay in the packaged process.
+`make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` opens Settings and checks its shortcut/engine, the bundled Lucida Grande family and both coordinate decoders, then runs portable flight/URRG round trips, explicit demo/both-video and engine checks. `--flight-smoke` exercises planning and recorded flight save/load, embedded assets, the exact URRG code and disconnected paused replay in the packaged process.
 
 `scripts/verify_package.py --model /path/to/zephy_testlaunch.ork` additionally runs the supplied model using the packaged motor library and records its resolved motor digest. The N8406 curve is bundled in `resources/motors`; rebuild the bridge with `make bridge` after changing its Java source.
 
@@ -52,7 +69,7 @@ Demo smoke mode uses bundled Zephyrus CSV telemetry plus a synthetic video test 
 
 Development Mac packages use ad-hoc signing. For release, set `MAC_SIGN_IDENTITY` to the team's Developer ID Application identity before packaging, then notarize/staple the DMG using team credentials. Sign Windows releases with the team's Authenticode certificate. No credentials are included. Camera permission and hardware-specific drivers remain OS/device requirements.
 
-The local development engine is an existing team-supplied binary; its exact corresponding source-to-binary match is unverified. Rebuild from a recorded source revision and retain source/dependency redistribution materials for a release. macOS metadata targets 13+, but only the recorded host is qualified. Windows 10/11 x64 is intended; the Windows x64 package has been built and tested in the supplied Windows 11 ARM VM under x64 emulation. Physical Windows x64 hardware remains a separate acceptance target.
+The current Mac package embeds the downloaded OpenRocket-MIT v6.2 release and records its verified release checksum; a reproducible source-to-binary match is not asserted. Rebuild from a recorded source revision and retain source/dependency redistribution materials for a release. macOS metadata targets 13+, but only the recorded host is qualified. Windows 10/11 x64 is intended; the Windows x64 package has been built and tested in the supplied Windows 11 ARM VM under x64 emulation. Physical Windows x64 hardware remains a separate acceptance target.
 
 References: [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html), [Qt packaging](https://doc.qt.io/qtforpython-6/deployment/deployment-pyinstaller.html), [Temurin](https://adoptium.net/).
 

@@ -15,6 +15,7 @@ import urllib.parse
 import urllib.request
 import zipfile
 import numpy as np
+from .settings import AppSettings, runtime_root, validate_engine_jar
 from .domain import demo_sample, finite, validate_wind, wind_from, write_json
 from .media import popen_options
 
@@ -154,12 +155,6 @@ def weather_profile(latitude, longitude, altitude_msl, when):
     )
 
 
-def runtime_root():
-    if getattr(sys, "frozen", False):
-        return Path(sys._MEIPASS) / "vendor"
-    return Path(__file__).resolve().parents[2] / "vendor"
-
-
 def bundled_motor_files():
     directory = runtime_root().parent / "resources" / "motors"
     manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
@@ -173,8 +168,9 @@ def bundled_motor_files():
 
 
 class SimulationJob:
-    def __init__(self, mission, directory):
+    def __init__(self, mission, directory, settings=None):
         self.mission, self.directory = mission, Path(directory)
+        self.settings = (settings or AppSettings()).validate()
         self.process = None
         self.cancelled = threading.Event()
 
@@ -189,9 +185,12 @@ class SimulationJob:
         java = root / "java" / "bin" / ("java.exe" if sys.platform == "win32" else "java")
         if not java.exists():
             raise ValueError("Bundled Java runtime missing. Build with make runtime and make bridge.")
-        jars = [root / "openrocket.jar", root / "rocket-bridge.jar"]
+        jars = [self.settings.engine_path, root / "rocket-bridge.jar"]
         if not all(p.exists() for p in jars):
-            raise ValueError("OpenRocket engine/bridge missing. Run make bridge with OPENROCKET_JAR.")
+            raise ValueError(
+                "OpenRocket engine/bridge missing. Check the JAR in Settings or rebuild the bundled engine."
+            )
+        validate_engine_jar(jars[0])
         model = Path(self.mission.model)
         if not model.is_file():
             raise ValueError("Select a valid .ork model")
@@ -258,14 +257,16 @@ class SimulationJob:
             self.process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT, **popen_options())
             started = time.monotonic()
             while self.process.poll() is None:
-                if self.cancelled.wait(0.1) or time.monotonic() - started > 120:
+                if self.cancelled.wait(0.1) or time.monotonic() - started > self.settings.simulation_timeout:
                     self.process.terminate()
                     try:
                         self.process.wait(timeout=3)
                     except subprocess.TimeoutExpired:
                         self.process.kill()
                         self.process.wait()
-                    raise ValueError("Simulation cancelled or exceeded 120 seconds")
+                    raise ValueError(
+                        f"Simulation cancelled or exceeded {self.settings.simulation_timeout} seconds"
+                    )
                 if log.tell() > 20_000_000:
                     self.process.kill()
                     self.process.wait()
@@ -285,6 +286,8 @@ class SimulationJob:
             raise ValueError("OpenRocket failed: " + tail)
         result = Trajectory.load(self.directory / "trajectory.csv")
         result.manifest.update(
+            engine_path=str(jars[0]),
+            simulation_timeout=self.settings.simulation_timeout,
             engine_sha256=hashlib.sha256(jars[0].read_bytes()).hexdigest(),
             model_sha256=hashlib.sha256((self.directory / "model.ork").read_bytes()).hexdigest(),
             motor_sha256=motor_hashes,

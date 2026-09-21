@@ -1,4 +1,4 @@
-"""Portable build orchestration; only the runtime download needs internet after setup."""
+"""Portable build orchestration; downloads are confined to explicit build-time preparation."""
 
 from __future__ import annotations
 import argparse
@@ -7,12 +7,15 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
+import tempfile
 import shutil
 import subprocess
 import sys
 import sysconfig
 import tarfile
 import urllib.request
+import urllib.error
 import venv
 import zipfile
 
@@ -119,51 +122,128 @@ def runtime():
     run(binary, "-version")
 
 
-def bridge(engine):
-    VENDOR.mkdir(exist_ok=True)
-    destination = VENDOR / "openrocket.jar"
-    if engine:
-        source = Path(engine).expanduser().resolve()
-        if not source.is_file():
-            raise SystemExit(f"Engine JAR not found: {source}")
-        if source != destination.resolve():
-            shutil.copy2(source, destination)
-    if not destination.exists():
-        raise SystemExit(
-            "Set OPENROCKET_JAR to the team's complete swing-*-all.jar (including engine/resources)."
-        )
-    build = ROOT / "build" / "bridge"
-    build.mkdir(parents=True, exist_ok=True)
-    run(
-        "javac",
-        "--release",
-        "17",
-        "-encoding",
-        "UTF-8",
-        "-cp",
-        destination,
-        "-d",
-        build,
-        ROOT / "simulation_bridge" / "src" / "RocketBridge.java",
+RELEASE_REPOSITORY = "MDNich/ActiveControl_MIT_RktTeam"
+
+
+def release_asset(release):
+    if release != "latest" and not re.fullmatch(r"v\d+(?:\.\d+)+", release):
+        raise SystemExit("OPENROCKET_DOWNLOAD must be latest or a release tag such as v6.2")
+    endpoint = "latest" if release == "latest" else "tags/" + release
+    url = f"https://api.github.com/repos/{RELEASE_REPOSITORY}/releases/{endpoint}"
+    request = urllib.request.Request(
+        url, headers={"User-Agent": "RocketGNCMonitor-build/0.1", "Accept": "application/vnd.github+json"}
     )
-    run("jar", "--create", "--file", VENDOR / "rocket-bridge.jar", "-C", build, ".")
-    write(
-        VENDOR / "engine.json",
-        dict(
-            engine_sha256=sha(destination),
-            bridge_sha256=sha(VENDOR / "rocket-bridge.jar"),
-            source_match="Supplied engine binary; source revision must be verified before production redistribution",
+    with urllib.request.urlopen(request, timeout=30) as response:
+        metadata = json.load(response)
+    tag = metadata.get("tag_name", "")
+    if metadata.get("draft") or metadata.get("prerelease") or not re.fullmatch(r"v\d+(?:\.\d+)+", tag):
+        raise SystemExit("Select a published stable OpenRocket-MIT release")
+    if release != "latest" and tag != release:
+        raise SystemExit("GitHub returned a different release tag")
+    name = f"OpenRocket-MIT-{tag}.jar"
+    assets = [asset for asset in metadata.get("assets", []) if asset.get("name") == name]
+    if len(assets) != 1:
+        raise SystemExit(
+            f"Release {tag} must contain exactly one {name}; use OPENROCKET_JAR for a local build"
+        )
+    asset = assets[0]
+    expected_url = f"https://github.com/{RELEASE_REPOSITORY}/releases/download/{tag}/{name}"
+    if asset.get("browser_download_url") != expected_url:
+        raise SystemExit("Unexpected OpenRocket release asset URL")
+    digest = asset.get("digest")
+    if digest and not re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
+        raise SystemExit("Unsupported OpenRocket release checksum")
+    return asset, dict(
+        kind="github_release",
+        repository=RELEASE_REPOSITORY,
+        release_tag=tag,
+        asset=name,
+        url=expected_url,
+        release_url=metadata.get("html_url"),
+        source_archive=metadata.get("tarball_url"),
+        expected_digest=digest,
+    )
+
+
+def bridge(engine="", release=""):
+    from rocket_gnc_monitor.settings import validate_engine_jar
+
+    if engine and release:
+        raise SystemExit("Choose OPENROCKET_JAR or OPENROCKET_DOWNLOAD, not both")
+    VENDOR.mkdir(exist_ok=True)
+    (ROOT / "build").mkdir(exist_ok=True)
+    destination = VENDOR / "openrocket.jar"
+    # Download and compile in isolation; failed preparation preserves the working bundle.
+    with tempfile.TemporaryDirectory(prefix="engine-", dir=ROOT / "build") as temporary:
+        stage = Path(temporary)
+        candidate = stage / "openrocket.jar"
+        if release:
+            try:
+                asset, provenance = release_asset(release)
+                print("Downloading", provenance["asset"], flush=True)
+                download(provenance["url"], candidate)
+            except urllib.error.URLError as exc:
+                raise SystemExit(
+                    f"OpenRocket download failed: {exc}. Retry or use OPENROCKET_JAR offline."
+                ) from exc
+            if candidate.stat().st_size != asset.get("size"):
+                raise SystemExit("OpenRocket download size mismatch")
+            if asset.get("digest") and "sha256:" + sha(candidate) != asset["digest"]:
+                raise SystemExit("OpenRocket download checksum mismatch")
+            provenance["checksum_verified"] = bool(asset.get("digest"))
+            if not asset.get("digest"):
+                print("Release has no published checksum; recording the downloaded SHA-256.", flush=True)
+        else:
+            source = Path(engine).expanduser().resolve() if engine else destination
+            if not source.is_file():
+                raise SystemExit("Set OPENROCKET_JAR to a complete team JAR, or OPENROCKET_DOWNLOAD=latest")
+            provenance = dict(kind="local_file", path=str(source))
+            if source.resolve() == destination.resolve() and (VENDOR / "engine.json").is_file():
+                previous = json.loads((VENDOR / "engine.json").read_text())
+                if previous.get("engine_sha256") == sha(source):
+                    provenance = previous.get("source", provenance)
+            shutil.copy2(source, candidate)
+        try:
+            validate_engine_jar(candidate)
+        except ValueError as exc:
+            raise SystemExit(str(exc)) from exc
+        classes = stage / "classes"
+        classes.mkdir()
+        run(
+            "javac",
+            "--release",
+            "17",
+            "-encoding",
+            "UTF-8",
+            "-cp",
+            candidate,
+            "-d",
+            classes,
+            ROOT / "simulation_bridge" / "src" / "RocketBridge.java",
+        )
+        compiled = stage / "rocket-bridge.jar"
+        run("jar", "--create", "--file", compiled, "-C", classes, ".")
+        manifest = dict(
+            engine_sha256=sha(candidate),
+            bridge_sha256=sha(compiled),
+            source=provenance,
+            source_match="Release/local binary provenance recorded; reproducible source-to-binary match not asserted",
             contract_version=1,
             nominal_only=True,
             inertia_override=False,
-        ),
-    )
+        )
+        shutil.copy2(candidate, destination)
+        shutil.copy2(compiled, VENDOR / "rocket-bridge.jar")
+        write(VENDOR / "engine.json", manifest)
     shutil.copytree(ROOT / "simulation_bridge" / "src", VENDOR / "bridge-source", dirs_exist_ok=True)
 
 
-def package(target):
+def package(target, engine="", release=""):
     if target and target != platform.system():
         raise SystemExit(f"Build {target} on a native {target} machine; PyInstaller is not a cross-compiler.")
+    if engine or release:
+        bridge(engine, release)
+        runtime()
     for required in [VENDOR / "java-runtime.json", VENDOR / "openrocket.jar", VENDOR / "rocket-bridge.jar"]:
         if not required.exists():
             raise SystemExit(f"Missing {required.name}; run make runtime and make bridge first.")
@@ -277,19 +357,21 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["help", "setup", "runtime", "bridge", "package", "clean"])
     parser.add_argument("--engine", default=os.environ.get("OPENROCKET_JAR", ""))
+    parser.add_argument("--download", default=os.environ.get("OPENROCKET_DOWNLOAD", ""))
     parser.add_argument("--platform", default="")
     args = parser.parse_args()
     if args.command == "help":
-        print("make setup | run | test | lint | runtime | bridge OPENROCKET_JAR=/path/to/swing-all.jar")
-        print("make package-macos (on Mac) | package-windows (on Windows) | smoke")
+        print("make setup | run | test | lint | runtime | bridge OPENROCKET_JAR=/path/to/OpenRocket-MIT.jar")
+        print("make package-macos OPENROCKET_DOWNLOAD=latest (or v6.2) | OPENROCKET_JAR=/path/to/engine.jar")
+        print("make package-windows (on Windows) | smoke; no engine option reuses the staged bundle")
     elif args.command == "setup":
         setup()
     elif args.command == "runtime":
         runtime()
     elif args.command == "bridge":
-        bridge(args.engine)
+        bridge(args.engine, args.download)
     elif args.command == "package":
-        package(args.platform)
+        package(args.platform, args.engine, args.download)
     elif args.command == "clean":
         for name in ("build", "dist"):
             path = ROOT / name

@@ -93,6 +93,12 @@ def main():
     startup = json.loads((output / "startup" / "smoke-report.json").read_text())
     flight = json.loads((output / "flight" / "flight-smoke-report.json").read_text())
     if (
+        not startup["settings"]["visible"]
+        or startup["settings"]["shortcut"] != "Ctrl+,"
+        or not startup["settings"]["bundled_engine"]
+    ):
+        raise SystemExit("Packaged Settings window or bundled engine missing")
+    if (
         flight["mode"] != "REPLAY"
         or not flight["paused"]
         or flight["hardware_open"]

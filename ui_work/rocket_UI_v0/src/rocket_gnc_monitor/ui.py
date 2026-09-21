@@ -1,7 +1,7 @@
 """Operator workspaces for flight, antenna, GNC, mission and session analysis."""
 
 from __future__ import annotations
-from dataclasses import asdict
+from dataclasses import asdict, replace
 from datetime import datetime, timezone
 import copy
 import json
@@ -55,6 +55,7 @@ from .rocket_panel import RocketPanel
 from .zephyrus import legacy_values
 from .fonts import FONT_FAMILY, configure_fonts
 from .location_ui import LaunchLocation
+from .settings_ui import SettingsDialog
 
 
 def label(text, name=None):
@@ -240,6 +241,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1120, 800)
         self.setStyleSheet(STYLE)
         self.controller = c = Controller(data_dir)
+        self.settings_dialog = None
         self.events = []
         self.last_ui = 0
         self.last_table = 0
@@ -410,9 +412,9 @@ class MainWindow(QMainWindow):
             action.triggered.connect(callback)
             menu.addAction(action)
         view_menu = self.menuBar().addMenu("View")
-        daylight = QAction("Daylight theme", self)
+        self.daylight_action = daylight = QAction("Daylight theme", self)
         daylight.setCheckable(True)
-        daylight.toggled.connect(self.set_daylight)
+        daylight.toggled.connect(lambda enabled: self.guard(lambda: self.set_daylight(enabled)))
         view_menu.addAction(daylight)
         help_menu = self.menuBar().addMenu("Help")
         for title, filename in [
@@ -425,7 +427,13 @@ class MainWindow(QMainWindow):
             action = QAction(title, self)
             action.triggered.connect(lambda checked=False, f=filename: self.show_help(f))
             help_menu.addAction(action)
+        self.set_daylight(c.settings.daylight, persist=False)
         self.refresh()
+        if c.settings_error:
+            self.add_event(c.settings_error)
+            self.statusBar().showMessage(
+                "Settings could not be loaded; defaults are active. Open Settings to repair."
+            )
 
     def restart_demo(self, launch):
         def restart():
@@ -452,6 +460,13 @@ class MainWindow(QMainWindow):
             action.triggered.connect(callback)
             file_menu.addAction(action)
             self.flight_actions[key] = action
+        file_menu.addSeparator()
+        self.settings_action = QAction("Settings…", self)
+        self.settings_action.setMenuRole(QAction.MenuRole.PreferencesRole)
+        self.settings_action.setShortcut(QKeySequence("Ctrl+,"))
+        self.settings_action.setShortcutContext(Qt.ShortcutContext.ApplicationShortcut)
+        self.settings_action.triggered.connect(self.open_settings)
+        file_menu.addAction(self.settings_action)
         menu = self.menuBar().addMenu("Serial controls")
         self.legacy_actions = {}
         definitions = [
@@ -499,9 +514,33 @@ class MainWindow(QMainWindow):
         layout.addWidget(close)
         dialog.exec()
 
-    def set_daylight(self, enabled):
+    def open_settings(self):
+        if self.settings_dialog is None:
+            self.settings_dialog = SettingsDialog(
+                self.controller.settings, self.controller.data_dir, self.apply_settings, self
+            )
+            self.settings_dialog.finished.connect(self.settings_closed)
+        self.settings_dialog.show()
+        self.settings_dialog.raise_()
+        self.settings_dialog.activateWindow()
+
+    def settings_closed(self):
+        self.settings_dialog.deleteLater()
+        self.settings_dialog = None
+
+    def apply_settings(self, settings):
+        self.controller.save_settings(settings)
+        self.set_daylight(settings.daylight, persist=False)
+        self.statusBar().showMessage("Settings saved", 5000)
+
+    def set_daylight(self, enabled, *, persist=True):
         from .widgets import DARK_COLORS, LIGHT_COLORS
 
+        if persist and enabled != self.controller.settings.daylight:
+            self.controller.save_settings(replace(self.controller.settings, daylight=enabled))
+        self.daylight_action.blockSignals(True)
+        self.daylight_action.setChecked(enabled)
+        self.daylight_action.blockSignals(False)
         palette = LIGHT_COLORS if enabled else DARK_COLORS
         COLORS.update(palette)
         style = STYLE
@@ -1177,7 +1216,7 @@ class MainWindow(QMainWindow):
         if c.recorder:
             c.stop_recording()
         else:
-            result = self.guard(lambda: c.start_recording(c.data_dir / "sessions"))
+            result = self.guard(lambda: c.start_recording(c.settings.sessions_path(c.data_dir)))
             if result:
                 self.add_event(f"Session: {result}")
         self.last_ui = 0

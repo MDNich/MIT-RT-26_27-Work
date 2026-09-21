@@ -42,6 +42,8 @@ maintenance anchors.
 \src{src/rocket_gnc_monitor/controller.py} & State owner and orchestration: connection generations, polling, command dispatch, tracking, mode changes, recording, replay, file jobs, alerts and shutdown. \\
 \src{src/rocket_gnc_monitor/ui.py} & \code{MainWindow}, \code{MissionDialog}, workspace construction, shortcuts, file dialogs, result presentation, enabled states and plots. \\
 \src{src/rocket_gnc_monitor/rocket_panel.py} & Complete legacy rocket Telemetry/Commands/Power/Recovery subviews and retained confirmations. \\
+\src{src/rocket_gnc_monitor/settings.py} & Immutable \code{AppSettings}, validation, atomic per-machine persistence, runtime paths and JAR checks. \\
+\src{src/rocket_gnc_monitor/settings_ui.py} & Modeless \code{SettingsDialog}, engine/folder pickers, defaults, validation and save/cancel. \\
 \src{src/rocket_gnc_monitor/widgets.py} & Themes, \code{AttitudeView}, \code{MountView}, local geometry, material colors and camera/pose transforms. \\
 \src{src/rocket_gnc_monitor/fonts.py} & Private font registration and global Qt font choice. \\
 \src{src/rocket_gnc_monitor/domain.py} & \code{Mission}, \code{Sample}, finite checks, geographic transforms, pointing and wind validation. Contains a synthetic test-data helper. \\
@@ -618,7 +620,7 @@ and nominal/inertia flags.
 \input{figures/simulation}
 
 Limits are 40 MB for the model file, 100 MB expanded ORK archive contents,
-10 MB per motor curve, 120 s of worker wall time and 20 MB of worker log.
+10 MB per motor curve, a configurable worker time limit (120 s by default) and 20 MB of worker log.
 Cancellation sets an event and terminates the child; timeout/oversized-log paths
 also stop it. Result collection checks return status, prefers a structured
 \code{error.json} message and otherwise includes a bounded log tail.
@@ -724,6 +726,33 @@ full orbit and zoom, feed/boresight collinearity, and the compass tests.
 Hardware behavior belongs in the controller/protocol layers and requires
 separate regression evidence.
 
+\section{Settings storage and application}
+\code{AppSettings} is a frozen dataclass, independent of \code{Mission}.
+Schema version 1 contains \code{openrocket_jar} (empty means bundled),
+\code{sessions_directory} (empty means the per-user sessions directory),
+\code{daylight} (false by default), and \code{simulation_timeout} (120 s,
+validated integer range 10--1800). Nonempty stored paths must be absolute.
+The dialog expands user paths before storage. JAR validation checks the ZIP
+container for engine and dependency classes; API compatibility is established
+by bridge compilation and actual simulation, not by the file chooser alone.
+
+\code{Controller} loads \code{settings.json} from its data directory.
+Malformed settings leave defaults active, preserve the original file and produce
+an operator-visible diagnostic. Missing external files remain selected until
+repaired; simulation does not silently substitute the bundled engine.
+Saving writes and flushes a temporary file in the same directory and then
+atomically replaces the settings file. In-memory preferences change only after
+a successful write.
+
+\code{MainWindow} installs one application-wide Command-comma QAction with the
+native preferences menu role. \code{SettingsDialog} is modeless and reused while
+open. Save updates the controller and theme; Cancel has no persistence side
+effects. Every simulation receives the immutable settings snapshot at submission.
+The private Java runtime and bridge remain bundled; the first classpath entry
+is the selected engine. Result metadata records its path, SHA-256 and time limit.
+Logging resolves the configured destination when starting a new session.
+Portable-flight loading never rewrites machine settings.
+
 \section{Developer setup and native packaging}\label{sec:build}
 \subsection{Source environment}
 Run the following from the application root, not this report directory:
@@ -748,7 +777,9 @@ cleaning the application build directory.
 \subsection{Runtime and bridge}
 \begin{lstlisting}[language=bash]
 make runtime
-make bridge OPENROCKET_JAR="/absolute/path/to/swing-24.12.RC.01-all.jar"
+make bridge OPENROCKET_JAR="/absolute/path/to/OpenRocket-MIT-v6.2.jar"
+# Or resolve the latest stable release from the team repository:
+make bridge OPENROCKET_DOWNLOAD=latest
 \end{lstlisting}
 \code{runtime} selects OS and process architecture, downloads a Temurin Java 17
 JRE, verifies the publisher-provided SHA-256 and stages \code{vendor/java}.
@@ -761,6 +792,36 @@ complete fork JAR. It compiles with Java 17 release and UTF-8 settings, builds
 \code{rocket-bridge.jar}, records engine/bridge hashes and copies bridge source
 into the vendor tree. With a previously staged engine, later \code{make bridge}
 can reuse it. Rebuild the bridge after editing its Java source.
+
+\subsection{Release downloads and engine provenance}
+The team's \href{https://github.com/MDNich/ActiveControl_MIT_RktTeam/releases}{GitHub releases} provide the bundled engine. Set
+\code{OPENROCKET_DOWNLOAD=latest} to resolve the latest stable release.
+\code{OPENROCKET_DOWNLOAD=v6.2} pins a release tag. Asset selection requires the
+exact name \code{OpenRocket-MIT-vX.Y.jar}; installer and disk-image assets are
+ignored. Supplying both download and local-JAR options is an error.
+The downloader checks asset size and any published SHA-256; an absent published
+digest is explicitly reported and the downloaded hash is still recorded.
+The v6.2 JAR has a verified published checksum.
+
+Preparation stages the candidate and compiles the bridge in a temporary
+directory. Download, checksum or compilation failure preserves the previously
+staged engine and bridge. The engine manifest records the release tag, asset
+URL, source archive URL, published digest, verification status and engine/bridge
+hashes. Latest is resolved only on an explicit build request; neither app
+startup nor Settings performs automatic updates. A future incompatible release
+can fail bridge compilation; production builds should pin a tested tag.
+
+\begin{lstlisting}[language=bash]
+make package-macos OPENROCKET_DOWNLOAD=latest
+make package-macos OPENROCKET_DOWNLOAD=v6.2
+make package-macos OPENROCKET_JAR="/path/to/OpenRocket-MIT-v6.2.jar"
+\end{lstlisting}
+These options also apply to \code{package-windows}, \code{package} and native
+\code{all} targets. With an engine option, packaging stages the engine, rebuilds
+the bridge and prepares the private Java runtime before freezing. With neither
+option, existing vendor files are reused without a download. The current Mac
+package embeds the v6.2 release; release provenance does not itself establish a
+reproducible source-to-binary build.
 
 \subsection{Native platform builds}
 \begin{lstlisting}[language=bash]
@@ -827,7 +888,8 @@ licenses or credentials.
 \code{test_media.py} & FFmpeg arguments, capture/recording lifecycle and available runtime checks. \\
 \code{test_ui.py} & Workspace rendering, legacy values/readiness, orbit independence, compass chirality and pseudo-terminal radio status. \\
 \code{test_simulation.py} & Bundled N8406 identity, real engine trajectory, named missing-motor and unpowered errors. Engine-dependent cases skip if runtime/bridge is absent. \\
-\code{test_build.py} & Windows-on-ARM host with x64 Python selects the x64 runtime correctly. \\
+\code{test_settings.py} & Shortcut, persistence, cancel/defaults, invalid settings, recording destination and per-job snapshots. \\
+\code{test_build.py} & Runtime architecture; latest/pinned release selection, checksums, local JARs and failure preservation. \\
 \bottomrule
 \end{longtable}
 
@@ -886,7 +948,7 @@ CLI smoke entry points are:
 \end{longtable}
 
 \subsection{Recorded results and their limits}
-The September 21 dual-video revision passed 77 Mac regression tests. New checks
+The September 21 Settings/engine revision passed 94 Mac regression tests. Settings persistence, shortcut handling, bundled/custom simulations and local/latest/pinned build paths are covered. The earlier dual-video revision passed 77 tests. New checks
 cover camera reservations during open/close, reciprocal camera and serial
 dropdown exclusion, independent stream failure and frames, old single-video
 replay, two-feed flight archives and compact layouts. The refreshed package

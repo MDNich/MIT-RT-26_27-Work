@@ -8,6 +8,17 @@ Launch opens LIVE on the Control panel, with no automatic serial connection or c
 
 Connect each board independently at 115200 baud. Connecting the ground board opens its port; click **Start Polling** to receive telemetry. **Stop Polling** pauses reception while leaving the serial port and rocket commands available. **Start Logging** creates a session immediately. Ground commands/logging require the ground board; manual pointer controls require the pointer board independently. The control panel distinguishes connected/polling stopped, waiting, live reception, and stale reception.
 
+## Global settings
+
+Open **Rocket GNC Monitor → Settings…** or press **⌘,** on Mac. On Windows, use **File → Settings…** or **Ctrl+,**. Settings are available in every mode, including disconnected LIVE.
+
+- **OpenRocket JAR:** Browse to a complete compatible OpenRocket-MIT JAR, or choose **Use bundled**. The packaged app includes the engine and Java; no separate OpenRocket installation is needed. The bundled release version and effective path are displayed. Changes apply to the next simulation; a running job keeps its selected engine and time limit. If a custom file moves or disappears, select it again or return to the bundled engine.
+- **Simulation time limit:** 10–1800 seconds; default 120 seconds.
+- **Recording folder:** Where new logging sessions are created. **Use default** restores the app data directory's sessions folder. Existing sessions and active recordings stay in their current locations.
+- **Appearance:** Dark or Daylight. The View menu's Daylight choice also persists.
+
+**Save** validates and stores preferences; **Cancel** discards edits. **Restore Defaults** resets the form and takes effect when saved. Preferences live in the per-user application data directory as `settings.json` (the exact path appears in the window); `--data-dir` selects a separate preferences file. They are local to this computer and are not included in mission JSON or portable flight files. Mission-specific site, wind, rail, alert and video-offset choices remain in Mission configuration. The app always starts in LIVE with hardware closed.
+
 ## Original keyboard shortcuts
 
 All shortcuts work from every workspace. On Mac, Qt maps Ctrl to **Command** and Alt to **Option**, as in the previous UI.

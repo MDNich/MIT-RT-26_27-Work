@@ -96,6 +96,33 @@ when preserving full capture provenance. Close the app normally to finalize its
 workers. A flight saved while logging is still active is a snapshot and can omit
 the unfinished video segment.
 
+\section{Global settings}\label{sec:settings}
+Open \ui{Rocket GNC Monitor > Settings} on Mac or press Command-comma.
+Windows uses \ui{File > Settings} or Ctrl-comma. The window is available in every
+workspace and source mode, including disconnected LIVE. Reopening it brings the
+existing editor forward.
+
+\begin{longtable}{@{}L{.24\linewidth}L{.69\linewidth}@{}}
+\toprule Preference & Behavior \\\midrule\endhead
+OpenRocket JAR & Browse to a complete compatible OpenRocket-MIT JAR. \ui{Use bundled} clears the override and shows the bundled release and path. Java remains included with the app. \\
+Simulation time limit & 10--1800 s; default 120 s. Engine and time-limit changes apply to the next job; the running job retains its snapshot. \\
+Recording folder & Destination for new logging sessions. \ui{Use default} restores the application's sessions directory. Existing files and active recordings retain their locations. \\
+Appearance & Dark or Daylight. The \ui{View > Daylight theme} action updates the same persistent preference. \\
+\bottomrule
+\end{longtable}
+\ui{Save} validates and stores changes. \ui{Cancel} discards edits.
+\ui{Restore Defaults} changes the form and requires Save to take effect.
+A missing or unreadable custom JAR is reported; select the relocated file or use
+the bundled engine. The current Mac package includes OpenRocket-MIT v6.2 and
+requires no separate OpenRocket installation or runtime download.
+
+Preferences are stored in \code{settings.json} under the per-user application
+data directory; the exact path is shown in the window. \code{--data-dir} also
+selects a separate settings store. These machine-local paths and preferences
+are not exported in mission JSON or portable flight files. Site, wind, rail,
+alert thresholds and video offset remain mission-specific. Startup remains
+LIVE with hardware closed regardless of the saved preferences.
+
 \section{Navigation and connection control}
 The persistent header contains the mission name, source-mode selector,
 Start/Stop Polling and Start/Stop Logging. In LIVE and REPLAY the two serial cards
@@ -610,6 +637,7 @@ their enabled state still follows the appropriate connection/mode.
 
 \begin{longtable}{@{}L{.39\linewidth}L{.27\linewidth}L{.27\linewidth}@{}}
 \toprule Action & Mac & Windows / Qt notation \\\midrule\endhead
+Settings & Command-comma & Ctrl+comma \\
 Open flight & Command-O & Ctrl+O \\
 Save flight & Command-S & Ctrl+S \\
 Refresh serial ports & Command-R & Ctrl+R \\

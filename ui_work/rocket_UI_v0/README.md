@@ -22,6 +22,8 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 - Portable `.rktflight` Save/Open files (⌘S/⌘O), including mission, embedded model/motors, simulation and available recordings; saves can run during logging.
 - Indexed SQLite replay, exact serial capture with CRCs, event timeline, legacy CSV import/export, video seek/offset, incomplete-session recovery, dark/daylight themes and acknowledged alerts.
 
+Open **Settings…** with **⌘,** (Windows: **Ctrl+,**) to select an OpenRocket JAR, simulation time limit, recording folder and display theme. Preferences persist on this computer. **Use bundled** restores the included engine.
+
 ## Develop and build
 
 From this folder, with Python 3.12, GNU Make and JDK 17+:
@@ -36,7 +38,7 @@ make -f Makefile.macos all OPENROCKET_JAR="/path/to/swing-24.12.RC.01-all.jar"
 make -f Makefile.windows all OPENROCKET_JAR="C:/path/to/swing-24.12.RC.01-all.jar"
 ```
 
-The complete team-fork fat JAR is required at build time. The private Java runtime is downloaded and checksum-verified during `make runtime`. Both native Makefiles produce a complete runtime package. Windows PowerShell equivalents, signing and offline preparation: [BUILD.md](docs/BUILD.md).
+Supply a complete team-fork JAR or download it with `make package-macos OPENROCKET_DOWNLOAD=latest` (pin with `OPENROCKET_DOWNLOAD=v6.2`). Local embedding also works directly with `make package-macos OPENROCKET_JAR="/path/to/OpenRocket-MIT-v6.2.jar"`. The current Mac package includes OpenRocket-MIT v6.2. The private Java runtime is downloaded and checksum-verified during `make runtime`. Both native Makefiles produce a complete runtime package. Windows PowerShell equivalents, signing and offline preparation: [BUILD.md](docs/BUILD.md).
 
 [Legacy feature parity](docs/LEGACY_PARITY.md) · [Operator guide](docs/OPERATOR_GUIDE.md) · [Wire contract](docs/PROTOCOL.md) · [Implementation/validation status](docs/IMPLEMENTATION_STATUS.md) · [Third-party notices](docs/THIRD_PARTY_NOTICES.md)
 
@@ -48,6 +50,6 @@ Original planning baseline: [development plan](DEVELOPMENT_PLAN.md), [antenna de
 
 ## Built artifacts and validation
 
-The September 21 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. The full Mac regression run passed 77 tests; focused final checks cover both feeds, recording/replay and portable flights. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
+The September 21 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. The full Mac regression run passed 94 tests, including Settings persistence/shortcuts, local and release engine selection, download failure handling, both feeds, recording/replay and portable flights. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
 
 The Windows ZIP remains the September 18 build (30 tests passed, one POSIX-only test skipped, in the Windows 11 ARM VM under x64 emulation). It has **not** been rebuilt for this revision; current work and validation target Mac only.

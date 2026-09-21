@@ -33,6 +33,6 @@ Review the prose against any code changes before publishing a regenerated report
 
 ## Documentation checks
 
-The published PDF has 38 pages and seven TikZ diagrams, embedded Latin Modern fonts, and no raster images. All pages were rendered and reviewed; the LaTeX build has no overfull boxes or undefined references. The examples load through the application's validators, 36 source links resolve, and 72 implementation-file hashes match the source inventory. Results are recorded in `evidence/documentation-validation-2026-09-21.json`.
+The published PDF has 40 pages and seven TikZ diagrams, embedded Latin Modern fonts, and no raster images. All pages were rendered and reviewed; the LaTeX build has no overfull boxes or undefined references. The examples load through the application's validators, 38 source links resolve, and 75 implementation-file hashes match the source inventory. Results are recorded in `evidence/documentation-validation-2026-09-21.json`.
 
-The September 21 refresh documents independent Digital/Analog USB video and reciprocal camera/serial selector exclusion. Current application results are in evidence/application-validation-2026-09-21.json; the September 20 file remains historical.
+The September 21 refresh includes persistent Settings, local/latest/pinned OpenRocket builds and the bundled v6.2 engine, alongside Digital/Analog video. Current application results are in `evidence/application-validation-settings-2026-09-21.json`; the earlier files retain their historical results.

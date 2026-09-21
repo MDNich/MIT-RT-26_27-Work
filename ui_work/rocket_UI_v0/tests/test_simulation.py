@@ -1,5 +1,6 @@
 import hashlib
 import json
+import shutil
 from pathlib import Path
 import sys
 import zipfile
@@ -77,3 +78,17 @@ def test_unpowered_configuration_is_reported_before_simulation(tmp_path):
     with pytest.raises(ValueError, match="has no active motor"):
         SimulationJob(Mission(model=str(model)), tmp_path / "job").run()
     assert not (tmp_path / "job" / "trajectory.csv").exists()
+
+
+@engine
+def test_custom_jar_and_time_limit_are_used_and_recorded(tmp_path):
+    from rocket_gnc_monitor.settings import AppSettings
+
+    custom = tmp_path / "Custom OpenRocket.jar"
+    shutil.copyfile(RUNTIME / "openrocket.jar", custom)
+    settings = AppSettings(openrocket_jar=str(custom), simulation_timeout=180)
+    result = SimulationJob(Mission(model=str(FIXTURE)), tmp_path / "job", settings).run()
+    assert len(result.points) > 1000
+    assert result.manifest["engine_path"] == str(custom)
+    assert result.manifest["engine_sha256"] == hashlib.sha256(custom.read_bytes()).hexdigest()
+    assert result.manifest["simulation_timeout"] == 180

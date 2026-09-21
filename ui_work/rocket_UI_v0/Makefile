@@ -7,6 +7,8 @@ PYTHON ?= python3
 VENV_PY := .venv/bin/python
 endif
 
+ENGINE_OPTIONS = --engine "$(OPENROCKET_JAR)" --download "$(OPENROCKET_DOWNLOAD)"
+
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
 .PHONY: help setup run demo test lint runtime bridge package package-macos package-windows smoke verify-package clean
@@ -26,13 +28,13 @@ lint:
 runtime:
 	$(VENV_PY) scripts/build.py runtime
 bridge:
-	$(VENV_PY) scripts/build.py bridge --engine "$(OPENROCKET_JAR)"
+	$(VENV_PY) scripts/build.py bridge $(ENGINE_OPTIONS)
 package:
-	$(VENV_PY) scripts/build.py package
+	$(VENV_PY) scripts/build.py package $(ENGINE_OPTIONS)
 package-macos:
-	$(VENV_PY) scripts/build.py package --platform Darwin
+	$(VENV_PY) scripts/build.py package --platform Darwin $(ENGINE_OPTIONS)
 package-windows:
-	$(VENV_PY) scripts/build.py package --platform Windows
+	$(VENV_PY) scripts/build.py package --platform Windows $(ENGINE_OPTIONS)
 smoke:
 	$(VENV_PY) -m rocket_gnc_monitor --smoke-test --data-dir build/smoke
 verify-package:

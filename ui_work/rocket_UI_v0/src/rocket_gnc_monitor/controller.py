@@ -18,6 +18,7 @@ from .recording import SessionReader, SessionRecorder
 from .trajectory import Trajectory, SimulationJob
 from .media import VIDEO_STREAMS, VideoWorker
 from .zephyrus import rocket_packet, legacy_values
+from .settings import AppSettings
 
 
 @dataclass
@@ -48,6 +49,13 @@ class Controller(QObject):
         super().__init__()
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.settings_path = self.data_dir / "settings.json"
+        self.settings_error = ""
+        try:
+            self.settings = AppSettings.load(self.settings_path)
+        except ValueError as exc:
+            self.settings = AppSettings()
+            self.settings_error = str(exc)
         self.mission = Mission()
         self.mode = "LIVE"
         self.latest = None
@@ -867,10 +875,15 @@ class Controller(QObject):
         mission = copy.deepcopy(self.mission).validate()
         if not mission.site_configured:
             raise ValueError("Configure the launch site before simulation")
-        job = SimulationJob(mission, self.data_dir / "simulation" / uuid.uuid4().hex)
+        job = SimulationJob(mission, self.data_dir / "simulation" / uuid.uuid4().hex, self.settings)
         self.simulation = job
         self.submit("simulation", job.run)
         self.log("OpenRocket nominal simulation started")
+
+    def save_settings(self, settings):
+        settings.save(self.settings_path)
+        self.settings = settings
+        self.settings_error = ""
 
     def tick(self):
         now = time.monotonic()
