@@ -168,8 +168,9 @@ def test_virtual_controller_manual_follow_pause_seek_change_and_mode_isolation(q
 def test_pointer_location_profile_and_portable_flight_roundtrip(qtbot, tmp_path):
     dialog = MissionDialog(Mission())
     qtbot.addWidget(dialog)
-    for key, value in [("pointer_latitude", 42.7), ("pointer_longitude", -77.2), ("pointer_altitude", 123.5)]:
-        dialog.fields[key].setValue(value)
+    dialog.pointer_location.latitude.setValue(42.7)
+    dialog.pointer_location.longitude.setValue(-77.2)
+    dialog.pointer_location.altitude.setValue(123.5)
     dialog.fields["pointer_site_configured"].setChecked(True)
     dialog.accept()
     m = dialog.mission

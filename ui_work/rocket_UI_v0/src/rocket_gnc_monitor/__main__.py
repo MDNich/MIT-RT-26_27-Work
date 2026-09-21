@@ -126,10 +126,26 @@ def main():
         from .demo import DemoFlight
         from .trajectory import Trajectory
         from .ui import MissionDialog
+        from .domain import to_enu
 
         c = window.controller
         dialog = MissionDialog(c.mission)
         dialog.location.preset.setCurrentIndex(dialog.location.preset.findData("URRG"))
+        dialog.pointer_location.format.setCurrentIndex(dialog.pointer_location.format.findData("mgrs"))
+        dialog.pointer_location.mgrs.setText("18T UN 20615 30290")
+        dialog.fields["pointer_site_configured"].setChecked(True)
+        dialog.accept()
+        assert dialog.mission.pointer_location_code == "18TUN2061530290"
+        assert dialog.mission.pointer_latitude == dialog.mission.latitude
+        pointer_mgrs = dialog.mission.pointer_location_code
+        dialog.mission.save(data / "antenna-mgrs.json")
+        from .domain import Mission
+
+        dialog = MissionDialog(Mission.load(data / "antenna-mgrs.json"))
+        dialog.pointer_location.format.setCurrentIndex(dialog.pointer_location.format.findData("relative"))
+        dialog.pointer_location.heading.setValue(90)
+        dialog.pointer_location.distance.setValue(500)
+        dialog.pointer_location.height_difference.setValue(5)
         dialog.accept()
         mission = dialog.mission
         mission.model = str(window.resource_root / "resources" / "examples" / "simple.ork")
@@ -143,6 +159,12 @@ def main():
         c.apply_flight(planning)
         assert c.mode == "LIVE" and c.reader is None and c.reference is not None
         assert c.mission.launch_location_code == "18TUN2061530290"
+        assert c.mission.pointer_location_format == "relative"
+        antenna_enu = to_enu(c.mission.latitude, c.mission.longitude, c.mission.altitude, (
+            c.mission.pointer_latitude, c.mission.pointer_longitude, c.mission.pointer_altitude
+        ))
+        assert abs(antenna_enu[0] - 500) < 1e-4 and abs(antenna_enu[1]) < 1e-4
+        assert c.mission.pointer_altitude == c.mission.altitude + 5
         assert Path(c.mission.model).is_file()
         demo = DemoFlight("GS2")
         archive = data / "zephyrus.rktflight"
@@ -169,6 +191,11 @@ def main():
             hardware_open=any(c.workers.values()),
             site=c.mission.launch_site_name,
             code=c.mission.launch_location_code,
+            pointer_location=dict(mgrs=pointer_mgrs, format=c.mission.pointer_location_format,
+                                  heading=c.mission.pointer_launch_heading,
+                                  distance=c.mission.pointer_launch_distance,
+                                  height_difference=c.mission.pointer_height_difference,
+                                  launch_enu=antenna_enu),
             model_exists=Path(c.mission.model).is_file(),
             reference_rows=len(c.reference.points),
             latest_row=c.latest.details["demo_row"],

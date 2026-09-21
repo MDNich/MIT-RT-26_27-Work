@@ -125,6 +125,8 @@ def main():
         or flight["code"] != "18TUN2061530290"
         or not flight["model_exists"]
         or flight["reference_rows"] != 2
+        or flight["pointer_location"]["mgrs"] != "18TUN2061530290"
+        or flight["pointer_location"]["format"] != "relative"
     ):
         raise SystemExit("Packaged flight-file / URRG round trip failed")
     if startup.get("font_family") != "Lucida Grande" or "Lucida Grande" not in startup.get(

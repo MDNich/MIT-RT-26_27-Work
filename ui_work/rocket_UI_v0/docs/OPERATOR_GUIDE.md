@@ -10,7 +10,10 @@ Connect each board independently at 115200 baud. Connecting the ground board ope
 
 ## Virtual antenna pointer and trajectory rehearsal
 
-1. Open **Mission → Configure… → Antenna pointer**. Enter the mount's WGS84 latitude, longitude and ellipsoid altitude, then check **Antenna location established** and save. The position persists in mission JSON and portable flight files.
+1. Open **Mission → Configure… → Antenna pointer**. Choose latitude/longitude, **MGRS**, or **Relative to launch**, then check **Antenna location established** and save. The position persists in mission JSON and portable flight files.
+   - Latitude/longitude and MGRS use a separate WGS84 ellipsoid altitude. MGRS accepts spaces and lowercase and shows the resolved coordinates and grid precision.
+   - **Relative to launch** requires an established launch origin. Enter the true heading **from the antenna toward the rocket on its launch pad**, horizontal distance (0–100,000 m), and **antenna altitude minus launch altitude** in metres. Positive means the antenna is above the pad; negative means below. For example, heading 90°, distance 500 m and height +5 m places the antenna west of the pad and 5 m higher.
+   - Relative offsets remain attached to the mission launch site: changing the launch coordinates or ellipsoid altitude recalculates the antenna position. The preview shows the resolved WGS84 position. Existing saved missions default to latitude/longitude entry.
 2. In **Mission & wind**, run OpenRocket or import a georeferenced, launch-relative ENU trajectory. The reference's stored origin is used for tracking; the antenna may be offset from the launch site.
 3. Stay in **LIVE**. Choose **Virtual antenna pointer** in the pointer connection dropdown and click **Connect**, or use **Connect virtual pointer** on the Antenna pointer page. No ground station is needed.
 4. Use Send, UP/DOWN/LEFT/RIGHT and ZERO to actuate the simulated mount. The original keyboard shortcuts work. The displayed pose slews toward the target at illustrative rates of 90°/s azimuth and 60°/s elevation.

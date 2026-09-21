@@ -321,9 +321,17 @@ This creates an in-process simulator and needs no ground station or physical
 serial port. The connection, pose and banner explicitly identify simulated
 motion; rocket controls remain locked until the real ground station connects.
 
-Configure the mount under \ui{Mission > Configure > Antenna pointer}: WGS84
-latitude, longitude and ellipsoid altitude, plus \ui{Antenna location established}.
-Mission JSON and portable flight files retain the position. The physical-board
+Configure the mount under \ui{Mission > Configure > Antenna pointer}. Select
+latitude/longitude, \ui{MGRS}, or \ui{Relative to launch}, and check
+\ui{Antenna location established}. Absolute entry uses a separate WGS84
+ellipsoid altitude; MGRS accepts spaces and lowercase and previews grid precision.
+Relative entry requires an established launch origin and takes the true heading
+from the antenna toward the rocket on the launch pad, horizontal distance
+(0--100\,km), and antenna altitude minus launch altitude. Positive height means
+the antenna is above the pad. For example, $90^\circ$, 500\,m and $+5$\,m place
+it west of the pad and 5\,m higher. The preview shows resolved coordinates.
+Mission JSON and portable flight files retain the entry form and parameters;
+relative positions recalculate when the mission launch origin changes. The physical-board
 tracking path continues using the frozen receiver GPS from \ui{Send to AntPtr}.
 
 Run OpenRocket or load a georeferenced, launch-relative ENU reference. Then use

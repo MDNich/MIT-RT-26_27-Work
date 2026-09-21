@@ -15,6 +15,11 @@
 \code{pointer_longitude} & 0.0 & Virtual antenna WGS84 longitude, degrees. \\
 \code{pointer_altitude} & 0.0 & Virtual antenna WGS84 ellipsoid altitude, metres; physical legacy tracking retains height zero. \\
 \code{pointer_site_configured} & False & Boolean assertion that the antenna location is established; required for virtual trajectory tracking. \\
+\code{pointer_location_format} & latlon & Antenna entry: latlon, mgrs or relative; relative coordinates are recalculated during validation. \\
+\code{pointer_location_code} & (empty) & MGRS entry provenance, up to 80 characters; canonical coordinates are authoritative for absolute entry. \\
+\code{pointer_launch_heading} & 0.0 & True heading from antenna to rocket on its launch pad, 0 to 360 degrees. \\
+\code{pointer_launch_distance} & 0.0 & Horizontal antenna-to-pad range in the antenna ENU frame, 0 to 100000 metres. \\
+\code{pointer_height_difference} & 0.0 & Antenna minus launch ellipsoid altitude, metres; positive means antenna above launch site. \\
 \code{pointer_calibrated} & False & Retained assertion, always cleared by disk load and mode changes; not a manual-send prerequisite. \\
 \code{pointer_az_offset} & 0.0 & Retained offset field; not applied by current legacy manual/tracking dispatch. \\
 \code{pointer_el_offset} & 0.0 & Retained offset field; not applied by current legacy manual/tracking dispatch. \\

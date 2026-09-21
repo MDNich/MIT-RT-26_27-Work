@@ -1,5 +1,12 @@
 # Implementation and acceptance status
 
+## September 21 Mac revision — antenna location entry
+
+- Antenna mission location accepts latitude/longitude, MGRS, or launch-relative true heading, horizontal distance and antenna-minus-launch altitude difference. The preview resolves WGS84 coordinates offline.
+- MGRS format/code and relative parameters persist in mission JSON and portable flights; old files retain latitude/longitude defaults. Relative positions recalculate when the mission launch site changes.
+- WGS84 tangent-frame solving preserves antenna-to-pad heading and horizontal range, with 0–100 km input validation. Cardinal, oblique, southern-hemisphere, high-latitude and antimeridian cases are covered.
+- **107 regression tests passed**. Native Mac dark/daylight forms reviewed. Packaged verification exercises MGRS and relative positions through the flight-file workflow. Windows has not been rebuilt.
+
 ## September 21 Mac revision — virtual pointer and dropdown repair
 
 - Mission configuration includes an Antenna pointer tab with a persistent WGS84 location and an explicit location-established flag.

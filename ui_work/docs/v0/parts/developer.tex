@@ -737,6 +737,20 @@ $[-90,90]$ degrees and advances along the shortest azimuth route with bounded
 angular speeds. Virtual bytes use the separate \code{virtual_pointer_tx} capture
 channel; command events include a \code{VIRTUAL} source.
 
+\code{PointerLocation} uses the existing offline MGRS converter and keeps
+canonical absolute coordinates across display-format changes. Relative entry
+stores bearing $b$, horizontal distance $d$ and altitude difference $\Delta h$.
+During mission validation, \code{pointer_from_launch} solves antenna latitude
+and longitude on WGS84 with $h_a=h_l+\Delta h$ so that the launch point in the
+antenna's ENU frame satisfies $E=d\sin b$ and $N=d\cos b$. A bounded Newton
+iteration uses metre-scaled finite differences and a $10^{-5}$\,m residual
+criterion. Inputs are limited to 100\,km; degenerate or nonconvergent coordinates
+raise a visible validation error. No additional runtime dependency is needed.
+Launch edits and disk loads re-resolve relative positions; absolute MGRS entry
+retains its canonical latitude/longitude. Old mission files default to lat/lon.
+Tests cover heading chirality, both hemispheres, high latitude, the antimeridian,
+zero distance, invalid entries and mission/flight persistence.
+
 \code{VirtualFlight} owns its reference, independent clock, speed and antenna
 origin. For a launch-frame ENU point $p_l$, ECEF origins $o_l,o_a$ and ECEF-to-ENU
 rotation matrices $R_l,R_a$, the antenna-frame vector is
@@ -986,7 +1000,7 @@ CLI smoke entry points are:
 \end{longtable}
 
 \subsection{Recorded results and their limits}
-The current virtual-pointer revision passed 101 Mac regression tests. Native Cocoa popup checks cover both themes and long device names. The previous Settings/engine revision passed 94 tests. Settings persistence, shortcut handling, bundled/custom simulations and local/latest/pinned build paths are covered. The earlier dual-video revision passed 77 tests. New checks
+The current antenna-location revision passed 107 Mac regression tests; the preceding virtual-pointer revision passed 101. Native Cocoa popup checks cover both themes and long device names. The previous Settings/engine revision passed 94 tests. Settings persistence, shortcut handling, bundled/custom simulations and local/latest/pinned build paths are covered. The earlier dual-video revision passed 77 tests. New checks
 cover camera reservations during open/close, reciprocal camera and serial
 dropdown exclusion, independent stream failure and frames, old single-video
 replay, two-feed flight archives and compact layouts. The refreshed package

@@ -1,6 +1,7 @@
-"""Three interchangeable launch-location entry forms with offline conversion."""
+"""Launch and antenna location entry with offline coordinate conversion."""
 
-from PySide6.QtCore import Signal
+import math
+from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -9,9 +10,13 @@ from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QLineEdit,
     QLabel,
+    QSizePolicy,
 )
 from openlocationcode import openlocationcode as olc
-from .location import Location, coordinates, decode_mgrs, decode_plus_code, encode_mgrs, encode_plus_code
+from .location import (
+    Location, coordinates, decode_mgrs, decode_plus_code, encode_mgrs, encode_plus_code, pointer_from_launch,
+)
+from .domain import to_enu
 from .widgets import ComboBox as QComboBox
 
 
@@ -175,3 +180,171 @@ class LaunchLocation(QWidget):
             return
         self._location = value
         self.preview.setText(f"Launch site: {value.latitude:.7f}°, {value.longitude:.7f}°\n{value.note}")
+
+
+class LocationPages(QStackedWidget):
+    def sizeHint(self):
+        return self.currentWidget().sizeHint()
+
+    def minimumSizeHint(self):
+        return self.currentWidget().minimumSizeHint()
+
+
+class PointerLocation(QWidget):
+    """Antenna entry; relative offsets follow the current mission launch origin."""
+
+    def __init__(self, mission, launch_origin, parent=None):
+        super().__init__(parent)
+        self.launch_origin = launch_origin
+        self._location = coordinates(mission.pointer_latitude, mission.pointer_longitude)
+        self._kind = mission.pointer_location_format
+        self._has_location = mission.pointer_site_configured
+        self._editing = False
+        self._filling = True
+        root = QVBoxLayout(self)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        self.format = QComboBox()
+        for title, key in [("Latitude / longitude", "latlon"), ("MGRS", "mgrs"), ("Relative to launch", "relative")]:
+            self.format.addItem(title, key)
+        self.format.setAccessibleName("Antenna location coordinate format")
+        self.format.setCurrentIndex(self.format.findData(self._kind))
+        root.addWidget(self.format)
+        self.pages = LocationPages()
+        self.pages.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        root.addWidget(self.pages)
+        page = QWidget()
+        form = QFormLayout(page)
+        self.latitude = self.number(-90, 90, 7, mission.pointer_latitude)
+        self.longitude = self.number(-180, 180, 7, mission.pointer_longitude)
+        form.addRow("Latitude (°)", self.latitude)
+        form.addRow("Longitude (°)", self.longitude)
+        self.pages.addWidget(page)
+        page = QWidget()
+        form = QFormLayout(page)
+        self.mgrs = QLineEdit(mission.pointer_location_code or encode_mgrs(
+            mission.pointer_latitude, mission.pointer_longitude
+        ))
+        self.mgrs.setMaxLength(80)
+        self.mgrs.setPlaceholderText("e.g. 18T UN 20615 30290")
+        self.mgrs.setAccessibleName("Antenna MGRS coordinate")
+        form.addRow("MGRS", self.mgrs)
+        self.pages.addWidget(page)
+        page = QWidget()
+        form = QFormLayout(page)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
+        self.heading = self.number(0, 360, 3, mission.pointer_launch_heading)
+        self.distance = self.number(0, 100_000, 2, mission.pointer_launch_distance)
+        self.height_difference = self.number(-10000, 10000, 2, mission.pointer_height_difference)
+        form.addRow("Heading: antenna → launch pad (° true)", self.heading)
+        form.addRow("Horizontal distance to launch pad (m)", self.distance)
+        form.addRow("Antenna altitude − launch altitude (m)", self.height_difference)
+        note = QLabel("0° points north, 90° east. Positive height means the antenna is above the launch site. The rocket position here is its launch-pad position.")
+        note.setWordWrap(True)
+        form.addRow(note)
+        self.pages.addWidget(page)
+        self.absolute_height = QWidget()
+        form = QFormLayout(self.absolute_height)
+        form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
+        self.altitude = self.number(-10000, 20000, 2, mission.pointer_altitude)
+        form.addRow("Antenna altitude, WGS84 ellipsoid (m)", self.altitude)
+        root.addWidget(self.absolute_height)
+        self.preview = QLabel()
+        self.preview.setWordWrap(True)
+        self.preview.setAccessibleName("Resolved antenna coordinates and altitude")
+        root.addWidget(self.preview)
+        for field in (self.latitude, self.longitude):
+            field.valueChanged.connect(self.edited)
+        self.mgrs.textChanged.connect(self.edited)
+        for field in (self.altitude, self.heading, self.distance, self.height_difference):
+            field.valueChanged.connect(self.update_preview)
+        self.format.currentIndexChanged.connect(self.change_format)
+        if mission.pointer_location_code and self._kind == "mgrs":
+            self._location = Location(mission.pointer_latitude, mission.pointer_longitude, mission.pointer_location_code)
+        self._filling = False
+        self.show_page()
+        self.update_preview()
+
+    @staticmethod
+    def number(low, high, decimals, value):
+        field = QDoubleSpinBox()
+        field.setDecimals(decimals)
+        field.setRange(low, high)
+        field.setValue(value)
+        return field
+
+    def value(self):
+        if self._kind == "relative":
+            return pointer_from_launch(
+                self.launch_origin(), self.heading.value(), self.distance.value(), self.height_difference.value()
+            )
+        point = self._location
+        if self._editing:
+            point = (decode_mgrs(self.mgrs.text()) if self._kind == "mgrs"
+                     else coordinates(self.latitude.value(), self.longitude.value()))
+        return point, self.altitude.value()
+
+    def edited(self):
+        if not self._filling:
+            self._editing = True
+            self._has_location = True
+            self.update_preview()
+
+    def show_page(self):
+        self.pages.setCurrentIndex(self.format.currentIndex())
+        self.pages.updateGeometry()
+        self.absolute_height.setVisible(self._kind != "relative")
+
+    def change_format(self):
+        try:
+            point, altitude = self.value()
+        except ValueError:
+            point, altitude = self._location, self.altitude.value()
+        self._filling = True
+        self._kind = self.format.currentData()
+        self.latitude.setValue(point.latitude)
+        self.longitude.setValue(point.longitude)
+        self.altitude.setValue(altitude)
+        code = encode_mgrs(point.latitude, point.longitude) if self._kind == "mgrs" else ""
+        self.mgrs.setText(code)
+        if self._kind == "relative" and self._has_location:
+            try:
+                launch = self.launch_origin()
+            except ValueError:
+                pass  # Show the missing-origin explanation until the launch site is set.
+            else:
+                east, north, _ = to_enu(*launch, (point.latitude, point.longitude, altitude))
+                if math.hypot(east, north) <= 100_000 and abs(altitude - launch[2]) <= 10000:
+                    self.heading.setValue(math.degrees(math.atan2(east, north)) % 360)
+                    self.distance.setValue(math.hypot(east, north))
+                    self.height_difference.setValue(altitude - launch[2])
+        self._location = Location(point.latitude, point.longitude, code)
+        self._editing = False
+        self._filling = False
+        self.show_page()
+        self.update_preview()
+
+    def update_preview(self):
+        if self._filling:
+            return
+        try:
+            point, altitude = self.value()
+        except ValueError as exc:
+            self.preview.setText(str(exc))
+            return
+        self._location = point
+        self.preview.setText(
+            f"Antenna: {point.latitude:.7f}°, {point.longitude:.7f}°\n"
+            f"{altitude:.2f} m ellipsoid · {point.note}"
+        )
+
+    def apply(self, mission):
+        point, altitude = self.value()
+        mission.pointer_latitude, mission.pointer_longitude = point.latitude, point.longitude
+        mission.pointer_altitude = altitude
+        mission.pointer_location_format = self._kind
+        mission.pointer_location_code = point.code
+        mission.pointer_launch_heading = self.heading.value()
+        mission.pointer_launch_distance = self.distance.value()
+        mission.pointer_height_difference = self.height_difference.value()

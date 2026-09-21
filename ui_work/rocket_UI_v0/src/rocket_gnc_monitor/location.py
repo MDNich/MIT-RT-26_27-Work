@@ -1,10 +1,12 @@
 """Offline WGS84 launch-site entry using MGRS and Google Open Location Codes."""
 
 from dataclasses import dataclass
+import math
 import re
 import mgrs
+import numpy as np
 from openlocationcode import openlocationcode as olc
-from .domain import finite
+from .domain import finite, to_enu
 
 
 @dataclass(frozen=True)
@@ -60,3 +62,47 @@ def decode_plus_code(text, reference=None):
 def encode_plus_code(latitude, longitude):
     coordinates(latitude, longitude)
     return olc.encode(latitude, longitude, codeLength=11)
+
+
+def pointer_from_launch(launch, heading, distance, height_difference):
+    """Place a nearby antenna using the launch vector in the antenna's ENU frame.
+
+    Heading points from antenna to pad, clockwise from true north. Distance is
+    horizontal (not slant range); height difference is antenna minus launch
+    ellipsoid altitude. Solve WGS84 coordinates so the virtual pointer sees that
+    exact horizontal vector, including across the longitude seam.
+    """
+    coordinates(*launch[:2])
+    if not all(finite(v) for v in (*launch, heading, distance, height_difference)):
+        raise ValueError("Relative antenna coordinates must be finite")
+    if not 0 <= heading <= 360 or not 0 <= distance <= 100_000:
+        raise ValueError("Use a heading from 0 to 360° and a horizontal distance from 0 to 100,000 m")
+    altitude = launch[2] + height_difference
+    if distance == 0:
+        return coordinates(*launch[:2]), altitude
+    angle = math.radians(heading)
+    target = np.array([distance * math.sin(angle), distance * math.cos(angle)])
+    lat, lon = launch[:2]
+    # Work in metres of tangent displacement to keep the Jacobian well scaled.
+    for _ in range(30):
+        origin = (lat, lon, altitude)
+        residual = np.asarray(to_enu(*launch, origin)[:2]) - target
+        if np.linalg.norm(residual) < 1e-5:
+            return coordinates(lat, lon), altitude
+        cos_lat = math.cos(math.radians(lat))
+        if abs(cos_lat) < 1e-8:
+            break
+        dlat, dlon = 1 / 111_320, 1 / (111_320 * cos_lat)
+        jacobian = np.column_stack([
+            np.asarray(to_enu(*launch, (lat + dlat, lon, altitude))[:2]) - residual - target,
+            np.asarray(to_enu(*launch, (lat, lon + dlon, altitude))[:2]) - residual - target,
+        ])
+        try:
+            step = np.linalg.solve(jacobian, residual)
+        except np.linalg.LinAlgError:
+            break
+        lat -= step[0] * dlat
+        lon = (lon - step[1] * dlon + 180) % 360 - 180
+        if not -90 < lat < 90:
+            break
+    raise ValueError("Cannot resolve this relative offset; enter antenna latitude/longitude or MGRS instead")

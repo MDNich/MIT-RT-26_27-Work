@@ -62,6 +62,11 @@ class Mission:
     pointer_longitude: float = 0.0
     pointer_altitude: float = 0.0
     pointer_site_configured: bool = False
+    pointer_location_format: str = "latlon"
+    pointer_location_code: str = ""
+    pointer_launch_heading: float = 0.0
+    pointer_launch_distance: float = 0.0
+    pointer_height_difference: float = 0.0
     pointer_calibrated: bool = False
     pointer_az_offset: float = 0.0
     pointer_el_offset: float = 0.0
@@ -87,6 +92,16 @@ class Mission:
     def validate(self):
         if type(self.pointer_site_configured) is not bool:
             raise ValueError("Antenna location established must be true or false")
+        if self.pointer_location_format not in {"latlon", "mgrs", "relative"}:
+            raise ValueError("Unsupported antenna location format")
+        if not isinstance(self.pointer_location_code, str) or len(self.pointer_location_code) > 80:
+            raise ValueError("Invalid antenna location code")
+        if not all(finite(v) for v in (
+            self.pointer_launch_heading, self.pointer_launch_distance, self.pointer_height_difference
+        )):
+            raise ValueError("Relative antenna coordinates must be finite")
+        if not 0 <= self.pointer_launch_heading <= 360 or not 0 <= self.pointer_launch_distance <= 100_000:
+            raise ValueError("Invalid relative antenna heading or horizontal distance")
         if not isinstance(self.launch_site_name, str) or len(self.launch_site_name) > 80:
             raise ValueError("Invalid launch site name")
         if self.launch_location_format not in {"latlon", "mgrs", "pluscode"}:
@@ -146,6 +161,16 @@ class Mission:
         if not 0 < self.rail_length <= 100 or not 0 <= self.rail_tilt < 90:
             raise ValueError("Invalid rail configuration")
         validate_wind(self.wind)
+        if self.pointer_location_format == "relative":
+            if not self.site_configured:
+                raise ValueError("Establish the launch origin before using a relative antenna location")
+            from .location import pointer_from_launch
+
+            point, self.pointer_altitude = pointer_from_launch(
+                (self.latitude, self.longitude, self.altitude),
+                self.pointer_launch_heading, self.pointer_launch_distance, self.pointer_height_difference,
+            )
+            self.pointer_latitude, self.pointer_longitude = point.latitude, point.longitude
         return self
 
     def save(self, path):

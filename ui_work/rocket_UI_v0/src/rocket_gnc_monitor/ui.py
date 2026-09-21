@@ -53,7 +53,7 @@ from .widgets import STYLE, COLORS, AttitudeView, MountView, ComboBox as QComboB
 from .rocket_panel import RocketPanel
 from .zephyrus import legacy_values
 from .fonts import FONT_FAMILY, configure_fonts
-from .location_ui import LaunchLocation
+from .location_ui import LaunchLocation, PointerLocation
 from .settings_ui import SettingsDialog
 from .virtual_pointer import VIRTUAL_POINTER_DEVICE
 
@@ -151,9 +151,7 @@ class MissionDialog(QDialog):
                 "Antenna pointer",
                 [
                     ("pointer_site_configured", "Antenna location established", "bool"),
-                    ("pointer_latitude", "Antenna latitude (WGS84 degrees)", (-90, 90, 7)),
-                    ("pointer_longitude", "Antenna longitude (WGS84 degrees)", (-180, 180, 7)),
-                    ("pointer_altitude", "Antenna altitude, WGS84 ellipsoid (m)", (-1000, 10000, 2)),
+                    ("pointer_location", "Antenna location", "pointer_location"),
                 ],
             ),
         ]
@@ -168,6 +166,10 @@ class MissionDialog(QDialog):
                         lambda: self.fields["site_configured"].setChecked(True)
                     )
                     form.addRow(title, self.location)
+                    continue
+                if kind == "pointer_location":
+                    self.pointer_location = PointerLocation(mission, self.launch_origin)
+                    form.addRow(self.pointer_location)
                     continue
                 value = getattr(mission, key)
                 if kind == "text":
@@ -199,6 +201,12 @@ class MissionDialog(QDialog):
             scroll.setWidgetResizable(True)
             scroll.setWidget(page)
             tabs.addTab(scroll, page_title)
+        for field in (self.location.latitude, self.location.longitude, self.fields["altitude"]):
+            field.valueChanged.connect(self.pointer_location.update_preview)
+        for field in (self.location.mgrs, self.location.plus_code, self.location.reference_lat, self.location.reference_lon):
+            field.textChanged.connect(self.pointer_location.update_preview)
+        self.fields["site_configured"].toggled.connect(self.pointer_location.update_preview)
+        self.location.preset_selected.connect(self.pointer_location.update_preview)
         note = label(
             "Set the antenna location for virtual trajectory tracking. Physical-board tracking retains the ground GPS set with Send to AntPtr.",
             "muted",
@@ -211,6 +219,12 @@ class MissionDialog(QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         root.addWidget(buttons)
+
+    def launch_origin(self):
+        if not self.fields["site_configured"].isChecked():
+            raise ValueError("Establish the launch origin in the Mission tab to use a relative antenna location")
+        point = self.location.value()
+        return point.latitude, point.longitude, self.fields["altitude"].value()
 
     def accept(self):
         try:
@@ -230,6 +244,7 @@ class MissionDialog(QDialog):
             self.mission.launch_location_format = self.location.format.currentData()
             self.mission.launch_location_code = location.code
             self.mission.launch_site_name = self.location.preset.currentData()
+            self.pointer_location.apply(self.mission)
             self.mission.validate()
         except ValueError as exc:
             QMessageBox.warning(self, "Mission settings", str(exc))
