@@ -1,0 +1,17 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\node[box,text width=36mm] (inputs) at (0,0) {Mission + ORK + motors\\wind, rail and seed};
+\node[box,text width=36mm] (job) at (5.15,0) {Python job directory\\copied inputs + request};
+\node[accentbox,text width=36mm] (java) at (10.3,0) {Private Java process\\RocketBridge + team engine};
+\node[box,text width=36mm] (result) at (10.3,-2) {Trajectory CSV + JSON\\or structured error};
+\node[box,text width=36mm] (validate) at (5.15,-2) {Validate trajectory\\attach hashes and provenance};
+\node[box,text width=36mm] (view) at (0,-2) {Qt result handling\\reference-origin checks};
+\draw[flow] (inputs)--(job);
+\draw[flow] (job)--(java);
+\draw[flow] (java)--(result);
+\draw[flow] (result)--(validate);
+\draw[flow] (validate)--(view);
+\node[captionnode,text width=130mm] at (5.15,-3.3) {Cancellation and worker limits do not stop telemetry acquisition. Simulation results remain nominal and are never translated directly into physical control commands.};
+\end{tikzpicture}
+\caption{The simulation boundary uses files and a subprocess, keeping the JVM outside the Qt process.}
+\end{figure}

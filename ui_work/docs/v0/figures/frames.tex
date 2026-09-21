@@ -1,0 +1,20 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}[>=Latex]
+\begin{scope}[shift={(0,0)}]
+\draw[->,thick,cernblue] (0,0)--(2.5,0) node[right]{East};
+\draw[->,thick,cernblue] (0,0)--(0,2.4) node[above]{North};
+\draw[->,thick,cernblue] (0,0)--(-1.25,-.85) node[left]{Up};
+\draw[->,teal,thick] (0,1.6) arc[start angle=90,end angle=0,radius=1.6];
+\node[teal,font=\footnotesize] at (1.4,1.6) {azimuth};
+\node[captionnode] at (.5,-1.6) {Navigation frame\\$E\times N=U$};
+\end{scope}
+\begin{scope}[shift={(7,0)}]
+\draw[->,thick,cernblue] (0,0)--(2.5,0) node[right]{$+X$: west};
+\draw[->,thick,cernblue] (0,0)--(0,2.4) node[above]{$+Y$: up};
+\draw[->,thick,cernblue] (0,0)--(-1.5,-.9) node[left]{$+Z$: north};
+\node[captionnode,text width=55mm] at (.4,-1.6) {Mount renderer coordinates\\East is $-X$, not $+X$};
+\end{scope}
+\end{tikzpicture}
+\caption{The navigation and renderer bases are different but both preserve the intended chirality. The diagram is a projected axis sketch; up on the page is not a universal physical direction.}
+\label{fig:frames}
+\end{figure}

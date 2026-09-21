@@ -1,0 +1,46 @@
+\begin{longtable}{@{}L{.08\linewidth}L{.34\linewidth}L{.51\linewidth}@{}}
+\toprule Column & Field & Meaning \\\midrule\endhead
+1 & \code{timestamp} & Receive UTC, Unix seconds. \\
+2 & \code{pyros} & Six pyro continuity codes. \\
+3 & \code{servos} & Four legacy drive values. \\
+4 & \code{servos_deg} & Four converted servo angles; first two use 60-degree scale, last two 50-degree scale; good CSV rounded to two decimals. \\
+5 & \code{accelerometer} & XYZ acceleration, m/s squared. \\
+6 & \code{barofilteredalt} & Filtered barometric altitude, m. \\
+7 & \code{temp} & Legacy calibrated temperature, degrees C. \\
+8 & \code{gyro} & XYZ gyro rates, degrees/s. \\
+9 & \code{gps_fix} & Rocket fix code. \\
+10 & \code{lat} & Rocket latitude, degrees. \\
+11 & \code{lon} & Rocket longitude, degrees. \\
+12 & \code{gpsalt} & GPS height, m; datum depends on firmware/configuration. \\
+13 & \code{gps_horiz_prec} & Horizontal GPS accuracy, m. \\
+14 & \code{gps_vert_prec} & Vertical GPS accuracy, m. \\
+15 & \code{gps_num_sat} & Satellite count. \\
+16 & \code{flight_time} & Original raw device clock, milliseconds. \\
+17 & \code{yaw_gyro_int} & Integrated yaw, degrees. \\
+18 & \code{pitch_gyro_int} & Integrated pitch, degrees. \\
+19 & \code{roll_gyro_int} & Integrated roll, degrees. \\
+20 & \code{state} & Legacy state enum string. \\
+21 & \code{pktnum} & Packet counter. \\
+22 & \code{rssi} & Ground receiver RSSI, dBm. \\
+23 & \code{armed_pyros} & Armed bits as list; good-packet CSV retains two unused zero entries. \\
+24 & \code{fired_pyros} & Fired bits as list; same good-packet padding. \\
+25 & \code{badpackets} & Rejected-packet counter. \\
+26 & \code{rxrssi} & Onboard RSSI, dBm. \\
+27 & \code{accel_integrated_velo} & Reported integrated velocity, m/s. \\
+28 & \code{baro_max_alt} & Maximum barometric altitude, m. \\
+29 & \code{gps_max_alt} & Maximum GPS altitude, m. \\
+30 & \code{pyro_resistances} & Pyro resistance list; good-packet output pads two unused zero entries. \\
+31 & \code{cell_voltages} & Three cell voltages, V. \\
+32 & \code{total_current} & Total current, A. \\
+33 & \code{converter_voltages} & Six rail voltages, V. \\
+34 & \code{converter_currents} & Six rail currents, A. \\
+35 & \code{bms_protections_enabled} & BMS enabled protection bits. \\
+36 & \code{bms_protection_status} & BMS triggered protection bits. \\
+37 & \code{bms_temp} & BMS temperature, degrees C. \\
+38 & \code{enabled_status} & Derived rail-enabled states from voltage proximity to nominal. \\
+39 & \code{angleFromVertical} & Legacy angle-from-vertical derived from pitch/yaw, degrees. \\
+40 & \code{gnd_lat} & Frozen/display receiver latitude convention, rounded to five decimals. \\
+41 & \code{gnd_lon} & Receiver longitude convention, rounded to five decimals. \\
+42 & \code{gnd_fix} & Legacy ground fix Boolean: trailer fix equals 3. \\
+43 & \code{gnd_alt} & Legacy receiver height: signed wire integer divided by 1000, rounded for display/CSV. \\
+\bottomrule\end{longtable}

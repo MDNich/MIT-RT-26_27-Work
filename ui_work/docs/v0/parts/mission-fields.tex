@@ -1,0 +1,38 @@
+\begin{longtable}{@{}L{.28\linewidth}L{.18\linewidth}L{.47\linewidth}@{}}
+\toprule Field & Default & Meaning \\\midrule\endhead
+\code{name} & Untitled mission & Human-readable mission name. \\
+\code{latitude} & 0.0 & WGS84 launch latitude in degrees; -90 to 90. \\
+\code{longitude} & 0.0 & WGS84 launch longitude in degrees; -180 to 180. \\
+\code{altitude} & 0.0 & Launch ellipsoid altitude in metres; used by geographic transforms. \\
+\code{altitude_msl} & 0.0 & Launch mean-sea-level elevation in metres; weather and engine atmosphere. \\
+\code{site_configured} & False & Explicit origin-established flag; required for LIVE trajectory and simulation. \\
+\code{launch_location_format} & latlon & Entry provenance: latlon, mgrs or pluscode. \\
+\code{launch_location_code} & (empty) & Entered/resolved code; up to 80 characters. Canonical lat/lon remains authoritative. \\
+\code{launch_site_name} & (empty) & Preset name, currently URRG or empty for Custom; up to 80 characters. \\
+\code{legacy_altitude} & unknown & unknown, ellipsoid, gps\_agl or barometric\_agl; selects trajectory height interpretation. \\
+\code{canard_count} & 4 & Number of UI canard slots, integer 0 to 16; four tabs are always added. \\
+\code{pointer_latitude} & 0.0 & Retained configuration field; not the current frozen legacy tracking origin. \\
+\code{pointer_longitude} & 0.0 & Retained configuration field; not the current frozen legacy tracking origin. \\
+\code{pointer_altitude} & 0.0 & Retained configuration field; legacy pointing uses ground height zero. \\
+\code{pointer_calibrated} & False & Retained assertion, always cleared by disk load and mode changes; not a manual-send prerequisite. \\
+\code{pointer_az_offset} & 0.0 & Retained offset field; not applied by current legacy manual/tracking dispatch. \\
+\code{pointer_el_offset} & 0.0 & Retained offset field; not applied by current legacy manual/tracking dispatch. \\
+\code{pointer_el_min} & 0.0 & Stored route-helper envelope minimum; not an enforced operator control limit. \\
+\code{pointer_el_max} & 80.0 & Stored route-helper envelope maximum; ordered within -90 to 90 degrees. \\
+\code{pointer_az_min} & 0.0 & Stored route-helper azimuth minimum; not enforced by the legacy dispatch path. \\
+\code{pointer_az_max} & 359.0 & Stored route-helper azimuth maximum; ordered within 0 to 360 degrees. \\
+\code{pointer_full_rotation} & False & Stored route-helper choice; not a firmware cable-wrap guarantee. \\
+\code{freshness} & 2.0 & Maximum acceptable sample age, 0.1 to 60 seconds. \\
+\code{video_offset} & 0.0 & Seconds; positive value delays recorded video relative to telemetry. \\
+\code{wind} & One calm layer at height 0 & 1 to 200 increasing nonnegative AGL heights with east/north velocity components; max speed 150 m/s. \\
+\code{wind_source} & Manual · calm & Human-readable profile provenance. \\
+\code{weather_raw} & \{\} & Cached normalized request/result/provider payload, when retrieved. \\
+\code{model} & (empty) & Selected ORK path. Archives embed it and rebind the extracted path. \\
+\code{motor_files} & [] & Up to 100 custom curve paths; selected files are embedded in flight archives. \\
+\code{simulation_index} & 0 & Saved ORK simulation, zero-based integer 0 to 1000. \\
+\code{rail_length} & 2.0 & Launch rod length in metres; greater than 0 and at most 100. \\
+\code{rail_tilt} & 0.0 & Tilt from vertical in degrees; at least 0 and less than 90. \\
+\code{rail_heading} & 0.0 & True-north bearing in degrees; UI range 0 to 359.99. \\
+\code{seed} & 42 & Integer random seed, 0 to 2147483647. \\
+\code{low_battery} & 9.0 & Total-battery alert threshold in volts; 1-second dwell and 0.3 V clearing hysteresis. \\
+\bottomrule\end{longtable}

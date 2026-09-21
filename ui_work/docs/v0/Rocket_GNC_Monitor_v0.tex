@@ -1,0 +1,44 @@
+\documentclass[english,10pt,a4paper,titlepage]{scrartcl}
+\usepackage{report-style}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+\title{Rocket GNC Monitor v0}
+\subtitle{Complete functionality and developer documentation\\Application version 0.1.0}
+\author{MIT Rocket Team\\Avionics and GNC}
+\date{21 September 2026}
+\begin{document}
+\maketitle
+\section*{Document control and reading guide}
+\addcontentsline{toc}{section}{Document control and reading guide}
+This report documents the implemented desktop application in
+\code{ui_work/rocket_UI_v0}, including the portable flight-file workflow and
+URRG launch-site preset. Part I explains the operator interface and its
+observable behavior. Part II describes the software architecture, contracts,
+source files, build process and extension points. Appendices provide configuration,
+sample and file-field references.
+
+\begin{longtable}{@{}L{.27\linewidth}L{.68\linewidth}@{}}
+\toprule Item & Baseline \\\midrule\endhead
+Documentation date & 21 September 2026. \\
+Software identity & Rocket GNC Monitor, Python package version 0.1.0, application generation v0. \\
+Implementation reviewed & Source files and checked-in resources under \code{rocket_UI_v0}; exact file hashes are recorded in \code{evidence/source-manifest.json}. \\
+Current distribution & macOS arm64 app and DMG, rebuilt for flight save/load and URRG. Windows makefiles remain available; the Windows ZIP predates these changes. \\
+Validation evidence & Existing 71-test regression run, final focused checks, packaged startup/demo/video/flight/OpenRocket verification. This documentation pass does not constitute a new hardware qualification. \\
+Report style & KOMA-Script, 10 pt Latin Modern, A4 with 18 mm margins, blue headings, shaded tables and code blocks, matching the supplied GenMAPS report. All diagrams are editable TikZ with LaTeX text. \\
+\bottomrule
+\end{longtable}
+\statusnote{Reading the evidence}{Implemented behavior is distinguished from nominal simulation assumptions and future controlled-vehicle work. A valid software test result is not a measured mechanical pose, a radio acknowledgment or field acceptance.}
+\input{figures/system-overview}
+\clearpage
+{\small\tableofcontents}
+\clearpage
+\part{Application functionality and operation}
+\input{parts/functionality}
+\clearpage
+\part{Codebase and developer documentation}
+\input{parts/developer}
+\clearpage
+\appendix
+\input{parts/reference}
+\label{LastContentPage}
+\end{document}

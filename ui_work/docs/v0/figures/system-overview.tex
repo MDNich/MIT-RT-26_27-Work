@@ -1,0 +1,22 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}[node distance=12mm and 12mm]
+\node[box] (rocket) at (0,0) {Rocket flight computer\\Zephyrus telemetry};
+\node[box] (ground) at (5.1,0) {Ground station board\\radio and USB serial};
+\node[accentbox] (app) at (5.1,-2.05) {Rocket GNC Monitor\\views, commands\\and recording};
+\node[box] (pointer) at (10.2,-2.05) {Pointer control board\\separate USB serial};
+\node[box] (camera) at (0,-2.05) {USB video receiver\\camera input};
+\node[smallbox] (files) at (.2,-4.25) {Flight files\\and session replay};
+\node[smallbox] (engine) at (5.1,-4.25) {Private OpenRocket\\nominal simulation};
+\node[smallbox] (wind) at (10.2,-4.25) {Wind layers\\manual or online};
+\draw[flow] (rocket) -- node[above,font=\footnotesize]{radio} (ground);
+\draw[flow] (ground) -- node[right,font=\footnotesize,align=left]{telemetry /\\uplink} (app);
+\draw[flow] (camera) -- node[above,font=\footnotesize]{video} (app);
+\draw[flow] (app) -- node[above,font=\footnotesize]{aim} (pointer);
+\draw[flow] (app.south west) -- (files.north east);
+\draw[flow] (engine) -- (app);
+\draw[flow] (wind) -- (engine);
+\draw[optional] (files.north) to[bend left=18] (app.west);
+\end{tikzpicture}
+\caption{System boundary. The two serial boards are independent. Simulation, replay and drawing operate inside the desktop application; the app does not infer unavailable actuator feedback. Dashed flow denotes offline restoration.}
+\label{fig:system}
+\end{figure}

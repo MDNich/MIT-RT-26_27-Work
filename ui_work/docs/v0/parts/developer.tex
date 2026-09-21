@@ -1,0 +1,942 @@
+\section{Repository, entry points and source ownership}\label{sec:repo}
+The application is self-contained under \code{ui_work/rocket_UI_v0}. Its
+\code{src/rocket_gnc_monitor} package is the Python application;
+\code{simulation_bridge/src/RocketBridge.java} is the Java integration layer.
+The old PyQt5 ground-station folder is a behavioral reference, not a runtime
+dependency. Production builds use bundled resources and do not need the original
+telemetry, OpenRocket source or font-system paths.
+
+The console entry point \code{rocket-gnc-monitor} and
+\code{python -m rocket_gnc_monitor} both call \code{__main__.main}.
+The packaged launcher calls that same function. It parses arguments, registers
+Lucida Grande, names the Qt organization/application, resolves the per-user data
+directory, constructs \code{MainWindow} and enters the Qt event loop.
+The window owns one \code{Controller}; its close event invokes controller shutdown.
+
+\begin{lstlisting}
+rocket_UI_v0/
+  src/rocket_gnc_monitor/    # application package
+  simulation_bridge/src/    # Java bridge source
+  resources/                # icon, fonts, demos, motors, examples
+  docs/                     # in-app Markdown help and dependency notices
+  tests/                    # unit, Qt, serial and engine integration tests
+  tests/fixtures/           # captured legacy contract and small .ork fixture
+  scripts/                  # setup, build and package verification
+  packaging/                # PyInstaller spec, launcher, entitlements
+  vendor/                   # staged engine, bridge, JRE, build manifests
+  build/                    # generated jobs, logs and validation artifacts
+  dist/                     # distributable app/DMG or folder/ZIP
+  Makefile                  # shared native build entry points
+  Makefile.macos / Makefile.windows
+  pyproject.toml / uv.lock / requirements-build.txt
+\end{lstlisting}
+
+\subsection{Module map}
+Paths in this report link to the reviewed source relative to the existing
+repository layout. Use the named symbols rather than fixed line numbers as
+maintenance anchors.
+
+\begin{longtable}{@{}L{.29\linewidth}L{.64\linewidth}@{}}
+\toprule Module & Responsibility and main seams \\\midrule\endhead
+\src{src/rocket_gnc_monitor/__main__.py} & CLI/startup; Qt data path and fonts; startup, demo, flight and engine smoke modes. \\
+\src{src/rocket_gnc_monitor/controller.py} & State owner and orchestration: connection generations, polling, command dispatch, tracking, mode changes, recording, replay, file jobs, alerts and shutdown. \\
+\src{src/rocket_gnc_monitor/ui.py} & \code{MainWindow}, \code{MissionDialog}, workspace construction, shortcuts, file dialogs, result presentation, enabled states and plots. \\
+\src{src/rocket_gnc_monitor/rocket_panel.py} & Complete legacy rocket Telemetry/Commands/Power/Recovery subviews and retained confirmations. \\
+\src{src/rocket_gnc_monitor/widgets.py} & Themes, \code{AttitudeView}, \code{MountView}, local geometry, material colors and camera/pose transforms. \\
+\src{src/rocket_gnc_monitor/fonts.py} & Private font registration and global Qt font choice. \\
+\src{src/rocket_gnc_monitor/domain.py} & \code{Mission}, \code{Sample}, finite checks, geographic transforms, pointing and wind validation. Contains a synthetic test-data helper. \\
+\src{src/rocket_gnc_monitor/location.py} & Qt-independent coordinate conversion and \code{Location}. \\
+\src{src/rocket_gnc_monitor/location_ui.py} & \code{LaunchLocation} widget; format/preset state, preview and edit-versus-display distinction. \\
+\src{src/rocket_gnc_monitor/devices.py} & Port identity inventory and bounded independent \code{SerialWorker} threads. \\
+\src{src/rocket_gnc_monitor/protocol.py} & Incremental \code{ZephyrusDecoder}, pointer packet builder and legacy route-validation helper. \\
+\src{src/rocket_gnc_monitor/zephyrus.py} & Rocket command opcodes/packet building and canonical 43-column legacy CSV adapter. \\
+\src{src/rocket_gnc_monitor/legacy_sample.py} & Restricted AST-based CSV literal parsing and full row-to-sample conversion. \\
+\src{src/rocket_gnc_monitor/legacy.py} & Validated legacy CSV-to-session conversion, provenance and incomplete-import handling. \\
+\src{src/rocket_gnc_monitor/demo.py} & Bundled CSV integrity, launch cue, independent receiver clocks and plot-only ENU frame. \\
+\src{src/rocket_gnc_monitor/recording.py} & Asynchronous \code{SessionRecorder}, indexed read-only \code{SessionReader}, raw capture CRC reader. \\
+\src{src/rocket_gnc_monitor/flight.py} & Portable archive snapshot, atomic save, validated extraction and \code{LoadedFlight}. \\
+\src{src/rocket_gnc_monitor/media.py} & FFmpeg location, camera discovery, process arguments, frame queue, recording and orderly stop. \\
+\src{src/rocket_gnc_monitor/trajectory.py} & \code{Trajectory}, online wind normalization, motor resources and isolated \code{SimulationJob}. \\
+\src{src/rocket_gnc_monitor/__init__.py} & Package version identifier. \\
+\src{simulation_bridge/src/RocketBridge.java} & Fork-specific OpenRocket loading, motor resolution, nominal options, trajectory/error publication and private preferences. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Dependencies and resource resolution}
+Python is the main application language because Qt, serial I/O, numerical plots
+and filesystem orchestration fit one runtime. Java is isolated to the existing
+team OpenRocket fork. The GUI uses PySide6 Essentials and PyQtGraph with NumPy;
+serial transport uses pyserial, video uses imageio-ffmpeg's native FFmpeg, and
+location conversion uses \code{mgrs} and \code{openlocationcode}.
+
+The project permits Python 3.12 through 3.14 in metadata; the build guidance and
+tested environments center on 3.12--3.13. Dependency ranges live in
+\src{pyproject.toml}; \src{uv.lock} and \src{requirements-build.txt} pin build
+environments. Do not treat the range bounds as a tested matrix.
+
+Source execution resolves resources from the repository root. Frozen execution
+uses PyInstaller's \code{sys._MEIPASS}. FFmpeg is located through its wrapper;
+Java/engine/bridge are resolved under \code{vendor}. A wheel or editable Python
+package alone is not the complete production distribution: package the resource
+tree and native runtimes through the supplied build workflow.
+
+\section{Runtime architecture and state ownership}\label{sec:runtime}
+\input{figures/runtime}
+\subsection{Concurrency model}
+Qt widgets and controller state are updated on the main thread. Serial workers
+own their ports and decoders. The recorder has its own thread and SQLite
+connection. General background jobs use a four-worker executor; video open/close
+operations use a separate one-worker executor to serialize FFmpeg lifecycle
+changes. A decoder thread drains FFmpeg frames, with a separate stderr drain.
+
+The controller's 30 ms timer drains up to 2,000 queued messages per tick,
+advances DEMO/REPLAY, dispatches tracking when due, takes the most recent video
+frame, collects completed futures and updates alerts. Playback delta is capped
+at 0.3 s per tick, so a long blocked GUI does not produce an arbitrarily large
+playback jump. This desktop scheduler is not a hard real-time control loop.
+
+\begin{longtable}{@{}L{.30\linewidth}L{.21\linewidth}L{.42\linewidth}@{}}
+\toprule Buffer / cadence & Bound & Consequence \\\midrule\endhead
+Controller messages & 16,000 messages & UI overflow increments \code{ui_drops}; stale generations are ignored. \\
+Displayed history and track & 6,000 each & Bounded UI memory; not the full session archive. \\
+Plot time-series tail & 1,200 samples & Altitude/rate/rotation plots use a shorter recent tail. \\
+UI refresh & About 10 Hz & \code{refresh} throttles updates to 0.1 s. Some tables refresh every 0.5 s. \\
+Telemetry command queue & 64 commands & Bounded; each command expires after 0.5 s. \\
+Pointer command queue & 1 command & No silent overwrite; a pending dispatch prevents another ordinary target. \\
+Tracking & At most 5 Hz & New target only if the preceding one is not pending. \\
+Recorder queue & 16,000 entries & LIVE overflow records loss/fault. File import can wait rather than drop rows. \\
+Recorder commit & About every 0.25 s & Raw/CSV are flushed and fsynced before committing matching indexes/state. \\
+Video display queue & 2 frames & Old display frames are dropped for freshness, independently of FFmpeg recording. \\
+Replay history reconstruction & Previous 120 s & Earlier samples remain on disk and can be sought explicitly. \\
+\bottomrule
+\end{longtable}
+
+In LIVE, \code{Controller.enqueue} sends an accepted sample to the recorder
+before putting it into the UI queue. Raw callbacks also reach the recorder
+directly. Thus a dropped UI message need not mean the same sample was lost from
+disk. Conversely, recorder overflow is an independent data-loss condition.
+Do not merge these counters or move capture entirely behind UI repainting.
+
+\subsection{Connection generations and asynchronous results}
+A new serial connection receives a generation token. Worker messages are used
+only if the current role still owns that generation and the mode is LIVE.
+This prevents a late error/sample from an old worker from altering a new link.
+Video uses a separate generation and a single lifecycle executor to prevent an
+old open result from replacing a newer selection.
+
+General jobs report through the controller's future list and \code{task_done}
+signal. Weather/reference/simulation jobs retain source-mode identity; completed
+work from a different mode is not silently installed. Simulation results are
+also compared against the relevant mission inputs. The UI performs additional
+weather site checks and reference-origin validation.
+
+Flight operations use \code{flight_busy}. Saving captures copies of mutable
+mission/reference/history state before background I/O. Opening stores the
+connection generation and mission snapshot; if source/settings change while
+loading, the result is not applied over the newer context.
+
+\subsection{Mode transitions}
+\code{switch_mode} validates the target and verifies a requested demo resource
+before changing the current source. It stops logging, closes replay/serial/video
+resources, cancels host tracking, clears histories and command state, resets time
+and sample counters, clears pointer calibration and installs the new mode.
+DEMO saves the prior reference for restoration when leaving.
+
+\input{figures/modes}
+
+\code{open_replay} validates the session's mission/reference before replacing
+the current source, then enters REPLAY, restores the manifest, seeks to zero and
+stays paused. \code{apply_flight} restores an extracted flight's mission,
+reference and saved position; a planning-only file forces a clean LIVE state.
+Neither path restores a physical connection.
+
+\subsection{Lifecycle and shutdown}
+\code{Controller.shutdown} is idempotent. It stops the Qt timer, stops serial
+workers, closes video and waits for the video executor, cancels the active
+simulation, closes recorder/reader resources and waits for background work.
+Pending recording-close work is allowed to finish. Keep this ownership order
+when introducing a new worker so it cannot write to an already closed resource.
+
+\section{Data contracts, units and geographic frames}\label{sec:data}
+\subsection{Mission and Sample}
+\code{Mission} is a dataclass of persisted configuration. \code{validate}
+checks coordinate/numeric ranges, supported location/height choices, actuator
+count, seed/index, motor-path list and wind profile. \code{save} writes schema
+version 1 through temporary-file replacement. \code{load} accepts version 1,
+filters to known fields, uses dataclass defaults for absent fields and always
+clears \code{pointer_calibrated}. There is no general multi-version migration
+framework.
+
+\code{Sample} is a dataclass representing one accepted or imported sample.
+It contains device/receive times, source, packet number, navigation/kinematic
+values, phase, actuator dictionary and extensible details. Optional missing
+measurements use \code{None}; they are not replaced by zero. The live decoder
+converts nonfinite floating sensor values to unavailable values. JSON output
+rejects NaN. Appendices~\ref{app:mission} and \ref{app:sample} give all fields.
+
+\code{details} carries original legacy fields, provenance, boot index and
+quality annotations. Extend it conservatively: legacy rendering, CSV export,
+record/replay and archive validation all consume samples. New actuator entries
+should use explicit \code{demand}, \code{measured} and/or \code{drive} keys with
+declared units, rather than renaming the four unknown legacy channels.
+
+\subsection{WGS84 and local ENU}
+\code{ecef} uses WGS84 semi-major axis \(a=6378137\) m and eccentricity squared
+\(e^2=6.69437999014\times10^{-3}\).
+For latitude \(\phi\), longitude \(\lambda\), ellipsoid height \(h\):
+\[
+ N(\phi)=\frac{a}{\sqrt{1-e^2\sin^2\phi}},\quad
+ \boldsymbol{x}=\begin{bmatrix}
+ (N+h)\cos\phi\cos\lambda\\
+ (N+h)\cos\phi\sin\lambda\\
+ (N(1-e^2)+h)\sin\phi
+ \end{bmatrix}.
+\]
+\code{to_enu} subtracts the origin ECEF vector and applies the standard local
+east/north/up rotation at that origin. The plotting contract is
+\((E,N,U)\), with \(E\times N=U\).
+\code{pointing} converts the local displacement to
+\[
+ \mathrm{az}=\operatorname{atan2}(E,N)\bmod 360^\circ,\qquad
+ \mathrm{el}=\operatorname{atan2}\bigl(U,\sqrt{E^2+N^2}\bigr).
+\]
+The helper rejects the near-origin and nearly overhead cases described in Part I.
+The live legacy pointer caller deliberately chooses its own origin/height
+convention; it does not call the mission trajectory conversion as a substitute.
+
+\input{figures/frames}
+
+\subsection{Time normalization and reboot behavior}
+The decoder extends a 32-bit millisecond rollover when a backward jump exceeds
+\(2^{31}\). A smaller backward jump starts another boot epoch, resets rollover
+offset and clears sequence-gap history. Sequence gaps use modulo-65536
+differences and count missing values only for forward deltas between 2 and 32767.
+The controller uses boot-index changes to invalidate alignment and old history.
+
+For recording, elapsed time is the host monotonic receive time minus recorder
+start, rounded to microseconds. Replay is driven by this elapsed column,
+not by pretending onboard uptime began at zero. Events restore alignment and
+last sent pointer state. Imported CSV uses original receive timestamps relative
+to its first row. DEMO uses its receiver's own timestamps; it does not merge
+the three clocks.
+
+\section{Serial and protocol implementation}\label{sec:protocol}
+\subsection{Port ownership and transport rules}
+\code{ports} returns device, description, serial number and an identity derived
+from VID/PID/serial when possible. \code{Controller.connect} enforces LIVE,
+nonempty selection and distinct board ports, then constructs the worker.
+Connecting does not start telemetry polling or transmit a setup command.
+
+The worker opens pyserial with the role-specific read timeout and a 0.2 s write
+timeout. Queued writes call \code{cancel_read} where available to wake the worker.
+Only the telemetry role has the polling gate. Pointer RX is logged as bytes and
+hex status, not decoded as authoritative measured angles.
+Each write checks expiration, records the actually written prefix, and emits
+\code{sent} only if the complete payload was written. Errors close the port;
+there is no retry loop.
+
+\subsection{Telemetry framing and checksum}
+A telemetry frame is 144 bytes:
+\begin{lstlisting}
+offset 0..1      AB AB synchronizer
+offset 2..129    128-byte Zephyrus payload P
+offset 130..143 14-byte ground receiver trailer G
+
+P[127] = sum(P[0:127]) modulo 256
+\end{lstlisting}
+The incremental parser retains partial frames and a trailing potential sync
+byte. After a bad checksum it advances one byte and rescans, so an overlapping
+valid synchronizer is not thrown away. It accepts concatenated reads and
+reports accepted, rejected, discarded-byte and inferred-gap counters.
+The additive checksum covers the payload only, is weak error detection and
+does not authenticate a sender.
+
+Payload offsets are relative to \(P[0]\); multibyte fields below are little
+endian unless stated otherwise.
+\begin{longtable}{@{}L{.14\linewidth}L{.31\linewidth}L{.48\linewidth}@{}}
+\toprule Bytes & Field & Decode / interpretation \\\midrule\endhead
+0--1 & Pyro continuity & Six two-bit states from the packed 16-bit value. \\
+2, 3 & Armed, fired & Channel bit masks; channels 0--5. \\
+4--9 & Pyro resistance & Six unsigned bytes divided by 10. \\
+10--15 & Servo drives & Four packed 12-bit values, retained as legacy drives. \\
+16--24 & Acceleration XYZ & Three signed 24-bit integers divided by 12800 and multiplied by 9.80665; m/s$^2$. \\
+25--30 & Gyro XYZ & Signed int16 values times 0.03051757812; legacy Y sign inverted; degrees/s. \\
+31 & Rocket GPS fix & Raw fix code; 3D trajectory requires at least 3. \\
+32--39 & Latitude, longitude & Two signed int32 values times $10^{-7}$ degrees. Invalid bounds clear coordinates/fix. \\
+40--43 & GPS height & Float32 metres; interpretation is mission-dependent. \\
+44--51 & Horizontal/vertical accuracy & Two uint32 values divided by 1000. \\
+52 & Satellites & Unsigned byte. \\
+53--58 & Raw pressure, temperature & Two 24-bit raw words; temperature calibration is in the legacy adapter. \\
+59--62 & Filtered altitude & Float32 metres. \\
+63 & State & 0 ground testing, 1 preflight, 2 flight, 3 post-apogee, 4 main, 5 end. \\
+64--75 & Integrated rotations & Three float32 values at 64, 68, 72; rendered roll/pitch/yaw. \\
+76--79 & Maximum heights & Barometer then GPS uint16. \\
+80--83 & Onboard clock & uint32 milliseconds uptime. \\
+84--85 & Packet sequence & uint16 modulo counter. \\
+86 & Onboard RSSI & Signed byte minus 99. \\
+87--92 & Cell voltages & Three signed int16 values divided by 1000. \\
+93--94 & Total current & Signed int16 divided by $-1000$. \\
+95--97 & BMS & Temperature byte divided by 2; protection status and enabled bits. \\
+98--109 & Six rail voltages & Signed int16 times 0.0016. \\
+110--121 & Six rail currents & Signed int16 times 0.000625. \\
+122--125 & Velocity & Float32 metres/s. \\
+126 & Unmapped byte & Not interpreted by the present decoder. \\
+127 & Payload checksum & Sum modulo 256 of bytes 0--126. \\
+\bottomrule
+\end{longtable}
+Trailer \(G\) is RSSI at 0 (signed byte minus 99), fix at 1, signed int32
+latitude at 2, longitude at 6 (both \(10^{-7}\) degrees), and signed int32
+height at 10. The legacy adapter divides receiver height by 1000 even though the
+audited firmware supplies metres. Preserve this discrepancy explicitly; the
+legacy pointer origin instead uses height zero.
+
+\subsection{Pointer command packets}
+\begin{lstlisting}
+byte 0       AA
+byte 1       opcode
+bytes 2..5   azimuth float32 LE (opcode 0), otherwise zero
+bytes 6..9   elevation float32 LE (opcode 0), otherwise zero
+byte 10      sum(bytes 1..9) modulo 256
+\end{lstlisting}
+Opcodes are 0 absolute, 1 UP, 2 DOWN, 3 LEFT, 4 RIGHT and 5 ZERO.
+The legacy firmware negates internal azimuth and uses a shortest-route policy;
+the host preserves original direction opcodes rather than reinterpreting them.
+Absolute finite values are serialized without invoking the old
+\code{validate_route} helper.
+
+\code{validate_route} and mission envelope/calibration fields remain in source
+for compatibility and tests of that helper. They are not called by the current
+manual control/tracking dispatch path. Do not document them as an active
+mechanical interlock or silently enable them when modifying the legacy UI.
+
+\subsection{Rocket uplink packets}
+\begin{lstlisting}
+byte 0       AA
+bytes 1..12  zero/reserved, except:
+             byte 12 integer argument, or
+             bytes 9..12 float32 LE angle
+byte 13      command opcode
+bytes 14..15 sum(bytes 1..13) modulo 65536, BIG endian
+\end{lstlisting}
+The mixed endian checksum is deliberate and covered by captured vectors.
+\begin{longtable}{@{}L{.15\linewidth}L{.40\linewidth}L{.38\linewidth}@{}}
+\toprule Opcode & Encoder command & Argument \\\midrule\endhead
+01 / 06 / 07 & Arm / fire / disarm pyros & Nonempty bitmask of channels 0--5. \\
+02 & Advance state & Requested state code; UI uses current + 1. \\
+03 / 05 & Airbrakes / roll servo & Finite float32 angle. \\
+04 & PD activate & No parameter. \\
+08 / 09 & Zero servos / P-Y-roll & No parameter; zero-roll API aliases 09. \\
+0A / 0B & Zero altitude / velocity & No parameter. \\
+10 / 11 / 12 / 13 & Piston / BP wells / tender descender / all & No parameter. \\
+14 & VTX power & Index 0--3 for 1/3/5/8 W. \\
+15 & Converter requests & Six ordered Boolean request bits. \\
+16 & BMS protections & Boolean encoded 0/1; API exists, operator status is read-only. \\
+\bottomrule
+\end{longtable}
+\code{rocket_packet} validates command/value types. UI confirmation and transport
+authorization remain separate layers: construct bytes without side effects,
+confirm the original sensitive actions in \code{RocketPanel}, then dispatch
+through the controller.
+
+\section{Recording, replay and portable archive internals}\label{sec:storage}
+\subsection{Session writer and durability}
+\code{SessionRecorder} creates
+\code{session_YYYYMMDD_HHMMSS_<suffix>} and writes an initial manifest with
+\code{complete:false}. It enqueues sample dictionaries, events and role-tagged
+raw byte chunks. One writer thread owns all session output. SQLite uses WAL and
+\code{synchronous=FULL}; ordinary commits occur about every 0.25 s and at closure.
+
+\begin{lstlisting}[language=SQL]
+CREATE TABLE samples(
+  id INTEGER PRIMARY KEY, elapsed REAL, t REAL, data TEXT);
+CREATE INDEX sample_time ON samples(elapsed);
+CREATE TABLE events(
+  id INTEGER PRIMARY KEY, elapsed REAL, data TEXT);
+CREATE INDEX event_time ON events(elapsed);
+CREATE TABLE raw_index(
+  id INTEGER PRIMARY KEY, elapsed REAL, role TEXT,
+  offset INTEGER, length INTEGER);
+CREATE TABLE snapshot_state(
+  id INTEGER PRIMARY KEY CHECK(id=1), data TEXT);
+\end{lstlisting}
+\code{samples.data} is JSON from \code{Sample.to_dict};
+\code{events.data} is \code{{"name":..., "data":...}}.
+A raw index offset points to the chunk header in \code{raw.bin}; its length is
+the payload length, not the whole chunk length.
+
+Before a database commit, raw bytes and both CSV outputs are flushed and fsynced.
+The same SQLite transaction stores a \code{snapshot_state} row with matching
+raw/CSV byte lengths, manifest snapshot, duration, error and dropped count.
+A successful final close checkpoints WAL and updates the manifest with completion,
+duration and error/loss information. Queue overflow marks loss; a close timeout
+or writer exception leaves an incomplete/error condition.
+
+The recorder's own decoder watches raw telemetry RX to produce the rejected
+packet CSV. Bad packets do not become \code{samples} rows. Good and bad CSV field
+order comes from \code{CSV_FIELDS}; the adapter retains the original padding and
+calibrations while fixing the documented old bad-packet-only inconsistencies.
+
+\subsection{Raw capture format}
+Each raw chunk has a 25-byte little-endian header with
+\code{struct.Struct("<4sddBI")}:
+\begin{longtable}{@{}L{.17\linewidth}L{.23\linewidth}L{.53\linewidth}@{}}
+\toprule Offset & Type & Meaning \\\midrule\endhead
+0--3 & 4 bytes & Magic \code{RGM1}. \\
+4--11 & float64 & Host session elapsed seconds. \\
+12--19 & float64 & UTC Unix seconds. \\
+20 & uint8 & Role: telemetry RX 1, pointer RX 2, pointer TX 3, telemetry/rocket uplink TX 4. \\
+21--24 & uint32 & Payload byte count. \\
+25 onward & Byte payload & Exactly the declared number of raw serial bytes. \\
+Following payload & uint32 LE & CRC32 of header plus payload. \\
+\bottomrule
+\end{longtable}
+\code{read_raw} yields complete CRC-checked chunks and rejects wrong magic,
+payloads over 4 MiB, truncated headers/payloads and CRC mismatch. This capture CRC
+protects stored chunks; it does not add authentication to the radio or repair
+the unchecksummed receiver trailer.
+
+\subsection{Replay reader}
+\code{SessionReader} opens SQLite read-only, reads manifest version 1, gets sample
+count and maximum sample elapsed time, and runs \code{PRAGMA quick_check}.
+\code{at(t)} returns the latest sample at or before \(t\);
+\code{between(a,b)} returns \(a<elapsed\le b\), ordered by elapsed and id,
+with a default 20,000-row limit. \code{events(t,begin)} uses the same temporal
+selection convention.
+
+\code{seek} clamps to the session duration, clears future state, resets initial
+time alignment, applies prior events and reconstructs a 120 s history window.
+Received monotonic times are refreshed for display. Normal play advances the
+cursor at the selected speed, applies events and samples in the traversed
+interval, and pauses at the end. Events currently restore flight-zero and
+sent-pointer state; do not assume every console string is executable replay logic.
+
+\subsection{Flight archive layout}
+The portable extension is \code{.rktflight}; its contents are ZIP64 with a
+\code{flight.json} inventory. Files normally use DEFLATE level 3, while MKV is
+stored without another compression layer.
+
+\begin{lstlisting}
+flight.json                 # format/version, source/scope, position, inventory
+mission.json                # version 1; asset paths relative to this archive
+assets/rocket.ork            # optional selected model
+assets/motor_000.eng         # optional selected curves (.eng or .rse)
+reference.csv
+reference.json              # optional current normalized reference
+session/manifest.json       # only if a session was exported
+session/session.sqlite      # standalone staged database, no -wal/-shm
+session/raw.bin
+session/telemetry.csv
+session/telemetry_badpackets.csv
+session/legacy-source.csv   # if available from legacy import
+session/reference.*         # if present
+session/video*/segments.csv
+session/video*/segment_*.mkv
+\end{lstlisting}
+The inventory records byte count and SHA-256 for every payload file; it does not
+recursively checksum itself. Top-level keys include
+\code{format:"rocket-gnc-flight"}, \code{schema_version:1},
+app version, save UTC, source mode, export scope, sample count, optional session
+path, playback position, flight-zero/alignment and video-scope description.
+
+Selected user motor files are embedded under generated portable names. The
+app's own standard/bundled motor library is part of the runtime distribution;
+it is not duplicated in every flight. Original job hashes and request metadata
+may remain in the reference manifest as provenance; the live model/motor paths
+are rebound to extracted assets.
+
+\subsection{Active snapshot consistency}
+\input{figures/snapshot}
+\code{snapshot_session} uses SQLite's online backup API to capture a committed
+database without pausing the serial writer. It then reads the copied
+\code{snapshot_state} to find exactly which raw/CSV prefixes belong to that
+database version. Later appends to the source do not change those prefixes.
+An early save waits briefly for the first committed state. Older stable sessions
+without snapshot state use their available files and retain their completion
+status.
+
+Video is copied from finalized entries in the segment CSV; a partial trailing
+index line is ignored for active capture, and segments beyond the snapshot
+duration are omitted. After logging stops, the controller waits for pending
+video/recorder closure before saving. No unfinished camera file is claimed as
+complete footage.
+
+The staged database is checkpointed and changed to DELETE journal mode once all
+staging readers close. Only this owned staging copy is changed; the active
+source database stays in WAL mode. This avoids shipping platform-specific
+shared-memory state. A temporary archive is fsynced and replaced atomically at
+the requested destination.
+
+\subsection{Archive validation and application}
+\code{load_flight} extracts into a new UUID directory under the owned flight
+cache. It rejects unsupported versions, encryption, linked/directory/duplicate
+case-folded entries, absolute/traversal/backslash/colon/control-character paths,
+mismatched inventories, declared sizes and content hashes. Loading limits are
+64 GiB of expanded entries, 100,000 entries and 16 MiB per metadata object; free
+space is checked before extraction.
+
+Mission asset paths must resolve to included assets. Mission/reference data,
+SQLite integrity, sample/event structure and video segment indexes are validated
+before the controller applies a \code{LoadedFlight}. On failure, the new
+extraction directory is removed. Parsing uses JSON and ordinary media/model
+formats, not pickle or evaluation of archive-supplied Python.
+
+The archive inventory is corruption detection, not a signature or trust identity.
+A deliberately altered payload with a recomputed hash is still subject to
+schema checks, but is not proven to have come from the team. File limits and
+validation should remain aligned when evolving save and load behavior.
+
+\Needspace{24\baselineskip}
+\subsection{Read-only analysis example}
+Run analysis with the app's development environment so its domain contracts
+match the recording:
+\begin{lstlisting}[language=Python]
+from pathlib import Path
+from rocket_gnc_monitor.recording import SessionReader, read_raw
+
+session = Path("/absolute/path/to/session_folder")
+reader = SessionReader(session)
+try:
+    print(reader.count, reader.duration, reader.manifest["complete"])
+    for elapsed, sample in reader.between(-1, min(10, reader.duration)):
+        print(elapsed, sample.t, sample.altitude)
+    reader.export_csv(session.parent / "analysis-export.csv")
+finally:
+    reader.close()
+
+for elapsed, utc, role, payload in read_raw(session / "raw.bin"):
+    print(elapsed, role, len(payload))
+\end{lstlisting}
+Do not feed replay events to a serial worker. Reading archive/session data is
+separate from authorizing hardware commands.
+
+\section{Legacy import and demo provenance}\label{sec:legacy}
+\code{numeric_list} uses a small AST visitor. It accepts numeric/Boolean literals,
+bounded list/tuple forms, unary signs and known one-argument NumPy numeric
+wrappers, plus known Boolean names. It rejects arbitrary calls and attributes;
+it never invokes \code{eval}. Numeric-array text is limited to 4,096 characters
+and arrays to 32 elements.
+
+\code{import_legacy} rejects files over 200 MB and known bad-packet filenames,
+requires the audited core headers, checks monotonic receive timestamps and
+refuses empty datasets. File import can block on the recorder queue to preserve
+all rows. It stores source bytes and hash, records observed imported flight
+transitions, and explicitly marks raw packets unavailable. A failed import
+retains an incomplete/error manifest rather than presenting a completed session.
+
+\code{DemoFlight} verifies the uncompressed SHA-256 and row count from
+\code{resources/demo/manifest.json}; gzip is lossless packaging. It computes
+receiver-relative times, locates the first FLIGHT row and exposes a launch cue
+and indexed samples. Each sample contains the original row/UTC, station,
+source file/hash and local-frame note. Plot-only rejection of invalid/far GPS
+does not erase the original values.
+
+The functions \code{domain.demo_sample} and \code{Trajectory.demo} remain useful
+synthetic fixtures and examples. They do not drive the current operator DEMO
+telemetry. Avoid reconnecting these helpers to the source selector when adding
+features; the user-visible default is the actual GS2 log.
+
+\section{Video implementation and synchronization}\label{sec:media}
+\code{camera_devices} invokes bundled FFmpeg to enumerate AVFoundation or
+DirectShow devices (and Linux video devices in its existing branch).
+\code{VideoWorker.arguments} builds an argument list, without a shell, for camera,
+file or test-pattern input. It maps only video and disables audio.
+
+The display pipe is \code{rgb24} at \(960\times540\). The decoder reads exactly
+one full frame before queueing it; incomplete EOF frames are discarded.
+The two-frame queue trades display history for low latency. Recording is a
+separate FFmpeg output from the same input: MPEG-4 for live/test sources,
+stream-copy for local files, Matroska segments and \code{segments.csv}.
+The display scaling does not imply the stored camera stream has the same
+dimensions.
+
+\code{start_video} increments a token and schedules lifecycle work on the
+single-worker video executor. \code{stop} first writes \code{q} and continues
+draining output so FFmpeg can finish the trailer/index, then uses bounded
+terminate/kill fallback. Keep stderr draining independent so logs cannot block
+frame acquisition.
+
+A \code{Video recording started} event records session elapsed time, source kind
+and video directory. Replay finds the eligible recording segment at
+\[
+ t_{\mathrm{video}}=t_{\mathrm{replay}}-t_{\mathrm{start}}-\Delta_{\mathrm{offset}}.
+\]
+It chooses a segment whose interval contains that time and seeks relative to
+the segment start. Positive offset therefore delays video. Paused replay uses
+\code{single_frame}; playback uses the requested speed. This is host timing
+alignment, not camera exposure or hardware clock synchronization.
+
+\section{Weather and OpenRocket bridge contracts}\label{sec:bridge}
+\subsection{Weather normalization}
+\code{weather_profile} parses timezone-aware ISO timestamps and normalizes to
+UTC. It caps response bytes at 4,000,000 and uses a 15 s network timeout. The
+nearest returned hour must lie within 3,600 s. It transforms geopotential height
+\(H\) to geometric height using \(R=6356766\) m:
+\[
+ h_{\mathrm{AGL}}=\frac{RH}{R-H}-h_{\mathrm{launch,MSL}}.
+\]
+The returned object contains \code{layers}, \code{raw}, \code{source},
+\code{request}, \code{endpoint} and \code{retrieved_utc}. Network work stays in the
+job pool. The mission stores that object in \code{weather_raw}. Manual profiles
+use exactly the same validated east/north layer representation.
+
+\subsection{Trajectory contract}
+A trajectory is an \(N\times4\) NumPy array \((t,E,N,U)\) plus JSON metadata.
+It requires 2--200,000 rows, finite values and strictly increasing time.
+Loading caps the CSV at 40 MB. The manifest must declare version 1, ENU and
+\code{m,s}; a nonsynthetic reference needs a valid three-value geographic origin.
+\code{at(t)} interpolates each spatial coordinate linearly within coverage and
+returns unavailable outside it. Save produces CSV and a same-basename JSON.
+
+\subsection{Simulation job boundary}
+The Python job copies the model and all explicit/bundled custom curves, writes
+\code{request.json}, launches the private Java executable and captures its output
+in \code{worker.log}. The request contains schema version, copied asset paths,
+bundled motor count, simulation index, launch latitude/longitude, MSL altitude,
+ellipsoid origin altitude, rail settings, seed, wind layers, output directory
+and nominal/inertia flags.
+
+\input{figures/simulation}
+
+Limits are 40 MB for the model file, 100 MB expanded ORK archive contents,
+10 MB per motor curve, 120 s of worker wall time and 20 MB of worker log.
+Cancellation sets an event and terminates the child; timeout/oversized-log paths
+also stop it. Result collection checks return status, prefers a structured
+\code{error.json} message and otherwise includes a bounded log tail.
+
+The bridge runs headless with private in-memory preferences. It loads the team's
+motor database, adds hash-verified bundled curves and explicit custom curves,
+loads the ORK document and verifies the selected saved configuration. A missing
+motor warning becomes a named error before simulation. A configuration without
+an active motor is rejected.
+
+The fork-specific nominal setup disables saved simulation extensions and its
+global inertia override. It sets fixed rail direction rather than
+\emph{launch into wind}, a 0.05 s step setting, a 600 s simulation maximum,
+ISA atmosphere, multilevel AGL wind and zero turbulence standard deviation.
+The Java wind direction is \emph{toward},
+\(\operatorname{atan2}(v_E,v_N)\), in contrast to the operator's meteorological
+\emph{from} input.
+
+The first branch contributes time, X/east, Y/north and altitude/up.
+Nonfinite/nonincreasing rows are skipped; fewer than two rows is an error.
+Output metadata records branch count, motors and their engine digests, saved
+simulation name, warnings, nominal qualification flags and solver description.
+Python adds engine/model/motor hashes and the exact request/job directory.
+The bridge exits explicitly after success so engine loader threads cannot keep
+the worker alive.
+
+\subsection{Reproducibility and interpretation}
+The bundled MITRT N8406 curve is \code{resources/motors/TestLaunch_v14.eng}.
+Its engine digest is
+\code{057a820844b93fe3307401623a92d4c6}.
+Byte integrity and model-digest matching are separate checks: identical naming
+alone is insufficient.
+
+A fixed seed and copied inputs support reproducibility on the pinned engine.
+Results do not automatically transfer to a different OpenRocket binary or
+qualified controlled-flight model. The package retains the complete team engine;
+a random upstream JAR is not a drop-in replacement for fork-specific fields.
+The exact source revision corresponding to the supplied engine binary remains
+a release provenance item in the existing build metadata.
+
+\section{UI, font and antenna graphics maintenance}\label{sec:graphics}
+\subsection{UI responsibilities}
+Workspace builders in \code{MainWindow} construct widgets; event handlers call
+the controller or submit background jobs; \code{refresh} presents snapshots.
+\code{refresh_connections} and \code{RocketPanel.set_controls_enabled} express
+the existing board/mode rules. \code{guard} reports exceptions in the event area,
+status bar and warning dialog. Do not swallow a rejected operation by leaving
+a success-looking UI state.
+
+\code{install_shortcuts} creates each QAction once. The original ten serial
+actions coexist with standard Open/Save flight actions. Binding signals again
+during periodic refresh would duplicate transmissions and must be avoided.
+The daylight toggle updates the shared palette, stylesheet and plot/widget
+colors. New custom-drawn labels should use the same font and palette conventions.
+
+The global application font is Lucida Grande, registered from the packaged
+font collection by \code{configure_fonts}. The collection is loaded privately;
+the app does not install a system font. Plot axis labels and painter text use
+the same family. The report itself uses Latin Modern to match the requested
+LaTeX report style; these are separate presentation choices.
+
+\subsection{Where the antenna's physical description is defined}
+The physical drawing is procedural code inside
+\src{src/rocket_gnc_monitor/widgets.py}, specifically
+\code{MountView.paintEvent}. There is no separate CAD/mesh file.
+Local helper functions \code{box}, \code{rod} and \code{face} construct polygons;
+\code{palette} defines timber, frame, metal, grid, dark enclosure and other
+material colors. Faces are depth-sorted and projected with QPainter, so the
+drawing does not require an OpenGL/WebGL viewer.
+
+The local transform functions deliberately separate attachment levels:
+\begin{itemize}
+\item \code{identity}: fixed stand/legs.
+\item \code{turn}: azimuth rotation for turntable and supporting structure.
+\item \code{carrier}: azimuth times elevation rotation, then translation to
+the pivot at renderer position \((0,3.28,0)\).
+\item \code{avenger}: carrier-local offset \((-1.03,0,0.16)\) for the enclosed
+Avenger assembly.
+\end{itemize}
+The common beam is centered at carrier-local zero with extents
+\(2.65\times0.10\times0.10\) in illustrative model units.
+The Yagi boom is at local \(x=1.03\), running approximately from \(z=-0.35\)
+to \(3.55\), with 21 crossed element positions. The grid is sampled procedurally;
+the feed extends along local \(+Z\) from \(z=0.27\) to \(1.04\), in grid material.
+The dashed boresight continues on the same axis. These values define appearance,
+not fabrication dimensions.
+
+\code{mount_rotations} and \code{MOUNT_COMPASS} implement the corrected basis:
+renderer \(+Y\) up, \(+Z\) north, \(-X\) east. Do not flip only the compass letters
+to compensate for a reflection elsewhere. The regression checks
+\(E\times N=U\), headings at the cardinal azimuths and determinant \(+1\).
+
+Camera yaw/pitch start at \(72^\circ/20^\circ\). Dragging changes those at
+0.45 degrees per pixel. Zoom is clamped to 0.65--2.5. The analytic right/up basis
+stays defined through top/bottom views and full orbit. Camera state and
+\code{set_pose} are separate; an orbit event must never call pointer dispatch.
+
+\subsection{Changing the model without changing hardware behavior}
+Edit only geometry/material/attachment transforms for visual changes. Keep
+attachment objects on \code{carrier} unless the physical part truly belongs to
+the fixed stand or azimuth-only support. Check front/side/top/perspective views,
+full orbit and zoom, feed/boresight collinearity, and the compass tests.
+Hardware behavior belongs in the controller/protocol layers and requires
+separate regression evidence.
+
+\section{Developer setup and native packaging}\label{sec:build}
+\subsection{Source environment}
+Run the following from the application root, not this report directory:
+\begin{lstlisting}[language=bash]
+make setup PYTHON=python3.12
+make run
+make demo
+make test
+make lint
+\end{lstlisting}
+Setup creates \code{.venv}, installs pinned build requirements and installs the
+package editable without resolving a second dependency set. With uv, an existing
+workflow can use \code{uv sync --locked}. Runtime simulation additionally needs
+the staged private Java/engine/bridge.
+
+The shared Makefile uses \code{.venv/bin/python} on Unix-like hosts and
+\code{.venv/Scripts/python.exe} on Windows. The default target prints help.
+\code{make clean} removes generated app \code{build}/\code{dist}; it is not
+a session-data purge command. Preserve validation logs you want to retain before
+cleaning the application build directory.
+
+\subsection{Runtime and bridge}
+\begin{lstlisting}[language=bash]
+make runtime
+make bridge OPENROCKET_JAR="/absolute/path/to/swing-24.12.RC.01-all.jar"
+\end{lstlisting}
+\code{runtime} selects OS and process architecture, downloads a Temurin Java 17
+JRE, verifies the publisher-provided SHA-256 and stages \code{vendor/java}.
+Its manifest records the version, source, hash, OS and architecture. Reuse is
+allowed only for a matching target. Stage dependencies/runtime in advance for
+offline builds; do not copy a Mac virtual environment or JRE to Windows.
+
+\code{bridge} needs JDK 17+ tools \code{javac} and \code{jar}, and the team's
+complete fork JAR. It compiles with Java 17 release and UTF-8 settings, builds
+\code{rocket-bridge.jar}, records engine/bridge hashes and copies bridge source
+into the vendor tree. With a previously staged engine, later \code{make bridge}
+can reuse it. Rebuild the bridge after editing its Java source.
+
+\subsection{Native platform builds}
+\begin{lstlisting}[language=bash]
+# On macOS, after setup:
+make -f Makefile.macos all \
+  OPENROCKET_JAR="/absolute/path/to/swing-24.12.RC.01-all.jar"
+
+# On Windows with GNU Make and x64 Python:
+make -f Makefile.windows all \
+  OPENROCKET_JAR="C:/OpenRocket/swing-24.12.RC.01-all.jar"
+\end{lstlisting}
+Each platform's \code{all} target runs tests, stages runtime, builds bridge,
+packages and verifies the package. PyInstaller builds on its target OS; this is
+not cross-compilation. Windows ARM hosts must use x64 Python for the supported
+emulated build path; runtime architecture follows the Python process rather
+than host hardware alone.
+
+Without GNU Make, Windows PowerShell can call the scripts directly:
+\begin{lstlisting}
+py -3.12 scripts/build.py setup
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe scripts/build.py runtime
+.venv\Scripts\python.exe scripts/build.py bridge --engine "C:\OpenRocket\swing-all.jar"
+.venv\Scripts\python.exe scripts/build.py package --platform Windows
+.venv\Scripts\python.exe scripts/verify_package.py
+\end{lstlisting}
+The prior Windows VM used Python 3.13 x64; use the installed matching launcher
+version. This historical validation does not assert that the newest Mac feature
+revision has been rebuilt there.
+
+\subsection{Package contents and artifacts}
+\src{packaging/RocketGNCMonitor.spec} includes the resources, in-app docs and vendor
+tree, FFmpeg data, package metadata and the native MGRS library. It excludes
+unneeded Qt WebEngine/QML/Quick and scientific packages. The launcher is
+windowed. macOS bundling declares camera usage and the application identity.
+
+The build renders the repository SVG icon into native icons, gathers dependency
+license/notice files, writes \code{vendor/build-manifest.json} and retains
+FFmpeg build information. macOS produces
+\nolinkurl{dist/RocketGNCMonitor.app} and an architecture-labeled DMG. Windows produces
+a complete \code{dist/RocketGNCMonitor} folder and ZIP. Distributable archives
+have SHA-256 sidecars.
+
+\code{MAC_SIGN_IDENTITY} can select a team Developer ID identity at build time;
+the current local build uses ad-hoc signing. Notarization/stapling and Windows
+release signing are external release steps. Preserve existing third-party
+notices, the proprietary font provenance, Java legal files, engine and bridge
+source/provenance materials. The exact corresponding engine source remains an
+explicit release record to resolve; this documentation does not grant new
+licenses or credentials.
+
+\section{Testing, verification and evidence}\label{sec:tests}
+\subsection{Test organization}
+\begin{longtable}{@{}L{.32\linewidth}L{.61\linewidth}@{}}
+\toprule Test group & Contract exercised \\\midrule\endhead
+\code{test_protocol.py}, \code{test_serial.py} & Decoder corruption/fragmentation, clock and sequence behavior, pointer bytes and OS pseudo-terminal transport. \\
+\code{test_parity.py} & Captured old-UI commands/CSV/shortcuts, actual Qt key events, independent ports and retained confirmations. \\
+\code{test_controller.py} & Startup locks, source isolation, stale tracking, dispatch/pending state and mode behavior. \\
+\code{test_domain.py}, \code{test_location.py} & Geographic/datum/wind validation, MGRS/Plus Codes, preset and coordinate persistence. \\
+\code{test_demo.py}, \code{test_legacy.py} & Exact bundled logs, timing/seek/quality behavior, safe CSV conversion and provenance. \\
+\code{test_recording.py}, \code{test_session_flow.py} & SQLite/raw/CSV recovery, pending-batch drain, record-stop-replay and video seek. \\
+\code{test_flight.py} & Portable assets, active snapshots, full-demo and buffer exports, corruption/path rejection, atomic failure and final video inclusion. \\
+\code{test_media.py} & FFmpeg arguments, capture/recording lifecycle and available runtime checks. \\
+\code{test_ui.py} & Workspace rendering, legacy values/readiness, orbit independence, compass chirality and pseudo-terminal radio status. \\
+\code{test_simulation.py} & Bundled N8406 identity, real engine trajectory, named missing-motor and unpowered errors. Engine-dependent cases skip if runtime/bridge is absent. \\
+\code{test_build.py} & Windows-on-ARM host with x64 Python selects the x64 runtime correctly. \\
+\bottomrule
+\end{longtable}
+
+Run focused tests for the seam being changed, then the appropriate full release
+checks. Offscreen Mac/Linux Qt tests can use:
+\begin{lstlisting}[language=bash]
+QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q
+.venv/bin/python -m ruff check src tests --select F
+git diff --check
+\end{lstlisting}
+Windows tests should exercise the native Qt Windows platform; its offscreen
+font behavior is not equivalent to checking a real native window.
+These serial tests use pseudo-terminals or in-memory substitutes, not physical
+boards or recovery hardware.
+
+\subsection{Legacy parity baseline}
+\code{tests/fixtures/legacy_reference.json} was captured from the original
+\code{UI.py}, \code{rocket.py} and \code{pointer.py}. It records source hashes and
+118 rocket command cases, eight pointer cases, geographic tracking cases,
+all 43 CSV columns and the ten original shortcut strings.
+The fixture generator strips physical connection behavior and substitutes
+in-memory streams. Do not regenerate it merely to make a failing test accept
+a changed protocol; first establish the intended compatibility decision.
+
+The retained compatibility details include receiver-height division, five-decimal
+frozen GPS, ground height zero for tracking, servo degree conversion/rounding and
+two unused padded pyro list entries in good-packet CSV. Documented fixes include
+rejected-packet counter accuracy, bad-packet-only field inconsistencies, eight
+BMS columns and duplicate old shortcut connections.
+
+\subsection{Packaged verification}
+\begin{lstlisting}[language=bash]
+make verify-package
+.venv/bin/python scripts/verify_package.py \
+  --model /absolute/path/to/zephy_testlaunch.ork \
+  --output build/package-verification
+\end{lstlisting}
+The script launches the actual packaged executable with a minimal system PATH
+and no developer Python/Java overrides. It checks locked LIVE startup,
+Lucida Grande, coordinate conversion, planning/recorded flight round trips with
+URRG, all three demo logs plus video, and the bundled example OpenRocket run.
+The optional model flag adds a supplied model to the same packaged worker test.
+
+CLI smoke entry points are:
+\begin{longtable}{@{}L{.30\linewidth}L{.63\linewidth}@{}}
+\toprule Flag & Use \\\midrule\endhead
+\code{--demo} & Explicit recorded demo startup. \\
+\code{--demo-station GS1|GS2|GS3} & Receiver selection; default GS2. \\
+\code{--data-dir PATH} & Override per-user application data directory. \\
+\code{--startup-smoke} & Check disconnected/locked LIVE startup and exit. \\
+\code{--smoke-test} & Exercise recorded demo and synthetic video, write report, exit. \\
+\code{--flight-smoke} & Save/load planning and GS2 flights, URRG/assets/reference, paused isolated replay. \\
+\code{--simulation-smoke MODEL} & Exercise private engine with synthetic zero-coordinate site and write report. \\
+\code{--screenshot PATH} & Optional native render for smoke verification; not used for this report's diagrams. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Recorded results and their limits}
+The retained September 20 Mac validation reports 71 passing regression tests,
+followed by focused final checks. Packaged flight verification restored all
+5,464 GS2 samples, URRG, a copied model and reference in paused REPLAY with no
+physical worker. The bundled example simulation returned 1,551 rows.
+The supplied Zephyrus ORK returned 11,626 rows in the package's synthetic
+zero-coordinate smoke setup; this is a dependency/configuration test rather
+than the actual launch prediction.
+
+The prior Windows 11 ARM VM exercised an x64 package under emulation with
+30 tests passing and one POSIX-only skip, before the current revision.
+Mac signature and DMG checks establish package integrity, not notarization or
+hardware qualification. The copied evidence in this report folder preserves
+the original result rather than relabeling it as a fresh test run.
+
+\section{Extension recipes and maintenance boundaries}\label{sec:extend}
+\subsection{Add another launch-site preset}
+Add the name/code to \code{LaunchLocation}'s preset selector and its selection
+handler, use the existing converter, emit \code{preset_selected} and preserve
+canonical coordinates. Keep elevations explicit. Add a test for exact input
+provenance, save/load stability, display-format changes, manual edit clearing
+and cancellation. If presets grow, extracting a data-only catalog is a natural
+refactor; do not introduce a required network geocoder for offline presets.
+
+\subsection{Support the new three-axis telemetry board}
+Define a versioned wire contract first: framing, checksum/CRC, units, axes,
+timestamps, reset behavior, sequence numbering and channel identities. Implement
+a separate decoder/adapter that produces the established \code{Sample} contract.
+Populate measured/demand fields only when the firmware supplies them.
+Do not reinterpret legacy servo channel numbers as canards/tabs without an
+explicit hardware mapping.
+
+Add golden packet vectors, fragmented/corrupt/reboot tests, recording and archive
+round trips, replay/UI tests and captured new-board data. Preserve the old
+Zephyrus adapter so existing logs and hardware retain their behavior. Update the
+protocol documentation and qualification status with the code.
+
+\subsection{Add a command or pointer feedback protocol}
+Keep pure encoding in the protocol/command modules and dispatch authorization in
+the controller. Add the appropriate UI control and confirmation behavior,
+reference bytes and no-duplicate-shortcut tests. Define acknowledgment IDs,
+timeouts and partial-write semantics explicitly before showing a new
+\emph{confirmed} status.
+
+For measured pointer feedback, create a structured RX parser and a separate
+measured-pose field. Do not overwrite the meaning of the last-sent target.
+Mechanical homing, cable limits and motion stop require an agreed firmware and
+operational contract, not merely a renamed host button.
+
+\subsection{Extend a saved schema}
+For an optional mission field, add a dataclass default, validation, editor if
+needed, and mission/flight/session tests. Older version-1 files rely on default
+values for absent known fields. Breaking semantic changes need a version bump
+and explicit migration or rejection; filtering unknown fields is not migration.
+
+For new sample shapes or archive files, update \code{Sample}, import adapters,
+record/export paths, \code{flight.load_flight} validation and replay consumers.
+Exercise save during active logging, failure before replacement and reopening
+without original source assets. Preserve queue bounds and authoritative capture
+independence from UI history.
+
+\subsection{Change simulation physics}
+Modify the Java bridge only against the matching fork API and rebuild
+\code{rocket-bridge.jar}. Record solver/options, tests and model/motor hashes.
+Controlled canard/tab dynamics need explicit model parameters and physics
+qualification; do not simply clear the \code{controlled_model_validated:false}
+flag or infer missing vehicle feedback from demo traces.
+
+\subsection{A practical change checklist}
+Before distributing a change, review the affected source-mode behavior and
+resource ownership; run meaningful focused tests; retain legacy parity where
+applicable; inspect affected windows at 1120 by 800 and larger sizes; rebuild the
+native package; run packaged verification; and update operator/developer docs
+and release evidence. Physical interface or control changes additionally require
+the team's hardware acceptance process. Never use a real recovery command as a
+software smoke test.

@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-21",
+  "scope": "Documentation validation only; historical application results are stored separately.",
+  "pdf": {
+    "file": "Rocket_GNC_Monitor_v0.pdf",
+    "sha256": "c99908a113e00054000f03b673815fae6fc1835579aa80674bea6aa4555ec737",
+    "pages": 37,
+    "paper": "A4",
+    "embedded_latin_modern_fonts": true,
+    "raster_images": 0,
+    "tikz_figures": [
+      "figures/antenna-hierarchy.tex",
+      "figures/frames.tex",
+      "figures/modes.tex",
+      "figures/runtime.tex",
+      "figures/simulation.tex",
+      "figures/snapshot.tex",
+      "figures/system-overview.tex"
+    ]
+  },
+  "build": {
+    "latexmk": "pass",
+    "overfull_boxes": 0,
+    "undefined_references": 0
+  },
+  "visual_review": {
+    "all_pages_rendered": true,
+    "all_pages_reviewed": true,
+    "diagram_labels_and_pagination": "pass"
+  },
+  "implementation_checks": {
+    "source_file_hashes_verified": 71,
+    "source_links_verified": 36,
+    "mission_fields": 35,
+    "sample_fields": 20,
+    "legacy_csv_columns": 43,
+    "mission_wind_trajectory_examples": "loaded with the application validators"
+  },
+  "application_test_suite_rerun": false
+}

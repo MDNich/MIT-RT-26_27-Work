@@ -1,0 +1,18 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\node[box,text width=37mm] (write) at (0,0) {Recorder keeps appending\\raw bytes and CSV};
+\node[box,text width=37mm] (commit) at (5.2,0) {Flush files, then commit\\rows and prefix lengths};
+\node[accentbox,text width=37mm] (backup) at (10.4,0) {Online SQLite backup\\one committed snapshot};
+\node[box,text width=37mm] (prefix) at (10.4,-2) {Copy matching prefixes\\and finalized video};
+\node[box,text width=37mm] (zip) at (5.2,-2) {Hash inventory and ZIP\\standalone database};
+\node[box,text width=37mm] (publish) at (0,-2) {Atomic destination replace\\existing file kept on failure};
+\draw[flow] (write)--(commit);
+\draw[flow] (commit)--(backup);
+\draw[flow] (backup)--(prefix);
+\draw[flow] (prefix)--(zip);
+\draw[flow] (zip)--(publish);
+\draw[optional] (commit.north) to[bend right=35] node[above,font=\footnotesize]{next acquisition batch} (write.north);
+\end{tikzpicture}
+\caption{Save during logging. The snapshot boundary is a committed database transaction with matching file lengths, not an uncontrolled copy of an active SQLite file.}
+\label{fig:snapshot}
+\end{figure}

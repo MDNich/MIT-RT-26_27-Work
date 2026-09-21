@@ -1,0 +1,621 @@
+\section{Purpose, scope and operating model}\label{sec:scope}
+Rocket GNC Monitor is a native desktop ground application for an amateur rocket.
+It combines two independent serial links, camera video, recorded-flight playback,
+a visual antenna assembly, telemetry and actuator displays, and a nominal
+OpenRocket trajectory. The current transport contract is Zephyrus. The interface
+has places for a configurable number of canards and four fin tabs, but the
+Zephyrus packet contains four legacy servo drives; it does not provide the new
+vehicle's requested and measured canard/tab angles.
+
+The application starts in \ui{LIVE}, on \ui{Control panel}, without opening either
+serial port, starting polling or opening a camera. Connect each board explicitly.
+A ground-board USB connection, a working rocket radio link and a pointer-board
+USB connection are three separate observations. A screen showing telemetry does
+not imply that an uplink command was acknowledged by the rocket.
+
+\begin{longtable}{@{}L{.13\linewidth}L{.38\linewidth}L{.42\linewidth}@{}}
+\toprule Mode & Source and controls & Persistence and transition behavior \\\midrule\endhead
+LIVE & Physical Zephyrus telemetry; ground commands require its board connection. Pointer manual controls require the pointer board independently. & Logging captures received data. Source changes close physical transports and clear displayed history. Reconnect and restart polling explicitly. \\
+DEMO & One complete bundled GS1, GS2 or GS3 receiver log; synthetic video test pattern. Commands are simulated. & No physical serial transport. Can record a rehearsal or export the complete selected dataset. Returning to LIVE restores the prior reference and retains mission settings. \\
+REPLAY & Indexed session telemetry and recorded video, initially paused. Physical commands disabled. & Seek, step, change speed and export. Session files are read for replay; a new flight archive can preserve the session and displayed position. \\
+\bottomrule
+\end{longtable}
+
+The three source modes are not launch states. Rocket states such as Preflight,
+Flight and Main come from telemetry and are shown within a mode. Likewise,
+\ui{Start Logging} is independent of \ui{Start Polling}: opening a recording does
+not by itself create telemetry.
+
+\subsection{Supported machines and offline use}
+The current verified build is macOS arm64. The distributable app includes Python,
+Qt/PySide6, NumPy, serial support, FFmpeg, the private Java runtime, the team's
+OpenRocket engine and bridge, motors, demo recordings and Lucida Grande. A
+production machine does not need a separate Python or Java installation.
+The macOS app is packaged with a minimum-system declaration of macOS 13; that is
+not evidence that every such system has been tested.
+
+Windows has native build entry points and a previously tested x64 package.
+The current Mac feature revision has not been rebuilt and qualified on Windows.
+Linux-related camera and runtime branches exist, but Linux is not a qualified
+release target. Keep the whole Windows package together; its executable alone is
+insufficient.
+
+Serial reception, local video input, demonstration, recording/replay, coordinate
+conversion and simulation work offline when the package and inputs are present.
+Online wind retrieval requires internet access. USB devices may require an
+appropriate OS driver, and macOS camera permission must be granted.
+
+\subsection{What the app establishes}
+A command marked \emph{sent} has been dispatched on the serial interface; neither
+legacy protocol provides the command-level acknowledgment needed to prove the
+requested physical action. The antenna graphic follows the last sent target,
+not measured motor encoders. Its dimensions are illustrative rather than
+surveyed CAD.
+
+The OpenRocket output is a nominal reference. It does not qualify the new
+controlled rocket's aerodynamic, actuator or control-loop behavior. Integrated
+Zephyrus rotations are displayed as received and are not a validated attitude
+solution. Missing measurements are shown as unavailable rather than inferred.
+
+\section{A complete operating workflow}\label{sec:workflow}
+\subsection{Before connecting equipment}
+\begin{enumerate}
+\item Start the app and confirm \ui{LIVE} on the connection panel. Both board
+cards should be disconnected.
+\item Open \ui{Mission $\rightarrow$ Configure}. Name the mission and enter the
+launch origin, or choose \ui{URRG}. Enter the ellipsoid and mean-sea-level
+elevations separately, then select the verified legacy height interpretation.
+\item In \ui{Mission \& wind}, enter and apply a manual wind profile or retrieve
+one for the intended UTC time. Select the rocket's \code{.ork} file and any
+additional motor curves. Run the nominal simulation if a reference is needed.
+\item Save a planning \code{.rktflight} file so the settings, selected model/motors
+and available reference can be reopened together.
+\end{enumerate}
+\subsection{Receiving and recording}
+\begin{enumerate}
+\item Refresh the two serial selectors. Assign the ground-station board and
+antenna-pointer board to different ports.
+\item Connect the ground board and click \ui{Start Polling}. Wait for
+\ui{Rocket telemetry live}, then verify packet age and the displayed data.
+\item Connect the pointer board if pointing control is needed. Manual pointer
+control is independent of the ground board.
+\item On \ui{Flight overview}, choose \ui{Find cameras}, select the USB receiver
+and press \ui{Start camera}. Confirm that frames are arriving.
+\item Click \ui{Start Logging}. It immediately creates a unique session folder.
+Check Diagnostics for the recording path and any loss/error indication.
+\item For tracking, use \ui{Send to AntPtr} to freeze the receiver GPS, then
+\ui{Track live rocket}. Tracking requires both boards, polling and a usable
+fresh target. Review the meaning of ZERO and Stop tracking in
+Section~\ref{sec:antenna}.
+\end{enumerate}
+\subsection{After the flight}
+Stop tracking and stop logging. Use \ui{Save flight} to create the portable
+archive; the save waits for pending recorder/video closure. Reopen the file to
+check the recorded session in paused replay. Retain the original session folder
+when preserving full capture provenance. Close the app normally to finalize its
+workers. A flight saved while logging is still active is a snapshot and can omit
+the unfinished video segment.
+
+\section{Navigation and connection control}
+The persistent header contains the mission name, source-mode selector,
+Start/Stop Polling and Start/Stop Logging. In LIVE and REPLAY the two serial cards
+remain visible; controls are enabled according to mode and board state. The
+status area provides local wall-clock time, source/status messages and alerts.
+The \ui{View} menu selects the daylight theme; this changes contrast, not data.
+
+\begin{longtable}{@{}L{.23\linewidth}L{.70\linewidth}@{}}
+\toprule Workspace & Function \\\midrule\endhead
+Control panel & Ground USB, rocket radio and pointer USB status; packet age, RSSI, valid/rejected counts and readiness. \\
+Flight overview & Main metrics, camera/file video, projected trajectory, vertical profile and attitude instrument. \\
+Antenna pointer & Orbitable assembly, manual azimuth/elevation, direction commands, ZERO, ground-GPS freeze and tracking. \\
+GNC \& actuators & Three angular-rate and integrated-rotation traces, canard/tab channel slots and legacy servo drives. \\
+Mission \& wind & Mission configuration, launch location, wind layers, weather, rocket/motor selection and simulation. \\
+Sessions \& replay & Portable flight files, session-folder replay, legacy CSV import, sample export, seeking and event timeline. \\
+Diagnostics & Decoded sample JSON, packet counters, recording state, events and alert acknowledgment. \\
+Rocket controls & Four subviews: Telemetry, Rocket commands, Power, Recovery \& pyros. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Rocket radio status}
+\begin{longtable}{@{}L{.20\linewidth}L{.38\linewidth}L{.35\linewidth}@{}}
+\toprule Status & Meaning & Normal next action \\\midrule\endhead
+Disconnected & Ground USB transport is not connected. & Select and connect the telemetry board. \\
+Paused & Ground USB is open but telemetry polling is stopped. & Start polling to receive; uplinks remain available. \\
+Waiting & Polling is active but no fresh valid packet has established reception. & Check transmitter, receiver, antenna and serial source. \\
+Receiving & A checksum-valid LIVE packet arrived within the configured freshness interval. & Monitor packet age and loss indicators. \\
+Stale & Previously received valid telemetry has aged beyond that interval. & Restore reception; explicitly restart tracking if it stopped. \\
+\bottomrule
+\end{longtable}
+The default freshness interval is 2 s. Reconnecting the ground board clears prior
+reception evidence. A connected USB device alone never proves a rocket radio
+link. The trailer carrying ground-receiver GPS has no independent checksum.
+
+\subsection{Serial behavior and command availability}
+Both boards use 115200 baud, eight data bits, no parity, one stop bit and no
+flow-control override. DTR/RTS follow the original pyserial defaults.
+Ground reads use a 1 s timeout; pointer reads use 0.1 s. The selectors reject
+assigning the same serial device to both roles, including the usual macOS
+\code{/dev/tty.} versus \code{/dev/cu.} alias.
+
+Stopping polling leaves the port open and leaves rocket uplinks available.
+Disconnecting a board closes its transport and clears relevant pending state.
+There is no automatic reconnection, retransmission or tracking restart. A
+partially written packet is treated as uncertain, not retried.
+
+\section{Flight overview, coordinates and time}\label{sec:flightview}
+\subsection{Metrics and plots}
+The six main metrics are altitude in metres, velocity in metres per second,
+aligned flight time in seconds, battery in volts, receiver RSSI in dBm and sample
+age in seconds. Missing values remain blank/unavailable. Battery is the sum of
+the three decoded cell voltages; velocity is the legacy reported integrated
+velocity rather than a recomputed derivative of the plotted altitude.
+
+The trajectory view offers \ui{Plan: East/North}, \ui{Side: East/Up} and a fixed
+projected \ui{Perspective}. The actual trace uses accepted local positions. The
+reference is dashed, with a diamond at the simulated position for the same
+aligned time. The residual label is the Euclidean three-dimensional distance
+between actual and reference positions at that time. It is not a closest-point
+distance or an estimate of navigation error.
+
+A reference marker requires aligned time within the reference interval; the
+app does not extrapolate before or after the simulation. A trace or last point
+can remain visible when new packets are absent, so always read sample age.
+The vertical profile overlays reported altitude with the reference's
+launch-relative up coordinate. Their comparison depends on using the correct
+altitude convention.
+
+\subsection{Altitude conventions}
+For LIVE geographic-to-local conversion, configure an origin and a valid 3D
+rocket GPS fix. Choose one verified interpretation:
+\begin{longtable}{@{}L{.27\linewidth}L{.66\linewidth}@{}}
+\toprule Mission choice & Conversion used for the rocket's absolute height \\\midrule\endhead
+Unknown & Geographic trajectory position remains unavailable. Telemetry values still display. \\
+GPS absolute ellipsoid & Use the reported GPS altitude directly. \\
+GPS zeroed at launch origin & Add mission ellipsoid altitude to the reported GPS-relative altitude. \\
+Filtered barometer relative to launch & Add mission ellipsoid altitude to the reported filtered barometric altitude. \\
+\bottomrule
+\end{longtable}
+Mean-sea-level elevation is a separate simulation/weather input; it is not
+substituted for ellipsoid height in the geographic transform. The legacy antenna
+tracking convention is separate again (Section~\ref{sec:antenna}).
+
+\subsection{Clock meanings}
+There are three primary clocks. Device time is flight-computer uptime in
+seconds after rollover extension. UTC is the packet's host reception time.
+Monotonic host time measures freshness and session elapsed time. Flight time is
+\[
+ t_{\mathrm{flight}}=t_{\mathrm{device}}-t_0.
+\]
+In LIVE, observing a received Preflight-to-Flight transition establishes
+\(t_0\). Connecting mid-flight does not establish liftoff time. A detected device
+reboot clears time alignment and displayed history and stops tracking. The
+Sessions action \ui{Set displayed sample to flight \(t=0\)} provides explicit
+manual alignment.
+
+The attitude display uses the legacy integrated rotations. In GNC, axes are
+labeled X/roll, Y/pitch and Z/yaw. The attitude graphic and traces describe
+the available legacy data; they do not imply a quaternion navigation estimator.
+
+\section{Video receiver and recorded video}
+Choose \ui{Find cameras}, select a listed USB camera/receiver and press
+\ui{Start camera}. The app uses AVFoundation on Mac, DirectShow on Windows and
+the existing Video4Linux branch on Linux. A local video file can also be selected.
+Network-stream URLs are not a dedicated operator input in this version.
+
+The displayed video is fitted into a \(960\times540\) RGB frame with its aspect
+ratio preserved. One FFmpeg input feeds both display and recording. Camera and
+demo sources are compressed for recording; file inputs use stream-copy for the
+recorded output. Audio is not captured. Files are stored as approximately
+30-second Matroska segments with a CSV time index.
+
+The video status reports frame age and errors; after two seconds without a
+recent frame it adds a stale/frozen indication. Stop closes capture but retains
+the final displayed image with an explicit stopped label. A retained image is
+not proof of a live stream.
+
+Starting or stopping logging reopens the configured video pipeline so its
+recording destination changes. A camera reconnect during a recording uses a
+new segment directory rather than overwriting earlier footage. Video lifecycle
+work occurs off the GUI thread, but a brief stream interruption is possible.
+
+Replay uses host session timing plus the mission's video offset. A positive
+offset delays video relative to telemetry; a negative offset advances it.
+A paused seek decodes a single frame. Camera exposure timestamps are not
+synchronized with onboard telemetry in this implementation.
+
+\section{Antenna assembly and pointing}\label{sec:antenna}
+\subsection{Viewing the physical model}
+The drawing follows the supplied four-leg stand, azimuth turntable, elevation
+supports and common antenna beam. The grid reflector, long Yagi and enclosed
+Avenger XR18 share the elevation carrier; mounting centers are attached to the
+beam concentric with the support pivots. The dish feed arm uses the dish's grid
+material and lies on the dashed boresight. The Avenger enclosure represents the
+black unit identified in the supplied photograph; no product photograph is
+embedded in the renderer.
+
+Drag to orbit the viewing camera, scroll to zoom, and double-click to reset the
+perspective. Perspective, Front, Side and Top presets are available. Viewing
+works with serial controls locked and never sends a command. All bearings use
+the corrected chirality: \(0^\circ\) north, \(90^\circ\) east, \(180^\circ\) south,
+\(270^\circ\) west.
+
+\input{figures/antenna-hierarchy}
+
+\subsection{Manual controls and the meaning of ZERO}
+Enter finite azimuth/elevation values and press \ui{Send}. Editing a text field
+alone does not move the drawing or transmit. The graphic updates on successful
+serial dispatch. The legacy manual path does not add mission calibration,
+software envelope or cable-wrap prerequisites; stored mission envelope fields
+are not enforcement for these buttons.
+
+UP, DOWN, LEFT and RIGHT send the original firmware direction opcodes in
+5-degree increments. These are direction packets, not host-generated absolute
+targets. Before a known target exists, the app cannot show a reliable absolute
+pose after a jog.
+
+\ui{ZERO} sends the firmware's count/target reset at the current physical
+position. It does not seek a home switch or mechanically return the mount to
+north/horizontal. The drawing's last-sent label is a command estimate; measured
+angles and board acknowledgment are unavailable.
+
+\subsection{Ground-GPS freeze and automatic tracking}
+With both boards connected and telemetry polling, press \ui{Send to AntPtr}.
+The receiver latitude and longitude are frozen at the original five-decimal
+rounding; its displayed altitude/fix are retained with that snapshot. The legacy
+calculation uses ground altitude zero and rocket filtered barometric altitude.
+Mission launch origin, ellipsoid/MSL settings and stored pointer offsets do not
+replace this convention.
+
+\ui{Track live rocket} computes targets at up to 5 Hz. It requires fresh LIVE
+rocket data, usable rocket coordinates and a frozen ground position. The
+geographic pointing helper rejects targets within 10 m and nearly overhead
+targets with under 1 m horizontal separation. Stale data, reboot or connection
+loss stops host tracking; resume explicitly after correcting the condition.
+\ui{Unfreeze GPS} releases the stored origin and stops tracking.
+
+\statusnote{Stop tracking}{This stops new targets and removes an unsent queued
+target. A movement already commanded can continue. The old firmware has no
+motion-stop opcode, watchdog, measured-pose report or mechanical-homing contract.}
+
+\section{Rocket commands, power and recovery}\label{sec:rocket}
+\subsection{Telemetry subview}
+The legacy Telemetry subview retains the original values: state, RSSIs, packet
+age/number, filtered and maximum altitude, velocity, integrated rotations,
+angle from vertical, temperature, GPS fix/position/heights/precision/satellites,
+four servo drive/degree readouts and three cell voltages. Cells above 3.7 V use
+the normal accent, those above 3.5 V the intermediate color, and the remainder
+the low-value color. These cell cues are separate from the configurable
+total-battery alert.
+
+\subsection{Rocket commands subview}
+\begin{longtable}{@{}L{.28\linewidth}L{.65\linewidth}@{}}
+\toprule Control & Implemented behavior \\\midrule\endhead
+Advance State & Requests current decoded state code plus one; retains the original confirmation dialog. The UI does not implement an independent flight-state machine. \\
+Zero P/Y/Roll; Zero Alt; Zero Velo; Zero Servos & Sends the corresponding original opcode. These do not rewrite recorded historical samples. \\
+PD Activate & Sends the legacy activation command. No new controller tuning interface is implemented. \\
+Roll control angle; Airbrakes angle & Sends the entered finite angle as the original float32 payload. \\
+VTX 1, 3, 5 or 8 W & Sends the legacy power-choice index. A selected button represents the request, not a radio acknowledgment. \\
+\bottomrule
+\end{longtable}
+Ground commands require the ground board in LIVE even when polling is paused.
+They are simulated in DEMO and disabled in REPLAY. The app does not require
+fresh radio evidence before every uplink; the separate reception indicator must
+be interpreted accordingly.
+
+\subsection{Power subview}
+Six converter requests and voltage/current readbacks are shown for 3, 3.3, 5,
+7.4, 8.4 and 28 V. Changing an editable request sends the full six-bit mask.
+The 3.3 V request stays on and is not editable, matching the old UI.
+Total current and temperature are readouts, not switchable rails.
+Readback state is derived from voltage proximity to the nominal rail, not from
+the state of its checkbox.
+
+The BMS table displays Enabled and Triggered rows for SCD, OCD2, OCD1, OCC,
+COV, CUV and the two reserved bits. It is read-only in the original operator
+workflow. A BMS command exists at protocol level but is not an additional
+operator toggle.
+
+\subsection{Recovery and pyro subview}
+Six channels, numbered 0--5, have selections, continuity, armed/fired state and
+resistance readouts. Select at least one channel before using ARM or FIRE.
+Both retain the original confirmation behavior and encode the chosen channel
+mask. The emergency actions PISTON, BP WELLS, TNDR DSNDR and DEPLOY ALL each
+retain their own confirmation.
+
+There is no added Disarm button in this subview, although the packet encoder
+supports the legacy disarm opcode. Continuity and armed/fired displays come from
+received packets; sending a request alone does not update them as confirmed
+hardware state. Consult the team's operational procedures for physical recovery
+system work; this report documents the existing UI rather than a firing sequence.
+
+\section{Mission configuration and launch sites}\label{sec:mission}
+\ui{Mission $\rightarrow$ Configure} opens a scrollable configuration dialog.
+Saving validates the entries and applies them; Cancel leaves the current mission
+unchanged. Stop logging before editing or loading another mission so a recording
+is not redefined in progress. Fields include the mission name, origin-established
+flag, location, two altitude datums, legacy height interpretation, canard count,
+freshness/battery thresholds, launch rail, saved simulation index, random seed and
+video offset. Appendix~\ref{app:mission} lists every stored field, including
+legacy fields that are not active UI controls.
+
+\subsection{Latitude/longitude, MGRS and Plus Codes}
+All coordinate conversions are offline:
+\begin{itemize}
+\item \ui{Latitude / longitude}: decimal degrees, latitude \(-90\) to \(90\),
+longitude \(-180\) to \(180\).
+\item \ui{MGRS}: compact or spaced UTM/UPS grid reference. The preview identifies
+the supplied grid resolution. Conversion uses the grid reference point, not a
+newly estimated survey position.
+\item \ui{Plus Code}: a full code resolves to its cell center. A short code
+requires explicit nearby reference latitude and longitude; locality names are
+not geocoded.
+\end{itemize}
+The preview shows the resolved canonical WGS84 coordinates before Save.
+Changing only the display format preserves canonical coordinates and avoids
+round-trip drift. A saved mission keeps the chosen format/code as entry
+provenance alongside latitude and longitude.
+
+\subsection{URRG preset}
+Select \ui{URRG} from the launch-site preset menu. It sets the exact supplied
+MGRS string \code{18TUN2061530290}, switches the entry format to MGRS and marks the
+origin established. Its resolved coordinates are approximately
+\(42.7041678^\circ\) latitude and \(-77.1902950^\circ\) longitude.
+
+The preset supplies coordinates only. It does not infer launch elevation,
+antenna position, wind or rail settings. Existing elevation values remain for
+the operator to review. Manual coordinate edits clear the preset name to Custom;
+changing the display format alone keeps URRG. Mission JSON and flight archives
+preserve the site selection.
+
+\subsection{Mission JSON versus portable flight files}
+\ui{Save mission} writes configuration JSON. \ui{Open mission} restores it,
+clears history/track and deselects the old reference. The JSON contains file
+paths for a selected rocket and custom motors; it does not embed those files.
+Loading mission JSON is not the same operation as opening a flight archive and
+does not itself perform the archive workflow's full source disconnection.
+
+Use \ui{Save flight} for a portable package containing the referenced assets
+and available data. Keep the distinction in mind when moving work to another
+machine.
+
+\section{Wind and nominal OpenRocket simulation}\label{sec:simulation}
+\subsection{Manual and imported wind}
+The wind table uses height above launch in metres, speed in metres per second
+and meteorological direction \emph{from} true north in degrees. Add or remove
+layers and press \ui{Apply wind}. Editing a table cell alone does not update the
+active mission profile.
+
+Heights must be nonnegative and strictly increasing; there must be 1--200 layers.
+Speeds must not exceed 150 m/s. A zero-speed direction has no physical effect.
+Internally each row becomes east and north velocity components:
+\[
+ v_E=-s\sin\theta,\qquad v_N=-s\cos\theta .
+\]
+\ui{Import wind} and \ui{Export wind} use JSON with \code{layers} and a
+\code{source} description. The included example shows the exact format.
+Outside the supplied altitude coverage, the nearest wind layer is held.
+
+\subsection{Online weather}
+Enter an ISO 8601 time with a timezone, such as
+\code{2026-09-21T16:00:00Z}, and the launch elevation above mean sea level.
+\ui{Retrieve wind} requests an Open-Meteo pressure-level profile at the mission
+latitude/longitude. The current implementation selects forecast or historical
+forecast based on age, rejects requests more than 15 days ahead, and requires
+an available provider hour within one hour of the selected time. These are app
+rules, not a guarantee that the provider has every date/location.
+
+Pressure levels are 1000, 925, 850, 700, 500, 300, 200 and 100 hPa. Missing levels
+and below-launch levels are skipped; remaining layers are sorted.
+Geopotential height is converted to geometric height, then the launch MSL
+elevation is subtracted. The provider response, request, endpoint, retrieval time
+and attribution remain in the mission for offline reuse. Review the resulting
+coverage. If the launch coordinates change during retrieval, the UI rejects
+applying that result to the new site.
+
+\subsection{Running a reference}
+\begin{enumerate}
+\item Configure the launch origin and altitude conventions.
+\item Choose the team's \code{.ork} file. It must contain a saved simulation with
+a valid active motor configuration.
+\item Select the saved simulation index in mission settings; index 0 means the
+first saved simulation.
+\item The Zephyrus MITRT N8406 curve is bundled automatically. For other custom
+motors, use \ui{Select custom motor files} to provide matching \code{.eng} or
+\code{.rse} curves. Cancel keeps the existing selection.
+\item Review rail length, tilt from vertical, true-north heading, wind and seed.
+Press \ui{Run nominal simulation}. \ui{Cancel simulation} terminates the worker.
+\end{enumerate}
+A fresh simulation uses the saved vehicle/motor configuration but explicit
+app-supplied site, rail and wind settings. The bridge disables saved extensions
+and the fork's global inertia override, uses the ISA atmosphere, zero wind
+turbulence standard deviation and a fixed seed, and returns the first output
+branch. The job also records branch count and warnings.
+
+A missing thrust curve is named before simulation; an unpowered configuration
+is rejected. The supplied Zephyrus test model previously failed because its
+custom N8406 curve was absent. The bundled curve now matches its required motor
+digest. The app copies model/motor inputs into each job and records hashes so
+the run can be traced independently of original input paths.
+
+\subsection{Importing a reference and interpreting results}
+\ui{Import reference} on Flight overview accepts a CSV and a same-basename JSON
+manifest. The CSV columns are \code{time_s,east_m,north_m,up_m}.
+The manifest declares version 1, ENU, \code{m,s}, and
+\code{origin:[latitude,longitude,ellipsoid_altitude]}; up is launch-relative.
+A LIVE comparison requires a configured mission origin matching that reference
+within \(10^{-6}\) degrees and 0.1 m altitude. Synthetic references are rejected
+for LIVE comparison. Stop logging before replacing the recording's reference.
+
+The saved trajectory is not a flight-control command, and the app does not
+run an online controlled-vehicle simulation driven by each received packet.
+For GNC assessment, compare the nominal baseline with actual data while retaining
+the solver and unavailable-feedback limitations.
+
+\section{Recorded Zephyrus demonstration}
+Choose DEMO explicitly. GS2 is the default; GS1 and GS3 are alternative receivers
+of the same launch, not consecutive segments. They are never concatenated or
+deduplicated. Each plays according to its own receive-time deltas, keeping gaps,
+original UTC, packet numbers and device time.
+
+\Needspace{14\baselineskip}
+\begin{longtable}{@{}L{.16\linewidth}L{.16\linewidth}L{.18\linewidth}L{.41\linewidth}@{}}
+\toprule Receiver & Samples & Duration & Use and limitations \\\midrule\endhead
+GS1 & 4,366 & 274.056 s & Original receiver record, with GPS outliers. \\
+GS2 & 5,464 & 330.234 s & Default record; most samples and fewer major GPS corruptions. \\
+GS3 & 4,939 & 332.725 s & Contains invalid ground GPS and anomalous rocket GPS/state readings; automatic simulated tracking is unavailable. \\
+\bottomrule
+\end{longtable}
+The initial cue is five receive-time seconds before the first FLIGHT packet.
+Use Play/Pause, the timeline, 0.25/0.5/1/2/4 times speed, \ui{Launch -5s} or
+\ui{Full start}. Stop logging before seeking or changing the receiver log.
+Pause and speed changes are allowed during a rehearsal recording.
+At the end the final sample is retained; restarting returns to the launch cue.
+
+The demo track uses horizontal GPS offsets from the first FLIGHT position plus
+the reported barometric height. It is a local observed track, not a surveyed
+ellipsoid/MSL trajectory. Missing 3D fixes and positions over 20 km horizontally
+from its origin are omitted from the plot but kept in raw decoded values.
+No interpolated packets, touchdown, actuator feedback or corrected state
+sequence are invented. The records end in Main descent.
+
+Video is labeled \ui{VIDEO TEST PATTERN}; no actual test-launch video was supplied.
+The original 43 CSV fields remain in each decoded sample's provenance. Raw radio
+frames were not supplied with these CSVs, so their radio checksums cannot be
+revalidated. The app verifies the bundled CSV byte hashes on loading.
+
+\section{Logging, sessions and portable flight files}\label{sec:persistence}
+\subsection{Starting and stopping logging}
+Start Logging creates a uniquely named session under the application data
+directory's \code{sessions} folder. It records accepted samples, events,
+raw serial bytes, both legacy CSVs and any recorded video. Logging runs
+independently of UI redraws. A bounded recorder queue reports dropped records
+and a fault if it overflows; loss is not silently labeled complete.
+
+Stop Logging detaches the active recorder and finishes outstanding video and
+file work in the background. The event timeline reports completion or error.
+Closing the app also finalizes its workers. A crash can lose uncommitted data and
+the active video segment; committed session data may still be replayable.
+
+\subsection{Session-folder replay}
+Use \ui{Open recorded session} to select a session folder. Playback begins paused.
+Controls provide seek, a 0.1 s step, 0.25/0.5/1/2/4 times speed and manual time
+alignment. Seeking reconstructs earlier events and up to 120 s of sample
+history instead of retaining future pointer/time state. The complete session
+remains indexed on disk even though visible plots are bounded.
+
+\ui{Export samples to CSV} writes the richer normalized export, including elapsed
+time and the complete sample JSON. This is distinct from the two original-format
+CSV files written automatically by the recorder.
+
+\ui{Import Zephyrus CSV} accepts the audited legacy layout, creates a converted
+session in a chosen parent directory, retains the original source file and
+opens it for replay. It preserves available extra columns; unsupported layouts
+are rejected. Importing decoded CSV cannot recreate raw packet quality or radio
+bytes.
+
+\subsection{Save flight and Open flight}
+Use \ui{File $\rightarrow$ Save flight} (Command-S on Mac) and
+\ui{File $\rightarrow$ Open flight} (Command-O). Both are also available in Mission
+and Sessions. A \code{.rktflight} archive contains the mission, embedded selected
+rocket/custom-motor files, current normalized simulation reference, and available
+session data. It is readable after the original model/motor paths disappear.
+
+\begin{longtable}{@{}L{.28\linewidth}L{.65\linewidth}@{}}
+\toprule State when saving & What is included \\\midrule\endhead
+Logging active & Consistent committed telemetry/raw/CSV snapshot and finalized video segments. Logging continues. The current unfinished video segment is omitted and the session remains marked as a recording snapshot. \\
+Logging just stopped & Last recording in the current source mode; save waits for pending recorder and video finalization. \\
+REPLAY & Opened session and displayed replay position. \\
+DEMO without a selected recorded session & Complete chosen GS dataset and current demo position; no invented camera footage or raw radio bytes. \\
+LIVE without a recorded session & Only the displayed telemetry buffer, up to 6,000 samples, explicitly identified as a buffer export. \\
+No available telemetry & Planning flight: mission, model/motors and any current simulation reference. \\
+\bottomrule
+\end{longtable}
+Save again after stopping logging to include the final samples and video segment.
+A flight archive carries normalized simulation output and metadata, but is not an
+automatic copy of every file in the original Java job directory; keep that
+directory for its complete worker log and inputs.
+
+Opening requires logging to be stopped and a running simulation to finish or
+be cancelled. The archive is validated before switching the current flight.
+A session-bearing flight opens in paused REPLAY with both transports closed.
+A planning flight opens in disconnected LIVE. Saved pointer calibration is
+cleared; no hardware automatically reconnects.
+
+Saving writes a temporary archive and atomically replaces the destination after
+success; failure leaves an existing destination intact. Loading validates paths,
+sizes, hashes and supported schemas. A damaged file reports an error instead of
+silently supplying partial data. Extracted assets are retained under the app's
+\code{flights} cache. The file format is versioned but not encrypted or
+cryptographically authenticated.
+
+\subsection{Storage and recovery}
+The default root is Qt's per-user \code{AppLocalDataLocation}, under organization
+\code{MITRocketTeam} and application \code{RocketGNCMonitor}. It normally lies
+under macOS Application Support or Windows Local AppData. Use the paths displayed
+by the app rather than assuming a fixed home directory. Developers can override
+it with \code{--data-dir}.
+
+A session contains \code{manifest.json}, \code{session.sqlite},
+\code{raw.bin}, \code{telemetry.csv}, \code{telemetry_badpackets.csv}, and optional
+reference, imported-source CSV and video directories.
+Do not delete a crashed session's SQLite \code{-wal} file before recovery:
+committed records can reside there. Incomplete sessions remain labeled
+incomplete; a usable database is not a guarantee of complete footage or raw bytes.
+
+\section{Alerts, diagnostics and troubleshooting}
+Diagnostics shows packet counts, the current decoded sample, event messages and
+recording information. Valid/rejected frames, discarded bytes and inferred
+sequence gaps describe different conditions. Rejected payloads are isolated
+from live sample displays and written to the bad-packet CSV when logging.
+
+The LIVE alert manager tracks telemetry stale/absent, low total battery,
+recording fault/loss and video ended/stale. Battery must remain below threshold
+for 1 s; clearing uses 0.3 V hysteresis. Video alerting has a 1 s dwell after an
+error or a frame age over 2 s. Acknowledgment records an event and marks the alert;
+it does not clear the underlying condition. The demo can show low original
+battery values in readouts without those being a new live-hardware alarm.
+
+\begin{longtable}{@{}L{.30\linewidth}L{.63\linewidth}@{}}
+\toprule Symptom & Checks or explanation \\\midrule\endhead
+Ground connected, no data & Start Polling. Check that the selected port is the telemetry board and that the rocket/receiver supplies valid frames. USB connection is not radio evidence. \\
+Controls remain locked & Confirm mode LIVE and the relevant board connection. Pointer manual controls need the pointer board; rocket commands/logging need the ground board. \\
+Camera absent or no image & Find cameras again, confirm the receiver enumerates as a camera, grant permission and inspect the video error. Another process may own the device. \\
+Image visible but no motion & Read frame age and stopped/stale status; the last frame can be retained. DEMO uses a test pattern. \\
+No actual trajectory & Establish launch origin, select the verified height convention and obtain valid 3D GPS. DEMO filters plot-only GPS outliers. \\
+No same-time reference marker & Establish flight time alignment and ensure the displayed time falls within the reference interval. \\
+Missing motor / unusable simulation & Select a saved powered configuration and matching custom curve. The N8406 is automatic. Review the named error and job's \code{worker.log}. \\
+Tracking unavailable or stopped & Check both links, polling, frozen ground GPS, target freshness and valid coordinates. Restart deliberately after fixing the problem. \\
+Graphic disagrees with mount & It is a last-sent command model, not feedback. ZERO resets counts at the physical position. Review firmware sign/mechanical reference separately. \\
+Flight save has less video & Active snapshots omit the unfinished segment. Stop logging, wait for completion and save again. \\
+Only a short live flight was saved & Logging was not active; the fallback saves only the bounded display buffer. Start Logging before acquisition for a full capture. \\
+Flight file rejected & Inspect the error for version, checksum, missing asset, path, database or space problems. Keep the original and the session source; do not bypass validation. \\
+Recording incomplete/loss & Inspect recorder error, dropped count and disk availability. Preserve SQLite/WAL and finalized video; neither raw nor CSV can recreate data never received or committed. \\
+\bottomrule
+\end{longtable}
+
+\section{Keyboard shortcuts and operational limits}\label{sec:shortcuts}
+Qt preserves the original shortcut strings. On Mac, Ctrl in those strings maps
+to Command, and Alt maps to Option. The following actions work across workspaces;
+their enabled state still follows the appropriate connection/mode.
+
+\begin{longtable}{@{}L{.39\linewidth}L{.27\linewidth}L{.27\linewidth}@{}}
+\toprule Action & Mac & Windows / Qt notation \\\midrule\endhead
+Open flight & Command-O & Ctrl+O \\
+Save flight & Command-S & Ctrl+S \\
+Refresh serial ports & Command-R & Ctrl+R \\
+Ground connection toggle & Command-Option-C & Ctrl+Alt+C \\
+Pointer connection toggle & Shift-Command-Option-C & Shift+Ctrl+Alt+C \\
+Polling toggle & Command-Return & Ctrl+Return \\
+Logging toggle & Command-L & Ctrl+L \\
+Pointer UP / DOWN & Command-Up / Down & Ctrl+Up / Down \\
+Pointer RIGHT / LEFT & Command-Right / Left & Ctrl+Right / Left \\
+Pointer ZERO & Command-0 & Ctrl+0 \\
+\bottomrule
+\end{longtable}
+
+Field acceptance still requires the actual boards, USB video receiver and mount,
+representative data rates, reconnect/power-loss behavior and a launch-duration
+soak. Three-axis control feedback, a qualified controlled-vehicle model, measured
+pointer pose and firmware-level stop/acknowledgment are outside the presently
+verified contract. The current development Mac distribution is ad-hoc signed;
+production notarization and clean-machine acceptance remain separate release work.

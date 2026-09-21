@@ -1,0 +1,146 @@
+\section{Complete mission configuration reference}\label{app:mission}
+The table follows the current \code{Mission} dataclass, including retained
+compatibility fields. Mission JSON adds \code{schema_version:1}; the default
+values below are application defaults, not a recommended launch configuration.
+The validator applies finite-number/range checks where defined; UI spinbox
+limits and dataclass validation are not identical for every field.
+\input{parts/mission-fields}
+
+\section{Complete normalized sample reference}\label{app:sample}
+\code{Sample.from_dict} retains known dataclass fields and uses defaults for
+absent optional values. The file formats add their own structural validation;
+the dataclass constructor alone is not a complete untrusted-input validator.
+Vector and dictionary meanings are defined by the producing protocol adapter.
+\input{parts/sample-fields}
+
+\section{Legacy CSV columns and derived values}\label{app:csv}
+This is the exact 43-column order written by the compatibility adapter.
+The rich \code{SessionReader.export_csv} format is different and includes full
+sample JSON. Imported records retain their original row text and available
+decoded values. List padding described below refers to live good-packet output;
+it should not be used to invent extra hardware channels.
+\input{parts/csv-fields}
+
+The live servo degree conversion is
+\[
+ \alpha_i=\frac{d_i-1500}{500}
+ \begin{cases}60^\circ,& i=0,1,\\50^\circ,& i=2,3.\end{cases}
+\]
+The legacy angle from vertical is
+\(\arccos(\cos p\cos y)\), with the cosine product clamped to \([-1,1]\).
+The raw temperature calibration in \code{legacy_values} is
+\[
+ T=\frac{2000+(T_{\mathrm{raw}}-\texttt{0x91E3}\cdot256)
+                    \texttt{0x6FEC}/2^{23}}{100}.
+\]
+These formulas reproduce the former monitor; they do not establish new sensor
+calibration accuracy.
+
+\section{Worked file examples}\label{app:examples}
+The \code{examples} directory accompanies the source report. Its inputs have been
+loaded through the application's validators as documentation examples.
+
+\subsection{URRG planning template}
+\code{examples/urrg-mission.json} includes all current mission fields and the
+exact URRG code/canonical coordinates. It deliberately leaves
+\code{site_configured:false}, altitude convention unknown and both elevations
+zero so the example cannot be mistaken for a surveyed setup. Open it with
+\ui{Open mission}, then review and complete those values. The essential location
+portion is:
+\begin{lstlisting}
+{
+  "schema_version": 1,
+  "name": "URRG template - verify launch elevations",
+  "launch_site_name": "URRG",
+  "launch_location_format": "mgrs",
+  "launch_location_code": "18TUN2061530290",
+  "site_configured": false,
+  "legacy_altitude": "unknown"
+}
+\end{lstlisting}
+The full file also supplies the decoded latitude and longitude; do not treat
+this shortened excerpt as a replacement for the full template.
+
+\subsection{Wind profile}
+\lstinputlisting{examples/wind.json}
+The second layer has eastward and southward components. This is a formatting
+example, not a retrieved URRG forecast.
+
+\subsection{Normalized trajectory}
+\lstinputlisting{examples/reference.csv}
+The matching manifest is:
+\lstinputlisting{examples/reference.json}
+The example is explicitly synthetic and is therefore rejected as a LIVE
+reference. It illustrates file structure and can be used for offline tests.
+
+\subsection{Portable flight metadata excerpt}
+\begin{lstlisting}
+{
+  "format": "rocket-gnc-flight",
+  "schema_version": 1,
+  "app_version": "0.1.0",
+  "source_mode": "DEMO",
+  "scope": "Complete Zephyrus GS2 dataset",
+  "session": "session",
+  "samples": 5464,
+  "position": 174.0,
+  "flight_zero": 747.766,
+  "time_aligned": true,
+  "files": {
+    "mission.json": {
+      "size": "<actual byte count>",
+      "sha256": "<actual content hash>"
+    }
+  }
+}
+\end{lstlisting}
+This explanatory excerpt omits other entries and contains descriptive
+placeholders; it is not an importable archive. Use the app's Save flight
+operation to create a valid inventory and package.
+
+\section{Source and validation index}\label{app:evidence}
+The code is the behavioral authority for this report. The following retained
+documents supplement the source map and explain provenance and compatibility:
+\begin{longtable}{@{}L{.35\linewidth}L{.58\linewidth}@{}}
+\toprule Source & Role \\\midrule\endhead
+\src{docs/OPERATOR_GUIDE.md} & In-app operator help; this report expands it into full functionality and developer coverage. \\
+\src{docs/LEGACY_PARITY.md} & Original UI inventory, captured vectors, exact shortcuts and compatibility exceptions. \\
+\src{docs/PROTOCOL.md} & Audited telemetry, pointer and uplink wire contract. \\
+\src{docs/DEMO_DATA.md} & GS1/GS2/GS3 source identity, timing and known quality issues. \\
+\src{docs/BUILD.md} & Native build, runtime staging, offline preparation and signing workflow. \\
+\src{docs/IMPLEMENTATION_STATUS.md} & Current versus historical acceptance status. \\
+\src{docs/THIRD_PARTY_NOTICES.md} & Bundled dependency notices and provenance references. \\
+\src{resources/fonts/README.md} & User-designated font resource and unchanged source hash. \\
+\src{resources/demo/manifest.json} & Original CSV hashes, row counts, durations and launch alignment. \\
+\src{resources/motors/manifest.json} & Bundled motor resource integrity and source identity. \\
+\src{tests/fixtures/legacy_reference.json} & Captured original protocol/CSV/shortcut behavior. \\
+\code{evidence/source-manifest.json} & Exact reviewed source/resource bytes and report-style reference hash. \\
+\nolinkurl{evidence/application-validation-2026-09-20.json} & Copied existing full/focused and packaged validation summary; preserves original test context. \\
+\bottomrule
+\end{longtable}
+
+The original design plans describe intentions and earlier stages; they are not
+used here to claim unimplemented capabilities. In particular, active legacy
+manual pointing does not enforce the early proposed software envelope, current
+DEMO uses recorded data rather than the synthetic fixture, and current Windows
+acceptance is older than this Mac revision.
+
+\section{Glossary}
+\begin{longtable}{@{}L{.23\linewidth}L{.70\linewidth}@{}}
+\toprule Term & Meaning in this app \\\midrule\endhead
+AGL & Height above the configured launch/ground reference. \\
+Ellipsoid height & Height relative to the WGS84 ellipsoid; used in ECEF/ENU transforms. \\
+MSL & Mean sea level elevation; entered separately for atmosphere and weather. \\
+ECEF / ENU & Earth-centered Earth-fixed / local east-north-up coordinate systems. \\
+GNC & Guidance, navigation and control; this app monitors available data and sends legacy commands. \\
+MGRS / Plus Code & Offline geographic coordinate representations; neither supplies elevation. \\
+Mission & Configuration object; mission JSON alone can contain external asset paths. \\
+Session & Directory containing indexed recorded data, raw bytes, CSVs, events and optional video/reference. \\
+Flight file & Portable versioned ZIP64 archive with mission/assets and available recording/reference data. \\
+Snapshot & Consistent committed subset saved while acquisition continues; active video segment may be absent. \\
+Nominal reference & OpenRocket output under the recorded options; not qualified controlled-vehicle dynamics. \\
+Sent / acknowledged & Serial dispatch / confirmed device response. The legacy command paths provide the first, not the second. \\
+Source mode / phase & LIVE, DEMO or REPLAY / received onboard rocket state; independent concepts. \\
+WAL & SQLite write-ahead log; retain it with a crashed source session during recovery. \\
+\bottomrule
+\end{longtable}

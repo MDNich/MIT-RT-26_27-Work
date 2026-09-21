@@ -1,0 +1,22 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\node[box,text width=38mm] (serial) at (0,0) {Serial worker threads\\decode and raw capture};
+\node[accentbox,text width=40mm] (controller) at (5.4,0) {Qt main thread\\Controller and timer};
+\node[box,text width=35mm] (ui) at (10.6,0) {MainWindow\\eight workspaces};
+\node[box,text width=38mm] (recorder) at (0,-2.1) {Recorder thread\\SQLite, raw bytes, CSV};
+\node[box,text width=40mm] (pool) at (5.4,-2.1) {Background job pool\\files, wind, simulation};
+\node[box,text width=35mm] (video) at (10.6,-2.1) {Video workers\\FFmpeg subprocess};
+\node[smallbox] (java) at (5.4,-4.1) {Java subprocess\\OpenRocket bridge};
+\draw[flow] (serial)--node[above,font=\footnotesize]{samples}(controller);
+\draw[flow] (serial)--node[left,font=\footnotesize]{capture}(recorder);
+\draw[flow] (controller)--node[above,font=\footnotesize]{signals}(ui);
+\draw[flow] (controller)--(pool);
+\draw[flow] (controller.south east)--(video.north west);
+\draw[flow] (pool)--(java);
+\draw[optional] (pool.south west) to[bend left=28] node[below,font=\footnotesize]{snapshot / restore} (recorder.south east);
+\draw[optional] (video.east) to[bend right=26] (ui.east);
+\node[captionnode,text width=35mm] at (10.6,-4.1) {Display frames may be dropped to keep the UI current. Recorder loss is reported separately.};
+\end{tikzpicture}
+\caption{Runtime ownership. Hardware reads, file compression and engine execution do not belong in Qt paint or input callbacks. LIVE accepted samples enter the recorder before the display queue.}
+\label{fig:runtime}
+\end{figure}
