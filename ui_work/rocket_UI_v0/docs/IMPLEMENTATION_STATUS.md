@@ -1,5 +1,14 @@
 # Implementation and acceptance status
 
+## September 21 Mac revision — Digital and Analog video
+
+- Flight overview contains two independent USB camera/file inputs labeled Digital and Analog, each with start/stop, frame age, errors and a bounded frame queue.
+- Camera choices exclude the other panel's selection. Controller reservations also cover asynchronous opening and closing. Serial dropdowns omit ports used by the other board while connecting or connected, including macOS tty/cu aliases.
+- Both feeds record and round-trip through portable flight files. Replay follows each stream's own starts, segments and gaps; old untagged recordings map to Digital. Closing logging waits for finalization of both feeds.
+- DEMO supplies distinct labeled test patterns for both panels. It still uses the unchanged recorded Zephyrus telemetry.
+- **77 regression tests passed** on Mac. The new checks exercise duplicate choices, closing reservations, independent failures/frames, legacy playback, dual-video flight round trips and minimum-size layout.
+- macOS is the build target for this revision. Physical dual-USB-camera acceptance remains separate from the synthetic video and packaged checks.
+
 ## September 20 Mac revision — legacy feature parity
 
 - All original operator functions and all ten keyboard shortcuts are restored. See [the complete inventory and reference tests](LEGACY_PARITY.md).

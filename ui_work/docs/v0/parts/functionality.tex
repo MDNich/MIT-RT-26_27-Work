@@ -1,6 +1,6 @@
 \section{Purpose, scope and operating model}\label{sec:scope}
 Rocket GNC Monitor is a native desktop ground application for an amateur rocket.
-It combines two independent serial links, camera video, recorded-flight playback,
+It combines two independent serial links, Digital and Analog USB video, recorded-flight playback,
 a visual antenna assembly, telemetry and actuator displays, and a nominal
 OpenRocket trajectory. The current transport contract is Zephyrus. The interface
 has places for a configurable number of canards and four fin tabs, but the
@@ -135,7 +135,8 @@ Both boards use 115200 baud, eight data bits, no parity, one stop bit and no
 flow-control override. DTR/RTS follow the original pyserial defaults.
 Ground reads use a 1 s timeout; pointer reads use 0.1 s. The selectors reject
 assigning the same serial device to both roles, including the usual macOS
-\code{/dev/tty.} versus \code{/dev/cu.} alias.
+\code{/dev/tty.} versus \code{/dev/cu.} alias. A connected or connecting
+board's port is removed from the other selector and restored when disconnected.
 
 Stopping polling leaves the port open and leaves rocket uplinks available.
 Disconnecting a board closes its transport and clears relevant pending state.
@@ -196,31 +197,40 @@ The attitude display uses the legacy integrated rotations. In GNC, axes are
 labeled X/roll, Y/pitch and Z/yaw. The attitude graphic and traces describe
 the available legacy data; they do not imply a quaternion navigation estimator.
 
-\section{Video receiver and recorded video}
-Choose \ui{Find cameras}, select a listed USB camera/receiver and press
-\ui{Start camera}. The app uses AVFoundation on Mac, DirectShow on Windows and
+\section{Digital and Analog video}
+Flight overview has independent \ui{Digital} and \ui{Analog} panels. Both receive
+video from USB cameras; the labels describe the rocket-to-ground radio links.
+In each panel choose \ui{Find}, select a listed USB camera/receiver and press
+\ui{Start}. Each panel has its own \ui{Stop} and \ui{File\ldots} controls.
+A selected camera is removed from the other dropdown; active and closing
+captures also reserve their camera. Select the empty choice to release an
+unused selection. Stopping or changing one stream leaves the other running. The app uses AVFoundation on Mac, DirectShow on Windows and
 the existing Video4Linux branch on Linux. A local video file can also be selected.
 Network-stream URLs are not a dedicated operator input in this version.
 
 The displayed video is fitted into a \(960\times540\) RGB frame with its aspect
-ratio preserved. One FFmpeg input feeds both display and recording. Camera and
+ratio preserved. Each stream has one FFmpeg input feeding its display and recording. Camera and
 demo sources are compressed for recording; file inputs use stream-copy for the
 recorded output. Audio is not captured. Files are stored as approximately
 30-second Matroska segments with a CSV time index.
 
-The video status reports frame age and errors; after two seconds without a
+Each video status reports frame age and errors; after two seconds without a
 recent frame it adds a stale/frozen indication. Stop closes capture but retains
 the final displayed image with an explicit stopped label. A retained image is
 not proof of a live stream.
 
-Starting or stopping logging reopens the configured video pipeline so its
-recording destination changes. A camera reconnect during a recording uses a
+Starting or stopping logging reopens both configured video pipelines so their
+recording destinations change. A camera reconnect during a recording uses a
 new segment directory rather than overwriting earlier footage. Video lifecycle
 work occurs off the GUI thread, but a brief stream interruption is possible.
 
 Replay uses host session timing plus the mission's video offset. A positive
 offset delays video relative to telemetry; a negative offset advances it.
-A paused seek decodes a single frame. Camera exposure timestamps are not
+Each stream follows its own recorded starts, segments and gaps. A paused seek
+decodes one frame per stream. Flight files include both feeds; old single-video
+sessions appear in Digital. A panel's Stop pauses that replay feed until a seek
+or playback restart. Compact displays can scroll to the lower flight plots.
+Camera exposure timestamps are not
 synchronized with onboard telemetry in this implementation.
 
 \section{Antenna assembly and pointing}\label{sec:antenna}
@@ -478,7 +488,7 @@ from its origin are omitted from the plot but kept in raw decoded values.
 No interpolated packets, touchdown, actuator feedback or corrected state
 sequence are invented. The records end in Main descent.
 
-Video is labeled \ui{VIDEO TEST PATTERN}; no actual test-launch video was supplied.
+Both videos are labeled \ui{TEST PATTERN} (Digital motion pattern and Analog bars); no actual test-launch video was supplied.
 The original 43 CSV fields remain in each decoded sample's provenance. Raw radio
 frames were not supplied with these CSVs, so their radio checksums cannot be
 revalidated. The app verifies the bundled CSV byte hashes on loading.
@@ -569,7 +579,7 @@ sequence gaps describe different conditions. Rejected payloads are isolated
 from live sample displays and written to the bad-packet CSV when logging.
 
 The LIVE alert manager tracks telemetry stale/absent, low total battery,
-recording fault/loss and video ended/stale. Battery must remain below threshold
+recording fault/loss and independently identified Digital/Analog video ended/stale. Battery must remain below threshold
 for 1 s; clearing uses 0.3 V hysteresis. Video alerting has a 1 s dwell after an
 error or a frame age over 2 s. Acknowledgment records an event and marks the alert;
 it does not clear the underlying condition. The demo can show low original

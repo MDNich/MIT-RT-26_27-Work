@@ -115,12 +115,17 @@ def main():
         or not startup["controls_locked"]
         or startup["hardware_open"]
         or startup["samples"]
-        or startup["video_frames"]
+        or any(v["frames"] for v in startup["video_streams"].values())
     ):
         raise SystemExit("Packaged application did not start in locked Live mode")
     simulation = json.loads((output / "simulation" / "simulation-smoke-report.json").read_text())
-    if demo["hardware_open"] or demo["demo_progress_samples"] <= 20 or demo["video_frames"] <= 0:
-        raise SystemExit("Packaged demo did not receive telemetry/video or opened hardware")
+    if (
+        demo["hardware_open"]
+        or demo["demo_progress_samples"] <= 20
+        or set(demo["video_streams"]) != {"digital", "analog"}
+        or any(v["frames"] <= 0 or v["error"] for v in demo["video_streams"].values())
+    ):
+        raise SystemExit("Packaged demo did not receive telemetry/both videos or opened hardware")
     demo_manifest = json.loads((contents / "resources" / "demo" / "manifest.json").read_text())
     if demo.get("demo_recording") != dict(station="GS2", **demo_manifest["GS2"]) or not demo.get(
         "latest_demo_row"

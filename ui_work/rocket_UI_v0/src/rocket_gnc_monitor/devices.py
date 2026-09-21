@@ -9,6 +9,11 @@ from serial.tools import list_ports
 from .protocol import ZephyrusDecoder
 
 
+def serial_device_key(device):
+    """macOS tty/cu aliases identify the same physical serial transport."""
+    return str(device).replace("/dev/tty.", "/dev/cu.").casefold()
+
+
 def ports():
     return [
         dict(

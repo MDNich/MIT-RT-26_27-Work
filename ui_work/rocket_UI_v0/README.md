@@ -1,6 +1,6 @@
 # Rocket GNC Monitor v0
 
-A native Python 3.12 / PySide6 desktop app for the two Zephyrus boards, USB video, antenna pointing, GNC monitoring, recording/replay, and OpenRocket trajectory comparison.
+A native Python 3.12 / PySide6 desktop app for the two Zephyrus boards, Digital and Analog USB video, antenna pointing, GNC monitoring, recording/replay, and OpenRocket trajectory comparison.
 
 Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** inside the complete extracted Windows package. Production machines need no separately installed Python, Qt, Java, FFmpeg, or build tools. Keep the package intact. Hardware-specific USB drivers may still be needed. The Mac app opens in **LIVE**, on the connection control panel, with physical transports closed and each board’s controls enabled when that board connects. Choose DEMO explicitly for rehearsal; `make demo` also starts a rehearsal.
 
@@ -11,7 +11,7 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 - Launch-site entry in decimal latitude/longitude, MGRS, or Plus Codes, with offline conversion, a resolved-position readout and a URRG preset (`18TUN2061530290`).
 - Eight workspaces: connection control panel, flight overview, antenna pointer, GNC/actuators, mission/wind, sessions/replay, diagnostics, and the full legacy rocket controls. USB board connection and rocket radio reception are shown independently.
 - Independent telemetry/pointer serial workers; incremental Zephyrus decoding, checksum recovery, loss counters, clock rollover/reboot detection.
-- USB camera discovery/capture, video-file input, and segmented recording through bundled FFmpeg.
+- Independent Digital and Analog USB camera/file streams, each with controls, frame status and segmented recording through bundled FFmpeg. Camera selectors exclude the other feed's assignment; serial selectors exclude the other connected board's port.
 - Photo-informed articulated mount: four timber legs, turntable, elevation cradle, open grid reflector, Yagi and enclosed Avenger XR18 attached directly to the common elevation beam through the support pivots. Drag to orbit through any angle, scroll to zoom, and double-click to reset the camera.
 - All legacy rocket controls: state advance, zero commands, roll/airbrake servo commands, PD activate, VTX power, power rails, pyro ARM/FIRE, and emergency recovery, with the original confirmations.
 - Legacy serial workflow: separate connect/disconnect and polling, independent manual pointer operation, native UP/DOWN/LEFT/RIGHT/ZERO commands, ground-GPS freeze, and all ten keyboard shortcuts.
@@ -48,6 +48,6 @@ Original planning baseline: [development plan](DEVELOPMENT_PLAN.md), [antenna de
 
 ## Built artifacts and validation
 
-The September 20 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. All 71 regression tests pass. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
+The September 21 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. The full Mac regression run passed 77 tests; focused final checks cover both feeds, recording/replay and portable flights. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
 
 The Windows ZIP remains the September 18 build (30 tests passed, one POSIX-only test skipped, in the Windows 11 ARM VM under x64 emulation). It has **not** been rebuilt for this revision; current work and validation target Mac only.

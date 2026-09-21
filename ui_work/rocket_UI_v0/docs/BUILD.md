@@ -1,6 +1,6 @@
 # Build and distribution
 
-September 20 revision: Mac only. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
+September 21 revision: Mac only, including independent Digital and Analog USB video. The existing Windows archive is the prior September 18 build and has not been refreshed for these changes.
 
 Use Python 3.12–3.13 (64 bit; x64 Python on Windows), JDK 17+ (`javac` and `jar` on PATH), and GNU Make on the build machine. Build Mac arm64 on Apple Silicon, Mac x86_64 on Intel, and Windows x64 on Windows x64. PyInstaller does not cross-compile. Production users need only the resulting complete package. Lucida Grande is bundled in `resources/fonts/LucidaGrande.ttc` and registered through Qt on Mac and Windows. Preserve the font resource and its provenance notice. The MGRS native library and Open Location Code dependency are bundled for offline location conversion.
 
@@ -44,7 +44,7 @@ PATH=/usr/bin:/bin dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --s
 dist/RocketGNCMonitor.app/Contents/MacOS/RocketGNCMonitor --simulation-smoke /path/to/model.ork --data-dir build/package-simulation
 ```
 
-`make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` checks the bundled Lucida Grande family and both coordinate decoders, then runs portable flight/URRG round trips, explicit demo/video and engine checks. `--flight-smoke` exercises planning and recorded flight save/load, embedded assets, the exact URRG code and disconnected paused replay in the packaged process.
+`make run` starts the default locked LIVE view; `make demo` selects the recorded Zephyrus GS2 launch explicitly. `--startup-smoke` verifies a locked LIVE launch with zero samples and no camera/serial transport. `make verify-package` checks the bundled Lucida Grande family and both coordinate decoders, then runs portable flight/URRG round trips, explicit demo/both-video and engine checks. `--flight-smoke` exercises planning and recorded flight save/load, embedded assets, the exact URRG code and disconnected paused replay in the packaged process.
 
 `scripts/verify_package.py --model /path/to/zephy_testlaunch.ork` additionally runs the supplied model using the packaged motor library and records its resolved motor digest. The N8406 curve is bundled in `resources/motors`; rebuild the bridge with `make bridge` after changing its Java source.
 

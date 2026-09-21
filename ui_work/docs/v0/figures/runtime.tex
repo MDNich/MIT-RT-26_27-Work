@@ -5,7 +5,7 @@
 \node[box,text width=35mm] (ui) at (10.6,0) {MainWindow\\eight workspaces};
 \node[box,text width=38mm] (recorder) at (0,-2.1) {Recorder thread\\SQLite, raw bytes, CSV};
 \node[box,text width=40mm] (pool) at (5.4,-2.1) {Background job pool\\files, wind, simulation};
-\node[box,text width=35mm] (video) at (10.6,-2.1) {Video workers\\FFmpeg subprocess};
+\node[box,text width=35mm] (video) at (10.6,-2.1) {Video workers\\Digital and Analog};
 \node[smallbox] (java) at (5.4,-4.1) {Java subprocess\\OpenRocket bridge};
 \draw[flow] (serial)--node[above,font=\footnotesize]{samples}(controller);
 \draw[flow] (serial)--node[left,font=\footnotesize]{capture}(recorder);

@@ -47,8 +47,8 @@ from PySide6.QtWidgets import (
 )
 from .controller import Controller
 from .domain import Mission, finite, validate_wind, wind_from
-from .devices import ports
-from .media import WIDTH, HEIGHT, camera_devices
+from .devices import ports, serial_device_key
+from .media import VIDEO_STREAMS, WIDTH, HEIGHT, camera_devices
 from .trajectory import Trajectory, weather_profile
 from .widgets import STYLE, COLORS, AttitudeView, MountView
 from .rocket_panel import RocketPanel
@@ -103,6 +103,15 @@ def plot(ylabel, xlabel="Flight time", unit="s"):
         item.getAxis(axis).setPen(COLORS["line"])
         item.getAxis(axis).setTickFont(QFont(FONT_FAMILY, 10))
     return item
+
+
+class FlightScrollArea(QScrollArea):
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        # Qt's wrapped-label height-for-width calculation otherwise expands
+        # both plot rows to their preferred heights, creating excessive scroll.
+        if self.widget():
+            self.widget().setMaximumHeight(max(720, self.viewport().height()))
 
 
 class MissionDialog(QDialog):
@@ -235,6 +244,12 @@ class MainWindow(QMainWindow):
         self.last_ui = 0
         self.last_table = 0
         self.port_widgets = {}
+        self.serial_devices = []
+        self.port_choice_signature = None
+        self.camera_devices = []
+        self.camera_choice_signature = None
+        self.video_widgets = {}
+        self.last_pixmaps = {stream: None for stream in VIDEO_STREAMS}
         self.disconnect_buttons = {}
         self.refresh_buttons = {}
         self.live_controls = []
@@ -378,7 +393,8 @@ class MainWindow(QMainWindow):
         self.statusBar().addPermanentWidget(self.wall_clock)
         c.event.connect(self.add_event)
         c.changed.connect(self.refresh)
-        c.frame.connect(self.show_frame)
+        c.video_frame.connect(self.show_frame)
+        c.video_reset.connect(self.reset_video_frame)
         c.task_done.connect(self.task_done)
         self.refresh_ports()
         self.wind_to_table()
@@ -644,31 +660,53 @@ class MainWindow(QMainWindow):
             self.metrics[key] = value
         layout.addLayout(metrics)
         middle = QHBoxLayout()
-        panel, column = card("Video receiver")
-        self.video_image = label("USB CAMERA · NOT STARTED")
-        self.video_image.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.video_image.setMinimumSize(260, 100)
-        self.video_image.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
-        column.addWidget(self.video_image, 1)
-        self.video_status = label("No frames", "muted")
-        column.addWidget(self.video_status)
-        controls = QHBoxLayout()
-        self.camera = QComboBox()
-        self.camera.addItem("Choose USB camera…", "")
-        self.camera.setAccessibleName("USB camera")
-        controls.addWidget(self.camera, 1)
-        controls.addWidget(button("Find cameras", lambda: self.controller.submit("cameras", camera_devices)))
-        column.addLayout(controls)
-        row = QHBoxLayout()
-        for control in [
-            button("Start camera", lambda: self.guard(self.start_camera), True),
-            button("Video file…", self.video_file),
-        ]:
-            row.addWidget(control)
-            self.live_controls.append(control)
-        row.addWidget(button("Stop", self.controller.stop_video))
-        column.addLayout(row)
-        middle.addWidget(panel, 1)
+        for stream, title in VIDEO_STREAMS.items():
+            panel, column = card(title)
+            view = label(f"{title.upper()} · USB CAMERA NOT STARTED")
+            view.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            view.setMinimumSize(140, 100)
+            view.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding)
+            column.addWidget(view, 1)
+            status = label("Camera not started", "muted")
+            status.setWordWrap(True)
+            status.setFixedHeight(32)
+            status.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
+            column.addWidget(status)
+            controls = QHBoxLayout()
+            camera = QComboBox()
+            camera.addItem("Choose USB camera…", "")
+            camera.setAccessibleName(f"{title} USB camera")
+            camera.setMinimumWidth(0)
+            camera.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
+            controls.addWidget(camera, 1)
+            find = button("Find", lambda: self.controller.submit("cameras", camera_devices))
+            find.setToolTip("Find USB cameras for both video streams")
+            controls.addWidget(find)
+            column.addLayout(controls)
+            row = QHBoxLayout()
+            start = button(
+                "Start", lambda checked=False, ch=stream: self.guard(lambda: self.start_camera(ch)), True
+            )
+            file = button("File…", lambda checked=False, ch=stream: self.video_file(ch))
+            stop = button(
+                "Stop", lambda checked=False, ch=stream: self.controller.stop_video(ch, pause_replay=True)
+            )
+            for control in (start, file, stop):
+                row.addWidget(control)
+            self.live_controls.extend((start, file))
+            column.addLayout(row)
+            middle.addWidget(panel, 1)
+            self.video_widgets[stream] = dict(
+                image=view, status=status, camera=camera, start=start, file=file, stop=stop
+            )
+            camera.currentIndexChanged.connect(self.update_camera_choices)
+        # Keep first-stream widget names available to existing integrations.
+        digital = self.video_widgets["digital"]
+        self.video_image, self.video_status, self.camera = (
+            digital["image"],
+            digital["status"],
+            digital["camera"],
+        )
         panel, column = card("Flight trajectory")
         row = QHBoxLayout()
         self.view = QComboBox()
@@ -694,6 +732,8 @@ class MainWindow(QMainWindow):
         column.addWidget(self.trajectory_plot, 1)
         self.reference_label = label("No reference selected", "muted")
         self.reference_label.setWordWrap(True)
+        self.reference_label.setFixedHeight(48)
+        self.reference_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
         column.addWidget(self.reference_label)
         middle.addWidget(panel, 1)
         layout.addLayout(middle, 4)
@@ -711,10 +751,19 @@ class MainWindow(QMainWindow):
         column.addWidget(self.attitude, 1)
         self.attitude_label = label("Awaiting telemetry", "muted")
         self.attitude_label.setWordWrap(True)
+        self.attitude_label.setFixedHeight(40)
+        self.attitude_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
         column.addWidget(self.attitude_label)
         bottom.addWidget(panel, 1)
         layout.addLayout(bottom, 2)
-        return page
+        # Keep both camera controls and plots usable when the connection bar
+        # reduces the available height on a compact display.
+        page.setMinimumHeight(680)
+        scroll = FlightScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setWidget(page)
+        return scroll
 
     def antenna_page(self):
         page = QWidget()
@@ -1002,18 +1051,69 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(text, 8000)
 
     def refresh_ports(self):
-        devices = ports()
+        self.serial_devices = ports()
+        self.update_port_choices(force=True)
+
+    def update_port_choices(self, force=False):
+        c = self.controller
+        active = {
+            role: worker.device
+            for role, worker in c.workers.items()
+            if worker and c.states[role] in {"Connected", "Connecting"}
+        }
+        signature = tuple(active.items())
+        if not force and signature == self.port_choice_signature:
+            return
+        self.port_choice_signature = signature
         for role, (combo, _, _) in self.port_widgets.items():
-            if self.controller.states[role] in {"Connected", "Connecting"}:
-                continue
-            selected = combo.currentData()
+            selected = active.get(role, combo.currentData())
+            excluded = {serial_device_key(device) for other, device in active.items() if other != role}
+            choices = [
+                d["device"] for d in self.serial_devices if serial_device_key(d["device"]) not in excluded
+            ]
+            if role in active and active[role] not in choices:
+                choices.insert(0, active[role])
+            combo.blockSignals(True)
             combo.clear()
-            for device in devices:
-                combo.addItem(device["device"], device["device"])
-            if not devices:
-                combo.addItem("No serial devices", "")
-            if selected:
-                combo.setCurrentIndex(max(0, combo.findData(selected)))
+            for device in choices:
+                combo.addItem(device, device)
+            if not choices:
+                combo.addItem("No available serial devices", "")
+            combo.setCurrentIndex(max(0, combo.findData(selected)))
+            combo.blockSignals(False)
+
+    def update_camera_choices(self, *_):
+        selected = {stream: w["camera"].currentData() or "" for stream, w in self.video_widgets.items()}
+        reservations = {
+            stream: frozenset(state.reserved_cameras)
+            for stream, state in self.controller.video_streams.items()
+        }
+        signature = (tuple(self.camera_devices), tuple(selected.items()), tuple(reservations.items()))
+        if signature == self.camera_choice_signature:
+            return
+        for stream, widgets in self.video_widgets.items():
+            combo = widgets["camera"]
+            excluded = set().union(*(values for other, values in reservations.items() if other != stream))
+            excluded.update(value for other, value in selected.items() if other != stream and value)
+            state = self.controller.video_streams[stream]
+            current = state.config[1] if state.config and state.config[0] == "camera" else selected[stream]
+            choices = [(label, source) for label, source in self.camera_devices if source not in excluded]
+            # Keep a connected camera visible in its own dropdown during rescans.
+            if current and current not in excluded and current not in {source for _, source in choices}:
+                choices.append((f"Camera {current}", current))
+            combo.blockSignals(True)
+            combo.clear()
+            combo.addItem("Choose USB camera…" if self.camera_devices else "Find USB cameras…", "")
+            for description, source in choices:
+                duplicates = sum(name == description for name, _ in self.camera_devices)
+                combo.addItem(f"{description} · {source}" if duplicates > 1 else description, source)
+            combo.setCurrentIndex(max(0, combo.findData(current)))
+            combo.blockSignals(False)
+        self.camera_choice_signature = (
+            tuple(self.camera_devices),
+            tuple((stream, w["camera"].currentData() or "") for stream, w in self.video_widgets.items()),
+            tuple(reservations.items()),
+        )
 
     def connect_role(self, role):
         if self.controller.states[role] not in {"Connected", "Connecting"}:
@@ -1031,32 +1131,43 @@ class MainWindow(QMainWindow):
         self.last_ui = 0
         self.refresh()
 
-    def show_frame(self, data):
+    def show_frame(self, stream, data):
         image = QImage(data, WIDTH, HEIGHT, WIDTH * 3, QImage.Format.Format_RGB888).copy()
-        self.last_pixmap = QPixmap.fromImage(image)
-        self.video_image.setPixmap(
-            self.last_pixmap.scaled(
-                self.video_image.size(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
+        pixmap = self.last_pixmaps[stream] = QPixmap.fromImage(image)
+        if stream == "digital":
+            self.last_pixmap = pixmap
+        view = self.video_widgets[stream]["image"]
+        view.setPixmap(
+            pixmap.scaled(
+                view.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
             )
         )
 
-    def start_camera(self):
+    def reset_video_frame(self, stream):
+        self.last_pixmaps[stream] = None
+        if stream == "digital":
+            self.last_pixmap = None
+        self.video_widgets[stream]["image"].setText(f"{VIDEO_STREAMS[stream].upper()} · NO VIDEO")
+
+    def start_camera(self, stream="digital"):
         self.controller.require_ground_station()
-        source = self.camera.currentData()
+        source = self.video_widgets[stream]["camera"].currentData()
         if source is None or source == "":
             raise ValueError("Find and select a USB camera first")
-        self.controller.start_video("camera", source)
+        self.controller.start_video("camera", source, stream=stream)
+        self.update_camera_choices()
 
-    def video_file(self):
+    def video_file(self, stream="digital"):
         if self.controller.mode == "LIVE" and not self.controller.ground_connected:
             return
         path, _ = QFileDialog.getOpenFileName(
-            self, "Video source", "", "Video (*.mp4 *.mkv *.mov *.avi *.ts);;All files (*)"
+            self,
+            f"{VIDEO_STREAMS[stream]} video source",
+            "",
+            "Video (*.mp4 *.mkv *.mov *.avi *.ts);;All files (*)",
         )
         if path:
-            self.controller.start_video("file", path)
+            self.controller.start_video("file", path, stream=stream)
 
     def mount_camera(self, name):
         self.mount.set_camera(name)
@@ -1351,11 +1462,11 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage(f"Saved {result['path']}")
             self.setWindowTitle(f"Rocket GNC Monitor · {Path(result['path']).name}")
         if name == "cameras":
-            self.camera.clear()
-            for description, source in result:
-                self.camera.addItem(description, source)
-            if not result:
-                self.camera.addItem("No USB cameras found", "")
+            self.camera_devices = list(
+                dict.fromkeys((description, str(source)) for description, source in result)
+            )
+            self.camera_choice_signature = None
+            self.update_camera_choices()
         elif name == "weather":
             request = result["request"]
             current = self.controller.mission
@@ -1568,6 +1679,8 @@ class MainWindow(QMainWindow):
                 self.demo_slider.setValue(round(c.demo_time * 1000))
             self.demo_slider.blockSignals(False)
             self.demo_clock.setText(f"{c.demo_time:.1f} / {c.demo.duration:.1f} s")
+        self.update_port_choices()
+        self.update_camera_choices()
         for role, (combo, action, status) in self.port_widgets.items():
             active = c.states[role] in {"Connected", "Connecting"}
             status.setText(c.states[role])
@@ -1643,20 +1756,39 @@ class MainWindow(QMainWindow):
             self.pointer_pose.setText("REPLAY")
             if not c.pointer_sent:
                 self.mount.set_pose(0, 0)
-        if c.video:
-            frame_age = now - c.video.last_frame if c.video.last_frame else None
-            state = c.video.error or (
-                f"{'VIDEO TEST PATTERN' if c.video.kind == 'demo' else c.video.kind.upper()} · frame age {frame_age:.1f}s"
-                if frame_age is not None
-                else "Starting video…"
+        for stream, channel in c.video_streams.items():
+            widgets = self.video_widgets[stream]
+            worker = channel.worker
+            if worker:
+                frame_age = now - worker.last_frame if worker.last_frame else None
+                state = worker.error or (
+                    f"{'TEST PATTERN' if worker.kind == 'demo' else worker.kind.upper()} · frame age {frame_age:.1f}s"
+                    if frame_age is not None
+                    else "Starting video…"
+                )
+                if frame_age is not None and frame_age > 2:
+                    state += " · FROZEN / STALE"
+            else:
+                state = channel.error or (
+                    "Starting video…"
+                    if channel.config
+                    else "Stopping camera…"
+                    if channel.reserved_cameras
+                    else "Video stopped · last frame retained"
+                    if self.last_pixmaps[stream]
+                    else "Camera not started"
+                )
+            widgets["status"].setText(state)
+            widgets["status"].setToolTip(state)
+            busy = bool(channel.config or channel.reserved_cameras)
+            widgets["camera"].setEnabled(c.mode != "REPLAY" and not busy)
+            widgets["start"].setEnabled(
+                c.mode != "REPLAY"
+                and (c.mode == "DEMO" or c.ground_connected)
+                and bool(widgets["camera"].currentData())
+                and not busy
             )
-            if frame_age is not None and frame_age > 2:
-                state += " · FROZEN / STALE"
-            self.video_status.setText(state)
-        else:
-            self.video_status.setText(
-                "Video stopped · last frame retained" if self.last_pixmap else "Camera not started"
-            )
+            widgets["stop"].setEnabled(bool(channel.config))
         if s:
             self.attitude.angles = s.attitude
             self.attitude.update()

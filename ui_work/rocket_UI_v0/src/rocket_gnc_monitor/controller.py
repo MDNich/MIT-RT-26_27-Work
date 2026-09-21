@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 from collections import deque
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 import copy
+from dataclasses import dataclass, field
 import queue
 from pathlib import Path
 import time
@@ -11,18 +12,36 @@ import uuid
 from PySide6.QtCore import QObject, QTimer, Signal
 from .domain import Mission, pointing, target_position, to_enu, finite
 from .demo import DemoFlight
-from .devices import SerialWorker
+from .devices import SerialWorker, serial_device_key
 from .protocol import pointer_packet
 from .recording import SessionReader, SessionRecorder
 from .trajectory import Trajectory, SimulationJob
-from .media import VideoWorker
+from .media import VIDEO_STREAMS, VideoWorker
 from .zephyrus import rocket_packet, legacy_values
+
+
+@dataclass
+class VideoStream:
+    """One independent lifecycle queue; only its executor touches backend."""
+
+    executor: ThreadPoolExecutor
+    worker: VideoWorker | None = None
+    backend: VideoWorker | None = None
+    config: tuple | None = None
+    generation: int = 0
+    reserved_cameras: set = field(default_factory=set)
+    replay_key: tuple | None = None
+    replay_paused: bool = False
+    lifecycle_future: Future | None = None
+    error: str = ""
 
 
 class Controller(QObject):
     changed = Signal()
     event = Signal(str)
-    frame = Signal(bytes)
+    frame = Signal(bytes)  # First-stream compatibility for existing integrations.
+    video_frame = Signal(str, bytes)
+    video_reset = Signal(str)
     task_done = Signal(str, object)
 
     def __init__(self, data_dir):
@@ -41,9 +60,12 @@ class Controller(QObject):
         self.polling = False
         self.messages = queue.Queue(maxsize=16000)
         self.executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="gnc")
-        self.video_executor = ThreadPoolExecutor(max_workers=1, thread_name_prefix="video-lifecycle")
-        self.video_generation = 0
-        self._video_backend = None
+        self.video_streams = {
+            stream: VideoStream(ThreadPoolExecutor(max_workers=1, thread_name_prefix=f"video-{stream}"))
+            for stream in VIDEO_STREAMS
+        }
+        self.last_replay_video = 0.0
+        self._video_replay_cache = None
         self.futures = []
         self.generation = 0
         self.recorder = None
@@ -52,8 +74,6 @@ class Controller(QObject):
         self.recording_close_future = None
         self.flight_busy = False
         self.last_flight_path = None
-        self.video = None
-        self.video_config = None
         self.simulation = None
         self.stats = dict(accepted=0, rejected=0, discarded=0, gaps=0)
         self.ui_drops = 0
@@ -98,6 +118,15 @@ class Controller(QObject):
         future.source_mode = self.mode
         self.futures.append((name, future))
         return future
+
+    @property
+    def video(self):
+        """Legacy access to the first (Digital) stream."""
+        return self.video_streams["digital"].worker
+
+    @property
+    def video_config(self):
+        return self.video_streams["digital"].config
 
     @property
     def ground_connected(self):
@@ -159,6 +188,7 @@ class Controller(QObject):
             self.reader.close()
             self.reader = None
         self.last_session_path = None
+        self._video_replay_cache = None
         self.tracking = False
         for role in self.workers:
             self.disconnect(role)
@@ -185,10 +215,13 @@ class Controller(QObject):
         if mode != "DEMO" and self.reference and self.reference.manifest.get("synthetic"):
             self.reference = None
         self.stop_video()
+        for stream in VIDEO_STREAMS:
+            self.video_reset.emit(stream)
         if mode == "DEMO":
             self.seek_demo(self.demo.cue)
             self.demo_playing = True
-            self.start_video("demo")
+            for stream in VIDEO_STREAMS:
+                self.start_video("demo", stream, stream=stream)
         self.log(f"Source changed to {mode}; physical pointer transport closed")
         self.changed.emit()
 
@@ -280,9 +313,8 @@ class Controller(QObject):
             raise ValueError("Physical connections require LIVE mode")
         if not device:
             raise ValueError("Choose a serial device")
-        normalize = lambda p: p.replace("/dev/tty.", "/dev/cu.").casefold()
         for other, worker in self.workers.items():
-            if other != role and worker and normalize(worker.device) == normalize(device):
+            if other != role and worker and serial_device_key(worker.device) == serial_device_key(device):
                 raise ValueError("One serial device cannot serve both board roles")
         self.disconnect(role)
         self.generation += 1
@@ -507,23 +539,29 @@ class Controller(QObject):
         if self.reference:
             self.reference.save(self.recorder.path / "reference.csv")
         self.log("Recording started", {"mode": self.mode})
-        if self.video_config:
-            kind, source = self.video_config
-            self.start_video(kind, source)
+        for stream, state in self.video_streams.items():
+            if state.config:
+                self.start_video(*state.config, stream=stream)
         return self.recorder.path
 
     def stop_recording(self):
         if self.recorder:
             recorder, self.recorder = self.recorder, None
             recorder.event("Recording stopped")
-            video_close = None
-            if self.video_config:
-                kind, source = self.video_config
-                video_close = self.start_video(kind, source)
+            video_closes = [
+                self.start_video(*state.config, stream=stream) if state.config else state.lifecycle_future
+                for stream, state in self.video_streams.items()
+            ]
 
             def close_recording():
-                if video_close:
-                    video_close.result()
+                for future in video_closes:
+                    if future:
+                        try:
+                            future.result()
+                        except Exception as exc:
+                            # A failed camera open must not strand the telemetry
+                            # recorder or prevent the other feed from finalizing.
+                            recorder.event("Video lifecycle error", {"error": str(exc)})
                 return recorder.close(), recorder.error, str(recorder.path)
 
             self.recording_close_future = self.submit("recording_closed", close_recording)
@@ -691,15 +729,14 @@ class Controller(QObject):
             "telemetry": (self.ground_connected and self.polling and stale, "Telemetry stale / absent", 0),
             "battery": (not stale and battery is not None and battery < threshold, "Low battery", 1),
             "recording": (bool(self.recorder and self.recorder.error), "Recording fault / loss", 0),
-            "video": (
-                bool(
-                    self.video
-                    and (self.video.error or (self.video.last_frame and now - self.video.last_frame > 2))
-                ),
-                "Video ended / stale",
-                1,
-            ),
         }
+        for stream, state in self.video_streams.items():
+            worker = state.worker
+            conditions[f"video_{stream}"] = (
+                bool(worker and (worker.error or (worker.last_frame and now - worker.last_frame > 2))),
+                f"{VIDEO_STREAMS[stream]} video ended / stale",
+                1,
+            )
         for key, (active, message, dwell) in conditions.items():
             if active:
                 since = self.alert_since.setdefault(key, now)
@@ -711,76 +748,118 @@ class Controller(QObject):
                 if self.alerts.pop(key, None):
                     self.log("Alert cleared: " + message, {"key": key})
 
-    def replay_video(self):
+    def replay_video(self, stream=None, force=True):
         if not self.reader:
             return
         import csv
 
-        events = [
-            (t, e)
-            for t, e in self.reader.events(self.reader.duration)
-            if e["name"] == "Video recording started"
-        ]
-        eligible = [(t, e) for t, e in events if t <= self.replay_time - self.mission.video_offset]
-        if not eligible:
-            self.stop_video()
-            return
-        start, event = eligible[-1]
-        directory_name = event["data"].get("directory", "video")
-        directory = self.reader.path / Path(directory_name).name
-        listing = directory / "segments.csv"
-        if not listing.exists():
-            self.stop_video()
-            return
-        cursor = self.replay_time - start - self.mission.video_offset
-        with listing.open(newline="") as handle:
-            for name, begin, end in csv.reader(handle):
-                if float(begin) <= cursor < float(end):
-                    # Ignore directory components from imported session manifests.
-                    path = directory / Path(name).name
-                    if path.is_file():
-                        self.start_video("file", str(path), cursor - float(begin))
-                    return
-        self.stop_video()
+        # A replay reader is a fixed session snapshot. Cache its media inventory;
+        # segment transitions must not rescan the entire event log every UI tick.
+        if self._video_replay_cache is None or self._video_replay_cache[0] is not self.reader:
+            events = [
+                (t, e)
+                for t, e in self.reader.events(self.reader.duration)
+                if e["name"] == "Video recording started"
+            ]
+            self._video_replay_cache = (self.reader, events, {})
+        _, starts, indexes = self._video_replay_cache
+        events = [(t, e) for t, e in starts if t <= self.replay_time - self.mission.video_offset]
+        for channel in [stream] if stream else VIDEO_STREAMS:
+            state = self.video_streams[channel]
+            if force:
+                state.replay_paused = False
+            elif state.replay_paused:
+                continue
+            eligible = [(t, e) for t, e in events if e["data"].get("stream", "digital") == channel]
+            target = None
+            if eligible:
+                start, event = eligible[-1]
+                directory = self.reader.path / Path(event["data"].get("directory", "video")).name
+                listing = directory / "segments.csv"
+                cursor = self.replay_time - start - self.mission.video_offset
+                if directory not in indexes:
+                    segments = []
+                    if listing.exists():
+                        with listing.open(newline="") as handle:
+                            for name, begin, end in csv.reader(handle):
+                                path = directory / Path(name).name
+                                if path.is_file():
+                                    segments.append((str(path), float(begin), float(end)))
+                    indexes[directory] = segments
+                for path, begin, end in indexes[directory]:
+                    if begin <= cursor < end:
+                        target = (path, cursor - begin)
+                        break
+            if target:
+                key = (target[0], self.replay_speed, self.replay_playing)
+                if force or state.replay_key != key:
+                    self.start_video("file", *target, stream=channel)
+                    state.replay_key = key
+            elif state.config or state.replay_key:
+                self.stop_video(channel)
+                self.video_reset.emit(channel)
 
-    def start_video(self, kind, source="", seek=0):
-        self.video_generation += 1
-        token = self.video_generation
-        self.video = None
-        self.video_config = (kind, source)
-        directory = self.recorder.path / "video" if self.recorder else None
-        if self.recorder:
-            # A new recording directory avoids overwriting previous segments on reconnect.
-            if directory.exists():
-                directory = self.recorder.path / ("video_" + uuid.uuid4().hex[:6])
-            self.log("Video recording started", {"directory": directory.name, "kind": kind})
+    def start_video(self, kind, source="", seek=0, *, stream="digital"):
+        state = self.video_streams[stream]
+        if kind == "camera":
+            if source is None or source == "":
+                raise ValueError("Choose a USB camera")
+            source = str(source)
+            for other, other_state in self.video_streams.items():
+                if other != stream and source in other_state.reserved_cameras:
+                    raise ValueError(f"This USB camera is already assigned to {VIDEO_STREAMS[other]}")
+            state.reserved_cameras.add(source)
+        state.generation += 1
+        token = state.generation
+        state.worker = None
+        state.config = (kind, source)
+        state.error = ""
+        state.replay_key = None
+        self.video_reset.emit(stream)
+        # Every start owns a distinct directory, including rapid reconnects before
+        # the previous asynchronous open has had time to create its directory.
+        directory = self.recorder.path / f"video_{stream}_{uuid.uuid4().hex}" if self.recorder else None
+        if directory:
+            self.log("Video recording started", {"directory": directory.name, "kind": kind, "stream": stream})
         speed = self.replay_speed if self.mode == "REPLAY" else 1.0
         single_frame = self.mode == "REPLAY" and not self.replay_playing
 
         def open_video():
-            if self._video_backend:
-                self._video_backend.stop()
-                self._video_backend = None
-            if token != self.video_generation:
-                return token, None
-            self._video_backend = VideoWorker(kind, source, directory, seek, speed, single_frame)
-            return token, self._video_backend
+            if state.backend:
+                state.backend.stop()
+                state.backend = None
+            if token != state.generation:
+                return stream, token, None
+            state.backend = VideoWorker(kind, source, directory, seek, speed, single_frame)
+            return stream, token, state.backend
 
-        future = self.video_executor.submit(open_video)
+        future = state.lifecycle_future = state.executor.submit(open_video)
+        future.video_context = (stream, token)
         self.futures.append(("video_open", future))
         return future
 
-    def stop_video(self):
-        self.video_generation += 1
-        self.video = None
-        self.video_config = None
+    def stop_video(self, stream=None, *, pause_replay=False):
+        futures = []
+        for channel in [stream] if stream else VIDEO_STREAMS:
+            state = self.video_streams[channel]
+            state.generation += 1
+            token = state.generation
+            state.worker = None
+            state.config = None
+            state.error = ""
+            state.replay_key = None
+            state.replay_paused = pause_replay and self.mode == "REPLAY"
 
-        def close_video():
-            if self._video_backend:
-                self._video_backend.stop()
-                self._video_backend = None
+            def close_video(state=state, channel=channel, token=token):
+                if state.backend:
+                    state.backend.stop()
+                    state.backend = None
+                return channel, token
 
-        self.futures.append(("video_closed", self.video_executor.submit(close_video)))
+            future = state.lifecycle_future = state.executor.submit(close_video)
+            self.futures.append(("video_closed", future))
+            futures.append(future)
+        return futures
 
     def run_simulation(self):
         if self.simulation:
@@ -814,7 +893,7 @@ class Controller(QObject):
                     self.pointer_status = "Connected"
                 self.log(f"{role.title()} connected")
             elif kind in {"error", "disconnected"}:
-                self.states[role] = "Disconnected"
+                self.disconnect(role)
                 self.log(f"{role.title()}: {data}")
                 if role == "telemetry":
                     self.rocket_commands.clear()
@@ -865,8 +944,9 @@ class Controller(QObject):
             if self.replay_time >= self.reader.duration:
                 self.replay_playing = False
                 self.stop_video()
-            elif self.video and self.video.error == "Video ended":
-                self.replay_video()
+            elif now - self.last_replay_video >= 0.2:
+                self.last_replay_video = now
+                self.replay_video(force=False)
         if self.tracking and now - self.last_tracking >= 0.2:
             self.last_tracking = now
             try:
@@ -875,15 +955,18 @@ class Controller(QObject):
                     self.point(*target)
             except (ValueError, queue.Full) as exc:
                 self.hold(str(exc))
-        if self.video:
-            frame = None
-            while not self.video.frames.empty():
-                try:
-                    frame = self.video.frames.get_nowait()
-                except queue.Empty:
-                    break
-            if frame:
-                self.frame.emit(frame)
+        for stream, state in self.video_streams.items():
+            if state.worker:
+                frame = None
+                while not state.worker.frames.empty():
+                    try:
+                        frame = state.worker.frames.get_nowait()
+                    except queue.Empty:
+                        break
+                if frame:
+                    self.video_frame.emit(stream, frame)
+                    if stream == "digital":
+                        self.frame.emit(frame)
         for name, future in self.futures[:]:
             if future.done():
                 self.futures.remove((name, future))
@@ -915,9 +998,18 @@ class Controller(QObject):
                                 "Simulation inputs changed while running; result remains in its job folder"
                             )
                     if name == "video_open":
-                        token, worker = result
-                        if token == self.video_generation:
-                            self.video = worker
+                        stream, token, worker = result
+                        state = self.video_streams[stream]
+                        if token == state.generation:
+                            state.worker = worker
+                            state.reserved_cameras = (
+                                {state.config[1]} if state.config and state.config[0] == "camera" else set()
+                            )
+                    elif name == "video_closed":
+                        stream, token = result
+                        state = self.video_streams[stream]
+                        if token == state.generation:
+                            state.reserved_cameras.clear()
                     if name == "flight_loaded":
                         if self.recorder or future.flight_context != (self.generation, self.mission):
                             raise ValueError(
@@ -931,6 +1023,13 @@ class Controller(QObject):
                         self.flight_busy = False
                     self.task_done.emit(name, result)
                 except Exception as exc:
+                    if name == "video_open":
+                        stream, token = future.video_context
+                        state = self.video_streams[stream]
+                        if token == state.generation:
+                            state.config = None
+                            state.reserved_cameras.clear()
+                            state.error = str(exc)
                     if name in {"flight_loaded", "flight_saved"}:
                         self.flight_busy = False
                     self.log(f"{name}: {exc}")
@@ -951,7 +1050,8 @@ class Controller(QObject):
             if worker:
                 worker.stop()
         self.stop_video()
-        self.video_executor.shutdown(wait=True, cancel_futures=False)
+        for state in self.video_streams.values():
+            state.executor.shutdown(wait=True, cancel_futures=False)
         if self.simulation:
             self.simulation.cancel()
         if self.recorder:

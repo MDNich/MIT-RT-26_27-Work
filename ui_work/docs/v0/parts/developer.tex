@@ -86,12 +86,13 @@ tree and native runtimes through the supplied build workflow.
 Qt widgets and controller state are updated on the main thread. Serial workers
 own their ports and decoders. The recorder has its own thread and SQLite
 connection. General background jobs use a four-worker executor; video open/close
-operations use a separate one-worker executor to serialize FFmpeg lifecycle
-changes. A decoder thread drains FFmpeg frames, with a separate stderr drain.
+operations use one single-worker executor per stream to serialize its FFmpeg
+lifecycle changes independently. Each decoder thread drains its FFmpeg frames,
+with a separate stderr drain.
 
 The controller's 30 ms timer drains up to 2,000 queued messages per tick,
-advances DEMO/REPLAY, dispatches tracking when due, takes the most recent video
-frame, collects completed futures and updates alerts. Playback delta is capped
+advances DEMO/REPLAY, dispatches tracking when due, takes the most recent frame from each
+video stream, collects completed futures and updates alerts. Playback delta is capped
 at 0.3 s per tick, so a long blocked GUI does not produce an arbitrarily large
 playback jump. This desktop scheduler is not a hard real-time control loop.
 
@@ -106,7 +107,7 @@ Pointer command queue & 1 command & No silent overwrite; a pending dispatch prev
 Tracking & At most 5 Hz & New target only if the preceding one is not pending. \\
 Recorder queue & 16,000 entries & LIVE overflow records loss/fault. File import can wait rather than drop rows. \\
 Recorder commit & About every 0.25 s & Raw/CSV are flushed and fsynced before committing matching indexes/state. \\
-Video display queue & 2 frames & Old display frames are dropped for freshness, independently of FFmpeg recording. \\
+Video display queue & 2 frames per stream & Old display frames are dropped for freshness, independently of FFmpeg recording. \\
 Replay history reconstruction & Previous 120 s & Earlier samples remain on disk and can be sought explicitly. \\
 \bottomrule
 \end{longtable}
@@ -121,8 +122,9 @@ Do not merge these counters or move capture entirely behind UI repainting.
 A new serial connection receives a generation token. Worker messages are used
 only if the current role still owns that generation and the mode is LIVE.
 This prevents a late error/sample from an old worker from altering a new link.
-Video uses a separate generation and a single lifecycle executor to prevent an
-old open result from replacing a newer selection.
+Each video stream uses a separate generation and lifecycle executor to prevent
+an old open result from replacing a newer selection. Camera reservations cover
+pending opens and closes as well as running capture.
 
 General jobs report through the controller's future list and \code{task_done}
 signal. Weather/reference/simulation jobs retain source-mode identity; completed
@@ -152,7 +154,7 @@ Neither path restores a physical connection.
 
 \subsection{Lifecycle and shutdown}
 \code{Controller.shutdown} is idempotent. It stops the Qt timer, stops serial
-workers, closes video and waits for the video executor, cancels the active
+workers, closes video and waits for both video executors, cancels the active
 simulation, closes recorder/reader resources and waits for background work.
 Pending recording-close work is allowed to finish. Keep this ownership order
 when introducing a new worker so it cannot write to an already closed resource.
@@ -549,19 +551,37 @@ stream-copy for local files, Matroska segments and \code{segments.csv}.
 The display scaling does not imply the stored camera stream has the same
 dimensions.
 
-\code{start_video} increments a token and schedules lifecycle work on the
-single-worker video executor. \code{stop} first writes \code{q} and continues
+\code{Controller.video_streams} maps \code{digital} and \code{analog} to
+\code{VideoStream} state: worker, backend, configuration, generation, reserved
+cameras, replay key/pause state, lifecycle future and open error. \code{video_frame} carries
+the stream identifier and bytes; \code{video_reset} clears only that panel.
+The legacy \code{video}/\code{video_config} properties and \code{frame} signal
+remain first-stream aliases.
+
+\code{start_video(..., stream="digital")} increments that stream's token and
+schedules work on its single-worker executor. Duplicate camera sources are
+rejected before altering either stream, including a camera whose prior handle
+is still closing. \code{stop_video(stream)} closes one feed; omitting the stream
+closes both. The UI filters camera selections and uses \code{serial_device_key}
+to exclude active board ports and macOS aliases from the other serial dropdown. \code{stop} first writes \code{q} and continues
 draining output so FFmpeg can finish the trailer/index, then uses bounded
 terminate/kill fallback. Keep stderr draining independent so logs cannot block
 frame acquisition.
 
-A \code{Video recording started} event records session elapsed time, source kind
-and video directory. Replay finds the eligible recording segment at
+A \code{Video recording started} event records session elapsed time, source kind,
+video directory and \code{stream}. Every recording start allocates a unique
+\code{video_<stream>_<uuid>} directory, even when opens are queued rapidly.
+Stopping logging waits for both lifecycle futures before closing the recorder,
+including a feed manually stopped just beforehand. Old events without a stream
+identifier map to Digital. Replay finds the eligible recording segment at
 \[
  t_{\mathrm{video}}=t_{\mathrm{replay}}-t_{\mathrm{start}}-\Delta_{\mathrm{offset}}.
 \]
-It chooses a segment whose interval contains that time and seeks relative to
-the segment start. Positive offset therefore delays video. Paused replay uses
+It chooses each stream's segment whose interval contains that time and seeks
+relative to its start. A manually stopped replay feed stays stopped until an
+explicit seek or playback restart. Playing checks segment transitions every 0.2 s; a replay
+key avoids reopening an unchanged segment. The reader's media events and
+segment indexes are cached so these checks do not repeatedly scan the event log. Gaps stop only the affected feed. Positive offset therefore delays video. Paused replay uses
 \code{single_frame}; playback uses the requested speed. This is host timing
 alignment, not camera exposure or hardware clock synchronization.
 
@@ -802,6 +822,7 @@ licenses or credentials.
 \code{test_domain.py}, \code{test_location.py} & Geographic/datum/wind validation, MGRS/Plus Codes, preset and coordinate persistence. \\
 \code{test_demo.py}, \code{test_legacy.py} & Exact bundled logs, timing/seek/quality behavior, safe CSV conversion and provenance. \\
 \code{test_recording.py}, \code{test_session_flow.py} & SQLite/raw/CSV recovery, pending-batch drain, record-stop-replay and video seek. \\
+\code{test_dual_video.py} & Camera reservations and dropdown exclusion, independent streams/failures, legacy replay, dual-video archive round trip and minimum-size panels. \\
 \code{test_flight.py} & Portable assets, active snapshots, full-demo and buffer exports, corruption/path rejection, atomic failure and final video inclusion. \\
 \code{test_media.py} & FFmpeg arguments, capture/recording lifecycle and available runtime checks. \\
 \code{test_ui.py} & Workspace rendering, legacy values/readiness, orbit independence, compass chirality and pseudo-terminal radio status. \\
@@ -865,6 +886,12 @@ CLI smoke entry points are:
 \end{longtable}
 
 \subsection{Recorded results and their limits}
+The September 21 dual-video revision passed 77 Mac regression tests. New checks
+cover camera reservations during open/close, reciprocal camera and serial
+dropdown exclusion, independent stream failure and frames, old single-video
+replay, two-feed flight archives and compact layouts. The refreshed package
+smoke report records Digital and Analog frame counts separately.
+
 The retained September 20 Mac validation reports 71 passing regression tests,
 followed by focused final checks. Packaged flight verification restored all
 5,464 GS2 samples, URRG, a copied model and reference in paused REPLAY with no

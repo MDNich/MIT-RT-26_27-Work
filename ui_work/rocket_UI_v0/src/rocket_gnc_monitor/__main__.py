@@ -136,6 +136,13 @@ def main():
                 mode=c.mode,
                 video_frames=c.video.received_frames if c.video else 0,
                 video_error=c.video.error if c.video else "",
+                video_streams={
+                    stream: dict(
+                        frames=state.worker.received_frames if state.worker else 0,
+                        error=state.worker.error if state.worker else state.error,
+                    )
+                    for stream, state in c.video_streams.items()
+                },
                 hardware_open=any(c.workers.values()),
                 demo_recording=dict(station=c.demo.station, **c.demo.metadata) if c.demo else None,
                 demo_progress_samples=c.demo_replayed_rows,
@@ -158,12 +165,12 @@ def main():
             valid = (
                 report["mode"] == "LIVE"
                 and report["samples"] == 0
-                and report["video_frames"] == 0
+                and all(v["frames"] == 0 for v in report["video_streams"].values())
                 and report["controls_locked"]
                 if args.startup_smoke
                 else report["mode"] == "DEMO"
                 and report["demo_progress_samples"] > 20
-                and report["video_frames"] > 0
+                and all(v["frames"] > 0 and not v["error"] for v in report["video_streams"].values())
             )
             app.exit(0 if valid and not report["hardware_open"] else 1)
 

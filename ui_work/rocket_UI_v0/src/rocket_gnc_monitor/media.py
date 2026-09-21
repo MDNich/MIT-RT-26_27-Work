@@ -12,6 +12,7 @@ import threading
 import time
 import imageio_ffmpeg
 
+VIDEO_STREAMS = {"digital": "Digital", "analog": "Analog"}
 WIDTH, HEIGHT = 960, 540
 
 
@@ -69,7 +70,8 @@ class VideoWorker:
     def arguments(self):
         args = [ffmpeg(), "-hide_banner", "-loglevel", "warning", "-y"]
         if self.kind == "demo":
-            args += ["-re", "-f", "lavfi", "-i", "testsrc2=size=960x540:rate=30"]
+            pattern = "smptebars" if self.source == "analog" else "testsrc2"
+            args += ["-re", "-f", "lavfi", "-i", f"{pattern}=size=960x540:rate=30"]
         elif self.kind == "camera":
             if platform.system() == "Darwin":
                 args += ["-f", "avfoundation", "-framerate", "30", "-i", f"{self.source}:none"]

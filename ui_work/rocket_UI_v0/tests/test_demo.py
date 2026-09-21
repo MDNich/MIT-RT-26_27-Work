@@ -67,7 +67,7 @@ def demo_controller(qapp, tmp_path, monkeypatch):
     c = Controller(tmp_path)
     c.timer.stop()
     # These tests focus on telemetry; the session-flow test exercises real video.
-    monkeypatch.setattr(c, "start_video", lambda *args: None)
+    monkeypatch.setattr(c, "start_video", lambda *args, **kwargs: None)
     c.switch_mode("DEMO")
     yield c
     c.shutdown()
