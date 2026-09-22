@@ -12,10 +12,11 @@ STATION ?= base
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
-.PHONY: help setup run away demo test lint runtime bridge package package-macos package-windows smoke verify-package clean
+.PHONY: help setup run away demo test lint runtime bridge package package-macos package-macos-universal package-windows smoke verify-package clean
 
 help:
 	@$(PYTHON) scripts/build.py help
+	@echo 'make package-macos-universal MAC_ARM64_APP=/path/to/arm.app MAC_X86_64_APP=/path/to/intel.app'
 setup:
 	$(PYTHON) scripts/build.py setup
 run:
@@ -36,6 +37,8 @@ package:
 	$(VENV_PY) scripts/build.py package $(ENGINE_OPTIONS)
 package-macos:
 	$(VENV_PY) scripts/build.py package --platform Darwin $(ENGINE_OPTIONS)
+package-macos-universal:
+	$(VENV_PY) scripts/package_macos_universal.py --arm64-app "$(MAC_ARM64_APP)" --x86_64-app "$(MAC_X86_64_APP)" --output-dir "$(if $(UNIVERSAL_OUTPUT),$(UNIVERSAL_OUTPUT),dist)"
 package-windows:
 	$(VENV_PY) scripts/build.py package --platform Windows $(ENGINE_OPTIONS)
 smoke:

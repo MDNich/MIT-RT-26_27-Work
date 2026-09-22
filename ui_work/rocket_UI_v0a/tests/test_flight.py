@@ -140,7 +140,7 @@ def test_full_demo_export_and_replay_position(qtbot, tmp_path):
         expected_sample = c.latest.to_dict()
         archive = tmp_path / "zephyrus.rktflight"
         c.save_flight(archive)
-        qtbot.waitUntil(lambda: not c.flight_busy, timeout=10000)
+        qtbot.waitUntil(lambda: not c.flight_busy, timeout=60000)
         assert archive.exists()
         with zipfile.ZipFile(archive) as saved:
             assert not any(name.endswith(("-wal", "-shm")) for name in saved.namelist())

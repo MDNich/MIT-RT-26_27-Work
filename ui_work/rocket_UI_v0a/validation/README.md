@@ -1,5 +1,7 @@
 # v0a acceptance record — 22 September 2026
 
+The [cross-platform release validation](cross-platform-2026-09-22/README.md) records the subsequent universal Mac and Windows builds, including the refreshed Apple Silicon installer. The original package checksum and platform limits below are historical.
+
 This record applies to the separate v0a application. The inherited v0 validation report is historical and is not the acceptance record for this workspace revision.
 
 ## Workspace review

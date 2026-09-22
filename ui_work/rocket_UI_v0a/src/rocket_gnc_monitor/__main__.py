@@ -290,11 +290,29 @@ def main():
             else 1
         )
     if args.smoke_test or args.startup_smoke:
+        from time import monotonic
+
+        smoke_started = monotonic()
+        smoke_deadline = smoke_started + 30
 
         def complete():
             from .location import decode_mgrs, decode_plus_code
 
             c = window.controller
+            ready = c.demo_replayed_rows > 20 and all(
+                state.worker and state.worker.received_frames > 0 and not state.worker.error
+                for state in c.video_streams.values()
+            )
+            # Native video startup can take longer under CPU emulation. Wait for
+            # the same required evidence, with a bound, instead of a fixed race.
+            if args.smoke_test and monotonic() < smoke_deadline:
+                failed = any(
+                    state.error or (state.worker and state.worker.error)
+                    for state in c.video_streams.values()
+                )
+                if not ready and not failed:
+                    QTimer.singleShot(250, complete)
+                    return
             mgrs_location = decode_mgrs("15TWG0000049776")
             plus_location = decode_plus_code("8FVC9G8F+6X")
             window.open_settings()
@@ -306,6 +324,8 @@ def main():
             )
             window.settings_dialog.reject()
             report = dict(
+                smoke_elapsed_s=monotonic() - smoke_started,
+                smoke_readiness_timeout=bool(args.smoke_test and not ready and monotonic() >= smoke_deadline),
                 settings=settings_check,
                 samples=len(c.history),
                 mode=c.mode,

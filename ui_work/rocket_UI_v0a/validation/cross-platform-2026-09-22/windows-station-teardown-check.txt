@@ -1,0 +1,17 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.6.0 -- C:\RocketGNCBuild\rocket_UI_v0a\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+PySide6 6.11.2 -- Qt runtime 6.11.2 -- Qt compiled 6.11.2
+rootdir: C:\RocketGNCBuild\rocket_UI_v0a
+configfile: pyproject.toml
+plugins: qt-4.5.0
+collecting ... collected 6 items
+
+tests/test_station_workspace.py::test_base_exposes_all_categories_and_complete_instrument_tables PASSED [ 16%]
+tests/test_station_workspace.py::test_station_switch_keeps_live_pointer_and_flight_state PASSED [ 33%]
+tests/test_station_workspace.py::test_secondary_window_dispatches_shared_shortcuts_once PASSED [ 50%]
+tests/test_station_workspace.py::test_companion_cannot_hide_base_information_and_owner_stops_all_timers PASSED [ 66%]
+tests/test_station_workspace.py::test_escape_preserves_embedded_flight_view_but_dismisses_standalone PASSED [ 83%]
+tests/test_station_workspace.py::test_open_embedded_flight_synchronizes_a_new_reference_immediately PASSED [100%]
+
+============================= 6 passed in 44.49s ==============================

@@ -1,0 +1,77 @@
+{
+  "date": "2026-09-22",
+  "version": "0.1.1",
+  "release_tag": "rocket-ui-v0a",
+  "base_commit": "0753ff0ebe170314eb12637c7526857a28d709a1",
+  "source_inputs": "build-input-sha256.json",
+  "artifacts": {
+    "RocketGNCMonitor-v0a-Windows-x64.zip": {
+      "bytes": 214764672,
+      "sha256": "b773a71e2b6711599134cbb709c8a5f95ef8e0d83a7b7120385e78e6aca04fae"
+    },
+    "RocketGNCMonitor-v0a-macOS-arm64.zip": {
+      "bytes": 203732945,
+      "sha256": "b3824a525f441eb056e586850632a769d0a25e7b9b885beb872a3b4c3d3cc0c3"
+    },
+    "RocketGNCMonitor-v0a-macOS-universal.zip": {
+      "bytes": 410750094,
+      "sha256": "552cc569de50e7f244d9ba42533fe672a73a1e5c6ede2fe6e4cf937acc2b0d2e"
+    }
+  },
+  "source_tests": {
+    "macos": {
+      "passed": 142,
+      "final_fixture_regressions_passed": 6,
+      "log": "macos-source-tests.txt"
+    },
+    "windows": {
+      "initial_full_suite": {
+        "passed": 134,
+        "skipped": 4,
+        "failed": 2,
+        "application_tests_passed": 130,
+        "application_posix_tests_skipped": 3,
+        "failures": "macOS-only packager symlink tests; module subsequently scoped to macOS"
+      },
+      "targeted_reruns": {
+        "mac_packager_tests_skipped": 7,
+        "demo_flight_video_layout_passed": 11,
+        "table_cells_passed": 2,
+        "station_workspace_passed": 6
+      },
+      "single_final_full_suite_run": false
+    }
+  },
+  "packaged_checks": {
+    "macos_arm64": {
+      "passed": 11,
+      "report": "macos-arm64-packaged.json",
+      "execution": "native Apple Silicon"
+    },
+    "macos_x86_64": {
+      "passed": 11,
+      "report": "macos-x86_64-packaged.json",
+      "execution": "Intel payload through Rosetta on Apple Silicon"
+    },
+    "windows_x64": {
+      "passed": 11,
+      "report": "windows-x64-packaged.json",
+      "execution": "fresh ZIP extraction in path containing spaces; Windows 11 ARM VM through x64 emulation"
+    },
+    "total_passed": 33
+  },
+  "validation_limits": [
+    "Physical Intel Mac and Windows x64 hardware not exercised",
+    "USB cameras and serial boards not connected during validation",
+    "Mac ad-hoc signing; no notarization",
+    "Windows unsigned development build"
+  ],
+  "integrity": {
+    "macos": "macos-integrity.json",
+    "windows": "windows-archive.json",
+    "apple_silicon_archive": "macos-arm64-archive.json"
+  },
+  "source_differences": {
+    "windows": "windows-staged-spec.diff; only Darwin-only minimum macOS string differs"
+  }
+}

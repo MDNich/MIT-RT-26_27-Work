@@ -1,9 +1,10 @@
 """Station layouts share live state, retain shortcuts and expose every instrument."""
 
 import json
+import gc
 
 import pytest
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QCoreApplication, QEvent
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QListWidget, QStackedWidget, QTabWidget
 
@@ -29,12 +30,20 @@ def station(qtbot, tmp_path, monkeypatch):
         raise AssertionError("A workspace operation attempted to open physical serial")
 
     monkeypatch.setattr("rocket_gnc_monitor.controller.SerialWorker", no_physical_serial)
+    # Complete the preceding fixture's deferred Qt destruction before creating
+    # another set of native plot menus in the shared test QApplication.
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    gc.collect()
     window = StationWindow(tmp_path, station="base", auto_place=False)
     qtbot.addWidget(window)
     window.resize(1920, 1020)
     window.companion.resize(1920, 1020)
     window.show()
     qtbot.waitUntil(lambda: window.companion.isVisible())
+    # Windows may constrain a window's initial geometry to the VM's display.
+    # Size the realized windows explicitly for the target 1080p layout check.
+    window.resize(1920, 1020)
+    window.companion.resize(1920, 1020)
     qtbot.wait(120)
     yield window
     window.close()

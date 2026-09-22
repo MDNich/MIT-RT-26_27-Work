@@ -120,6 +120,24 @@ def test_station_switch_and_live_return_preserve_mission_and_isolate_sources(dem
     assert not any(c.workers.values()) and not c.time_aligned
 
 
+def test_slow_seek_preserves_recorded_packet_ages(demo_controller, monkeypatch):
+    c = demo_controller
+    clock = [1000.0]
+    sample = c.demo.sample
+
+    def slow_sample(*args, **kwargs):
+        clock[0] += 0.01
+        return sample(*args, **kwargs)
+
+    monkeypatch.setattr("rocket_gnc_monitor.controller.time.monotonic", lambda: clock[0])
+    monkeypatch.setattr(c.demo, "sample", slow_sample)
+    c.seek_demo(c.demo.cue)
+    assert clock[0] - 1000 > c.mission.freshness
+    first = c.demo_index - len(c.history)
+    for index, received in enumerate(c.history, start=first):
+        assert c.last_tick - received.received == pytest.approx(c.demo_time - c.demo.times[index])
+
+
 def test_demo_recording_keeps_csv_fields_and_provenance(demo_controller, tmp_path, qtbot):
     from rocket_gnc_monitor.recording import SessionReader
 

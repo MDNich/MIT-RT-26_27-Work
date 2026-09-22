@@ -336,6 +336,11 @@ class Controller(QObject):
             self.accept(sample)
         self.demo_replayed_rows = 0
         self.last_tick = time.monotonic()
+        # History decoding is not elapsed flight time. Anchor the restored samples
+        # to seek completion so slow machines preserve the recorded packet ages.
+        seek_duration = self.last_tick - now
+        for sample in self.history:
+            sample.received += seek_duration
         self.changed.emit()
 
     def play_demo(self, playing=None):

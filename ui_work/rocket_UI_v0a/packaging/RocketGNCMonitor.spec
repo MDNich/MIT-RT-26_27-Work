@@ -33,4 +33,4 @@ if sys.platform == "darwin":
             "CFBundleDisplayName": "Rocket GNC Monitor v0a",
             "NSHighResolutionCapable": True,
             "NSCameraUsageDescription": "Display and record the connected rocket video receiver.",
-            "LSMinimumSystemVersion": "13.0"})
+            "LSMinimumSystemVersion": "14.0"})

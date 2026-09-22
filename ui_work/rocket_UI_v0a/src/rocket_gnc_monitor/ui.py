@@ -29,7 +29,6 @@ from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
     QTableWidget,
-    QTableWidgetItem,
     QHeaderView,
     QSlider,
     QPlainTextEdit,
@@ -56,6 +55,7 @@ from .fonts import FONT_FAMILY, configure_fonts
 from .location_ui import LaunchLocation, PointerLocation
 from .settings_ui import SettingsDialog
 from .virtual_pointer import VIRTUAL_POINTER_DEVICE
+from .table_cells import set_cell
 
 
 def label(text, name=None):
@@ -1470,7 +1470,7 @@ class MainWindow(QMainWindow):
         row = self.wind_table.rowCount()
         self.wind_table.insertRow(row)
         for col, value in enumerate([height, speed, direction]):
-            self.wind_table.setItem(row, col, QTableWidgetItem(f"{value:.2f}"))
+            set_cell(self.wind_table, row, col, f"{value:.2f}")
 
     def remove_wind_row(self):
         row = self.wind_table.currentRow()
@@ -2070,7 +2070,7 @@ class MainWindow(QMainWindow):
                 else "Unavailable"
             )
             for col, text in enumerate(cells):
-                self.actuators.setItem(row, col, QTableWidgetItem(text))
+                set_cell(self.actuators, row, col, text)
 
     def refresh_plots(self, force=False):
         if not hasattr(self, "trajectory_plot"):

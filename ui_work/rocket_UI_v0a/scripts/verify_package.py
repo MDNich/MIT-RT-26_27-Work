@@ -6,6 +6,7 @@ import json
 import math
 import os
 from pathlib import Path
+import platform
 import subprocess
 import sys
 
@@ -35,7 +36,11 @@ def main():
         "--model", type=Path, help="Also verify a supplied .ork with the packaged motor library"
     )
     parser.add_argument("--output", type=Path, default=ROOT / "build" / "package-verification")
+    parser.add_argument("--mac-arch", choices=("arm64", "x86_64"),
+                        help="Run every macOS package check through this architecture slice")
     args = parser.parse_args()
+    if args.mac_arch and sys.platform != "darwin":
+        parser.error("--mac-arch is only supported on macOS")
     package = (
         args.package
         or ROOT / "dist" / (APP_NAME + ".app" if sys.platform == "darwin" else APP_NAME)
@@ -46,6 +51,13 @@ def main():
         else package / (APP_NAME + ".exe" if os.name == "nt" else APP_NAME)
     )
     contents = package / "Contents" / "Resources" if sys.platform == "darwin" else package / "_internal"
+    architecture = args.mac_arch or platform.machine()
+    if sys.platform == "darwin" and (package / "Contents" / "Helpers").is_dir():
+        helper = package / "Contents" / "Helpers" / f"RocketGNCMonitor-{architecture}.app"
+        contents = helper / "Contents" / "Resources"
+    launch = [str(executable)]
+    if args.mac_arch:
+        launch = ["/usr/bin/arch", "-" + args.mac_arch, *launch]
     model = contents / "resources" / "examples" / "simple.ork"
     if not executable.is_file() or not model.is_file():
         raise SystemExit("Package executable/example model missing")
@@ -132,7 +144,7 @@ def main():
         )
     for name, arguments in commands:
         run = subprocess.run(
-            [str(executable), *arguments], cwd=package, env=environment, capture_output=True, timeout=150
+            [*launch, *arguments], cwd=package, env=environment, capture_output=True, timeout=150
         )
         (output / (name + ".log")).write_bytes(run.stdout + run.stderr)
         if run.returncode:
@@ -215,7 +227,7 @@ def main():
     # Exercise every receiver log in the actual packaged process, not the source tree.
     for station in ("GS1", "GS3"):
         result = subprocess.run(
-            [str(executable), "--smoke-test", "--demo-station", station, "--data-dir", str(output / station)],
+            [*launch, "--smoke-test", "--demo-station", station, "--data-dir", str(output / station)],
             cwd=package,
             env=environment,
             capture_output=True,
@@ -244,6 +256,7 @@ def main():
         json.dumps(
             dict(
                 package=str(package),
+                architecture=architecture,
                 minimal_path=True,
                 station_workspaces=stations,
                 startup=startup,

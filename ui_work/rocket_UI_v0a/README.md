@@ -60,7 +60,7 @@ make package-macos OPENROCKET_DOWNLOAD=v6.2
 make verify-package
 ```
 
-Only package preparation downloads the engine/runtime. Supplying `OPENROCKET_JAR` copies the local engine into the app; omitting engine options reuses the staged `vendor` files. `make runtime` prepares the private, checksum-verified Java runtime. Mac outputs are `dist/RocketGNCMonitor-v0a.app` and `dist/RocketGNCMonitor-v0a-Darwin-arm64.dmg` (architecture varies with the build host). Windows uses `RocketGNCMonitor-v0a.exe` in a complete ZIP package; build it natively on Windows. This revision's active packaging and UI validation target Mac.
+Only package preparation downloads the engine/runtime. Supplying `OPENROCKET_JAR` copies the local engine into the app; omitting engine options reuses the staged `vendor` files. `make runtime` prepares the private, checksum-verified Java runtime. Mac outputs are `dist/RocketGNCMonitor-v0a.app` and `dist/RocketGNCMonitor-v0a-Darwin-arm64.dmg` (architecture varies with the build host). Windows uses `RocketGNCMonitor-v0a.exe` in a complete ZIP package; build it natively on Windows. Mac packages require macOS 14 or newer. The universal package runs natively on Apple Silicon and Intel; the Windows package targets x64 (also tested through x64 emulation in the supplied Windows 11 ARM VM). See [universal Mac packaging](docs/MAC_UNIVERSAL.md) for its Makefile target and verification commands.
 
 The packaged verification exercises locked Live startup, the three recorded demos and both videos, portable flight files, URRG, virtual pointing and the private OpenRocket runtime/3D events with a minimal system PATH. Hardware acceptance still requires the actual boards, camera receivers and network equipment.
 

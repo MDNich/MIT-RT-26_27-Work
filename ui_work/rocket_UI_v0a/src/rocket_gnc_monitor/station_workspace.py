@@ -23,7 +23,6 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QHeaderView,
     QFileDialog,
-    QTableWidgetItem,
 )
 
 from .ui import MainWindow as InstrumentWindow, button, label
@@ -31,6 +30,7 @@ from .widgets import ComboBox
 from .flight_view import Flight3DDialog
 from .media import camera_devices
 from .domain import finite
+from .table_cells import set_cell
 
 
 COMPACT_STYLE = """
@@ -640,7 +640,7 @@ class StationWindow(InstrumentWindow):
             ]
             items.append("Drive only" if "drive" in values else "Unavailable")
             for r, value in enumerate(items):
-                self.actuators.setItem(r, column, QTableWidgetItem(value))
+                set_cell(self.actuators, r, column, value)
 
     def arrange_displays(self):
         screens = QApplication.screens()
@@ -749,13 +749,13 @@ class StationWindow(InstrumentWindow):
         ):
             table.setRowCount(len(names))
             for r, name in enumerate(names):
-                table.setItem(r, 0, QTableWidgetItem(name))
+                set_cell(table, r, 0, name)
                 if not c.latest:
-                    table.setItem(r, 1, QTableWidgetItem("—"))
+                    set_cell(table, r, 1, "—")
                 table.setRowHeight(r, 19)
             table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
             table.setColumnWidth(0, round(table.viewport().width() * 0.58))
-        self.rocket_panel.power.setItem(7, 0, QTableWidgetItem("Temp °C"))
+        set_cell(self.rocket_panel.power, 7, 0, "Temp °C")
         for col in (0, 1):
             self.rocket_panel.pyros.horizontalHeader().setSectionResizeMode(
                 col, QHeaderView.ResizeMode.ResizeToContents

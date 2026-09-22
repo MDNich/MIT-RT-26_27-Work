@@ -3,6 +3,7 @@
 import json
 import queue
 import threading
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -145,7 +146,7 @@ def test_legacy_video_is_digital_and_stream_gaps_remain_separate(qtbot, tmp_path
         c.open_replay(r.path)
         c.seek(1)
         qtbot.waitUntil(lambda: c.video is not None)
-        assert c.video.source.endswith("video/segment.mkv")
+        assert Path(c.video.source) == r.path / "video" / "segment.mkv"
         assert c.video.single_frame and c.video.seek == 1
         assert c.video_streams["analog"].worker is None
         c.seek(3.5)

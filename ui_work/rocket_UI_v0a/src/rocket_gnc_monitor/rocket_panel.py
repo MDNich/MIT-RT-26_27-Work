@@ -3,7 +3,6 @@
 from __future__ import annotations
 import time
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
@@ -16,7 +15,6 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QTabWidget,
     QTableWidget,
-    QTableWidgetItem,
     QHeaderView,
     QAbstractItemView,
     QMessageBox,
@@ -24,6 +22,7 @@ from PySide6.QtWidgets import (
 from .zephyrus import legacy_values
 from .domain import finite
 from .widgets import COLORS
+from .table_cells import clear_cells, set_cell
 
 
 def card(title):
@@ -192,7 +191,7 @@ class RocketPanel(QWidget):
         self.power_master.setEnabled(False)
         self.power.setCellWidget(0, 1, self.power_master)
         for i, name in enumerate(["3 V", "3.3 V", "5 V", "7.4 V", "8.4 V", "28 V"]):
-            self.power.setItem(i + 1, 0, QTableWidgetItem(name))
+            set_cell(self.power, i + 1, 0, name)
             check = QCheckBox()
             check.setChecked(True)
             check.setEnabled(i != 1)
@@ -207,8 +206,8 @@ class RocketPanel(QWidget):
                         )
                     )
                 )
-        self.power.setItem(0, 0, QTableWidgetItem("Total"))
-        self.power.setItem(7, 0, QTableWidgetItem("Temperature (°C)"))
+        set_cell(self.power, 0, 0, "Total")
+        set_cell(self.power, 7, 0, "Temperature (°C)")
         column.addWidget(self.power)
         layout.addWidget(panel, 3)
         panel, column = card("BMS protection status")
@@ -233,7 +232,7 @@ class RocketPanel(QWidget):
             self.pyro_selection.append(check)
             self.controls.append(check)
             self.pyros.setCellWidget(row, 0, check)
-            self.pyros.setItem(row, 1, QTableWidgetItem(str(row)))
+            set_cell(self.pyros, row, 1, str(row))
         column.addWidget(self.pyros)
         row = QHBoxLayout()
         for title, name in [("ARM", "arm_pyros"), ("FIRE", "fire_pyros")]:
@@ -277,9 +276,9 @@ class RocketPanel(QWidget):
     def fill(self, widget, values):
         widget.setRowCount(len(values))
         for row, (name, value) in enumerate(values):
-            widget.setItem(row, 0, QTableWidgetItem(name))
+            set_cell(widget, row, 0, name)
             display = f"{value:.7f}" if name in {"Latitude", "Longitude"} and finite(value) else text(value)
-            widget.setItem(row, 1, QTableWidgetItem(display))
+            set_cell(widget, row, 1, display)
 
     def set_controls_enabled(self):
         connected = self.c.ground_connected or self.c.mode == "DEMO"
@@ -299,13 +298,13 @@ class RocketPanel(QWidget):
         if s is None:
             # Never retain another source's values when switching modes.
             for widget in [self.telemetry, self.gps, self.servos, self.cells, self.protections]:
-                widget.clearContents()
+                clear_cells(widget)
             for row in range(8):
                 for col in (2, 3, 4):
-                    self.power.setItem(row, col, QTableWidgetItem("—"))
+                    set_cell(self.power, row, col, "—")
             for row in range(6):
                 for col in (2, 3, 4):
-                    self.pyros.setItem(row, col, QTableWidgetItem("—"))
+                    set_cell(self.pyros, row, col, "—")
             return
         v = legacy_values(s, self.c.stats["rejected"])
         self.fill(
@@ -347,15 +346,11 @@ class RocketPanel(QWidget):
         )
         for i in range(4):
             for col, value in enumerate([i, v["servos"][i], v["servos_deg"][i]]):
-                self.servos.setItem(i, col, QTableWidgetItem(text(value)))
+                set_cell(self.servos, i, col, text(value))
         for i, value in enumerate(v["cell_voltages"]):
-            self.cells.setItem(i, 0, QTableWidgetItem(str(i + 1)))
-            item = QTableWidgetItem(text(value))
-            if finite(value):
-                item.setForeground(
-                    QColor(COLORS["accent" if value > 3.7 else "gold" if value > 3.5 else "red"])
-                )
-            self.cells.setItem(i, 1, item)
+            set_cell(self.cells, i, 0, str(i + 1))
+            color = COLORS["accent" if value > 3.7 else "gold" if value > 3.5 else "red"] if finite(value) else None
+            set_cell(self.cells, i, 1, text(value), color)
         for i in range(6):
             enabled, voltage, current = (
                 v["enabled_status"][i],
@@ -363,12 +358,11 @@ class RocketPanel(QWidget):
                 v["converter_currents"][i],
             )
             for col, value in [(2, enabled), (3, voltage), (4, current)]:
-                item = QTableWidgetItem(text(value))
-                if enabled is not None:
-                    item.setForeground(
-                        QColor(COLORS["accent" if enabled == self.rail_requests[i].isChecked() else "red"])
-                    )
-                self.power.setItem(i + 1, col, item)
+                color = (
+                    COLORS["accent" if enabled == self.rail_requests[i].isChecked() else "red"]
+                    if enabled is not None else None
+                )
+                set_cell(self.power, i + 1, col, text(value), color)
         requested = [check.isChecked() for check in self.rail_requests]
         self.power_master.setCheckState(
             Qt.CheckState.Checked
@@ -377,25 +371,19 @@ class RocketPanel(QWidget):
             if not any(requested)
             else Qt.CheckState.PartiallyChecked
         )
-        self.power.setItem(0, 2, QTableWidgetItem(text(all(v["enabled_status"]))))
-        self.power.setItem(0, 4, QTableWidgetItem(text(v["total_current"])))
-        self.power.setItem(7, 3, QTableWidgetItem(text(v["bms_temp"])))
+        set_cell(self.power, 0, 2, text(all(v["enabled_status"])))
+        set_cell(self.power, 0, 4, text(v["total_current"]))
+        set_cell(self.power, 7, 3, text(v["bms_temp"]))
         for row, field in enumerate(["bms_protections_enabled", "bms_protection_status"]):
             bits = v[field]
             for col in range(8):
                 value = ((bits >> (7 - col)) & 1) if bits is not None else None
-                item = QTableWidgetItem(text(value))
-                if value is not None:
-                    item.setForeground(QColor(COLORS["accent" if value == (1 if row == 0 else 0) else "red"]))
-                self.protections.setItem(row, col, item)
+                color = COLORS["accent" if value == (1 if row == 0 else 0) else "red"] if value is not None else None
+                set_cell(self.protections, row, col, text(value), color)
         for row in range(6):
             status = v["pyros"][row]
             label = ["FAIL", "UNCONNECTED", "CONNECTED", "FIRED"][status] if status in (0, 1, 2, 3) else "—"
-            item = QTableWidgetItem(label)
-            if status in (0, 1, 2, 3):
-                item.setForeground(QColor(COLORS[["red", "muted", "accent", "gold"][status]]))
-            self.pyros.setItem(row, 2, item)
-            self.pyros.setItem(
-                row, 3, QTableWidgetItem(f"A:{v['armed_pyros'][row]} F:{v['fired_pyros'][row]}")
-            )
-            self.pyros.setItem(row, 4, QTableWidgetItem(text(v["pyro_resistances"][row])))
+            color = COLORS[["red", "muted", "accent", "gold"][status]] if status in (0, 1, 2, 3) else None
+            set_cell(self.pyros, row, 2, label, color)
+            set_cell(self.pyros, row, 3, f"A:{v['armed_pyros'][row]} F:{v['fired_pyros'][row]}")
+            set_cell(self.pyros, row, 4, text(v["pyro_resistances"][row]))

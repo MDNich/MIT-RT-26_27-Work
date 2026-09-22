@@ -1,0 +1,93 @@
+{
+  "host": {
+    "os": "macOS-26.5-arm64-arm-64bit",
+    "machine": "arm64"
+  },
+  "app": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/dist/RocketGNCMonitor-v0a-universal.app",
+  "signing": {
+    "identity": "ad-hoc",
+    "notarized": false,
+    "verification": "codesign --verify --deep --strict: valid on disk; satisfies designated requirement"
+  },
+  "payloads": {
+    "arm64": {
+      "native_files_checked": 178,
+      "source_executable_hash_matches": true,
+      "signed_executable_sha256": "42943d61aa4e25dc833dfdd800d66f4d04bed7b606bd47155fe8a685294e6712",
+      "java_architecture": "aarch64",
+      "openrocket_sha256": "c53e91389e9c580da60bb25f05b6eb7c7705490eaae08089bc95354cf2950e70",
+      "bundle_identifier": "edu.mit.rocketteam.gncmonitor.v0a",
+      "camera_usage_description": "Display and record the connected rocket video receiver."
+    },
+    "x86_64": {
+      "native_files_checked": 112,
+      "source_executable_hash_matches": true,
+      "signed_executable_sha256": "e6c101a65fb05a214c18103437bacafa9e5ce358f6e08270d45cc9fbd7147c0e",
+      "java_architecture": "x64",
+      "openrocket_sha256": "c53e91389e9c580da60bb25f05b6eb7c7705490eaae08089bc95354cf2950e70",
+      "bundle_identifier": "edu.mit.rocketteam.gncmonitor.v0a",
+      "camera_usage_description": "Display and record the connected rocket video receiver."
+    }
+  },
+  "artifacts": {
+    "dmg": {
+      "name": "RocketGNCMonitor-v0a-macOS-universal.dmg",
+      "bytes": 410749916,
+      "sha256": "c183beec7c8cd9f5baeab51a5e17e7283c6639b6865f2fd0255743e896dcdca8",
+      "sidecar_matches": true
+    },
+    "zip": {
+      "name": "RocketGNCMonitor-v0a-macOS-universal.zip",
+      "bytes": 410750094,
+      "sha256": "552cc569de50e7f244d9ba42533fe672a73a1e5c6ede2fe6e4cf937acc2b0d2e",
+      "sidecar_matches": true
+    }
+  },
+  "launcher_architectures": [
+    "arm64",
+    "x86_64"
+  ],
+  "minimum_macos": "14.0",
+  "launcher_sha256": "8a83e47d073915f2e91a12de1251f036bfa1b7b6a51040d43c9f85cdeeae4384",
+  "manifest_sha256": "7a54f4555087c31681e3d068ba29dcd3a542e89706783e3e4913c542462bc6ed",
+  "dmg_integrity_verified": true,
+  "zip_contents_match_dmg": true,
+  "review": {
+    "documentation_requires_macos14": true,
+    "universal_launcher_layout_documented": true,
+    "development_signing_limitations_documented": true,
+    "hardware_validation_limits_documented": true
+  },
+  "relocation": {
+    "relocated_app": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/build/mac-universal/Relocated Install/Rocket GNC Monitor.app",
+    "refreshed_from_final_package": true,
+    "signature_verified": true,
+    "checks": {
+      "finder-final": {
+        "architecture": "arm64",
+        "launch_method": "LaunchServices",
+        "exit_code": 0,
+        "seconds": 5.13,
+        "working_directory": "/private/tmp",
+        "live_startup_locked": true,
+        "hardware_open": false,
+        "bundled_engine_found": true
+      },
+      "intel-relocated-final": {
+        "architecture": "x86_64",
+        "launch_method": "arch -x86_64",
+        "exit_code": 0,
+        "seconds": 11.28,
+        "working_directory": "/private/tmp",
+        "live_startup_locked": true,
+        "hardware_open": false,
+        "bundled_engine_found": true
+      }
+    }
+  },
+  "physical_hardware_tests": {
+    "intel_mac": false,
+    "usb_cameras": false,
+    "serial_boards": false
+  }
+}
