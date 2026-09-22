@@ -155,14 +155,26 @@ public class RocketBridge {
             List<Double> east=branch.get(FlightDataType.TYPE_POSITION_X);
             List<Double> north=branch.get(FlightDataType.TYPE_POSITION_Y);
             List<Double> up=branch.get(FlightDataType.TYPE_ALTITUDE);
+            FlightDataType[] motionTypes={FlightDataType.TYPE_ORIENTATION_QW,FlightDataType.TYPE_ORIENTATION_QX,
+                FlightDataType.TYPE_ORIENTATION_QY,FlightDataType.TYPE_ORIENTATION_QZ,
+                FlightDataType.TYPE_VELOCITY_X,FlightDataType.TYPE_VELOCITY_Y,FlightDataType.TYPE_VELOCITY_Z,
+                FlightDataType.TYPE_ROLL_RATE,FlightDataType.TYPE_PITCH_RATE,FlightDataType.TYPE_YAW_RATE};
+            List<List<Double>> motion=new ArrayList<>();
+            for(FlightDataType type:motionTypes) motion.add(branch.get(type));
             int written=0;
             try(PrintWriter csv=new PrintWriter(Files.newBufferedWriter(output.resolve("trajectory.csv.tmp")))) {
-                csv.println("time_s,east_m,north_m,up_m");
+                csv.println("time_s,east_m,north_m,up_m,qw,qx,qy,qz,velocity_east_m_s,velocity_north_m_s,velocity_up_m_s,roll_rate_rad_s,pitch_rate_rad_s,yaw_rate_rad_s");
                 double previous=-Double.MAX_VALUE;
                 for(int i=0;i<time.size();i++) {
                     double t=time.get(i),e=east.get(i),n=north.get(i),u=up.get(i);
                     if(!Double.isFinite(t+e+n+u) || t<=previous) continue;
-                    csv.printf(Locale.US,"%.8f,%.8f,%.8f,%.8f%n",t,e,n,u);
+                    csv.printf(Locale.US,"%.8f,%.8f,%.8f,%.8f",t,e,n,u);
+                    for(List<Double> column:motion) {
+                        Double value=column==null || i>=column.size() ? null : column.get(i);
+                        csv.print(",");
+                        if(value!=null && Double.isFinite(value)) csv.printf(Locale.US,"%.10g",value);
+                    }
+                    csv.println();
                     previous=t;written++;
                 }
             }
@@ -171,10 +183,20 @@ public class RocketBridge {
                 +"; events: "+branch.getEvents());
             JsonArrayBuilder origin=Json.createArrayBuilder().add(number(request,"latitude"))
                 .add(number(request,"longitude")).add(number(request,"origin_ellipsoid_altitude"));
+            JsonArrayBuilder flightEvents=Json.createArrayBuilder();
+            for(FlightEvent event:branch.getEvents()) {
+                if(!Double.isFinite(event.getTime())) continue;
+                flightEvents.add(Json.createObjectBuilder().add("time",event.getTime())
+                    .add("type",event.getType().name())
+                    .add("source",event.getSource()==null ? "" : event.getSource().getName())
+                    .add("source_id",event.getSource()==null ? "" : event.getSource().getID().toString()));
+            }
             JsonObject result=Json.createObjectBuilder().add("schema_version",1).add("frame","ENU")
                 .add("units","m,s").add("altitude_datum","launch_relative").add("origin",origin)
                 .add("name","OpenRocket nominal · "+document.getRocket().getName())
                 .add("motors",resolvedMotors).add("saved_simulation",saved.getName())
+                .add("flight_events",flightEvents).add("visuals_schema_version",1)
+                .add("attitude_frame","body_to_ENU").add("body_axis","+Z")
                 .add("branch",0).add("branch_count",data.getBranchCount()).add("synthetic",false)
                 .add("controlled_model_validated",false).add("inertia_override",false)
                 .add("solver","ModifiedEventSimulationEngine / useRK6=false")

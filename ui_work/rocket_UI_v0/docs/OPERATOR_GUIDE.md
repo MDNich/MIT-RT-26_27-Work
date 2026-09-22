@@ -22,6 +22,17 @@ Connect each board independently at 115200 baud. Connecting the ground board ope
 
 The connection, pose and banner are labeled **VIRTUAL / SIMULATED**. Rehearsal never opens a serial port, generates telemetry or unlocks ground-station/rocket controls. Its kinematics illustrate motion, not calibrated hardware dynamics. At a coincident antenna/target position the direction is undefined; at exact zenith it retains the previous azimuth. Physical pointer tracking keeps the legacy **Send to AntPtr** ground-GPS workflow. Simulation playback/connection state is temporary and is not restored when loading a flight.
 
+## 3D flight playback
+
+Open **View → 3D flight…**, or **3D…** beside the Flight overview trajectory selector. Run OpenRocket or import a reference first. The new window shows the simulation trajectory, an enlarged schematic rocket with fins/canards, an ignition plume during recorded motor burns, and a parachute at recorded deployment. Camera orbit is independent of the rocket's attitude.
+
+- Drag to orbit, Shift-drag/right-drag to pan, scroll to zoom, and double-click or **Fit** to reset framing. Choose Perspective/Top/Side, follow the rocket, adjust its display size, or toggle velocity and ground projection.
+- Play/pause, rewind, change speed, scrub the timeline, or jump to ignition, burnout, apogee, deployment and touchdown events. Playback uses elapsed time, independent of repaint frequency.
+- **Follow monitor time** displays the virtual-pointer rehearsal time, or the aligned telemetry flight time. This shows the simulation at that time; it does not actuate the pointer. Turn it off for independent inspection.
+- Gold is the reference, teal is the actual track when the mission and reference origins match, and purple is the configured antenna. Camera movement and independent playback send no hardware commands.
+- Re-run OpenRocket for older references that lack quaternion/event columns. Old four-column references remain usable, with a path-aligned illustrative rocket and an explicit unavailable-attitude/events label. Motor ignition or recovery is never inferred from height or descending motion. The supplied Zephyrus test model has no recovery event in its nominal output; the bundled small example does.
+- The rocket and canopy are schematic, not a CAD model or a deployment-dynamics prediction. Engine attitude held after tumble/recovery and insufficient angular sampling are labeled explicitly. Flight files retain the added motion/event data.
+
 ## Global settings
 
 Open **Rocket GNC Monitor → Settings…** or press **⌘,** on Mac. On Windows, use **File → Settings…** or **Ctrl+,**. Settings are available in every mode, including disconnected LIVE.
@@ -83,9 +94,11 @@ Flight t=0 is set only by an observed Preflight → Flight transition or an expl
 
 ## Antenna
 
+The drawing uses cached geometry and its own 16 ms animation timer, independent of the slower dashboard refresh. Hidden views stop animating. Rotation takes the short path through north, and framing stays fixed during movement. This visual smoothing changes no serial commands or control timing.
+
 The drawing follows the supplied stand and antenna references with the September 20 attachment clarification: the grid dish, Yagi and black Avenger XR18 mount directly to a shared beam concentric with the support pivots. Their mounting centers share the beam elevation rather than using raised/lowered stalks. Dimensions and hidden mechanisms are illustrative. Drag the model to orbit from any angle, including above and below; scroll to zoom; double-click or use a preset to reset the view. Orbit changes only the viewing camera, even when Live controls are locked. Enter azimuth/elevation and click Send. Editing the fields does not move the graphic or transmit. UP/DOWN/LEFT/RIGHT send the original firmware direction opcodes; ZERO sends the original zero opcode.
 
-“Sent” means serial dispatch, not board acknowledgment or arrival. Measured angles are unavailable. “ZERO” resets software step counters at the physical current position; it does not home to a switch. The graphic follows the last sent target; a direction command before a known target leaves the angle readout unknown.
+“Sent” means serial dispatch, not board acknowledgment or arrival. Measured angles are unavailable. “ZERO” resets software step counters at the physical current position; it does not home to a switch. The graphic smoothly approaches the last sent target; a direction command before a known target leaves the angle readout unknown.
 
 With both boards connected and polling, use **Send to AntPtr** to freeze the ground-station GPS coordinates. **Start tracking** then sends pointing angles at 5 Hz using the rocket GPS latitude/longitude and filtered barometric altitude, exactly as the old UI calculated them. Ground coordinates retain the old five-decimal rounding and the old pointer altitude of zero. The displayed receiver altitude retains its historical division by 1000. These conventions are preserved separately from trajectory display settings. Unfreeze to update the ground location; Stop tracking ends periodic commands. Stale/invalid telemetry or disconnection stops host tracking; restart explicitly.
 

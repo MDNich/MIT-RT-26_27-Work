@@ -1,0 +1,16 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\node[box,text width=37mm] (engine) at (0,0) {OpenRocket branch\\position, attitude, events};
+\node[accentbox,text width=37mm] (frame) at (5.15,0) {Flight frame\\SLERP + event state};
+\node[box,text width=37mm] (scene) at (10.3,0) {3D scene\\rocket, plume, canopy};
+\node[box,text width=37mm] (clock) at (0,-2) {Elapsed-time clock\\or read-only monitor time};
+\node[box,text width=37mm] (mesh) at (5.15,-2) {Cached geometry\\vectorized transforms};
+\node[box,text width=37mm] (camera) at (10.3,-2) {Independent camera\\orbit, pan, zoom, follow};
+\draw[flow] (engine) -- (frame);
+\draw[flow] (frame) -- (scene);
+\draw[flow] (clock.east) -- (frame.south west);
+\draw[flow] (mesh) -- (scene.south west);
+\draw[flow] (camera) -- (scene);
+\end{tikzpicture}
+\caption{Flight events determine ignition and recovery appearance. Camera and display timing are independent of control dispatch; the antenna shares the cached-geometry renderer.}
+\end{figure}

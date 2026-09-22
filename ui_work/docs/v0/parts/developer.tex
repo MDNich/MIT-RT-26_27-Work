@@ -44,7 +44,12 @@ maintenance anchors.
 \src{src/rocket_gnc_monitor/rocket_panel.py} & Complete legacy rocket Telemetry/Commands/Power/Recovery subviews and retained confirmations. \\
 \src{src/rocket_gnc_monitor/settings.py} & Immutable \code{AppSettings}, validation, atomic per-machine persistence, runtime paths and JAR checks. \\
 \src{src/rocket_gnc_monitor/settings_ui.py} & Modeless \code{SettingsDialog}, engine/folder pickers, defaults, validation and save/cancel. \\
-\src{src/rocket_gnc_monitor/widgets.py} & Themes, \code{AttitudeView}, \code{MountView}, local geometry, material colors and camera/pose transforms. \\
+\src{src/rocket_gnc_monitor/widgets.py} & Themes, \code{AttitudeView}, \code{MountView}, animation and camera/pose transforms. \\
+\src{src/rocket_gnc_monitor/mount_geometry.py} & Cached stand, turntable, beam, antennas and material definitions. \\
+\src{src/rocket_gnc_monitor/scene_mesh.py} & Vectorized rigid transforms, normal shading and QPainter depth-sorted polygons. \\
+\src{src/rocket_gnc_monitor/flight_scene.py} & Elapsed-time playback, quaternion SLERP, burn/recovery events and frame sampling. \\
+\src{src/rocket_gnc_monitor/flight_view.py} & Modeless 3D viewer, orbit/pan/zoom, timeline, monitor-time link and overlays. \\
+\src{src/rocket_gnc_monitor/rocket_geometry.py} & Cached schematic rocket, ignition plume and recovery canopy. \\
 \src{src/rocket_gnc_monitor/fonts.py} & Private font registration and global Qt font choice. \\
 \src{src/rocket_gnc_monitor/domain.py} & \code{Mission}, \code{Sample}, finite checks, geographic transforms, pointing and wind validation. Contains a synthetic test-data helper. \\
 \src{src/rocket_gnc_monitor/location.py} & Qt-independent coordinate conversion and \code{Location}. \\
@@ -609,6 +614,15 @@ Loading caps the CSV at 40 MB. The manifest must declare version 1, ENU and
 \code{m,s}; a nonsynthetic reference needs a valid three-value geographic origin.
 \code{at(t)} interpolates each spatial coordinate linearly within coverage and
 returns unavailable outside it. Save produces CSV and a same-basename JSON.
+Optional motion columns are \code{qw,qx,qy,qz}, the three ENU velocity components
+in metres/s, and roll/pitch/yaw rates in radians/s. They form a matching
+$N\times10$ array; missing values are blank/NaN, never infinity. Partial column
+sets are rejected. Metadata declares \code{visuals_schema_version=1},
+\code{attitude_frame=body_to_ENU} and \code{body_axis=+Z}. A bounded
+\code{flight_events} list stores time, type, source name and stable source ID.
+The Java bridge exports actual simulation samples/events; trajectory save and
+portable-flight snapshots preserve these additions without changing the base
+four-column position contract.
 
 \subsection{Simulation job boundary}
 The Python job copies the model and all explicit/bundled custom curves, writes
@@ -684,9 +698,10 @@ the same family. The report itself uses Latin Modern to match the requested
 LaTeX report style; these are separate presentation choices.
 
 \subsection{Where the antenna's physical description is defined}
-The physical drawing is procedural code inside
-\src{src/rocket_gnc_monitor/widgets.py}, specifically
-\code{MountView.paintEvent}. There is no separate CAD/mesh file.
+The physical description is procedural code in
+\src{src/rocket_gnc_monitor/mount_geometry.py}, specifically
+\code{mount_mesh}. It is compiled once into a cached mesh, then drawn by
+\code{MountView.paintEvent} in \src{src/rocket_gnc_monitor/widgets.py}.
 Local helper functions \code{box}, \code{rod} and \code{face} construct polygons;
 \code{palette} defines timber, frame, metal, grid, dark enclosure and other
 material colors. Faces are depth-sorted and projected with QPainter, so the
@@ -726,6 +741,41 @@ the fixed stand or azimuth-only support. Check front/side/top/perspective views,
 full orbit and zoom, feed/boresight collinearity, and the compass tests.
 Hardware behavior belongs in the controller/protocol layers and requires
 separate regression evidence.
+
+\section{Smooth animation and 3D flight rendering}
+\input{figures/flight-scene}
+\code{Mesh} stores concatenated polygon vertices, group IDs, centers, normals
+and cached material shades. Array operations apply fixed/azimuth/beam transforms,
+project vertices and depth-sort faces; geometry is not rebuilt while painting.
+\code{MountView} uses a precise 16 ms Qt timer, stops it while hidden, samples
+virtual pose directly and approaches targets with a 45 ms exponential display
+time constant. Azimuth uses the shortest signed arc through north. Fixed camera
+framing removes pose-dependent zoom changes. Public command/pose state remains
+separate from interpolated display state and never generates serial commands.
+
+\code{FlightScene} and \code{Playback} follow the team's OpenRocket v6.2
+\code{TrajectoryData}, \code{TrajectoryPlayback} and \code{Trajectory3DPanel}
+conventions reviewed at commit \code{65defde5}. Playback uses a monotonic elapsed
+clock; orientation uses normalized shortest-arc quaternion SLERP. Samples whose
+angular rate times interval reaches $\pi$ radians do not invent intermediate
+attitude. Missing orientation uses a labeled path-aligned illustration.
+Ignitions and burnouts pair by motor source; old burnout-only events begin at
+launch. Deployment enables the illustrative canopy; tumble/recovery marks
+engine-held attitude. No recovery or ignition is guessed from position.
+
+\code{Flight3DDialog} has its own visible-only timer, snapshots reference identity,
+and resets when a reference changes. Monitor-time linking is read-only. Actual
+track overlays require matching mission/reference origins. The trajectory drawing
+uses at most 6,000 path vertices; full motion samples remain available for frame
+sampling. Cached schematic vehicle/plume/canopy geometry uses the same mesh
+renderer and Qt/NumPy runtimes as the antenna. No Python OpenGL dependency is added.
+
+Local Cocoa measurements reached about 63 displayed frames/s for both views.
+The isolated antenna median repaint fell from about 48 ms to 8 ms after caching;
+full-window native drawing remained within the 16 ms target in the recorded
+probe. These are development-Mac measurements, not a guaranteed frame rate on
+other machines. The verification captures ignition, burnout and recovery from
+an actual bundled-example simulation and separately checks the Zephyrus model.
 
 \section{Virtual pointer transport and trajectory geometry}
 \code{VirtualPointer} satisfies the pointer worker's command interface without
@@ -938,6 +988,7 @@ licenses or credentials.
 \code{test_media.py} & FFmpeg arguments, capture/recording lifecycle and available runtime checks. \\
 \code{test_ui.py} & Workspace rendering, legacy values/readiness, orbit independence, compass chirality and pseudo-terminal radio status. \\
 \code{test_simulation.py} & Bundled N8406 identity, real engine trajectory, named missing-motor and unpowered errors. Engine-dependent cases skip if runtime/bridge is absent. \\
+\code{test_flight_3d.py} & SLERP, event boundaries, elapsed clock, motion persistence, animation and read-only Qt viewer controls. \\
 \code{test_virtual_pointer.py} & Packet actuation, frame geometry, playback, manual takeover, physical isolation, profile/flight persistence and Qt controls. \\
 \code{test_settings.py} & Shortcut, persistence, cancel/defaults, invalid settings, recording destination and per-job snapshots. \\
 \code{test_build.py} & Runtime architecture; latest/pinned release selection, checksums, local JARs and failure preservation. \\
@@ -990,6 +1041,7 @@ CLI smoke entry points are:
 \code{--demo} & Explicit recorded demo startup. \\
 \code{--demo-station GS1|GS2|GS3} & Receiver selection; default GS2. \\
 \code{--data-dir PATH} & Override per-user application data directory. \\
+\code{--flight-3d-smoke CSV} & Verify quaternion-backed 3D poses, ignition, burnout and parachute renderings. \\
 \code{--virtual-pointer-smoke CSV} & Exercise virtual connection, actuation, reference playback/seek and disconnect without physical transport. \\
 \code{--startup-smoke} & Check disconnected/locked LIVE startup and exit. \\
 \code{--smoke-test} & Exercise recorded demo and synthetic video, write report, exit. \\
@@ -1000,7 +1052,7 @@ CLI smoke entry points are:
 \end{longtable}
 
 \subsection{Recorded results and their limits}
-The current antenna-location revision passed 107 Mac regression tests; the preceding virtual-pointer revision passed 101. Native Cocoa popup checks cover both themes and long device names. The previous Settings/engine revision passed 94 tests. Settings persistence, shortcut handling, bundled/custom simulations and local/latest/pinned build paths are covered. The earlier dual-video revision passed 77 tests. New checks
+The current graphics revision passed 113 Mac regression tests. The antenna-location revision passed 107; the preceding virtual-pointer revision passed 101. Native Cocoa popup checks cover both themes and long device names. The previous Settings/engine revision passed 94 tests. Settings persistence, shortcut handling, bundled/custom simulations and local/latest/pinned build paths are covered. The earlier dual-video revision passed 77 tests. New checks
 cover camera reservations during open/close, reciprocal camera and serial
 dropdown exclusion, independent stream failure and frames, old single-video
 replay, two-feed flight archives and compact layouts. The refreshed package

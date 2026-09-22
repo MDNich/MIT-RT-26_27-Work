@@ -19,6 +19,9 @@ def main():
         help="Rehearse a georeferenced trajectory with the virtual pointer and exit",
     )
     startup.add_argument(
+        "--flight-3d-smoke", type=Path, help="Verify 3D attitude, ignition and recovery playback"
+    )
+    startup.add_argument(
         "--flight-smoke", action="store_true", help="Verify portable flight files and the URRG preset"
     )
     parser.add_argument(
@@ -66,6 +69,48 @@ def main():
         window.controller.switch_mode("DEMO")
         window.pages.setCurrentIndex(1)
     window.show()
+    if args.flight_3d_smoke:
+        from .trajectory import Trajectory
+
+        c = window.controller
+        c.timer.stop()
+        c.reference = Trajectory.load(args.flight_3d_smoke)
+        assert c.reference.motion is not None
+        window.open_flight_3d()
+        dialog = window.flight_3d_dialog
+        dialog.timer.stop()
+        burns = dialog.scene.burns
+        deployments = dialog.scene.deployments
+        assert burns and deployments
+        snapshots = [
+            ("ignition", (burns[0][0] + burns[0][1]) / 2),
+            ("burnout", burns[0][1]),
+            ("parachute", deployments[0]["time"] + 1),
+        ]
+        frames = {}
+        for name, stamp in snapshots:
+            dialog.playback.seek(stamp)
+            dialog.last_labels = 0
+            dialog.tick()
+            app.processEvents()
+            frame = dialog.view.frame
+            frames[name] = dict(
+                time=frame.time,
+                powered=frame.powered,
+                recovery=frame.recovery,
+                attitude=frame.attitude,
+                state=frame.state,
+            )
+            dialog.grab().save(str(data / (name + ".png")))
+        assert frames["ignition"]["powered"] and not frames["burnout"]["powered"]
+        assert frames["parachute"]["recovery"]
+        assert all("Simulation attitude" in frame["attitude"] for frame in frames.values())
+        report = dict(
+            frames=frames, motion_rows=len(c.reference.motion), hardware_open=any(c.workers.values())
+        )
+        (data / "flight-3d-smoke-report.json").write_text(json.dumps(report, indent=2))
+        window.close()
+        return 0
     if args.virtual_pointer_smoke:
         from .trajectory import Trajectory
         from .virtual_pointer import VIRTUAL_POINTER_DEVICE
@@ -160,9 +205,12 @@ def main():
         assert c.mode == "LIVE" and c.reader is None and c.reference is not None
         assert c.mission.launch_location_code == "18TUN2061530290"
         assert c.mission.pointer_location_format == "relative"
-        antenna_enu = to_enu(c.mission.latitude, c.mission.longitude, c.mission.altitude, (
-            c.mission.pointer_latitude, c.mission.pointer_longitude, c.mission.pointer_altitude
-        ))
+        antenna_enu = to_enu(
+            c.mission.latitude,
+            c.mission.longitude,
+            c.mission.altitude,
+            (c.mission.pointer_latitude, c.mission.pointer_longitude, c.mission.pointer_altitude),
+        )
         assert abs(antenna_enu[0] - 500) < 1e-4 and abs(antenna_enu[1]) < 1e-4
         assert c.mission.pointer_altitude == c.mission.altitude + 5
         assert Path(c.mission.model).is_file()
@@ -191,11 +239,14 @@ def main():
             hardware_open=any(c.workers.values()),
             site=c.mission.launch_site_name,
             code=c.mission.launch_location_code,
-            pointer_location=dict(mgrs=pointer_mgrs, format=c.mission.pointer_location_format,
-                                  heading=c.mission.pointer_launch_heading,
-                                  distance=c.mission.pointer_launch_distance,
-                                  height_difference=c.mission.pointer_height_difference,
-                                  launch_enu=antenna_enu),
+            pointer_location=dict(
+                mgrs=pointer_mgrs,
+                format=c.mission.pointer_location_format,
+                heading=c.mission.pointer_launch_heading,
+                distance=c.mission.pointer_launch_distance,
+                height_difference=c.mission.pointer_height_difference,
+                launch_enu=antenna_enu,
+            ),
             model_exists=Path(c.mission.model).is_file(),
             reference_rows=len(c.reference.points),
             latest_row=c.latest.details["demo_row"],

@@ -20,14 +20,56 @@ from .domain import demo_sample, finite, validate_wind, wind_from, write_json
 from .media import popen_options
 
 
+MOTION_COLUMNS = (
+    "qw",
+    "qx",
+    "qy",
+    "qz",
+    "velocity_east_m_s",
+    "velocity_north_m_s",
+    "velocity_up_m_s",
+    "roll_rate_rad_s",
+    "pitch_rate_rad_s",
+    "yaw_rate_rad_s",
+)
+
+
 class Trajectory:
-    def __init__(self, points, manifest):
+    def __init__(self, points, manifest, motion=None):
         self.points = np.asarray(points, dtype=float)
         self.manifest = manifest
+        self.motion = None if motion is None else np.asarray(motion, dtype=float)
         if self.points.ndim != 2 or self.points.shape[1] != 4 or not 2 <= len(self.points) <= 200000:
             raise ValueError("Trajectory needs 2–200,000 rows of time/east/north/up")
         if not np.isfinite(self.points).all() or not (np.diff(self.points[:, 0]) > 0).all():
             raise ValueError("Trajectory must be finite with strictly increasing time")
+        if self.motion is not None and (
+            self.motion.shape != (len(self.points), len(MOTION_COLUMNS))
+            or np.isinf(self.motion).any()
+            or manifest.get("visuals_schema_version") != 1
+            or manifest.get("attitude_frame") != "body_to_ENU"
+            or manifest.get("body_axis") != "+Z"
+        ):
+            raise ValueError(
+                "Trajectory motion requires v1 body-to-ENU quaternions, +Z nose and matching rows"
+            )
+        events = manifest.get("flight_events", [])
+        if (
+            not isinstance(events, list)
+            or len(events) > 10000
+            or any(
+                not isinstance(e, dict)
+                or not finite(e.get("time"))
+                or not isinstance(e.get("type"), str)
+                or not e["type"]
+                or not all(
+                    isinstance(e.get(k, ""), str) and len(e.get(k, "")) <= 1000
+                    for k in ("type", "source", "source_id")
+                )
+                for e in events
+            )
+        ):
+            raise ValueError("Invalid trajectory flight events")
         if (
             manifest.get("schema_version") != 1
             or manifest.get("frame") != "ENU"
@@ -67,17 +109,33 @@ class Trajectory:
         manifest = json.loads(path.with_suffix(".json").read_text(encoding="utf-8"))
         with path.open(newline="", encoding="utf-8-sig") as handle:
             rows = csv.DictReader(handle)
-            points = [[float(row[key]) for key in ("time_s", "east_m", "north_m", "up_m")] for row in rows]
+            has_motion = all(key in (rows.fieldnames or []) for key in MOTION_COLUMNS)
+            if not has_motion and any(key in (rows.fieldnames or []) for key in MOTION_COLUMNS):
+                raise ValueError("Trajectory motion columns must be complete")
+            points, motion = [], []
+            for row in rows:
+                points.append([float(row[key]) for key in ("time_s", "east_m", "north_m", "up_m")])
+                if has_motion:
+                    motion.append([float(row[key]) if row[key] else math.nan for key in MOTION_COLUMNS])
         manifest["csv_sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
-        return cls(points, manifest)
+        return cls(points, manifest, motion if has_motion else None)
 
     def save(self, path):
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", newline="", encoding="utf-8") as handle:
             writer = csv.writer(handle)
-            writer.writerow(["time_s", "east_m", "north_m", "up_m"])
-            writer.writerows(self.points.tolist())
+            writer.writerow(
+                ["time_s", "east_m", "north_m", "up_m"]
+                + (list(MOTION_COLUMNS) if self.motion is not None else [])
+            )
+            for index, point in enumerate(self.points):
+                extra = (
+                    [v if math.isfinite(v) else "" for v in self.motion[index]]
+                    if self.motion is not None
+                    else []
+                )
+                writer.writerow([*point, *extra])
         write_json(path.with_suffix(".json"), self.manifest)
 
     def at(self, t):

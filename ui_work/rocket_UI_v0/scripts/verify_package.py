@@ -70,6 +70,15 @@ def main():
         ),
         ("simulation", ["--simulation-smoke", str(model), "--data-dir", str(output / "simulation")]),
         (
+            "flight-3d",
+            [
+                "--flight-3d-smoke",
+                str(output / "simulation" / "trajectory.csv"),
+                "--data-dir",
+                str(output / "flight-3d"),
+            ],
+        ),
+        (
             "virtual-pointer",
             [
                 "--virtual-pointer-smoke",
@@ -104,6 +113,14 @@ def main():
     startup = json.loads((output / "startup" / "smoke-report.json").read_text())
     flight = json.loads((output / "flight" / "flight-smoke-report.json").read_text())
     virtual = json.loads((output / "virtual-pointer" / "virtual-pointer-smoke-report.json").read_text())
+    scene = json.loads((output / "flight-3d" / "flight-3d-smoke-report.json").read_text())
+    if (
+        scene["hardware_open"]
+        or not scene["frames"]["ignition"]["powered"]
+        or scene["frames"]["burnout"]["powered"]
+        or not scene["frames"]["parachute"]["recovery"]
+    ):
+        raise SystemExit("Packaged 3D flight events failed")
     if (
         not virtual["virtual_connected"]
         or virtual["physical_ports_open"]
@@ -194,6 +211,7 @@ def main():
                 startup=startup,
                 flight=flight,
                 virtual_pointer=virtual,
+                flight_3d=scene,
                 demo=demo,
                 simulation=simulation,
                 selected_model=selected_model,

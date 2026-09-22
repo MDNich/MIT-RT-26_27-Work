@@ -1,5 +1,13 @@
 # Implementation and acceptance status
 
+## September 21 Mac revision — smooth antenna and 3D flight
+
+- Antenna geometry is compiled once, transformed in vectorized batches, and animated independently at a 16 ms cadence. Camera framing no longer changes with pose; angle smoothing follows the shortest azimuth arc. Geometry/materials now live in `mount_geometry.py`.
+- The new 3D flight window follows the team's OpenRocket v6.2 viewer conventions: ENU path, body +Z quaternion orientation, motor burns keyed by source, parachute deployment, event jumps, elapsed-time playback, orbit/pan/zoom and follow controls.
+- Bridge output includes quaternion, velocity and angular-rate columns plus events. Old four-column references retain a labeled path-aligned fallback. New motion/events round-trip through portable flights. Live actual tracks are overlaid only for a matching reference origin.
+- Local native Cocoa measurements achieved about 63 displayed frames/s for antenna motion and flight playback. Before caching, the isolated antenna paint median was about 48 ms; after caching it was about 8 ms. These are development-Mac measurements, not platform guarantees.
+- **113 regression tests passed**. Real Zephyrus and bundled-example simulations were checked; ignition, burnout and parachute renderings are included in packaged verification. The Zephyrus nominal model has no recovery deployment event. Windows has not been rebuilt.
+
 ## September 21 Mac revision — antenna location entry
 
 - Antenna mission location accepts latitude/longitude, MGRS, or launch-relative true heading, horizontal distance and antenna-minus-launch altitude difference. The preview resolves WGS84 coordinates offline.

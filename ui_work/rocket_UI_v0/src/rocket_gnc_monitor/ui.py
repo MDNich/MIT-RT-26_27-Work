@@ -266,6 +266,7 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(STYLE)
         self.controller = c = Controller(data_dir)
         self.settings_dialog = None
+        self.flight_3d_dialog = None
         self.events = []
         self.last_ui = 0
         self.last_table = 0
@@ -436,6 +437,7 @@ class MainWindow(QMainWindow):
             action.triggered.connect(callback)
             menu.addAction(action)
         view_menu = self.menuBar().addMenu("View")
+        view_menu.addAction("3D flight…", self.open_flight_3d)
         self.daylight_action = daylight = QAction("Daylight theme", self)
         daylight.setCheckable(True)
         daylight.toggled.connect(lambda enabled: self.guard(lambda: self.set_daylight(enabled)))
@@ -778,6 +780,7 @@ class MainWindow(QMainWindow):
         self.view.currentIndexChanged.connect(lambda: self.refresh_plots(force=True))
         row.addWidget(self.view)
         row.addWidget(button("Import reference…", self.load_reference))
+        row.addWidget(button("3D…", self.open_flight_3d))
         column.addLayout(row)
         self.trajectory_plot = plot("North (m)", "East", "m")
         self.trajectory_legend = self.trajectory_plot.addLegend(offset=(10, 10))
@@ -843,6 +846,9 @@ class MainWindow(QMainWindow):
         row.addStretch()
         column.addLayout(row)
         self.mount = MountView()
+        self.mount.pose_provider = lambda: (
+            self.controller.virtual_pointer.pose if self.controller.virtual_pointer else None
+        )
         column.addWidget(self.mount, 1)
         note = label("Yagi · grid reflector · Avenger XR18 — all mounted on the elevation beam", "muted")
         note.setWordWrap(True)
@@ -2145,6 +2151,18 @@ class MainWindow(QMainWindow):
                 else "No reference selected · actual position requires a verified origin and altitude convention"
             )
 
+    def open_flight_3d(self):
+        from .flight_view import Flight3DDialog
+
+        if self.flight_3d_dialog is None:
+            self.flight_3d_dialog = Flight3DDialog(self.controller, self)
+        self.flight_3d_dialog.show()
+        self.flight_3d_dialog.raise_()
+        self.flight_3d_dialog.activateWindow()
+
     def closeEvent(self, event):
+        if self.flight_3d_dialog:
+            self.flight_3d_dialog.close()
+        self.mount.animation.stop()
         self.controller.shutdown()
         event.accept()

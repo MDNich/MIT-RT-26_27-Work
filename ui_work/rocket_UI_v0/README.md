@@ -12,7 +12,7 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 - Eight workspaces: connection control panel, flight overview, antenna pointer, GNC/actuators, mission/wind, sessions/replay, diagnostics, and the full legacy rocket controls. USB board connection and rocket radio reception are shown independently.
 - Independent telemetry/pointer serial workers; incremental Zephyrus decoding, checksum recovery, loss counters, clock rollover/reboot detection.
 - Independent Digital and Analog USB camera/file streams, each with controls, frame status and segmented recording through bundled FFmpeg. Camera selectors exclude the other feed's assignment; serial selectors exclude the other connected board's port.
-- Photo-informed articulated mount: four timber legs, turntable, elevation cradle, open grid reflector, Yagi and enclosed Avenger XR18 attached directly to the common elevation beam through the support pivots. Drag to orbit through any angle, scroll to zoom, and double-click to reset the camera.
+- Smooth, independently animated, photo-informed articulated mount: four timber legs, turntable, elevation cradle, open grid reflector, Yagi and enclosed Avenger XR18 attached directly to the common elevation beam through the support pivots. Drag to orbit through any angle, scroll to zoom, and double-click to reset the camera.
 - All legacy rocket controls: state advance, zero commands, roll/airbrake servo commands, PD activate, VTX power, power rails, pyro ARM/FIRE, and emergency recovery, with the original confirmations.
 - Legacy serial workflow: separate connect/disconnect and polling, independent manual pointer operation, native UP/DOWN/LEFT/RIGHT/ZERO commands, ground-GPS freeze, and all ten keyboard shortcuts.
 - One-click Start/Stop Logging writes both original 43-column good/bad-packet CSVs alongside the richer session recording.
@@ -23,6 +23,8 @@ Open the packaged **RocketGNCMonitor.app** on Mac, or **RocketGNCMonitor.exe** i
 - Indexed SQLite replay, exact serial capture with CRCs, event timeline, legacy CSV import/export, video seek/offset, incomplete-session recovery, dark/daylight themes and acknowledged alerts.
 
 Open **Settings…** with **⌘,** (Windows: **Ctrl+,**) to select an OpenRocket JAR, simulation time limit, recording folder and display theme. Preferences persist on this computer. **Use bundled** restores the included engine.
+
+Open **View → 3D flight…** (or **3D…** on Flight overview) for orbitable simulation playback with a schematic rocket, attitude, motor plume, parachute, event jumps and follow controls. New OpenRocket runs include orientation and event data; rerun older references to add these details.
 
 For hardware-free rehearsal, set **Mission → Configure → Antenna pointer**, connect **Virtual antenna pointer**, then use **Follow trajectory** after running OpenRocket or loading a reference. Manual controls and the original pointer shortcuts actuate the simulated mount. Antenna position accepts latitude/longitude, MGRS, or a launch-relative heading, horizontal distance and altitude difference.
 
@@ -52,6 +54,6 @@ Original planning baseline: [development plan](DEVELOPMENT_PLAN.md), [antenna de
 
 ## Built artifacts and validation
 
-The September 21 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. The full Mac regression run passed 107 tests, including virtual-pointer motion/tracking, MGRS/relative antenna locations, profile persistence, physical-transport isolation, Settings persistence/shortcuts, local and release engine selection, download failure handling, both feeds, recording/replay and portable flights. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
+The September 21 Mac revision is available as `dist/RocketGNCMonitor.app` and `dist/RocketGNCMonitor-Darwin-arm64.dmg`, with a SHA-256 sidecar. Mac regression tests include captured outputs from the original UI, 118 rocket command cases, eight pointer cases, all CSV columns, all ten actual keyboard shortcuts, confirmation dialogs, and OS pseudo-serial integration. The full Mac regression run passed 113 tests, including virtual-pointer motion/tracking, MGRS/relative antenna locations, profile persistence, physical-transport isolation, Settings persistence/shortcuts, local and release engine selection, download failure handling, both feeds, recording/replay and portable flights. Packaged Live startup, all three recorded demos/video, URRG/portable flight round trips, and OpenRocket checks are included in `make verify-package`.
 
 The Windows ZIP remains the September 18 build (30 tests passed, one POSIX-only test skipped, in the Windows 11 ARM VM under x64 emulation). It has **not** been rebuilt for this revision; current work and validation target Mac only.

@@ -22,22 +22,21 @@ sample and file-field references.
 Documentation date & 21 September 2026. \\
 Software identity & Rocket GNC Monitor, Python package version 0.1.0, application generation v0. \\
 Implementation reviewed & Source files and checked-in resources under \code{rocket_UI_v0}; exact file hashes are recorded in \code{evidence/source-manifest.json}. \\
-Current distribution & macOS arm64 app and DMG, rebuilt for MGRS/relative antenna entry, virtual pointer rehearsal, dropdown sizing, Settings, OpenRocket-MIT v6.2, Digital/Analog video, flight save/load and URRG. Windows makefiles remain available; the Windows ZIP predates these changes. \\
-Validation evidence & 107-test Mac regression run for virtual pointer, Settings, engine selection and dual video and packaged startup/demo/flight/OpenRocket verification. Historical September 20 results are retained separately. Physical dual-camera acceptance remains outstanding. \\
+Current distribution & macOS arm64 app and DMG, rebuilt for smooth antenna/3D flight rendering, MGRS/relative antenna entry, virtual pointer rehearsal, dropdown sizing, Settings, OpenRocket-MIT v6.2, Digital/Analog video, flight save/load and URRG. Windows makefiles remain available; the Windows ZIP predates these changes. \\
+Validation evidence & 113-test Mac regression run for virtual pointer, Settings, engine selection and dual video and packaged startup/demo/flight/OpenRocket verification. Historical September 20 results are retained separately. Physical dual-camera acceptance remains outstanding. \\
 Report style & KOMA-Script, 10 pt Latin Modern, A4 with 18 mm margins, blue headings, shaded tables and code blocks, matching the supplied GenMAPS report. All diagrams are editable TikZ with LaTeX text. \\
 \bottomrule
 \end{longtable}
 \statusnote{Reading the evidence}{Implemented behavior is distinguished from nominal simulation assumptions and future controlled-vehicle work. A valid software test result is not a measured mechanical pose, a radio acknowledgment or field acceptance.}
 \input{figures/system-overview}
 \clearpage
-{\small\tableofcontents}
+{\small\RedeclareSectionCommand[tocbeforeskip=.35em]{section}\tableofcontents}
 \clearpage
 \part{Application functionality and operation}
 \input{parts/functionality}
 \clearpage
 \part{Codebase and developer documentation}
 \input{parts/developer}
-\clearpage
 \appendix
 \input{parts/reference}
 \label{LastContentPage}

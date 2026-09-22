@@ -224,6 +224,31 @@ The attitude display uses the legacy integrated rotations. In GNC, axes are
 labeled X/roll, Y/pitch and Z/yaw. The attitude graphic and traces describe
 the available legacy data; they do not imply a quaternion navigation estimator.
 
+\subsection{Orbitable 3D flight playback}
+Open \ui{View > 3D flight}, or \ui{3D} beside the Flight overview trajectory
+selector. The viewer shows a simulation reference, an enlarged schematic rocket
+with fins/canards, a motor plume during recorded burns and a parachute at recorded
+deployment. Body orientation follows exported quaternions independently of the
+viewing camera. This is an illustrative vehicle, not an imported CAD surface.
+
+Drag to orbit; Shift-drag or right-drag to pan; scroll to zoom. Double-click or
+\ui{Fit} resets framing. Perspective, Top and Side presets, rocket size,
+\ui{Follow rocket}, ground projection and velocity overlays are available.
+Play/pause, rewind, speed, the timeline and event selector support inspection of
+ignition, burnout, apogee, deployment and touchdown. Independent playback sends
+no hardware command. \ui{Follow monitor time} instead follows virtual-pointer
+rehearsal or aligned telemetry flight time; the displayed rocket remains the
+simulation reference at that time.
+
+Gold denotes the reference, teal the actual track when geographic origins match,
+and purple the antenna location. Old four-column references remain usable with
+a path-aligned illustration and explicit unavailable-attitude/events labels.
+Rerun OpenRocket to add orientation and event data. Ignition and deployment are
+never inferred from ascent/descent. The supplied Zephyrus test model has no
+recovery event in its nominal output; the bundled small example does. Held
+attitude after tumble/recovery and insufficient angular sampling are labeled.
+Portable flight files retain the added columns and event metadata.
+
 \section{Digital and Analog video}
 Flight overview has independent \ui{Digital} and \ui{Analog} panels. Both receive
 video from USB cameras; the labels describe the rocket-to-ground radio links.
@@ -262,6 +287,11 @@ synchronized with onboard telemetry in this implementation.
 
 \section{Antenna assembly and pointing}\label{sec:antenna}
 \subsection{Viewing the physical model}
+The antenna uses cached geometry and an independent 16 ms display timer. Rotation
+is smoothed along the shortest azimuth arc; fixed framing avoids size changes
+during movement. Hidden views stop animating. This affects presentation only,
+without changing serial commands or controller timing.
+
 The drawing follows the supplied four-leg stand, azimuth turntable, elevation
 supports and common antenna beam. The grid reflector, long Yagi and enclosed
 Avenger XR18 share the elevation carrier; mounting centers are attached to the
