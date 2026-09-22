@@ -191,10 +191,21 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
     if abs(time-p['target'])>1e-8: raise ValueError('Solved time does not match target')
     if time<=s['time_s']: raise ValueError('Solved time did not advance')
     m=c['material']; n=c['numerics']; rv=m['virgin_reference_density_kg_m3']; rc=m['char_reference_density_kg_m3']
-    # Every active solid must have an export; dead solids must not reappear.
+    # POST1 in MAPDL 2026 R1 keeps result rows for EKILLed elements even after
+    # ESEL,R,LIVE.  Treat those rows as stale output, not as a resurrection:
+    # require every live solid exactly once, allow only controller-declared dead
+    # solids as extras, then exclude the dead rows from all state and audits.
     dead={str(f['element']) for row in mesh['rows'][:p['layer']] for f in row}
     expected=set(mesh['elements'])-dead
-    if set(fields)!=expected or set(energy)!=expected: raise ValueError('Missing, duplicate or resurrected solid fields')
+    field_ids=set(fields); energy_ids=set(energy); defined=set(mesh['elements'])
+    if field_ids!=energy_ids:
+        raise ValueError('Element and energy field ID sets differ')
+    if not expected.issubset(field_ids):
+        raise ValueError('Missing live solid fields')
+    if not field_ids.issubset(defined) or not (field_ids-expected).issubset(dead):
+        raise ValueError('Unexpected solid field IDs')
+    fields={eid:fields[eid] for eid in expected}
+    energy={eid:energy[eid] for eid in expected}
     if any(len(v)!=4 for v in fields.values()) or any(len(v)!=7 for v in energy.values()):
         raise ValueError('Truncated solver fields')
     used_nodes={str(nid) for f in mesh['rows'][p['layer']]+mesh['outer'] for nid in f['nodes']}
