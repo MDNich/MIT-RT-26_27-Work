@@ -1,4 +1,6 @@
-# v0a acceptance record — 22 September 2026
+# v0a acceptance records — 22 September 2026
+
+The newest [station-profile and video-role validation](station-profiles-2026-09-22/README.md) covers the startup wizard, five station identities, Balius/Iris video, and refreshed packages. The workspace record below is historical.
 
 The [cross-platform release validation](cross-platform-2026-09-22/README.md) records the subsequent universal Mac and Windows builds, including the refreshed Apple Silicon installer. The original package checksum and platform limits below are historical.
 

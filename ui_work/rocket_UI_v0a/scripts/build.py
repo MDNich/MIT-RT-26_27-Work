@@ -365,8 +365,8 @@ def main():
     parser.add_argument("--platform", default="")
     args = parser.parse_args()
     if args.command == "help":
-        print("Rocket GNC Monitor v0a: make setup | run | away | test | lint | runtime")
-        print("make run STATION=base (two windows) | make away (one reduced window)")
+        print("Rocket GNC Monitor v0a: make setup | run | away | video | test | lint | runtime")
+        print("make run (setup wizard) | make away (telemetry/pointer) | make video VEHICLE=iris (Iris receiver routing)")
         print("make bridge OPENROCKET_JAR=/path/to/OpenRocket-MIT.jar")
         print("make package-macos OPENROCKET_DOWNLOAD=latest (or v6.2) | OPENROCKET_JAR=/path/to/engine.jar")
         print("make package-windows (on Windows) | smoke; no engine option reuses the staged bundle")

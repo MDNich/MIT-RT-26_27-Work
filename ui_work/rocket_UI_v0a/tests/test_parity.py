@@ -10,7 +10,7 @@ import select
 from types import SimpleNamespace
 import pytest
 from PySide6.QtGui import QKeySequence
-from PySide6.QtTest import QTest
+from PySide6.QtTest import QSignalSpy, QTest
 from PySide6.QtWidgets import QMessageBox
 from rocket_gnc_monitor.domain import Mission, pointing
 from rocket_gnc_monitor.protocol import ZephyrusDecoder, pointer_packet
@@ -111,9 +111,11 @@ def test_all_shortcuts_work_across_views_and_serial_roles(qtbot, tmp_path, monke
 
     def key(name):
         refresh()
-        assert w.legacy_actions[name].isEnabled(), name
-        QTest.keySequence(w, w.legacy_actions[name].shortcut())
-        qtbot.wait(40)
+        action = w.legacy_actions[name]
+        assert action.isEnabled(), name
+        triggered = QSignalSpy(action.triggered)
+        QTest.keySequence(w, action.shortcut())
+        qtbot.waitUntil(lambda: triggered.count() > 0)
 
     def receive(fd, size):
         output = bytearray()

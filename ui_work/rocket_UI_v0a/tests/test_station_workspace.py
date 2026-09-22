@@ -17,11 +17,12 @@ from test_protocol import frame
 
 BASE_CARDS = {
     "flight3d", "trajectory", "altitude", "attitude", "antenna", "pointing",
-    "gnc_rates", "gnc_angles", "actuators", "digital", "analog", "telemetry",
+    "gnc_rates", "gnc_angles", "actuators", "telemetry",
     "gps", "servos", "cells", "commands", "power", "bms", "recovery",
     "mission", "sessions", "diagnostics", "network",
 }
 AWAY_CARDS = {"antenna", "pointing", "altitude", "attitude", "telemetry", "gps"}
+VIDEO_CARDS = {"digital", "analog"}
 
 
 @pytest.fixture
@@ -62,9 +63,12 @@ def test_base_exposes_all_categories_and_complete_instrument_tables(station, qtb
     assert all(worker is None for worker in c.workers.values())
     assert all(stream.worker is None for stream in c.video_streams.values())
     assert not c.polling and c.recorder is None
-    assert set(w.cards) == BASE_CARDS
+    assert set(w.cards) == BASE_CARDS | VIDEO_CARDS
+    assert {key for key, card in w.cards.items() if card.isVisible()} == BASE_CARDS
     for key, card in w.cards.items():
-        assert card.isVisible(), key
+        if key in VIDEO_CARDS:
+            assert not card.isVisible(), key
+            continue
         assert card.window() in (w, w.companion), key
         assert card.width() > 100 and card.height() > 50, key
     for owner in (w, w.companion):
@@ -123,10 +127,30 @@ def test_station_switch_keeps_live_pointer_and_flight_state(station, qtbot):
 
     w.set_station_mode("base")
     qtbot.wait(60)
-    assert w.companion.isVisible() and all(card.isVisible() for card in w.cards.values())
+    assert w.companion.isVisible()
+    assert {key for key, card in w.cards.items() if card.isVisible()} == BASE_CARDS
     assert c.virtual_pointer is pointer and c.latest is sample and list(c.history) == history
     assert w.flight_3d_dialog.timer.isActive()
     assert json.loads(w.station_path.read_text())["station"] == "base"
+
+    w.set_station_mode("video")
+    qtbot.wait(60)
+    refresh(w)
+    assert not w.companion.isVisible()
+    assert {key for key, card in w.cards.items() if card.isVisible()} == VIDEO_CARDS
+    assert c.virtual_pointer is pointer and c.pointer_connected
+    assert c.latest is sample and list(c.history) == history and c.mission is mission
+    assert not w.flight_3d_dialog.timer.isActive()
+    assert json.loads(w.station_path.read_text())["station"] == "video"
+    assert not any(widget.isVisible() for widget in
+                   (w.usb_strip, w.poll_button, w.health, w.mission_label, w.banner, *w.metrics.values()))
+
+    w.set_station_mode("base")
+    qtbot.wait(60)
+    refresh(w)
+    assert {key for key, card in w.cards.items() if card.isVisible()} == BASE_CARDS
+    assert w.usb_strip.isVisible() and w.poll_button.isVisible() and w.health.isVisible()
+    assert c.virtual_pointer is pointer and c.latest is sample
 
 
 def test_secondary_window_dispatches_shared_shortcuts_once(station, qtbot):

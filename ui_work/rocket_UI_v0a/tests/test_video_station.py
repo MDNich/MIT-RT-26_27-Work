@@ -1,6 +1,7 @@
 """The diagram's video computer works without a telemetry USB board."""
 
 import csv
+import json
 import queue
 
 import pytest
@@ -35,14 +36,23 @@ def choices(combo):
 
 def test_video_computer_opens_distinct_cameras_without_unlocking_rocket(qtbot, tmp_path, monkeypatch):
     monkeypatch.setattr("rocket_gnc_monitor.controller.VideoWorker", CameraStub)
-    window = StationWindow(tmp_path, station="base", auto_place=False)
+    window = StationWindow(tmp_path, station="video", auto_place=False)
     qtbot.addWidget(window)
     window.show()
     c = window.controller
     try:
+        window.resize(1280, 800)
+        qtbot.wait(50)
+        assert window.station_mode == "video" and not window.companion.isVisible()
+        assert {key for key, card in window.cards.items() if card.isVisible()} == {"digital", "analog"}
+        assert not window.usb_strip.isVisible() and not window.poll_button.isVisible()
+        assert not any(widget.isVisible() for widget in window.metrics.values())
         assert c.mode == "LIVE" and not c.ground_connected
         window.task_done("cameras", [("Digital USB receiver", "0"), ("Analog USB receiver", "1")])
         digital, analog = (window.video_widgets[stream] for stream in ("digital", "analog"))
+        for widgets in (digital, analog):
+            assert all(widgets[key].isVisible() for key in ("camera", "start", "stop", "file", "status"))
+            assert widgets["image"].isVisible() and widgets["image"].width() > 350
         digital["camera"].setCurrentIndex(digital["camera"].findData("0"))
         analog["camera"].setCurrentIndex(analog["camera"].findData("1"))
         refresh(window)
@@ -59,20 +69,52 @@ def test_video_computer_opens_distinct_cameras_without_unlocking_rocket(qtbot, t
             state.worker.last_frame = 1.0
         refresh(window)
         assert window.record_button.isEnabled() and window.legacy_actions["log"].isEnabled()
+        assert window.record_button.isVisible()
         assert not window.rocket_panel.buttons["advance_state"].isEnabled()
         assert not window.poll_button.isEnabled()
         with pytest.raises(ValueError, match="disconnected"):
             c.send_rocket("advance_state")
         assert c.workers == {"telemetry": None, "pointer": None}
 
+        workers = {stream: state.worker for stream, state in c.video_streams.items()}
+        for mode in ("base", "away", "video"):
+            window.set_station_mode(mode)
+            qtbot.wait(40)
+            refresh(window)
+            assert all(state.worker is workers[stream] and not state.worker.stopped
+                       for stream, state in c.video_streams.items())
+            assert all(window.cards[stream].isVisible() == (mode == "video") for stream in workers)
+        assert json.loads(window.station_path.read_text())["station"] == "video"
+        assert digital["camera"].currentData() == "0" and analog["camera"].currentData() == "1"
+        assert "0" not in choices(analog["camera"]) and "1" not in choices(digital["camera"])
+
         c.switch_mode("REPLAY")
         refresh(window)
+        assert window.video_replay_bar.isVisible() and window.replay_controls.isVisible()
+        assert window.play.isVisible() and window.replay_slider.isVisible() and window.speed.isVisible()
+        assert not window.align_time_button.isVisible()
         assert not digital["start"].isEnabled() and not analog["start"].isEnabled()
         assert not digital["file"].isEnabled() and not window.record_button.isEnabled()
         with pytest.raises(ValueError, match="replay"):
             window.start_camera("digital")
+        window.set_station_mode("base")
+        refresh(window)
+        assert window.replay_controls.isVisible() and window.align_time_button.isVisible()
+        assert not window.video_replay_bar.isVisible()
+        window.set_station_mode("video")
     finally:
         window.close()
+
+    restored = StationWindow(tmp_path, auto_place=False)
+    qtbot.addWidget(restored)
+    try:
+        restored.show()
+        qtbot.wait(50)
+        assert restored.station_mode == "video" and not restored.companion.isVisible()
+        assert restored.controller.mode == "LIVE"
+        assert not any(state.worker for state in restored.controller.video_streams.values())
+    finally:
+        restored.close()
 
 
 def test_recording_requires_received_video_and_replay_stays_read_only(qtbot, tmp_path, monkeypatch):

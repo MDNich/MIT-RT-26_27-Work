@@ -281,15 +281,16 @@ class RocketPanel(QWidget):
             set_cell(widget, row, 1, display)
 
     def set_controls_enabled(self):
-        connected = self.c.ground_connected or self.c.mode == "DEMO"
         for control in self.controls:
-            control.setEnabled(connected)
+            control.setEnabled(self.c.can_command)
+            control.setToolTip(self.c.command_block_reason)
         self.status.setText(
-            "Ground station connected"
-            if self.c.ground_connected
-            else "Demo"
+            "Demo · commands simulated"
             if self.c.mode == "DEMO"
-            else "Ground station disconnected"
+            and self.c.can_command
+            else "Uplink board connected" if self.c.can_command and self.c.board_layout == "base"
+            else "Ground station connected" if self.c.can_command
+            else self.c.command_block_reason
         )
 
     def refresh(self):

@@ -1,0 +1,27 @@
+.................................................................F...... [ 26%]
+........................................................................ [ 52%]
+........................................................................ [ 79%]
+.........................................................                [100%]
+=================================== FAILURES ===================================
+_____________ test_both_streams_record_and_round_trip_in_a_flight ______________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x1214b72f0>
+tmp_path = PosixPath('/private/var/folders/0h/g0tyr1fs37v321_hzk1h17pr0000gn/T/pytest-of-mdn/pytest-119/test_both_streams_record_and_r0')
+
+    def test_both_streams_record_and_round_trip_in_a_flight(qtbot, tmp_path):
+        c = Controller(tmp_path / "app")
+
+        def both_frames():
+            return all(s.worker is not None and s.worker.received_frames > 3 for s in c.video_streams.values())
+
+        try:
+            c.switch_mode("DEMO")
+            qtbot.waitUntil(both_frames, timeout=6000)
+            c.start_recording(tmp_path / "recordings")
+>           qtbot.waitUntil(both_frames, timeout=6000)
+E           pytestqt.exceptions.TimeoutError: waitUntil timed out in 6000 milliseconds
+
+tests/test_dual_video.py:185: TimeoutError
+=========================== short test summary info ============================
+FAILED tests/test_dual_video.py::test_both_streams_record_and_round_trip_in_a_flight
+1 failed, 272 passed in 155.75s (0:02:35)

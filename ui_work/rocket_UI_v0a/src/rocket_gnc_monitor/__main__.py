@@ -5,16 +5,52 @@ from pathlib import Path
 import sys
 
 
+def resolve_profile(args, data_dir):
+    """Apply CLI defaults without conflating station identity and display role."""
+    from dataclasses import replace
+    from .station_profile import load_profile, profile_for_layout
+
+    profile = load_profile(data_dir)
+    if args.station:
+        profile = profile_for_layout(args.station, profile)
+    changes = {
+        name: value for name, value in
+        (("station", args.site), ("role", args.role), ("vehicle", args.vehicle))
+        if value is not None
+    }
+    return replace(profile, **changes)
+
+
+def station_board_report(window):
+    """Capture real board controls without inferring a connected hardware target."""
+    panel = window.iris_links
+    return dict(
+        serial_roles=list(window.controller.workers),
+        visible_serial_roles=[role for role, (selector, _, _) in window.port_widgets.items() if selector.isVisible()],
+        iris_link_boards=list(panel.selectors) if panel is not None else [],
+        iris_simulated_targets=dict(panel.simulated_targets) if panel is not None else {},
+        iris_switch_buttons_enabled={board: button.isEnabled() for board, button in panel.buttons.items()} if panel is not None else {},
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description="Rocket GNC Monitor")
     parser.add_argument("--data-dir", type=Path)
-    parser.add_argument("--station", choices=["base", "away"], help="Workspace: base uses two displays; away uses one")
+    parser.add_argument(
+        "--station", choices=["base", "away", "video"],
+        help="Legacy workspace choice; preselects the startup wizard",
+    )
+    parser.add_argument("--site", choices=["base", "away1", "away2", "away3", "away4"])
+    parser.add_argument("--role", choices=["telemetry", "video"])
+    parser.add_argument("--vehicle", choices=["balius", "iris"])
+    parser.add_argument("--skip-setup", action="store_true", help="Open directly with saved or explicit station choices")
     startup = parser.add_mutually_exclusive_group()
     startup.add_argument("--demo", action="store_true", help="Play the recorded Zephyrus test flight")
     parser.add_argument("--demo-station", choices=["GS1", "GS2", "GS3"], default="GS2")
     startup.add_argument("--smoke-test", action="store_true", help="Exercise recorded demo playback and exit")
     startup.add_argument("--startup-smoke", action="store_true", help="Verify locked Live startup and exit")
     startup.add_argument("--station-smoke", action="store_true", help="Verify station workspace layout and exit")
+    startup.add_argument("--setup-smoke", action="store_true", help="Render the startup wizard without opening instruments")
     startup.add_argument(
         "--virtual-pointer-smoke",
         type=Path,
@@ -40,12 +76,14 @@ def main():
         from .trajectory import SimulationJob
 
         directory = args.data_dir or Path.cwd() / "simulation-smoke"
+        profile = resolve_profile(args, directory)
         trajectory = SimulationJob(
             Mission(site_configured=True, model=str(args.simulation_smoke)), directory
         ).run()
         write_json(
             directory / "simulation-smoke-report.json",
             dict(
+                profile=profile.to_dict(), local_channels=list(profile.local_channels),
                 rows=len(trajectory.points),
                 apogee_m=float(trajectory.points[:, 3].max()),
                 manifest=trajectory.manifest,
@@ -56,7 +94,6 @@ def main():
     from PySide6.QtWidgets import QApplication
     from PySide6.QtGui import QFontInfo, QFontDatabase
     from .fonts import configure_fonts
-    from .station_workspace import StationWindow as MainWindow
 
     app = QApplication(sys.argv[:1])
     font_id = configure_fonts(app)
@@ -65,7 +102,69 @@ def main():
     data = args.data_dir or Path(
         QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppLocalDataLocation)
     )
-    window = MainWindow(data, station=args.station, auto_place=not args.station_smoke)
+    profile = resolve_profile(args, data)
+    smoke = any((
+        args.smoke_test, args.startup_smoke, args.station_smoke, args.virtual_pointer_smoke,
+        args.flight_3d_smoke, args.flight_smoke, args.setup_smoke,
+    ))
+    if args.setup_smoke or not (args.skip_setup or smoke):
+        from .startup_wizard import StartupWizard
+
+        wizard = StartupWizard(profile)
+        if args.setup_smoke:
+            data.mkdir(parents=True, exist_ok=True)
+            pages = []
+
+            def setup_check(index=0):
+                try:
+                    name = ("station", "role", "vehicle")[index]
+                    app.processEvents()
+                    wizard.grab().save(str(data / f"setup-{name}.png"))
+                    pages.append(dict(name=name, title=wizard.currentPage().title()))
+                    if index < 2:
+                        wizard.next()
+                        QTimer.singleShot(150, lambda: setup_check(index + 1))
+                        return
+                    if args.screenshot:
+                        args.screenshot.parent.mkdir(parents=True, exist_ok=True)
+                        wizard.grab().save(str(args.screenshot))
+                    report = dict(
+                        profile=wizard.profile.to_dict(), local_channels=list(wizard.profile.local_channels),
+                        pages=pages, controller_created=False,
+                        finish_text=wizard.button(wizard.WizardButton.FinishButton).text(),
+                    )
+                    (data / "setup-smoke-report.json").write_text(json.dumps(report, indent=2))
+                    wizard.reject()
+                    app.exit(0)
+                except Exception:
+                    import traceback
+                    traceback.print_exc()
+                    wizard.reject()
+                    app.exit(1)
+
+            wizard.show()
+            QTimer.singleShot(500, setup_check)
+            return app.exec()
+        if wizard.exec() != wizard.DialogCode.Accepted:
+            return 0
+        profile = wizard.profile
+    preference_error = None
+    if not smoke:
+        try:
+            profile.save(data)
+        except OSError as exc:
+            preference_error = f"Station defaults could not be saved: {exc}"
+    # Do not instantiate an instrument owner, controller or device workers until
+    # setup has been accepted (or explicitly bypassed for automation).
+    from .station_workspace import StationWindow as MainWindow
+
+    window = MainWindow(data, profile=profile, auto_place=not args.station_smoke)
+    if preference_error:
+        window.statusBar().showMessage(preference_error, 12000)
+    profile_fields = dict(
+        profile=profile.to_dict(), local_channels=list(profile.local_channels),
+        local_video_channels=list(window.controller.video_streams),
+    )
     if args.demo or args.smoke_test:
         window.controller.demo_station = args.demo_station
         window.controller.switch_mode("DEMO")
@@ -80,13 +179,38 @@ def main():
                 window.grab().save(str(data / "display-1.png"))
                 if window.station_mode == "base":
                     window.companion.grab().save(str(data / "display-2.png"))
+                wall = window.video_wall
+                wall_report = None if wall is None else dict(
+                    primary_channels=list(wall.primary_tiles),
+                    thumbnail_sources=[list(key) for key in wall.thumbnails],
+                    visible_primary_channels=[key for key, tile in wall.primary_tiles.items() if tile.isVisible()],
+                    visible_thumbnail_sources=[list(key) for key, tile in wall.thumbnails.items() if tile.isVisible()],
+                    selected_sources={key: list(source) for key, source in wall.selected_sources.items()},
+                    remote_available=any(feed.available for (station, _), feed in wall.feeds.items() if station != "local"),
+                )
                 report = dict(
+                    **profile_fields,
+                    **station_board_report(window),
                     station_mode=window.station_mode, source_mode=window.controller.mode,
                     shared_controller=window.controller is window.companion.controller,
                     window_count=sum(w.isVisible() for w in (window, window.companion)),
                     visible_cards=[key for key, card in window.cards.items() if card.isVisible()],
                     hardware_open=any(window.controller.workers.values()),
                     shortcuts_shared=all(a in window.companion.actions() for a in window.legacy_actions.values()),
+                    video_inputs_visible=all(
+                        window.video_widgets[stream]["camera"].isVisible()
+                        for stream in window.video_widgets
+                    ),
+                    camera_inputs=list(window.video_widgets),
+                    visible_camera_inputs=[
+                        stream for stream, widgets in window.video_widgets.items()
+                        if widgets["camera"].isVisible()
+                    ],
+                    video_wall=wall_report,
+                    telemetry_controls_visible=any(
+                        widget.isVisible() for widget in
+                        (window.usb_strip, window.poll_button, window.health, *window.metrics.values())
+                    ),
                 )
                 (data / "station-smoke-report.json").write_text(json.dumps(report, indent=2))
                 window.close()
@@ -134,6 +258,7 @@ def main():
         assert frames["parachute"]["recovery"]
         assert all("Simulation attitude" in frame["attitude"] for frame in frames.values())
         report = dict(
+            **profile_fields,
             frames=frames, motion_rows=len(c.reference.motion), hardware_open=any(c.workers.values())
         )
         (data / "flight-3d-smoke-report.json").write_text(json.dumps(report, indent=2))
@@ -168,6 +293,7 @@ def main():
         window.refresh()
         app.processEvents()
         report = dict(
+            **profile_fields,
             mode=c.mode,
             virtual_connected=bool(c.virtual_pointer),
             physical_ports_open=any(
@@ -261,6 +387,7 @@ def main():
         window.last_ui = 0
         window.refresh()
         report = dict(
+            **profile_fields,
             mode=c.mode,
             samples=c.reader.count,
             paused=not c.replay_playing,
@@ -324,11 +451,14 @@ def main():
             )
             window.settings_dialog.reject()
             report = dict(
+                **profile_fields,
+                **station_board_report(window),
                 smoke_elapsed_s=monotonic() - smoke_started,
                 smoke_readiness_timeout=bool(args.smoke_test and not ready and monotonic() >= smoke_deadline),
                 settings=settings_check,
                 samples=len(c.history),
                 mode=c.mode,
+                station_mode=window.station_mode,
                 video_frames=c.video.received_frames if c.video else 0,
                 video_error=c.video.error if c.video else "",
                 video_streams={

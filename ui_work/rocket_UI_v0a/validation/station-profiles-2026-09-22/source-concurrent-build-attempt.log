@@ -1,0 +1,26 @@
+........................................................................ [ 26%]
+F....................................................................... [ 52%]
+........................................................................ [ 79%]
+.........................................................                [100%]
+=================================== FAILURES ===================================
+__________________ test_full_demo_export_and_replay_position ___________________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x121145100>
+tmp_path = PosixPath('/private/var/folders/0h/g0tyr1fs37v321_hzk1h17pr0000gn/T/pytest-of-mdn/pytest-117/test_full_demo_export_and_repl0')
+
+    def test_full_demo_export_and_replay_position(qtbot, tmp_path):
+        c = Controller(tmp_path / "app")
+        try:
+            c.switch_mode("DEMO")
+            c.play_demo(False)
+            c.seek_demo(c.demo.launch_time + 3)
+            expected_sample = c.latest.to_dict()
+            archive = tmp_path / "zephyrus.rktflight"
+            c.save_flight(archive)
+>           qtbot.waitUntil(lambda: not c.flight_busy, timeout=60000)
+E           pytestqt.exceptions.TimeoutError: waitUntil timed out in 60000 milliseconds
+
+tests/test_flight.py:143: TimeoutError
+=========================== short test summary info ============================
+FAILED tests/test_flight.py::test_full_demo_export_and_replay_position - pyte...
+1 failed, 272 passed in 145.48s (0:02:25)

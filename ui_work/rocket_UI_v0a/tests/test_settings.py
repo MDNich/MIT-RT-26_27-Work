@@ -82,6 +82,8 @@ def test_settings_shortcut_cancel_validation_save_and_restart(qtbot, tmp_path, e
     window.activateWindow()
     qtbot.wait(80)
     assert window.settings_action.menuRole() == QAction.MenuRole.PreferencesRole
+    mission_menu = next(action.menu() for action in window.menuBar().actions() if action.text() == "Mission")
+    assert all(action.menuRole() == QAction.MenuRole.NoRole for action in mission_menu.actions())
     assert window.settings_action.shortcut() == QKeySequence("Ctrl+,")
     assert len(window.legacy_actions) == 10
     qtbot.keyClick(window, Qt.Key.Key_Comma, Qt.KeyboardModifier.ControlModifier)

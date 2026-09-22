@@ -46,7 +46,7 @@ from PySide6.QtWidgets import (
 from .controller import Controller
 from .domain import Mission, finite, validate_wind, wind_from
 from .devices import ports, serial_device_key
-from .media import VIDEO_STREAMS, WIDTH, HEIGHT, camera_devices
+from .media import WIDTH, HEIGHT, camera_devices
 from .trajectory import Trajectory, weather_profile
 from .widgets import STYLE, COLORS, AttitudeView, MountView, ComboBox as QComboBox
 from .rocket_panel import RocketPanel
@@ -253,7 +253,7 @@ class MissionDialog(QDialog):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, video_channels=None, video_labels=None, board_layout="legacy", vehicle="balius"):
         super().__init__()
         configure_fonts(QApplication.instance())
         self.setWindowTitle("Rocket GNC Monitor")
@@ -264,7 +264,8 @@ class MainWindow(QMainWindow):
         self.resize(1480, 980)
         self.setMinimumSize(1120, 800)
         self.setStyleSheet(STYLE)
-        self.controller = c = Controller(data_dir)
+        self.controller = c = Controller(data_dir, video_channels=video_channels, video_labels=video_labels,
+                                         board_layout=board_layout, vehicle=vehicle)
         self.settings_dialog = None
         self.flight_3d_dialog = None
         self.events = []
@@ -276,7 +277,7 @@ class MainWindow(QMainWindow):
         self.camera_devices = []
         self.camera_choice_signature = None
         self.video_widgets = {}
-        self.last_pixmaps = {stream: None for stream in VIDEO_STREAMS}
+        self.last_pixmaps = {stream: None for stream in c.video_channels}
         self.disconnect_buttons = {}
         self.refresh_buttons = {}
         self.live_controls = []
@@ -311,7 +312,7 @@ class MainWindow(QMainWindow):
         self.serial_bar = QWidget()
         connections = QHBoxLayout(self.serial_bar)
         connections.setContentsMargins(0, 0, 0, 0)
-        for role, title in [("telemetry", "Ground station"), ("pointer", "Antenna pointer")]:
+        for role, title in c.serial_labels.items():
             panel, layout = card()
             heading = QHBoxLayout()
             heading.addWidget(label(title, "section"))
@@ -434,6 +435,9 @@ class MainWindow(QMainWindow):
             ("Open session…", self.open_session),
         ]:
             action = QAction(title, self)
+            # Cocoa otherwise treats "Configure…" as Preferences and steals
+            # Command-comma from the explicit Settings action.
+            action.setMenuRole(QAction.MenuRole.NoRole)
             action.triggered.connect(callback)
             menu.addAction(action)
         view_menu = self.menuBar().addMenu("View")
@@ -726,7 +730,7 @@ class MainWindow(QMainWindow):
             self.metrics[key] = value
         layout.addLayout(metrics)
         middle = QHBoxLayout()
-        for stream, title in VIDEO_STREAMS.items():
+        for stream, title in self.controller.video_labels.items():
             panel, column = card(title)
             view = label(f"{title.upper()} · USB CAMERA NOT STARTED")
             view.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -746,7 +750,7 @@ class MainWindow(QMainWindow):
             camera.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
             controls.addWidget(camera, 1)
             find = button("Find", lambda: self.controller.submit("cameras", camera_devices))
-            find.setToolTip("Find USB cameras for both video streams")
+            find.setToolTip("Find USB cameras for the active video inputs")
             controls.addWidget(find)
             column.addLayout(controls)
             row = QHBoxLayout()
@@ -1266,7 +1270,7 @@ class MainWindow(QMainWindow):
         self.last_pixmaps[stream] = None
         if stream == "digital":
             self.last_pixmap = None
-        self.video_widgets[stream]["image"].setText(f"{VIDEO_STREAMS[stream].upper()} · NO VIDEO")
+        self.video_widgets[stream]["image"].setText(f"{self.controller.video_labels[stream].upper()} · NO VIDEO")
 
     def start_camera(self, stream="digital"):
         self.controller.require_ground_station()
@@ -1281,7 +1285,7 @@ class MainWindow(QMainWindow):
             return
         path, _ = QFileDialog.getOpenFileName(
             self,
-            f"{VIDEO_STREAMS[stream]} video source",
+            f"{self.controller.video_labels[stream]} video source",
             "",
             "Video (*.mp4 *.mkv *.mov *.avi *.ts);;All files (*)",
         )

@@ -35,3 +35,9 @@ Ground serial is bidirectional. The 16-byte packet is `AA`, eleven zero/reserved
 Polling is separate from connecting, as in the original UI. Ground read timeout is 1 second and pointer timeout is 0.1 second; DTR/RTS use pyserial defaults. Ground writes wake the reader and work while polling is stopped. Commands are never retried automatically. Transports are independently closed and cannot share a port.
 
 See [feature parity](LEGACY_PARITY.md) for captured reference vectors and CSV compatibility details.
+
+## v0a board roles and Iris selector placeholder
+
+Normal station profiles separate the Base downlink and uplink boards. Away stations only have downlink; the pointer remains separate. Downlink owns Zephyrus decoding and polling, while the Base uplink uses the existing 16-byte command format. The legacy programmatic controller profile retains the original combined ground-board path. A port cannot be shared among board roles.
+
+Iris requires a Sustainer/Booster selector on each downlink board and on the Base-only uplink board. The user confirmed that the selector wire command is not set yet. The legacy firmware audit found no such opcode or acknowledgement. The UI therefore provides explicitly labelled DEMO-only placeholder switches, records their simulated board/target events, and emits no selector bytes. Live Iris rocket commands are gated until an uplink target can be established under the eventual firmware contract.

@@ -12,21 +12,160 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 APP_NAME = "RocketGNCMonitor-v0a"
+STATION_CARDS = {
+    "base": {
+        "flight3d", "trajectory", "altitude", "attitude", "antenna", "pointing",
+        "gnc_rates", "gnc_angles", "actuators", "telemetry", "gps", "servos", "cells",
+        "commands", "power", "bms", "recovery", "mission", "sessions", "diagnostics", "network",
+    },
+    "away": {"antenna", "pointing", "altitude", "attitude", "telemetry", "gps"},
+    "video": {"digital", "analog"},
+}
+LEGACY_PROFILES = {
+    "base": dict(station="base", role="telemetry", vehicle="balius"),
+    "away": dict(station="away1", role="telemetry", vehicle="balius"),
+    "video": dict(station="away1", role="video", vehicle="balius"),
+}
+EXTRA_PROFILES = {
+    "station-away-iris": dict(station="away4", role="video", vehicle="iris"),
+    "station-base-video-balius": dict(station="base", role="video", vehicle="balius"),
+    "station-base-video-iris": dict(station="base", role="video", vehicle="iris"),
+    "station-base-telemetry-iris": dict(station="base", role="telemetry", vehicle="iris"),
+    "station-away4-telemetry-iris": dict(station="away4", role="telemetry", vehicle="iris"),
+}
+IRIS_DEMO_PROFILE = dict(station="away2", role="video", vehicle="iris")
+IRIS_BOOSTER_DEMO_PROFILE = dict(station="away4", role="video", vehicle="iris")
+SETUP_PROFILE = dict(station="base", role="video", vehicle="iris")
 
 
-def validate_station_report(report, station):
+def profile_channels(profile):
+    return ["digital", "analog", "analog2"] if profile["vehicle"] == "iris" else ["digital", "analog"]
+
+
+def profile_layout(profile):
+    return "video" if profile["role"] == "video" else "base" if profile["station"] == "base" else "away"
+
+
+def profile_serial_roles(profile):
+    return ["telemetry", "uplink", "pointer"] if profile_layout(profile) == "base" else ["telemetry", "pointer"]
+
+
+def profile_iris_boards(profile):
+    if profile["vehicle"] != "iris" or profile["role"] != "telemetry":
+        return []
+    return ["downlink", "uplink"] if profile["station"] == "base" else ["downlink"]
+
+
+def same_inventory(actual, expected):
+    return isinstance(actual, list) and len(actual) == len(expected) and set(actual) == set(expected)
+
+
+def profile_local_channels(profile):
+    if profile["station"] == "base" and profile["role"] == "video":
+        return ["digital"]
+    if profile["vehicle"] == "iris" and profile["station"] != "base":
+        return ["digital", "analog2" if profile["station"] == "away4" else "analog"]
+    return profile_channels(profile)
+
+
+def profile_remote_sources(profile):
+    return [
+        [f"away{i}", channel] for i in range(1, 5)
+        for channel in profile_local_channels(dict(profile, station=f"away{i}", role="video"))
+    ]
+
+
+def profile_default_sources(profile):
+    remote = profile_remote_sources(profile)
+    return {
+        channel: ["local", channel] if channel == "digital"
+        else next(source for source in remote if source[1] == channel)
+        for channel in profile_channels(profile)
+    }
+
+
+def profile_arguments(profile):
+    return ["--site", profile["station"], "--role", profile["role"], "--vehicle", profile["vehicle"]]
+
+
+def valid_profile_report(report, profile):
+    local = profile_local_channels(profile)
+    return report.get("profile") == profile and report.get("local_video_channels") == local
+
+
+def validate_station_report(report, station, profile=None):
     """Require the packaged workspace's shared state and hardware isolation."""
+    profile = profile or LEGACY_PROFILES[station]
+    channels = profile_channels(profile)
+    base_video = profile["station"] == "base" and profile["role"] == "video"
+    local = profile_local_channels(profile)
+    serial_roles = profile_serial_roles(profile)
+    iris_boards = profile_iris_boards(profile)
+    cards = {"video_wall"} if base_video else set(local) if station == "video" else STATION_CARDS[station]
     if (
-        report.get("station_mode") != station
+        not valid_profile_report(report, profile)
+        or report.get("station_mode") != station
         or report.get("source_mode") != "LIVE"
         or report.get("shared_controller") is not True
         or report.get("window_count") != (2 if station == "base" else 1)
         or not isinstance(report.get("visible_cards"), list)
-        or not report["visible_cards"]
+        or set(report["visible_cards"]) != cards
         or report.get("hardware_open") is not False
         or report.get("shortcuts_shared") is not True
+        or report.get("video_inputs_visible") is not (station == "video")
+        or report.get("telemetry_controls_visible") is not (station != "video")
+        or report.get("camera_inputs") != local
+        or report.get("visible_camera_inputs") != (local if station == "video" else [])
+        or not same_inventory(report.get("serial_roles"), serial_roles)
+        or not same_inventory(report.get("visible_serial_roles"), serial_roles if station != "video" else [])
+        or not same_inventory(report.get("iris_link_boards"), iris_boards)
+        or report.get("iris_simulated_targets") != dict.fromkeys(iris_boards)
+        or report.get("iris_switch_buttons_enabled") != dict.fromkeys(iris_boards, False)
     ):
         raise SystemExit(f"Packaged {station} station workspace failed")
+    wall = report.get("video_wall")
+    if not base_video:
+        if wall is not None:
+            raise SystemExit(f"Packaged {station} station workspace failed: unexpected video wall")
+        return
+    sources = profile_remote_sources(profile)
+    selected = profile_default_sources(profile)
+    if (
+        not isinstance(wall, dict)
+        or wall.get("primary_channels") != channels
+        or wall.get("visible_primary_channels") != channels
+        or wall.get("thumbnail_sources") != sources
+        or wall.get("visible_thumbnail_sources") != sources
+        or wall.get("selected_sources") != selected
+        or wall.get("remote_available") is not False
+    ):
+        raise SystemExit(f"Packaged {station} station workspace failed: video wall inventory")
+
+
+def validate_setup_report(report):
+    if (
+        report.get("profile") != SETUP_PROFILE
+        or report.get("local_channels") != ["digital"]
+        or report.get("controller_created") is not False
+        or report.get("finish_text") != "Open station"
+        or not isinstance(report.get("pages"), list)
+        or [page.get("name") for page in report["pages"]] != ["station", "role", "vehicle"]
+    ):
+        raise SystemExit("Packaged startup wizard failed")
+
+
+def validate_video_demo(report, profile):
+    if (
+        not valid_profile_report(report, profile)
+        or report.get("mode") != "DEMO"
+        or report.get("station_mode") != "video"
+        or report.get("hardware_open") is not False
+        or report.get("demo_progress_samples", 0) <= 20
+        or not isinstance(report.get("video_streams"), dict)
+        or set(report["video_streams"]) != set(profile_local_channels(profile))
+        or any(v.get("frames", 0) <= 0 or v.get("error") for v in report["video_streams"].values())
+    ):
+        raise SystemExit("Packaged Video station demo channels failed")
 
 
 def main():
@@ -82,7 +221,7 @@ def main():
                 str(output / ("station-" + station)),
             ],
         )
-        for station in ("base", "away")
+        for station in STATION_CARDS
     ] + [
         (
             "flight",
@@ -106,7 +245,8 @@ def main():
         ),
         (
             "demo",
-            ["--smoke-test", "--data-dir", str(output / "demo"), "--screenshot", str(output / "window.png")],
+            ["--smoke-test", "--station", "video", "--data-dir", str(output / "demo"),
+             "--screenshot", str(output / "window.png")],
         ),
         ("simulation", ["--simulation-smoke", str(model), "--data-dir", str(output / "simulation")]),
         (
@@ -130,6 +270,19 @@ def main():
             ],
         ),
     ]
+    commands.extend(
+        (name, ["--station-smoke", *profile_arguments(profile), "--data-dir", str(output / name)])
+        for name, profile in EXTRA_PROFILES.items()
+    )
+    commands.extend([
+        ("setup", ["--setup-smoke", *profile_arguments(SETUP_PROFILE), "--data-dir", str(output / "setup")]),
+        ("demo-iris", ["--smoke-test", *profile_arguments(IRIS_DEMO_PROFILE),
+                       "--data-dir", str(output / "demo-iris"),
+                       "--screenshot", str(output / "demo-iris.png")]),
+        ("demo-iris-booster", ["--smoke-test", *profile_arguments(IRIS_BOOSTER_DEMO_PROFILE),
+                               "--data-dir", str(output / "demo-iris-booster"),
+                               "--screenshot", str(output / "demo-iris-booster.png")]),
+    ])
     if args.model:
         commands.append(
             (
@@ -154,8 +307,15 @@ def main():
     flight = json.loads((output / "flight" / "flight-smoke-report.json").read_text())
     virtual = json.loads((output / "virtual-pointer" / "virtual-pointer-smoke-report.json").read_text())
     scene = json.loads((output / "flight-3d" / "flight-3d-smoke-report.json").read_text())
+    iris_demo = json.loads((output / "demo-iris" / "smoke-report.json").read_text())
+    iris_booster_demo = json.loads((output / "demo-iris-booster" / "smoke-report.json").read_text())
+    setup = json.loads((output / "setup" / "setup-smoke-report.json").read_text())
+    validate_setup_report(setup)
+    for page in ("station", "role", "vehicle"):
+        if not (output / "setup" / f"setup-{page}.png").is_file():
+            raise SystemExit(f"Packaged startup wizard {page} screenshot missing")
     stations = {}
-    for station in ("base", "away"):
+    for station in STATION_CARDS:
         folder = output / ("station-" + station)
         report = json.loads((folder / "station-smoke-report.json").read_text())
         validate_station_report(report, station)
@@ -163,6 +323,15 @@ def main():
             if not (folder / f"display-{display}.png").is_file():
                 raise SystemExit(f"Packaged {station} station display {display} screenshot missing")
         stations[station] = report
+    profile_stations = {}
+    for name, profile in EXTRA_PROFILES.items():
+        folder = output / name
+        report = json.loads((folder / "station-smoke-report.json").read_text())
+        validate_station_report(report, profile_layout(profile), profile)
+        for display in range(1, report["window_count"] + 1):
+            if not (folder / f"display-{display}.png").is_file():
+                raise SystemExit(f"Packaged {name} display {display} screenshot missing")
+        profile_stations[name] = report
     if (
         scene["hardware_open"]
         or not scene["frames"]["ignition"]["powered"]
@@ -212,22 +381,24 @@ def main():
     ):
         raise SystemExit("Packaged application did not start in locked Live mode")
     simulation = json.loads((output / "simulation" / "simulation-smoke-report.json").read_text())
-    if (
-        demo["hardware_open"]
-        or demo["demo_progress_samples"] <= 20
-        or set(demo["video_streams"]) != {"digital", "analog"}
-        or any(v["frames"] <= 0 or v["error"] for v in demo["video_streams"].values())
-    ):
-        raise SystemExit("Packaged demo did not receive telemetry/both videos or opened hardware")
+    validate_video_demo(demo, LEGACY_PROFILES["video"])
+    validate_video_demo(iris_demo, IRIS_DEMO_PROFILE)
+    validate_video_demo(iris_booster_demo, IRIS_BOOSTER_DEMO_PROFILE)
     demo_manifest = json.loads((contents / "resources" / "demo" / "manifest.json").read_text())
     if demo.get("demo_recording") != dict(station="GS2", **demo_manifest["GS2"]) or not demo.get(
         "latest_demo_row"
     ):
         raise SystemExit("Packaged demo did not play the bundled Zephyrus GS2 recording")
+    if iris_demo.get("demo_recording") != dict(station="GS2", **demo_manifest["GS2"]) or not iris_demo.get("latest_demo_row"):
+        raise SystemExit("Packaged Iris demo did not play the bundled Zephyrus GS2 recording")
+    if iris_booster_demo.get("demo_recording") != dict(station="GS2", **demo_manifest["GS2"]) or not iris_booster_demo.get("latest_demo_row"):
+        raise SystemExit("Packaged Iris booster-station demo did not play the bundled Zephyrus GS2 recording")
     # Exercise every receiver log in the actual packaged process, not the source tree.
+    receiver_demos = {}
     for station in ("GS1", "GS3"):
         result = subprocess.run(
-            [*launch, "--smoke-test", "--demo-station", station, "--data-dir", str(output / station)],
+            [*launch, "--smoke-test", "--station", "video", "--demo-station", station,
+             "--data-dir", str(output / station)],
             cwd=package,
             env=environment,
             capture_output=True,
@@ -239,6 +410,8 @@ def main():
         report = json.loads((output / station / "smoke-report.json").read_text())
         if report.get("demo_recording") != dict(station=station, **demo_manifest[station]):
             raise SystemExit(f"Packaged {station} recording identity mismatch")
+        validate_video_demo(report, LEGACY_PROFILES["video"])
+        receiver_demos[station] = report
     if simulation["rows"] < 2 or not math.isfinite(simulation["apogee_m"]) or simulation["apogee_m"] <= 0:
         raise SystemExit("Packaged simulation did not produce a usable example trajectory")
     if simulation["manifest"]["name"] != "OpenRocket nominal · A simple model rocket":
@@ -258,19 +431,25 @@ def main():
                 package=str(package),
                 architecture=architecture,
                 minimal_path=True,
+                check_count=len(commands) + len(receiver_demos),
                 station_workspaces=stations,
+                station_profiles=profile_stations,
+                setup=setup,
                 startup=startup,
                 flight=flight,
                 virtual_pointer=virtual,
                 flight_3d=scene,
                 demo=demo,
+                iris_demo=iris_demo,
+                iris_booster_demo=iris_booster_demo,
+                receiver_demos=receiver_demos,
                 simulation=simulation,
                 selected_model=selected_model,
             ),
             indent=2,
         )
     )
-    print(f"Packaged base/away workspaces, Live startup, demo/video and OpenRocket engine passed: {output}")
+    print(f"{len(commands) + len(receiver_demos)} packaged checks passed: startup wizard, station profiles, video wall, Sustainer/Booster playback and OpenRocket: {output}")
 
 
 if __name__ == "__main__":

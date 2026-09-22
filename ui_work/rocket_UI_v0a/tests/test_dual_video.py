@@ -7,6 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+from pytestqt.exceptions import TimeoutError as QtTimeoutError
 from rocket_gnc_monitor.controller import Controller
 from rocket_gnc_monitor.domain import demo_sample
 from rocket_gnc_monitor.recording import SessionReader, SessionRecorder
@@ -175,14 +176,41 @@ def test_legacy_video_is_digital_and_stream_gaps_remain_separate(qtbot, tmp_path
 def test_both_streams_record_and_round_trip_in_a_flight(qtbot, tmp_path):
     c = Controller(tmp_path / "app")
 
+    def diagnostics():
+        states = {}
+        for channel, state in c.video_streams.items():
+            worker = state.worker or state.backend
+            future = state.lifecycle_future
+            states[channel] = dict(
+                published_worker=state.worker is not None,
+                received_frames=worker.received_frames if worker else 0,
+                lifecycle_error=state.error,
+                worker_error=worker.error if worker else "",
+                lifecycle_done=future.done() if future else None,
+                lifecycle_running=future.running() if future else None,
+                ffmpeg_logs=list(worker.logs) if worker else [],
+            )
+        return json.dumps(states, indent=2)
+
     def both_frames():
+        for channel, state in c.video_streams.items():
+            if state.error or (state.worker and state.worker.error):
+                pytest.fail(f"{channel} failed while waiting for frames:\n{diagnostics()}")
         return all(s.worker is not None and s.worker.received_frames > 3 for s in c.video_streams.values())
+
+    def wait_for_frames(timeout):
+        try:
+            qtbot.waitUntil(both_frames, timeout=timeout)
+        except QtTimeoutError:
+            pytest.fail(f"Video frames not ready within {timeout} ms:\n{diagnostics()}", pytrace=False)
 
     try:
         c.switch_mode("DEMO")
-        qtbot.waitUntil(both_frames, timeout=6000)
+        wait_for_frames(6000)
         c.start_recording(tmp_path / "recordings")
-        qtbot.waitUntil(both_frames, timeout=6000)
+        # Recording restarts each input. Graceful stop/terminate/kill can use
+        # 2 + 2 + 1 seconds before FFmpeg starts and delivers new frames.
+        wait_for_frames(20000)
         qtbot.wait(800)
         # Stopping an individual feed immediately before logging must still wait
         # for that feed's final segment when saving the flight.

@@ -152,22 +152,60 @@ def test_package_forwards_engine_options_before_freezing(builder, monkeypatch):
     assert calls == [("", "latest")]
 
 
-@pytest.mark.parametrize("station,window_count", [("base", 2), ("away", 1)])
-def test_package_station_verification_rejects_missing_windows_and_open_hardware(station, window_count):
+@pytest.fixture
+def verifier():
     path = Path(__file__).resolve().parents[1] / "scripts/verify_package.py"
     spec = importlib.util.spec_from_file_location("rocket_verify_package", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    return module
+
+
+def station_report(verifier, station, profile=None):
+    profile = profile or verifier.LEGACY_PROFILES[station]
+    channels = verifier.profile_channels(profile)
+    base_video = profile["station"] == "base" and profile["role"] == "video"
+    local = verifier.profile_local_channels(profile)
+    serial_roles = verifier.profile_serial_roles(profile)
+    iris_boards = verifier.profile_iris_boards(profile)
     report = dict(
+        profile=profile,
+        local_video_channels=local,
+        camera_inputs=local,
+        visible_camera_inputs=local if station == "video" else [],
         station_mode=station,
         source_mode="LIVE",
         shared_controller=True,
-        window_count=window_count,
-        visible_cards=["Telemetry", "Antenna pointer"],
+        window_count=2 if station == "base" else 1,
+        visible_cards=["video_wall"] if base_video else local if station == "video" else sorted(verifier.STATION_CARDS[station]),
         hardware_open=False,
         shortcuts_shared=True,
+        video_inputs_visible=station == "video",
+        telemetry_controls_visible=station != "video",
+        video_wall=None,
+        serial_roles=serial_roles,
+        visible_serial_roles=serial_roles if station != "video" else [],
+        iris_link_boards=iris_boards,
+        iris_simulated_targets=dict.fromkeys(iris_boards),
+        iris_switch_buttons_enabled=dict.fromkeys(iris_boards, False),
     )
-    module.validate_station_report(report, station)
+    if base_video:
+        sources = verifier.profile_remote_sources(profile)
+        report["video_wall"] = dict(
+            primary_channels=channels,
+            visible_primary_channels=channels,
+            thumbnail_sources=sources,
+            visible_thumbnail_sources=sources,
+            selected_sources=verifier.profile_default_sources(profile),
+            remote_available=False,
+        )
+    return report
+
+
+@pytest.mark.parametrize("station", ["base", "away", "video"])
+def test_package_station_verification_rejects_missing_windows_and_open_hardware(verifier, station):
+    report = station_report(verifier, station)
+    verifier.validate_station_report(report, station)
     for field, invalid in (
         ("window_count", 0),
         ("hardware_open", True),
@@ -175,6 +213,104 @@ def test_package_station_verification_rejects_missing_windows_and_open_hardware(
         ("source_mode", "DEMO"),
         ("shortcuts_shared", False),
         ("visible_cards", []),
+        ("visible_cards", [*report["visible_cards"], "unexpected-panel"]),
+        ("video_inputs_visible", station != "video"),
+        ("telemetry_controls_visible", station == "video"),
+        ("profile", dict(station="away4", role="video", vehicle="iris")),
+        ("local_video_channels", ["digital"]),
+        ("camera_inputs", ["digital", "digital"]),
+        ("visible_camera_inputs", [] if station == "video" else ["digital"]),
+        ("serial_roles", ["telemetry", "pointer"] if station == "base" else ["telemetry", "uplink", "pointer"]),
+        ("visible_serial_roles", [] if station != "video" else ["telemetry"]),
     ):
         with pytest.raises(SystemExit, match=f"Packaged {station} station workspace failed"):
-            module.validate_station_report(dict(report, **{field: invalid}), station)
+            verifier.validate_station_report(dict(report, **{field: invalid}), station)
+
+
+@pytest.mark.parametrize("site,boards,serial_roles", [
+    ("base", ["downlink", "uplink"], ["telemetry", "uplink", "pointer"]),
+    ("away4", ["downlink"], ["telemetry", "pointer"]),
+])
+def test_package_iris_telemetry_requires_separate_real_boards_and_inactive_placeholders(verifier, site, boards, serial_roles):
+    profile = dict(station=site, role="telemetry", vehicle="iris")
+    layout = verifier.profile_layout(profile)
+    report = station_report(verifier, layout, profile)
+    assert report["serial_roles"] == serial_roles
+    assert report["iris_link_boards"] == boards
+    verifier.validate_station_report(report, layout, profile)
+    for field, invalid in (
+        ("serial_roles", ["telemetry", "pointer"] if site == "base" else ["telemetry", "uplink", "pointer"]),
+        ("visible_serial_roles", ["telemetry", "pointer"] if site == "base" else ["telemetry", "uplink", "pointer"]),
+        ("iris_link_boards", ["downlink"] if site == "base" else ["downlink", "uplink"]),
+        ("iris_simulated_targets", dict.fromkeys(boards, "sustainer")),
+        ("iris_switch_buttons_enabled", dict.fromkeys(boards, True)),
+    ):
+        with pytest.raises(SystemExit, match="station workspace failed"):
+            verifier.validate_station_report(dict(report, **{field: invalid}), layout, profile)
+
+
+@pytest.mark.parametrize("vehicle,count", [("balius", 8), ("iris", 8)])
+def test_package_base_video_wall_requires_exact_visible_channels_and_local_digital(verifier, vehicle, count):
+    import copy
+
+    profile = dict(station="base", role="video", vehicle=vehicle)
+    report = station_report(verifier, "video", profile)
+    verifier.validate_station_report(report, "video", profile)
+    assert len(report["video_wall"]["thumbnail_sources"]) == count
+    if vehicle == "iris":
+        assert report["video_wall"]["selected_sources"]["analog2"] == ["away4", "analog2"]
+        assert ["away4", "analog"] not in report["video_wall"]["thumbnail_sources"]
+        assert ["away1", "analog2"] not in report["video_wall"]["thumbnail_sources"]
+    with pytest.raises(SystemExit, match="station workspace failed"):
+        verifier.validate_station_report(dict(report, local_video_channels=["digital", "analog"]), "video", profile)
+    for field, invalid in (
+        ("primary_channels", ["digital"]),
+        ("visible_primary_channels", []),
+        ("thumbnail_sources", report["video_wall"]["thumbnail_sources"][:-1]),
+        ("visible_thumbnail_sources", report["video_wall"]["thumbnail_sources"][:-1]),
+        ("selected_sources", {"digital": ["local", "analog"]}),
+        ("remote_available", True),
+    ):
+        damaged = copy.deepcopy(report)
+        damaged["video_wall"][field] = invalid
+        with pytest.raises(SystemExit, match="video wall inventory"):
+            verifier.validate_station_report(damaged, "video", profile)
+
+
+def test_package_iris_away4_requires_booster_analog_camera_controls(verifier):
+    profile = verifier.EXTRA_PROFILES["station-away-iris"]
+    report = station_report(verifier, "video", profile)
+    verifier.validate_station_report(report, "video", profile)
+    for field in ("local_video_channels", "camera_inputs", "visible_camera_inputs", "visible_cards"):
+        with pytest.raises(SystemExit, match="station workspace failed"):
+            verifier.validate_station_report(dict(report, **{field: ["digital", "analog"]}), "video", profile)
+
+
+@pytest.mark.parametrize("station,analog", [("away2", "analog"), ("away4", "analog2")])
+def test_package_iris_demo_rejects_a_missing_failed_or_wrong_analog_receiver(verifier, station, analog):
+    profile = dict(station=station, role="video", vehicle="iris")
+    report = dict(
+        profile=profile, local_video_channels=["digital", analog],
+        mode="DEMO", station_mode="video", hardware_open=False, demo_progress_samples=30,
+        video_streams={channel: dict(frames=60, error="") for channel in ("digital", analog)},
+    )
+    verifier.validate_video_demo(report, profile)
+    for streams in (
+        {key: value for key, value in report["video_streams"].items() if key != analog},
+        dict(report["video_streams"], **{analog: dict(frames=0, error="")}),
+        dict(report["video_streams"], **{analog: dict(frames=60, error="Decoder failed")}),
+        {"digital": dict(frames=60, error=""), "analog2" if analog == "analog" else "analog": dict(frames=60, error="")},
+    ):
+        with pytest.raises(SystemExit, match="demo channels failed"):
+            verifier.validate_video_demo(dict(report, video_streams=streams), profile)
+
+
+def test_package_setup_requires_all_pages_and_no_controller(verifier):
+    report = dict(
+        profile=verifier.SETUP_PROFILE, local_channels=["digital"], controller_created=False,
+        finish_text="Open station", pages=[dict(name=name) for name in ("station", "role", "vehicle")],
+    )
+    verifier.validate_setup_report(report)
+    for field, invalid in (("controller_created", True), ("pages", report["pages"][:2]), ("local_channels", ["digital", "analog"])):
+        with pytest.raises(SystemExit, match="startup wizard failed"):
+            verifier.validate_setup_report(dict(report, **{field: invalid}))

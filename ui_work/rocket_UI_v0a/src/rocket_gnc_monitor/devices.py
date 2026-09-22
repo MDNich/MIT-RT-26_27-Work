@@ -30,14 +30,14 @@ def ports():
 
 class SerialWorker:
     def __init__(self, role, device, generation, emit, raw, baud=115200):
-        if role not in {"telemetry", "pointer"}:
+        if role not in {"telemetry", "uplink", "pointer"}:
             raise ValueError("Unknown serial role")
         self.role, self.device, self.generation = role, device, generation
         self.emit, self.raw, self.baud = emit, raw, baud
         self.stop_event = threading.Event()
         self.poll_event = threading.Event()
-        self.commands = queue.Queue(maxsize=64 if role == "telemetry" else 1)
-        self.decoder = ZephyrusDecoder()
+        self.commands = queue.Queue(maxsize=1 if role == "pointer" else 64)
+        self.decoder = ZephyrusDecoder() if role == "telemetry" else None
         self.connection = None
         self.thread = threading.Thread(target=self.run, name=f"{role}-serial", daemon=True)
         self.thread.start()
@@ -105,7 +105,9 @@ class SerialWorker:
                             self.message("expired", command_id)
                         else:
                             written = self.connection.write(payload)
-                            self.raw(self.role + "_tx", payload[:written])
+                            # RGM1 role 4 remains the rocket command wire stream,
+                            # including a base station's dedicated uplink board.
+                            self.raw("telemetry_tx" if self.role == "uplink" else self.role + "_tx", payload[:written])
                             if written != len(payload):
                                 raise IOError("Incomplete serial write")
                             self.message("sent", command_id)
@@ -113,7 +115,8 @@ class SerialWorker:
                     continue
                 chunk = self.connection.read(min(max(self.connection.in_waiting, 1), 4096))
                 if chunk and (self.role != "telemetry" or self.poll_event.is_set()):
-                    self.raw(self.role + "_rx", chunk)
+                    if self.role != "uplink":
+                        self.raw(self.role + "_rx", chunk)
                     if self.role == "telemetry":
                         for sample in self.decoder.feed(chunk):
                             self.message("sample", sample)

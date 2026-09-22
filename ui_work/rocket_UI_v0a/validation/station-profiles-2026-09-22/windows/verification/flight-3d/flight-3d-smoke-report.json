@@ -1,0 +1,40 @@
+{
+  "profile": {
+    "station": "base",
+    "role": "telemetry",
+    "vehicle": "balius"
+  },
+  "local_channels": [
+    "digital",
+    "analog"
+  ],
+  "local_video_channels": [
+    "digital",
+    "analog"
+  ],
+  "frames": {
+    "ignition": {
+      "time": 0.365,
+      "powered": true,
+      "recovery": false,
+      "attitude": "Simulation attitude",
+      "state": "MOTOR BURNING"
+    },
+    "burnout": {
+      "time": 0.73,
+      "powered": false,
+      "recovery": false,
+      "attitude": "Simulation attitude",
+      "state": "COAST / PAD"
+    },
+    "parachute": {
+      "time": 4.731,
+      "powered": false,
+      "recovery": true,
+      "attitude": "Simulation attitude \u00b7 held after recovery/tumble",
+      "state": "PARACHUTE DEPLOYED"
+    }
+  },
+  "motion_rows": 1551,
+  "hardware_open": false
+}

@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 from collections import deque
+from collections.abc import Mapping
 from concurrent.futures import Future, ThreadPoolExecutor
 import copy
 from dataclasses import dataclass, field
 import queue
 from pathlib import Path
 import time
+from types import MappingProxyType
 import uuid
 from PySide6.QtCore import QObject, QTimer, Signal
 from .domain import Mission, pointing, target_position, to_enu, finite
@@ -16,7 +18,7 @@ from .devices import SerialWorker, serial_device_key
 from .protocol import pointer_packet
 from .recording import SessionReader, SessionRecorder
 from .trajectory import Trajectory, SimulationJob
-from .media import VIDEO_STREAMS, VideoWorker
+from .media import DEFAULT_VIDEO_CHANNELS, VIDEO_STREAMS, VideoWorker
 from .zephyrus import rocket_packet, legacy_values
 from .settings import AppSettings
 from .virtual_pointer import VirtualPointer, VirtualFlight, VIRTUAL_POINTER_DEVICE
@@ -46,8 +48,37 @@ class Controller(QObject):
     video_reset = Signal(str)
     task_done = Signal(str, object)
 
-    def __init__(self, data_dir):
+    def __init__(self, data_dir, video_channels=None, video_labels=None, board_layout="legacy", vehicle="balius"):
         super().__init__()
+        if board_layout not in {"legacy", "base", "away"}:
+            raise ValueError("Unknown board layout; choose legacy, base or away")
+        if vehicle not in {"balius", "iris"}:
+            raise ValueError("Unknown vehicle; choose balius or iris")
+        self.board_layout, self.vehicle = board_layout, vehicle
+        serial_labels = {"telemetry": "Ground station" if board_layout == "legacy" else "Downlink telemetry"}
+        if board_layout == "base":
+            serial_labels["uplink"] = "Uplink commands"
+        serial_labels["pointer"] = "Antenna pointer"
+        self._serial_labels = MappingProxyType(serial_labels)
+        channels = tuple(DEFAULT_VIDEO_CHANNELS if video_channels is None else video_channels)
+        if not channels or any(channel not in VIDEO_STREAMS for channel in channels):
+            raise ValueError("Video channels must be selected from digital, analog and analog2")
+        if len(set(channels)) != len(channels):
+            raise ValueError("Video channels must be unique")
+        if "digital" not in channels:
+            raise ValueError("Video channels must include digital")
+        labels = {
+            channel: "Analog 1" if channel == "analog" and "analog2" in channels else VIDEO_STREAMS[channel]
+            for channel in channels
+        }
+        if video_labels is not None:
+            if not isinstance(video_labels, Mapping) or set(video_labels) != set(channels):
+                raise ValueError("Video labels must contain exactly the active video channels")
+            if any(not isinstance(value, str) or not value.strip() for value in video_labels.values()):
+                raise ValueError("Video labels must be nonempty text")
+            labels = {channel: video_labels[channel].strip() for channel in channels}
+        self._video_channels = channels
+        self._video_labels = MappingProxyType(labels)
         self.data_dir = Path(data_dir)
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.settings_path = self.data_dir / "settings.json"
@@ -63,16 +94,16 @@ class Controller(QObject):
         self.history = deque(maxlen=6000)
         self.track = deque(maxlen=6000)
         self.reference = None
-        self.workers = {"telemetry": None, "pointer": None}
-        self.states = {"telemetry": "Disconnected", "pointer": "Disconnected"}
+        self.workers = dict.fromkeys(self.serial_labels)
+        self.states = dict.fromkeys(self.serial_labels, "Disconnected")
         self.last_live_received = None
         self.polling = False
         self.messages = queue.Queue(maxsize=16000)
         self.executor = ThreadPoolExecutor(max_workers=4, thread_name_prefix="gnc")
-        self.video_streams = {
+        self._video_streams = MappingProxyType({
             stream: VideoStream(ThreadPoolExecutor(max_workers=1, thread_name_prefix=f"video-{stream}"))
-            for stream in VIDEO_STREAMS
-        }
+            for stream in self.video_channels
+        })
         self.last_replay_video = 0.0
         self._video_replay_cache = None
         self.futures = []
@@ -130,6 +161,57 @@ class Controller(QObject):
         future.source_mode = self.mode
         self.futures.append((name, future))
         return future
+
+    @property
+    def serial_labels(self):
+        return self._serial_labels
+
+    @property
+    def command_role(self):
+        return "uplink" if self.board_layout == "base" else "telemetry" if self.board_layout == "legacy" else None
+
+    @property
+    def command_connected(self):
+        role = self.command_role
+        return (self.mode == "LIVE" and role is not None and self.workers[role] is not None
+                and self.states[role] == "Connected")
+
+    @property
+    def command_block_reason(self):
+        if self.board_layout == "away":
+            return "Away stations cannot transmit rocket commands"
+        if self.mode == "REPLAY":
+            return "Replay is read-only"
+        if self.mode == "LIVE" and self.vehicle == "iris":
+            return "Iris live command target protocol pending; commands are disabled"
+        if self.mode == "LIVE" and not self.command_connected:
+            return "Uplink board is disconnected" if self.board_layout == "base" else "Ground station is disconnected"
+        return ""
+
+    @property
+    def can_command(self):
+        return not self.command_block_reason
+
+    @property
+    def video_channels(self):
+        """The local input channels chosen when this controller was created."""
+        return self._video_channels
+
+    @property
+    def video_labels(self):
+        return self._video_labels
+
+    @property
+    def video_streams(self):
+        """Mutable lifecycle state within an immutable set of local inputs."""
+        return self._video_streams
+
+    def _selected_video_channels(self, stream=None):
+        if stream is None:
+            return self.video_channels
+        if stream not in self.video_streams:
+            raise ValueError(f"Video channel {stream!r} is not active for this station")
+        return (stream,)
 
     @property
     def video(self):
@@ -294,12 +376,12 @@ class Controller(QObject):
         if mode != "DEMO" and self.reference and self.reference.manifest.get("synthetic"):
             self.reference = None
         self.stop_video()
-        for stream in VIDEO_STREAMS:
+        for stream in self.video_channels:
             self.video_reset.emit(stream)
         if mode == "DEMO":
             self.seek_demo(self.demo.cue)
             self.demo_playing = True
-            for stream in VIDEO_STREAMS:
+            for stream in self.video_channels:
                 self.start_video("demo", stream, stream=stream)
         self.log(f"Source changed to {mode}; physical pointer transport closed")
         self.changed.emit()
@@ -370,12 +452,16 @@ class Controller(QObject):
             self.log("Zephyrus recording ended; final received sample retained")
 
     def disconnect(self, role):
+        if role not in self.serial_labels:
+            raise ValueError(f"Unknown serial role: {role!r}")
         worker = self.workers.get(role)
         self.workers[role] = None
         if worker:
             worker.stop_event.set()
             self.submit(f"disconnect:{role}", worker.stop)
         self.states[role] = "Disconnected"
+        if role == self.command_role:
+            self.rocket_commands.clear()
         if role == "pointer":
             self.tracking = False
             self.virtual_flight = self.virtual_context = None
@@ -386,7 +472,6 @@ class Controller(QObject):
             self.pointer_status = "Disconnected"
             self.mission.pointer_calibrated = False
         elif role == "telemetry":
-            self.rocket_commands.clear()
             self.frozen_ground = None
             self.polling = False
             self.last_live_received = None
@@ -394,6 +479,8 @@ class Controller(QObject):
                 self.hold("Ground station disconnected")
 
     def connect(self, role, device):
+        if role not in self.serial_labels:
+            raise ValueError(f"Unknown serial role: {role!r}")
         if self.mode != "LIVE":
             raise ValueError("Physical connections require LIVE mode")
         if not device:
@@ -422,7 +509,8 @@ class Controller(QObject):
 
     def enqueue(self, generation, role, kind, data):
         worker = self.workers.get(role)
-        if worker and worker.generation == generation and kind == "sample" and self.polling and self.recorder:
+        if (role == "telemetry" and worker and worker.generation == generation
+                and kind == "sample" and self.polling and self.recorder):
             self.recorder.sample(data)
         try:
             self.messages.put_nowait((generation, role, kind, data))
@@ -502,9 +590,8 @@ class Controller(QObject):
         )
 
     def send_rocket(self, command, value=None):
-        if self.mode == "REPLAY":
-            raise ValueError("Replay is read-only")
-        self.require_ground_station()
+        if not self.can_command:
+            raise ValueError(self.command_block_reason)
         if command == "advance_state":
             value = (self.latest.details.get("state_code", 0) if self.latest else 0) + 1
         packet = rocket_packet(command, value)
@@ -512,8 +599,10 @@ class Controller(QObject):
             self.log("Rocket command simulated", {"command": command, "value": value})
             return
         command_id = uuid.uuid4().hex
-        self.workers["telemetry"].send(packet, command_id)
+        self.workers[self.command_role].send(packet, command_id)
         self.rocket_commands[command_id] = {"command": command, "value": value}
+        if self.board_layout == "base":
+            self.rocket_commands[command_id]["serial_role"] = "uplink"
         self.log("Rocket command requested", self.rocket_commands[command_id])
 
     def freeze_ground_station(self):
@@ -847,7 +936,7 @@ class Controller(QObject):
             worker = state.worker
             conditions[f"video_{stream}"] = (
                 bool(worker and (worker.error or (worker.last_frame and now - worker.last_frame > 2))),
-                f"{VIDEO_STREAMS[stream]} video ended / stale",
+                f"{self.video_labels[stream]} video ended / stale",
                 1,
             )
         for key, (active, message, dwell) in conditions.items():
@@ -862,6 +951,7 @@ class Controller(QObject):
                     self.log("Alert cleared: " + message, {"key": key})
 
     def replay_video(self, stream=None, force=True):
+        channels = self._selected_video_channels(stream)
         if not self.reader:
             return
         import csv
@@ -877,7 +967,7 @@ class Controller(QObject):
             self._video_replay_cache = (self.reader, events, {})
         _, starts, indexes = self._video_replay_cache
         events = [(t, e) for t, e in starts if t <= self.replay_time - self.mission.video_offset]
-        for channel in [stream] if stream else VIDEO_STREAMS:
+        for channel in channels:
             state = self.video_streams[channel]
             if force:
                 state.replay_paused = False
@@ -913,6 +1003,9 @@ class Controller(QObject):
                 self.video_reset.emit(channel)
 
     def start_video(self, kind, source="", seek=0, *, stream="digital"):
+        if stream is None:
+            raise ValueError("Choose an active video channel")
+        self._selected_video_channels(stream)
         state = self.video_streams[stream]
         if kind == "camera":
             if source is None or source == "":
@@ -920,7 +1013,7 @@ class Controller(QObject):
             source = str(source)
             for other, other_state in self.video_streams.items():
                 if other != stream and source in other_state.reserved_cameras:
-                    raise ValueError(f"This USB camera is already assigned to {VIDEO_STREAMS[other]}")
+                    raise ValueError(f"This USB camera is already assigned to {self.video_labels[other]}")
             state.reserved_cameras.add(source)
         state.generation += 1
         token = state.generation
@@ -953,7 +1046,7 @@ class Controller(QObject):
 
     def stop_video(self, stream=None, *, pause_replay=False):
         futures = []
-        for channel in [stream] if stream else VIDEO_STREAMS:
+        for channel in self._selected_video_channels(stream):
             state = self.video_streams[channel]
             state.generation += 1
             token = state.generation
@@ -1003,9 +1096,9 @@ class Controller(QObject):
             worker = self.workers.get(role)
             if not worker or worker.generation != generation or self.mode != "LIVE":
                 continue
-            if kind == "sample" and self.polling and self.states[role] == "Connected":
+            if role == "telemetry" and kind == "sample" and self.polling and self.states[role] == "Connected":
                 self.accept(data)
-            elif kind == "stats":
+            elif role == "telemetry" and kind == "stats":
                 self.stats = data
             elif kind == "connected":
                 self.states[role] = "Connected"
@@ -1018,25 +1111,24 @@ class Controller(QObject):
                 self.disconnect(role)
                 self.log(f"{role.title()}: {data}")
                 if role == "telemetry":
-                    self.rocket_commands.clear()
                     self.frozen_ground = None
                     self.polling = False
                     self.last_live_received = None
-                if self.tracking or (role == "pointer" and self.pointer_pending):
+                if (role in {"telemetry", "pointer"} and self.tracking) or (role == "pointer" and self.pointer_pending):
                     self.hold(f"{role} unavailable")
                 if role == "pointer":
                     self.pointer_sent = self.pointer_pending = None
                     self.mission.pointer_calibrated = False
                     self.pointer_status = "Disconnected"
-            elif kind == "sent" and role == "telemetry":
+            elif kind == "sent" and role == self.command_role:
                 command = self.rocket_commands.pop(data, None)
                 if command:
                     self.log("Rocket command sent", command)
-            elif kind == "expired" and role == "telemetry":
+            elif kind == "expired" and role == self.command_role:
                 command = self.rocket_commands.pop(data, None)
                 if command:
                     self.log("Rocket command expired; not sent", command)
-            elif kind == "sent" and data in self.dispatched_commands:
+            elif kind == "sent" and role == "pointer" and data in self.dispatched_commands:
                 self.pointer_sent = self.dispatched_commands.pop(data)
                 if self.virtual_pointer:
                     self.pointer_sent = self.virtual_pointer.target
@@ -1055,12 +1147,12 @@ class Controller(QObject):
                         "source": "VIRTUAL" if self.virtual_pointer else "LIVE",
                     },
                 )
-            elif kind == "expired":
+            elif kind == "expired" and role == "pointer":
                 self.dispatched_commands.pop(data, None)
                 self.command_names.pop(data, None)
                 self.hold("Queued command expired")
             elif kind == "rx":
-                self.log("Pointer RX: " + data[:140])
+                self.log(f"{role.title()} RX: " + data[:140])
         if self.mode == "DEMO":
             self.advance_demo(dt, now)
         elif self.mode == "REPLAY" and self.reader and self.replay_playing:

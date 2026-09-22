@@ -9,10 +9,11 @@ endif
 
 ENGINE_OPTIONS = --engine "$(OPENROCKET_JAR)" --download "$(OPENROCKET_DOWNLOAD)"
 STATION ?= base
+VEHICLE ?=
 
 .DEFAULT_GOAL := help
 .NOTPARALLEL:
-.PHONY: help setup run away demo test lint runtime bridge package package-macos package-macos-universal package-windows smoke verify-package clean
+.PHONY: help setup run away video demo test lint runtime bridge package package-macos package-macos-universal package-windows smoke verify-package clean
 
 help:
 	@$(PYTHON) scripts/build.py help
@@ -20,9 +21,11 @@ help:
 setup:
 	$(PYTHON) scripts/build.py setup
 run:
-	$(VENV_PY) -m rocket_gnc_monitor --station $(STATION)
+	$(VENV_PY) -m rocket_gnc_monitor $(if $(filter command line,$(origin STATION)),--station $(STATION)) $(if $(VEHICLE),--vehicle $(VEHICLE))
 away:
 	$(VENV_PY) -m rocket_gnc_monitor --station away
+video:
+	$(VENV_PY) -m rocket_gnc_monitor --station video $(if $(VEHICLE),--vehicle $(VEHICLE))
 demo:
 	$(VENV_PY) -m rocket_gnc_monitor --demo --station $(STATION)
 test:

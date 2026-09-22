@@ -1,4 +1,4 @@
-"""Two-display base station and one-display away station over one instrument owner.
+"""Base, away and video workspaces over one instrument owner.
 
 The v0 widgets remain the single source of control callbacks and telemetry state.
 Only their presentation changes: no second Controller, duplicate serial worker,
@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QTimer, QPoint
+from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -28,9 +29,10 @@ from PySide6.QtWidgets import (
 from .ui import MainWindow as InstrumentWindow, button, label
 from .widgets import ComboBox
 from .flight_view import Flight3DDialog
-from .media import camera_devices
+from .media import WIDTH, HEIGHT, camera_devices
 from .domain import finite
 from .table_cells import set_cell
+from .station_profile import StationProfile
 
 
 COMPACT_STYLE = """
@@ -77,28 +79,49 @@ class StationDisplay(QMainWindow):
         super().__init__(owner, Qt.WindowType.Window)
         self.owner = owner
         self.controller = owner.controller
-        self.setWindowTitle("Rocket GNC Monitor v0a · 2 / Systems & video")
+        self.setWindowTitle("Rocket GNC Monitor v0a · 2 / Systems")
         self.setWindowIcon(owner.windowIcon())
         self.resize(1920, 1020)
         self.setMinimumSize(1280, 800)
 
     def closeEvent(self, event):
-        if self.owner.closing or self.owner.station_mode == "away":
+        if self.owner.closing or self.owner.station_mode != "base":
             event.accept()
         else:
             event.ignore()
             self.statusBar().showMessage(
-                "Base station uses both displays. Choose Away station for one window.", 8000
+                "Base telemetry uses both displays. Relaunch and choose Away telemetry or Video for one window."
+                if self.owner.profile_locked else
+                "Base station uses both displays. Choose Away station or Video station for one window.", 8000
             )
 
 
 class StationWindow(InstrumentWindow):
-    def __init__(self, data_dir, station=None, auto_place=True):
+    def __init__(self, data_dir, station=None, auto_place=True, profile=None):
         self.workspace_ready = False
         self.closing = False
         self.auto_place = auto_place
         self.station_mode = "base"
-        super().__init__(data_dir)
+        self.profile_locked = profile is not None
+        self.station_path = Path(data_dir) / "station-layout.json"
+        if profile is not None:
+            station = profile.layout
+        elif station is None:
+            try:
+                station = json.loads(self.station_path.read_text()).get("station", "base")
+            except (OSError, ValueError, AttributeError):
+                station = "base"
+        self.profile = profile or StationProfile(
+            station="away1" if station in ("away", "video") else "base",
+            role="video" if station == "video" else "telemetry",
+        )
+        self.video_wall = None
+        self.away_flight_dialog = None
+        super().__init__(data_dir, video_channels=self.profile.local_channels,
+                         video_labels={key: self.profile.channel_labels[key] for key in self.profile.local_channels},
+                         board_layout=("base" if self.profile.station == "base" and self.profile.role == "telemetry"
+                                       else "away") if self.profile_locked else "legacy",
+                         vehicle=self.profile.vehicle)
         self.setWindowTitle("Rocket GNC Monitor v0a · 1 / Flight & antenna")
         self.setMinimumSize(1280, 800)
         self.resize(1920, 1020)
@@ -109,12 +132,6 @@ class StationWindow(InstrumentWindow):
         self.cards = {}
         self.companion = StationDisplay(self)
         self.companion.setStyleSheet(self.styleSheet() + COMPACT_STYLE)
-        self.station_path = Path(data_dir) / "station-layout.json"
-        if station is None:
-            try:
-                station = json.loads(self.station_path.read_text()).get("station", "base")
-            except (OSError, ValueError, AttributeError):
-                station = "base"
         self.build_workspace()
         # One QAction can be installed on two windows without duplicate bindings.
         for action in (*self.legacy_actions.values(), *self.flight_actions.values()):
@@ -123,7 +140,7 @@ class StationWindow(InstrumentWindow):
         self.workspace_ready = True
         self.set_daylight(self.controller.settings.daylight, persist=False)
         self.refresh_actuators()
-        self.set_station_mode(station if station in ("base", "away") else "base", persist=False)
+        self.set_station_mode(station if station in ("base", "away", "video") else "base", persist=False)
         self.last_ui = 0
         self.refresh()
         QApplication.instance().screenAdded.connect(self.screens_changed)
@@ -161,32 +178,53 @@ class StationWindow(InstrumentWindow):
         self.station_selector = ComboBox()
         self.station_selector.addItem("Base station · two displays", "base")
         self.station_selector.addItem("Away station · one display", "away")
+        self.station_selector.addItem("Video station · two channels", "video")
         self.station_selector.setAccessibleName("Station workspace")
         self.station_selector.currentIndexChanged.connect(
             lambda: self.set_station_mode(self.station_selector.currentData())
         )
-        heading = row(label("ROCKET / v0a", "heading"), self.station_selector, self.mission_label)
+        self.workspace_title = label("ROCKET / v0a", "heading")
+        heading = row(self.workspace_title, self.station_selector, self.mission_label)
+        self.station_identity = label(
+            f"{self.profile.station_label} · {self.profile.role.title()} · {self.profile.vehicle_label}"
+            + (f" · {' / '.join(self.profile.telemetry_targets)}"
+               if self.profile.role == "telemetry" and self.profile.vehicle == "iris" else ""),
+            "eyebrow",
+        )
+        self.station_identity.setToolTip("Station and role are selected in the startup wizard.")
+        heading.insertWidget(1, self.station_identity)
+        self.station_identity.setVisible(self.profile_locked)
+        self.station_selector.setVisible(not self.profile_locked)
         heading.addStretch()
         heading.addWidget(label("DATA SOURCE", "eyebrow"))
         for widget in (self.mode, self.poll_button, self.record_button):
             heading.addWidget(widget)
             widget.show()
+        heading.addWidget(button("Settings…", self.open_settings))
         outer.addLayout(heading)
         self.usb_strip = QWidget()
         usb = QHBoxLayout(self.usb_strip)
         usb.setContentsMargins(0, 0, 0, 0)
-        for role, title in (("telemetry", "Telemetry PCB / USB"), ("pointer", "Antenna PCB / USB")):
+        for role, title in self.controller.serial_labels.items():
             combo, connect, status = self.port_widgets[role]
             usb.addWidget(label(title, "section"))
             for w in (combo, self.refresh_buttons[role], connect, self.disconnect_buttons[role], status):
                 usb.addWidget(w, 1 if w is combo else 0)
                 w.show()
         outer.addWidget(self.usb_strip)
+        self.iris_links = None
+        if self.profile_locked and self.profile.vehicle == "iris" and self.profile.role == "telemetry":
+            from .iris_link_panel import IrisLinkPanel
+
+            self.iris_links = IrisLinkPanel(self.controller, station=self.profile.station)
+            outer.addWidget(self.iris_links)
         self.attach(outer, self.demo_bar)
         self.health = QLabel()
         self.health.setObjectName("eyebrow")
         outer.addWidget(self.health)
-        metric_strip = QHBoxLayout()
+        self.metric_strip = QWidget()
+        metric_strip = QHBoxLayout(self.metric_strip)
+        metric_strip.setContentsMargins(0, 0, 0, 0)
         for key, title in (
             ("altitude", "ALTITUDE · m"),
             ("velocity", "VELOCITY · m/s"),
@@ -204,12 +242,29 @@ class StationWindow(InstrumentWindow):
             line.addWidget(self.metrics[key])
             self.metrics[key].show()
             metric_strip.addWidget(box, 1)
-        outer.addLayout(metric_strip)
+        outer.addWidget(self.metric_strip)
         self.flight_board = QWidget()
         self.flight_grid = QGridLayout(self.flight_board)
         self.flight_grid.setContentsMargins(0, 0, 0, 0)
         self.flight_grid.setSpacing(7)
         outer.addWidget(self.flight_board, 1)
+        self.video_replay_bar = QWidget()
+        self.video_replay_layout = QVBoxLayout(self.video_replay_bar)
+        self.video_replay_layout.setContentsMargins(0, 0, 0, 0)
+        self.video_replay_layout.setSpacing(4)
+        self.video_replay_status = label("Open a recorded flight or session to play its video.", "muted")
+        self.video_replay_status.setMinimumWidth(0)
+        self.video_replay_status.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        self.video_replay_layout.addLayout(
+            row(
+                button("Open flight…", self.open_flight),
+                button("Open session…", self.open_session),
+                self.video_replay_status,
+            )
+        )
+        outer.addWidget(self.video_replay_bar)
+        self.video_notice = label("", "muted")
+        outer.addWidget(self.video_notice)
         self.attach(outer, self.banner)
 
         root2 = QWidget()
@@ -217,7 +272,7 @@ class StationWindow(InstrumentWindow):
         secondary = QVBoxLayout(root2)
         secondary.setContentsMargins(12, 9, 12, 5)
         secondary.setSpacing(6)
-        title = row(label("SYSTEMS / VIDEO", "heading"))
+        title = row(label("SYSTEMS / GROUND STATION", "heading"))
         self.secondary_health = label("LIVE · Ground station disconnected", "eyebrow")
         title.addWidget(self.secondary_health, 1)
         title.addWidget(button("Arrange displays", self.arrange_displays))
@@ -245,9 +300,20 @@ class StationWindow(InstrumentWindow):
                 table.horizontalHeader().setMinimumSectionSize(28)
                 table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         view_menu = next(a.menu() for a in self.menuBar().actions() if a.text() == "View")
+        if self.profile_locked and self.profile.role == "video":
+            for action in view_menu.actions():
+                if action.text() == "3D flight…":
+                    action.setVisible(False)
+            serial_menu = next(a.menu() for a in self.menuBar().actions() if a.text() == "Serial controls")
+            serial_menu.setTitle("Video controls")
+            for key, action in self.legacy_actions.items():
+                if key != "log":
+                    action.setVisible(False)
         view_menu.addAction("Arrange station displays", self.arrange_displays)
-        view_menu.addAction("Base station · two displays", lambda: self.set_station_mode("base"))
-        view_menu.addAction("Away station · one display", lambda: self.set_station_mode("away"))
+        if not self.profile_locked:
+            view_menu.addAction("Base station · two displays", lambda: self.set_station_mode("base"))
+            view_menu.addAction("Away station · one display", lambda: self.set_station_mode("away"))
+            view_menu.addAction("Video station", lambda: self.set_station_mode("video"))
         # Same menu actions remain usable from the second display on macOS.
         for menu_action in self.menuBar().actions():
             if menu_action.menu():
@@ -318,6 +384,7 @@ class StationWindow(InstrumentWindow):
         note = label("Zephyrus: four drive values; new actuator feedback unavailable.", "muted")
         note.setWordWrap(True)
         layout.addWidget(note)
+        self.actuator_note = note
 
     def build_pointer_cards(self):
         layout = self.card("antenna", "ANTENNA / physical assembly")
@@ -363,12 +430,9 @@ class StationWindow(InstrumentWindow):
         layout.addStretch()
 
     def build_system_cards(self):
-        for stream, title in (
-            ("digital", "DIGITAL / USB video receiver"),
-            ("analog", "ANALOG / USB video receiver"),
-        ):
+        for stream, title in self.controller.video_labels.items():
             v = self.video_widgets[stream]
-            layout = self.card(stream, title)
+            layout = self.card(stream, f"{title.upper()} / USB video receiver")
             self.attach(layout, v["image"], 1)
             self.attach(layout, v["status"])
             v["status"].setFixedHeight(18)
@@ -381,6 +445,20 @@ class StationWindow(InstrumentWindow):
             )
             video_row.setStretch(0, 1)
             layout.addLayout(video_row)
+        if self.profile.station == "base" and self.profile.role == "video":
+            from .video_wall import VideoWall
+
+            controls = QWidget()
+            local = QVBoxLayout(controls)
+            local.setContentsMargins(0, 0, 0, 0)
+            v = self.video_widgets["digital"]
+            local.addWidget(v["status"])
+            local.addLayout(row(
+                v["camera"], button("Find", lambda: self.controller.submit("cameras", camera_devices)),
+                v["start"], v["stop"], v["file"],
+            ))
+            self.video_wall = VideoWall(self.profile, local_controls=controls)
+            self.attach(self.card("video_wall", "VIDEO / launch site & away stations"), self.video_wall, 1)
         rp = self.rocket_panel
         for key, title, widget in (
             ("telemetry", "ROCKET / full telemetry", rp.telemetry),
@@ -480,10 +558,16 @@ class StationWindow(InstrumentWindow):
         self.flight_file_status.setMaximumHeight(27)
         self.attach(layout, self.session_status)
         self.session_status.setMaximumHeight(27)
-        self.attach(layout, self.replay_slider)
-        layout.addLayout(
+        self.session_replay_layout = layout
+        self.replay_controls = QWidget()
+        playback = QVBoxLayout(self.replay_controls)
+        playback.setContentsMargins(0, 0, 0, 0)
+        playback.setSpacing(4)
+        self.attach(playback, self.replay_slider)
+        playback.addLayout(
             row(self.play, self.step_button, self.speed, self.replay_clock, self.align_time_button)
         )
+        layout.addWidget(self.replay_controls)
         self.align_time_button.setText("Set t = 0")
         self.play.setText("Play / pause")
         layout = self.card("diagnostics", "DIAGNOSTICS / alerts, decoded sample & events")
@@ -499,6 +583,10 @@ class StationWindow(InstrumentWindow):
         from .station_panel import StationNetworkPanel
 
         self.network_panel = StationNetworkPanel(self.controller)
+        if self.profile_locked:
+            self.network_panel.station_name.setText(
+                f"{self.profile.station_label} · {self.profile.role.title()}"
+            )
         self.attach(self.card("network", "GROUND NETWORK / APRS & local stations"), self.network_panel, 1)
 
     def place(self, grid, key, r, c, rs=1, cs=1):
@@ -509,9 +597,20 @@ class StationWindow(InstrumentWindow):
     def set_station_mode(self, value, persist=True):
         if not self.workspace_ready:
             return
-        if value not in ("base", "away"):
-            raise ValueError("Station mode must be base or away")
+        if value not in ("base", "away", "video"):
+            raise ValueError("Station mode must be base, away or video")
+        if self.profile_locked and value != self.profile.layout:
+            return
         self.station_mode = value
+        video = value == "video"
+        self.setMinimumSize(*(1000, 600) if video else (1280, 800))
+        self.workspace_title.setText("VIDEO / v0a" if video else "ROCKET / v0a")
+        for widget in (self.mission_label, self.poll_button, self.health, self.metric_strip, self.banner):
+            widget.setVisible(not video)
+        # Playback controls have one owner and retain their signals and state.
+        (self.video_replay_layout if video else self.session_replay_layout).addWidget(self.replay_controls)
+        self.replay_controls.show()
+        self.align_time_button.setVisible(not video)
         self.mount.zoom = 1.4 if value == "base" else 1.0
         for grid in (self.flight_grid, self.systems_grid):
             while grid.count():
@@ -543,10 +642,8 @@ class StationWindow(InstrumentWindow):
                 self.flight_grid.setColumnStretch(i, weight)
             # Four columns keep every former tab and nested tab in view.
             for args in (
-                ("digital", 0, 0, 1, 1),
-                ("analog", 0, 1, 1, 1),
-                ("telemetry", 1, 0, 1, 1),
-                ("gps", 1, 1, 1, 1),
+                ("telemetry", 0, 0, 2, 1),
+                ("gps", 0, 1, 2, 1),
                 ("servos", 2, 0, 1, 1),
                 ("cells", 2, 1, 1, 1),
                 ("diagnostics", 3, 0, 1, 2),
@@ -565,7 +662,7 @@ class StationWindow(InstrumentWindow):
                 self.systems_grid.setColumnStretch(i, weight)
             if self.isVisible():
                 self.companion.show()
-        else:
+        elif value == "away":
             self.setWindowTitle("Rocket GNC Monitor v0a · Away station")
             self.companion.hide()
             for args in (
@@ -581,6 +678,19 @@ class StationWindow(InstrumentWindow):
                 self.flight_grid.setRowStretch(i, 1)
             for i, weight in enumerate((42, 30, 28)):
                 self.flight_grid.setColumnStretch(i, weight)
+        else:
+            self.setWindowTitle(
+                f"Rocket GNC Monitor v0a · {self.profile.station_label} / {self.profile.vehicle_label} video"
+            )
+            self.companion.hide()
+            if self.video_wall is not None:
+                self.place(self.flight_grid, "video_wall", 0, 0)
+                self.flight_grid.setColumnStretch(0, 1)
+            else:
+                for column, stream in enumerate(self.controller.video_streams):
+                    self.place(self.flight_grid, stream, 0, column)
+                    self.flight_grid.setColumnStretch(column, 1)
+            self.flight_grid.setRowStretch(0, 1)
         self.station_selector.blockSignals(True)
         self.station_selector.setCurrentIndex(self.station_selector.findData(value))
         self.station_selector.blockSignals(False)
@@ -590,10 +700,21 @@ class StationWindow(InstrumentWindow):
                 self.station_path.write_text(json.dumps({"station": value}, indent=2) + "\n")
             except OSError as exc:
                 self.statusBar().showMessage(f"Workspace preference not saved: {exc}", 8000)
-        self.rescale_videos()
+        self.last_ui = self.last_table = 0
+        self.refresh()
+        QTimer.singleShot(0, self.rescale_videos)
 
     def open_flight_3d(self):
         if not self.workspace_ready:
+            return
+        if self.profile_locked and self.profile.role == "video":
+            return
+        if self.profile_locked and self.profile.layout == "away":
+            if self.away_flight_dialog is None:
+                self.away_flight_dialog = Flight3DDialog(self.controller, self)
+            self.away_flight_dialog.show()
+            self.away_flight_dialog.raise_()
+            self.away_flight_dialog.activateWindow()
             return
         if self.station_mode != "base":
             self.set_station_mode("base")
@@ -612,6 +733,16 @@ class StationWindow(InstrumentWindow):
         self.controller.start_video("camera", source, stream=stream)
         self.update_camera_choices()
 
+    def connect_role(self, role):
+        if self.profile_locked and self.profile.role == "video":
+            return
+        super().connect_role(role)
+
+    def toggle_connection(self, role):
+        if self.profile_locked and self.profile.role == "video":
+            return
+        super().toggle_connection(role)
+
     def video_file(self, stream="digital"):
         if self.controller.mode == "REPLAY":
             return
@@ -624,6 +755,8 @@ class StationWindow(InstrumentWindow):
     def refresh_actuators(self):
         if not self.workspace_ready:
             return super().refresh_actuators()
+        if self.station_mode == "video":
+            return
         c = self.controller
         channels = {f"Canard {i + 1}": {} for i in range(c.mission.canard_count)}
         channels.update({f"Tab {i + 1}": {} for i in range(4)})
@@ -646,7 +779,11 @@ class StationWindow(InstrumentWindow):
         screens = QApplication.screens()
         primary = self.screen() or screens[0]
         second = next((s for s in screens if s is not primary), primary)
-        for window, screen in ((self, primary), (self.companion, second)):
+        windows = (
+            ((self, primary), (self.companion, second))
+            if self.station_mode == "base" else ((self, primary),)
+        )
+        for window, screen in windows:
             rect = screen.availableGeometry()
             window.setGeometry(rect.adjusted(4, 4, -4, -4))
         if second is primary and self.station_mode == "base":
@@ -669,8 +806,8 @@ class StationWindow(InstrumentWindow):
 
     def rescale_videos(self):
         for stream, pixmap in self.last_pixmaps.items():
-            if pixmap:
-                view = self.video_widgets[stream]["image"]
+            view = self.video_widgets[stream]["image"]
+            if pixmap and view.isVisible():
                 view.setPixmap(
                     pixmap.scaled(
                         view.size(),
@@ -679,13 +816,96 @@ class StationWindow(InstrumentWindow):
                     )
                 )
 
+    def show_frame(self, stream, data):
+        # Keep receiving and retaining frames when another workspace is visible;
+        # avoid scaling hidden video surfaces or restarting a camera on return.
+        image = QImage(data, WIDTH, HEIGHT, WIDTH * 3, QImage.Format.Format_RGB888).copy()
+        pixmap = self.last_pixmaps[stream] = QPixmap.fromImage(image)
+        if stream == "digital":
+            self.last_pixmap = pixmap
+            if self.video_wall is not None:
+                self.update_local_video_context()
+                self.video_wall.set_local_frame(pixmap)
+        view = self.video_widgets[stream]["image"]
+        if view.isVisible():
+            view.setPixmap(
+                pixmap.scaled(
+                    view.size(), Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation,
+                )
+            )
+
+    def reset_video_frame(self, stream):
+        super().reset_video_frame(stream)
+        if stream == "digital" and self.video_wall is not None:
+            self.video_wall.reset_local_frame("Local digital camera not started")
+
+    def update_local_video_context(self):
+        if self.video_wall is None:
+            return
+        c = self.controller
+        state = c.video_streams["digital"]
+        worker = state.worker
+        error = state.error or (worker.error if worker else "")
+        if c.mode == "REPLAY":
+            label = "Replay · paused" if state.replay_paused or not c.replay_playing else "Replay · playing"
+            self.video_wall.set_local_source(f"Replay · unavailable: {error}" if error else label)
+        elif c.mode == "DEMO":
+            label = "Demo · test pattern" if state.config else "Demo · stopped"
+            self.video_wall.set_local_source(f"Demo · unavailable: {error}" if error else label)
+        elif error:
+            self.video_wall.set_local_source(f"Local video · unavailable: {error}")
+        elif not state.config:
+            self.video_wall.set_local_source("Local video · stopped")
+        elif state.config[0] == "file":
+            self.video_wall.set_local_source("Local video file")
+        elif state.config[0] == "camera":
+            active = bool(worker and not worker.stopped.is_set() and worker.thread.is_alive())
+            live = bool(active and worker.last_frame)
+            label = "Local USB camera" if live else (
+                "Local USB camera · awaiting frames" if active else "Local USB camera · starting"
+            )
+            if worker and not active:
+                label = "Local USB camera · stopped"
+            self.video_wall.set_local_source(label, live=live)
+        else:
+            self.video_wall.set_local_source("Local video source")
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self.workspace_ready and self.station_mode == "video":
+            QTimer.singleShot(0, self.rescale_videos)
+
+    def refresh_plots(self, force=False):
+        if self.workspace_ready and self.station_mode == "video":
+            return
+        super().refresh_plots(force=force)
+
     def refresh(self):
         previous = self.last_ui
         super().refresh()
         if not self.workspace_ready or self.last_ui == previous:
             return
         c = self.controller
-        self.usb_strip.setVisible(c.mode != "DEMO")
+        video = self.station_mode == "video"
+        self.update_local_video_context()
+        if self.profile_locked and self.profile.role == "video":
+            for key, action in self.legacy_actions.items():
+                if key != "log":
+                    action.setEnabled(False)
+        self.usb_strip.setVisible(not video and c.mode != "DEMO")
+        self.demo_bar.setVisible(not video and c.mode == "DEMO")
+        self.video_replay_bar.setVisible(video and c.mode == "REPLAY")
+        if video:
+            self.record_button.setText("Stop recording" if c.recorder else "Start recording")
+            self.video_replay_status.setText(
+                f"Recorded session · {Path(c.reader.path).name}" if c.reader
+                else "Open a recorded flight or session to play its video."
+            )
+            self.video_notice.setText(
+                (c.recorder.error or "Recording video to the current session.") if c.recorder else ""
+            )
+        self.video_notice.setVisible(video and c.recorder is not None)
         status = "   /   ".join(
             self.connection_tiles[k].text().replace("● ", "") for k in ("ground", "rocket", "pointer")
         )
@@ -693,6 +913,8 @@ class StationWindow(InstrumentWindow):
         self.secondary_health.setText(c.mode + " · " + self.connection_tiles["rocket"].text())
         self.secondary_banner.setText(self.banner.text())
         self.network_panel.refresh()
+        if self.iris_links is not None:
+            self.iris_links.refresh()
         for stream, widgets in self.video_widgets.items():
             state = c.video_streams[stream]
             available = c.mode != "REPLAY" and not (state.config or state.reserved_cameras)
@@ -703,6 +925,8 @@ class StationWindow(InstrumentWindow):
         if c.mode != "REPLAY" and any(s.worker and s.worker.last_frame for s in c.video_streams.values()):
             self.record_button.setEnabled(True)
             self.legacy_actions["log"].setEnabled(True)
+        if video:
+            return
         for table in (
             self.actuators,
             self.rocket_panel.telemetry,
@@ -777,6 +1001,9 @@ class StationWindow(InstrumentWindow):
                 + table.horizontalHeader().height()
                 + 4
             )
+        self.cards["actuators"].setMinimumHeight(
+            self.actuators.minimumHeight() + self.actuator_note.sizeHint().height() + 46
+        )
 
     def set_daylight(self, enabled, *, persist=True):
         super().set_daylight(enabled, persist=persist)
@@ -787,7 +1014,11 @@ class StationWindow(InstrumentWindow):
 
     def closeEvent(self, event):
         self.closing = True
+        if self.away_flight_dialog is not None:
+            self.away_flight_dialog.close()
         if self.workspace_ready:
             self.network_panel.shutdown()
+            if self.video_wall is not None:
+                self.video_wall.close()
             self.companion.close()
         super().closeEvent(event)

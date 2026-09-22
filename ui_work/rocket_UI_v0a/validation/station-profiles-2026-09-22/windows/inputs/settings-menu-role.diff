@@ -1,0 +1,12 @@
+--- originally-tested-ui.py
++++ final-ui.py
+@@ -435,6 +435,9 @@
+             ("Open session…", self.open_session),
+         ]:
+             action = QAction(title, self)
++            # Cocoa otherwise treats "Configure…" as Preferences and steals
++            # Command-comma from the explicit Settings action.
++            action.setMenuRole(QAction.MenuRole.NoRole)
+             action.triggered.connect(callback)
+             menu.addAction(action)
+         view_menu = self.menuBar().addMenu("View")

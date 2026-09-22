@@ -12,7 +12,8 @@ import threading
 import time
 import imageio_ffmpeg
 
-VIDEO_STREAMS = {"digital": "Digital", "analog": "Analog"}
+DEFAULT_VIDEO_CHANNELS = ("digital", "analog")
+VIDEO_STREAMS = {"digital": "Digital", "analog": "Analog", "analog2": "Analog 2"}
 WIDTH, HEIGHT = 960, 540
 
 
@@ -25,6 +26,29 @@ def popen_options():
     return {"creationflags": subprocess.CREATE_NO_WINDOW} if os.name == "nt" else {}
 
 
+def _directshow_cameras(lines):
+    """Keep receiver identities distinct when USB adapters share a display name."""
+    devices, pending = [], None
+    for line in lines:
+        device = re.search(r'"(.+)" \((video|audio)\)\s*$', line)
+        alternative = re.search(r'Alternative name "(.+)"\s*$', line)
+        if device:
+            pending = [device[1], device[1]] if device[2] == "video" else None
+            if pending is not None:
+                devices.append(pending)
+        elif alternative and pending is not None:
+            # FFmpeg prints the alternative identifier immediately after its
+            # device. Never attach an audio or orphan identifier to a camera.
+            pending[1] = alternative[1]
+            pending = None
+        else:
+            pending = None
+    unique = {}
+    for title, source in devices:
+        unique.setdefault(source, (title, source))
+    return list(unique.values())
+
+
 def camera_devices():
     system = platform.system()
     if system == "Darwin":
@@ -35,6 +59,8 @@ def camera_devices():
         return [(str(p), str(p)) for p in sorted(Path("/dev").glob("video*"))]
     run = subprocess.run(command, capture_output=True, timeout=12, **popen_options())
     lines = run.stderr.decode(errors="replace").splitlines()
+    if system == "Windows":
+        return _directshow_cameras(lines)
     devices, video = [], False
     for line in lines:
         if system == "Darwin":
@@ -45,8 +71,6 @@ def camera_devices():
             elif video and (match := re.search(r"\[(\d+)\] (.+)$", line)):
                 if "Capture screen" not in match[2]:
                     devices.append((match[2], match[1]))
-        elif match := re.search(r'"(.+)" \(video\)', line):
-            devices.append((match[1], match[1]))
     return devices
 
 
@@ -70,7 +94,7 @@ class VideoWorker:
     def arguments(self):
         args = [ffmpeg(), "-hide_banner", "-loglevel", "warning", "-y"]
         if self.kind == "demo":
-            pattern = "smptebars" if self.source == "analog" else "testsrc2"
+            pattern = {"analog": "smptebars", "analog2": "testsrc"}.get(self.source, "testsrc2")
             args += ["-re", "-f", "lavfi", "-i", f"{pattern}=size=960x540:rate=30"]
         elif self.kind == "camera":
             if platform.system() == "Darwin":
