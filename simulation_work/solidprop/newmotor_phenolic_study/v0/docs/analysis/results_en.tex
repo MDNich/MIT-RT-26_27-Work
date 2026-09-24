@@ -1,0 +1,92 @@
+\clearpage
+\section{Interim results as of September 24, 2026}
+\subsection{Accepted state at 5.2500 seconds}
+This documentation snapshot ends at accepted step 405; the planned horizon
+remains \SI{7}{s}. No future solver result is included. Only one row has been
+removed: \SI{0.01984375}{mm} removed and \SI{4.74265625}{mm} still present
+geometrically. The remaining thickness is not necessarily virgin material.
+The mean hot-face temperature reaches \SI{1505.14}{\celsius}; this is not the
+maximum temperature of the model.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_results_en.pdf}
+\caption{Accepted history: mean hot-face temperature, pyrolysed depth and
+geometric removal, cumulative masses, and balance errors. Masses are scaled
+to a full ring of \SI{50}{mm} length. The vertical dotted line marks the
+first row removal.}
+\end{figure}
+
+At the latest state, the relative energy error is 0.2968\,\% (5\,\% limit)
+and the relative hot-convection error is \(6.01\times10^{-9}\) (0.02 limit).
+Cumulative gas mass is \SI{11.7197}{g} and consumed-carbon mass is
+\SI{0.36454}{g}, on the full-ring scale. All accepted audits are below both
+limits. This validates these numerical checks, not the exploratory material
+laws.
+
+\clearpage
+\subsection{Pyrolysis-front progression}
+For consistency with the previous estimates, the front is defined by
+\(\bar\alpha\geq0.98\), where \(\bar\alpha\) is the volume-weighted mean of
+the 500 elements in a radial row. We retain the contiguous zone from the
+original bore and interpolate linearly between row centres bracketing the
+threshold. Already removed rows retain their last accepted conversion in
+this original-bore depth measure.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_conversion_en.pdf}
+\caption{Conversion profiles and depths of the 90, 98, and 99\,\% fronts.
+Profiles show the first \SI{1.3}{mm} of the original \SI{4.7625}{mm} thickness.
+Front histories sample every fourth checkpoint, supplemented by the latest
+accepted state and the previous comparison checkpoint.}
+\end{figure}
+
+At \SI{5.2500}{s}, the 98\,\% front is at \SI{0.44928}{mm}, or 9.43\,\% of
+the initial thickness. The 90 and 99\,\% fronts are at \SI{0.57958}{mm} and
+\SI{0.40556}{mm}, respectively. The threshold is a post-processing definition:
+it changes neither the material law nor the removal rule.
+\textbf{Pyrolysed therefore means neither burned nor geometrically removed.}
+
+\clearpage
+\subsection{25, 50, and 75 percent projections}
+A least-squares straight line is fitted to the 98\,\% front depth over the
+latest available \SI{0.6625}{s}, using the same sampling. The current fit
+uses 15 points from \SI{4.5875}{s} to \SI{5.2500}{s}. Its fitted speed is
+\SI{0.13647}{mm.s^{-1}}, versus \SI{0.14557}{mm.s^{-1}} at the previous
+\SI{4.6625}{s} assessment.
+
+\begin{table}[H]\centering
+\caption{Physical times since ignition, not wall-clock calculation durations.}
+\begin{tabular}{lrrr}\toprule
+Pyrolysed initial thickness & Previous [s] & Updated [s] & Change\\\midrule
+25\,\% & 10.30 & 10.68 & +3.7\,\%\\
+50\,\% & 18.48 & 19.40 & +5.0\,\%\\
+75\,\% & 26.66 & 28.13 & +5.5\,\%\\\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_projections_en.pdf}
+\caption{Left: accepted calculation in solid blue and extrapolations in
+dashes; shading extends beyond available results. Right: drift in predicted
+crossing times as new checkpoints enter the fitting window.}
+\end{figure}
+
+The projection at \SI{7}{s} is approximately 14.46\,\% pyrolysed. The
+25/50/75\,\% estimates remain of the same order, but rise as the front slows:
+they have not stabilised in the sense of predictive convergence. All these
+crossings lie beyond the currently authorised horizon. These are uncalibrated
+linear extrapolations, with no physical confidence interval; they do not
+demonstrate motor survivability. Uncertainty grows substantially at 50 and
+75\,\%.
+
+\subsection{Sources and reproducibility}
+The \code{newmotor_v0_history.csv} history is a view of immutable JSON audits
+for each accepted step: time, thicknesses, masses, surface temperature,
+conversion, loads, and balances. Figures read accepted audits and conversion
+checkpoints directly, never a step still being exported. The reduced snapshot
+and source SHA-256 hashes are stored in
+\path{docs/analysis/accepted_results_snapshot.json}. The
+\code{make_results_figures.py} script rebuilds figures offline; its
+\code{--capture} option reads the runtime without changing the calculation.
+Text and tables in this edition are frozen at the same index 405.
+\clearpage

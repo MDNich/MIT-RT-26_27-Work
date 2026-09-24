@@ -15,10 +15,10 @@
 \protected\def\code#1{\texttt{\detokenize{#1}}}
 \sisetup{locale=US,per-mode=symbol,range-phrase=--,range-units=single}
 \setcounter{secnumdepth}{3}\setcounter{tocdepth}{2}
-\title{~\\[-2em]\sc Preparation of Thermochemical Simulation v0\\
+\title{~\\[-2em]\sc Thermochemical Simulation v0: Interim Results\\
 for the New Phenolic Liner}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Solid Propulsion Simulations}
-\date{\sc September 20, 2026}
+\date{\sc September 24, 2026}
 
 \begin{document}
 \selectlanguage{english}
@@ -34,8 +34,9 @@ for the New Phenolic Liner}
 \textbf{Purpose of this document.} This report records the reproducible
 preparation of the first model version for the new motor. It strictly separates
 the requested geometry from assumptions inherited from the earlier simulations.
-The native Windows model, mesh, restart chain, and MAPDL preflight are ready,
-but no transient calculation has been started. The primary goal is to compute,
+The native Windows model, mesh, restart chain, and MAPDL preflight are validated.
+The transient calculation is running; this edition freezes accepted results at
+\SI{5.2500}{s}, index 405. The primary goal is to compute,
 without ambiguous terminology, removed phenolic thickness, remaining thickness,
 pyrolysis-gas mass, and consumed-carbon mass at every time.
 \end{minipage}\end{center}
@@ -307,19 +308,7 @@ step closes mass between initial mass, remaining solid, pyrolysis gas, consumed
 carbon, and ejected residual. An error beyond tolerance automatically prevents
 the next solve.
 
-\subsection{Planned outputs}
-The \code{newmotor_v0_history.csv} file is atomically rebuilt after every
-accepted step. It includes time, row index, removed and remaining thickness,
-sector and full-ring masses, surface temperature, \(\alpha_{\mathrm{mean}}\),
-\(\alpha_{\min}\), film coefficient, powers, balance residuals, and warnings.
-One immutable JSON record is retained for each checkpoint; the CSV is only a
-derived view of those records.
-
-Result plots will be generated from these converged states: remaining and
-removed thickness versus time, consumed-mass components, recession rate,
-temperature and blowing, radial temperature/conversion profiles, and distance
-from the surface to the 90, 95, and 99\,\% pyrolysis fronts. A vertical line
-will mark the first numerically meaningful recession front.
+\input{../analysis/results_en.tex}
 
 \section{Windows execution, pause, and resume}
 All large files are isolated in Git-ignored \code{v0/ansystmp}. The \code{v0}
@@ -330,8 +319,13 @@ the older project. The UserMatTh source and DLL are copied locally.
 Before the first calculation, \code{launch_v0.ps1 -Preflight} verifies input
 hashes, mesh, the local \code{1055@localhost} license, and reads the complete
 deck without \code{SOLVE}. The September 20, 2026 preflight confirms 229,665
-nodes, 152,000 elements, zero warnings, and zero errors. No solver process is
-currently active, and no simulation \code{state.json} has been created.
+nodes, 152,000 elements, zero warnings, and zero errors. The transient run was
+subsequently explicitly launched on 10 ranks. On September 22, step 247 at
+\SI{3.275}{s} was recovered after a false POST1 export rejection following
+\code{EKILL}, without relaxing thresholds. The controller requires all live
+identifiers, rejects duplicates and foreign identifiers, and ignores only
+surplus rows already declared dead. The failure archive and
+\code{RECOVERY_PROVENANCE.json} preserve provenance.
 
 Launch requires explicit \code{-Run} and uses 10 DMP ranks. The script refuses
 to start when ANSYS/MPI already exists. Six restart generations are retained.
@@ -339,7 +333,7 @@ to start when ANSYS/MPI already exists. Six restart generations are retained.
 \code{-Run -Resume} is allowed only from a \code{PAUSED_AT_CHECKPOINT} state
 whose inputs remain unchanged.
 
-\section{Preparation status and next decisions}
+\section{Run status and next decisions}
 \begin{table}[H]\centering
 \begin{tabular}{L{7.2cm}L{5.4cm}}\toprule
 Item & Status\\\midrule
@@ -350,12 +344,12 @@ Solver inputs & sealed with SHA-256\\
 Chamber pressure & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
 Pause/resume & prepared at accepted checkpoints\\
 French/English reports & compiled from the same parameters\\
-Transient calculation & not started; explicit authorization still required\\\bottomrule
+Transient calculation & running; frozen state at \SI{5.2500}{s}, index 405\\\bottomrule
 \end{tabular}
 \end{table}
 
-Before launch, the actual burn duration, gas composition, and measured
-phenolic properties remain desirable. Without them, v0 is
+To qualify the results, the actual burn duration, gas composition, and measured
+phenolic properties are still required. Without them, v0 is
 deliberately a seven-second exploratory reference. Its structure is nonetheless
 ready to answer the primary question: how much phenolic was transformed or
 removed, and how much sound thickness remains at each time?

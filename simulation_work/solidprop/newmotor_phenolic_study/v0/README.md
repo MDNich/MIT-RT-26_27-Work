@@ -1,7 +1,7 @@
 # New motor phenolic study — v0
 
-This directory contains the reproducible inputs and bilingual preparation
-report for the new two-layer motor model.  The nominal diameters are:
+This directory contains the reproducible inputs and bilingual interim-results
+reports for the new two-layer motor model. The nominal diameters are:
 
 - aluminium OD: 6.000 in (152.400 mm);
 - aluminium ID / phenolic OD: 5.625 in (142.875 mm);
@@ -59,3 +59,54 @@ accompanied by removed thickness, removed initial-equivalent mass, pyrolysis
 gas mass, oxidized-char mass, mass residual, and the energy audit.  This keeps
 "removed phenolic", "pyrolysis gas", and "burned char" separate instead of
 combining physically different quantities.
+
+## Accepted-results snapshot — September 24, 2026
+
+The reports and figures are frozen at **accepted index 405, 5.2500 s**;
+the simulation is still running toward 7 s. Only documentation outputs were
+updated; the active runtime and solver configuration were not modified.
+
+- [French report](docs/fr/newmotor_phenolic_v0_report.pdf)
+- [English report](docs/en/newmotor_phenolic_v0_report.pdf)
+- [Reduced accepted dataset and source SHA-256 hashes](docs/analysis/accepted_results_snapshot.json)
+
+The contiguous, volume-weighted row-mean **alpha ≥ 0.98** front reaches
+**0.44928 mm (9.43%)** of the initial 4.7625 mm thickness. This is pyrolysis,
+not disappearance: only **0.01984375 mm** has been geometrically removed,
+leaving **4.74265625 mm** present (not necessarily virgin).
+
+![Accepted temperature, conversion/removal, mass and balance histories](docs/analysis/newmotor_results_en.png)
+
+![Radial conversion profiles and pyrolysis-front progression](docs/analysis/newmotor_conversion_en.png)
+
+Recent-window linear extrapolations place 25/50/75% pyrolysed thickness at
+**10.68 / 19.40 / 28.13 s since ignition**, versus 10.30 / 18.48 / 26.66 s
+at the previous 4.6625 s assessment. These are exploratory, uncalibrated
+extrapolations beyond the current 7 s horizon, not demonstrated motor lifetimes.
+The upward drift reflects a slowing front; the estimates are not converged
+predictions. At 7 s, the same fit projects approximately 14.46% pyrolysed.
+
+![Exploratory projections and their drift with new accepted states](docs/analysis/newmotor_projections_en.png)
+
+### Reproduce the documentation figures
+
+From `v0/docs/analysis`, using Python with Matplotlib:
+
+```sh
+# Offline rebuild using the versioned, frozen dataset (no runtime access).
+python3 make_results_figures.py
+
+# Explicit refresh from accepted audits/checkpoints, reading the runtime only.
+python3 make_results_figures.py --capture ../../ansystmp/windows
+```
+
+The refresh freezes `state.json` at one accepted index, ignores newer audits
+and checkpoints, checks audit thresholds, and saves reduced data plus source
+hashes. Large result/restart files are neither read nor committed. Fronts use
+every fourth checkpoint plus the latest state and the previous comparison
+checkpoint. Fits use a fixed trailing 0.6625 s window, with linear interpolation
+between radial-row centres at alpha = 0.98. Report prose and tables are tied to
+this snapshot and must also be refreshed when publishing newer data.
+
+Recompile each report from its language directory with two passes of
+`pdflatex -interaction=nonstopmode -halt-on-error newmotor_phenolic_v0_report.tex`.

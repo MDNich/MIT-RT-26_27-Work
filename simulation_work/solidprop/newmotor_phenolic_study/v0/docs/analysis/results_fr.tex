@@ -1,0 +1,92 @@
+\clearpage
+\section{Résultats intermédiaires au 24 septembre 2026}
+\subsection{État accepté à 5,2500 secondes}
+L'instantané documentaire s'arrête au pas accepté 405; l'horizon prévu reste
+\SI{7}{s}. Aucun résultat futur du solveur n'est inclus. Une seule rangée a
+été supprimée : \SI{0.01984375}{mm} retirés et \SI{4.74265625}{mm} encore
+présents géométriquement. Cette épaisseur restante n'est pas nécessairement
+du matériau vierge. La température moyenne de face chaude atteint
+\SI{1505.14}{\celsius}; ce n'est pas la température maximale du modèle.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_results_fr.pdf}
+\caption{Historique accepté : température moyenne de face chaude, profondeur
+pyrolysée et suppression géométrique, masses cumulées et erreurs de bilans.
+Les masses sont ramenées à un anneau complet de longueur \SI{50}{mm}.
+Le pointillé vertical indique la première suppression de rangée.}
+\end{figure}
+
+Au dernier état, l'erreur énergétique relative est de 0,2968\,\% (seuil
+5\,\%) et l'erreur relative de convection chaude de \(6.01\times10^{-9}\)
+(seuil 0,02). La masse de gaz cumulée vaut \SI{11.7197}{g} et la masse de
+carbone consommée \SI{0.36454}{g}, à l'échelle anneau complet. Les audits
+acceptés sont tous sous les deux seuils. Cela valide ces contrôles numériques,
+pas les lois de matériau exploratoires.
+
+\clearpage
+\subsection{Progression du front de pyrolyse}
+Pour rester comparable aux estimations précédentes, le front est défini par
+\(\bar\alpha\geq0.98\), où \(\bar\alpha\) est la moyenne pondérée par volume
+des 500 éléments d'une rangée radiale. On retient la zone continue depuis
+l'alésage initial et on interpole linéairement entre centres des rangées qui
+encadrent le seuil. Les rangées déjà supprimées gardent leur dernière conversion
+acceptée dans cette mesure depuis l'alésage initial.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_conversion_fr.pdf}
+\caption{Profils de conversion et profondeurs des fronts à 90, 98 et 99\,\%.
+Les profils montrent les premiers \SI{1.3}{mm} des \SI{4.7625}{mm} initiaux.
+Les historiques des fronts utilisent un checkpoint sur quatre, complété par
+le dernier état accepté et le checkpoint de comparaison précédent.}
+\end{figure}
+
+À \SI{5.2500}{s}, le front à 98\,\% est à \SI{0.44928}{mm}, soit
+9,43\,\% de l'épaisseur initiale. Les fronts à 90 et 99\,\% sont respectivement
+à \SI{0.57958}{mm} et \SI{0.40556}{mm}. Le seuil est une définition de
+post-traitement : il ne modifie ni la loi de matériau ni la règle de suppression.
+\textbf{Pyrolysé ne signifie donc ni brûlé ni géométriquement disparu.}
+
+\clearpage
+\subsection{Projections 25, 50 et 75 pour cent}
+Une droite est ajustée par moindres carrés à la profondeur du front à 98\,\%
+sur les dernières \SI{0.6625}{s} disponibles, avec le même échantillonnage.
+L'ajustement actuel utilise 15 points de \SI{4.5875}{s} à \SI{5.2500}{s}.
+La vitesse ajustée est \SI{0.13647}{mm.s^{-1}}, contre
+\SI{0.14557}{mm.s^{-1}} au précédent bilan à \SI{4.6625}{s}.
+
+\begin{table}[H]\centering
+\caption{Temps physiques depuis l'allumage, et non durées de calcul.}
+\begin{tabular}{lrrr}\toprule
+Épaisseur initiale pyrolysée & Précédent [s] & Actualisé [s] & Variation\\\midrule
+25\,\% & 10,30 & 10,68 & +3,7\,\%\\
+50\,\% & 18,48 & 19,40 & +5,0\,\%\\
+75\,\% & 26,66 & 28,13 & +5,5\,\%\\\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_projections_fr.pdf}
+\caption{À gauche, calcul accepté en trait plein et extrapolations en tirets;
+la zone grise est au-delà des résultats disponibles. À droite, dérive des temps
+prédits lorsque de nouveaux checkpoints entrent dans la fenêtre d'ajustement.}
+\end{figure}
+
+La projection à \SI{7}{s} est d'environ 14,46\,\% pyrolysés. Les estimations
+25/50/75\,\% restent du même ordre, mais augmentent avec le ralentissement du
+front : elles ne sont pas stabilisées au sens d'une convergence prédictive.
+Tous ces franchissements sont au-delà de l'horizon actuellement autorisé.
+Ce sont des extrapolations linéaires non calibrées, sans intervalle de confiance
+physique; elles ne démontrent pas la tenue du moteur. Leur incertitude augmente
+fortement à 50 et 75\,\%.
+
+\subsection{Sources et reproductibilité}
+Le journal \code{newmotor_v0_history.csv} est une vue des audits JSON immuables
+de chaque pas accepté : temps, épaisseurs, masses, température de surface,
+conversion, charges et bilans. Les figures utilisent directement les audits
+acceptés et les checkpoints de conversion, jamais un pas encore en cours
+d'export. L'instantané réduit et les empreintes SHA-256 des sources sont dans
+\path{docs/analysis/accepted_results_snapshot.json}. Le script
+\code{make_results_figures.py} régénère les figures hors ligne; son option
+\code{--capture} lit le runtime sans modifier le calcul. Les textes et tableaux
+de cette édition sont figés au même index 405.
+\clearpage

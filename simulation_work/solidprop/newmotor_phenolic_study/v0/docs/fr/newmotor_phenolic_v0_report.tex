@@ -15,10 +15,10 @@
 \protected\def\code#1{\texttt{\detokenize{#1}}}
 \sisetup{locale=FR,per-mode=symbol,range-phrase=--,range-units=single}
 \setcounter{secnumdepth}{3}\setcounter{tocdepth}{2}
-\title{~\\[-2em]\sc Préparation de la Simulation Thermochimique v0\\
+\title{~\\[-2em]\sc Simulation Thermochimique v0 : Résultats Intermédiaires\\
 du Nouveau Liner Phénolique}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Simulations/Propulsion Solide}
-\date{\sc 20 septembre 2026}
+\date{\sc 24 septembre 2026}
 
 \begin{document}
 \selectlanguage{french}
@@ -35,7 +35,8 @@ du Nouveau Liner Phénolique}
 de la première version du modèle du nouveau moteur. Il distingue strictement la
 géométrie demandée des hypothèses reprises des simulations antérieures. Le
 modèle natif Windows, le maillage, la chaîne de reprise et le précontrôle MAPDL
-sont prêts, mais aucun calcul transitoire n'a été lancé. L'objectif principal
+sont validés. Le calcul transitoire est en cours; cette édition fige les
+résultats acceptés à \SI{5.2500}{s}, index 405. L'objectif principal
 est de calculer, sans ambiguïté de vocabulaire, l'épaisseur de phénolique
 retirée, l'épaisseur restante, la masse gazeuse issue de la pyrolyse et la masse
 de carbone consommée à chaque instant.
@@ -318,21 +319,7 @@ Le journal conserve les valeurs du secteur et les valeurs multipliées par
 de pyrolyse, carbone consommé et résidu éjecté. Une erreur supérieure à la
 tolérance bloque automatiquement la suite du calcul.
 
-\subsection{Sorties prévues}
-Le fichier \code{newmotor_v0_history.csv} sera réécrit atomiquement après chaque
-pas accepté. Il contient notamment le temps, le numéro de rangée, l'épaisseur
-retirée et restante, les masses sectorielles et anneau complet, la température
-de surface, \(\alpha_{\mathrm{moy}}\), \(\alpha_{\min}\), le coefficient de
-film, les puissances, les résidus de bilans et les éventuels avertissements.
-Un fichier JSON immuable est conservé pour chaque checkpoint; le CSV n'est
-qu'une vue reconstruite de ces enregistrements.
-
-Les figures de résultats seront générées à partir de ces états convergés :
-épaisseur restante et retirée en fonction du temps, composantes de masse
-consommée, vitesse de récession, température et soufflage, profils radiaux de
-température/conversion, ainsi que distance entre la surface et les fronts de
-pyrolyse 90, 95 et 99\,\%. La naissance du front de récession sera marquée par
-une ligne verticale.
+\input{../analysis/results_fr.tex}
 
 \section{Exécution Windows, pause et reprise}
 Tous les gros fichiers sont isolés dans \code{v0/ansystmp}, ignoré par Git. Le
@@ -344,9 +331,13 @@ copiées localement.
 Avant le premier calcul, \code{launch_v0.ps1 -Preflight} vérifie les empreintes
 des entrées, le maillage, la licence locale \code{1055@localhost} et charge le
 deck complet sans \code{SOLVE}. Le précontrôle du 20 septembre 2026 confirme
-229,665 nœuds, 152,000 éléments, zéro avertissement et zéro erreur. Aucun
-processus de calcul n'est actuellement actif et aucun \code{state.json} de
-simulation n'a été créé.
+229,665 nœuds, 152,000 éléments, zéro avertissement et zéro erreur.
+Le calcul transitoire a ensuite été explicitement lancé sur 10 rangs.
+Le 22 septembre, le pas 247 à \SI{3.275}{s} a été récupéré après un faux rejet
+d'export POST1 suivant \code{EKILL}, sans assouplir les seuils. Le contrôleur
+exige tous les identifiants vivants, interdit doublons et identifiants étrangers,
+et ignore uniquement les lignes excédentaires déjà déclarées mortes. L'archive
+de l'arrêt et \code{RECOVERY_PROVENANCE.json} conservent la provenance.
 
 Le lancement exige l'option explicite \code{-Run} et 10 rangs DMP. Le script
 refuse de démarrer si ANSYS/MPI est déjà présent. Six générations de restart
@@ -354,7 +345,7 @@ sont conservées. \code{request_pause.ps1} demande un arrêt au prochain
 macro-pas accepté; \code{-Run -Resume} n'est autorisé qu'à partir d'un état
 \code{PAUSED_AT_CHECKPOINT} dont les entrées sont inchangées.
 
-\section{État de préparation et prochaines décisions}
+\section{État du calcul et prochaines décisions}
 \begin{table}[H]\centering
 \begin{tabular}{L{7.2cm}L{5.4cm}}\toprule
 Élément & État\\\midrule
@@ -365,11 +356,11 @@ Entrées de calcul & scellées par SHA-256\\
 Pression de chambre & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
 Pause/reprise & préparée au checkpoint accepté\\
 Rapports FR/EN & compilés à partir des mêmes paramètres\\
-Calcul transitoire & non lancé; autorisation explicite encore nécessaire\\\bottomrule
+Calcul transitoire & en cours; état figé à \SI{5.2500}{s}, index 405\\\bottomrule
 \end{tabular}
 \end{table}
 
-Avant de lancer, il reste souhaitable de fournir la durée de combustion réelle,
+Pour qualifier les résultats, il reste nécessaire de fournir la durée de combustion réelle,
 la composition gazeuse et les propriétés mesurées du phénolique. Sans ces
 données, le calcul v0 est volontairement une référence
 exploratoire de sept secondes. Sa structure est néanmoins prête à répondre à
