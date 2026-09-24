@@ -96,6 +96,12 @@ figures share `latex_style.py`: **`text.usetex=True` and Computer Modern/Latin
 Modern serif typography**, including titles, labels, legends, and tick labels.
 The white backgrounds, boxed axes, light grey grids, report palette, and French
 decimal commas match the earlier `phenolic_case_study/tmp3` documentation.
+Sampled curves also reuse its filled circular markers (`marker="o"`, 2.8 pt),
+1.55 pt connecting lines, and larger brown final-state circles (31 pt²).
+Dense curves retain all line data but display approximately 80 markers on
+existing samples; no interpolated samples are introduced. Thresholds and
+extrapolation lines have no sample markers; predicted crossings are hollow
+circles to distinguish them from calculated states.
 There is no sans-serif fallback.
 
 ```sh

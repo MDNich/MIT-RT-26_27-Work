@@ -5,6 +5,24 @@ and siunitx packages. Do not silently fall back to Matplotlib fonts.
 """
 import matplotlib as mpl
 from cycler import cycler
+import math
+
+
+def plot_samples(ax, x, y, *, highlight_latest=True, **kwargs):
+    """Use the earlier simulation3 recession plot's circular sample styling.
+
+    Retain every sample in the line. Display up to about 80 sample markers
+    plus the final sample to avoid a solid band on dense 405-step histories.
+    Markers always coincide with existing samples, never interpolated points.
+    """
+    stride = max(1, math.ceil(len(x) / 80))
+    marked = sorted(set(range(0, len(x), stride)) | {len(x) - 1})
+    line, = ax.plot(x, y, marker="o", markersize=2.8, linewidth=1.55,
+                    markevery=marked, **kwargs)
+    if highlight_latest:
+        ax.scatter([x[-1]], [y[-1]], marker="o", color="#A04A00",
+                   s=31, zorder=3, label="_nolegend_")
+    return line
 
 
 def configure_latex():
