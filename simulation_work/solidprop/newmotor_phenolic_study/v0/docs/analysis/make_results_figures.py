@@ -12,7 +12,7 @@ import gzip
 import hashlib
 import json
 import math
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import matplotlib
@@ -28,6 +28,8 @@ SNAPSHOT = ROOT / "accepted_results_snapshot.json"
 THICKNESS = 4.7625  # mm, initial phenolic thickness
 THRESHOLD = .98
 WINDOW = .6625  # s, fixed recent fitting window
+COMPARISON_INDEX = 405
+COMPARISON_TIME = 5.25
 
 
 def digest(raw):
@@ -71,6 +73,7 @@ def capture(runtime):
     assert len(rows) == 240 and all(len(row) == 500 for row in rows)
     sources = {"state.json": digest(raw), "mesh_map.json": digest(mesh_raw)}
     audits = []
+    audit_times = []
     for path in sorted((runtime / "checkpoints").glob("audit_*.json")):
         idx = int(path.stem.split("_")[1])
         if idx > index:
@@ -82,6 +85,7 @@ def capture(runtime):
         assert abs(audit["hot_power_relative_error"]) <= .02
         audit["index"] = idx
         audits.append(audit)
+        audit_times.append({"index": idx, "mtime_epoch_s": path.stat().st_mtime})
         sources[str(path.relative_to(runtime))] = digest(data)
     assert audits[-1]["index"] == index
     assert all(b["time_s"] > a["time_s"] for a,b in zip(audits,audits[1:]))
@@ -90,7 +94,7 @@ def capture(runtime):
     selected_profiles = {min(160,index), min(240,index), min(320,index), index}
     for path in sorted((runtime / "checkpoints").glob("state_*.json.gz")):
         idx = int(path.name.split("_")[1].split(".")[0])
-        if idx > index or (idx % 4 and idx not in {358,index}):
+        if idx > index or (idx % 4 and idx not in {358,COMPARISON_INDEX,index}):
             continue
         data = path.read_bytes()
         s = json.loads(gzip.decompress(data))
@@ -106,13 +110,26 @@ def capture(runtime):
         sources[str(path.relative_to(runtime))] = digest(data)
     assert points[-1]["index"] == index
     assert abs(points[-1]["time_s"]-state["time_s"]) < 1e-9
-    snapshot = {"captured_utc": datetime.now(timezone.utc).isoformat(),
+    now = datetime.now(timezone.utc)
+    remaining_steps = math.ceil((7-state["time_s"])/.0125-1e-8)
+    age = now.timestamp()-audit_times[-1]["mtime_epoch_s"]
+    estimates = []
+    for n in (10,20,40):
+        seconds_per_step = (audit_times[-1]["mtime_epoch_s"]-audit_times[-n-1]["mtime_epoch_s"])/n
+        remaining_hours = max(0, remaining_steps*seconds_per_step-age)/3600
+        estimates.append({"window_steps": n, "minutes_per_step": seconds_per_step/60,
+                          "remaining_hours": remaining_hours,
+                          "finish_utc": (now+timedelta(hours=remaining_hours)).isoformat()})
+    snapshot = {"captured_utc": now.isoformat(),
                 "accepted_index": index, "accepted_time_s": state["time_s"],
                 "status_at_capture": state["status"],
                 "source_runtime": "v0/ansystmp/windows", "source_sha256": sources,
                 "definition": "Contiguous alpha >= 0.98 front from original bore; volume-weighted radial-row means; linear interpolation between centres. Deleted rows retain their accepted alpha. Not material removal.",
                 "fit_window_s": WINDOW, "sample_stride": 4,
-                "audits": audits, "fronts": points, "profiles": profiles}
+                "audits": audits, "fronts": points, "profiles": profiles,
+                "wall_clock_estimate": {"horizon_s": 7, "remaining_steps": remaining_steps,
+                    "method": "Mean accepted-audit mtime spacing over 10/20/40 steps; subtract age of latest acceptance. Conditional constant throughput, not a confidence interval.",
+                    "audit_times": audit_times[-41:], "scenarios": estimates}}
     SNAPSHOT.write_text(json.dumps(snapshot, indent=2, allow_nan=False)+"\n")
     return snapshot
 
@@ -191,7 +208,7 @@ def plots(s, lang):
 
     regular=[p for p in points if p["index"]%4==0 or p["index"]==s["accepted_index"]]
     current=fit(regular,s["accepted_time_s"])
-    previous=fit([p for p in points if p["index"]%4==0 or p["index"]==358],4.6625)
+    previous=fit([p for p in points if p["index"]%4==0 or p["index"]==COMPARISON_INDEX],COMPARISON_TIME)
     evolution=[(p["time_s"],fit(regular,p["time_s"])) for p in regular if p["time_s"]>=3.5]
     fig,axs=plt.subplots(1,2,figsize=(10,4.6),layout="constrained")
     ax=axs[0]
@@ -228,7 +245,8 @@ def main():
         current,previous=plots(s,lang)
     print(json.dumps({"index":s["accepted_index"],"time_s":s["accepted_time_s"],
                       "latest_front":s["fronts"][-1],"fit":current,"previous_fit":previous,
-                      "latest_audit":s["audits"][-1]},indent=2))
+                      "latest_audit":s["audits"][-1],
+                      "wall_clock_estimate":s.get("wall_clock_estimate")},indent=2))
 
 
 if __name__ == "__main__":

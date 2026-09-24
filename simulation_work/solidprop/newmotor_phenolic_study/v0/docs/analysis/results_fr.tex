@@ -1,12 +1,13 @@
 \clearpage
 \section{Résultats intermédiaires au 24 septembre 2026}
-\subsection{État accepté à 5,2500 secondes}
-L'instantané documentaire s'arrête au pas accepté 405; l'horizon prévu reste
+\subsection{État accepté à 5,3625 secondes}
+L'instantané documentaire du 24 septembre à 17 h 34 UTC (13 h 34 EDT)
+s'arrête au pas accepté 414; l'horizon prévu reste
 \SI{7}{s}. Aucun résultat futur du solveur n'est inclus. Une seule rangée a
 été supprimée : \SI{0.01984375}{mm} retirés et \SI{4.74265625}{mm} encore
 présents géométriquement. Cette épaisseur restante n'est pas nécessairement
 du matériau vierge. La température moyenne de face chaude atteint
-\SI{1505.14}{\celsius}; ce n'est pas la température maximale du modèle.
+\SI{1506.80}{\celsius}; ce n'est pas la température maximale du modèle.
 
 \begin{figure}[H]\centering
 \includegraphics[width=.98\textwidth]{../analysis/newmotor_results_fr.pdf}
@@ -16,10 +17,10 @@ Les masses sont ramenées à un anneau complet de longueur \SI{50}{mm}.
 Le pointillé vertical indique la première suppression de rangée.}
 \end{figure}
 
-Au dernier état, l'erreur énergétique relative est de 0,2968\,\% (seuil
-5\,\%) et l'erreur relative de convection chaude de \(6.01\times10^{-9}\)
-(seuil 0,02). La masse de gaz cumulée vaut \SI{11.7197}{g} et la masse de
-carbone consommée \SI{0.36454}{g}, à l'échelle anneau complet. Les audits
+Au dernier état, l'erreur énergétique relative est de 0,2896\,\% (seuil
+5\,\%) et l'erreur relative de convection chaude de \(3.36\times10^{-8}\)
+(seuil 0,02). La masse de gaz cumulée vaut \SI{11.9592}{g} et la masse de
+carbone consommée \SI{0.37537}{g}, à l'échelle anneau complet. Les audits
 acceptés sont tous sous les deux seuils. Cela valide ces contrôles numériques,
 pas les lois de matériau exploratoires.
 
@@ -40,9 +41,9 @@ Les historiques des fronts utilisent un checkpoint sur quatre, complété par
 le dernier état accepté et le checkpoint de comparaison précédent.}
 \end{figure}
 
-À \SI{5.2500}{s}, le front à 98\,\% est à \SI{0.44928}{mm}, soit
-9,43\,\% de l'épaisseur initiale. Les fronts à 90 et 99\,\% sont respectivement
-à \SI{0.57958}{mm} et \SI{0.40556}{mm}. Le seuil est une définition de
+À \SI{5.3625}{s}, le front à 98\,\% est à \SI{0.46413}{mm}, soit
+9,75\,\% de l'épaisseur initiale. Les fronts à 90 et 99\,\% sont respectivement
+à \SI{0.59496}{mm} et \SI{0.41965}{mm}. Le seuil est une définition de
 post-traitement : il ne modifie ni la loi de matériau ni la règle de suppression.
 \textbf{Pyrolysé ne signifie donc ni brûlé ni géométriquement disparu.}
 
@@ -50,17 +51,17 @@ post-traitement : il ne modifie ni la loi de matériau ni la règle de suppressi
 \subsection{Projections 25, 50 et 75 pour cent}
 Une droite est ajustée par moindres carrés à la profondeur du front à 98\,\%
 sur les dernières \SI{0.6625}{s} disponibles, avec le même échantillonnage.
-L'ajustement actuel utilise 15 points de \SI{4.5875}{s} à \SI{5.2500}{s}.
-La vitesse ajustée est \SI{0.13647}{mm.s^{-1}}, contre
-\SI{0.14557}{mm.s^{-1}} au précédent bilan à \SI{4.6625}{s}.
+L'ajustement actuel utilise 14 points de \SI{4.7375}{s} à \SI{5.3625}{s}.
+La vitesse ajustée est \SI{0.13457}{mm.s^{-1}}, contre
+\SI{0.13647}{mm.s^{-1}} au précédent rapport à \SI{5.2500}{s} (index 405).
 
 \begin{table}[H]\centering
 \caption{Temps physiques depuis l'allumage, et non durées de calcul.}
 \begin{tabular}{lrrr}\toprule
 Épaisseur initiale pyrolysée & Précédent [s] & Actualisé [s] & Variation\\\midrule
-25\,\% & 10,30 & 10,68 & +3,7\,\%\\
-50\,\% & 18,48 & 19,40 & +5,0\,\%\\
-75\,\% & 26,66 & 28,13 & +5,5\,\%\\\bottomrule
+25\,\% & 10,68 & 10,76 & +0,7\,\%\\
+50\,\% & 19,40 & 19,61 & +1,0\,\%\\
+75\,\% & 28,13 & 28,46 & +1,2\,\%\\\bottomrule
 \end{tabular}
 \end{table}
 
@@ -71,13 +72,44 @@ la zone grise est au-delà des résultats disponibles. À droite, dérive des te
 prédits lorsque de nouveaux checkpoints entrent dans la fenêtre d'ajustement.}
 \end{figure}
 
-La projection à \SI{7}{s} est d'environ 14,46\,\% pyrolysés. Les estimations
-25/50/75\,\% restent du même ordre, mais augmentent avec le ralentissement du
-front : elles ne sont pas stabilisées au sens d'une convergence prédictive.
+La projection à \SI{7}{s} est d'environ 14,38\,\% pyrolysés. Les estimations
+25/50/75\,\% varient peu depuis le rapport précédent (moins de 1,2\,\%),
+mais continuent d'augmenter avec le ralentissement du front : cette stabilité
+locale ne démontre pas une convergence prédictive.
 Tous ces franchissements sont au-delà de l'horizon actuellement autorisé.
 Ce sont des extrapolations linéaires non calibrées, sans intervalle de confiance
 physique; elles ne démontrent pas la tenue du moteur. Leur incertitude augmente
 fortement à 50 et 75\,\%.
+
+\clearpage
+\subsection{Estimation de fin du calcul à 7 secondes}
+Au 24 septembre 2026 à 13 h 34 EDT (17 h 34 UTC), il reste 131 pas
+macros de \SI{0.0125}{s} à accepter, soit \SI{1.6375}{s} physiques.
+Les dix rangs MAPDL et les deux processus MPI sont présents. Le pas 415
+a convergé à \SI{5.375}{s}, mais sa finalisation n'est pas encore acceptée;
+il n'est donc pas ajouté aux résultats documentés.
+
+La cadence est calculée à partir des dates de modification des audits acceptés,
+sur 10, 20 et 40 intervalles consécutifs terminant au pas 414. La durée déjà
+écoulée depuis le dernier audit est déduite du temps restant. Les pauses ou
+lenteurs incluses dans ces intervalles ne sont pas retirées.
+\begin{table}[H]\centering
+\caption{Scénarios à cadence constante au moment de l'instantané.}
+\begin{tabular}{lrrl}\toprule
+Fenêtre & Minutes/pas & Reste [h] & Fin estimée (EDT)\\\midrule
+10 pas & 26,01 & 56,5 & 26 septembre, 22 h 05\\
+20 pas & 25,26 & 54,9 & 26 septembre, 20 h 27\\
+40 pas & 21,95 & 47,7 & 26 septembre, 13 h 13\\\bottomrule
+\end{tabular}
+\end{table}
+\textbf{Prévision de planification : environ 55 à 60 heures restantes},
+soit du 26 septembre vers 20 h 30 au 27 septembre vers 1 h 30 EDT.
+Cette plage prudente arrondit les cadences récentes; ce n'est pas un intervalle
+de confiance ni une borne garantie. Deux intervalles récents ont duré environ
+58 minutes, contre environ 20 à 25 minutes habituellement. Les écritures,
+exports et futures suppressions de rangées peuvent encore retarder la fin.
+L'estimation concerne uniquement la fin du calcul à \SI{7}{s}, pas la
+disparition du liner ni les franchissements extrapolés de 25/50/75\,\%.
 
 \subsection{Sources et reproductibilité}
 Le journal \code{newmotor_v0_history.csv} est une vue des audits JSON immuables
@@ -88,5 +120,6 @@ d'export. L'instantané réduit et les empreintes SHA-256 des sources sont dans
 \path{docs/analysis/accepted_results_snapshot.json}. Le script
 \code{make_results_figures.py} régénère les figures hors ligne; son option
 \code{--capture} lit le runtime sans modifier le calcul. Les textes et tableaux
-de cette édition sont figés au même index 405.
+de cette édition sont figés au même index 414. Les horodatages et les trois
+scénarios de durée sont également conservés dans cet instantané.
 \clearpage
