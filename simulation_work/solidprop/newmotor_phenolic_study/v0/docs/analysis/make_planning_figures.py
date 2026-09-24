@@ -4,22 +4,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import matplotlib as mpl
+from latex_style import configure_latex
 
-mpl.rcParams.update(
-    {
-        "text.usetex": True,
-        "font.family": "serif",
-        "font.serif": ["Computer Modern Roman"],
-        "axes.unicode_minus": False,
-        "text.latex.preamble": (
-            r"\usepackage[T1]{fontenc}"
-            r"\usepackage[utf8]{inputenc}"
-            r"\usepackage{lmodern}"
-            r"\usepackage{siunitx}"
-        ),
-    }
-)
+configure_latex()
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Patch, Rectangle

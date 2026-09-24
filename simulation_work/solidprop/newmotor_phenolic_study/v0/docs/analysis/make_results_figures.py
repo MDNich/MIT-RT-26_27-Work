@@ -18,6 +18,10 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
+from latex_style import configure_latex
+
+configure_latex()
 
 ROOT = Path(__file__).resolve().parent
 SNAPSHOT = ROOT / "accepted_results_snapshot.json"
@@ -114,6 +118,12 @@ def capture(runtime):
 
 
 def save(fig, name, lang):
+    if lang == "fr":
+        # Same decimal-comma convention as the earlier French report figures.
+        for ax in fig.axes:
+            formatter = lambda value, _: format(value, "g").replace(".", "{,}")
+            ax.xaxis.set_major_formatter(FuncFormatter(formatter))
+            ax.yaxis.set_major_formatter(FuncFormatter(formatter))
     fig.savefig(ROOT / f"{name}_{lang}.pdf", bbox_inches="tight")
     fig.savefig(ROOT / f"{name}_{lang}.png", dpi=160, bbox_inches="tight")
     plt.close(fig)
@@ -121,21 +131,24 @@ def save(fig, name, lang):
 
 def plots(s, lang):
     fr = lang == "fr"
-    tr = lambda a,b: a if fr else b
+    def tr(a,b):
+        return ((a if fr else b).replace("%", r"\%")
+                .replace("α", r"$\alpha$").replace("≠", r"$\ne$"))
+    def number(value, decimals=4):
+        text = f"{value:.{decimals}f}"
+        return text.replace(".", ",") if fr else text
     audits, points = s["audits"], s["fronts"]
     ts = [a["time_s"] for a in audits]
     ft = [p["time_s"] for p in points]
-    title = tr("Résultats acceptés", "Accepted results") + f" | t = {s['accepted_time_s']:.4f} s | index {s['accepted_index']}"
+    title = tr("Résultats acceptés", "Accepted results") + f" | t = {number(s['accepted_time_s'])} s | index {s['accepted_index']}"
     xlabel = tr("Temps physique depuis l'allumage [s]", "Physical time since ignition [s]")
-    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 9,
-                         "axes.spines.top": False, "axes.spines.right": False})
     fig, axs = plt.subplots(2,2,figsize=(10,7.2), layout="constrained")
     ax=axs[0,0]
-    ax.plot(ts,[a["Ts_mean_C"] for a in audits],color="#c34a28")
-    ax.set(title=tr("Température moyenne de la face chaude", "Mean hot-face temperature"),ylabel="°C")
+    ax.plot(ts,[a["Ts_mean_C"] for a in audits],color="#08357E")
+    ax.set(title=tr("Température moyenne de la face chaude", "Mean hot-face temperature"),ylabel=r"$^\circ\mathrm{C}$")
     ax=axs[0,1]
     ax.plot(ft,[p["front_98_mm"] for p in points],label=tr("Front de pyrolyse α = 0,98", "Pyrolysis front α = 0.98"))
-    ax.step(ts,[a["phenolic_removed_thickness_m"]*1000 for a in audits],where="post",label=tr("Épaisseur supprimée", "Removed thickness"),color="#c34a28")
+    ax.step(ts,[a["phenolic_removed_thickness_m"]*1000 for a in audits],where="post",label=tr("Épaisseur supprimée", "Removed thickness"),color="#A04A00")
     ax.set(title=tr("Transformation et suppression distinctes", "Transformation is not removal"),ylabel="mm")
     ax.legend(fontsize=8)
     ax=axs[1,0]
@@ -146,29 +159,29 @@ def plots(s, lang):
     ax=axs[1,1]
     ax.plot(ts,[100*a["energy_relative_error"] for a in audits],label=tr("Erreur énergétique", "Energy error"))
     ax.plot(ts,[100*a["hot_power_relative_error"] for a in audits],label=tr("Erreur convection chaude", "Hot convection error"))
-    ax.axhline(5,color="#c34a28",ls="--",label=tr("Seuil énergie 5 %", "Energy limit 5%"))
+    ax.axhline(5,color="#A04A00",ls="--",label=tr("Seuil énergie 5 %", "Energy limit 5%"))
     ax.axhline(2,color="#777777",ls=":",label=tr("Seuil convection 2 %", "Convection limit 2%"))
-    ax.set(title=tr("Bilans des pas acceptés", "Accepted-step balance checks"),ylabel="%")
+    ax.set(title=tr("Bilans des pas acceptés", "Accepted-step balance checks"),ylabel=r"\%")
     ax.legend(fontsize=8,ncol=2)
     kill = next((a["time_s"] for a in audits if a["rows_removed"]),None)
     for ax in axs.flat:
-        ax.set_xlabel(xlabel);ax.grid(alpha=.2)
-        if kill is not None:ax.axvline(kill,color="#777777",ls=":",alpha=.45)
+        ax.set_xlabel(xlabel)
+        if kill is not None:ax.axvline(kill,color="#A64D79",ls=":",lw=1.1)
     fig.suptitle(title+"\n"+tr("Pointillé vertical : première suppression de rangée", "Vertical dotted line: first row removal"),fontsize=12)
     save(fig,"newmotor_results",lang)
 
     fig,axs=plt.subplots(1,2,figsize=(10,4.3),layout="constrained")
     depth=[(i+.5)*THICKNESS/240 for i in range(240)]
     for profile in s["profiles"]:
-        axs[0].plot(depth,profile["alpha_row_mean"],label=f"{profile['time_s']:.4f} s")
-    axs[0].axhline(.98,ls="--",color="#777777",label="α = 0.98")
+        axs[0].plot(depth,profile["alpha_row_mean"],label=f"{number(profile['time_s'])} s")
+    axs[0].axhline(.98,ls="--",color="#777777",label=tr("α = 0,98", "α = 0.98"))
     axs[0].set(xlim=(0,1.3),ylim=(0,1.04),xlabel=tr("Profondeur depuis l'alésage initial [mm]", "Depth from original bore [mm]"),ylabel=tr("Conversion moyenne par rangée α", "Row-mean conversion α"),title=tr("Profils radiaux de conversion", "Radial conversion profiles"))
     axs[0].legend(fontsize=8)
     for threshold in (90,98,99):
-        axs[1].plot(ft,[p[f"front_{threshold}_mm"] for p in points],label=f"α = {threshold/100:.2f}")
+        value = number(threshold/100,2).replace(",", "{,}")
+        axs[1].plot(ft,[p[f"front_{threshold}_mm"] for p in points],label=rf"$\alpha = {value}$")
     axs[1].set(xlabel=xlabel,ylabel=tr("Profondeur du front [mm]", "Front depth [mm]"),title=tr("Front continu depuis la face chaude", "Contiguous front from hot face"))
     axs[1].legend()
-    for ax in axs:ax.grid(alpha=.2)
     fig.suptitle(title,fontsize=12)
     save(fig,"newmotor_conversion",lang)
 
@@ -178,15 +191,15 @@ def plots(s, lang):
     evolution=[(p["time_s"],fit(regular,p["time_s"])) for p in regular if p["time_s"]>=3.5]
     fig,axs=plt.subplots(1,2,figsize=(10,4.6),layout="constrained")
     ax=axs[0]
-    ax.plot(ft,[100*p["front_98_mm"]/THICKNESS for p in points],color="#1f77b4",lw=2,label=tr("Calcul accepté", "Accepted calculation"))
+    ax.plot(ft,[100*p["front_98_mm"]/THICKNESS for p in points],color="#08357E",lw=1.55,label=tr("Calcul accepté", "Accepted calculation"))
     horizon=max(current["targets_s"][-1],previous["targets_s"][-1])+1
-    for result,color,label in [(previous,"#999999",tr("Projection précédente", "Previous projection")),(current,"#c34a28",tr("Projection actualisée", "Updated projection"))]:
+    for result,color,label in [(previous,"#999999",tr("Projection précédente", "Previous projection")),(current,"#A04A00",tr("Projection actualisée", "Updated projection"))]:
         xx=[result["end_s"],horizon]
         ax.plot(xx,[100*(result["speed_mm_s"]*t+result["intercept_mm"])/THICKNESS for t in xx],ls="--",color=color,label=label)
     for q,t in zip((25,50,75),current["targets_s"]):
         ax.axhline(q,color="#dddddd",lw=.8)
-        ax.plot(t,q,"o",color="#c34a28")
-        ax.annotate(f"{t:.1f} s",(t,q),xytext=(-5,5) if q == 75 else (5,5),
+        ax.plot(t,q,"o",color="#A04A00")
+        ax.annotate(f"{number(t,1)} s",(t,q),xytext=(-5,5) if q == 75 else (5,5),
                     ha="right" if q == 75 else "left",textcoords="offset points",fontsize=8)
     ax.axvspan(s["accepted_time_s"],horizon,color="#eeeeee",alpha=.45)
     ax.axvline(7,color="#777777",ls=":",label=tr("Horizon du calcul : 7 s", "Simulation horizon: 7 s"))
@@ -194,10 +207,9 @@ def plots(s, lang):
     ax.legend(fontsize=7.5,loc="upper left")
     ax=axs[1]
     for i,q in enumerate((25,50,75)):
-        ax.plot([t for t,r in evolution],[r["targets_s"][i] for t,r in evolution],label=f"{q} %")
+        ax.plot([t for t,r in evolution],[r["targets_s"][i] for t,r in evolution],label=rf"{q}\,\%")
     ax.set(xlabel=tr("Dernier temps accepté utilisé [s]", "Last accepted time used [s]"),ylabel=tr("Temps prédit depuis l'allumage [s]", "Predicted time since ignition [s]"),title=tr("Stabilité de la projection (fenêtre 0,6625 s)", "Projection stability (0.6625 s window)"))
     ax.legend()
-    for ax in axs:ax.grid(alpha=.2)
     fig.suptitle(tr("Exploratoire, non calibré : pyrolyse ≠ disparition de matière", "Exploratory, uncalibrated: pyrolysis ≠ material disappearance"),fontsize=12)
     save(fig,"newmotor_projections",lang)
     return current,previous

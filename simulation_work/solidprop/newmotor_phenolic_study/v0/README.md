@@ -90,7 +90,13 @@ predictions. At 7 s, the same fit projects approximately 14.46% pyrolysed.
 
 ### Reproduce the documentation figures
 
-From `v0/docs/analysis`, using Python with Matplotlib:
+From `v0/docs/analysis`, using Python with Matplotlib and a working LaTeX
+installation (including `lmodern` and `siunitx`). All planning and results
+figures share `latex_style.py`: **`text.usetex=True` and Computer Modern/Latin
+Modern serif typography**, including titles, labels, legends, and tick labels.
+The white backgrounds, boxed axes, light grey grids, report palette, and French
+decimal commas match the earlier `phenolic_case_study/tmp3` documentation.
+There is no sans-serif fallback.
 
 ```sh
 # Offline rebuild using the versioned, frozen dataset (no runtime access).
