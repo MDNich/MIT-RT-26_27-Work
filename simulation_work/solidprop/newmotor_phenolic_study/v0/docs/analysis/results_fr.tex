@@ -1,13 +1,16 @@
 \clearpage
-\section{Résultats intermédiaires au 24 septembre 2026}
-\subsection{État accepté à 5,3625 secondes}
-L'instantané documentaire du 24 septembre à 17 h 34 UTC (13 h 34 EDT)
-s'arrête au pas accepté 414; l'horizon prévu reste
+\section{Résultats intermédiaires du 26 septembre 2026 (UTC)}
+\subsection{État accepté à 6,2875 secondes}
+L'instantané documentaire du 26 septembre à 14 h 46 UTC (10 h 46 EDT)
+s'arrête au pas accepté 488; l'horizon prévu reste
 \SI{7}{s}. Aucun résultat futur du solveur n'est inclus. Une seule rangée a
 été supprimée : \SI{0.01984375}{mm} retirés et \SI{4.74265625}{mm} encore
 présents géométriquement. Cette épaisseur restante n'est pas nécessairement
 du matériau vierge. La température moyenne de face chaude atteint
-\SI{1506.80}{\celsius}; ce n'est pas la température maximale du modèle.
+\SI{1518.25}{\celsius}. Le maximum nodal exporté vaut aussi
+\SI{1518.25}{\celsius} à cette précision; la conversion maximale locale vaut
+\(\alpha_{\max}=1\), sans impliquer une conversion totale du liner. Moyenne de face et maximum nodal restent
+deux grandeurs distinctes.
 
 \begin{figure}[H]\centering
 \includegraphics[width=.98\textwidth]{../analysis/newmotor_results_fr.pdf}
@@ -17,10 +20,10 @@ Les masses sont ramenées à un anneau complet de longueur \SI{50}{mm}.
 Le pointillé vertical indique la première suppression de rangée.}
 \end{figure}
 
-Au dernier état, l'erreur énergétique relative est de 0,2896\,\% (seuil
-5\,\%) et l'erreur relative de convection chaude de \(3.36\times10^{-8}\)
-(seuil 0,02). La masse de gaz cumulée vaut \SI{11.9592}{g} et la masse de
-carbone consommée \SI{0.37537}{g}, à l'échelle anneau complet. Les audits
+Au dernier état, l'erreur énergétique relative est de 0,2406\,\% (seuil
+5\,\%) et l'erreur relative de convection chaude de \(5.67\times10^{-8}\)
+(seuil 0,02). La masse de gaz cumulée vaut \SI{13.8437}{g} et la masse de
+carbone consommée \SI{0.47650}{g}, à l'échelle anneau complet. Les audits
 acceptés sont tous sous les deux seuils. Cela valide ces contrôles numériques,
 pas les lois de matériau exploratoires.
 
@@ -41,9 +44,9 @@ Les historiques des fronts utilisent un checkpoint sur quatre, complété par
 le dernier état accepté et le checkpoint de comparaison précédent.}
 \end{figure}
 
-À \SI{5.3625}{s}, le front à 98\,\% est à \SI{0.46413}{mm}, soit
-9,75\,\% de l'épaisseur initiale. Les fronts à 90 et 99\,\% sont respectivement
-à \SI{0.59496}{mm} et \SI{0.41965}{mm}. Le seuil est une définition de
+À \SI{6.2875}{s}, le front à 98\,\% est à \SI{0.57986}{mm}, soit
+12,18\,\% de l'épaisseur initiale. Les fronts à 90 et 99\,\% sont respectivement
+à \SI{0.71616}{mm} et \SI{0.53394}{mm}. Le seuil est une définition de
 post-traitement : il ne modifie ni la loi de matériau ni la règle de suppression.
 \textbf{Pyrolysé ne signifie donc ni brûlé ni géométriquement disparu.}
 
@@ -51,17 +54,17 @@ post-traitement : il ne modifie ni la loi de matériau ni la règle de suppressi
 \subsection{Projections 25, 50 et 75 pour cent}
 Une droite est ajustée par moindres carrés à la profondeur du front à 98\,\%
 sur les dernières \SI{0.6625}{s} disponibles, avec le même échantillonnage.
-L'ajustement actuel utilise 14 points de \SI{4.7375}{s} à \SI{5.3625}{s}.
-La vitesse ajustée est \SI{0.13457}{mm.s^{-1}}, contre
-\SI{0.13647}{mm.s^{-1}} au précédent rapport à \SI{5.2500}{s} (index 405).
+L'ajustement actuel utilise 14 points de \SI{5.6375}{s} à \SI{6.2875}{s}.
+La vitesse ajustée est \SI{0.12370}{mm.s^{-1}}, contre
+\SI{0.12822}{mm.s^{-1}} au précédent rapport à \SI{5.8875}{s} (index 456).
 
 \begin{table}[H]\centering
 \caption{Temps physiques depuis l'allumage, et non durées de calcul.}
 \begin{tabular}{lrrr}\toprule
 Épaisseur initiale pyrolysée & Précédent [s] & Actualisé [s] & Variation\\\midrule
-25\,\% & 10,68 & 10,76 & +0,7\,\%\\
-50\,\% & 19,40 & 19,61 & +1,0\,\%\\
-75\,\% & 28,13 & 28,46 & +1,2\,\%\\\bottomrule
+25\,\% & 11,03 & 11,22 & +1,7\,\%\\
+50\,\% & 20,32 & 20,85 & +2,6\,\%\\
+75\,\% & 29,60 & 30,47 & +2,9\,\%\\\bottomrule
 \end{tabular}
 \end{table}
 
@@ -72,10 +75,10 @@ la zone grise est au-delà des résultats disponibles. À droite, dérive des te
 prédits lorsque de nouveaux checkpoints entrent dans la fenêtre d'ajustement.}
 \end{figure}
 
-La projection à \SI{7}{s} est d'environ 14,38\,\% pyrolysés. Les estimations
-25/50/75\,\% varient peu depuis le rapport précédent (moins de 1,2\,\%),
-mais continuent d'augmenter avec le ralentissement du front : cette stabilité
-locale ne démontre pas une convergence prédictive.
+La projection à \SI{7}{s} est d'environ 14,03\,\% pyrolysés. Les estimations
+25/50/75\,\% augmentent de 1,7 à 2,9\,\% depuis le rapport précédent,
+avec le ralentissement du front. Cette dérive ne démontre pas une convergence
+prédictive.
 Tous ces franchissements sont au-delà de l'horizon actuellement autorisé.
 Ce sont des extrapolations linéaires non calibrées, sans intervalle de confiance
 physique; elles ne démontrent pas la tenue du moteur. Leur incertitude augmente
@@ -83,31 +86,39 @@ fortement à 50 et 75\,\%.
 
 \clearpage
 \subsection{Estimation de fin du calcul à 7 secondes}
-Au 24 septembre 2026 à 13 h 34 EDT (17 h 34 UTC), il reste 131 pas
-macros de \SI{0.0125}{s} à accepter, soit \SI{1.6375}{s} physiques.
-Les dix rangs MAPDL et les deux processus MPI sont présents. Le pas 415
-a convergé à \SI{5.375}{s}, mais sa finalisation n'est pas encore acceptée;
-il n'est donc pas ajouté aux résultats documentés.
+Au pas accepté 488 à \SI{6.2875}{s}, il reste 57 pas macros de
+\SI{0.0125}{s}, soit \SI{0.7125}{s} physiques. Les dix rangs sont actifs;
+le pas 489 à \SI{6.3}{s} est convergé mais encore en finalisation.
+Son travail n'est pas compté comme accepté. Aucune nouvelle erreur ni
+suppression de rangée n'est observée.
 
 La cadence est calculée à partir des dates de modification des audits acceptés,
-sur 10, 20 et 40 intervalles consécutifs terminant au pas 414. La durée déjà
-écoulée depuis le dernier audit est déduite du temps restant. Les pauses ou
-lenteurs incluses dans ces intervalles ne sont pas retirées.
+sur les 10, 20 et 30 derniers intervalles entre pas ordinaires acceptés après
+la reprise, terminant au pas 488. La récupération du pas 424 et l'intervalle
+de première acceptation du pas 425 sont exclus. Aucune durée d'arrêt, ni l'âge
+du pas en cours, n'est déduite du travail restant. Les lenteurs ultérieures
+restent incluses. Les dates ci-dessous partent de l'instantané à 10 h 46 EDT
+le 26 septembre, à cadence constante.
 \begin{table}[H]\centering
 \caption{Scénarios à cadence constante au moment de l'instantané.}
 \begin{tabular}{lrrl}\toprule
 Fenêtre & Minutes/pas & Reste [h] & Fin estimée (EDT)\\\midrule
-10 pas & 26,01 & 56,5 & 26 septembre, 22 h 05\\
-20 pas & 25,26 & 54,9 & 26 septembre, 20 h 27\\
-40 pas & 21,95 & 47,7 & 26 septembre, 13 h 13\\\bottomrule
+10 pas & 35,86 & 34,1 & 27 septembre, vers 20 h 50\\
+20 pas & 34,14 & 32,4 & 27 septembre, vers 19 h 12\\
+30 pas & 40,35 & 38,3 & 28 septembre, vers 01 h 06\\\bottomrule
 \end{tabular}
 \end{table}
-\textbf{Prévision de planification : environ 55 à 60 heures restantes},
-soit du 26 septembre vers 20 h 30 au 27 septembre vers 1 h 30 EDT.
-Cette plage prudente arrondit les cadences récentes; ce n'est pas un intervalle
-de confiance ni une borne garantie. Deux intervalles récents ont duré environ
-58 minutes, contre environ 20 à 25 minutes habituellement. Les écritures,
-exports et futures suppressions de rangées peuvent encore retarder la fin.
+Les six derniers intervalles seuls donnent \SI{36.19}{min} par pas et
+environ \SI{34.4}{h} restantes. La fenêtre de 30 pas inclut notamment le long
+intervalle de finalisation du pas 467; il n'est pas assimilé ici à du temps CPU.
+\textbf{Planification prudente : environ 35 à 50 heures à partir de cet
+instantané}, soit du 27 septembre vers 22 h au 28 septembre vers 13 h EDT
+(le 28 septembre vers 02 h à 17 h UTC).
+Cette enveloppe actualise celle de 65 à 95 heures du rapport au pas 456;
+elle repose sur le travail restant et les cadences observées, pas sur une
+soustraction du temps écoulé. Ce n'est ni un intervalle de confiance ni une
+borne garantie. La cause des variations de cadence n'est pas établie ici;
+écritures, exports et suppressions de rangées peuvent encore retarder la fin.
 L'estimation concerne uniquement la fin du calcul à \SI{7}{s}, pas la
 disparition du liner ni les franchissements extrapolés de 25/50/75\,\%.
 
@@ -120,6 +131,6 @@ d'export. L'instantané réduit et les empreintes SHA-256 des sources sont dans
 \path{docs/analysis/accepted_results_snapshot.json}. Le script
 \code{make_results_figures.py} régénère les figures hors ligne; son option
 \code{--capture} lit le runtime sans modifier le calcul. Les textes et tableaux
-de cette édition sont figés au même index 414. Les horodatages et les trois
+de cette édition sont figés au même index 488. Les horodatages et les trois
 scénarios de durée sont également conservés dans cet instantané.
 \clearpage

@@ -18,7 +18,7 @@
 \title{~\\[-2em]\sc Thermochemical Simulation v0: Interim Results\\
 for the New Phenolic Liner}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Solid Propulsion Simulations}
-\date{\sc September 24, 2026}
+\date{\sc September 26, 2026 (UTC)}
 
 \begin{document}
 \selectlanguage{english}
@@ -36,7 +36,7 @@ preparation of the first model version for the new motor. It strictly separates
 the requested geometry from assumptions inherited from the earlier simulations.
 The native Windows model, mesh, restart chain, and MAPDL preflight are validated.
 The transient calculation is running; this edition freezes accepted results at
-\SI{5.3625}{s}, index 414. The primary goal is to compute,
+\SI{6.2875}{s}, index 488, after an explicitly authorised recovery. The primary goal is to compute,
 without ambiguous terminology, removed phenolic thickness, remaining thickness,
 pyrolysis-gas mass, and consumed-carbon mass at every time.
 \end{minipage}\end{center}
@@ -313,7 +313,7 @@ the next solve.
 \section{Windows execution, pause, and resume}
 All large files are isolated in Git-ignored \code{v0/ansystmp}. The \code{v0}
 directory is mapped to drive \code{V:} in Windows, and the runtime is
-\code{V:\textbackslash ansystmp\textbackslash windows}. It has no reference to
+\path{V:\ansystmp\windows}. It has no reference to
 the older project. The UserMatTh source and DLL are copied locally.
 
 Before the first calculation, \code{launch_v0.ps1 -Preflight} verifies input
@@ -327,8 +327,23 @@ identifiers, rejects duplicates and foreign identifiers, and ignores only
 surplus rows already declared dead. The failure archive and
 \code{RECOVERY_PROVENANCE.json} preserve provenance.
 
+On September 25 (UTC), a separate exit-code \(-1\) failure required explicit
+user authorisation. Its exact cause remains unknown; this was not the earlier
+false POST1 rejection. The failed runtime is preserved in
+\path{windows_failed_exit_minus1_20260925_014712}. In a separate copy, results
+from all ten partitions reconstructed step 424 at \SI{5.4875}{s}. The same
+extraction at step 423 exactly reproduces all three original exports (nodal
+temperatures, element fields, and energy). The unchanged controller accepts
+step 424 and its balances. A ten-rank native restart setup check and a complete
+no-solve preflight finish with zero errors and warnings. Restart is explicitly
+launched from this checkpoint at 01:57 UTC. Acceptance of step 425 and subsequent
+progress through step 488 confirm complete continuation. Partition hashes and provenance are recorded in
+\path{RECOVERY_EXIT_MINUS1_PROVENANCE.json}.
+
 Launch requires explicit \code{-Run} and uses 10 DMP ranks. The script refuses
-to start when ANSYS/MPI already exists. Six restart generations are retained.
+to start when ANSYS/MPI already exists. The configured limit is six generations,
+but this failure inventory contains only \code{r001} (step 424) and \code{r006}
+(step 6): do not assume six recent restart points are available.
 \code{request_pause.ps1} requests a stop at the next accepted macro-step;
 \code{-Run -Resume} is allowed only from a \code{PAUSED_AT_CHECKPOINT} state
 whose inputs remain unchanged.
@@ -344,7 +359,7 @@ Solver inputs & sealed with SHA-256\\
 Chamber pressure & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
 Pause/resume & prepared at accepted checkpoints\\
 French/English reports & compiled from the same parameters\\
-Transient calculation & running; frozen state at \SI{5.3625}{s}, index 414\\\bottomrule
+Transient calculation & active on 10 ranks; frozen state at \SI{6.2875}{s}, index 488\\\bottomrule
 \end{tabular}
 \end{table}
 

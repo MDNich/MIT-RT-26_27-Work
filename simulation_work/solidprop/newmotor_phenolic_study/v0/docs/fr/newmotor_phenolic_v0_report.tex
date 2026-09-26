@@ -18,7 +18,7 @@
 \title{~\\[-2em]\sc Simulation Thermochimique v0 : Résultats Intermédiaires\\
 du Nouveau Liner Phénolique}
 \author{\sc MIT Rocket Team --- M. Nichitiu --- Simulations/Propulsion Solide}
-\date{\sc 24 septembre 2026}
+\date{\sc 26 septembre 2026 (UTC)}
 
 \begin{document}
 \selectlanguage{french}
@@ -35,8 +35,8 @@ du Nouveau Liner Phénolique}
 de la première version du modèle du nouveau moteur. Il distingue strictement la
 géométrie demandée des hypothèses reprises des simulations antérieures. Le
 modèle natif Windows, le maillage, la chaîne de reprise et le précontrôle MAPDL
-sont validés. Le calcul transitoire est en cours; cette édition fige les
-résultats acceptés à \SI{5.3625}{s}, index 414. L'objectif principal
+sont validés. Cette édition documente la continuation après la reprise autorisée du
+calcul; elle fige les résultats acceptés à \SI{6.2875}{s}, index 488. L'objectif principal
 est de calculer, sans ambiguïté de vocabulaire, l'épaisseur de phénolique
 retirée, l'épaisseur restante, la masse gazeuse issue de la pyrolyse et la masse
 de carbone consommée à chaque instant.
@@ -324,7 +324,7 @@ tolérance bloque automatiquement la suite du calcul.
 \section{Exécution Windows, pause et reprise}
 Tous les gros fichiers sont isolés dans \code{v0/ansystmp}, ignoré par Git. Le
 dossier \code{v0} est mappé sous Windows sur le lecteur \code{V:}; le runtime
-est \code{V:\textbackslash ansystmp\textbackslash windows}. Il ne contient
+est \path{V:\ansystmp\windows}. Il ne contient
 aucune référence vers l'ancien projet. Les sources UserMatTh et la DLL sont
 copiées localement.
 
@@ -339,9 +339,26 @@ exige tous les identifiants vivants, interdit doublons et identifiants étranger
 et ignore uniquement les lignes excédentaires déjà déclarées mortes. L'archive
 de l'arrêt et \code{RECOVERY_PROVENANCE.json} conservent la provenance.
 
+Le 25 septembre (UTC), un autre arrêt avec code \(-1\) a nécessité une
+autorisation explicite de l'utilisateur. Sa cause exacte reste indéterminée;
+il ne s'agit pas du faux rejet POST1 précédent. Le runtime arrêté est conservé
+dans \path{windows_failed_exit_minus1_20260925_014712}. Dans une copie distincte,
+les résultats des dix partitions ont permis de reconstruire le pas 424 à
+\SI{5.4875}{s}. La même extraction au pas 423 reproduit exactement les trois
+exports originaux (températures, champs élémentaires et énergie).
+Le contrôleur inchangé accepte les bilans du pas 424. Un contrôle natif de
+configuration du restart sur dix rangs et un préflight complet sans solve
+se terminent avec zéro erreur et zéro avertissement. La reprise est lancée
+explicitement depuis ce checkpoint à 01 h 57 UTC. L'acceptation du pas 425,
+puis la progression jusqu'au pas 488, confirment la continuation complète.
+La provenance et les empreintes des partitions sont
+dans \path{RECOVERY_EXIT_MINUS1_PROVENANCE.json}.
+
 Le lancement exige l'option explicite \code{-Run} et 10 rangs DMP. Le script
-refuse de démarrer si ANSYS/MPI est déjà présent. Six générations de restart
-sont conservées. \code{request_pause.ps1} demande un arrêt au prochain
+refuse de démarrer si ANSYS/MPI est déjà présent. La limite configurée est de
+six générations, mais l'inventaire de cet arrêt ne contient que \code{r001}
+(pas 424) et \code{r006} (pas 6) : ne pas supposer six points récents disponibles.
+\code{request_pause.ps1} demande un arrêt au prochain
 macro-pas accepté; \code{-Run -Resume} n'est autorisé qu'à partir d'un état
 \code{PAUSED_AT_CHECKPOINT} dont les entrées sont inchangées.
 
@@ -356,7 +373,7 @@ Entrées de calcul & scellées par SHA-256\\
 Pression de chambre & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
 Pause/reprise & préparée au checkpoint accepté\\
 Rapports FR/EN & compilés à partir des mêmes paramètres\\
-Calcul transitoire & en cours; état figé à \SI{5.3625}{s}, index 414\\\bottomrule
+Calcul transitoire & actif sur 10 rangs; état figé à \SI{6.2875}{s}, index 488\\\bottomrule
 \end{tabular}
 \end{table}
 

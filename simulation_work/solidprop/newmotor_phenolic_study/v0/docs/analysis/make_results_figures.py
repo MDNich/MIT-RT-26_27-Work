@@ -28,8 +28,8 @@ SNAPSHOT = ROOT / "accepted_results_snapshot.json"
 THICKNESS = 4.7625  # mm, initial phenolic thickness
 THRESHOLD = .98
 WINDOW = .6625  # s, fixed recent fitting window
-COMPARISON_INDEX = 405
-COMPARISON_TIME = 5.25
+COMPARISON_INDEX = 456
+COMPARISON_TIME = 5.8875
 
 
 def digest(raw):
@@ -112,24 +112,39 @@ def capture(runtime):
     assert abs(points[-1]["time_s"]-state["time_s"]) < 1e-9
     now = datetime.now(timezone.utc)
     remaining_steps = math.ceil((7-state["time_s"])/.0125-1e-8)
-    age = now.timestamp()-audit_times[-1]["mtime_epoch_s"]
+    recovery_path = runtime / "RECOVERY_EXIT_MINUS1_PROVENANCE.json"
+    recovery = json.loads(recovery_path.read_text()) if recovery_path.exists() else None
+    excluded = {recovery["recovered_index"]} if recovery else set()
+    # Use only intervals between two ordinary post-restart accepted steps.
+    # Neither reconstruction of 424 nor the first acceptance after it is a
+    # representative complete production interval. Retain subsequent slowdowns.
+    restart_index = recovery["recovered_index"] if recovery else -1
+    intervals = [(b["mtime_epoch_s"]-a["mtime_epoch_s"])
+                 for a,b in zip(audit_times,audit_times[1:])
+                 if a["index"] > restart_index and b["index"] not in excluded]
     estimates = []
-    for n in (10,20,40):
-        seconds_per_step = (audit_times[-1]["mtime_epoch_s"]-audit_times[-n-1]["mtime_epoch_s"])/n
-        remaining_hours = max(0, remaining_steps*seconds_per_step-age)/3600
+    for n in (10,20,30):
+        if len(intervals) < n:
+            continue
+        seconds_per_step = sum(intervals[-n:])/n
+        remaining_hours = remaining_steps*seconds_per_step/3600
         estimates.append({"window_steps": n, "minutes_per_step": seconds_per_step/60,
                           "remaining_hours": remaining_hours,
                           "finish_utc": (now+timedelta(hours=remaining_hours)).isoformat()})
     snapshot = {"captured_utc": now.isoformat(),
                 "accepted_index": index, "accepted_time_s": state["time_s"],
                 "status_at_capture": state["status"],
+                "nodal_temperature_max_C": max(state["temperatures"].values()),
+                "alpha_max": max(state["alpha"].values()),
                 "source_runtime": "v0/ansystmp/windows", "source_sha256": sources,
                 "definition": "Contiguous alpha >= 0.98 front from original bore; volume-weighted radial-row means; linear interpolation between centres. Deleted rows retain their accepted alpha. Not material removal.",
                 "fit_window_s": WINDOW, "sample_stride": 4,
+                "recovery": recovery,
                 "audits": audits, "fronts": points, "profiles": profiles,
                 "wall_clock_estimate": {"horizon_s": 7, "remaining_steps": remaining_steps,
-                    "method": "Mean accepted-audit mtime spacing over 10/20/40 steps; subtract age of latest acceptance. Conditional constant throughput, not a confidence interval.",
-                    "audit_times": audit_times[-41:], "scenarios": estimates}}
+                    "method": "Mean of last 10/20/30 intervals between ordinary accepted post-restart steps (both indices > 424). Includes subsequent wall-clock slowdowns; excludes recovery and first post-restart acceptance intervals. Conservative remaining whole-step workload from capture, without subtracting downtime or current-step age. Not a confidence interval.",
+                    "excluded_recovery_interval_indices": sorted(excluded),
+                    "audit_times": audit_times[-42:], "scenarios": estimates}}
     SNAPSHOT.write_text(json.dumps(snapshot, indent=2, allow_nan=False)+"\n")
     return snapshot
 
