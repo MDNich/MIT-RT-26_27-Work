@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Freeze accepted MAPDL data read-only, or rebuild bilingual figures offline.
 
-Capture: python make_results_figures.py --capture ../../ansystmp/windows
+Capture: python make_results_figures.py --capture ../../ansystmp/windows --pause-at 6.5
 Rebuild: python make_results_figures.py
 Only docs/analysis is written; no solver commands are executed.
 """
@@ -63,7 +63,7 @@ def fit(points, end):
             "targets_s": [(THICKNESS*q-intercept)/speed for q in (.25,.5,.75)]}
 
 
-def capture(runtime):
+def capture(runtime, pause_at=None):
     raw = (runtime / "state.json").read_bytes()
     state = json.loads(raw)
     index = state["index"]
@@ -111,7 +111,10 @@ def capture(runtime):
     assert points[-1]["index"] == index
     assert abs(points[-1]["time_s"]-state["time_s"]) < 1e-9
     now = datetime.now(timezone.utc)
-    remaining_steps = math.ceil((7-state["time_s"])/.0125-1e-8)
+    target = 7 if pause_at is None else pause_at
+    if not state["time_s"] <= target <= 7:
+        raise ValueError("Documented stop must be between accepted time and sealed horizon")
+    remaining_steps = math.ceil((target-state["time_s"])/.0125-1e-8)
     recovery_path = runtime / "RECOVERY_EXIT_MINUS1_PROVENANCE.json"
     recovery = json.loads(recovery_path.read_text()) if recovery_path.exists() else None
     excluded = {recovery["recovered_index"]} if recovery else set()
@@ -134,6 +137,7 @@ def capture(runtime):
     snapshot = {"captured_utc": now.isoformat(),
                 "accepted_index": index, "accepted_time_s": state["time_s"],
                 "status_at_capture": state["status"],
+                "configured_horizon_s": 7, "planned_pause_s": pause_at,
                 "nodal_temperature_max_C": max(state["temperatures"].values()),
                 "alpha_max": max(state["alpha"].values()),
                 "source_runtime": "v0/ansystmp/windows", "source_sha256": sources,
@@ -141,7 +145,7 @@ def capture(runtime):
                 "fit_window_s": WINDOW, "sample_stride": 4,
                 "recovery": recovery,
                 "audits": audits, "fronts": points, "profiles": profiles,
-                "wall_clock_estimate": {"horizon_s": 7, "remaining_steps": remaining_steps,
+                "wall_clock_estimate": {"horizon_s": target, "remaining_steps": remaining_steps,
                     "method": "Mean of last 10/20/30 intervals between ordinary accepted post-restart steps (both indices > 424). Includes subsequent wall-clock slowdowns; excludes recovery and first post-restart acceptance intervals. Conservative remaining whole-step workload from capture, without subtracting downtime or current-step age. Not a confidence interval.",
                     "excluded_recovery_interval_indices": sorted(excluded),
                     "audit_times": audit_times[-42:], "scenarios": estimates}}
@@ -238,7 +242,10 @@ def plots(s, lang):
         ax.annotate(f"{number(t,1)} s",(t,q),xytext=(-5,5) if q == 75 else (5,5),
                     ha="right" if q == 75 else "left",textcoords="offset points",fontsize=8)
     ax.axvspan(s["accepted_time_s"],horizon,color="#eeeeee",alpha=.45)
-    ax.axvline(7,color="#777777",ls=":",label=tr("Horizon du calcul : 7 s", "Simulation horizon: 7 s"))
+    pause = s.get("planned_pause_s")
+    stop_label = (tr("Pause programmée : ", "Scheduled pause: ")+number(pause,1)+" s"
+                  if pause is not None else tr("Horizon du calcul : 7 s", "Simulation horizon: 7 s"))
+    ax.axvline(pause if pause is not None else 7,color="#777777",ls=":",label=stop_label)
     ax.set(xlim=(0,horizon),ylim=(0,85),xlabel=xlabel,ylabel=tr("Épaisseur initiale pyrolysée [%]", "Pyrolysed initial thickness [%]"),title=tr("Au-delà du calcul : extrapolation linéaire", "Beyond the calculation: linear extrapolation"))
     ax.legend(fontsize=7.5,loc="upper left")
     ax=axs[1]
@@ -254,8 +261,9 @@ def plots(s, lang):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--capture",type=Path)
+    parser.add_argument("--pause-at",type=float,help="Document a requested pause; never changes solver files")
     args=parser.parse_args()
-    s=capture(args.capture.resolve()) if args.capture else json.loads(SNAPSHOT.read_text())
+    s=capture(args.capture.resolve(),args.pause_at) if args.capture else json.loads(SNAPSHOT.read_text())
     for lang in ("fr","en"):
         current,previous=plots(s,lang)
     print(json.dumps({"index":s["accepted_index"],"time_s":s["accepted_time_s"],

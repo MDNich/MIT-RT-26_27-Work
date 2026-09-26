@@ -36,7 +36,8 @@ de la première version du modèle du nouveau moteur. Il distingue strictement l
 géométrie demandée des hypothèses reprises des simulations antérieures. Le
 modèle natif Windows, le maillage, la chaîne de reprise et le précontrôle MAPDL
 sont validés. Cette édition documente la continuation après la reprise autorisée du
-calcul; elle fige les résultats acceptés à \SI{6.2875}{s}, index 488. L'objectif principal
+calcul; elle fige les résultats acceptés à \SI{6.375}{s}, index 495, avec une
+pause propre programmée à \SI{6.5}{s}. L'objectif principal
 est de calculer, sans ambiguïté de vocabulaire, l'épaisseur de phénolique
 retirée, l'épaisseur restante, la masse gazeuse issue de la pyrolyse et la masse
 de carbone consommée à chaque instant.
@@ -350,7 +351,7 @@ Le contrôleur inchangé accepte les bilans du pas 424. Un contrôle natif de
 configuration du restart sur dix rangs et un préflight complet sans solve
 se terminent avec zéro erreur et zéro avertissement. La reprise est lancée
 explicitement depuis ce checkpoint à 01 h 57 UTC. L'acceptation du pas 425,
-puis la progression jusqu'au pas 488, confirment la continuation complète.
+puis la progression jusqu'au pas 495, confirment la continuation complète.
 La provenance et les empreintes des partitions sont
 dans \path{RECOVERY_EXIT_MINUS1_PROVENANCE.json}.
 
@@ -371,16 +372,17 @@ Maillage structuré & validé : 229,665 nœuds, 152,000 hexaèdres\\
 Précontrôle Windows & terminé, 0 avertissement, 0 erreur, aucun solve\\
 Entrées de calcul & scellées par SHA-256\\
 Pression de chambre & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
-Pause/reprise & préparée au checkpoint accepté\\
+Pause/reprise & pause propre programmée à \SI{6.5}{s}\\
 Rapports FR/EN & compilés à partir des mêmes paramètres\\
-Calcul transitoire & actif sur 10 rangs; état figé à \SI{6.2875}{s}, index 488\\\bottomrule
+Calcul transitoire & actif sur 10 rangs; état figé à \SI{6.375}{s}, index 495\\\bottomrule
 \end{tabular}
 \end{table}
 
 Pour qualifier les résultats, il reste nécessaire de fournir la durée de combustion réelle,
 la composition gazeuse et les propriétés mesurées du phénolique. Sans ces
 données, le calcul v0 est volontairement une référence
-exploratoire de sept secondes. Sa structure est néanmoins prête à répondre à
+exploratoire dont l'horizon scellé reste de sept secondes, avec une pause
+opérationnelle demandée à \SI{6.5}{s}. Sa structure est néanmoins prête à répondre à
 la question principale : combien de phénolique a été transformé ou retiré, et
 quelle épaisseur saine reste à chaque instant ?
 

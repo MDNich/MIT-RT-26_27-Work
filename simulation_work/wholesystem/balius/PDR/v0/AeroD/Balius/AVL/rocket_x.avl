@@ -1,0 +1,102 @@
+Rocket 3
+0.0                      Mach
+0      0      0.0        iYsym  iZsym  Zsym
+125.66370614359172    4    4        Sref   Cref   Bref
+0.0    0.0    0.0        Xref   Yref   Zref
+0.45
+
+#
+#=============================================
+BODY
+Fuselage
+30  1.0
+
+TRANSLATE
+0.0  0.0  0.0
+
+BFIL
+fuse_x.dat
+
+#=============================================
+SURFACE
+Top Fins
+23  1.0   ! Nchord Cspace
+YDUPLICATE
+0.0
+
+SCALE
+1.0  1.0  1.0
+TRANSLATE
+53.9  1.414213562373095  1.414213562373095
+SECTION
+    0        0.0        0.0       6.1        0.0      11   1.0
+NACA
+0007
+SECTION
+    1.8719999999999997        1.4707821048680187        1.4707821048680187       4.228        0.0      15   1.0
+NACA
+0007
+CONTROL
+delta_a -57.29577951308232 0.6452223273415326 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_e -57.29577951308232 0.6452223273415326 0.0 0.0 0.0 1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_r 57.29577951308232 0.6452223273415326 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+
+SECTION
+    4.571999999999999        3.5921024484276614        3.5921024484276614       1.5280000000000005        0.0      -8   1.0
+NACA
+0007
+CONTROL
+delta_a -57.29577951308232 0.0183246073298432 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_e -57.29577951308232 0.0183246073298432 0.0 0.0 0.0 1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_r 57.29577951308232 0.0183246073298432 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+
+SECTION
+    3.1499999999999995        2.4748737341529163        2.4748737341529163       2.95        0.0      0   1.0
+NACA
+0007
+
+#=============================================
+SURFACE
+Bottom Fins
+23  1.0   ! Nchord Cspace
+YDUPLICATE
+0.0
+
+SCALE
+1.0  1.0  1.0
+TRANSLATE
+53.9  1.414213562373095  -1.414213562373095
+SECTION
+    0        0.0        0.0       6.1        0.0      11   1.0
+NACA
+0007
+SECTION
+    1.8719999999999997        1.4707821048680187        -1.4707821048680187       4.228        0.0      15   1.0
+NACA
+0007
+CONTROL
+delta_a -57.29577951308232 0.6452223273415326 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_e -57.29577951308232 0.6452223273415326 0.0 0.0 0.0 1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_r -57.29577951308232 0.6452223273415326 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+
+SECTION
+    4.571999999999999        3.5921024484276614        -3.5921024484276614       1.5280000000000005        0.0      -8   1.0
+NACA
+0007
+CONTROL
+delta_a -57.29577951308232 0.0183246073298432 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_e -57.29577951308232 0.0183246073298432 0.0 0.0 0.0 1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+CONTROL
+delta_r -57.29577951308232 0.0183246073298432 0.0 0.0 0.0 -1.0 ! name , gain , Xhinge , XYZhvec , SgnDup
+
+SECTION
+    3.1499999999999995        2.4748737341529163        -2.4748737341529163       2.95        0.0      0   1.0
+NACA
+0007

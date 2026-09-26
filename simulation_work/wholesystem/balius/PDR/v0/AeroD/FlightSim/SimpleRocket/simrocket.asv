@@ -1,0 +1,140 @@
+function [slog] = simrocket(rocket, controller, x0, xdot0, delta0, dt, ...
+    tmax, t0)
+    %% --------------------------------------------------------------------
+    % simrocket(rocket, controller, x0, xdot0, delta0, dt, ...
+    % tmax, t0)
+    % ---------------------------------------------------------------------
+    % Simulates rocket flight and returns history of all relevant 
+    % quantities.
+    % ---------------------------------------------------------------------
+    % Arguments
+    % - rocket: [struct] rocket object
+    % - controller: [struct] controller object
+    % - x0: [12 1] initial state. Default x0 = zeros(12, 1)
+    % - xdot0: [12 1] initial state derivative. Default xdot0 = zeros(12,
+    %      1)
+    % - delta0: [3 1] initial control state. Default delta0 = zeros(3, 1)
+    % - dt: [1 1] time step in seconds. Default dt = 0.01 sec
+    % - tmax: [1 1] final time in seconds. Default tmax = 10.0 sec.
+    % - t0: [1 1] initial time in seconds; time vector begins at t0.
+    %      Default t0 = 0
+    % ---------------------------------------------------------------------
+    % Returns
+    % - slog: [struct] simulation log. Fields:
+    % --- .t: [1 N] time vector
+    % --- .x: [12 N] state vector history
+    % --- .delta: [3 N] control vector history
+    % --- .xdot: [12 N] state derivative history
+    % --- .m: [1 N] mass history
+    % --- .I: [3 3 N] inertia history
+    % --- .Vwind: [3 N] wind velocity history
+    % --- .F_aero [3 N] aerodynamic force history
+    % --- .M_aero [3 N] aerodynamic moment history
+    % --- .F_prop [3 N] propulsive force history
+    % --- .M_prop [3 N] propulsive moment history
+    % --- .F_grav [3 N] gravitational force history
+    %% ----------------------------------------------
+    
+    %% Arguments block
+    arguments
+        rocket
+        controller
+        x0 = zeros([12 1])
+        xdot0 = zeros([12 1])
+        dt = .01
+        tmax = 10
+        t0 = 0
+    end
+    
+    %% Get sensors
+    imu = rocket.imu;
+    gyro = rocket.gyro;
+    servos = rocket.servos;
+
+    %% Preallocate simulation log
+    k = 1;
+    N = round((tmax - t0)/dt);
+
+    slog = struct();
+    slog.t = zeros(1, N);
+    slog.x = zeros(12, N);
+    slog.delta = zeros(3, N);
+    slog.xdot = zeros(12, N);
+    slog.m = zeros(1, N);
+    slog.I = zeros(3, 3, N);
+    slog.Vwind = zeros(3, N);
+    slog.F_aero = zeros(3, N);
+    slog.M_aero = zeros(3, N);
+    slog.F_prop = zeros(3, N);
+    slog.M_prop = zeros(3, N);
+    slog.F_grav = zeros(3, N);
+
+    %% Initialize simulation
+    t = t0;
+    x = x0;
+    xdot = xdot0;
+    delta = [0; 0; 0];
+    
+    %% Simulation loop
+    for k = 1:N
+        %% Read sensors
+        omegahat = gyro.calc_omega(x, xdot);
+        Vdothat = imu.calc_vdot(x, xdot);
+
+        %% Control
+        delta_star = controller.calc_delta_star(omegahat, Vdothat);
+
+        delta = servos.calc_delta(delta, delta_star);
+
+        %% Update external variables
+        m = rocket.calc_mass(t);
+        I = rocket.calc_inertia(t);
+
+        Vwind = wind_v(x, t);
+        
+        [F_aero, M_aero] = aero_fm(x, delta, Vwind, rocket);
+        [F_prop, M_prop] = prop_fm(x, t, rocket);
+        [F_grav] = grav_fm(x, t, rocket);
+        
+        xdot = sixdof(x, m, I, F_aero, F_prop, F_grav, M_aero, M_prop);
+        
+    
+        %% Log data from timestep k
+        slog.t(k) = t;
+        slog.x(:, k) = x;
+        slog.delta(:, k) = delta;
+        slog.xdot(:, k) = xdot;
+        slog.m(k) = m;
+        slog.I(:, :, k) = I;
+        slog.Vwind(:, k) = Vwind;
+        slog.F_aero(:, k) = F_aero;
+        slog.M_aero(:, k) = M_aero;
+        slog.F_prop(:, k) = F_prop;
+        slog.M_prop(:, k) = M_prop;
+        slog.F_grav(:, k) = F_grav;
+        slog.gyro_omegahat(:, k) = omegahat;
+        slog.imu_Vdothat(:, k) = Vdothat;
+
+        
+        
+        
+        %% Update state
+        x = x + xdot*dt;
+        t = t + dt;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    end
+    
+    
+
+end

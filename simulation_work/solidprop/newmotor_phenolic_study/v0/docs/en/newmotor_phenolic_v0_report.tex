@@ -36,7 +36,8 @@ preparation of the first model version for the new motor. It strictly separates
 the requested geometry from assumptions inherited from the earlier simulations.
 The native Windows model, mesh, restart chain, and MAPDL preflight are validated.
 The transient calculation is running; this edition freezes accepted results at
-\SI{6.2875}{s}, index 488, after an explicitly authorised recovery. The primary goal is to compute,
+\SI{6.375}{s}, index 495, after an explicitly authorised recovery, with a clean
+pause scheduled at \SI{6.5}{s}. The primary goal is to compute,
 without ambiguous terminology, removed phenolic thickness, remaining thickness,
 pyrolysis-gas mass, and consumed-carbon mass at every time.
 \end{minipage}\end{center}
@@ -337,7 +338,7 @@ temperatures, element fields, and energy). The unchanged controller accepts
 step 424 and its balances. A ten-rank native restart setup check and a complete
 no-solve preflight finish with zero errors and warnings. Restart is explicitly
 launched from this checkpoint at 01:57 UTC. Acceptance of step 425 and subsequent
-progress through step 488 confirm complete continuation. Partition hashes and provenance are recorded in
+progress through step 495 confirm complete continuation. Partition hashes and provenance are recorded in
 \path{RECOVERY_EXIT_MINUS1_PROVENANCE.json}.
 
 Launch requires explicit \code{-Run} and uses 10 DMP ranks. The script refuses
@@ -357,15 +358,16 @@ Structured mesh & validated: 229,665 nodes, 152,000 hexahedra\\
 Windows preflight & complete, 0 warnings, 0 errors, no solve\\
 Solver inputs & sealed with SHA-256\\
 Chamber pressure & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
-Pause/resume & prepared at accepted checkpoints\\
+Pause/resume & clean pause scheduled at \SI{6.5}{s}\\
 French/English reports & compiled from the same parameters\\
-Transient calculation & active on 10 ranks; frozen state at \SI{6.2875}{s}, index 488\\\bottomrule
+Transient calculation & active on 10 ranks; frozen state at \SI{6.375}{s}, index 495\\\bottomrule
 \end{tabular}
 \end{table}
 
 To qualify the results, the actual burn duration, gas composition, and measured
 phenolic properties are still required. Without them, v0 is
-deliberately a seven-second exploratory reference. Its structure is nonetheless
+deliberately exploratory: its sealed horizon remains seven seconds, with an
+operational pause requested at \SI{6.5}{s}. Its structure is nonetheless
 ready to answer the primary question: how much phenolic was transformed or
 removed, and how much sound thickness remains at each time?
 
