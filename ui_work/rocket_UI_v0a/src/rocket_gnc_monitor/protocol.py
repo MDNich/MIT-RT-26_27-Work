@@ -87,7 +87,7 @@ class ZephyrusDecoder:
             "boot_index": self.boot,
             "device_ticks_raw": ticks,
             "time_basis": "Onboard millis()/1000 uptime; align to launch separately",
-            "attitude_kind": "Legacy integrated rotation · axes uncalibrated",
+            "attitude_kind": "Body gyro integrals · not Euler attitude",
             "receiver_integrity": "Trailer has no independent checksum",
             "receiver_fix": g[1],
             "receiver_latitude": struct.unpack_from("<i", g, 2)[0] * 1e-7,

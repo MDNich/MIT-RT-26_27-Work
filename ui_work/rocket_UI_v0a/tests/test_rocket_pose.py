@@ -1,12 +1,13 @@
 """Angle chirality, source provenance and confirmed-effect behavior."""
 
-from dataclasses import replace
 import math
+from dataclasses import replace
 from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
+from rocket_gnc_monitor.demo import DemoFlight
 from rocket_gnc_monitor.domain import Sample
 from rocket_gnc_monitor.flight_scene import FlightFrame, FlightScene, quaternion_matrix
 from rocket_gnc_monitor.rocket_pose import RocketPose, rotation_from_rpy, simulation_pose, telemetry_pose
@@ -26,27 +27,114 @@ def frame(rotation=None, **kwargs):
     return FlightFrame(**values)
 
 
-@pytest.mark.parametrize("angles,axis,expected", [
-    ((90, 0, 0), (1, 0, 0), (0, 1, 0)),  # Roll moves the fins about the nose axis.
-    ((90, 0, 0), (0, 0, 1), (0, 0, 1)),
-    ((0, 90, 0), (0, 0, 1), (1, 0, 0)),
-    ((0, 0, 90), (0, 0, 1), (0, -1, 0)),
+@pytest.mark.parametrize("angles", [
+    (90, 0, 0), (0, 90, 0), (0, 0, 90), (450, -400, 721),
 ])
-def test_reported_rpy_rotates_all_three_axes_with_right_handed_chirality(angles, axis, expected):
+def test_gyro_integrals_are_preserved_but_never_treated_as_euler_orientation(angles):
     pose = telemetry_pose(sample(angles))
-    assert pose.angles == angles and pose.attitude_known
-    np.testing.assert_allclose(pose.rotation @ axis, expected, atol=1e-12)
-    np.testing.assert_allclose(pose.rotation.T @ pose.rotation, np.eye(3), atol=1e-12)
-    assert np.linalg.det(pose.rotation) == pytest.approx(1)
-    assert "Illustrative" in pose.status and "uncalibrated" in pose.status
+    assert pose.angles == angles and not pose.attitude_known
+    assert pose.angle_kind == "gyro_integrals"
+    np.testing.assert_array_equal(pose.rotation, np.eye(3))
+    assert "Orientation unavailable · gyro integrals are not attitude" in pose.status
 
 
 def test_reported_angles_are_not_normalized_or_replaced_by_simulation():
     values = (450, -400, 721)
     pose = telemetry_pose(sample(values))
     assert pose.angles == values and pose.source == "LIVE"
-    np.testing.assert_allclose(pose.rotation, rotation_from_rpy(90, -40, 1))
+    np.testing.assert_array_equal(pose.rotation, np.eye(3))
     assert pose.motor is pose.parachute is pose.ignited is None
+
+
+@pytest.mark.parametrize("station", ["GS1", "GS2", "GS3"])
+@pytest.mark.parametrize("seconds_after_launch", [2, 10])
+def test_real_zephyrus_climb_data_does_not_make_false_sideways_rocket(station, seconds_after_launch):
+    demo = DemoFlight(station)
+    stamp = demo.flight_zero + seconds_after_launch
+    index = min(range(len(demo.rows)), key=lambda i: abs(float(demo.rows[i]["flight_time"]) / 1000 - stamp))
+    value = demo.sample(index)
+    raw = tuple(float(demo.rows[index][key]) for key in ("roll_gyro_int", "pitch_gyro_int", "yaw_gyro_int"))
+    assert value.phase == "Flight" and value.altitude > demo.sample(demo.launch_index).altitude + 500
+    assert any(abs(angle) > 90 for angle in raw)
+    pose = telemetry_pose(value, "DEMO")
+    assert tuple(value.attitude) == raw == pose.angles
+    assert pose.angle_kind == "gyro_integrals" and not pose.attitude_known
+    assert pose.source == "DEMO" and "gyro integrals are not attitude" in pose.status
+    np.testing.assert_array_equal(pose.rotation, np.eye(3))
+
+
+def orientation(quaternion, **kwargs):
+    return dict(frame="body_to_ENU", body_axis="+Z", quaternion_wxyz=quaternion, **kwargs)
+
+
+@pytest.mark.parametrize("quaternion,axis,expected", [
+    ((1, 0, 0, 0), (0, 0, 1), (0, 0, 1)),
+    ((math.sqrt(0.5), 0, 0, math.sqrt(0.5)), (1, 0, 0), (0, 1, 0)),
+    ((math.sqrt(0.5), 0, 0, math.sqrt(0.5)), (0, 0, 1), (0, 0, 1)),
+    ((math.sqrt(0.5), 0, math.sqrt(0.5), 0), (0, 0, 1), (1, 0, 0)),
+    ((math.sqrt(0.5), math.sqrt(0.5), 0, 0), (0, 0, 1), (0, -1, 0)),
+])
+def test_explicit_quaternion_orientation_has_right_handed_chirality(quaternion, axis, expected):
+    value = sample((450, -400, 721), details={"orientation": orientation(quaternion)})
+    pose = telemetry_pose(value)
+    assert pose.attitude_known and pose.angle_kind == "orientation"
+    assert value.attitude == (450, -400, 721)  # The adapter never rewrites raw telemetry.
+    np.testing.assert_allclose(pose.rotation @ axis, expected, atol=1e-12)
+    np.testing.assert_allclose(pose.rotation, quaternion_matrix(quaternion), atol=1e-12)
+    np.testing.assert_allclose(rotation_from_rpy(*pose.angles), pose.rotation, atol=1e-12)
+    np.testing.assert_allclose(pose.rotation.T @ pose.rotation, np.eye(3), atol=1e-12)
+    assert np.linalg.det(pose.rotation) == pytest.approx(1)
+    assert "Orientation quaternion" in pose.status and not pose.rotation.flags.writeable
+
+
+def test_unit_quaternion_rounding_and_sign_are_supported_without_mutating_input():
+    quaternion = np.array([0.7, 0.2, -0.3, 0.5])
+    quaternion /= np.linalg.norm(quaternion)
+    quaternion *= 1.0005
+    value = sample(details={"orientation": orientation(quaternion)})
+    original = quaternion.copy()
+    positive = telemetry_pose(value)
+    value.details["orientation"]["quaternion_wxyz"] = -quaternion
+    negative = telemetry_pose(value)
+    assert positive.attitude_known and negative.attitude_known
+    np.testing.assert_array_equal(quaternion, original)
+    np.testing.assert_allclose(positive.rotation, negative.rotation)
+    quaternion[:] = 0
+    assert positive.attitude_known and np.linalg.det(positive.rotation) == pytest.approx(1)
+
+
+def test_orientation_contract_does_not_require_legacy_gyro_totals_and_remains_stale():
+    value = sample(None, details={"orientation": orientation([0, 0, 1, 0]), "flight_status": {
+        "motor_burning": False, "parachute_deployed": True,
+    }})
+    pose = telemetry_pose(value, fresh=False)
+    assert pose.attitude_known and pose.angle_kind == "orientation"
+    assert pose.stale and "STALE" in pose.status
+    assert pose.motor is False and pose.parachute is True
+    np.testing.assert_allclose(pose.rotation @ [0, 0, 1], [0, 0, -1], atol=1e-12)
+    assert value.attitude is None
+
+
+@pytest.mark.parametrize("metadata", [
+    None, True, [], {},
+    {"frame": "ENU_to_body", "body_axis": "+Z", "quaternion_wxyz": [1, 0, 0, 0]},
+    {"frame": "body_to_ENU", "body_axis": "+X", "quaternion_wxyz": [1, 0, 0, 0]},
+    {"frame": "body_to_ENU", "quaternion_wxyz": [1, 0, 0, 0]},
+    {"body_axis": "+Z", "quaternion_wxyz": [1, 0, 0, 0]},
+    {"frame": ["body_to_ENU"], "body_axis": "+Z", "quaternion_wxyz": [1, 0, 0, 0]},
+    orientation(None), orientation("1,0,0,0"), orientation([0, 0, 0, 0]),
+    orientation([2, 0, 0, 0]), orientation([1.01, 0, 0, 0]), orientation([0.5, 0, 0, 0]),
+    orientation([1, 0, 0]), orientation([1, 0, 0, 0, 0]), orientation([[1, 0, 0, 0]]),
+    orientation([math.nan, 0, 0, 0]), orientation([1, math.inf, 0, 0]),
+    orientation([1, True, 0, 0]), orientation([1, np.bool_(False), 0, 0]),
+    orientation(["1", 0, 0, 0]), orientation([10**400, 0, 0, 0]),
+    orientation([1e308, 1e308, 1e308, 1e308]), orientation(np.eye(4)),
+])
+def test_malformed_orientation_never_falls_back_to_legacy_euler_angles(metadata):
+    pose = telemetry_pose(sample((30, 60, 90), details={"orientation": metadata}))
+    assert pose.angles == (30, 60, 90) and pose.angle_kind == "gyro_integrals"
+    assert not pose.attitude_known and "Invalid orientation metadata" in pose.status
+    np.testing.assert_array_equal(pose.rotation, np.eye(3))
 
 
 @pytest.mark.parametrize("values,reported", [
@@ -71,6 +159,7 @@ def test_empty_pose_and_missing_telemetry_are_explicitly_unknown():
         assert pose.angles == (None, None, None)
         assert pose.motor is pose.parachute is pose.ignited is None
         assert not pose.attitude_known
+        assert pose.angle_kind == "unknown"
         np.testing.assert_array_equal(pose.rotation, np.eye(3))
         assert not pose.rotation.flags.writeable
     assert "No telemetry" in telemetry_pose(None).status
@@ -146,7 +235,7 @@ def test_simulation_uses_existing_quaternion_rotation_without_axis_conversion_or
     pose = simulation_pose(frame(original, powered=True))
     np.testing.assert_array_equal(pose.rotation, original)
     np.testing.assert_allclose(rotation_from_rpy(*pose.angles), original, atol=1e-12)
-    assert pose.source == "SIMULATION" and pose.attitude_known
+    assert pose.source == "SIMULATION" and pose.attitude_known and pose.angle_kind == "orientation"
     assert pose.motor is True and pose.ignited is True and pose.parachute is False
     assert not pose.stale and pose.time == 2.5
     original[0, 0] = -12
@@ -165,6 +254,7 @@ def test_simulation_path_alignment_is_preserved_but_never_claims_reported_angles
     pose = simulation_pose(frame(rotation, attitude="Path-aligned illustration · attitude unavailable"))
     np.testing.assert_array_equal(pose.rotation, rotation)
     assert not pose.attitude_known and pose.angles == (None, None, None)
+    assert pose.angle_kind == "unknown"
     assert "Path-aligned illustration" in pose.status
 
 

@@ -49,8 +49,17 @@ class RocketPoseView(QWidget):
     @property
     def angle_text(self):
         angles = self.pose.angles if self.pose is not None else (None, None, None)
+        names = ("∫R", "∫P", "∫Y") if self.pose is not None and self.pose.angle_kind == "gyro_integrals" else ("R", "P", "Y")
         return tuple(f"{name}  {value:+.1f}°" if value is not None and math.isfinite(value)
-                     else f"{name}  —" for name, value in zip(("R", "P", "Y"), angles))
+                     else f"{name}  —" for name, value in zip(names, angles))
+
+    @property
+    def orientation_text(self):
+        if self.pose is not None and self.pose.attitude_known:
+            return "SIMULATION ATTITUDE" if self.pose.source == "SIMULATION" else "TELEMETRY ATTITUDE"
+        if self.pose is not None and "Path-aligned" in self.pose.status:
+            return "PATH-ALIGNED ILLUSTRATION"
+        return "ORIENTATION UNAVAILABLE · neutral model"
 
     @property
     def effect_text(self):
@@ -75,7 +84,8 @@ class RocketPoseView(QWidget):
         if (not self.isVisible() or not known or previous is None or pose.stale
                 or previous.source != pose.source):
             self._display_quaternion = QQuaternion(self._target_quaternion)
-        self.setAccessibleDescription(self._source_text() + "; " + "; ".join(self.angle_text + self.effect_text))
+        self.setAccessibleDescription(self._source_text() + "; " + self.orientation_text
+                                      + "; " + "; ".join(self.angle_text + self.effect_text))
         self.update()
 
     def set_azimuth(self, degrees):
@@ -120,12 +130,14 @@ class RocketPoseView(QWidget):
     def _angle_source(self):
         if self.pose is not None and self.pose.source == "SIMULATION":
             return "R/P/Y derived" if self.pose.attitude_known else "R/P/Y unavailable"
-        return "R/P/Y reported"
+        if self.pose is not None and self.pose.angle_kind == "gyro_integrals":
+            return "Body gyro totals · not attitude"
+        return "R/P/Y derived" if self.pose is not None and self.pose.attitude_known else "R/P/Y unavailable"
 
     def _layout(self):
-        footer_top = self.height() - 74
+        footer_top = self.height() - 94
         return (QRectF(8, 4, self.width() - 16, footer_top - 9),
-                QRectF(12, footer_top, self.width() - 24, 72))
+                QRectF(12, footer_top, self.width() - 24, 92))
 
     def projection(self, viewport=None):
         """Fit visible effects without changing scale as the rocket rotates."""
@@ -160,22 +172,25 @@ class RocketPoseView(QWidget):
         painter.setPen(QPen(QColor(COLORS["line"]), 0.7))
         painter.drawLine(QPointF(x, info.y() - 2), QPointF(x + width, info.y() - 2))
         painter.setPen(QColor(COLORS["text"]))
+        self._font(painter, 12, True)
+        painter.drawText(QRectF(x, info.y(), width, 18), centered, self.orientation_text)
         self._font(painter, 13, True)
         for i, text in enumerate(self.angle_text):
-            painter.drawText(QRectF(x + i * width / 3, info.y(), width / 3, 20), centered, text)
+            painter.drawText(QRectF(x + i * width / 3, info.y() + 20, width / 3, 20), centered, text)
         self._font(painter, 11, True)
         for i, text in enumerate(self.effect_text):
             value = (self.pose.motor if self.pose else None) if i == 0 else (self.pose.parachute if self.pose else None)
             painter.setPen(QColor(COLORS["gold"] if value is True else COLORS["muted"]))
-            painter.drawText(QRectF(x + i * width / 2, info.y() + 21, width / 2, 18), centered, text)
+            painter.drawText(QRectF(x + i * width / 2, info.y() + 41, width / 2, 18), centered, text)
         painter.setPen(QColor(COLORS["muted"]))
         self._font(painter, 10)
         status = self.pose.status.removeprefix(self.pose.source + " · ") if self.pose is not None else "Attitude unavailable · neutral illustration"
-        if (self.pose is not None and self.pose.source != "SIMULATION"
-                and not self.pose.attitude_known and "neutral" not in status.lower()):
-            status = "Attitude unavailable · neutral illustration. " + status
         status = self._source_text() + " · " + self._angle_source() + " · " + status
-        painter.drawText(QRectF(x, info.y() + 41, width, 31),
+        if self.pose is not None and self.pose.angle_kind == "gyro_integrals":
+            status = self._source_text() + " · Body gyro integrals in degrees · not Euler angles"
+            if "Invalid orientation metadata" in self.pose.status:
+                status += " · Invalid orientation metadata"
+        painter.drawText(QRectF(x, info.y() + 61, width, 31),
                          Qt.AlignmentFlag.AlignHCenter | Qt.TextFlag.TextWordWrap, status)
 
     def paintEvent(self, event):
@@ -196,7 +211,9 @@ class RocketPoseView(QWidget):
         if self.pose is not None and self.pose.motor is True:
             flicker = 0.97 + 0.03 * math.sin(self._effect_time * 45)
             plume_mesh().draw(painter, project, forward, [rotation @ np.diag([1, 1, flicker])], [origin])
+        painter.setOpacity(0.4 if self.pose is None or (not self.pose.attitude_known and self.pose.source != "SIMULATION") else 1.0)
         rocket_mesh(self.canards).draw(painter, project, forward, [rotation], [origin])
+        painter.setOpacity(1.0)
         if self.pose is not None and self.pose.parachute is True:
             inflation = min(1.0, max(0.05, self.pose.inflation))
             canopy = np.array([0.0, 0.0, 1.1])

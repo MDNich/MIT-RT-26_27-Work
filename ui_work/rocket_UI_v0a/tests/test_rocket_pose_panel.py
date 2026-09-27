@@ -49,6 +49,9 @@ def test_all_telemetry_workspaces_replace_horizon_with_slider_controlled_rocket(
     panel.refresh()
     pose = panel.view.pose
     assert pose.angles == (25., 15., 40.)
+    assert pose.angle_kind == "gyro_integrals" and not pose.attitude_known
+    np.testing.assert_array_equal(pose.rotation, np.eye(3))
+    assert "ORIENTATION UNAVAILABLE" in panel.view.orientation_text
     assert pose.motor is None and pose.parachute is None
     assert "REPLAY" in pose.source
     for azimuth in (0, 90, 180, 270, 360):

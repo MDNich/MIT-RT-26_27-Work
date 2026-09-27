@@ -318,9 +318,9 @@ class RocketPanel(QWidget):
                     ("RX RSSI (dBm)", "rxrssi"),
                     ("Baro filtered altitude (m)", "barofilteredalt"),
                     ("Baro max altitude (m)", "baro_max_alt"),
-                    ("Roll (deg)", "roll_gyro_int"),
+                    ("Roll gyro total (°)", "roll_gyro_int"),
                     ("Accel integrated velocity (m/s)", "accel_integrated_velo"),
-                    ("Angle from vertical (°)", "angleFromVertical"),
+                    ("Legacy tilt proxy (°)", "angleFromVertical"),
                     ("Temperature (°C)", "temp"),
                 ]
             ]
@@ -329,6 +329,11 @@ class RocketPanel(QWidget):
                 ("Packet number", s.sequence),
             ],
         )
+        for column in (0, 1):
+            self.telemetry.item(7, column).setToolTip(
+                "Historical formula from independent pitch/yaw gyro integrals; not a measured angle from vertical. "
+                "Retained for comparison with the legacy UI and CSV exports."
+            )
         self.fill(
             self.gps,
             [

@@ -27,14 +27,15 @@ def pose(angles=(0, 0, 0), **kwargs):
                       source="LIVE", status="LIVE · Illustrative R/P/Y · axes uncalibrated", **kwargs)
 
 
-def test_reported_three_angles_and_unknown_effects_are_not_inferred(qtbot):
+def test_reported_gyro_totals_never_drive_a_false_orientation(qtbot):
     item = Sample(t=1, sequence=1, source="LIVE", phase="Flight", attitude=[45, 20, -10])
     view = make_view(qtbot, telemetry_pose(item))
-    assert view.angle_text == ("R  +45.0°", "P  +20.0°", "Y  -10.0°")
+    assert view.angle_text == ("∫R  +45.0°", "∫P  +20.0°", "∫Y  -10.0°")
     assert view.effect_text == ("MOTOR UNKNOWN", "CHUTE UNKNOWN")
-    np.testing.assert_allclose(view.display_rotation, rotation_from_rpy(45, 20, -10), atol=1e-6)
-    assert "R/P/Y reported" == view._angle_source()
-    assert "axes uncalibrated" in view.pose.status
+    np.testing.assert_allclose(view.display_rotation, np.eye(3), atol=1e-6)
+    assert view._angle_source() == "Body gyro totals · not attitude"
+    assert view.orientation_text == "ORIENTATION UNAVAILABLE · neutral model"
+    assert not view.pose.attitude_known
 
 
 @pytest.mark.parametrize("burning,caption", [(None, "IGNITED · BURN ?"), (False, "IGNITED · OFF"), (True, "MOTOR ON")])
@@ -69,8 +70,8 @@ def test_partial_unknown_telemetry_shows_neutral_model_and_retains_raw_fields(qt
     item = Sample(t=1, sequence=1, source="LIVE", attitude=[45, None, 30])
     view = make_view(qtbot, telemetry_pose(item))
     np.testing.assert_allclose(view.display_rotation, np.eye(3))
-    assert view.angle_text == ("R  +45.0°", "P  —", "Y  +30.0°")
-    assert "neutral" in view.pose.status and not view.pose.attitude_known
+    assert view.angle_text == ("∫R  +45.0°", "∫P  —", "∫Y  +30.0°")
+    assert "Orientation unavailable" in view.pose.status and not view.pose.attitude_known
     view.set_pose(None)
     assert view.angle_text == ("R  —", "P  —", "Y  —")
     assert view._source_text() == "NO TELEMETRY · Neutral illustration"

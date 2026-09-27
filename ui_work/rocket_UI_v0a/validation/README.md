@@ -1,5 +1,7 @@
 # v0a acceptance records — 22 September 2026
 
+The [gyro-integral attitude correction](gyro-attitude-correction-2026-09-27/README.md) supersedes the earlier conversion of legacy gyro totals into Euler orientation. Raw readouts remain available; actual telemetry attitude is explicitly unavailable without a validated orientation quaternion.
+
 The [larger rocket-view update](larger-rocket-pose-2026-09-27/README.md) enlarges the centered graphic, places all readouts beneath it and reallocates space within the Launch and Away flight layouts.
 
 The newest [Launch telemetry-board and rocket-pose validation](launch-telemetry-board-2026-09-27/README.md) verifies the single local Launch telemetry board, simulated uplink switch, compact 3D rocket with an upright azimuth-only camera, and unchanged video wall. It supersedes the local-board inventory in the earlier [Launch station and rocket-state validation](launch-station-2026-09-27/README.md), which introduced remote pointer selection, Away Wi-Fi selection and the prominent telemetry-state badge. The [startup locations and optional saved setup validation](startup-sites-2026-09-26/README.md) covers URRG station presets, CLI/wizard configuration and optional remembering. The earlier [station-profile and video-role validation](station-profiles-2026-09-22/README.md) covers five station identities and Balius/Iris video. The workspace record below is historical.

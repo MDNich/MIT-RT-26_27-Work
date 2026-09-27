@@ -100,7 +100,7 @@ def decode_row(row, *, source="LEGACY_CSV", received=None):
     details = {
         "legacy_csv": dict(row),
         "legacy_values": v,
-        "attitude_kind": "Legacy integrated rotation · recorded CSV",
+        "attitude_kind": "Body gyro integrals · not Euler attitude · recorded CSV",
         "quality": "Recorded decoded CSV; raw packet checksum unavailable",
         "state_code": PHASES.index(phase) if phase in PHASES else 0,
         "device_ticks_raw": ticks,
