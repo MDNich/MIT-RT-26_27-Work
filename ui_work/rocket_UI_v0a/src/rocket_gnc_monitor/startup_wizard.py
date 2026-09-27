@@ -43,16 +43,16 @@ class StartupWizard(QWizard):
         self.groups = {}
         self.add_choices(
             "station", "01 / STATION", "Where is this computer?",
-            "Assign this computer to the base station or one of the four away stations.",
-            [("base", "Base station", "Launch site · main ground station")]
-            + [(f"away{i}", f"Away station {i}", "Remote ground station") for i in range(1, 5)],
+            "Assign this computer to the launch station or one of the four away stations.",
+            [("base", "Launch station", "Ethernet / PoE · four LTU-XR links · uplink authority")]
+            + [(f"away{i}", f"Away station {i}", "Local Wi-Fi · downlink board and antenna pointer") for i in range(1, 5)],
             profile.station,
         )
         self.add_choices(
             "role", "02 / ROLE", "What will this computer display?",
             "Keep each station focused on its assigned task.",
             [
-                ("telemetry", "Telemetry", "Rocket telemetry and antenna pointing"),
+                ("telemetry", "Telemetry", "Rocket telemetry and station communication controls"),
                 ("video", "Video", "Camera reception, recording and playback in one dedicated window"),
             ],
             profile.role,
@@ -71,7 +71,7 @@ class StartupWizard(QWizard):
             "Set the launch pad and this station's location for the mission.",
             [
                 ("urrg", "URRG", "Use the URRG launch pad and the preset for your station number"),
-                ("custom", "Another launch site", "Set launch and antenna locations in Mission profile"),
+                ("custom", "Another launch site", "Set launch and station locations in Mission profile"),
             ],
             profile.launch_site,
         )
@@ -136,16 +136,23 @@ class StartupWizard(QWizard):
             if profile.station == "base":
                 text += " Away-station feeds: connection pending."
         else:
-            text += ("\nTwo displays · separate downlink and uplink boards."
+            text += ("\nTwo displays · Ethernet / PoE to four LTU-XR links."
                      if profile.station == "base" else
-                     "\nOne display · downlink board and antenna control.")
+                     "\nOne display · Wi-Fi, downlink board and antenna control.")
+            if profile.station == "base":
+                text += "\nChoose an away antenna pointer for communication; station transfer pending."
             targets = ", ".join(target.title() for target in profile.telemetry_targets)
             text += f"\nTelemetry assignment: {targets}."
         text += f"\nMission: {profile.vehicle_label} Launch."
         if profile.launch_site == "urrg":
+            site_label = "Launch station reference" if profile.station == "base" else profile.station_label
             text += (f"\nURRG launch pad: {URRG_LAUNCH_MGRS}"
-                     f"\n{profile.station_label}: {URRG_STATION_MGRS[profile.station]}"
+                     f"\n{site_label}: {URRG_STATION_MGRS[profile.station]}")
+            text += ("\nSet launch elevation in Mission profile; no local antenna pointer."
+                     if profile.station == "base" else
                      "\nSet launch and antenna elevations separately in Mission profile.")
         else:
-            text += "\nSet launch and antenna locations in Mission profile before tracking."
+            text += ("\nSet the launch location in Mission profile; choose an away antenna in the workspace."
+                     if profile.station == "base" else
+                     "\nSet launch and antenna locations in Mission profile before tracking.")
         self.summary.setText(text)

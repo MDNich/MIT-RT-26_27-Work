@@ -8,6 +8,12 @@ from PySide6.QtGui import QPixmap
 
 from rocket_gnc_monitor.station_profile import StationProfile
 from rocket_gnc_monitor.station_workspace import StationWindow
+from rocket_gnc_monitor.wifi import WifiSnapshot
+
+
+@pytest.fixture(autouse=True)
+def offline_wifi_status(monkeypatch):
+    monkeypatch.setattr('rocket_gnc_monitor.wifi_panel.read_wifi_status', WifiSnapshot)
 
 
 @pytest.mark.parametrize('site,vehicle,channels', [
@@ -39,8 +45,9 @@ def test_video_role_uses_only_its_local_receivers_and_remote_wall(qtbot, tmp_pat
         attempted = []
         monkeypatch.setattr(w.controller, 'connect', lambda *args: attempted.append(args))
         for role, key in [('telemetry', 'ground'), ('pointer', 'pointer')]:
-            w.port_widgets[role][0].addItem('Test board', '/test/serial')
-            w.port_widgets[role][0].setCurrentIndex(w.port_widgets[role][0].count() - 1)
+            if role in w.port_widgets:
+                w.port_widgets[role][0].addItem('Test board', '/test/serial')
+                w.port_widgets[role][0].setCurrentIndex(w.port_widgets[role][0].count() - 1)
             w.last_ui = 0
             w.refresh()
             assert not w.legacy_actions[key].isEnabled()
@@ -52,6 +59,7 @@ def test_video_role_uses_only_its_local_receivers_and_remote_wall(qtbot, tmp_pat
         assert w.legacy_actions['log'].isVisible()
         visible = {key for key, card in w.cards.items() if card.isVisible()}
         if site == 'base':
+            assert not w.port_widgets and w.controller.board_layout == 'launch'
             assert visible == {'video_wall'}
             assert set(w.video_wall.primary_views) == set(profile.channels)
             assert set(w.video_wall.thumbnails) == {(station, channel) for station, channels in profile.away_channels.items() for channel in channels}
@@ -91,7 +99,7 @@ def test_away_telemetry_retains_selected_station_number(qtbot, tmp_path):
         w.close()
 
 
-def test_base_wall_local_source_labels_follow_demo_file_and_paused_replay(qtbot, tmp_path):
+def test_launch_wall_local_source_labels_follow_demo_file_and_paused_replay(qtbot, tmp_path):
     QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
     gc.collect()
     w = StationWindow(tmp_path, profile=StationProfile('base', 'video', 'iris'), auto_place=False)
@@ -120,8 +128,8 @@ def test_base_wall_local_source_labels_follow_demo_file_and_paused_replay(qtbot,
 
 
 @pytest.mark.parametrize('site,vehicle,serial_roles,switches', [
-    ('base', 'balius', {'telemetry', 'uplink', 'pointer'}, set()),
-    ('base', 'iris', {'telemetry', 'uplink', 'pointer'}, {'downlink', 'uplink'}),
+    ('base', 'balius', set(), set()),
+    ('base', 'iris', set(), {'downlink', 'uplink'}),
     ('away4', 'iris', {'telemetry', 'pointer'}, {'downlink'}),
 ])
 def test_telemetry_station_board_inventory_and_iris_placeholders(qtbot, tmp_path, site, vehicle, serial_roles, switches):
@@ -148,7 +156,7 @@ def test_telemetry_station_board_inventory_and_iris_placeholders(qtbot, tmp_path
 
 
 @pytest.mark.parametrize('kind', ['file', 'camera'])
-def test_base_wall_stopped_input_keeps_frame_without_live_status(qtbot, tmp_path, kind):
+def test_launch_wall_stopped_input_keeps_frame_without_live_status(qtbot, tmp_path, kind):
     w = StationWindow(tmp_path, profile=StationProfile('base', 'video', 'iris'), auto_place=False)
     qtbot.addWidget(w)
     try:
@@ -175,7 +183,7 @@ def test_base_wall_stopped_input_keeps_frame_without_live_status(qtbot, tmp_path
     (True, 1, '', False, 'stopped', False),
     (True, 1, '', True, 'LIVE', True),
 ])
-def test_base_wall_camera_live_requires_healthy_worker_and_new_frame(
+def test_launch_wall_camera_live_requires_healthy_worker_and_new_frame(
         qtbot, tmp_path, worker_present, last_frame, error, active, expected, live):
     from types import SimpleNamespace
 
@@ -202,7 +210,7 @@ def test_base_wall_camera_live_requires_healthy_worker_and_new_frame(
         w.close()
 
 
-def test_base_wall_per_channel_replay_pause_overrides_global_playback(qtbot, tmp_path):
+def test_launch_wall_per_channel_replay_pause_overrides_global_playback(qtbot, tmp_path):
     w = StationWindow(tmp_path, profile=StationProfile('base', 'video', 'iris'), auto_place=False)
     qtbot.addWidget(w)
     try:

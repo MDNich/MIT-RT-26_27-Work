@@ -31,6 +31,18 @@ def station_board_report(window):
         iris_link_boards=list(panel.selectors) if panel is not None else [],
         iris_simulated_targets=dict(panel.simulated_targets) if panel is not None else {},
         iris_switch_buttons_enabled={board: button.isEnabled() for board, button in panel.buttons.items()} if panel is not None else {},
+        launch_station=window.launch_station,
+        selected_away_pointer=window.controller.selected_away_station,
+        away_pointer_choices=[window.launch_links.selector.itemData(i) for i in range(1, window.launch_links.selector.count())]
+        if window.launch_links else [],
+        local_pointer_controls_visible=window.virtual_connect.isVisible() or window.point_button.isVisible(),
+        wifi_selector_visible=window.wifi_panel is not None and window.wifi_panel.isVisible(),
+        rocket_state_badge=dict(
+            visible=window.rocket_state_badge.isVisible(),
+            state=window.rocket_state_badge.state_name,
+            color=window.rocket_state_badge.background_color,
+            source=window.rocket_state_badge.status_label.text(),
+        ),
     )
 
 
@@ -44,11 +56,12 @@ def argument_parser():
     )
     parser.add_argument("--data-dir", type=Path)
     parser.add_argument(
-        "--station", choices=["base", "away", "video"],
-        help="Legacy workspace choice; preselects the startup wizard",
+        "--station", choices=["launch", "base", "away", "video"], metavar="{launch,away,video}",
+        help="Legacy workspace choice; preselects the startup wizard (base remains an alias for launch)",
     )
-    parser.add_argument("--site", choices=["base", "away1", "away2", "away3", "away4"],
-                        help="Station identity: base or numbered away station (1–4)")
+    parser.add_argument("--site", choices=["launch", "base", "away1", "away2", "away3", "away4"],
+                        metavar="{launch,away1,away2,away3,away4}",
+                        help="Launch station or numbered away station (1–4); base remains an alias for launch")
     parser.add_argument("--role", choices=["telemetry", "video"], help="Computer's display and control role")
     parser.add_argument("--vehicle", choices=["balius", "iris"], help="Rocket and default mission name")
     parser.add_argument("--launch-site", choices=["urrg", "custom"],

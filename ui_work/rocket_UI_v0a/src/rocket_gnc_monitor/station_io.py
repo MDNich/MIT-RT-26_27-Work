@@ -557,7 +557,7 @@ def controller_snapshot(controller, name, aprs: APRSPosition | None = None):
             k: None if isinstance(v, float) and not math.isfinite(v) else v for k, v in telemetry.items()
         }
     angles = controller.virtual_pointer.pose if controller.virtual_pointer else controller.pointer_sent
-    links = {key: str(controller.states[key])[:80] for key in ("telemetry", "pointer")}
+    links = {key: str(controller.states.get(key, "Remote transport pending"))[:80] for key in ("telemetry", "pointer")}
     links["rocket"] = str(controller.rocket_link_state()[0])[:80]
     return validate_snapshot(
         {

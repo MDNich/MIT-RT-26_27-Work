@@ -34,12 +34,12 @@ def test_placeholders_do_not_actuate_or_claim_hardware_state(qtbot, mode):
         assert not panel.buttons[board].isEnabled()
         panel.simulate(board)
         assert panel.simulated_targets[board] is None
-        assert "Hardware target: unknown" in panel.status[board].text()
-        assert "firmware command not defined" in panel.status[board].text()
+        assert "Remote target: unknown" in panel.status[board].text()
+        assert "transport not configured" in panel.status[board].text()
     assert events == [] and controller.latest is sample
 
 
-def test_base_demo_switches_receiver_and_transmitter_independently(qtbot):
+def test_launch_demo_switches_receiver_and_transmitter_independently(qtbot):
     panel, controller, events, sample = make_panel(qtbot, mode="DEMO")
     panel.selectors["downlink"].setCurrentIndex(1)
     qtbot.mouseClick(panel.buttons["downlink"], Qt.MouseButton.LeftButton)
@@ -71,6 +71,13 @@ def test_away_station_has_only_receiver_with_correct_default(qtbot, station, def
     assert events[0][1]["target"] == default
     with pytest.raises(ValueError, match="uplink"):
         panel.simulate("uplink")
+
+
+def test_away_live_receiver_retains_hardware_placeholder(qtbot):
+    panel, _, events, _ = make_panel(qtbot, station="away4")
+    assert "Hardware target: unknown" in panel.status["downlink"].text()
+    assert "firmware command not defined" in panel.status["downlink"].text()
+    assert not panel.buttons["downlink"].isEnabled() and not events
 
 
 @pytest.mark.parametrize("destination", ["LIVE", "REPLAY"])

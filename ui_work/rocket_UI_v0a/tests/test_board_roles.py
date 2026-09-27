@@ -16,6 +16,7 @@ from rocket_gnc_monitor.domain import demo_sample
 from rocket_gnc_monitor.protocol import pointer_packet
 from rocket_gnc_monitor.recording import SessionReader, SessionRecorder, read_raw
 from rocket_gnc_monitor.ui import MainWindow
+from rocket_gnc_monitor.virtual_pointer import VIRTUAL_POINTER_DEVICE
 from rocket_gnc_monitor.zephyrus import rocket_packet
 from test_protocol import frame
 
@@ -43,6 +44,91 @@ class Board:
 @pytest.fixture
 def boards(monkeypatch):
     monkeypatch.setattr("rocket_gnc_monitor.controller.SerialWorker", Board)
+
+
+@pytest.mark.parametrize("vehicle", ["balius", "iris"])
+def test_launch_station_has_no_serial_transport_or_live_command_path(qtbot, tmp_path, boards, vehicle):
+    c = Controller(tmp_path, board_layout="launch", vehicle=vehicle)
+    try:
+        assert dict(c.serial_labels) == c.workers == c.states == {}
+        assert c.command_role == "uplink"
+        assert not c.ground_connected and not c.pointer_connected and not c.command_connected
+        assert c.virtual_pointer is None and not c.can_command
+        assert c.command_block_reason == "Launch uplink transport not configured"
+        for role, device in (("telemetry", "downlink"), ("uplink", "uplink"),
+                             ("pointer", "pointer"), ("pointer", VIRTUAL_POINTER_DEVICE)):
+            with pytest.raises(ValueError, match="no local serial"):
+                c.connect(role, device)
+        with pytest.raises(ValueError, match="uplink transport not configured"):
+            c.send_rocket("zero_alt")
+        with pytest.raises(ValueError, match="downlink transport not configured"):
+            c.set_polling(True)
+        with pytest.raises(ValueError, match="downlink transport not configured"):
+            c.freeze_ground_station()
+        for action in (lambda: c.manual_point(90, 30), lambda: c.jog(0, 5), c.reference_zero, c.start_tracking):
+            with pytest.raises(ValueError, match="Remote antenna-pointer transport not configured"):
+                action()
+        with pytest.raises(ValueError, match="no local antenna pointer"):
+            c.start_virtual_trajectory()
+        assert not c.tracking and c.pointer_requested is None and c.pointer_sent is None
+        assert not c.rocket_commands and not c.dispatched_commands
+        # Stale/local device events must not create a launch connection or sample.
+        for role in ("telemetry", "uplink", "pointer"):
+            c.enqueue(1, role, "connected", role)
+            c.enqueue(1, role, "sample", demo_sample(0, 1))
+        c.tick()
+        assert c.latest is None and c.rocket_link_state() == ("DISCONNECTED", None)
+        assert c.workers == c.states == {}
+    finally:
+        c.shutdown()
+
+
+def test_launch_remote_pointer_selection_is_intent_only_and_clears_old_pointer_state(qtbot, tmp_path):
+    c = Controller(tmp_path, board_layout="launch")
+    try:
+        assert c.selected_away_station is None
+        for station in ("away1", "away2", "away3", "away4", None):
+            c.pointer_sent = (20, 30)
+            c.pointer_requested = (40, 50)
+            c.pointer_pending = ("obsolete", (60, 70))
+            c.dispatched_commands["obsolete"] = (60, 70)
+            c.mission.pointer_calibrated = c.tracking = True
+            c.select_away_station(station)
+            assert c.selected_away_station == station
+            assert not c.tracking and not c.mission.pointer_calibrated
+            assert c.pointer_sent is c.pointer_requested is c.pointer_pending is None
+            assert not c.dispatched_commands
+            assert "transport not configured" in c.pointer_status
+            assert c.workers == c.states == {} and not c.pointer_connected
+            assert not c.command_connected and not c.can_command
+        for invalid in ("base", "away5", "", [], 1):
+            with pytest.raises(ValueError, match="1 to 4"):
+                c.select_away_station(invalid)
+        assert c.selected_away_station is None
+    finally:
+        c.shutdown()
+
+
+def test_launch_demo_and_replay_remain_available_without_local_devices(qtbot, tmp_path, monkeypatch):
+    c = Controller(tmp_path, board_layout="launch", vehicle="iris")
+    monkeypatch.setattr(c, "start_video", lambda *args, **kwargs: None)
+    events = []
+    c.event.connect(events.append)
+    try:
+        c.select_away_station("away3")
+        c.switch_mode("DEMO")
+        assert c.latest is not None and c.can_command
+        c.send_rocket("zero_alt")
+        assert events[-1] == "Rocket command simulated"
+        assert c.workers == c.states == {} and not c.command_connected
+        c.switch_mode("REPLAY")
+        assert not c.can_command and c.command_block_reason == "Replay is read-only"
+        c.switch_mode("LIVE")
+        assert c.selected_away_station == "away3"
+        assert "Away station 3" in c.pointer_status and "transport not configured" in c.pointer_status
+        assert not c.can_command and c.workers == c.states == {}
+    finally:
+        c.shutdown()
 
 
 def test_base_commands_use_only_uplink_and_downlink_controls_remain_independent(qtbot, tmp_path, boards):

@@ -37,10 +37,16 @@ def pointer_coordinates(mission):
 def test_urrg_startup_mission_uses_selected_station_and_vehicle(station, code, expected, vehicle):
     mission = mission_for_station(StationProfile(station, "telemetry", vehicle, "urrg"))
     assert mission.name == f"{vehicle.title()} Launch"
-    assert URRG_STATION_MGRS[station] == mission.pointer_location_code == code
-    assert (mission.pointer_latitude, mission.pointer_longitude) == pytest.approx(expected, abs=2e-9)
-    assert mission.pointer_site_name == f"URRG:{station}"
-    assert mission.pointer_location_format == "mgrs" and mission.pointer_site_configured
+    assert URRG_STATION_MGRS[station] == code
+    if station == "base":
+        assert not mission.pointer_site_configured
+        assert mission.pointer_location_code == mission.pointer_site_name == ""
+        assert pointer_coordinates(mission) == (0, 0, 0)
+    else:
+        assert mission.pointer_location_code == code
+        assert (mission.pointer_latitude, mission.pointer_longitude) == pytest.approx(expected, abs=2e-9)
+        assert mission.pointer_site_name == f"URRG:{station}"
+        assert mission.pointer_location_format == "mgrs" and mission.pointer_site_configured
     assert mission.launch_site_name == "URRG" and mission.site_configured
     assert URRG_LAUNCH_MGRS == mission.launch_location_code == "18TUN2061530290"
     assert (mission.latitude, mission.longitude) == pytest.approx(

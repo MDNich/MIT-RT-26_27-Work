@@ -1,6 +1,6 @@
 # v0a acceptance records — 22 September 2026
 
-The newest [startup locations and optional saved setup validation](startup-sites-2026-09-26/README.md) covers URRG station presets, CLI/wizard configuration, optional remembering, and the refreshed native Mac build. The earlier [station-profile and video-role validation](station-profiles-2026-09-22/README.md) covers five station identities and Balius/Iris video. The workspace record below is historical.
+The newest [Launch station and rocket-state validation](launch-station-2026-09-27/README.md) covers remote pointer selection, Away Wi-Fi selection, the prominent telemetry-state badge and the refreshed native Mac build. The [startup locations and optional saved setup validation](startup-sites-2026-09-26/README.md) covers URRG station presets, CLI/wizard configuration and optional remembering. The earlier [station-profile and video-role validation](station-profiles-2026-09-22/README.md) covers five station identities and Balius/Iris video. The workspace record below is historical.
 
 The [cross-platform release validation](cross-platform-2026-09-22/README.md) records the subsequent universal Mac and Windows builds, including the refreshed Apple Silicon installer. The original package checksum and platform limits below are historical.
 

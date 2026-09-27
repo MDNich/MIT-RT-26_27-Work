@@ -22,6 +22,9 @@ class StationProfile:
     launch_site: str = "custom"
 
     def __post_init__(self):
+        # Keep saved profiles and existing integrations compatible with the old ID.
+        if self.station == "launch":
+            object.__setattr__(self, "station", "base")
         for name, choices in (("station", STATIONS), ("role", ROLES), ("vehicle", VEHICLES),
                               ("launch_site", LAUNCH_SITES)):
             value = getattr(self, name)
@@ -59,7 +62,7 @@ class StationProfile:
 
     @property
     def station_label(self):
-        return "Base station" if self.station == "base" else f"Away station {self.station[-1]}"
+        return "Launch station" if self.station == "base" else f"Away station {self.station[-1]}"
 
     @property
     def vehicle_label(self):
@@ -91,7 +94,8 @@ class StationProfile:
 def profile_for_layout(layout, profile=None):
     """Translate the original three workspace flags without changing the vehicle."""
     profile = profile or StationProfile()
-    values = {"base": ("base", "telemetry"), "away": ("away1", "telemetry"), "video": ("away1", "video")}
+    values = {"launch": ("base", "telemetry"), "base": ("base", "telemetry"),
+              "away": ("away1", "telemetry"), "video": ("away1", "video")}
     if layout not in values:
         raise ValueError(f"Unknown station layout: {layout!r}")
     station, role = values[layout]

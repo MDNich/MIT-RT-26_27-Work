@@ -122,6 +122,7 @@ class MissionDialog(QDialog):
         self.setWindowTitle("Mission configuration")
         self.resize(690, 760)
         self.mission = copy.deepcopy(mission)
+        remote_only = getattr(getattr(parent, "controller", None), "board_layout", None) == "launch"
         root = QVBoxLayout(self)
         tabs = QTabWidget()
         root.addWidget(tabs)
@@ -156,6 +157,8 @@ class MissionDialog(QDialog):
             ),
         ]
         for page_title, fields in definitions:
+            if remote_only and page_title == "Antenna pointer":
+                continue
             page = QWidget()
             form = QFormLayout(page)
             form.setSpacing(11)
@@ -207,16 +210,19 @@ class MissionDialog(QDialog):
             scroll.setWidgetResizable(True)
             scroll.setWidget(page)
             tabs.addTab(scroll, page_title)
-        for field in (self.location.latitude, self.location.longitude, self.fields["altitude"]):
-            field.valueChanged.connect(self.pointer_location.update_preview)
-        for field in (self.location.mgrs, self.location.plus_code, self.location.reference_lat, self.location.reference_lon):
-            field.textChanged.connect(self.pointer_location.update_preview)
-        self.fields["site_configured"].toggled.connect(self.pointer_location.update_preview)
-        self.location.preset_selected.connect(self.pointer_location.update_preview)
-        self.location.preset.currentIndexChanged.connect(
-            lambda: self.pointer_location.set_urrg_available(self.location.preset.currentData() == "URRG")
-        )
+        if not remote_only:
+            for field in (self.location.latitude, self.location.longitude, self.fields["altitude"]):
+                field.valueChanged.connect(self.pointer_location.update_preview)
+            for field in (self.location.mgrs, self.location.plus_code, self.location.reference_lat, self.location.reference_lon):
+                field.textChanged.connect(self.pointer_location.update_preview)
+            self.fields["site_configured"].toggled.connect(self.pointer_location.update_preview)
+            self.location.preset_selected.connect(self.pointer_location.update_preview)
+            self.location.preset.currentIndexChanged.connect(
+                lambda: self.pointer_location.set_urrg_available(self.location.preset.currentData() == "URRG")
+            )
         note = label(
+            "Launch station has no local antenna pointer. Select an away-station pointer in the communication panel; its location is configured at that away station."
+            if remote_only else
             "Set the antenna location for virtual trajectory tracking. Physical-board tracking retains the ground GPS set with Send to AntPtr.",
             "muted",
         )
@@ -253,7 +259,8 @@ class MissionDialog(QDialog):
             self.mission.launch_location_format = self.location.format.currentData()
             self.mission.launch_location_code = location.code
             self.mission.launch_site_name = self.location.preset.currentData()
-            self.pointer_location.apply(self.mission)
+            if hasattr(self, "pointer_location"):
+                self.pointer_location.apply(self.mission)
             self.mission.validate()
         except ValueError as exc:
             QMessageBox.warning(self, "Mission settings", str(exc))
@@ -1192,7 +1199,7 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(text, 8000)
 
     def refresh_ports(self):
-        self.serial_devices = ports()
+        self.serial_devices = ports() if self.controller.serial_labels else []
         self.update_port_choices(force=True)
 
     def update_port_choices(self, force=False):
@@ -1261,6 +1268,8 @@ class MainWindow(QMainWindow):
         )
 
     def connect_role(self, role):
+        if role not in self.port_widgets:
+            return
         if self.controller.states[role] not in {"Connected", "Connecting"}:
             self.guard(lambda: self.controller.connect(role, self.port_widgets[role][0].currentData()))
         self.last_ui = 0
@@ -1378,7 +1387,7 @@ class MainWindow(QMainWindow):
         c = self.controller
         worker, flight = c.virtual_pointer, c.virtual_flight
         self.virtual_connect.setVisible(worker is None)
-        self.virtual_connect.setEnabled(c.mode == "LIVE" and not c.pointer_connected)
+        self.virtual_connect.setEnabled(c.board_layout != "launch" and c.mode == "LIVE" and not c.pointer_connected)
         self.virtual_panel.setVisible(worker is not None)
         for control in (self.ground_gps_title, self.ground_gps, self.freeze_gps, self.track_button):
             control.setVisible(worker is None)
@@ -1725,7 +1734,7 @@ class MainWindow(QMainWindow):
         state, age = c.rocket_link_state(now)
         simulated = c.mode == "DEMO"
         live_ready = simulated or c.ground_connected
-        pointer_ready = simulated or c.pointer_connected
+        pointer_ready = c.board_layout != "launch" and (simulated or c.pointer_connected)
         descriptions = {
             "DISCONNECTED": (
                 "Ground station disconnected",
@@ -1775,7 +1784,7 @@ class MainWindow(QMainWindow):
                 if simulated
                 else "OFFLINE / REPLAY"
                 if c.mode == "REPLAY"
-                else c.states[role].upper()
+                else c.states.get(role, "Remote transport pending").upper()
             )
             shade = (
                 "accent"
@@ -1869,6 +1878,9 @@ class MainWindow(QMainWindow):
         self.rocket_panel.set_controls_enabled()
         if hasattr(self, "legacy_actions"):
             for key, role in [("ground", "telemetry"), ("pointer", "pointer")]:
+                if role not in self.port_widgets:
+                    self.legacy_actions[key].setEnabled(False)
+                    continue
                 active = c.states[role] in {"Connected", "Connecting"}
                 self.legacy_actions[key].setEnabled(
                     c.mode == "LIVE" and (active or bool(self.port_widgets[role][0].currentData()))

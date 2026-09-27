@@ -50,8 +50,8 @@ class Controller(QObject):
 
     def __init__(self, data_dir, video_channels=None, video_labels=None, board_layout="legacy", vehicle="balius", initial_mission=None):
         super().__init__()
-        if board_layout not in {"legacy", "base", "away"}:
-            raise ValueError("Unknown board layout; choose legacy, base or away")
+        if board_layout not in {"legacy", "base", "launch", "away"}:
+            raise ValueError("Unknown board layout; choose legacy, launch or away")
         if vehicle not in {"balius", "iris"}:
             raise ValueError("Unknown vehicle; choose balius or iris")
         self.board_layout, self.vehicle = board_layout, vehicle
@@ -59,7 +59,12 @@ class Controller(QObject):
         if board_layout == "base":
             serial_labels["uplink"] = "Uplink commands"
         serial_labels["pointer"] = "Antenna pointer"
+        # The launch computer uses the station network, never a local PCB or
+        # pointer. Keep the old base layout only for legacy integrations.
+        if board_layout == "launch":
+            serial_labels = {}
         self._serial_labels = MappingProxyType(serial_labels)
+        self._selected_away_station = None
         channels = tuple(DEFAULT_VIDEO_CHANNELS if video_channels is None else video_channels)
         if not channels or any(channel not in VIDEO_STREAMS for channel in channels):
             raise ValueError("Video channels must be selected from digital, analog and analog2")
@@ -125,7 +130,7 @@ class Controller(QObject):
         self.pointer_last_command = "—"
         self.rocket_commands = {}
         self.frozen_ground = None
-        self.pointer_status = "Disconnected"
+        self.pointer_status = self.remote_pointer_status if board_layout == "launch" else "Disconnected"
         self.virtual_flight = None
         self.virtual_context = None
         self.last_virtual_command = 0.0
@@ -168,13 +173,13 @@ class Controller(QObject):
 
     @property
     def command_role(self):
-        return "uplink" if self.board_layout == "base" else "telemetry" if self.board_layout == "legacy" else None
+        return "uplink" if self.board_layout in {"base", "launch"} else "telemetry" if self.board_layout == "legacy" else None
 
     @property
     def command_connected(self):
         role = self.command_role
-        return (self.mode == "LIVE" and role is not None and self.workers[role] is not None
-                and self.states[role] == "Connected")
+        return (self.mode == "LIVE" and role is not None and self.workers.get(role) is not None
+                and self.states.get(role) == "Connected")
 
     @property
     def command_block_reason(self):
@@ -182,6 +187,8 @@ class Controller(QObject):
             return "Away stations cannot transmit rocket commands"
         if self.mode == "REPLAY":
             return "Replay is read-only"
+        if self.mode == "LIVE" and self.board_layout == "launch":
+            return "Launch uplink transport not configured"
         if self.mode == "LIVE" and self.vehicle == "iris":
             return "Iris live command target protocol pending; commands are disabled"
         if self.mode == "LIVE" and not self.command_connected:
@@ -191,6 +198,37 @@ class Controller(QObject):
     @property
     def can_command(self):
         return not self.command_block_reason
+
+    @property
+    def remote_pointer_status(self):
+        if self.selected_away_station is None:
+            return "Choose an away-station antenna pointer · transport not configured"
+        return f"Away station {self.selected_away_station[-1]} pointer · transport not configured"
+
+    @property
+    def selected_away_station(self):
+        return self._selected_away_station
+
+    def select_away_station(self, station):
+        """Select a future remote route without opening a connection or sending data."""
+        if self.board_layout != "launch":
+            raise ValueError("Remote antenna-pointer selection belongs to the launch station")
+        if station is not None and (not isinstance(station, str) or station not in {"away1", "away2", "away3", "away4"}):
+            raise ValueError("Choose an away station from 1 to 4")
+        if station == self.selected_away_station:
+            return
+        self._selected_away_station = station
+        self.tracking = False
+        self.virtual_flight = self.virtual_context = None
+        self.pointer_sent = self.pointer_pending = self.pointer_requested = None
+        self.dispatched_commands.clear()
+        self.command_names.clear()
+        self.pointer_last_command = "—"
+        self.mission.pointer_calibrated = False
+        self.frozen_ground = None
+        self.pointer_status = self.remote_pointer_status
+        self.log("Remote antenna pointer selected", {"station": station, "transport_configured": False})
+        self.changed.emit()
 
     @property
     def video_channels(self):
@@ -226,21 +264,21 @@ class Controller(QObject):
     def ground_connected(self):
         return (
             self.mode == "LIVE"
-            and self.workers["telemetry"] is not None
-            and self.states["telemetry"] == "Connected"
+            and self.workers.get("telemetry") is not None
+            and self.states.get("telemetry") == "Connected"
         )
 
     @property
     def pointer_connected(self):
         return (
             self.mode == "LIVE"
-            and self.workers["pointer"] is not None
-            and self.states["pointer"] == "Connected"
+            and self.workers.get("pointer") is not None
+            and self.states.get("pointer") == "Connected"
         )
 
     @property
     def virtual_pointer(self):
-        worker = self.workers["pointer"]
+        worker = self.workers.get("pointer")
         return worker if isinstance(worker, VirtualPointer) else None
 
     def virtual_flight_context(self):
@@ -254,6 +292,8 @@ class Controller(QObject):
         )
 
     def prepare_virtual_flight(self):
+        if self.board_layout == "launch":
+            raise ValueError("The launch station has no local antenna pointer")
         if not self.pointer_connected or not self.virtual_pointer:
             raise ValueError("Connect the Virtual antenna pointer first")
         context = self.virtual_flight_context()
@@ -306,6 +346,8 @@ class Controller(QObject):
                 self.log("VIRTUAL · trajectory playback completed")
 
     def set_polling(self, enabled):
+        if self.board_layout == "launch":
+            raise ValueError("Launch downlink transport not configured")
         self.require_ground_station()
         self.polling = bool(enabled)
         self.workers["telemetry"].set_polling(self.polling)
@@ -316,6 +358,8 @@ class Controller(QObject):
         self.changed.emit()
 
     def require_ground_station(self):
+        if self.mode == "LIVE" and self.board_layout == "launch":
+            raise ValueError("Launch downlink transport not configured")
         if self.mode == "LIVE" and not self.ground_connected:
             raise ValueError("Ground station is disconnected")
 
@@ -367,6 +411,8 @@ class Controller(QObject):
         self.mission.pointer_calibrated = False
         self.states = {r: "Simulated" if mode == "DEMO" else "Disconnected" for r in self.workers}
         self.pointer_status = "Demo" if mode == "DEMO" else "Disconnected"
+        if mode == "LIVE" and self.board_layout == "launch":
+            self.pointer_status = self.remote_pointer_status
         self.replay_playing = False
         self.flight_zero = 0
         self.time_aligned = mode != "LIVE"
@@ -479,6 +525,8 @@ class Controller(QObject):
                 self.hold("Ground station disconnected")
 
     def connect(self, role, device):
+        if self.board_layout == "launch":
+            raise ValueError("The launch station has no local serial boards or antenna pointer")
         if role not in self.serial_labels:
             raise ValueError(f"Unknown serial role: {role!r}")
         if self.mode != "LIVE":
@@ -563,6 +611,8 @@ class Controller(QObject):
     def dispatch_pointer(self, packet, angles, command):
         if self.mode == "REPLAY":
             raise ValueError("Replay cannot transmit pointer commands")
+        if self.mode == "LIVE" and self.board_layout == "launch":
+            raise ValueError("Remote antenna-pointer transport not configured")
         if self.mode == "DEMO":
             self.pointer_sent = angles
             self.pointer_last_command = command
@@ -628,6 +678,8 @@ class Controller(QObject):
         self.log("Ground GPS fixed for antenna pointer", self.frozen_ground)
 
     def point(self, azimuth, elevation):
+        if self.mode == "LIVE" and self.board_layout == "launch":
+            raise ValueError("Remote antenna-pointer transport not configured")
         packet = pointer_packet(azimuth, elevation)
         self.pointer_requested = (azimuth, elevation)
         self.dispatch_pointer(packet, (azimuth, elevation), "manual azimuth/elevation")
@@ -676,6 +728,8 @@ class Controller(QObject):
         self.point(azimuth, elevation)
 
     def start_tracking(self):
+        if self.mode == "LIVE" and self.board_layout == "launch":
+            raise ValueError("Remote antenna-pointer transport not configured")
         if self.virtual_pointer:
             raise ValueError("Use Follow trajectory for the virtual antenna pointer")
         if self.mode == "REPLAY":

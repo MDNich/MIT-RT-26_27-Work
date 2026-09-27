@@ -214,7 +214,7 @@ class PointerLocation(QWidget):
         self.preset.setAccessibleName("Antenna station location preset")
         self.preset.addItem("Custom station location", "")
         for key, code in URRG_STATION_MGRS.items():
-            name = "Base" if key == "base" else f"Away {key[-1]}"
+            name = "Launch station" if key == "base" else f"Away {key[-1]}"
             current = " · this station" if key == station else ""
             self.preset.addItem(f"URRG {name} · {code}{current}", f"URRG:{key}")
         self.preset.setCurrentIndex(max(0, self.preset.findData(mission.pointer_site_name)))

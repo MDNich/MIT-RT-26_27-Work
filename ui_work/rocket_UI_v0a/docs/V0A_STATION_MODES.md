@@ -1,27 +1,27 @@
 # v0a station workspaces and ground-station connections
 
-v0a organizes the monitor by station and operator role. One Base station and four numbered Away stations each offer Telemetry or Video. Balius has two system video channels; Iris has three, distributed across the stations.
+v0a organizes the monitor by station and operator role. One Launch station and four numbered Away stations each offer Telemetry or Video. Balius has two system video channels; Iris has three, distributed across the stations.
 
 ## Startup wizard
 
 Every normal launch asks for:
 
-1. **Station**: Base / launch site, or Away 1, 2, 3 or 4.
+1. **Station**: Launch station, or Away 1, 2, 3 or 4.
 2. **Role**: Telemetry or Video.
 3. **Vehicle**: Balius (Digital + Analog) or Iris (Sustainer Digital + Sustainer Analog + Booster Analog).
 4. **Launch site**: URRG or a custom location.
 
-**Remember these choices next time** is optional and off by default. Without it, the next launch starts from Base / Telemetry / Balius / custom site, unless command-line options preselect other choices. With it, the wizard starts from your saved selections. Uncheck it and finish setup to stop remembering choices. Previously automatic saved profiles do not opt you into remembering choices. Cancel preserves the remembering preference and exits before any device controller is constructed. Finish opens the chosen workspace in LIVE with devices disconnected.
+**Remember these choices next time** is optional and off by default. Without it, the next launch starts from Launch station / Telemetry / Balius / custom site, unless command-line options preselect other choices. With it, the wizard starts from your saved selections. Uncheck it and finish setup to stop remembering choices. Previously automatic saved profiles do not opt you into remembering choices. Cancel preserves the remembering preference and exits before any device controller is constructed. Finish opens the chosen workspace in LIVE with devices disconnected.
 
 During a session, **File → Forget setup on next launch** clears only the remembered startup choices. The current mission, instruments and other settings remain as they are.
 
-A new mission is named **Balius Launch** or **Iris Launch**, according to the selected vehicle. URRG automatically sets the rocket launch-pad coordinates and the selected Base/Away station's antenna coordinates; a custom site is entered in the mission editor. Elevations still need to be entered separately. Opening a saved mission or flight restores its own name and locations. The selected station identity appears at the top of the window and remains fixed for that session; relaunch to change it.
+A new mission is named **Balius Launch** or **Iris Launch**, according to the selected vehicle. URRG automatically sets the rocket launch-pad coordinates and, at Away stations, the selected station's antenna coordinates. Launch shows its own site reference but has no local antenna pointer. A custom launch site is entered in the mission editor. Elevations still need to be entered separately. Opening a saved mission or flight restores its own name and locations. The selected station identity appears at the top of the window and remains fixed for that session; relaunch to change it.
 
-**Base / Telemetry** opens Flight and Systems windows sharing one mission and controller. Put one on each display. Both windows can be moved and resized on a single display for preparation. The second window creates no duplicate serial workers or recording sessions.
+**Launch station / Telemetry** opens Flight and Systems windows sharing one mission and controller. Put one on each display. Both windows can be moved and resized on a single display for preparation. The second window creates no duplicate serial workers or recording sessions.
 
 **Away / Telemetry** opens one reduced workspace with main rocket telemetry and antenna pointing.
 
-**Away / Video** opens one simplified window with its two assigned USB camera inputs. **Base / Video** shows the primary channels and all four Away stations below them; Base has only a local Digital USB camera.
+**Away / Video** opens one simplified window with its two assigned USB camera inputs. **Launch station / Video** shows the primary channels and all four Away stations below them; The Launch station has only a local Digital USB camera.
 
 Video does not appear in either telemetry workspace. The video operator does not need to connect a telemetry PCB or pointer board.
 
@@ -34,41 +34,43 @@ Video does not appear in either telemetry workspace. The video operator does not
 dist/RocketGNCMonitor-v0a.app/Contents/MacOS/RocketGNCMonitor-v0a --site away3 --role video --vehicle iris --launch-site urrg --skip-setup
 ```
 
-`--site` accepts `base`, `away1`, `away2`, `away3`, `away4`; `--role` accepts `telemetry`, `video`; `--vehicle` accepts `balius`, `iris`; `--launch-site` accepts `urrg`, `custom`. These flags override the corresponding defaults or explicitly remembered choices. Omit `--skip-setup` to review them in the wizard; include it to start directly with the resolved profile. Adjust the executable path if the Mac app has been installed elsewhere, keeping it inside its complete `.app` bundle.
+`--site` accepts `launch`, `away1`, `away2`, `away3`, `away4`; `--role` accepts `telemetry`, `video`; `--vehicle` accepts `balius`, `iris`; `--launch-site` accepts `urrg`, `custom`. The previous `base` argument remains an alias for `launch`, including with the legacy `--station` flag. These flags override the corresponding defaults or explicitly remembered choices. Omit `--skip-setup` to review them in the wizard; include it to start directly with the resolved profile. Adjust the executable path if the Mac app has been installed elsewhere, keeping it inside its complete `.app` bundle.
 
-`--remember-setup` checks the remembering option; `--no-remember-setup` clears it. With `--skip-setup`, these explicitly save the resolved profile or remove the remembered startup choices, respectively. Without either flag, skipping setup leaves the remembering preference and saved choices unchanged. The legacy `--station base|away|video` preselects Base Telemetry, Away 1 Telemetry or Away 1 Video; it does not bypass setup. Smoke-test flags bypass setup, except the dedicated controller-free `--setup-smoke`.
+`--remember-setup` checks the remembering option; `--no-remember-setup` clears it. With `--skip-setup`, these explicitly save the resolved profile or remove the remembered startup choices, respectively. Without either flag, skipping setup leaves the remembering preference and saved choices unchanged. The legacy `--station launch|away|video` preselects Launch Telemetry, Away 1 Telemetry or Away 1 Video; it does not bypass setup. Smoke-test flags bypass setup, except the dedicated controller-free `--setup-smoke`.
 
 Station layout and data mode are separate decisions:
 
 | Data mode | Input and behavior |
 | --- | --- |
-| LIVE | Physical connections start closed. Connect the desired ground-station board, pointer and cameras explicitly. |
+| LIVE | Physical connections start closed. Away stations connect their downlink board, pointer and cameras explicitly. Launch selects an Away communication route; its future transport remains unavailable. |
 | DEMO | Bundled GS1/GS2/GS3 Zephyrus recordings; no physical telemetry connection is needed. |
 | REPLAY | A saved flight/session, with playback controls and physical command isolation. |
 
-## Base station: Flight display
+## Launch station: Flight display
 
-The flight display groups the information used to watch and control the rocket and maintain antenna pointing:
+The flight display groups the information used to watch the rocket and select its remote communication route:
 
 - Main telemetry, state, freshness and ground-station/rocket link status.
 - Flight plots, reference trajectory and 3D rocket presentation.
-- Antenna connection, current/commanded angles, articulated visualization, manual pointing and trajectory following.
+- Ethernet / PoE topology and a choice of Away 1–4 antenna pointers for communication. Launch has no local serial or virtual pointer connection; remote control and feedback await the interstation protocol.
 - Three-axis GNC plots and all actuator channels in a side-by-side matrix.
 
-The antenna and flight renderers animate independently of telemetry arrival. Drag the graphics to orbit, scroll to zoom and use the displayed view controls to restore the camera. The rocket's motor plume follows ignition/burnout events; its parachute appears only if the loaded simulation contains a deployment event. Reference attitude, measured telemetry and path-aligned illustrations are labelled so an illustration is not mistaken for sensor feedback.
+At Away stations, the antenna controls show current/commanded angles, articulated visualization, manual pointing and trajectory following. The antenna and flight renderers animate independently of telemetry arrival. Drag the graphics to orbit, scroll to zoom and use the displayed view controls to restore the camera. The rocket's motor plume follows ignition/burnout events; its parachute appears only if the loaded simulation contains a deployment event. Reference attitude, measured telemetry and path-aligned illustrations are labelled so an illustration is not mistaken for sensor feedback.
 
-## Base station: Systems display
+## Launch station: Systems display
 
 The companion display exposes the supporting information and controls:
 
-- Full rocket telemetry/GPS, servo and cell readouts, rocket commands, power rails, BMS protections and recovery controls supplied by the Zephyrus wire contract.
-- Mission launch and antenna positions, OpenRocket configuration/reference and wind information.
+- Full rocket telemetry/GPS, servo and cell readouts, rocket commands, power rails, BMS protections and recovery controls supplied by the Zephyrus wire contract. Live uplink actions are unavailable until the Launch transport is defined.
+- Mission launch location, OpenRocket configuration/reference and wind information. Away station missions additionally configure their local antenna positions.
 - APRS/network connections and status.
 - Session recording/replay and diagnostic events.
 
+The large **Rocket state** badge in the Systems window's upper-right corner follows the telemetry state machine: green **GROUND_TESTING**, blue **PREFLIGHT**, red **FLIGHT**, and orange **POST_APOGEE**, **MAIN** or **END**. Unknown states and missing telemetry are black. The smaller caption identifies LIVE, DEMO or REPLAY; stale live telemetry retains its last state with an explicit **STALE** label. The badge does not infer state from the simulation and does not indicate that commands are enabled.
+
 Monitoring information stays visible across the two windows. Configuration editors, confirmation dialogs and file selectors remain deliberate actions. Legacy functions retain their meaning even when their controls move to a different section.
 
-The target layout is two 1920 × 1080 displays (about 1920 × 1020 usable window space). Fixed instrument tables show every normal channel/field; long event history, raw JSON and arbitrary-length wind profiles scroll inside their visible panels. **View → Arrange station displays** places each window on an available screen. With one screen, both base windows remain available for preparation; Away and Video modes each use one window. Closing the Flight window shuts down the entire workspace. The Systems close button keeps the required base display open and points to the single-window station modes instead. Shortcuts work from either display.
+The target layout is two 1920 × 1080 displays (about 1920 × 1020 usable window space). Fixed instrument tables show every normal channel/field; long event history, raw JSON and arbitrary-length wind profiles scroll inside their visible panels. **View → Arrange station displays** places each window on an available screen. With one screen, both launch windows remain available for preparation; Away and Video modes each use one window. Closing the Flight window shuts down the entire workspace. The Systems close button keeps the required launch display open and points to the single-window station modes instead. Shortcuts work from either display.
 
 ## Video role
 
@@ -76,19 +78,19 @@ The target layout is two 1920 × 1080 displays (about 1920 × 1020 usable window
 
 Both assigned channels remain visible together. Balius uses **Digital + Analog** at every Away station. Iris uses **Sustainer Digital + Sustainer Analog** at Away 1–3, and **Sustainer Digital + Booster Analog** at Away 4. Each has its own camera selector, **Find**, **Start**, **Stop**, local video **File…** input and capture status. A camera selected or in use by one channel is excluded from every other channel, including while a previous capture is still closing. No telemetry or pointer board connection is required.
 
-### Base station
+### Launch station
 
-Two or three large primary channels sit above all four Away stations. There are eight thumbnail slots for either vehicle: each station contributes its assigned Digital/Analog pair. Iris’s large panes are Sustainer Digital, Sustainer Analog and Booster Analog; the Booster thumbnail exists only under Away 4. Base exposes one local USB camera selector, for **Digital** only. Digital initially shows that local source; Balius Analog and Iris Sustainer Analog initially select Away 1; Iris Booster Analog initially selects Away 4.
+Two or three large primary channels sit above all four Away stations. There are eight thumbnail slots for either vehicle: each station contributes its assigned Digital/Analog pair. Iris’s large panes are Sustainer Digital, Sustainer Analog and Booster Analog; the Booster thumbnail exists only under Away 4. The Launch station exposes one local USB camera selector, for **Digital** only. Digital initially shows that local source; Balius Analog and Iris Sustainer Analog initially select Away 1; Iris Booster Analog initially selects Away 4.
 
-**Double-click any Away thumbnail** to replace its matching large channel. For example, Away 3 Sustainer Analog replaces only the large Sustainer Analog view. Away 4 Booster Analog replaces only Booster Analog. Digital promotion replaces only Digital. Every other thumbnail stays visible, including lower-quality alternatives. **Use local Digital** returns the large Digital view to Base's USB receiver; promotion never closes that camera.
+**Double-click any Away thumbnail** to replace its matching large channel. For example, Away 3 Sustainer Analog replaces only the large Sustainer Analog view. Away 4 Booster Analog replaces only Booster Analog. Digital promotion replaces only Digital. Every other thumbnail stays visible, including lower-quality alternatives. **Use local Digital** returns the large Digital view to Launch station's USB receiver; promotion never closes that camera.
 
 The inter-station video connection has not yet been specified or implemented. Remote views therefore start with **Awaiting station link**, not simulated live pictures. Their presentation API already supports quality text, receive age, stale frames and loss of connection. Choosing a thumbnail selects its source even when it has no frame; it does not establish a network connection. The existing telemetry LAN feature does not carry video. Remote pictures injected through the future transport are display-only today; remote recording/replay is not implemented.
 
-The supplied routing diagram applies to **Balius**: direct Digital reception and telemetry at Base and all Away stations, Analog reception only at Away stations, and Away-to-Base relay of video/telemetry with bidirectional comms. The [Iris diagram](../references/IRIS_STATION_ROUTING.png) adds stage-specific routing, summarized below. The stage names label receiver assignments; the application does not infer a vehicle identity from legacy telemetry packets.
+The supplied routing diagrams establish the video and vehicle assignments. The revised station architecture uses four LTU-XR links for Away-to-Launch transfer, with no local telemetry board at Launch. The [Iris diagram](../references/IRIS_STATION_ROUTING.png) adds stage-specific routing, summarized below. The stage names label receiver assignments; the application does not infer a vehicle identity from legacy telemetry packets.
 
 ### Recording and playback
 
-The simplified screen hides serial connections, rocket readouts, antenna controls and mission panels. The data source remains visible so LIVE, generated DEMO video and recorded REPLAY are distinguishable. Local USB channels retain independent capture, segmented recording and replay. Once frames arrive, **Start recording** can create a video-only session. In REPLAY, a compact footer exposes flight/session loading, play, pause, seek and speed. Base replays the local Digital channel from an archive; inactive analog recordings remain preserved in the archive.
+The simplified screen hides serial connections, rocket readouts, antenna controls and mission panels. The data source remains visible so LIVE, generated DEMO video and recorded REPLAY are distinguishable. Local USB channels retain independent capture, segmented recording and replay. Once frames arrive, **Start recording** can create a video-only session. In REPLAY, a compact footer exposes flight/session loading, play, pause, seek and speed. The Launch station replays the local Digital channel from an archive; inactive analog recordings remain preserved in the archive.
 
 Settings remain available with **⌘,** / **Ctrl+,**. Quitting closes active workers. Normal station profiles are fixed for the session; the legacy programmatic layout-switching API retains its connection-preserving behavior for existing integrations.
 
@@ -98,39 +100,44 @@ Settings remain available with **⌘,** / **Ctrl+,**. Quitting closes active wor
 | --- | --- | --- | --- |
 | Away 1–3 | Sustainer Digital; Sustainer Analog | Sustainer | Sustainer |
 | Away 4 | Sustainer Digital; Booster Analog | Booster | Booster |
-| Base / launch site | Sustainer Digital | Sustainer and Booster | Relayed from Away stations |
+| Launch station | Sustainer Digital | Sustainer and Booster | Relayed from Away stations |
 
-The wizard and station header identify the telemetry assignment. There is one downlink board per station; the downlink board selects one Iris stage at a time. Base additionally has a separate uplink board, also with an Iris target switch. The switch commands and acknowledgement are not defined; the application does not claim to know the physical target. APRS remains one external Dire Wolf KISS input with an optional callsign filter; set the appropriate vehicle callsign. Automatic stage identification and Away-to-Base APRS relay are not yet implemented. This does not change the existing read-only one-peer telemetry LAN or establish the planned multi-station data/comms transport.
+The wizard and station header identify the telemetry assignment. Each Away station has one downlink board; that board selects one Iris stage at a time. Launch receives through the planned station links and alone has uplink authority, with no local serial board. Switch commands and acknowledgement are not defined; the application does not claim to know the physical target. APRS remains one external Dire Wolf KISS input with an optional callsign filter; set the appropriate vehicle callsign. Automatic stage identification and Away-to-Launch APRS relay are not yet implemented. The existing read-only one-peer telemetry LAN is separate from the planned multi-station data/comms transport.
 
 ## Iris target switches (placeholder)
 
-The Iris Telemetry workspace displays a **Downlink receiver** target selector. Base also displays an independent **Uplink transmitter** target selector; Away stations have no uplink board or transmit controls. Both offer Sustainer and Booster. Initial desired choices follow the station assignment (Booster at Away 4, Sustainer elsewhere).
+The Iris Telemetry workspace displays a **Downlink receiver** target selector. Launch also displays an independent **Uplink transmitter** target selector; Away stations have no uplink authority or transmit controls. Both offer Sustainer and Booster. Initial desired choices follow the station assignment (Booster at Away 4, Sustainer elsewhere). At Launch these represent future remote routing, not locally connected boards.
 
 These are explicitly marked **PLACEHOLDER** because the firmware switch command and acknowledgement are not defined. A dropdown is only a desired target, never a confirmed hardware target. In LIVE and REPLAY, the hardware target remains unknown and switch actions are disabled. No target-switch bytes are invented or transmitted. Iris live rocket commands are also unavailable until the uplink target protocol is implemented.
 
-In DEMO, **Simulate switch** updates the indicated simulated target and records an event identifying the downlink/uplink board and desired target. The two Base simulations are independent. Simulation changes switch state only: it does not relabel or replace the single bundled Zephyrus telemetry recording, and it does not transmit commands. Leaving DEMO clears simulated switch state. This supports interface rehearsal while the firmware contract is being finalized.
+In DEMO, **Simulate switch** updates the indicated simulated target and records an event identifying the downlink/uplink role and desired target. The two Launch simulations are independent. Simulation changes switch state only: it does not relabel or replace the single bundled Zephyrus telemetry recording, and it does not transmit commands. Leaving DEMO clears simulated switch state. This supports interface rehearsal while the firmware contract is being finalized.
 
 ## Ground-station circuit-board mapping
 
-The supplied ground-station software block diagram describes distinct data paths. USB device selection does not identify devices automatically by their cable position; use the port/camera names and verify each physical unit during setup.
+The current station architecture uses the paths below. Earlier supplied block diagrams remain reference material. USB device selection does not identify devices automatically by their cable position; use the port/camera names and verify each physical unit during setup.
 
 | Hardware/data path | Monitor integration |
 | --- | --- |
-| Downlink telemetry board → USB serial | Present at Base and every Away station. Zephyrus receive/polling. A USB connection and recent valid rocket telemetry are separate status conditions. |
-| Uplink telemetry board → USB serial | Base only. Existing Zephyrus command packets use this separate connection; Away stations cannot transmit rocket commands. |
-| Antenna pointer board → USB serial | Independent pointer commands. Once a serial port is connected to any board, it disappears from every other board's available ports. |
+| Downlink telemetry board → USB serial | Away stations only. Zephyrus receive/polling. A USB connection and recent valid rocket telemetry are separate status conditions. |
+| Launch uplink authority → selected Away route | Launch only; transport pending. No local uplink serial selector and no live command transmission. |
+| Antenna pointer board → USB serial | Away stations only. Independent pointer commands. Once a serial port is connected to one board, it disappears from the other board's available ports. |
 | Digital video receiver → USB camera capture | Digital video channel. |
 | Analog video receiver → USB camera capture | Away-only Analog channel (Sustainer at Iris Away 1–3, Booster at Iris Away 4). A camera selected for one channel is excluded from all other active selectors. |
 | APRS radio audio → computer audio/Dire Wolf → KISS TCP | Receive-only uncompressed APRS positions from an external Dire Wolf decoder, default `127.0.0.1:8001`. |
-| AP and LTU network equipment | Explicit read-only station status/telemetry exchange over the local LAN, default TCP `8765`. LTU management readings require its equipment protocol. |
+| Launch Ethernet / PoE → four LTU-XR links → Away LTU-XR and local WLAN | Away Wi-Fi selection and Launch communication-route selection are available. Selecting a network or route does not establish the future application transport. |
+| Existing direct station LAN | Explicit read-only station status/telemetry exchange with one peer, default TCP `8765`. This is not the planned four-Away-station transport. LTU management readings require its equipment protocol. |
 
-The Digital/Analog names refer to the rocket-to-ground radio video paths, not to the computer input type: the local computer inputs are USB cameras. The video computer can capture either feed without connecting the telemetry board. Once frames arrive, the recording control can create a video-only recording; the absence of a telemetry board does not prevent this. Balius rocket commands require the Base uplink connection; downlink reception and polling remain independent. Iris live commands stay locked while its physical uplink target cannot be established by a defined switch protocol.
+The Digital/Analog names refer to the rocket-to-ground radio video paths, not to the computer input type: the local computer inputs are USB cameras. The video computer can capture either feed without connecting the telemetry board. Once frames arrive, the recording control can create a video-only recording; the absence of a telemetry board does not prevent this. Live rocket commands remain locked at Launch while the uplink transport is undefined. Away downlink reception and polling remain independent.
 
-Unknown analog VRX control protocols and equipment-management interfaces are not represented as working controls or fabricated telemetry. An unavailable/unsupported status means the monitor has no verified value or command contract for that function. The current supported Zephyrus commands remain usable.
+Unknown analog VRX control protocols and equipment-management interfaces are not represented as working controls or fabricated telemetry. An unavailable/unsupported status means the monitor has no verified value or command contract for that function. Existing Away pointer commands and Zephyrus downlink polling remain available through their established serial connections.
 
 The [source diagram and implementation notes](../references/GROUND_STATION_BOARD_NOTES.md) record what is supported and which suggestions still require device protocols or additional work. Online wind retrieval needs internet access; manual and imported wind remain available offline.
 
 ## APRS and station LAN
+
+At Away stations, the Wi-Fi panel lets you choose a saved network or type an SSID. **Select Wi-Fi** saves the desired network for this station; it does not join the network. **Refresh** reads current/saved network names from the operating system, and **Open Wi-Fi settings** opens the system controls for securely joining it. The current OS connection is shown separately from the selected SSID, so a saved selection is never presented as a successful connection. Join the Away station's local WLAN before using any data connection. No Wi-Fi password is stored by the monitor.
+
+At Launch, the **Communication / Away antenna selection** panel shows the Ethernet / PoE topology and all four LTU-XR paths. Choose **Away station 1–4 antenna pointer** from **Choose an away-station pointer…** to set the desired communication route. Selection does not join a link, send rocket commands, move a pointer or imply live pointer feedback. Link status and signal strength remain unavailable until the bridge management and interstation data protocols are provided. Launch has no local serial or virtual pointer controls.
 
 The **Station network** panel keeps the two connections separate from the serial boards and USB video.
 
@@ -153,33 +160,33 @@ Host/port/filter choices are stored in `station_network.json` in the application
 
 The mission stores launch and antenna locations for simulation and virtual rehearsal. Physical Zephyrus tracking retains the legacy frozen ground-receiver GPS convention and Send to AntPtr action. Launch entry accepts decimal latitude/longitude, MGRS or Plus Codes, with URRG as a preset. Antenna entry accepts decimal latitude/longitude, MGRS or a position relative to launch.
 
-Choosing **URRG** in the startup wizard sets the launch pad to `18TUN2061530290` and the antenna to the preset for the selected station:
+Choosing **URRG** in the startup wizard sets the launch pad to `18TUN2061530290` and, at Away stations, the antenna to the preset for the selected station. Launch shows its coordinate as a site reference and does not create a local pointer location:
 
 | Station | MGRS location |
 | --- | --- |
-| Base | `18TUN2063730181` |
+| Launch station reference | `18TUN2063730181` |
 | Away 1 | `18TUN2177730106` |
 | Away 2 | `18TUN2291333237` |
 | Away 3 | `18TUN2015031101` |
 | Away 4 | `18TUN2259229678` |
 
-The mission editor also offers these station presets under **Antenna pointer** when the launch site is URRG, identifying the current station. Selecting a preset changes the horizontal antenna position and preserves its entered altitude. The references contain no elevation: a new mission starts with zero elevations, so enter the launch and antenna elevations for simulation or trajectory following. The presets do not calibrate the pointer or send commands to hardware. Saved missions and `.rktflight` files keep their own locations and names; startup defaults do not replace them when opened.
+At Away stations, the mission editor offers the Away presets under **Antenna pointer** when the launch site is URRG, identifying the current station. Selecting a preset changes the horizontal antenna position and preserves its entered altitude. Launch uses its communication-route selector instead of a local pointer editor. The references contain no elevation: a new mission starts with zero elevations, so enter the launch and relevant Away antenna elevations for simulation or trajectory following. The presets do not calibrate a pointer or send commands to hardware. Saved missions and `.rktflight` files keep their own locations and names; startup defaults do not replace them when opened.
 
 For relative entry, specify the heading **from the antenna to the rocket at launch**, horizontal distance and altitude difference using the signs shown in the editor. Check the resolved coordinates before following a trajectory. Save the mission in a `.rktflight` file to preserve the model, motors, reference and available recording with it.
 
-To rehearse without hardware: load or simulate a reference, select the virtual pointer, connect it and choose Follow trajectory. Manual pointer controls and the original keyboard shortcuts also operate the virtual mount. No physical pointer feedback is implied by the model: legacy firmware does not acknowledge moves or report measured pose.
+To rehearse without hardware at an Away station: load or simulate a reference, select the virtual pointer, connect it and choose Follow trajectory. Manual pointer controls and the original keyboard shortcuts also operate the virtual mount. No physical pointer feedback is implied by the model: legacy firmware does not acknowledge moves or report measured pose.
 
 ## Developer integration
 
-`station_profile.py` owns the immutable `StationProfile` and its validated, atomic JSON persistence, including the launch-site choice. Explicitly remembered startup choices use `startup-choices.json` in the application data directory; legacy `station-profile.json` and `station-layout.json` do not seed startup defaults. `startup_wizard.py` is a controller-free four-page Qt wizard; `__main__.py` resolves opted-in/CLI defaults and waits for acceptance before constructing `StationWindow`. Startup configuration supplies the new mission's vehicle-based name and optional URRG launch/station positions; loading an existing mission or flight remains authoritative. Smoke flags bypass interactive setup, while `--setup-smoke` only renders the wizard.
+`station_profile.py` owns the immutable `StationProfile` and its validated, atomic JSON persistence, including the launch-site choice. The internal station key `base` is retained for saved-profile compatibility; public `launch` values normalize to that key and display as Launch station. Explicitly remembered startup choices use `startup-choices.json` in the application data directory; legacy `station-profile.json` and `station-layout.json` do not seed startup defaults. `startup_wizard.py` is a controller-free four-page Qt wizard; `__main__.py` resolves opted-in/CLI defaults and waits for acceptance before constructing `StationWindow`. Startup configuration supplies the new mission's vehicle-based name and optional URRG launch/Away-pointer positions; loading an existing mission or flight remains authoritative. Smoke flags bypass interactive setup, while `--setup-smoke` only renders the wizard.
 
 `station_workspace.py` assembles the role-specific cards over one inherited instrument owner. An explicit profile fixes identity and role for the window lifetime. Video role gates hidden serial menu actions and connection callbacks; it keeps recording shortcuts and file/replay controls. Telemetry retains the original shortcuts and device gating. The legacy constructor without an explicit profile supports prior layout-switching integrations.
 
-`controller.py` accepts a `board_layout` (`legacy`, `base`, `away`) and vehicle profile. Base creates separate downlink/uplink/pointer workers; Away creates downlink/pointer workers. The legacy default preserves the previous combined ground-board API. Command readiness is separate from downlink reception readiness, and Iris live commands remain gated until its target-switch protocol exists. `iris_link_panel.py` owns clearly labelled DEMO-only target-switch state and never calls a transport.
+`controller.py` accepts a `board_layout` and vehicle profile. Launch creates no local serial workers; Away creates downlink/pointer workers. The legacy default preserves the previous combined ground-board API. Launch live uplink and remote pointer actuation stay unavailable until their transport is specified, independently of any incoming read-only LAN data. `iris_link_panel.py` owns clearly labelled DEMO-only target-switch state and never calls a transport.
 
 `controller.py` also accepts an immutable `video_channels` tuple. Its per-channel states drive worker lifecycle, reservations, recording and replay; `ui.py` constructs matching local controls from `video_labels`. Unknown/inactive channels are rejected. Existing two-channel defaults and missing-stream-as-Digital recordings remain compatible. `recording.py` and `flight.py` preserve arbitrary channel directories without an archive schema change. Digital-only replay filters inactive channels without deleting their archived assets.
 
-`video_wall.py` uses `StationProfile.away_channels` to validate every remote station/channel combination; unsupported combinations are rejected. It owns presentation and source selection only. A future transport should deliver decoded frames on the Qt GUI thread through `update_remote_frame(station, channel, QPixmap, quality="", received=None)`. Station IDs are `away1`–`away4`; channels are `digital`, `analog`, and Iris-only `analog2`. `received`, when supplied, must be local monotonic receive time. Use `mark_remote_unavailable(...)` on link loss. Five seconds without a fresh frame is labelled stale; quality strings are transport-provided and not inferred from image appearance. `set_local_source(label, live=False)` supplies truthful local demo/file/replay context and avoids falsely ageing paused recordings as a stale live camera. `select_remote(...)` promotes the matching channel, and `select_local_digital()` restores Base USB. `set_local_frame(...)` updates local Digital without overwriting a promoted remote view.
+`video_wall.py` uses `StationProfile.away_channels` to validate every remote station/channel combination; unsupported combinations are rejected. It owns presentation and source selection only. A future transport should deliver decoded frames on the Qt GUI thread through `update_remote_frame(station, channel, QPixmap, quality="", received=None)`. Station IDs are `away1`–`away4`; channels are `digital`, `analog`, and Iris-only `analog2`. `received`, when supplied, must be local monotonic receive time. Use `mark_remote_unavailable(...)` on link loss. Five seconds without a fresh frame is labelled stale; quality strings are transport-provided and not inferred from image appearance. `set_local_source(label, live=False)` supplies truthful local demo/file/replay context and avoids falsely ageing paused recordings as a stale live camera. `select_remote(...)` promotes the matching channel, and `select_local_digital()` restores Launch USB. `set_local_frame(...)` updates local Digital without overwriting a promoted remote view.
 
 The wall starts no network workers. It does not subscribe to the existing telemetry LAN protocol, relay frames, record remote frames or claim a live receiver connection. Add the transport and its recording semantics after the station interface is specified. Tests exercise source promotion, stale state, image aspect ratio, channel exclusivity, all three local recordings, profile validation, wizard cancellation and role isolation.
 

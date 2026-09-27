@@ -47,7 +47,7 @@ def profile_layout(profile):
 
 
 def profile_serial_roles(profile):
-    return ["telemetry", "uplink", "pointer"] if profile_layout(profile) == "base" else ["telemetry", "pointer"]
+    return [] if profile["station"] == "base" else ["telemetry", "pointer"]
 
 
 def profile_iris_boards(profile):
@@ -264,6 +264,7 @@ def main():
             [
                 "--virtual-pointer-smoke",
                 str(output / "simulation" / "trajectory.csv"),
+                "--site", "away1",
                 "--data-dir",
                 str(output / "virtual-pointer"),
                 "--screenshot",
@@ -312,7 +313,7 @@ def main():
     iris_booster_demo = json.loads((output / "demo-iris-booster" / "smoke-report.json").read_text())
     setup = json.loads((output / "setup" / "setup-smoke-report.json").read_text())
     validate_setup_report(setup)
-    for page in ("station", "role", "vehicle"):
+    for page in ("station", "role", "vehicle", "launch_site"):
         if not (output / "setup" / f"setup-{page}.png").is_file():
             raise SystemExit(f"Packaged startup wizard {page} screenshot missing")
     stations = {}

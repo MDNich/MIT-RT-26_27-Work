@@ -1,4 +1,4 @@
-"""Base, away and video workspaces over one instrument owner.
+"""Launch, away and video workspaces over one instrument owner.
 
 The v0 widgets remain the single source of control callbacks and telemetry state.
 Only their presentation changes: no second Controller, duplicate serial worker,
@@ -34,6 +34,7 @@ from .domain import finite
 from .table_cells import set_cell
 from .station_profile import StationProfile
 from .site_presets import mission_for_station
+from .rocket_state_badge import RocketStateBadge
 
 
 COMPACT_STYLE = """
@@ -91,9 +92,9 @@ class StationDisplay(QMainWindow):
         else:
             event.ignore()
             self.statusBar().showMessage(
-                "Base telemetry uses both displays. Relaunch and choose Away telemetry or Video for one window."
+                "Launch telemetry uses both displays. Relaunch and choose Away telemetry or Video for one window."
                 if self.owner.profile_locked else
-                "Base station uses both displays. Choose Away station or Video station for one window.", 8000
+                "Launch station uses both displays. Choose Away station or Video station for one window.", 8000
             )
 
 
@@ -118,13 +119,16 @@ class StationWindow(InstrumentWindow):
         )
         self.video_wall = None
         self.away_flight_dialog = None
+        self.launch_station = self.profile_locked and self.profile.station == "base"
+        self.launch_links = None
+        self.wifi_panel = None
         super().__init__(data_dir, video_channels=self.profile.local_channels,
                          video_labels={key: self.profile.channel_labels[key] for key in self.profile.local_channels},
-                         board_layout=("base" if self.profile.station == "base" and self.profile.role == "telemetry"
+                         board_layout=("launch" if self.launch_station
                                        else "away") if self.profile_locked else "legacy",
                          vehicle=self.profile.vehicle,
                          initial_mission=mission_for_station(self.profile) if self.profile_locked else None)
-        self.setWindowTitle("Rocket GNC Monitor v0a · 1 / Flight & antenna")
+        self.setWindowTitle("Rocket GNC Monitor v0a · 1 / Flight & links" if self.launch_station else "Rocket GNC Monitor v0a · 1 / Flight & antenna")
         self.setMinimumSize(1280, 800)
         self.resize(1920, 1020)
         # Keep old containers alive: their child widgets and signals are reused.
@@ -178,7 +182,7 @@ class StationWindow(InstrumentWindow):
         outer.setContentsMargins(12, 9, 12, 5)
         outer.setSpacing(6)
         self.station_selector = ComboBox()
-        self.station_selector.addItem("Base station · two displays", "base")
+        self.station_selector.addItem("Launch station · two displays", "base")
         self.station_selector.addItem("Away station · one display", "away")
         self.station_selector.addItem("Video station · two channels", "video")
         self.station_selector.setAccessibleName("Station workspace")
@@ -204,6 +208,15 @@ class StationWindow(InstrumentWindow):
             widget.show()
         heading.addWidget(button("Settings…", self.open_settings))
         outer.addLayout(heading)
+        if self.launch_station:
+            self.launch_network_notice = label("LAUNCH NETWORK · Ethernet / PoE → four LTU-XR links → Away stations 1–4 · data transport pending", "eyebrow")
+            self.launch_network_notice.setWordWrap(True)
+            outer.addWidget(self.launch_network_notice)
+        elif self.profile_locked:
+            from .wifi_panel import WifiPanel
+
+            self.wifi_panel = WifiPanel(self.controller.data_dir, self)
+            outer.addWidget(self.wifi_panel)
         self.usb_strip = QWidget()
         usb = QHBoxLayout(self.usb_strip)
         usb.setContentsMargins(0, 0, 0, 0)
@@ -274,11 +287,13 @@ class StationWindow(InstrumentWindow):
         secondary = QVBoxLayout(root2)
         secondary.setContentsMargins(12, 9, 12, 5)
         secondary.setSpacing(6)
-        title = row(label("SYSTEMS / GROUND STATION", "heading"))
+        title = row(label("SYSTEMS / LAUNCH STATION" if self.launch_station else "SYSTEMS / GROUND STATION", "heading"))
         self.secondary_health = label("LIVE · Ground station disconnected", "eyebrow")
         title.addWidget(self.secondary_health, 1)
         title.addWidget(button("Arrange displays", self.arrange_displays))
         title.addWidget(button("Settings…", self.open_settings))
+        self.rocket_state_badge = RocketStateBadge()
+        title.addWidget(self.rocket_state_badge)
         secondary.addLayout(title)
         self.systems_board = QWidget()
         self.systems_grid = QGridLayout(self.systems_board)
@@ -302,18 +317,24 @@ class StationWindow(InstrumentWindow):
                 table.horizontalHeader().setMinimumSectionSize(28)
                 table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         view_menu = next(a.menu() for a in self.menuBar().actions() if a.text() == "View")
+        if self.launch_station:
+            serial_menu = next(a.menu() for a in self.menuBar().actions() if a.text() == "Serial controls")
+            serial_menu.setTitle("Session controls")
+            for key, action in self.legacy_actions.items():
+                if key != "log":
+                    action.setVisible(False)
         if self.profile_locked and self.profile.role == "video":
             for action in view_menu.actions():
                 if action.text() == "3D flight…":
                     action.setVisible(False)
-            serial_menu = next(a.menu() for a in self.menuBar().actions() if a.text() == "Serial controls")
+            serial_menu = next(a.menu() for a in self.menuBar().actions() if a.text() in {"Serial controls", "Session controls"})
             serial_menu.setTitle("Video controls")
             for key, action in self.legacy_actions.items():
                 if key != "log":
                     action.setVisible(False)
         view_menu.addAction("Arrange station displays", self.arrange_displays)
         if not self.profile_locked:
-            view_menu.addAction("Base station · two displays", lambda: self.set_station_mode("base"))
+            view_menu.addAction("Launch station · two displays", lambda: self.set_station_mode("base"))
             view_menu.addAction("Away station · one display", lambda: self.set_station_mode("away"))
             view_menu.addAction("Video station", lambda: self.set_station_mode("video"))
         # Same menu actions remain usable from the second display on macOS.
@@ -389,7 +410,7 @@ class StationWindow(InstrumentWindow):
         self.actuator_note = note
 
     def build_pointer_cards(self):
-        layout = self.card("antenna", "ANTENNA / physical assembly")
+        layout = self.card("antenna", "AWAY POINTER / illustration" if self.launch_station else "ANTENNA / physical assembly")
         layout.addLayout(
             row(
                 *(
@@ -403,6 +424,15 @@ class StationWindow(InstrumentWindow):
         self.mount.display_padding = 20
         self.mount.show_hints = False
         self.mount.setToolTip("Drag to orbit · Scroll to zoom · Double-click to reset")
+        if self.launch_station:
+            from .launch_link_panel import LaunchLinkPanel
+
+            self.remote_pointer_caption = label("Select an away pointer · pose unavailable", "muted")
+            self.remote_pointer_caption.setWordWrap(True)
+            layout.addWidget(self.remote_pointer_caption)
+            self.launch_links = LaunchLinkPanel(self.controller, self.profile)
+            self.attach(self.card("pointing", "COMMUNICATION / away antenna selection"), self.launch_links, 1)
+            return
         self.attach(layout, self.pointer_sent)
         layout = self.card("pointing", "POINTING / control & rehearsal")
         layout.addLayout(row(self.pointer_pose, self.virtual_connect))
@@ -585,11 +615,17 @@ class StationWindow(InstrumentWindow):
         from .station_panel import StationNetworkPanel
 
         self.network_panel = StationNetworkPanel(self.controller)
+        if self.launch_station:
+            self.network_panel.topology.setText(
+                "Launch station: Ethernet / PoE to four LTU-XR links.\n"
+                "This manual peer link is read-only; operational station transport is pending."
+            )
+            self.network_panel.topology.setToolTip("The existing manual status link does not enable uplink, remote pointer control or video relay.")
         if self.profile_locked:
             self.network_panel.station_name.setText(
                 f"{self.profile.station_label} · {self.profile.role.title()}"
             )
-        self.attach(self.card("network", "GROUND NETWORK / APRS & local stations"), self.network_panel, 1)
+        self.attach(self.card("network", "APRS / manual status link"), self.network_panel, 1)
 
     def place(self, grid, key, r, c, rs=1, cs=1):
         widget = self.cards[key]
@@ -609,6 +645,8 @@ class StationWindow(InstrumentWindow):
         self.workspace_title.setText("VIDEO / v0a" if video else "ROCKET / v0a")
         for widget in (self.mission_label, self.poll_button, self.health, self.metric_strip, self.banner):
             widget.setVisible(not video)
+        if self.launch_station:
+            self.poll_button.hide()
         # Playback controls have one owner and retain their signals and state.
         (self.video_replay_layout if video else self.session_replay_layout).addWidget(self.replay_controls)
         self.replay_controls.show()
@@ -625,7 +663,7 @@ class StationWindow(InstrumentWindow):
         for panel in self.cards.values():
             panel.hide()
         if value == "base":
-            self.setWindowTitle("Rocket GNC Monitor v0a · 1 / Flight & antenna")
+            self.setWindowTitle("Rocket GNC Monitor v0a · 1 / Flight & links" if self.launch_station else "Rocket GNC Monitor v0a · 1 / Flight & antenna")
             for args in (
                 ("flight3d", 0, 0, 2, 2),
                 ("trajectory", 2, 0, 1, 1),
@@ -736,12 +774,12 @@ class StationWindow(InstrumentWindow):
         self.update_camera_choices()
 
     def connect_role(self, role):
-        if self.profile_locked and self.profile.role == "video":
+        if self.launch_station or (self.profile_locked and self.profile.role == "video"):
             return
         super().connect_role(role)
 
     def toggle_connection(self, role):
-        if self.profile_locked and self.profile.role == "video":
+        if self.launch_station or (self.profile_locked and self.profile.role == "video"):
             return
         super().toggle_connection(role)
 
@@ -890,12 +928,15 @@ class StationWindow(InstrumentWindow):
             return
         c = self.controller
         video = self.station_mode == "video"
+        self.rocket_state_badge.update_state(
+            c.latest, mode=c.mode, fresh=c.mode != "LIVE" or c.rocket_link_state()[0] == "RECEIVING"
+        )
         self.update_local_video_context()
-        if self.profile_locked and self.profile.role == "video":
+        if self.launch_station or (self.profile_locked and self.profile.role == "video"):
             for key, action in self.legacy_actions.items():
                 if key != "log":
                     action.setEnabled(False)
-        self.usb_strip.setVisible(not video and c.mode != "DEMO")
+        self.usb_strip.setVisible(not self.launch_station and not video and c.mode != "DEMO")
         self.demo_bar.setVisible(not video and c.mode == "DEMO")
         self.video_replay_bar.setVisible(video and c.mode == "REPLAY")
         if video:
@@ -912,6 +953,18 @@ class StationWindow(InstrumentWindow):
             self.connection_tiles[k].text().replace("● ", "") for k in ("ground", "rocket", "pointer")
         )
         self.health.setText("USB TELEMETRY · RADIO LINK · ANTENNA   /   " + status)
+        if self.launch_station:
+            self.launch_links.refresh()
+            selected = c.selected_away_station
+            self.remote_pointer_caption.setText(
+                f"Away station {selected[-1]} · illustration only · remote pose unavailable"
+                if selected else "Select an away pointer · pose unavailable"
+            )
+            self.mount.setVisible(selected is not None)
+            self.health.setText("LAUNCH NETWORK · four away links · station transport pending · uplink unavailable")
+            if c.mode == "LIVE":
+                self.connection_tiles["rocket"].setText("● REMOTE TELEMETRY UNAVAILABLE")
+                self.banner.setText("LIVE · " + c.remote_pointer_status + " · uplink transport pending")
         self.secondary_health.setText(c.mode + " · " + self.connection_tiles["rocket"].text())
         self.secondary_banner.setText(self.banner.text())
         self.network_panel.refresh()
@@ -1016,6 +1069,8 @@ class StationWindow(InstrumentWindow):
 
     def closeEvent(self, event):
         self.closing = True
+        if self.wifi_panel is not None:
+            self.wifi_panel.cleanup()
         if self.away_flight_dialog is not None:
             self.away_flight_dialog.close()
         if self.workspace_ready:

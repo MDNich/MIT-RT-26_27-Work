@@ -20,7 +20,7 @@ def test_topology_follows_station_role_and_vehicle(station, role, vehicle):
     assert profile.channels == (("digital", "analog", "analog2") if vehicle == "iris" else ("digital", "analog"))
     expected_local = profile.channels if station == "base" else ("digital", "analog2" if vehicle == "iris" and station == "away4" else "analog")
     assert profile.local_channels == (("digital",) if station == "base" and role == "video" else expected_local)
-    assert profile.station_label == ("Base station" if station == "base" else f"Away station {station[-1]}")
+    assert profile.station_label == ("Launch station" if station == "base" else f"Away station {station[-1]}")
     assert profile.vehicle_label == vehicle.title()
     assert set(profile.channel_labels) == set(profile.channels)
     assert profile.channel_labels["analog"] == ("Sustainer Analog" if vehicle == "iris" else "Analog")
@@ -67,7 +67,7 @@ def test_invalid_saved_profile_returns_safe_defaults(tmp_path, contents):
     assert load_profile(tmp_path) == StationProfile()
 
 
-@pytest.mark.parametrize("layout,station,role", [("base", "base", "telemetry"), ("away", "away1", "telemetry"), ("video", "away1", "video")])
+@pytest.mark.parametrize("layout,station,role", [("launch", "base", "telemetry"), ("base", "base", "telemetry"), ("away", "away1", "telemetry"), ("video", "away1", "video")])
 def test_legacy_layout_migration(tmp_path, layout, station, role):
     (tmp_path / "station-layout.json").write_text(json.dumps({"station": layout}))
     assert load_profile(tmp_path) == StationProfile(station, role)
@@ -112,7 +112,7 @@ def test_forgetting_only_removes_opt_in_choices(tmp_path):
     assert {path.name: path.read_text() for path in tmp_path.iterdir()} == retained
 
 
-@pytest.mark.parametrize("station", ["base", "away1", "away2", "away3", "away4"])
+@pytest.mark.parametrize("station", ["launch", "base", "away1", "away2", "away3", "away4"])
 def test_cli_accepts_each_station_number_and_launch_site(tmp_path, station):
     args = argument_parser().parse_args([
         "--site", station, "--role", "telemetry", "--vehicle", "balius",
@@ -127,3 +127,17 @@ def test_cli_rejects_unknown_station_and_launch_site(flag, value):
     with pytest.raises(SystemExit) as result:
         argument_parser().parse_args([flag, value])
     assert result.value.code == 2
+
+
+def test_launch_identity_accepts_new_name_and_preserves_existing_saved_profiles(tmp_path):
+    profile = StationProfile("launch", "telemetry", "iris", "urrg")
+    assert profile.station == "base"
+    assert profile.station_label == "Launch station"
+    assert profile == StationProfile("base", "telemetry", "iris", "urrg")
+    save_startup_choices(profile, tmp_path, True)
+    assert load_startup_choices(tmp_path) == (profile, True)
+    assert profile.to_dict()["station"] == "base"
+    args = argument_parser().parse_args(["--station", "launch", "--skip-setup"])
+    assert resolve_profile(args, tmp_path) == profile
+    help_text = argument_parser().format_help()
+    assert "--site {launch,away1,away2,away3,away4}" in help_text

@@ -1,4 +1,4 @@
-"""A base video wall preserves every away thumbnail and promotes matching feeds."""
+"""A launch video wall preserves every away thumbnail and promotes matching feeds."""
 
 from types import SimpleNamespace
 
@@ -187,7 +187,7 @@ def test_local_source_context_distinguishes_live_camera_demo_and_paused_replay(q
         assert wall.primary_status["digital"].text() == label
         assert "LIVE" not in wall.primary_status["digital"].text()
         assert "STALE" not in wall.primary_status["digital"].text()
-        assert wall.primary_sources["digital"].text() == "Base · " + label
+        assert wall.primary_sources["digital"].text() == "Launch station · " + label
     wall.set_local_source("Local USB", live=True)
     wall.set_local_frame(frame("red"))
     assert "LIVE" in wall.primary_status["digital"].text()

@@ -1,4 +1,4 @@
-"""Base-station video selection over local USB and explicitly supplied remote frames.
+"""Launch-station video selection over local USB and explicitly supplied remote frames.
 
 This widget does not open cameras or establish station links. Remote reception
 timestamps, when supplied, are from the receiving computer's monotonic clock.
@@ -152,7 +152,7 @@ class VideoWall(QWidget):
     def __init__(self, profile, local_controls=None, parent=None):
         super().__init__(parent)
         if profile.station != "base":
-            raise ValueError("The base video wall requires a base-station profile")
+            raise ValueError("The launch video wall requires a launch-station profile")
         expected = ("digital", "analog", "analog2") if profile.vehicle == "iris" else ("digital", "analog")
         if profile.vehicle not in ("iris", "balius") or tuple(profile.channels) != expected:
             raise ValueError("Unsupported vehicle or video channels")
@@ -197,7 +197,7 @@ class VideoWall(QWidget):
             primary_row.addWidget(tile, 1)
             if channel == "digital":
                 self.return_local_button = QPushButton("Local digital")
-                self.return_local_button.setToolTip("Show this base station's digital video source")
+                self.return_local_button.setToolTip("Show this launch station's digital video source")
                 self.return_local_button.clicked.connect(self.select_local_digital)
                 tile.header.addWidget(self.return_local_button)
                 if local_controls is not None:
@@ -260,7 +260,7 @@ class VideoWall(QWidget):
             raise ValueError("Local video source needs a label and a boolean live flag")
         self.local_source_label, self.local_source_live = label.strip(), live
         if self.selected_sources["digital"] == LOCAL_DIGITAL:
-            self.primary_sources["digital"].setText("Base · " + self.local_source_label)
+            self.primary_sources["digital"].setText("Launch station · " + self.local_source_label)
             self.primary_status["digital"].setText(self._status(LOCAL_DIGITAL))
 
     def reset_local_frame(self, text="Awaiting local USB camera"):
@@ -330,7 +330,7 @@ class VideoWall(QWidget):
         for name in (self.channels if channel is None else (channel,)):
             key = self.selected_sources[name]
             tile = self.primary_tiles[name]
-            tile.source_label.setText("Base · " + self.local_source_label if key == LOCAL_DIGITAL
+            tile.source_label.setText("Launch station · " + self.local_source_label if key == LOCAL_DIGITAL
                                       else f"Away station {key[0][-1]}")
             self._display(tile, key)
         for key, tile in self.thumbnails.items():
