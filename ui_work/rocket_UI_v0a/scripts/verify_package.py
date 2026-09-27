@@ -47,13 +47,13 @@ def profile_layout(profile):
 
 
 def profile_serial_roles(profile):
-    return [] if profile["station"] == "base" else ["telemetry", "pointer"]
+    return ["telemetry"] if profile["station"] == "base" else ["telemetry", "pointer"]
 
 
 def profile_iris_boards(profile):
     if profile["vehicle"] != "iris" or profile["role"] != "telemetry":
         return []
-    return ["downlink", "uplink"] if profile["station"] == "base" else ["downlink"]
+    return ["telemetry"] if profile["station"] == "base" else ["downlink"]
 
 
 def same_inventory(actual, expected):

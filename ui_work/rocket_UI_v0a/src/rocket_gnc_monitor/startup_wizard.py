@@ -44,7 +44,7 @@ class StartupWizard(QWizard):
         self.add_choices(
             "station", "01 / STATION", "Where is this computer?",
             "Assign this computer to the launch station or one of the four away stations.",
-            [("base", "Launch station", "Ethernet / PoE · four LTU-XR links · uplink authority")]
+            [("base", "Launch station", "One telemetry board · four LTU-XR links · no local pointer")]
             + [(f"away{i}", f"Away station {i}", "Local Wi-Fi · downlink board and antenna pointer") for i in range(1, 5)],
             profile.station,
         )
@@ -140,9 +140,13 @@ class StartupWizard(QWizard):
                      if profile.station == "base" else
                      "\nOne display · Wi-Fi, downlink board and antenna control.")
             if profile.station == "base":
-                text += "\nChoose an away antenna pointer for communication; station transfer pending."
+                text += "\nOne telemetry board: downlink reception and polling."
+                text += "\nUplink enable: firmware pending; DEMO simulation only."
+                text += "\nChoose an away antenna pointer; remote control pending."
             targets = ", ".join(target.title() for target in profile.telemetry_targets)
             text += f"\nTelemetry assignment: {targets}."
+            if profile.station == "base" and profile.vehicle == "iris":
+                text += " One shared board target."
         text += f"\nMission: {profile.vehicle_label} Launch."
         if profile.launch_site == "urrg":
             site_label = "Launch station reference" if profile.station == "base" else profile.station_label

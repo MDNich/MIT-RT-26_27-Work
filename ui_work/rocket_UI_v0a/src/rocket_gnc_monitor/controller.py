@@ -59,12 +59,14 @@ class Controller(QObject):
         if board_layout == "base":
             serial_labels["uplink"] = "Uplink commands"
         serial_labels["pointer"] = "Antenna pointer"
-        # The launch computer uses the station network, never a local PCB or
-        # pointer. Keep the old base layout only for legacy integrations.
+        # Launch has one local telemetry PCB. Its future uplink-enable switch
+        # has no wire command yet; remote pointers use a separate station link.
+        # Keep the old base layout only for legacy integrations.
         if board_layout == "launch":
-            serial_labels = {}
+            serial_labels = {"telemetry": "Telemetry board"}
         self._serial_labels = MappingProxyType(serial_labels)
         self._selected_away_station = None
+        self._simulated_uplink_enabled = False
         channels = tuple(DEFAULT_VIDEO_CHANNELS if video_channels is None else video_channels)
         if not channels or any(channel not in VIDEO_STREAMS for channel in channels):
             raise ValueError("Video channels must be selected from digital, analog and analog2")
@@ -173,7 +175,7 @@ class Controller(QObject):
 
     @property
     def command_role(self):
-        return "uplink" if self.board_layout in {"base", "launch"} else "telemetry" if self.board_layout == "legacy" else None
+        return "uplink" if self.board_layout == "base" else "telemetry" if self.board_layout in {"legacy", "launch"} else None
 
     @property
     def command_connected(self):
@@ -188,7 +190,9 @@ class Controller(QObject):
         if self.mode == "REPLAY":
             return "Replay is read-only"
         if self.mode == "LIVE" and self.board_layout == "launch":
-            return "Launch uplink transport not configured"
+            return "Launch uplink switch protocol not defined"
+        if self.mode == "DEMO" and self.board_layout == "launch" and not self.simulated_uplink_enabled:
+            return "Simulated launch uplink is OFF"
         if self.mode == "LIVE" and self.vehicle == "iris":
             return "Iris live command target protocol pending; commands are disabled"
         if self.mode == "LIVE" and not self.command_connected:
@@ -198,6 +202,25 @@ class Controller(QObject):
     @property
     def can_command(self):
         return not self.command_block_reason
+
+    @property
+    def simulated_uplink_enabled(self):
+        """DEMO-only intent; this never reports the physical board switch state."""
+        return self._simulated_uplink_enabled
+
+    def set_simulated_uplink(self, enabled):
+        """Exercise the launch uplink enable switch without transmitting bytes."""
+        if self.board_layout != "launch":
+            raise ValueError("The simulated uplink switch belongs to the launch station")
+        if self.mode != "DEMO":
+            raise ValueError("The launch uplink switch can only be simulated in DEMO mode")
+        if type(enabled) is not bool:
+            raise ValueError("Simulated uplink enable must be a boolean")
+        if enabled == self._simulated_uplink_enabled:
+            return
+        self._simulated_uplink_enabled = enabled
+        self.log("Launch uplink switch simulated", {"enabled": enabled, "source": "DEMO", "placeholder": True})
+        self.changed.emit()
 
     @property
     def remote_pointer_status(self):
@@ -346,8 +369,6 @@ class Controller(QObject):
                 self.log("VIRTUAL · trajectory playback completed")
 
     def set_polling(self, enabled):
-        if self.board_layout == "launch":
-            raise ValueError("Launch downlink transport not configured")
         self.require_ground_station()
         self.polling = bool(enabled)
         self.workers["telemetry"].set_polling(self.polling)
@@ -358,8 +379,6 @@ class Controller(QObject):
         self.changed.emit()
 
     def require_ground_station(self):
-        if self.mode == "LIVE" and self.board_layout == "launch":
-            raise ValueError("Launch downlink transport not configured")
         if self.mode == "LIVE" and not self.ground_connected:
             raise ValueError("Ground station is disconnected")
 
@@ -399,6 +418,7 @@ class Controller(QObject):
             self.disconnect(role)
         self.generation += 1
         self.mode = mode
+        self._simulated_uplink_enabled = False
         self.latest = None
         self.history.clear()
         self.track.clear()
@@ -525,8 +545,8 @@ class Controller(QObject):
                 self.hold("Ground station disconnected")
 
     def connect(self, role, device):
-        if self.board_layout == "launch":
-            raise ValueError("The launch station has no local serial boards or antenna pointer")
+        if self.board_layout == "launch" and role != "telemetry":
+            raise ValueError("The launch station has only one local telemetry board; no local antenna pointer or separate uplink board")
         if role not in self.serial_labels:
             raise ValueError(f"Unknown serial role: {role!r}")
         if self.mode != "LIVE":
@@ -656,6 +676,8 @@ class Controller(QObject):
         self.log("Rocket command requested", self.rocket_commands[command_id])
 
     def freeze_ground_station(self):
+        if self.board_layout == "launch":
+            raise ValueError("The launch station has no local antenna pointer")
         if self.frozen_ground is not None:
             self.frozen_ground = None
             if self.tracking:

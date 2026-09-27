@@ -4,7 +4,7 @@ import gc
 
 import pytest
 from PySide6.QtCore import QCoreApplication, QEvent
-from PySide6.QtWidgets import QTabWidget
+from PySide6.QtWidgets import QLabel, QTabWidget
 
 from rocket_gnc_monitor.station_profile import StationProfile
 from rocket_gnc_monitor.station_workspace import StationWindow
@@ -21,7 +21,7 @@ def offline_wifi_status(monkeypatch):
 
 @pytest.mark.parametrize("role", ["telemetry", "video"])
 @pytest.mark.parametrize("vehicle", ["balius", "iris"])
-def test_launch_profile_has_no_local_serial_or_pointer_controls(qtbot, tmp_path, monkeypatch, role, vehicle):
+def test_launch_profile_has_one_telemetry_board_and_no_local_pointer(qtbot, tmp_path, monkeypatch, role, vehicle):
     w = StationWindow(tmp_path, profile=StationProfile("base", role, vehicle), auto_place=False)
     qtbot.addWidget(w)
     try:
@@ -29,10 +29,13 @@ def test_launch_profile_has_no_local_serial_or_pointer_controls(qtbot, tmp_path,
         qtbot.wait(30)
         c = w.controller
         assert w.launch_station and c.board_layout == "launch"
-        assert w.port_widgets == c.workers == c.states == {}
+        assert set(w.port_widgets) == set(c.workers) == set(c.states) == {"telemetry"}
+        assert c.workers == {"telemetry": None}
         assert "Launch station" in w.station_identity.text()
         assert w.wifi_panel is None
-        assert not w.usb_strip.isVisible() and not w.poll_button.isVisible()
+        assert w.usb_strip.isVisible() is (role == "telemetry")
+        assert w.poll_button.isVisible() is (role == "telemetry")
+        assert (w.launch_uplink is not None) is (role == "telemetry")
         assert not any(widget.isVisible() for widget in (
             w.virtual_connect, w.virtual_panel, w.pointer_pose, w.pointer_sent,
             w.pointer_status, w.freeze_gps, *w.pointer_controls,
@@ -40,15 +43,15 @@ def test_launch_profile_has_no_local_serial_or_pointer_controls(qtbot, tmp_path,
         attempted = []
         monkeypatch.setattr(c, "connect", lambda *args: attempted.append(args))
         for key, action in w.legacy_actions.items():
-            if key != "log":
+            if key in {"pointer", "up", "down", "left", "right", "zero"} or (role == "video" and key != "log"):
                 assert not action.isVisible() and not action.isEnabled()
                 action.trigger()
-        for serial_role in ("telemetry", "uplink", "pointer"):
+        for serial_role in ("uplink", "pointer"):
             w.connect_role(serial_role)
             w.toggle_connection(serial_role)
         assert attempted == []
         assert not c.command_connected and not c.can_command
-        assert c.command_block_reason == "Launch uplink transport not configured"
+        assert c.command_block_reason == "Launch uplink switch protocol not defined"
         assert not any(button.isEnabled() for button in w.rocket_panel.buttons.values())
         assert w.launch_links.isVisible() is (role == "telemetry")
         assert w.companion.isVisible() is (role == "telemetry")
@@ -76,12 +79,13 @@ def test_launch_route_selection_changes_intent_only_and_never_marks_links_connec
             assert c.selected_away_station == station
             assert "transport not configured" in panel.status.text()
             assert not c.command_connected and not c.pointer_connected and not c.ground_connected
-            assert c.workers == c.states == {} and c.latest is None
+            assert c.workers == {"telemetry": None} and c.states == {"telemetry": "Disconnected"}
+            assert c.latest is None
             assert not c.can_command
             assert w.mount.isVisible() is (station is not None)
             assert "unavailable" in w.remote_pointer_caption.text()
             for key, label in panel.path_status.items():
-                assert "Link status unavailable" in label.text()
+                assert "unavailable" in label.text()
                 assert ("Selected route" in label.text()) is (key == station)
         assert not attempted
         assert "Launch station only" in panel.uplink.text()
@@ -187,5 +191,73 @@ def test_systems_badge_tracks_decoded_state_and_marks_stale_telemetry(qtbot, tmp
         w.refresh()
         assert badge.state_name == "NO TELEMETRY"
         assert badge.background_color == "#000000"
+    finally:
+        w.close()
+
+
+@pytest.mark.parametrize("vehicle", ["balius", "iris"])
+def test_launch_serial_shortcuts_feed_both_displays_and_uplink_switch_is_demo_only(qtbot, tmp_path, monkeypatch, vehicle):
+    from PySide6.QtCore import Qt
+    from rocket_gnc_monitor.protocol import ZephyrusDecoder
+    from test_board_roles import Board
+    from test_protocol import frame
+
+    monkeypatch.setattr("rocket_gnc_monitor.controller.SerialWorker", Board)
+    w = StationWindow(tmp_path, profile=StationProfile("launch", "telemetry", vehicle, "urrg"), auto_place=False)
+    qtbot.addWidget(w)
+    try:
+        w.show()
+        w.resize(1920, 1020)
+        w.companion.resize(1920, 1020)
+        c = w.controller
+        c.timer.stop()
+        w.serial_devices = [{"device": "/test/launch-board"}]
+        w.update_port_choices(force=True)
+        w.last_ui = 0
+        w.refresh()
+        assert w.legacy_actions["ground"].isVisible() and w.legacy_actions["ground"].isEnabled()
+        w.legacy_actions["ground"].trigger()
+        c.tick()
+        w.last_ui = 0
+        w.refresh()
+        assert c.ground_connected and w.poll_button.isEnabled()
+        w.legacy_actions["poll"].trigger()
+        board = c.workers["telemetry"]
+        assert c.polling and board.polling
+        sample = ZephyrusDecoder().feed(frame())[0]
+        c.enqueue(board.generation, "telemetry", "sample", sample)
+        c.tick()
+        w.last_ui = w.last_table = 0
+        w.refresh()
+        qtbot.wait(50)
+        assert c.latest is sample and c.rocket_link_state()[0] == "RECEIVING"
+        assert w.rocket_state_badge.state_name == "FLIGHT"
+        assert w.rocket_state_badge.status_label.text() == "LIVE · Telemetry"
+        assert "TELEMETRY LIVE" in w.secondary_health.text()
+        assert not w.launch_uplink.toggle.isEnabled() and not c.can_command
+        assert "UNKNOWN" in w.launch_uplink.status.text()
+        assert not board.sent
+        for table in (w.actuators, w.rocket_panel.telemetry, w.rocket_panel.pyros):
+            assert table.verticalScrollBar().maximum() == 0
+        c.switch_mode("DEMO")
+        c.play_demo(False)
+        c.select_away_station("away3")
+        w.last_ui = 0
+        w.refresh()
+        assert w.launch_uplink.isVisible() and not c.can_command
+        qtbot.wait(50)
+        for label in w.launch_links.findChildren(QLabel):
+            assert label.height() >= label.heightForWidth(label.width()), label.text()
+        qtbot.mouseClick(w.launch_uplink.toggle, Qt.MouseButton.LeftButton)
+        assert c.simulated_uplink_enabled and c.can_command
+        c.send_rocket("zero_alt")
+        qtbot.mouseClick(w.launch_uplink.toggle, Qt.MouseButton.LeftButton)
+        assert not c.simulated_uplink_enabled and not c.can_command
+        assert not board.sent
+        c.switch_mode("LIVE")
+        w.last_ui = 0
+        w.refresh()
+        assert not c.simulated_uplink_enabled and not c.ground_connected
+        assert "UNKNOWN" in w.launch_uplink.status.text()
     finally:
         w.close()

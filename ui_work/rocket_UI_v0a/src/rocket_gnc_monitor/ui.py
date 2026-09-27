@@ -48,7 +48,8 @@ from .domain import Mission, finite, validate_wind, wind_from
 from .devices import ports, serial_device_key
 from .media import WIDTH, HEIGHT, camera_devices
 from .trajectory import Trajectory, weather_profile
-from .widgets import STYLE, COLORS, AttitudeView, MountView, ComboBox as QComboBox
+from .widgets import STYLE, COLORS, MountView, ComboBox as QComboBox
+from .rocket_pose_panel import RocketPosePanel
 from .rocket_panel import RocketPanel
 from .zephyrus import legacy_values
 from .fonts import FONT_FAMILY, configure_fonts
@@ -648,7 +649,7 @@ class MainWindow(QMainWindow):
         self.reference_marker.setSymbolBrush(COLORS["gold"])
         self.virtual_mount_marker.setSymbolBrush(COLORS["violet"])
         self.mount.update()
-        self.attitude.update()
+        self.attitude.view.update()
 
     def guard(self, function):
         try:
@@ -849,14 +850,9 @@ class MainWindow(QMainWindow):
         )
         column.addWidget(self.altitude_plot)
         bottom.addWidget(panel, 3)
-        panel, column = card("Attitude")
-        self.attitude = AttitudeView()
+        panel, column = card("Rocket orientation & flight status")
+        self.attitude = RocketPosePanel(self.controller, self.rocket_pose_reference, self.open_flight_3d)
         column.addWidget(self.attitude, 1)
-        self.attitude_label = label("Awaiting telemetry", "muted")
-        self.attitude_label.setWordWrap(True)
-        self.attitude_label.setFixedHeight(40)
-        self.attitude_label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
-        column.addWidget(self.attitude_label)
         bottom.addWidget(panel, 1)
         layout.addLayout(bottom, 2)
         # Keep both camera controls and plots usable when the connection bar
@@ -2047,14 +2043,7 @@ class MainWindow(QMainWindow):
                 and not busy
             )
             widgets["stop"].setEnabled(bool(channel.config))
-        if s:
-            self.attitude.angles = s.attitude
-            self.attitude.update()
-            self.attitude_label.setText(s.details.get("attitude_kind", "Attitude"))
-        else:
-            self.attitude.angles = None
-            self.attitude.update()
-            self.attitude_label.setText("Awaiting telemetry")
+        self.attitude.refresh()
         if now - self.last_table > 0.5:
             self.last_table = now
             self.refresh_actuators()
@@ -2189,6 +2178,22 @@ class MainWindow(QMainWindow):
                 else "No reference selected · actual position requires a verified origin and altitude convention"
             )
 
+    def rocket_pose_reference(self):
+        dialog = self.flight_3d_dialog
+        if (getattr(self, "profile_locked", False)
+                and getattr(self, "profile", None).layout == "away"):
+            dialog = getattr(self, "away_flight_dialog", None)
+        if (dialog is not None and dialog.reference is self.controller.reference
+                and dialog.scene is not None and dialog.view.frame is not None):
+            state = "Playing" if dialog.playback.playing and dialog.isVisible() else "Paused"
+            if dialog.link.isChecked() and dialog.isVisible():
+                c = self.controller
+                available = ((c.virtual_flight and c.virtual_flight.reference is dialog.reference)
+                             or (c.latest and c.time_aligned))
+                state = "Monitor time" if available else "Time unavailable"
+            return dialog.scene, dialog.view.frame, state
+        return None
+
     def open_flight_3d(self):
         from .flight_view import Flight3DDialog
 
@@ -2202,5 +2207,6 @@ class MainWindow(QMainWindow):
         if self.flight_3d_dialog:
             self.flight_3d_dialog.close()
         self.mount.animation.stop()
+        self.attitude.shutdown()
         self.controller.shutdown()
         event.accept()

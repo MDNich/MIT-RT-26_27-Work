@@ -59,7 +59,7 @@ def test_video_role_uses_only_its_local_receivers_and_remote_wall(qtbot, tmp_pat
         assert w.legacy_actions['log'].isVisible()
         visible = {key for key, card in w.cards.items() if card.isVisible()}
         if site == 'base':
-            assert not w.port_widgets and w.controller.board_layout == 'launch'
+            assert set(w.port_widgets) == {'telemetry'} and w.controller.board_layout == 'launch'
             assert visible == {'video_wall'}
             assert set(w.video_wall.primary_views) == set(profile.channels)
             assert set(w.video_wall.thumbnails) == {(station, channel) for station, channels in profile.away_channels.items() for channel in channels}
@@ -128,8 +128,8 @@ def test_launch_wall_local_source_labels_follow_demo_file_and_paused_replay(qtbo
 
 
 @pytest.mark.parametrize('site,vehicle,serial_roles,switches', [
-    ('base', 'balius', set(), set()),
-    ('base', 'iris', set(), {'downlink', 'uplink'}),
+    ('base', 'balius', {'telemetry'}, set()),
+    ('base', 'iris', {'telemetry'}, {'telemetry'}),
     ('away4', 'iris', {'telemetry', 'pointer'}, {'downlink'}),
 ])
 def test_telemetry_station_board_inventory_and_iris_placeholders(qtbot, tmp_path, site, vehicle, serial_roles, switches):

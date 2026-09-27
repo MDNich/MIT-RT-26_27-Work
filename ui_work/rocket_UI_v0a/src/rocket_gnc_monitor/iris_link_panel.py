@@ -7,7 +7,7 @@ from .widgets import ComboBox
 
 
 class IrisLinkPanel(QFrame):
-    """Keep receiver/transmitter intentions separate from unknown hardware state.
+    """Keep board-target intentions separate from unknown hardware state.
 
     This panel deliberately has no transport dependency. A simulated selection
     changes its own state and writes a demo event; it never changes the recorded
@@ -25,13 +25,12 @@ class IrisLinkPanel(QFrame):
         self.simulated_targets = {}
         self._last_mode = controller.mode
         self.setObjectName("card")
-        self.setAccessibleName("Iris remote target placeholders" if self.is_launch else "Iris board target placeholders")
+        self.setAccessibleName("Iris board target placeholder")
         layout = QHBoxLayout(self)
         layout.setContentsMargins(9, 6, 9, 6)
         layout.setSpacing(18)
-        boards = [("downlink", "REMOTE DOWNLINK TARGET" if self.is_launch else "DOWNLINK RECEIVER")]
-        if self.is_launch:
-            boards.append(("uplink", "LAUNCH UPLINK TARGET"))
+        boards = ([("telemetry", "TELEMETRY BOARD TARGET")] if self.is_launch else
+                  [("downlink", "DOWNLINK RECEIVER")])
         for board, title in boards:
             group = QWidget()
             group.setObjectName("transparent")
@@ -46,10 +45,7 @@ class IrisLinkPanel(QFrame):
             controls.addStretch()
             selector = self.selectors[board] = ComboBox()
             selector.setAccessibleName(f"{title.title()} desired target")
-            selector.setToolTip(
-                "Desired target only; the remote transport is not configured"
-                if self.is_launch else "Desired target only; the physical board target is unknown"
-            )
+            selector.setToolTip("Desired target only; the physical board target is unknown")
             for target in ("sustainer", "booster"):
                 selector.addItem(target.title(), target)
             selector.setCurrentIndex(1 if station == "away4" else 0)
@@ -77,7 +73,7 @@ class IrisLinkPanel(QFrame):
             return
         target = self.selectors[board].currentData()
         self.simulated_targets[board] = target
-        name = "downlink receiver" if board == "downlink" else "uplink transmitter"
+        name = "telemetry board" if board == "telemetry" else "downlink receiver"
         self.controller.log(
             f"Iris {name} switch simulated",
             dict(board=board, target=target, source="DEMO", placeholder=True),
@@ -94,15 +90,11 @@ class IrisLinkPanel(QFrame):
             action.setEnabled(mode == "DEMO")
             action.setToolTip(
                 "Simulate this target selection; flight data remains unchanged"
-                if mode == "DEMO" else "Placeholder · remote transport not configured"
-                if self.is_launch else "Placeholder · firmware command not defined"
+                if mode == "DEMO" else "Placeholder · firmware command not defined"
             )
             if mode == "DEMO":
                 target = self.simulated_targets[board]
                 state = f"Simulated target: {target.title()}" if target else "No switch simulated"
                 self.status[board].setText(f"DEMO · Placeholder · {state} · Flight data unchanged")
             else:
-                self.status[board].setText(
-                    "Remote target: unknown · Placeholder · transport not configured"
-                    if self.is_launch else "Hardware target: unknown · Placeholder · firmware command not defined"
-                )
+                self.status[board].setText("Hardware target: unknown · Placeholder · firmware command not defined")

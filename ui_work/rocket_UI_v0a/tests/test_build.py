@@ -221,14 +221,14 @@ def test_package_station_verification_rejects_missing_windows_and_open_hardware(
         ("camera_inputs", ["digital", "digital"]),
         ("visible_camera_inputs", [] if station == "video" else ["digital"]),
         ("serial_roles", ["telemetry", "pointer"] if station == "base" else ["telemetry", "uplink", "pointer"]),
-        ("visible_serial_roles", [] if station == "away" else ["telemetry"]),
+        ("visible_serial_roles", [] if station != "video" else ["telemetry"]),
     ):
         with pytest.raises(SystemExit, match=f"Packaged {station} station workspace failed"):
             verifier.validate_station_report(dict(report, **{field: invalid}), station)
 
 
 @pytest.mark.parametrize("site,boards,serial_roles", [
-    ("base", ["downlink", "uplink"], []),
+    ("base", ["telemetry"], ["telemetry"]),
     ("away4", ["downlink"], ["telemetry", "pointer"]),
 ])
 def test_package_iris_telemetry_requires_station_specific_boards_and_inactive_placeholders(verifier, site, boards, serial_roles):

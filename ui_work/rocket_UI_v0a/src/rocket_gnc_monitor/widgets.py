@@ -5,7 +5,7 @@ import math
 import time
 import numpy as np
 from PySide6.QtCore import QPointF, QRectF, Qt, QTimer
-from PySide6.QtGui import QColor, QFont, QPainter, QPen, QRegion
+from PySide6.QtGui import QColor, QFont, QPainter, QPen
 from PySide6.QtWidgets import QWidget, QComboBox, QStyle
 from .fonts import FONT_FAMILY
 from .mount_geometry import mount_mesh
@@ -98,49 +98,6 @@ class ComboBox(QComboBox):
         screen = self.screen().availableGeometry()
         view.setMinimumWidth(min(width, max(1, screen.width() - 24)))
         super().showPopup()
-
-
-class AttitudeView(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.angles = None
-        self.setMinimumSize(190, 170)
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        rect = QRectF(self.rect()).adjusted(8, 8, -8, -8)
-        painter.setBrush(QColor(COLORS["panel"]))
-        painter.setPen(QColor(COLORS["line"]))
-        painter.drawRoundedRect(rect, 8, 8)
-        center = rect.center()
-        radius = min(rect.width(), rect.height()) * 0.38
-        painter.translate(center)
-        if self.angles:
-            painter.rotate(-self.angles[0])
-        painter.setBrush(QColor("#284963"))
-        painter.drawEllipse(QPointF(), radius, radius)
-        painter.setClipRegion(
-            QRegion(int(-radius), int(-radius), int(radius * 2), int(radius * 2), QRegion.RegionType.Ellipse)
-        )
-        offset = min(radius, max(-radius, (self.angles[1] if self.angles else 0) * radius / 45))
-        painter.fillRect(QRectF(-radius, offset, radius * 2, radius * 2), QColor("#614d3d"))
-        painter.setPen(QPen(QColor("#dceaf5"), 1.5))
-        painter.drawLine(QPointF(-radius, offset), QPointF(radius, offset))
-        for step in [-30, -20, -10, 10, 20, 30]:
-            y = offset + step * radius / 45
-            painter.drawLine(QPointF(-18, y), QPointF(18, y))
-        painter.setClipping(False)
-        painter.resetTransform()
-        painter.setPen(QPen(QColor(COLORS["accent"]), 3))
-        painter.drawLine(QPointF(center.x() - 48, center.y()), QPointF(center.x() - 12, center.y()))
-        painter.drawLine(QPointF(center.x() + 12, center.y()), QPointF(center.x() + 48, center.y()))
-        painter.drawEllipse(center, 4, 4)
-        if self.angles is None:
-            painter.setPen(QColor(COLORS["text"]))
-            painter.drawText(
-                rect, Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter, "ATTITUDE UNAVAILABLE"
-            )
 
 
 # Renderer coordinates: +Y is up and +Z is north, so east must be -X.

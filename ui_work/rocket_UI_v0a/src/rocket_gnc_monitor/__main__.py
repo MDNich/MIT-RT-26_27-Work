@@ -37,11 +37,25 @@ def station_board_report(window):
         if window.launch_links else [],
         local_pointer_controls_visible=window.virtual_connect.isVisible() or window.point_button.isVisible(),
         wifi_selector_visible=window.wifi_panel is not None and window.wifi_panel.isVisible(),
+        launch_uplink_switch=dict(
+            visible=window.launch_uplink is not None and window.launch_uplink.isVisible(),
+            hardware_state=None,
+            simulated_enabled=window.controller.simulated_uplink_enabled,
+        ),
         rocket_state_badge=dict(
             visible=window.rocket_state_badge.isVisible(),
             state=window.rocket_state_badge.state_name,
             color=window.rocket_state_badge.background_color,
             source=window.rocket_state_badge.status_label.text(),
+        ),
+        rocket_pose=dict(
+            renderer=type(window.attitude.view).__name__,
+            visible=window.attitude.isVisible(),
+            source=window.attitude.source.currentData(),
+            azimuth_slider_visible=window.attitude.azimuth.isVisible(),
+            camera_azimuth=window.attitude.view.azimuth,
+            camera_elevation=window.attitude.view.elevation,
+            effects=list(window.attitude.view.effect_text),
         ),
     )
 

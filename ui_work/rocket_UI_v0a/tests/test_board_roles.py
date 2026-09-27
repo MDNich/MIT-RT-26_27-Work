@@ -13,7 +13,7 @@ from PySide6.QtCore import QCoreApplication, QEvent
 from rocket_gnc_monitor.controller import Controller
 from rocket_gnc_monitor.devices import SerialWorker
 from rocket_gnc_monitor.domain import demo_sample
-from rocket_gnc_monitor.protocol import pointer_packet
+from rocket_gnc_monitor.protocol import ZephyrusDecoder, pointer_packet
 from rocket_gnc_monitor.recording import SessionReader, SessionRecorder, read_raw
 from rocket_gnc_monitor.ui import MainWindow
 from rocket_gnc_monitor.virtual_pointer import VIRTUAL_POINTER_DEVICE
@@ -47,23 +47,45 @@ def boards(monkeypatch):
 
 
 @pytest.mark.parametrize("vehicle", ["balius", "iris"])
-def test_launch_station_has_no_serial_transport_or_live_command_path(qtbot, tmp_path, boards, vehicle):
+def test_launch_station_receives_on_one_board_but_never_transmits_live_commands(qtbot, tmp_path, boards, vehicle):
     c = Controller(tmp_path, board_layout="launch", vehicle=vehicle)
     try:
-        assert dict(c.serial_labels) == c.workers == c.states == {}
-        assert c.command_role == "uplink"
+        assert dict(c.serial_labels) == {"telemetry": "Telemetry board"}
+        assert c.workers == {"telemetry": None}
+        assert c.states == {"telemetry": "Disconnected"}
+        assert c.command_role == "telemetry"
         assert not c.ground_connected and not c.pointer_connected and not c.command_connected
         assert c.virtual_pointer is None and not c.can_command
-        assert c.command_block_reason == "Launch uplink transport not configured"
-        for role, device in (("telemetry", "downlink"), ("uplink", "uplink"),
+        assert c.command_block_reason == "Launch uplink switch protocol not defined"
+        for role, device in (("uplink", "uplink"),
                              ("pointer", "pointer"), ("pointer", VIRTUAL_POINTER_DEVICE)):
-            with pytest.raises(ValueError, match="no local serial"):
+            with pytest.raises(ValueError, match="only one local telemetry board"):
                 c.connect(role, device)
-        with pytest.raises(ValueError, match="uplink transport not configured"):
-            c.send_rocket("zero_alt")
-        with pytest.raises(ValueError, match="downlink transport not configured"):
+        with pytest.raises(ValueError, match="virtual device is an antenna pointer"):
+            c.connect("telemetry", VIRTUAL_POINTER_DEVICE)
+        with pytest.raises(ValueError, match="Ground station is disconnected"):
             c.set_polling(True)
-        with pytest.raises(ValueError, match="downlink transport not configured"):
+        c.connect("telemetry", "launch-board")
+        c.tick()
+        board = c.workers["telemetry"]
+        assert c.ground_connected and c.command_connected
+        assert not c.can_command and not board.polling
+        with pytest.raises(ValueError, match="uplink switch protocol not defined"):
+            c.send_rocket("zero_alt")
+        with pytest.raises(ValueError, match="DEMO mode"):
+            c.set_simulated_uplink(True)
+        assert not board.sent and not c.simulated_uplink_enabled
+        sample = ZephyrusDecoder().feed(frame(77))[0]
+        c.enqueue(board.generation, "telemetry", "sample", sample)
+        c.tick()
+        assert c.latest is None
+        c.set_polling(True)
+        assert c.polling and board.polling
+        c.enqueue(board.generation, "telemetry", "sample", sample)
+        c.tick()
+        assert c.latest is sample and c.latest.sequence == 77 and c.latest.altitude == 123.25
+        assert c.rocket_link_state()[0] == "RECEIVING"
+        with pytest.raises(ValueError, match="no local antenna pointer"):
             c.freeze_ground_station()
         for action in (lambda: c.manual_point(90, 30), lambda: c.jog(0, 5), c.reference_zero, c.start_tracking):
             with pytest.raises(ValueError, match="Remote antenna-pointer transport not configured"):
@@ -72,13 +94,16 @@ def test_launch_station_has_no_serial_transport_or_live_command_path(qtbot, tmp_
             c.start_virtual_trajectory()
         assert not c.tracking and c.pointer_requested is None and c.pointer_sent is None
         assert not c.rocket_commands and not c.dispatched_commands
-        # Stale/local device events must not create a launch connection or sample.
-        for role in ("telemetry", "uplink", "pointer"):
-            c.enqueue(1, role, "connected", role)
-            c.enqueue(1, role, "sample", demo_sample(0, 1))
+        # The nonexistent board roles and stale telemetry cannot inject samples.
+        for role in ("uplink", "pointer"):
+            c.enqueue(board.generation, role, "connected", role)
+            c.enqueue(board.generation, role, "sample", demo_sample(0, 1))
+        c.enqueue(board.generation - 1, "telemetry", "sample", demo_sample(0, 2))
         c.tick()
-        assert c.latest is None and c.rocket_link_state() == ("DISCONNECTED", None)
-        assert c.workers == c.states == {}
+        assert c.latest is sample and set(c.workers) == {"telemetry"}
+        c.set_polling(False)
+        assert not c.polling and not board.polling and c.rocket_link_state() == ("PAUSED", None)
+        assert not board.sent and not c.can_command
     finally:
         c.shutdown()
 
@@ -99,7 +124,8 @@ def test_launch_remote_pointer_selection_is_intent_only_and_clears_old_pointer_s
             assert c.pointer_sent is c.pointer_requested is c.pointer_pending is None
             assert not c.dispatched_commands
             assert "transport not configured" in c.pointer_status
-            assert c.workers == c.states == {} and not c.pointer_connected
+            assert c.workers == {"telemetry": None} and c.states == {"telemetry": "Disconnected"}
+            assert not c.pointer_connected
             assert not c.command_connected and not c.can_command
         for invalid in ("base", "away5", "", [], 1):
             with pytest.raises(ValueError, match="1 to 4"):
@@ -109,24 +135,57 @@ def test_launch_remote_pointer_selection_is_intent_only_and_clears_old_pointer_s
         c.shutdown()
 
 
-def test_launch_demo_and_replay_remain_available_without_local_devices(qtbot, tmp_path, monkeypatch):
+@pytest.mark.parametrize("destination", ["LIVE", "REPLAY", "DEMO"])
+def test_launch_demo_uplink_gate_is_simulated_only_and_resets_on_mode_change(qtbot, tmp_path, monkeypatch, boards, destination):
     c = Controller(tmp_path, board_layout="launch", vehicle="iris")
     monkeypatch.setattr(c, "start_video", lambda *args, **kwargs: None)
     events = []
     c.event.connect(events.append)
     try:
+        c.connect("telemetry", "launch-board")
+        c.tick()
+        board = c.workers["telemetry"]
         c.select_away_station("away3")
         c.switch_mode("DEMO")
-        assert c.latest is not None and c.can_command
+        assert c.latest is not None and not c.can_command and not c.simulated_uplink_enabled
+        with pytest.raises(ValueError, match="uplink is OFF"):
+            c.send_rocket("zero_alt")
+        for invalid in (1, "on", None):
+            with pytest.raises(ValueError, match="must be a boolean"):
+                c.set_simulated_uplink(invalid)
+        c.set_simulated_uplink(True)
+        assert c.simulated_uplink_enabled and c.can_command
+        assert events[-1] == "Launch uplink switch simulated"
         c.send_rocket("zero_alt")
         assert events[-1] == "Rocket command simulated"
-        assert c.workers == c.states == {} and not c.command_connected
-        c.switch_mode("REPLAY")
-        assert not c.can_command and c.command_block_reason == "Replay is read-only"
+        assert not board.sent and c.workers == {"telemetry": None} and not c.command_connected
+        c.set_simulated_uplink(False)
+        assert not c.simulated_uplink_enabled and not c.can_command
+        c.set_simulated_uplink(True)
+        c.switch_mode(destination, force=destination == "DEMO")
+        assert not c.simulated_uplink_enabled and not c.can_command
+        if destination != "DEMO":
+            with pytest.raises(ValueError, match="DEMO mode"):
+                c.set_simulated_uplink(True)
+        if destination == "REPLAY":
+            assert c.command_block_reason == "Replay is read-only"
         c.switch_mode("LIVE")
         assert c.selected_away_station == "away3"
         assert "Away station 3" in c.pointer_status and "transport not configured" in c.pointer_status
-        assert not c.can_command and c.workers == c.states == {}
+        assert not c.can_command and not board.sent
+        assert c.workers == {"telemetry": None} and c.states == {"telemetry": "Disconnected"}
+    finally:
+        c.shutdown()
+
+
+@pytest.mark.parametrize("layout", ["away", "base", "legacy"])
+def test_simulated_uplink_switch_is_exclusive_to_launch(qtbot, tmp_path, layout):
+    c = Controller(tmp_path, board_layout=layout)
+    try:
+        c.mode = "DEMO"
+        with pytest.raises(ValueError, match="belongs to the launch station"):
+            c.set_simulated_uplink(True)
+        assert not c.simulated_uplink_enabled
     finally:
         c.shutdown()
 

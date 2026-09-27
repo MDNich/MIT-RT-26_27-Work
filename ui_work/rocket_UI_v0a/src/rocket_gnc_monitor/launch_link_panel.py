@@ -21,7 +21,7 @@ class LaunchLinkPanel(QWidget):
         self.profile = profile
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(9)
+        layout.setSpacing(6)
         layout.addWidget(text_label("Launch computer → Ethernet / PoE adapter\n4 × LTU-XR → Away stations 1–4"))
         self.site = text_label()
         layout.addWidget(self.site)
@@ -34,18 +34,18 @@ class LaunchLinkPanel(QWidget):
         layout.addWidget(self.selector)
         paths = QGridLayout()
         paths.setHorizontalSpacing(8)
-        paths.setVerticalSpacing(8)
+        paths.setVerticalSpacing(4)
         self.path_status = {}
         for number in range(1, 5):
             key = f"away{number}"
             stage = ("Booster" if number == 4 else "Sustainer") if profile.vehicle == "iris" else "Balius"
-            paths.addWidget(text_label(f"LTU-XR {number} ↔ Away {number}\n{stage} · local Wi-Fi"), number - 1, 0)
+            paths.addWidget(text_label(f"LTU-XR {number} ↔ Away {number} · {stage}"), number - 1, 0)
             self.path_status[key] = text_label("Link status unavailable")
             paths.addWidget(self.path_status[key], number - 1, 1)
         layout.addLayout(paths)
         self.status = text_label()
         layout.addWidget(self.status)
-        self.uplink = text_label("Uplink authority: Launch station only\nTransfer protocol pending · transmission unavailable")
+        self.uplink = text_label("Uplink authority: Launch station only · local telemetry board\nUplink switch protocol pending · transmission unavailable")
         layout.addWidget(self.uplink)
         layout.addWidget(text_label("Selecting a pointer chooses the intended route. It does not connect a link, move an antenna or transmit a command."))
         layout.addStretch()
@@ -64,10 +64,10 @@ class LaunchLinkPanel(QWidget):
         self.selector.blockSignals(previous)
         self.status.setText(self.controller.remote_pointer_status)
         for key, label in self.path_status.items():
-            label.setText("Selected route\nLink status unavailable" if key == selected else "Link status unavailable")
+            label.setText("Selected route · unavailable" if key == selected else "Link status unavailable")
             label.setStyleSheet("color: #79d4c8;" if key == selected else "")
         self.site.setText(
             f"URRG launch station: {URRG_STATION_MGRS['base']}\nStation reference only · no local antenna pointer"
             if self.controller.mission.launch_site_name == "URRG" else
-            "No local antenna pointer or serial telemetry boards"
+            "One local telemetry board · no local antenna pointer"
         )

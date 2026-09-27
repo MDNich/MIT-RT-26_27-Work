@@ -210,15 +210,30 @@ def test_cli_preselects_all_wizard_choices_and_can_open_directly(
     assert load_startup_choices(tmp_path) == expected
 
 
-def test_launch_wizard_describes_remote_topology_without_local_boards(qtbot):
+def test_launch_wizard_describes_one_local_board_and_remote_pointer(qtbot):
     wizard = StartupWizard(StationProfile("launch", "telemetry", "iris", "urrg"))
     qtbot.addWidget(wizard)
     choice = wizard.choices["station"]["base"]
     assert choice.accessibleName() == "Launch station"
     assert "four LTU-XR links" in choice.text()
+    assert "One telemetry board" in choice.text()
     summary = wizard.summary.text()
     assert "Ethernet / PoE to four LTU-XR links" in summary
     assert "Choose an away antenna pointer" in summary
+    assert "One telemetry board: downlink reception and polling." in summary
+    assert "Uplink enable: firmware pending; DEMO simulation only." in summary
+    assert "One shared board target." in summary
     assert "no local antenna pointer" in summary
     assert "Base" not in summary
     assert "uplink boards" not in summary
+
+
+def test_launch_wizard_limits_board_description_to_telemetry_role(qtbot):
+    wizard = StartupWizard(StationProfile("launch", "telemetry", "balius"))
+    qtbot.addWidget(wizard)
+    assert "One telemetry board" in wizard.summary.text()
+    assert "One shared board target" not in wizard.summary.text()
+    wizard.choices["role"]["video"].setChecked(True)
+    assert "Local USB inputs: Digital." in wizard.summary.text()
+    assert "One telemetry board" not in wizard.summary.text()
+    assert "Uplink enable" not in wizard.summary.text()

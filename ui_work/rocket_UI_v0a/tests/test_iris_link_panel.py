@@ -28,37 +28,40 @@ def make_panel(qtbot, station="base", mode="LIVE"):
 @pytest.mark.parametrize("mode", ["LIVE", "REPLAY"])
 def test_placeholders_do_not_actuate_or_claim_hardware_state(qtbot, mode):
     panel, controller, events, sample = make_panel(qtbot, mode=mode)
-    for board in ("downlink", "uplink"):
+    for board in ("telemetry",):
         assert panel.selectors[board].isEnabled()
         panel.selectors[board].setCurrentIndex(1)
         assert not panel.buttons[board].isEnabled()
         panel.simulate(board)
         assert panel.simulated_targets[board] is None
-        assert "Remote target: unknown" in panel.status[board].text()
-        assert "transport not configured" in panel.status[board].text()
+        assert "Hardware target: unknown" in panel.status[board].text()
+        assert "firmware command not defined" in panel.status[board].text()
     assert events == [] and controller.latest is sample
 
 
-def test_launch_demo_switches_receiver_and_transmitter_independently(qtbot):
+def test_launch_demo_has_one_common_telemetry_board_target(qtbot):
     panel, controller, events, sample = make_panel(qtbot, mode="DEMO")
-    panel.selectors["downlink"].setCurrentIndex(1)
-    qtbot.mouseClick(panel.buttons["downlink"], Qt.MouseButton.LeftButton)
-    assert panel.simulated_targets == {"downlink": "booster", "uplink": None}
+    assert set(panel.selectors) == set(panel.buttons) == set(panel.status) == {"telemetry"}
+    assert panel.selectors["telemetry"].currentData() == "sustainer"
+    assert panel.selectors["telemetry"].accessibleName() == "Telemetry Board Target desired target"
+    panel.selectors["telemetry"].setCurrentIndex(1)
+    qtbot.mouseClick(panel.buttons["telemetry"], Qt.MouseButton.LeftButton)
+    assert panel.simulated_targets == {"telemetry": "booster"}
     assert events[-1] == (
-        "Iris downlink receiver switch simulated",
-        dict(board="downlink", target="booster", source="DEMO", placeholder=True),
+        "Iris telemetry board switch simulated",
+        dict(board="telemetry", target="booster", source="DEMO", placeholder=True),
     )
-    qtbot.mouseClick(panel.buttons["uplink"], Qt.MouseButton.LeftButton)
-    assert panel.simulated_targets == {"downlink": "booster", "uplink": "sustainer"}
-    assert events[-1] == (
-        "Iris uplink transmitter switch simulated",
-        dict(board="uplink", target="sustainer", source="DEMO", placeholder=True),
-    )
+    assert len(events) == 1 and controller.latest is sample
+    panel.selectors["telemetry"].setCurrentIndex(0)
+    assert panel.simulated_targets["telemetry"] == "booster"
+    assert "Simulated target: Booster" in panel.status["telemetry"].text()
+    assert "Flight data unchanged" in panel.status["telemetry"].text()
+    qtbot.mouseClick(panel.buttons["telemetry"], Qt.MouseButton.LeftButton)
+    assert panel.simulated_targets == {"telemetry": "sustainer"}
     assert len(events) == 2 and controller.latest is sample
-    panel.selectors["downlink"].setCurrentIndex(0)
-    assert panel.simulated_targets["downlink"] == "booster"
-    assert "Simulated target: Booster" in panel.status["downlink"].text()
-    assert all("Flight data unchanged" in state.text() for state in panel.status.values())
+    for removed_board in ("downlink", "uplink"):
+        with pytest.raises(ValueError, match=removed_board):
+            panel.simulate(removed_board)
 
 
 @pytest.mark.parametrize("station,default", [("away1", "sustainer"), ("away2", "sustainer"), ("away3", "sustainer"), ("away4", "booster")])
@@ -83,15 +86,14 @@ def test_away_live_receiver_retains_hardware_placeholder(qtbot):
 @pytest.mark.parametrize("destination", ["LIVE", "REPLAY"])
 def test_leaving_demo_clears_simulation_and_rechecks_action_mode(qtbot, destination):
     panel, controller, events, _ = make_panel(qtbot, mode="DEMO")
-    panel.simulate("downlink")
-    panel.simulate("uplink")
+    panel.simulate("telemetry")
     controller.mode = destination
     # The callback also guards the mode before the next periodic UI refresh.
-    panel.simulate("downlink")
-    assert len(events) == 2
-    assert panel.simulated_targets == {"downlink": None, "uplink": None}
+    panel.simulate("telemetry")
+    assert len(events) == 1
+    assert panel.simulated_targets == {"telemetry": None}
     assert not any(action.isEnabled() for action in panel.buttons.values())
     controller.mode = "DEMO"
     panel.refresh()
     assert all(action.isEnabled() for action in panel.buttons.values())
-    assert panel.simulated_targets == {"downlink": None, "uplink": None}
+    assert panel.simulated_targets == {"telemetry": None}

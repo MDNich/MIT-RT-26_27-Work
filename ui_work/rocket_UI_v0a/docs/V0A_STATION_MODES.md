@@ -19,7 +19,7 @@ A new mission is named **Balius Launch** or **Iris Launch**, according to the se
 
 **Launch station / Telemetry** opens Flight and Systems windows sharing one mission and controller. Put one on each display. Both windows can be moved and resized on a single display for preparation. The second window creates no duplicate serial workers or recording sessions.
 
-**Away / Telemetry** opens one reduced workspace with main rocket telemetry and antenna pointing.
+**Away / Telemetry** opens one reduced workspace with main rocket telemetry, the compact 3D rocket pose and antenna pointing.
 
 **Away / Video** opens one simplified window with its two assigned USB camera inputs. **Launch station / Video** shows the primary channels and all four Away stations below them; The Launch station has only a local Digital USB camera.
 
@@ -42,7 +42,7 @@ Station layout and data mode are separate decisions:
 
 | Data mode | Input and behavior |
 | --- | --- |
-| LIVE | Physical connections start closed. Away stations connect their downlink board, pointer and cameras explicitly. Launch selects an Away communication route; its future transport remains unavailable. |
+| LIVE | Physical connections start closed. Launch connects one telemetry board for downlink reception/polling. Away stations connect their downlink board, pointer and cameras explicitly. Launch selects an Away communication route; the interstation transport and software uplink enable protocol remain pending. |
 | DEMO | Bundled GS1/GS2/GS3 Zephyrus recordings; no physical telemetry connection is needed. |
 | REPLAY | A saved flight/session, with playback controls and physical command isolation. |
 
@@ -50,18 +50,28 @@ Station layout and data mode are separate decisions:
 
 The flight display groups the information used to watch the rocket and select its remote communication route:
 
-- Main telemetry, state, freshness and ground-station/rocket link status.
-- Flight plots, reference trajectory and 3D rocket presentation.
-- Ethernet / PoE topology and a choice of Away 1–4 antenna pointers for communication. Launch has no local serial or virtual pointer connection; remote control and feedback await the interstation protocol.
+- Main telemetry, state, freshness and ground-station/rocket link status, received through one local telemetry board using the existing Zephyrus serial protocol and polling controls.
+- Flight plots, reference trajectory, full 3D flight playback and the compact 3D rocket pose.
+- Ethernet / PoE topology and a choice of Away 1–4 antenna pointers for communication. Launch has no local physical or virtual pointer connection; remote control and feedback await the interstation protocol.
 - Three-axis GNC plots and all actuator channels in a side-by-side matrix.
 
-At Away stations, the antenna controls show current/commanded angles, articulated visualization, manual pointing and trajectory following. The antenna and flight renderers animate independently of telemetry arrival. Drag the graphics to orbit, scroll to zoom and use the displayed view controls to restore the camera. The rocket's motor plume follows ignition/burnout events; its parachute appears only if the loaded simulation contains a deployment event. Reference attitude, measured telemetry and path-aligned illustrations are labelled so an illustration is not mistaken for sensor feedback.
+At Away stations, the antenna controls show current/commanded angles, articulated visualization, manual pointing and trajectory following. The antenna and full trajectory renderers retain their orbit/zoom controls: drag to orbit, scroll to zoom and use their displayed view controls to restore the camera. They animate independently of telemetry arrival. The compact rocket pose uses the separate camera controls described below. Reference attitude, telemetry rotation and path-aligned illustrations are labelled so an illustration is not mistaken for calibrated sensor feedback.
+
+## Compact 3D rocket pose
+
+The Launch and Away telemetry workspaces, and the legacy instrument view, show a 3D rocket in place of the circular attitude horizon. The compact model is accompanied by roll, pitch and yaw values and source/status text. Its **View azimuth** slider, from 0° to 360°, changes the viewing direction around the rocket. The camera remains upright; this compact view has no drag, pan or scroll interaction. Changing the viewing direction does not change the rocket's rotation or send hardware commands. The full trajectory viewer and antenna graphic retain their existing camera controls.
+
+The source selector defaults to **Telemetry**. It follows the selected LIVE, DEMO or REPLAY telemetry stream and displays the raw rotation values. Zephyrus supplies legacy integrated rotation with uncalibrated axes, so the resulting orientation remains explicitly illustrative. The current Zephyrus protocol provides no confirmed motor-burning or parachute-deployment status: those indicators remain **unknown**. Flight phase and pyro-fired flags do not confirm ignition, current motor burn or parachute deployment, and the display does not infer those effects from them.
+
+Choose **OpenRocket reference** to display the loaded simulation's orientation and flight events instead. This opens or focuses the existing 3D playback controls: embedded in Launch's Flight window, in the optional 3D flight window at Away stations, or in the legacy 3D flight dialog. Use **Play**, the time slider or **Jump to event…** to examine ignition, burnout and recovery. The compact pane shows its reference time and whether playback is paused, playing or following monitor time. A flame follows simulated motor-burning intervals; a parachute follows recorded simulation deployment events. Missing attitude or event information remains labelled unavailable or illustrative. A partial event list without motor or deployment history leaves the corresponding effect unknown. Selecting a reference never fills gaps in the Telemetry source with simulation values.
+
+For a demonstration without hardware, load or generate an OpenRocket reference containing flight events, select **OpenRocket reference**, leave **Follow monitor time** unchecked (**Monitor time** in the embedded Launch view), and use its playback controls. This operates the visualization only. Switching back to **Telemetry** restores the telemetry rotation and its own status information.
 
 ## Launch station: Systems display
 
 The companion display exposes the supporting information and controls:
 
-- Full rocket telemetry/GPS, servo and cell readouts, rocket commands, power rails, BMS protections and recovery controls supplied by the Zephyrus wire contract. Live uplink actions are unavailable until the Launch transport is defined.
+- Full rocket telemetry/GPS, servo and cell readouts, rocket commands, power rails, BMS protections and recovery controls supplied by the Zephyrus wire contract. Launch alone has uplink authority on its telemetry board. The software uplink enable/disable command is a firmware placeholder; it can be simulated in DEMO, while live rocket commands remain unavailable until that protocol is defined.
 - Mission launch location, OpenRocket configuration/reference and wind information. Away station missions additionally configure their local antenna positions.
 - APRS/network connections and status.
 - Session recording/replay and diagnostic events.
@@ -86,7 +96,7 @@ Two or three large primary channels sit above all four Away stations. There are 
 
 The inter-station video connection has not yet been specified or implemented. Remote views therefore start with **Awaiting station link**, not simulated live pictures. Their presentation API already supports quality text, receive age, stale frames and loss of connection. Choosing a thumbnail selects its source even when it has no frame; it does not establish a network connection. The existing telemetry LAN feature does not carry video. Remote pictures injected through the future transport are display-only today; remote recording/replay is not implemented.
 
-The supplied routing diagrams establish the video and vehicle assignments. The revised station architecture uses four LTU-XR links for Away-to-Launch transfer, with no local telemetry board at Launch. The [Iris diagram](../references/IRIS_STATION_ROUTING.png) adds stage-specific routing, summarized below. The stage names label receiver assignments; the application does not infer a vehicle identity from legacy telemetry packets.
+The supplied routing diagrams establish the video and vehicle assignments. The revised station architecture uses four LTU-XR links for Away-to-Launch transfer alongside one local telemetry board at Launch. That board is connected from the Telemetry workspace; the Video workspace retains its dedicated camera interface. The [Iris diagram](../references/IRIS_STATION_ROUTING.png) adds stage-specific routing, summarized below. The stage names label receiver assignments; the application does not infer a vehicle identity from legacy telemetry packets.
 
 ### Recording and playback
 
@@ -100,17 +110,17 @@ Settings remain available with **⌘,** / **Ctrl+,**. Quitting closes active wor
 | --- | --- | --- | --- |
 | Away 1–3 | Sustainer Digital; Sustainer Analog | Sustainer | Sustainer |
 | Away 4 | Sustainer Digital; Booster Analog | Booster | Booster |
-| Launch station | Sustainer Digital | Sustainer and Booster | Relayed from Away stations |
+| Launch station | Sustainer Digital | Sustainer or Booster through one board | Relayed from Away stations |
 
-The wizard and station header identify the telemetry assignment. Each Away station has one downlink board; that board selects one Iris stage at a time. Launch receives through the planned station links and alone has uplink authority, with no local serial board. Switch commands and acknowledgement are not defined; the application does not claim to know the physical target. APRS remains one external Dire Wolf KISS input with an optional callsign filter; set the appropriate vehicle callsign. Automatic stage identification and Away-to-Launch APRS relay are not yet implemented. The existing read-only one-peer telemetry LAN is separate from the planned multi-station data/comms transport.
+The wizard and station header identify the telemetry assignment. Each Away station has one downlink board; that board selects one Iris stage at a time. Launch also has one local telemetry board and alone has uplink authority. Its Sustainer/Booster selection is shared by downlink and uplink, so there are no independent targets or second serial board. The existing Zephyrus connection/polling receives downlink telemetry. Target-switch commands, acknowledgements and software uplink enable/disable are not defined; the application does not claim to know the physical target or uplink state. APRS remains one external Dire Wolf KISS input with an optional callsign filter; set the appropriate vehicle callsign. Automatic stage identification and Away-to-Launch APRS relay are not yet implemented. The existing read-only one-peer telemetry LAN is separate from the planned multi-station data/comms transport.
 
-## Iris target switches (placeholder)
+## Iris board target and Launch uplink (placeholders)
 
-The Iris Telemetry workspace displays a **Downlink receiver** target selector. Launch also displays an independent **Uplink transmitter** target selector; Away stations have no uplink authority or transmit controls. Both offer Sustainer and Booster. Initial desired choices follow the station assignment (Booster at Away 4, Sustainer elsewhere). At Launch these represent future remote routing, not locally connected boards.
+The Iris Telemetry workspace displays one Sustainer/Booster selector for its telemetry board. At Launch, this is the common board target for both downlink and uplink. Away stations have no uplink authority or transmit controls. Initial desired targets follow the station assignment (Booster at Away 4, Sustainer elsewhere). Choosing a remote Away antenna pointer remains a separate communication-route choice and does not actuate the board's stage switch.
 
-These are explicitly marked **PLACEHOLDER** because the firmware switch command and acknowledgement are not defined. A dropdown is only a desired target, never a confirmed hardware target. In LIVE and REPLAY, the hardware target remains unknown and switch actions are disabled. No target-switch bytes are invented or transmitted. Iris live rocket commands are also unavailable until the uplink target protocol is implemented.
+These controls are explicitly marked **PLACEHOLDER** because the firmware commands and acknowledgements are not defined. A dropdown is only a desired target, never a confirmed hardware target. In LIVE and REPLAY, the hardware target remains unknown and target-switch actions are disabled. Launch software uplink enable/disable likewise remains unavailable outside DEMO. No target-switch or uplink-enable bytes are invented or transmitted. Live rocket commands are locked for both vehicles until the Launch uplink enable contract is implemented; Iris also needs its common board-target contract.
 
-In DEMO, **Simulate switch** updates the indicated simulated target and records an event identifying the downlink/uplink role and desired target. The two Launch simulations are independent. Simulation changes switch state only: it does not relabel or replace the single bundled Zephyrus telemetry recording, and it does not transmit commands. Leaving DEMO clears simulated switch state. This supports interface rehearsal while the firmware contract is being finalized.
+In DEMO, **Simulate switch** updates the indicated simulated target and records an event. Launch also allows simulated uplink enable/disable on that same board. These changes do not relabel or replace the single bundled Zephyrus telemetry recording, and they transmit no hardware commands. Leaving DEMO clears simulated switch and uplink state. This supports interface rehearsal while the firmware contract is being finalized.
 
 ## Ground-station circuit-board mapping
 
@@ -118,8 +128,8 @@ The current station architecture uses the paths below. Earlier supplied block di
 
 | Hardware/data path | Monitor integration |
 | --- | --- |
-| Downlink telemetry board → USB serial | Away stations only. Zephyrus receive/polling. A USB connection and recent valid rocket telemetry are separate status conditions. |
-| Launch uplink authority → selected Away route | Launch only; transport pending. No local uplink serial selector and no live command transmission. |
+| Telemetry board → USB serial | One board at Launch and one at each Away station. Existing Zephyrus receive/polling. A USB connection and recent valid rocket telemetry are separate status conditions. |
+| Launch telemetry board → uplink | Launch only, on the same board and serial connection used for downlink. Software enable/disable is a firmware placeholder with DEMO simulation; live command transmission stays blocked. |
 | Antenna pointer board → USB serial | Away stations only. Independent pointer commands. Once a serial port is connected to one board, it disappears from the other board's available ports. |
 | Digital video receiver → USB camera capture | Digital video channel. |
 | Analog video receiver → USB camera capture | Away-only Analog channel (Sustainer at Iris Away 1–3, Booster at Iris Away 4). A camera selected for one channel is excluded from all other active selectors. |
@@ -127,7 +137,7 @@ The current station architecture uses the paths below. Earlier supplied block di
 | Launch Ethernet / PoE → four LTU-XR links → Away LTU-XR and local WLAN | Away Wi-Fi selection and Launch communication-route selection are available. Selecting a network or route does not establish the future application transport. |
 | Existing direct station LAN | Explicit read-only station status/telemetry exchange with one peer, default TCP `8765`. This is not the planned four-Away-station transport. LTU management readings require its equipment protocol. |
 
-The Digital/Analog names refer to the rocket-to-ground radio video paths, not to the computer input type: the local computer inputs are USB cameras. The video computer can capture either feed without connecting the telemetry board. Once frames arrive, the recording control can create a video-only recording; the absence of a telemetry board does not prevent this. Live rocket commands remain locked at Launch while the uplink transport is undefined. Away downlink reception and polling remain independent.
+The Digital/Analog names refer to the rocket-to-ground radio video paths, not to the computer input type: the local computer inputs are USB cameras. The video computer can capture either feed without connecting the telemetry board. Once frames arrive, the recording control can create a video-only recording; the absence of a telemetry board does not prevent this. Live rocket commands remain locked at Launch while the software uplink enable protocol is undefined. Downlink reception and polling at Launch and Away stations remain independent of this uplink placeholder.
 
 Unknown analog VRX control protocols and equipment-management interfaces are not represented as working controls or fabricated telemetry. An unavailable/unsupported status means the monitor has no verified value or command contract for that function. Existing Away pointer commands and Zephyrus downlink polling remain available through their established serial connections.
 
@@ -137,7 +147,7 @@ The [source diagram and implementation notes](../references/GROUND_STATION_BOARD
 
 At Away stations, the Wi-Fi panel lets you choose a saved network or type an SSID. **Select Wi-Fi** saves the desired network for this station; it does not join the network. **Refresh** reads current/saved network names from the operating system, and **Open Wi-Fi settings** opens the system controls for securely joining it. The current OS connection is shown separately from the selected SSID, so a saved selection is never presented as a successful connection. Join the Away station's local WLAN before using any data connection. No Wi-Fi password is stored by the monitor.
 
-At Launch, the **Communication / Away antenna selection** panel shows the Ethernet / PoE topology and all four LTU-XR paths. Choose **Away station 1–4 antenna pointer** from **Choose an away-station pointer…** to set the desired communication route. Selection does not join a link, send rocket commands, move a pointer or imply live pointer feedback. Link status and signal strength remain unavailable until the bridge management and interstation data protocols are provided. Launch has no local serial or virtual pointer controls.
+At Launch, the **Communication / Away antenna selection** panel shows the Ethernet / PoE topology and all four LTU-XR paths. Choose **Away station 1–4 antenna pointer** from **Choose an away-station pointer…** to set the desired communication route. Selection does not join a link, send rocket commands, move a pointer or imply live pointer feedback. Link status and signal strength remain unavailable until the bridge management and interstation data protocols are provided. Launch has no local physical or virtual pointer controls; its serial connection is for the telemetry board.
 
 The **Station network** panel keeps the two connections separate from the serial boards and USB video.
 
@@ -182,7 +192,9 @@ To rehearse without hardware at an Away station: load or simulate a reference, s
 
 `station_workspace.py` assembles the role-specific cards over one inherited instrument owner. An explicit profile fixes identity and role for the window lifetime. Video role gates hidden serial menu actions and connection callbacks; it keeps recording shortcuts and file/replay controls. Telemetry retains the original shortcuts and device gating. The legacy constructor without an explicit profile supports prior layout-switching integrations.
 
-`controller.py` accepts a `board_layout` and vehicle profile. Launch creates no local serial workers; Away creates downlink/pointer workers. The legacy default preserves the previous combined ground-board API. Launch live uplink and remote pointer actuation stay unavailable until their transport is specified, independently of any incoming read-only LAN data. `iris_link_panel.py` owns clearly labelled DEMO-only target-switch state and never calls a transport.
+The compact rocket-pose model and renderer keep telemetry and OpenRocket frames separate. Telemetry uses the sample's raw attitude and calibration/source caption. A future decoder may provide an optional `details.flight_status` object with exact Boolean fields `motor_burning`, `motor_ignited` and `parachute_deployed`; missing or non-Boolean values remain unknown. `motor_ignited` records historical ignition and does not by itself indicate a currently burning motor. Only explicit burning/deployment evidence controls telemetry flame/parachute effects. This is an internal decoded-data contract, not a new serial wire protocol, and the present Zephyrus decoder supplies none of these fields. Simulation poses instead use the selected OpenRocket frame and its event metadata, preserving unavailable-attitude and path-aligned-illustration labels.
+
+`controller.py` accepts a `board_layout` and vehicle profile. Launch creates one local telemetry worker; Away creates downlink/pointer workers. The legacy default preserves the previous combined ground-board API. The Launch telemetry worker uses the established Zephyrus downlink connection and polling path. Launch live uplink stays unavailable until its software enable protocol is specified; remote pointer actuation separately awaits the station transport. Incoming read-only LAN data cannot enable either. `iris_link_panel.py` presents one shared board target at Launch and a downlink target at Away stations, with clearly labelled DEMO-only target-switch simulation.
 
 `controller.py` also accepts an immutable `video_channels` tuple. Its per-channel states drive worker lifecycle, reservations, recording and replay; `ui.py` constructs matching local controls from `video_labels`. Unknown/inactive channels are rejected. Existing two-channel defaults and missing-stream-as-Digital recordings remain compatible. `recording.py` and `flight.py` preserve arbitrary channel directories without an archive schema change. Digital-only replay filters inactive channels without deleting their archived assets.
 

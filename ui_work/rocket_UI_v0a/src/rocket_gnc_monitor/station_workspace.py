@@ -121,6 +121,7 @@ class StationWindow(InstrumentWindow):
         self.away_flight_dialog = None
         self.launch_station = self.profile_locked and self.profile.station == "base"
         self.launch_links = None
+        self.launch_uplink = None
         self.wifi_panel = None
         super().__init__(data_dir, video_channels=self.profile.local_channels,
                          video_labels={key: self.profile.channel_labels[key] for key in self.profile.local_channels},
@@ -226,6 +227,11 @@ class StationWindow(InstrumentWindow):
             for w in (combo, self.refresh_buttons[role], connect, self.disconnect_buttons[role], status):
                 usb.addWidget(w, 1 if w is combo else 0)
                 w.show()
+        if self.launch_station and self.profile.role == "telemetry":
+            from .launch_uplink_panel import LaunchUplinkPanel
+
+            self.launch_uplink = LaunchUplinkPanel(self.controller)
+            usb.addWidget(self.launch_uplink)
         outer.addWidget(self.usb_strip)
         self.iris_links = None
         if self.profile_locked and self.profile.vehicle == "iris" and self.profile.role == "telemetry":
@@ -318,10 +324,8 @@ class StationWindow(InstrumentWindow):
                 table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         view_menu = next(a.menu() for a in self.menuBar().actions() if a.text() == "View")
         if self.launch_station:
-            serial_menu = next(a.menu() for a in self.menuBar().actions() if a.text() == "Serial controls")
-            serial_menu.setTitle("Session controls")
             for key, action in self.legacy_actions.items():
-                if key != "log":
+                if key in {"pointer", "up", "down", "left", "right", "zero"}:
                     action.setVisible(False)
         if self.profile_locked and self.profile.role == "video":
             for action in view_menu.actions():
@@ -393,10 +397,8 @@ class StationWindow(InstrumentWindow):
         self.reference_label.setFixedHeight(26)
         layout = self.card("altitude", "VERTICAL PROFILE / m")
         self.attach(layout, self.altitude_plot, 1)
-        layout = self.card("attitude", "ROCKET ATTITUDE")
+        layout = self.card("attitude", "ROCKET / orientation & flight status")
         self.attach(layout, self.attitude, 1)
-        self.attach(layout, self.attitude_label)
-        self.attitude_label.setFixedHeight(18)
         for key, title, graph in (
             ("gnc_rates", "ANGULAR RATES / °/s", self.rate_plot),
             ("gnc_angles", "INTEGRATED ROTATION / °", self.angle_plot),
@@ -645,8 +647,6 @@ class StationWindow(InstrumentWindow):
         self.workspace_title.setText("VIDEO / v0a" if video else "ROCKET / v0a")
         for widget in (self.mission_label, self.poll_button, self.health, self.metric_strip, self.banner):
             widget.setVisible(not video)
-        if self.launch_station:
-            self.poll_button.hide()
         # Playback controls have one owner and retain their signals and state.
         (self.video_replay_layout if video else self.session_replay_layout).addWidget(self.replay_controls)
         self.replay_controls.show()
@@ -774,12 +774,12 @@ class StationWindow(InstrumentWindow):
         self.update_camera_choices()
 
     def connect_role(self, role):
-        if self.launch_station or (self.profile_locked and self.profile.role == "video"):
+        if role not in self.controller.serial_labels or (self.profile_locked and self.profile.role == "video"):
             return
         super().connect_role(role)
 
     def toggle_connection(self, role):
-        if self.launch_station or (self.profile_locked and self.profile.role == "video"):
+        if role not in self.controller.serial_labels or (self.profile_locked and self.profile.role == "video"):
             return
         super().toggle_connection(role)
 
@@ -932,11 +932,13 @@ class StationWindow(InstrumentWindow):
             c.latest, mode=c.mode, fresh=c.mode != "LIVE" or c.rocket_link_state()[0] == "RECEIVING"
         )
         self.update_local_video_context()
-        if self.launch_station or (self.profile_locked and self.profile.role == "video"):
+        if self.profile_locked and self.profile.role == "video":
             for key, action in self.legacy_actions.items():
                 if key != "log":
                     action.setEnabled(False)
-        self.usb_strip.setVisible(not self.launch_station and not video and c.mode != "DEMO")
+        self.usb_strip.setVisible(not video and (self.launch_station or c.mode != "DEMO"))
+        if self.launch_uplink is not None:
+            self.launch_uplink.refresh()
         self.demo_bar.setVisible(not video and c.mode == "DEMO")
         self.video_replay_bar.setVisible(video and c.mode == "REPLAY")
         if video:
@@ -961,10 +963,10 @@ class StationWindow(InstrumentWindow):
                 if selected else "Select an away pointer · pose unavailable"
             )
             self.mount.setVisible(selected is not None)
-            self.health.setText("LAUNCH NETWORK · four away links · station transport pending · uplink unavailable")
+            local_status = " / ".join(self.connection_tiles[k].text().replace("● ", "") for k in ("ground", "rocket"))
+            self.health.setText("LOCAL TELEMETRY · " + local_status + "   /   AWAY NETWORK · four links · transport pending")
             if c.mode == "LIVE":
-                self.connection_tiles["rocket"].setText("● REMOTE TELEMETRY UNAVAILABLE")
-                self.banner.setText("LIVE · " + c.remote_pointer_status + " · uplink transport pending")
+                self.banner.setText(self.banner.text() + " · UPLINK SWITCH PROTOCOL PENDING")
         self.secondary_health.setText(c.mode + " · " + self.connection_tiles["rocket"].text())
         self.secondary_banner.setText(self.banner.text())
         self.network_panel.refresh()
