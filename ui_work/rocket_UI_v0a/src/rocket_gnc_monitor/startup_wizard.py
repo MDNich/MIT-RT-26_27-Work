@@ -1,9 +1,10 @@
 """Choose the launch-day computer assignment before opening any instruments."""
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QButtonGroup, QLabel, QRadioButton, QVBoxLayout, QWizard, QWizardPage
+from PySide6.QtWidgets import QButtonGroup, QCheckBox, QLabel, QRadioButton, QVBoxLayout, QWizard, QWizardPage
 
 from .station_profile import StationProfile
+from .site_presets import URRG_LAUNCH_MGRS, URRG_STATION_MGRS
 from .widgets import STYLE
 
 
@@ -23,7 +24,7 @@ QLabel#setupSummary { background: #121d2a; border: 1px solid #2a3b4f;
 
 
 class StartupWizard(QWizard):
-    def __init__(self, profile=None, parent=None):
+    def __init__(self, profile=None, parent=None, *, remember_choices=False):
         super().__init__(parent)
         profile = profile or StationProfile()
         self.setWindowTitle("Station setup · Rocket GNC Monitor")
@@ -56,7 +57,7 @@ class StartupWizard(QWizard):
             ],
             profile.role,
         )
-        vehicle_page = self.add_choices(
+        self.add_choices(
             "vehicle", "03 / VEHICLE", "Which rocket is flying?",
             "Video and telemetry receivers are assigned for the station you selected.",
             [
@@ -65,11 +66,24 @@ class StartupWizard(QWizard):
             ],
             profile.vehicle,
         )
+        launch_page = self.add_choices(
+            "launch_site", "04 / LAUNCH SITE", "Are you launching from URRG?",
+            "Set the launch pad and this station's location for the mission.",
+            [
+                ("urrg", "URRG", "Use the URRG launch pad and the preset for your station number"),
+                ("custom", "Another launch site", "Set launch and antenna locations in Mission profile"),
+            ],
+            profile.launch_site,
+        )
         self.summary = QLabel()
         self.summary.setObjectName("setupSummary")
         self.summary.setTextFormat(Qt.TextFormat.PlainText)
         self.summary.setWordWrap(True)
-        vehicle_page.layout().insertWidget(vehicle_page.layout().count() - 1, self.summary)
+        launch_page.layout().insertWidget(launch_page.layout().count() - 1, self.summary)
+        self.remember_checkbox = QCheckBox("Remember these choices next time")
+        self.remember_checkbox.setChecked(remember_choices)
+        self.remember_checkbox.setToolTip("Remember this station, role, rocket and launch-site choice on this computer.")
+        launch_page.layout().insertWidget(launch_page.layout().count() - 1, self.remember_checkbox)
         self.currentIdChanged.connect(self.update_summary)
         for group in self.groups.values():
             group.buttonToggled.connect(lambda *_: self.update_summary())
@@ -101,6 +115,10 @@ class StartupWizard(QWizard):
         return page
 
     @property
+    def remember_choices(self):
+        return self.remember_checkbox.isChecked()
+
+    @property
     def profile(self):
         return StationProfile(**{
             key: next(value for value, control in choices.items() if control.isChecked())
@@ -123,5 +141,11 @@ class StartupWizard(QWizard):
                      "\nOne display · downlink board and antenna control.")
             targets = ", ".join(target.title() for target in profile.telemetry_targets)
             text += f"\nTelemetry assignment: {targets}."
-        text += "\nThese choices will be remembered for the next launch."
+        text += f"\nMission: {profile.vehicle_label} Launch."
+        if profile.launch_site == "urrg":
+            text += (f"\nURRG launch pad: {URRG_LAUNCH_MGRS}"
+                     f"\n{profile.station_label}: {URRG_STATION_MGRS[profile.station]}"
+                     "\nSet launch and antenna elevations separately in Mission profile.")
+        else:
+            text += "\nSet launch and antenna locations in Mission profile before tracking."
         self.summary.setText(text)

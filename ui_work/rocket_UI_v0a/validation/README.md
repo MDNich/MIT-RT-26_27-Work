@@ -1,6 +1,6 @@
 # v0a acceptance records — 22 September 2026
 
-The newest [station-profile and video-role validation](station-profiles-2026-09-22/README.md) covers the startup wizard, five station identities, Balius/Iris video, and refreshed packages. The workspace record below is historical.
+The newest [startup locations and optional saved setup validation](startup-sites-2026-09-26/README.md) covers URRG station presets, CLI/wizard configuration, optional remembering, and the refreshed native Mac build. The earlier [station-profile and video-role validation](station-profiles-2026-09-22/README.md) covers five station identities and Balius/Iris video. The workspace record below is historical.
 
 The [cross-platform release validation](cross-platform-2026-09-22/README.md) records the subsequent universal Mac and Windows builds, including the refreshed Apple Silicon installer. The original package checksum and platform limits below are historical.
 

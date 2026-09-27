@@ -9,8 +9,13 @@ Every normal launch asks for:
 1. **Station**: Base / launch site, or Away 1, 2, 3 or 4.
 2. **Role**: Telemetry or Video.
 3. **Vehicle**: Balius (Digital + Analog) or Iris (Sustainer Digital + Sustainer Analog + Booster Analog).
+4. **Launch site**: URRG or a custom location.
 
-The previous choices are remembered in `station-profile.json` in the application data directory. Cancel exits before any device controller is constructed. Finish opens the chosen workspace in LIVE with devices disconnected. The selected identity appears at the top of the window and remains fixed for that session; relaunch to change it.
+**Remember these choices next time** is optional and off by default. Without it, the next launch starts from Base / Telemetry / Balius / custom site, unless command-line options preselect other choices. With it, the wizard starts from your saved selections. Uncheck it and finish setup to stop remembering choices. Previously automatic saved profiles do not opt you into remembering choices. Cancel preserves the remembering preference and exits before any device controller is constructed. Finish opens the chosen workspace in LIVE with devices disconnected.
+
+During a session, **File → Forget setup on next launch** clears only the remembered startup choices. The current mission, instruments and other settings remain as they are.
+
+A new mission is named **Balius Launch** or **Iris Launch**, according to the selected vehicle. URRG automatically sets the rocket launch-pad coordinates and the selected Base/Away station's antenna coordinates; a custom site is entered in the mission editor. Elevations still need to be entered separately. Opening a saved mission or flight restores its own name and locations. The selected station identity appears at the top of the window and remains fixed for that session; relaunch to change it.
 
 **Base / Telemetry** opens Flight and Systems windows sharing one mission and controller. Put one on each display. Both windows can be moved and resized on a single display for preparation. The second window creates no duplicate serial workers or recording sessions.
 
@@ -20,13 +25,18 @@ The previous choices are remembered in `station-profile.json` in the application
 
 Video does not appear in either telemetry workspace. The video operator does not need to connect a telemetry PCB or pointer board.
 
-`make run` opens the wizard with remembered choices; `make away` preselects Away 1 / Telemetry; `make video VEHICLE=iris` preselects Away 1 / Video / Iris. For unattended development, for example:
+`make run` opens the wizard; `make away` preselects Away 1 / Telemetry; `make video VEHICLE=iris` preselects Away 1 / Video / Iris. From the application source directory, for example:
 
 ```sh
-.venv/bin/python -m rocket_gnc_monitor --site away3 --role video --vehicle iris --skip-setup
+.venv/bin/python -m rocket_gnc_monitor --site away3 --role video --vehicle iris --launch-site urrg --skip-setup
+
+# Packaged Mac app:
+dist/RocketGNCMonitor-v0a.app/Contents/MacOS/RocketGNCMonitor-v0a --site away3 --role video --vehicle iris --launch-site urrg --skip-setup
 ```
 
-`--site` accepts `base`, `away1`, `away2`, `away3`, `away4`; `--role` accepts `telemetry`, `video`; `--vehicle` accepts `balius`, `iris`. Omit `--skip-setup` to review those choices in the wizard. The legacy `--station base|away|video` preselects Base Telemetry, Away 1 Telemetry or Away 1 Video; it does not bypass setup. Smoke-test flags bypass setup, except the dedicated controller-free `--setup-smoke`.
+`--site` accepts `base`, `away1`, `away2`, `away3`, `away4`; `--role` accepts `telemetry`, `video`; `--vehicle` accepts `balius`, `iris`; `--launch-site` accepts `urrg`, `custom`. These flags override the corresponding defaults or explicitly remembered choices. Omit `--skip-setup` to review them in the wizard; include it to start directly with the resolved profile. Adjust the executable path if the Mac app has been installed elsewhere, keeping it inside its complete `.app` bundle.
+
+`--remember-setup` checks the remembering option; `--no-remember-setup` clears it. With `--skip-setup`, these explicitly save the resolved profile or remove the remembered startup choices, respectively. Without either flag, skipping setup leaves the remembering preference and saved choices unchanged. The legacy `--station base|away|video` preselects Base Telemetry, Away 1 Telemetry or Away 1 Video; it does not bypass setup. Smoke-test flags bypass setup, except the dedicated controller-free `--setup-smoke`.
 
 Station layout and data mode are separate decisions:
 
@@ -143,13 +153,25 @@ Host/port/filter choices are stored in `station_network.json` in the application
 
 The mission stores launch and antenna locations for simulation and virtual rehearsal. Physical Zephyrus tracking retains the legacy frozen ground-receiver GPS convention and Send to AntPtr action. Launch entry accepts decimal latitude/longitude, MGRS or Plus Codes, with URRG as a preset. Antenna entry accepts decimal latitude/longitude, MGRS or a position relative to launch.
 
+Choosing **URRG** in the startup wizard sets the launch pad to `18TUN2061530290` and the antenna to the preset for the selected station:
+
+| Station | MGRS location |
+| --- | --- |
+| Base | `18TUN2063730181` |
+| Away 1 | `18TUN2177730106` |
+| Away 2 | `18TUN2291333237` |
+| Away 3 | `18TUN2015031101` |
+| Away 4 | `18TUN2259229678` |
+
+The mission editor also offers these station presets under **Antenna pointer** when the launch site is URRG, identifying the current station. Selecting a preset changes the horizontal antenna position and preserves its entered altitude. The references contain no elevation: a new mission starts with zero elevations, so enter the launch and antenna elevations for simulation or trajectory following. The presets do not calibrate the pointer or send commands to hardware. Saved missions and `.rktflight` files keep their own locations and names; startup defaults do not replace them when opened.
+
 For relative entry, specify the heading **from the antenna to the rocket at launch**, horizontal distance and altitude difference using the signs shown in the editor. Check the resolved coordinates before following a trajectory. Save the mission in a `.rktflight` file to preserve the model, motors, reference and available recording with it.
 
 To rehearse without hardware: load or simulate a reference, select the virtual pointer, connect it and choose Follow trajectory. Manual pointer controls and the original keyboard shortcuts also operate the virtual mount. No physical pointer feedback is implied by the model: legacy firmware does not acknowledge moves or report measured pose.
 
 ## Developer integration
 
-`station_profile.py` owns the immutable `StationProfile` and its validated, atomic JSON persistence. `startup_wizard.py` is a controller-free Qt wizard; `__main__.py` resolves saved/CLI defaults and waits for acceptance before constructing `StationWindow`. Smoke flags bypass interactive setup, while `--setup-smoke` only renders the wizard.
+`station_profile.py` owns the immutable `StationProfile` and its validated, atomic JSON persistence, including the launch-site choice. Explicitly remembered startup choices use `startup-choices.json` in the application data directory; legacy `station-profile.json` and `station-layout.json` do not seed startup defaults. `startup_wizard.py` is a controller-free four-page Qt wizard; `__main__.py` resolves opted-in/CLI defaults and waits for acceptance before constructing `StationWindow`. Startup configuration supplies the new mission's vehicle-based name and optional URRG launch/station positions; loading an existing mission or flight remains authoritative. Smoke flags bypass interactive setup, while `--setup-smoke` only renders the wizard.
 
 `station_workspace.py` assembles the role-specific cards over one inherited instrument owner. An explicit profile fixes identity and role for the window lifetime. Video role gates hidden serial menu actions and connection callbacks; it keeps recording shortcuts and file/replay controls. Telemetry retains the original shortcuts and device gating. The legacy constructor without an explicit profile supports prior layout-switching integrations.
 

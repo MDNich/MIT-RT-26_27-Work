@@ -168,7 +168,13 @@ class MissionDialog(QDialog):
                     form.addRow(title, self.location)
                     continue
                 if kind == "pointer_location":
-                    self.pointer_location = PointerLocation(mission, self.launch_origin)
+                    self.pointer_location = PointerLocation(
+                        mission, self.launch_origin,
+                        station=getattr(getattr(parent, "profile", None), "station", None),
+                    )
+                    self.pointer_location.preset_selected.connect(
+                        lambda: self.fields["pointer_site_configured"].setChecked(True)
+                    )
                     form.addRow(self.pointer_location)
                     continue
                 value = getattr(mission, key)
@@ -207,6 +213,9 @@ class MissionDialog(QDialog):
             field.textChanged.connect(self.pointer_location.update_preview)
         self.fields["site_configured"].toggled.connect(self.pointer_location.update_preview)
         self.location.preset_selected.connect(self.pointer_location.update_preview)
+        self.location.preset.currentIndexChanged.connect(
+            lambda: self.pointer_location.set_urrg_available(self.location.preset.currentData() == "URRG")
+        )
         note = label(
             "Set the antenna location for virtual trajectory tracking. Physical-board tracking retains the ground GPS set with Send to AntPtr.",
             "muted",
@@ -253,7 +262,7 @@ class MissionDialog(QDialog):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, data_dir, video_channels=None, video_labels=None, board_layout="legacy", vehicle="balius"):
+    def __init__(self, data_dir, video_channels=None, video_labels=None, board_layout="legacy", vehicle="balius", initial_mission=None):
         super().__init__()
         configure_fonts(QApplication.instance())
         self.setWindowTitle("Rocket GNC Monitor")
@@ -265,7 +274,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1120, 800)
         self.setStyleSheet(STYLE)
         self.controller = c = Controller(data_dir, video_channels=video_channels, video_labels=video_labels,
-                                         board_layout=board_layout, vehicle=vehicle)
+                                         board_layout=board_layout, vehicle=vehicle, initial_mission=initial_mission)
         self.settings_dialog = None
         self.flight_3d_dialog = None
         self.events = []
@@ -478,6 +487,15 @@ class MainWindow(QMainWindow):
         self.rocket_panel = RocketPanel(self.controller, self.guard)
         return self.rocket_panel
 
+    def forget_startup_setup(self):
+        from .station_profile import forget_startup_choices
+
+        def forget():
+            forget_startup_choices(self.controller.data_dir)
+            self.statusBar().showMessage("Setup forgotten. The next launch will use fresh wizard defaults.", 10000)
+
+        self.guard(forget)
+
     def install_shortcuts(self):
         file_menu = self.menuBar().addMenu("File")
         self.flight_actions = {}
@@ -497,6 +515,10 @@ class MainWindow(QMainWindow):
         self.settings_action.setShortcutContext(Qt.ShortcutContext.ApplicationShortcut)
         self.settings_action.triggered.connect(self.open_settings)
         file_menu.addAction(self.settings_action)
+        self.forget_setup_action = QAction("Forget setup on next launch", self)
+        self.forget_setup_action.setMenuRole(QAction.MenuRole.NoRole)
+        self.forget_setup_action.triggered.connect(self.forget_startup_setup)
+        file_menu.addAction(self.forget_setup_action)
         menu = self.menuBar().addMenu("Serial controls")
         self.legacy_actions = {}
         definitions = [

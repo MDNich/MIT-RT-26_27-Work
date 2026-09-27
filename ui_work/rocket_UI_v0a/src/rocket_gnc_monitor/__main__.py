@@ -6,16 +6,17 @@ import sys
 
 
 def resolve_profile(args, data_dir):
-    """Apply CLI defaults without conflating station identity and display role."""
+    """Apply explicit CLI choices to defaults the operator opted to remember."""
     from dataclasses import replace
-    from .station_profile import load_profile, profile_for_layout
+    from .station_profile import load_startup_choices, profile_for_layout
 
-    profile = load_profile(data_dir)
+    profile, _ = load_startup_choices(data_dir)
     if args.station:
         profile = profile_for_layout(args.station, profile)
     changes = {
         name: value for name, value in
-        (("station", args.site), ("role", args.role), ("vehicle", args.vehicle))
+        (("station", args.site), ("role", args.role), ("vehicle", args.vehicle),
+         ("launch_site", getattr(args, "launch_site", None)))
         if value is not None
     }
     return replace(profile, **changes)
@@ -33,17 +34,28 @@ def station_board_report(window):
     )
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Rocket GNC Monitor")
+def argument_parser():
+    parser = argparse.ArgumentParser(
+        description="Rocket GNC Monitor",
+        epilog=("Station, role, vehicle and launch-site options preselect the startup wizard. "
+                "Add --skip-setup to open directly. For example:\n"
+                "  %(prog)s --site away3 --role telemetry --vehicle iris --launch-site urrg --skip-setup"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument("--data-dir", type=Path)
     parser.add_argument(
         "--station", choices=["base", "away", "video"],
         help="Legacy workspace choice; preselects the startup wizard",
     )
-    parser.add_argument("--site", choices=["base", "away1", "away2", "away3", "away4"])
-    parser.add_argument("--role", choices=["telemetry", "video"])
-    parser.add_argument("--vehicle", choices=["balius", "iris"])
-    parser.add_argument("--skip-setup", action="store_true", help="Open directly with saved or explicit station choices")
+    parser.add_argument("--site", choices=["base", "away1", "away2", "away3", "away4"],
+                        help="Station identity: base or numbered away station (1–4)")
+    parser.add_argument("--role", choices=["telemetry", "video"], help="Computer's display and control role")
+    parser.add_argument("--vehicle", choices=["balius", "iris"], help="Rocket and default mission name")
+    parser.add_argument("--launch-site", choices=["urrg", "custom"],
+                        help="URRG sets the launch pad and selected station's coordinates automatically")
+    parser.add_argument("--skip-setup", action="store_true", help="Open directly with defaults and explicit station choices")
+    parser.add_argument("--remember-setup", action=argparse.BooleanOptionalAction, default=None,
+                        help="Remember (or forget) startup choices; otherwise use the wizard checkbox")
     startup = parser.add_mutually_exclusive_group()
     startup.add_argument("--demo", action="store_true", help="Play the recorded Zephyrus test flight")
     parser.add_argument("--demo-station", choices=["GS1", "GS2", "GS3"], default="GS2")
@@ -70,7 +82,11 @@ def main():
         type=Path,
         help="Test the private engine using a model and synthetic launch coordinates",
     )
-    args = parser.parse_args()
+    return parser
+
+
+def main():
+    args = argument_parser().parse_args()
     if args.simulation_smoke:
         from .domain import Mission, write_json
         from .trajectory import SimulationJob
@@ -103,6 +119,11 @@ def main():
         QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppLocalDataLocation)
     )
     profile = resolve_profile(args, data)
+    from .station_profile import load_startup_choices, save_startup_choices
+
+    _, remember_choices = load_startup_choices(data)
+    if args.remember_setup is not None:
+        remember_choices = args.remember_setup
     smoke = any((
         args.smoke_test, args.startup_smoke, args.station_smoke, args.virtual_pointer_smoke,
         args.flight_3d_smoke, args.flight_smoke, args.setup_smoke,
@@ -110,18 +131,19 @@ def main():
     if args.setup_smoke or not (args.skip_setup or smoke):
         from .startup_wizard import StartupWizard
 
-        wizard = StartupWizard(profile)
+        wizard = StartupWizard(profile, remember_choices=remember_choices)
         if args.setup_smoke:
             data.mkdir(parents=True, exist_ok=True)
             pages = []
 
             def setup_check(index=0):
                 try:
-                    name = ("station", "role", "vehicle")[index]
+                    names = ("station", "role", "vehicle", "launch_site")
+                    name = names[index]
                     app.processEvents()
                     wizard.grab().save(str(data / f"setup-{name}.png"))
                     pages.append(dict(name=name, title=wizard.currentPage().title()))
-                    if index < 2:
+                    if index < len(names) - 1:
                         wizard.next()
                         QTimer.singleShot(150, lambda: setup_check(index + 1))
                         return
@@ -131,6 +153,9 @@ def main():
                     report = dict(
                         profile=wizard.profile.to_dict(), local_channels=list(wizard.profile.local_channels),
                         pages=pages, controller_created=False,
+                        mission_name=f"{wizard.profile.vehicle_label} Launch",
+                        summary=wizard.summary.text(),
+                        remember_choices=wizard.remember_choices,
                         finish_text=wizard.button(wizard.WizardButton.FinishButton).text(),
                     )
                     (data / "setup-smoke-report.json").write_text(json.dumps(report, indent=2))
@@ -148,12 +173,13 @@ def main():
         if wizard.exec() != wizard.DialogCode.Accepted:
             return 0
         profile = wizard.profile
+        remember_choices = wizard.remember_choices
     preference_error = None
-    if not smoke:
+    if not smoke and (not args.skip_setup or args.remember_setup is not None):
         try:
-            profile.save(data)
+            save_startup_choices(profile, data, remember_choices)
         except OSError as exc:
-            preference_error = f"Station defaults could not be saved: {exc}"
+            preference_error = f"Startup preference could not be updated: {exc}"
     # Do not instantiate an instrument owner, controller or device workers until
     # setup has been accepted (or explicitly bypassed for automation).
     from .station_workspace import StationWindow as MainWindow
@@ -165,6 +191,10 @@ def main():
         profile=profile.to_dict(), local_channels=list(profile.local_channels),
         local_video_channels=list(window.controller.video_streams),
     )
+    if smoke:
+        from dataclasses import asdict
+
+        profile_fields["startup_mission"] = asdict(window.controller.mission)
     if args.demo or args.smoke_test:
         window.controller.demo_station = args.demo_station
         window.controller.switch_mode("DEMO")

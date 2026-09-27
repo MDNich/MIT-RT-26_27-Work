@@ -4,8 +4,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from rocket_gnc_monitor.__main__ import resolve_profile
-from rocket_gnc_monitor.station_profile import StationProfile, load_profile, profile_for_layout
+from rocket_gnc_monitor.__main__ import argument_parser, resolve_profile
+from rocket_gnc_monitor.station_profile import (
+    StationProfile, forget_startup_choices, load_profile, load_startup_choices,
+    profile_for_layout, save_startup_choices,
+)
 
 
 @pytest.mark.parametrize("station", ["base", "away1", "away2", "away3", "away4"])
@@ -31,14 +34,15 @@ def test_topology_follows_station_role_and_vehicle(station, role, vehicle):
         assert profile.telemetry_targets == ("Balius",)
 
 
-@pytest.mark.parametrize("field,value", [("station", "away5"), ("role", "pilot"), ("vehicle", "Balius"), ("vehicle", None)])
+@pytest.mark.parametrize("field,value", [("station", "away5"), ("role", "pilot"), ("vehicle", "Balius"),
+                                        ("vehicle", None), ("launch_site", "URRG"), ("launch_site", None)])
 def test_profile_rejects_invalid_choices(field, value):
     with pytest.raises(ValueError):
         StationProfile(**{field: value})
 
 
 def test_profile_is_immutable_and_round_trips_without_mission_changes(tmp_path):
-    profile = StationProfile("away3", "video", "iris")
+    profile = StationProfile("away3", "video", "iris", "urrg")
     mission = tmp_path / "mission.json"
     mission.write_text('{"name":"Flight A"}')
     profile.save(tmp_path)
@@ -48,6 +52,13 @@ def test_profile_is_immutable_and_round_trips_without_mission_changes(tmp_path):
     assert not list(tmp_path.glob(".station-profile-*"))
     with pytest.raises(dataclasses.FrozenInstanceError):
         profile.station = "base"
+
+
+def test_saved_profile_before_launch_site_question_keeps_previous_defaults(tmp_path):
+    (tmp_path / "station-profile.json").write_text(json.dumps({
+        "station": "away4", "role": "video", "vehicle": "iris",
+    }))
+    assert load_profile(tmp_path) == StationProfile("away4", "video", "iris", "custom")
 
 
 @pytest.mark.parametrize("contents", ["broken json", "[]", '{"station":"away9"}', '{"role":false}', '{"extra":1}'])
@@ -63,9 +74,56 @@ def test_legacy_layout_migration(tmp_path, layout, station, role):
     assert profile_for_layout(layout, StationProfile(vehicle="iris")) == StationProfile(station, role, "iris")
 
 
-def test_cli_explicit_profile_fields_override_legacy_layout_and_saved_defaults(tmp_path):
-    StationProfile("away4", "video", "iris").save(tmp_path)
+def test_cli_explicit_profile_fields_override_legacy_layout_and_opted_in_defaults(tmp_path):
+    save_startup_choices(StationProfile("away4", "video", "iris", "urrg"), tmp_path, True)
     args = SimpleNamespace(station="away", site="base", role="video", vehicle=None)
-    assert resolve_profile(args, tmp_path) == StationProfile("base", "video", "iris")
+    assert resolve_profile(args, tmp_path) == StationProfile("base", "video", "iris", "urrg")
     args = SimpleNamespace(station=None, site=None, role=None, vehicle=None)
-    assert resolve_profile(args, tmp_path) == StationProfile("away4", "video", "iris")
+    assert resolve_profile(args, tmp_path) == StationProfile("away4", "video", "iris", "urrg")
+    args.launch_site = "custom"
+    assert resolve_profile(args, tmp_path) == StationProfile("away4", "video", "iris", "custom")
+
+
+def test_startup_ignores_legacy_automatic_preferences(tmp_path):
+    StationProfile("away4", "video", "iris", "urrg").save(tmp_path)
+    (tmp_path / "station-layout.json").write_text('{"station":"video"}')
+    args = argument_parser().parse_args([])
+    assert load_startup_choices(tmp_path) == (StationProfile(), False)
+    assert resolve_profile(args, tmp_path) == StationProfile()
+
+
+@pytest.mark.parametrize("contents", ["broken json", "[]", '{"station":"away9"}', '{"extra":1}'])
+def test_damaged_opt_in_preferences_do_not_block_startup(tmp_path, contents):
+    (tmp_path / "startup-choices.json").write_text(contents)
+    assert load_startup_choices(tmp_path) == (StationProfile(), False)
+
+
+def test_forgetting_only_removes_opt_in_choices(tmp_path):
+    retained = {"station-profile.json": "legacy", "station-layout.json": "legacy layout",
+                "mission.json": "mission", "settings.json": "settings"}
+    for name, contents in retained.items():
+        (tmp_path / name).write_text(contents)
+    profile = StationProfile("away4", "video", "iris", "urrg")
+    save_startup_choices(profile, tmp_path, True)
+    assert load_startup_choices(tmp_path) == (profile, True)
+    forget_startup_choices(tmp_path)
+    forget_startup_choices(tmp_path)
+    assert not (tmp_path / "startup-choices.json").exists()
+    assert {path.name: path.read_text() for path in tmp_path.iterdir()} == retained
+
+
+@pytest.mark.parametrize("station", ["base", "away1", "away2", "away3", "away4"])
+def test_cli_accepts_each_station_number_and_launch_site(tmp_path, station):
+    args = argument_parser().parse_args([
+        "--site", station, "--role", "telemetry", "--vehicle", "balius",
+        "--launch-site", "urrg", "--skip-setup",
+    ])
+    assert args.skip_setup
+    assert resolve_profile(args, tmp_path) == StationProfile(station, "telemetry", "balius", "urrg")
+
+
+@pytest.mark.parametrize("flag,value", [("--site", "away5"), ("--launch-site", "elsewhere")])
+def test_cli_rejects_unknown_station_and_launch_site(flag, value):
+    with pytest.raises(SystemExit) as result:
+        argument_parser().parse_args([flag, value])
+    assert result.value.code == 2

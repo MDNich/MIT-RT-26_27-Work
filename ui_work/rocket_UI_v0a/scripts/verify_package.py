@@ -22,20 +22,20 @@ STATION_CARDS = {
     "video": {"digital", "analog"},
 }
 LEGACY_PROFILES = {
-    "base": dict(station="base", role="telemetry", vehicle="balius"),
-    "away": dict(station="away1", role="telemetry", vehicle="balius"),
-    "video": dict(station="away1", role="video", vehicle="balius"),
+    "base": dict(station="base", role="telemetry", vehicle="balius", launch_site="custom"),
+    "away": dict(station="away1", role="telemetry", vehicle="balius", launch_site="custom"),
+    "video": dict(station="away1", role="video", vehicle="balius", launch_site="custom"),
 }
 EXTRA_PROFILES = {
-    "station-away-iris": dict(station="away4", role="video", vehicle="iris"),
-    "station-base-video-balius": dict(station="base", role="video", vehicle="balius"),
-    "station-base-video-iris": dict(station="base", role="video", vehicle="iris"),
-    "station-base-telemetry-iris": dict(station="base", role="telemetry", vehicle="iris"),
-    "station-away4-telemetry-iris": dict(station="away4", role="telemetry", vehicle="iris"),
+    "station-away-iris": dict(station="away4", role="video", vehicle="iris", launch_site="custom"),
+    "station-base-video-balius": dict(station="base", role="video", vehicle="balius", launch_site="custom"),
+    "station-base-video-iris": dict(station="base", role="video", vehicle="iris", launch_site="custom"),
+    "station-base-telemetry-iris": dict(station="base", role="telemetry", vehicle="iris", launch_site="custom"),
+    "station-away4-telemetry-iris": dict(station="away4", role="telemetry", vehicle="iris", launch_site="custom"),
 }
-IRIS_DEMO_PROFILE = dict(station="away2", role="video", vehicle="iris")
-IRIS_BOOSTER_DEMO_PROFILE = dict(station="away4", role="video", vehicle="iris")
-SETUP_PROFILE = dict(station="base", role="video", vehicle="iris")
+IRIS_DEMO_PROFILE = dict(station="away2", role="video", vehicle="iris", launch_site="custom")
+IRIS_BOOSTER_DEMO_PROFILE = dict(station="away4", role="video", vehicle="iris", launch_site="custom")
+SETUP_PROFILE = dict(station="base", role="video", vehicle="iris", launch_site="urrg")
 
 
 def profile_channels(profile):
@@ -85,7 +85,8 @@ def profile_default_sources(profile):
 
 
 def profile_arguments(profile):
-    return ["--site", profile["station"], "--role", profile["role"], "--vehicle", profile["vehicle"]]
+    return ["--site", profile["station"], "--role", profile["role"], "--vehicle", profile["vehicle"],
+            "--launch-site", profile.get("launch_site", "custom")]
 
 
 def valid_profile_report(report, profile):
@@ -149,7 +150,7 @@ def validate_setup_report(report):
         or report.get("controller_created") is not False
         or report.get("finish_text") != "Open station"
         or not isinstance(report.get("pages"), list)
-        or [page.get("name") for page in report["pages"]] != ["station", "role", "vehicle"]
+        or [page.get("name") for page in report["pages"]] != ["station", "role", "vehicle", "launch_site"]
     ):
         raise SystemExit("Packaged startup wizard failed")
 

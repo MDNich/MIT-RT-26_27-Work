@@ -1,6 +1,6 @@
 # Rocket GNC Monitor v0a
 
-A native Python / PySide6 monitoring application for one **Base station** and **four Away stations**. A startup wizard selects the station, **Telemetry** or **Video** role, and **Balius** or **Iris** vehicle. Telemetry uses two displays at Base and one reduced display at Away stations. Video has its own dedicated screen: two system channels for Balius, three for Iris, with receivers assigned by station. Station identity and role are independent of **LIVE**, **DEMO** and **REPLAY** data modes.
+A native Python / PySide6 monitoring application for one **Base station** and **four Away stations**. A startup wizard selects Base or Away 1–4, **Telemetry** or **Video** role, **Balius** or **Iris** vehicle, and **URRG** or a custom launch site. Telemetry uses two displays at Base and one reduced display at Away stations. Video has its own dedicated screen: two system channels for Balius, three for Iris, with receivers assigned by station. Station identity and role are independent of **LIVE**, **DEMO** and **REPLAY** data modes.
 
 This is a separate revision of `rocket_UI_v0`; the original application remains available. Install **RocketGNCMonitor-v0a.app** alongside **RocketGNCMonitor.app** on Mac. v0a has a separate application identifier and preferences. The full package includes Python, Qt, Java, OpenRocket and FFmpeg; keep it intact when copying it to another computer. USB devices may require their manufacturer's drivers.
 
@@ -15,7 +15,9 @@ See the [v0a station guide](docs/V0A_STATION_MODES.md) for the screen arrangemen
 | Away 1–4 / Video | One | Balius: Digital + Analog. Iris Away 1–3: Sustainer Digital + Sustainer Analog; Away 4: Sustainer Digital + Booster Analog. Independent USB selection, capture and recording/playback. |
 | Base / Video | One | Two or three large channels above every Away station’s matching thumbnails. Local Digital USB input; remote sources await the future station video connection. |
 
-The workspaces expose their monitoring sections together without the previous left-hand navigation tabs. Editors, file selectors and confirmations still open when an operator takes an action. The two base windows share one controller, mission, recording session and device connections. Video panels appear only in the Video role. The wizard appears at each launch with the previous selection remembered. Station identity and role remain fixed for that session; relaunch to choose another assignment. Double-click an Away thumbnail at Base to replace the matching large channel; other thumbnails remain available.
+The workspaces expose their monitoring sections together without the previous left-hand navigation tabs. Editors, file selectors and confirmations still open when an operator takes an action. The two base windows share one controller, mission, recording session and device connections. Video panels appear only in the Video role. The wizard appears at each launch; **Remember these choices next time** is optional and off by default. Station identity and role remain fixed for that session; relaunch to choose another assignment. Double-click an Away thumbnail at Base to replace the matching large channel; other thumbnails remain available.
+
+New missions are named **Balius Launch** or **Iris Launch**. Choosing URRG fills the launch-pad location and the selected Base/Away station's antenna location from the [URRG presets](docs/V0A_STATION_MODES.md#mission-and-antenna-positions). Elevations remain manual. Opening a saved mission or flight uses its stored settings.
 
 The application starts in **LIVE**, with physical connections closed. Ground-station and pointer controls become available when their respective boards connect. USB video runs independently of the ground-station serial connection, including video-only recording once frames arrive. All camera selectors prevent assigning one USB camera to multiple active channels, including Iris’s station-specific Digital/Analog pair. Serial selectors exclude a port already connected by any other board. Choose **DEMO** explicitly for rehearsal; it uses the recorded Zephyrus GS1/GS2/GS3 datasets, with GS2 as the default.
 
@@ -26,7 +28,7 @@ The supplied routing diagram describes **Balius**: Digital reception and telemet
 - Independent downlink, Base-only uplink, and antenna workers; original command packets, confirmations and keyboard shortcuts, plus legacy good/bad packet CSV logging. Live Iris uplink commands remain locked while the target-switch contract is undefined; DEMO can exercise the placeholder switches and command UI.
 - Two **Balius** channels (**Digital**, **Analog**) or three system-wide **Iris** channels (**Sustainer Digital**, **Sustainer Analog**, **Booster Analog**), with station-specific USB capture/recording, exclusive camera assignment, replay offsets and segmented FFmpeg recording. Each Away station exposes its two assigned receivers; Base Video exposes only its local Digital camera. Its remote thumbnails support matching-channel promotion and show honest connection/age status; the station video transport is pending.
 - Smooth articulated antenna graphics with orbit/zoom, including the grid reflector, Yagi and enclosed Avenger XR18 on a common beam. Physical and virtual pointers share the same manual controls and original shortcuts.
-- Launch and antenna positions using latitude/longitude or MGRS; launch Plus Codes and URRG preset (`18TUN2061530290`); launch-relative pointer heading, horizontal distance and altitude difference.
+- Launch and antenna positions using latitude/longitude or MGRS; launch Plus Codes, URRG launch-pad preset (`18TUN2061530290`) and five station presets; launch-relative pointer heading, horizontal distance and altitude difference.
 - OpenRocket trajectory simulation with bundled or selected team JAR, manual/imported/online wind, additional motors and reference comparison. Animated 3D playback shows attitude, recorded ignition/burnout events and parachute deployment. Older references without event/attitude columns remain usable; rerun them to add those details.
 - Portable `.rktflight` Save/Open files (**⌘S / ⌘O**), mission/model/motor/reference/session storage, indexed replay, seek/speed controls and diagnostic events.
 - **Settings…** (**⌘,**, or **Ctrl+,** on Windows) for the OpenRocket JAR, simulation time limit, recording folder and theme. Lucida Grande is bundled privately.
@@ -39,13 +41,23 @@ From this directory, with Python 3.12, GNU Make and JDK 17+:
 
 ```sh
 make setup PYTHON=python3.12
-make run                 # Startup wizard with remembered defaults
+make run                 # Startup wizard; remembering choices is optional
 make away                # Wizard preselects Away 1 / Telemetry
 make video VEHICLE=iris   # Wizard preselects Away 1 / Video / Iris
 make demo STATION=base   # Recorded Zephyrus rehearsal
 make test
 make lint
 ```
+
+Preselect all wizard choices from the command line, or add `--skip-setup` to open that workspace directly:
+
+```sh
+.venv/bin/python -m rocket_gnc_monitor --site away3 --role telemetry --vehicle iris --launch-site urrg --skip-setup
+# Packaged Mac app, run from this directory:
+dist/RocketGNCMonitor-v0a.app/Contents/MacOS/RocketGNCMonitor-v0a --site away3 --role telemetry --vehicle iris --launch-site urrg --skip-setup
+```
+
+Use `--site base|away1|away2|away3|away4`, `--role telemetry|video`, `--vehicle balius|iris` and `--launch-site urrg|custom`. Omitted choices use the startup defaults, or the profile you explicitly chose to remember. `--skip-setup` leaves that preference unchanged unless you also pass `--remember-setup` or `--no-remember-setup`. See the [startup guide](docs/V0A_STATION_MODES.md#startup-wizard) for details.
 
 Build on the target operating system:
 

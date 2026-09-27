@@ -308,7 +308,7 @@ def test_package_iris_demo_rejects_a_missing_failed_or_wrong_analog_receiver(ver
 def test_package_setup_requires_all_pages_and_no_controller(verifier):
     report = dict(
         profile=verifier.SETUP_PROFILE, local_channels=["digital"], controller_created=False,
-        finish_text="Open station", pages=[dict(name=name) for name in ("station", "role", "vehicle")],
+        finish_text="Open station", pages=[dict(name=name) for name in ("station", "role", "vehicle", "launch_site")],
     )
     verifier.validate_setup_report(report)
     for field, invalid in (("controller_created", True), ("pages", report["pages"][:2]), ("local_channels", ["digital", "analog"])):

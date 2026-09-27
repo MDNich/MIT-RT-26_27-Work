@@ -64,6 +64,7 @@ class Mission:
     pointer_site_configured: bool = False
     pointer_location_format: str = "latlon"
     pointer_location_code: str = ""
+    pointer_site_name: str = ""
     pointer_launch_heading: float = 0.0
     pointer_launch_distance: float = 0.0
     pointer_height_difference: float = 0.0
@@ -96,6 +97,8 @@ class Mission:
             raise ValueError("Unsupported antenna location format")
         if not isinstance(self.pointer_location_code, str) or len(self.pointer_location_code) > 80:
             raise ValueError("Invalid antenna location code")
+        if not isinstance(self.pointer_site_name, str) or len(self.pointer_site_name) > 80:
+            raise ValueError("Invalid antenna site name")
         if not all(finite(v) for v in (
             self.pointer_launch_heading, self.pointer_launch_distance, self.pointer_height_difference
         )):

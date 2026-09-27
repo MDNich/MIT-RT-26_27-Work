@@ -48,7 +48,7 @@ class Controller(QObject):
     video_reset = Signal(str)
     task_done = Signal(str, object)
 
-    def __init__(self, data_dir, video_channels=None, video_labels=None, board_layout="legacy", vehicle="balius"):
+    def __init__(self, data_dir, video_channels=None, video_labels=None, board_layout="legacy", vehicle="balius", initial_mission=None):
         super().__init__()
         if board_layout not in {"legacy", "base", "away"}:
             raise ValueError("Unknown board layout; choose legacy, base or away")
@@ -88,7 +88,7 @@ class Controller(QObject):
         except ValueError as exc:
             self.settings = AppSettings()
             self.settings_error = str(exc)
-        self.mission = Mission()
+        self.mission = copy.deepcopy(initial_mission).validate() if initial_mission is not None else Mission()
         self.mode = "LIVE"
         self.latest = None
         self.history = deque(maxlen=6000)

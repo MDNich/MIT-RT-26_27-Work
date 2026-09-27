@@ -1,4 +1,4 @@
-"""Validated startup choices for a station computer, independent of its mission."""
+"""Validated startup choices for a station computer and its launch site."""
 
 from dataclasses import asdict, dataclass, replace
 import json
@@ -9,7 +9,9 @@ from tempfile import NamedTemporaryFile
 STATIONS = ("base", "away1", "away2", "away3", "away4")
 ROLES = ("telemetry", "video")
 VEHICLES = ("balius", "iris")
+LAUNCH_SITES = ("custom", "urrg")
 PROFILE_FILENAME = "station-profile.json"
+STARTUP_CHOICES_FILENAME = "startup-choices.json"
 
 
 @dataclass(frozen=True)
@@ -17,9 +19,11 @@ class StationProfile:
     station: str = "base"
     role: str = "telemetry"
     vehicle: str = "balius"
+    launch_site: str = "custom"
 
     def __post_init__(self):
-        for name, choices in (("station", STATIONS), ("role", ROLES), ("vehicle", VEHICLES)):
+        for name, choices in (("station", STATIONS), ("role", ROLES), ("vehicle", VEHICLES),
+                              ("launch_site", LAUNCH_SITES)):
             value = getattr(self, name)
             if not isinstance(value, str) or value not in choices:
                 raise ValueError(f"Unknown {name}: {value!r}; choose {', '.join(choices)}")
@@ -72,8 +76,8 @@ class StationProfile:
 
     @classmethod
     def from_dict(cls, value):
-        if not isinstance(value, dict) or set(value) - {"station", "role", "vehicle"}:
-            raise ValueError("A station profile must contain station, role and vehicle choices")
+        if not isinstance(value, dict) or set(value) - {"station", "role", "vehicle", "launch_site"}:
+            raise ValueError("A station profile must contain station, role, vehicle and launch-site choices")
         return cls(**value)
 
     @classmethod
@@ -111,6 +115,33 @@ def load_profile(data_dir):
 
 
 def save_profile(profile, data_dir):
+    """Legacy profile persistence; app startup uses explicit opt-in choices below."""
+    _write_profile(profile, data_dir, PROFILE_FILENAME)
+
+
+def load_startup_choices(data_dir):
+    """Only choices explicitly remembered by the operator become startup defaults."""
+    try:
+        value = json.loads((Path(data_dir) / STARTUP_CHOICES_FILENAME).read_text(encoding="utf-8"))
+        return StationProfile.from_dict(value), True
+    except (OSError, ValueError, TypeError):
+        return StationProfile(), False
+
+
+def save_startup_choices(profile, data_dir, remember):
+    """Save an opt-in profile, or forget it without touching legacy preference files."""
+    if remember:
+        _write_profile(profile, data_dir, STARTUP_CHOICES_FILENAME)
+    else:
+        forget_startup_choices(data_dir)
+
+
+def forget_startup_choices(data_dir):
+    """Forget only opt-in wizard choices; retain the current mission and app settings."""
+    (Path(data_dir) / STARTUP_CHOICES_FILENAME).unlink(missing_ok=True)
+
+
+def _write_profile(profile, data_dir, filename):
     if not isinstance(profile, StationProfile):
         raise TypeError("Expected a StationProfile")
     directory = Path(data_dir)
@@ -120,7 +151,7 @@ def save_profile(profile, data_dir):
         with NamedTemporaryFile(mode="w", encoding="utf-8", dir=directory, prefix=".station-profile-", delete=False) as output:
             temporary = Path(output.name)
             output.write(json.dumps(profile.to_dict(), indent=2) + "\n")
-        temporary.replace(directory / PROFILE_FILENAME)
+        temporary.replace(directory / filename)
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)

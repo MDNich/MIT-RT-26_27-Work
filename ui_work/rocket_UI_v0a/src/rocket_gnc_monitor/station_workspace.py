@@ -33,6 +33,7 @@ from .media import WIDTH, HEIGHT, camera_devices
 from .domain import finite
 from .table_cells import set_cell
 from .station_profile import StationProfile
+from .site_presets import mission_for_station
 
 
 COMPACT_STYLE = """
@@ -121,7 +122,8 @@ class StationWindow(InstrumentWindow):
                          video_labels={key: self.profile.channel_labels[key] for key in self.profile.local_channels},
                          board_layout=("base" if self.profile.station == "base" and self.profile.role == "telemetry"
                                        else "away") if self.profile_locked else "legacy",
-                         vehicle=self.profile.vehicle)
+                         vehicle=self.profile.vehicle,
+                         initial_mission=mission_for_station(self.profile) if self.profile_locked else None)
         self.setWindowTitle("Rocket GNC Monitor v0a · 1 / Flight & antenna")
         self.setMinimumSize(1280, 800)
         self.resize(1920, 1020)

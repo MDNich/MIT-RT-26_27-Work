@@ -17,6 +17,7 @@ from .location import (
     Location, coordinates, decode_mgrs, decode_plus_code, encode_mgrs, encode_plus_code, pointer_from_launch,
 )
 from .domain import to_enu
+from .site_presets import URRG_LAUNCH_MGRS, URRG_STATION_MGRS
 from .widgets import ComboBox as QComboBox
 
 
@@ -32,7 +33,7 @@ class LaunchLocation(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         self.preset = QComboBox()
         self.preset.addItem("Custom launch site", "")
-        self.preset.addItem("URRG · 18TUN2061530290", "URRG")
+        self.preset.addItem(f"URRG · {URRG_LAUNCH_MGRS}", "URRG")
         self.preset.setAccessibleName("Launch site preset")
         self.preset.setCurrentIndex(max(0, self.preset.findData(mission.launch_site_name)))
         root.addWidget(self.preset)
@@ -106,12 +107,12 @@ class LaunchLocation(QWidget):
     def choose_preset(self):
         if self.preset.currentData() != "URRG":
             return
-        self._location = decode_mgrs("18TUN2061530290")
+        self._location = decode_mgrs(URRG_LAUNCH_MGRS)
         self.format.setCurrentIndex(self.format.findData("mgrs"))
         self.change_format()
         self._filling = True
-        self.mgrs.setText("18TUN2061530290")
-        self._location = decode_mgrs("18TUN2061530290")
+        self.mgrs.setText(URRG_LAUNCH_MGRS)
+        self._location = decode_mgrs(URRG_LAUNCH_MGRS)
         self._editing = False
         self._filling = False
         self.update_preview()
@@ -139,6 +140,8 @@ class LaunchLocation(QWidget):
             else ""
         )
         if kind == "mgrs":
+            if self.preset.currentData() == "URRG":
+                code = URRG_LAUNCH_MGRS
             self.mgrs.setText(code)
         elif kind == "pluscode":
             self.plus_code.setText(code)
@@ -193,7 +196,9 @@ class LocationPages(QStackedWidget):
 class PointerLocation(QWidget):
     """Antenna entry; relative offsets follow the current mission launch origin."""
 
-    def __init__(self, mission, launch_origin, parent=None):
+    preset_selected = Signal()
+
+    def __init__(self, mission, launch_origin, parent=None, *, station=None):
         super().__init__(parent)
         self.launch_origin = launch_origin
         self._location = coordinates(mission.pointer_latitude, mission.pointer_longitude)
@@ -205,6 +210,19 @@ class PointerLocation(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         root.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        self.preset = QComboBox()
+        self.preset.setAccessibleName("Antenna station location preset")
+        self.preset.addItem("Custom station location", "")
+        for key, code in URRG_STATION_MGRS.items():
+            name = "Base" if key == "base" else f"Away {key[-1]}"
+            current = " · this station" if key == station else ""
+            self.preset.addItem(f"URRG {name} · {code}{current}", f"URRG:{key}")
+        self.preset.setCurrentIndex(max(0, self.preset.findData(mission.pointer_site_name)))
+        root.addWidget(self.preset)
+        self.preset_note = QLabel("URRG station presets set coordinates only; set antenna altitude below.")
+        self.preset_note.setWordWrap(True)
+        root.addWidget(self.preset_note)
+        self.set_urrg_available(mission.launch_site_name == "URRG")
         self.format = QComboBox()
         for title, key in [("Latitude / longitude", "latlon"), ("MGRS", "mgrs"), ("Relative to launch", "relative")]:
             self.format.addItem(title, key)
@@ -265,6 +283,43 @@ class PointerLocation(QWidget):
         self._filling = False
         self.show_page()
         self.update_preview()
+        self.preset.currentIndexChanged.connect(self.choose_preset)
+
+    def set_urrg_available(self, available):
+        self.preset.setEnabled(available)
+        self.preset_note.setText(
+            "URRG station presets set coordinates only; set antenna altitude below."
+            if available else "Select URRG as the launch site to use the station presets."
+        )
+        if not available:
+            # Removing a preset label must never relocate the antenna.
+            self.preset.setCurrentIndex(0)
+
+    def choose_preset(self):
+        key = self.preset.currentData()
+        if self._filling or not key or not self.preset.isEnabled():
+            return
+        try:
+            _, altitude = self.value()
+        except ValueError:
+            altitude = self.altitude.value()
+        point = decode_mgrs(URRG_STATION_MGRS[key.removeprefix("URRG:")])
+        self._filling = True
+        self._kind = "mgrs"
+        blocked = self.format.blockSignals(True)
+        self.format.setCurrentIndex(self.format.findData(self._kind))
+        self.format.blockSignals(blocked)
+        self.latitude.setValue(point.latitude)
+        self.longitude.setValue(point.longitude)
+        self.mgrs.setText(point.code)
+        self.altitude.setValue(altitude)
+        self._location = point
+        self._editing = False
+        self._has_location = True
+        self._filling = False
+        self.show_page()
+        self.update_preview()
+        self.preset_selected.emit()
 
     @staticmethod
     def number(low, high, decimals, value):
@@ -287,6 +342,7 @@ class PointerLocation(QWidget):
 
     def edited(self):
         if not self._filling:
+            self.preset.setCurrentIndex(0)
             self._editing = True
             self._has_location = True
             self.update_preview()
@@ -303,10 +359,16 @@ class PointerLocation(QWidget):
             point, altitude = self._location, self.altitude.value()
         self._filling = True
         self._kind = self.format.currentData()
+        if self._kind == "relative":
+            self.preset.setCurrentIndex(0)
         self.latitude.setValue(point.latitude)
         self.longitude.setValue(point.longitude)
         self.altitude.setValue(altitude)
         code = encode_mgrs(point.latitude, point.longitude) if self._kind == "mgrs" else ""
+        if self._kind == "mgrs" and self.preset.currentData():
+            # Preserve the supplied grid reference across display-format changes.
+            # Re-encoding a point on a grid boundary can round into its neighbor.
+            code = URRG_STATION_MGRS[self.preset.currentData().removeprefix("URRG:")]
         self.mgrs.setText(code)
         if self._kind == "relative" and self._has_location:
             try:
@@ -345,6 +407,7 @@ class PointerLocation(QWidget):
         mission.pointer_altitude = altitude
         mission.pointer_location_format = self._kind
         mission.pointer_location_code = point.code
+        mission.pointer_site_name = self.preset.currentData()
         mission.pointer_launch_heading = self.heading.value()
         mission.pointer_launch_distance = self.distance.value()
         mission.pointer_height_difference = self.height_difference.value()
