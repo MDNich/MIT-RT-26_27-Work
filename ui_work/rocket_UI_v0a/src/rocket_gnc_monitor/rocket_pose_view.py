@@ -123,20 +123,23 @@ class RocketPoseView(QWidget):
         return "R/P/Y reported"
 
     def _layout(self):
-        if self.height() < 265:
-            split = max(120, self.width() - 260)
-            return QRectF(3, 3, split - 5, self.height() - 6), QRectF(split + 5, 6, self.width() - split - 13, self.height() - 12)
-        return QRectF(12, 34, self.width() - 24, self.height() - 111), None
+        footer_top = self.height() - 74
+        return (QRectF(8, 4, self.width() - 16, footer_top - 9),
+                QRectF(12, footer_top, self.width() - 24, 72))
 
     def projection(self, viewport=None):
-        """Fixed envelope includes the body, plume and canopy for every pose."""
+        """Fit visible effects without changing scale as the rocket rotates."""
         viewport = viewport or self._layout()[0]
         az, el = math.radians(self.azimuth), math.radians(self.elevation)
         forward = -np.array([math.cos(az) * math.cos(el), math.sin(az) * math.cos(el), math.sin(el)])
         right = np.array([-math.sin(az), math.cos(az), 0.0])
         up = np.cross(right, forward)
-        center = np.array([0.0, 0.0, 0.12])
-        scale = max(1.0, min(viewport.width(), viewport.height()) / 2.5)
+        burning = self.pose is not None and self.pose.motor is True
+        recovery = self.pose is not None and self.pose.parachute is True
+        radius = 1.08 if burning else 0.60
+        low, high = -radius, max(radius, 1.45 if recovery else radius)
+        center = np.array([0.0, 0.0, (low + high) / 2])
+        scale = max(1.0, min(viewport.width() / (2 * radius), viewport.height() / (high - low)))
 
         def project(vertices):
             v = np.asarray(vertices, dtype=float) - center
@@ -152,40 +155,28 @@ class RocketPoseView(QWidget):
         painter.setFont(font)
 
     def _draw_text(self, painter, viewport, info):
+        x, width = info.x(), info.width()
+        centered = Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter
+        painter.setPen(QPen(QColor(COLORS["line"]), 0.7))
+        painter.drawLine(QPointF(x, info.y() - 2), QPointF(x + width, info.y() - 2))
         painter.setPen(QColor(COLORS["text"]))
-        compact = info is not None
-        if compact:
-            x, width = info.x(), info.width()
-            self._font(painter, 11, True)
-            painter.drawText(QRectF(x, info.y(), width, 17), self._source_text() + " · " + self._angle_source())
-            self._font(painter, 12, True)
-            for i, text in enumerate(self.angle_text):
-                painter.drawText(QRectF(x + i * width / 3, info.y() + 25, width / 3, 19), text)
-            effect_y = info.y() + 51
-            status_y = info.y() + 77
-            status_h = max(30, info.height() - 81)
-        else:
-            self._font(painter, 13, True)
-            for i, text in enumerate(self.angle_text):
-                painter.drawText(QRectF(16 + i * (self.width() - 32) / 3, 9, (self.width() - 32) / 3, 21), text)
-            x, width = 16, self.width() - 32
-            effect_y = self.height() - 66
-            status_y = self.height() - 38
-            status_h = 33
+        self._font(painter, 13, True)
+        for i, text in enumerate(self.angle_text):
+            painter.drawText(QRectF(x + i * width / 3, info.y(), width / 3, 20), centered, text)
         self._font(painter, 11, True)
         for i, text in enumerate(self.effect_text):
             value = (self.pose.motor if self.pose else None) if i == 0 else (self.pose.parachute if self.pose else None)
             painter.setPen(QColor(COLORS["gold"] if value is True else COLORS["muted"]))
-            painter.drawText(QRectF(x + i * width / 2, effect_y, width / 2, 20), text)
+            painter.drawText(QRectF(x + i * width / 2, info.y() + 21, width / 2, 18), centered, text)
         painter.setPen(QColor(COLORS["muted"]))
         self._font(painter, 10)
         status = self.pose.status.removeprefix(self.pose.source + " · ") if self.pose is not None else "Attitude unavailable · neutral illustration"
         if (self.pose is not None and self.pose.source != "SIMULATION"
                 and not self.pose.attitude_known and "neutral" not in status.lower()):
             status = "Attitude unavailable · neutral illustration. " + status
-        if not compact:
-            status = self._source_text() + " · " + self._angle_source() + " · " + status
-        painter.drawText(QRectF(x, status_y, width, status_h), Qt.TextFlag.TextWordWrap, status)
+        status = self._source_text() + " · " + self._angle_source() + " · " + status
+        painter.drawText(QRectF(x, info.y() + 41, width, 31),
+                         Qt.AlignmentFlag.AlignHCenter | Qt.TextFlag.TextWordWrap, status)
 
     def paintEvent(self, event):
         painter = QPainter(self)

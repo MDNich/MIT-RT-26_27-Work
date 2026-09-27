@@ -670,15 +670,15 @@ class StationWindow(InstrumentWindow):
                 ("altitude", 2, 1, 1, 1),
                 ("antenna", 0, 2, 1, 1),
                 ("pointing", 1, 2, 2, 1),
-                ("attitude", 0, 3, 1, 1),
-                ("gnc_rates", 1, 3, 1, 1),
-                ("gnc_angles", 2, 3, 1, 1),
-                ("actuators", 3, 0, 1, 4),
+                ("attitude", 0, 3, 2, 2),
+                ("gnc_rates", 2, 3, 1, 1),
+                ("gnc_angles", 2, 4, 1, 1),
+                ("actuators", 3, 0, 1, 5),
             ):
                 self.place(self.flight_grid, *args)
             for i, weight in enumerate((32, 24, 24, 20)):
                 self.flight_grid.setRowStretch(i, weight)
-            for i, weight in enumerate((20, 20, 30, 30)):
+            for i, weight in enumerate((20, 20, 30, 15, 15)):
                 self.flight_grid.setColumnStretch(i, weight)
             # Four columns keep every former tab and nested tab in view.
             for args in (
@@ -708,8 +708,8 @@ class StationWindow(InstrumentWindow):
             for args in (
                 ("antenna", 0, 0, 2, 1),
                 ("pointing", 2, 0, 2, 1),
-                ("altitude", 0, 1, 2, 1),
-                ("attitude", 2, 1, 2, 1),
+                ("attitude", 0, 1, 3, 1),
+                ("altitude", 3, 1, 1, 1),
                 ("telemetry", 0, 2, 2, 1),
                 ("gps", 2, 2, 2, 1),
             ):

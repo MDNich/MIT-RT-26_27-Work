@@ -10,6 +10,7 @@ from PySide6.QtWidgets import QApplication
 from rocket_gnc_monitor.domain import Sample
 from rocket_gnc_monitor.rocket_pose import RocketPose, rotation_from_rpy, simulation_pose, telemetry_pose
 from rocket_gnc_monitor.rocket_pose_view import RocketPoseView
+from rocket_gnc_monitor.rocket_geometry import rocket_mesh, plume_mesh, canopy_mesh
 
 
 def make_view(qtbot, pose=None, size=(550, 180)):
@@ -86,14 +87,33 @@ def test_explicit_path_aligned_simulation_preserves_matrix_without_claimed_angle
     assert view._source_text() == "SIMULATION"
 
 
-def test_effect_flags_never_change_center_or_scale(qtbot):
-    view = make_view(qtbot, pose())
-    vertices = np.array([[0, 0, -0.4], [0, 0, 0], [0, 0, 0.55], [0.23, 0, -0.4]])
-    before = view.projection()[0](vertices)
-    view.set_pose(pose(motor=True, parachute=True, inflation=1))
-    np.testing.assert_array_equal(view.projection()[0](vertices), before)
-    view.set_pose(pose(motor=False, parachute=False))
-    np.testing.assert_array_equal(view.projection()[0](vertices), before)
+def test_larger_framing_fits_visible_effects_and_stays_fixed_during_rotation(qtbot):
+    view = make_view(qtbot, pose(), size=(550, 320))
+    viewport, labels = view._layout()
+    assert labels.top() > viewport.bottom()
+    assert viewport.width() > 0.9 * view.width()
+    project, _ = view.projection()
+    body_height = np.ptp(project([[0, 0, -.43], [0, 0, .55]])[:, 1])
+    assert body_height > 0.75 * viewport.height()
+    probes = np.array([[0, 0, 0], [1, 1, 1]])
+    for burning, recovery in ((False, False), (True, False), (False, True), (True, True)):
+        view.set_pose(pose(motor=burning, parachute=recovery, inflation=1))
+        for azimuth in range(0, 360, 45):
+            view.set_azimuth(azimuth)
+            project, _ = view.projection()
+            framing = project(probes)
+            for angles in ((0, 0, 0), (20, 75, 40), (90, -90, 180), (0, 180, 0)):
+                current = pose(angles, motor=burning, parachute=recovery, inflation=1)
+                view.set_pose(current)
+                np.testing.assert_array_equal(view.projection()[0](probes), framing)
+                vertices = [rocket_mesh().vertices @ current.rotation.T]
+                if burning:
+                    vertices.append(plume_mesh().vertices @ current.rotation.T)
+                if recovery:
+                    vertices.append(canopy_mesh().vertices + [0, 0, 1.1])
+                xy = project(np.vstack(vertices))
+                assert np.all(xy[:, 0] >= viewport.left()) and np.all(xy[:, 0] <= viewport.right())
+                assert np.all(xy[:, 1] >= viewport.top()) and np.all(xy[:, 1] <= viewport.bottom())
 
 
 @pytest.mark.parametrize("motor,chute,expected", [(None, None, []), (False, False, []),
