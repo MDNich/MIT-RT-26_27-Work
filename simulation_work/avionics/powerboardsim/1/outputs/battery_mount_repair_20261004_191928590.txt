@@ -1,0 +1,20 @@
+Battery mounting repair: 20261004_191928590 UTC
+Assumption: battery mounts are rigidly clamped/bolted, as confirmed by user.
+Modal solve is NOT started by this script.
+Saved-database backup: Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\outputs\before_battery_mounts_20261004_191928590.mechdb
+Saved database backup does not include unsaved edits; old contact values follow.
+BEFORE Zone de contact 183: ContactType=Bonded; ContactFormulation=MPC; PinballRegion=Radius; PinballRadius=0.0003 [m]; InterfaceTreatment=AdjustToTouch; Suppressed=False
+BEFORE Zone de contact 195: ContactType=Bonded; ContactFormulation=MPC; PinballRegion=Radius; PinballRadius=0.0003 [m]; InterfaceTreatment=AdjustToTouch; Suppressed=False
+BEFORE Zone de contact 208: ContactType=Bonded; ContactFormulation=MPC; PinballRegion=Radius; PinballRadius=0.0003 [m]; InterfaceTreatment=AdjustToTouch; Suppressed=False
+VERIFIED object=1696 name=Zone de contact 183 source=[20024, 20028] target=[23077] Bonded/MPC pinball=0.3 mm
+VERIFIED object=1732 name=Zone de contact 195 source=[20395, 20400] target=[23317] Bonded/MPC pinball=0.3 mm
+VERIFIED object=1771 name=Zone de contact 208 source=[20862, 20866] target=[23257] Bonded/MPC pinball=0.3 mm
+ERROR:
+Traceback (most recent call last):
+  File "C:\Users\mdn\AppData\Local\Temp\jgzup4n0.3vn.tmp", line 147, in <module>
+    log('VERIFIED object=' + str(c.ObjectId) + ' name=' + c.Name +
+  File "C:\Users\mdn\AppData\Local\Temp\jgzup4n0.3vn.tmp", line 77, in log
+    writer.WriteLine(str(message))
+UnicodeDecodeError: ('unknown', u'\xe9', 0, 1, '')
+
+Rollback attempted; inspect any ROLLBACK ERROR above.

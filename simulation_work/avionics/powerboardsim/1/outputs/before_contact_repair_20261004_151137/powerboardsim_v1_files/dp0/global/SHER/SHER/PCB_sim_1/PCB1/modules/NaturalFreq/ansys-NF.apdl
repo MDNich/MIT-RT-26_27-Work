@@ -1,0 +1,13 @@
+!-----------------------------------------------
+! Sherlock/Ansys Model: PCB_sim_1 PCB1
+!-----------------------------------------------
+/input,ansys-FEAModel,apdl
+!-------------------------------------------------------
+! NATURAL FREQUENCY ANALYSIS
+!-------------------------------------------------------
+/SOLU
+antype,MODAL                            ! Modal Analysis
+modopt,LANB,50,2.0E01,2.0E03            ! Frequency Range
+allsel,ALL
+solve
+finish

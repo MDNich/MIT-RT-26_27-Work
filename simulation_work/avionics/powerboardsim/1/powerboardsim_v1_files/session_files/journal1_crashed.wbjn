@@ -1,0 +1,20 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+template1 = GetTemplate(TemplateName="SherlockPre")
+system1 = template1.CreateSystem()
+system1.Delete()
+Extensions.LoadExtension(
+    Id="22267810-43dd-444c-b69c-948d1736da5a",
+    Version="2026.1",
+    Format="Binary")
+template2 = GetTemplate(TemplateName="Mechanical Model")
+system2 = template2.CreateSystem()
+Save(Overwrite=True)
+geometry1 = system2.GetContainer(ComponentName="Geometry")
+geometry1.SetFile(FilePath="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/src/Power_Board_Batt_Screw.step")
+modelComponent1 = system2.GetComponent(Name="Model")
+modelComponent1.Refresh()
+model1 = system2.GetContainer(ComponentName="Model")
+model1.Edit()
+model1.Exit()

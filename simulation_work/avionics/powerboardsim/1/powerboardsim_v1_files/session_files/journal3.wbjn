@@ -1,0 +1,172 @@
+# encoding: utf-8
+# 2026 R1
+SetScriptVersion(Version="26.1.175")
+Save(Overwrite=True)
+system1 = GetSystem(Name="SYS")
+geometry1 = system1.GetContainer(ComponentName="Geometry")
+geometry1.SetFile(FilePath="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/src/Power_Board_Batt_Screw.step")
+modelComponent1 = system1.GetComponent(Name="Model")
+modelComponent1.Refresh()
+model1 = system1.GetContainer(ComponentName="Model")
+model1.Edit()
+model1.Exit()
+modelComponent1.Reset()
+modelComponent1.Refresh()
+model1.Edit()
+geometry1.SetFile(FilePath="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/src/Power_Board_Batt_Screw_defeatured.STEP")
+modelComponent1.Refresh()
+model1.Edit()
+template1 = GetTemplate(TemplateName="SherlockPre")
+system2 = template1.CreateSystem(
+    Position="Right",
+    RelativeTo=system1)
+project1 = system2.GetContainer(ComponentName="Project")
+project1.Edit()
+model1.Exit()
+setupComponent1 = system2.GetComponent(Name="Setup")
+setupComponent1.Refresh()
+system2.Delete()
+system3 = template1.CreateSystem(
+    Position="Right",
+    RelativeTo=system1)
+template2 = GetTemplate(TemplateName="SherlockPost")
+system4 = template2.CreateSystem(
+    Position="Right",
+    RelativeTo=system3)
+project2 = system3.GetContainer(ComponentName="Project")
+project2.Edit()
+model1.Edit()
+Save(Overwrite=True)
+engineeringData1 = system1.GetContainer(ComponentName="Engineering Data")
+matl1 = engineeringData1.CreateMaterial(Name="Nickel")
+matl1.Delete()
+favorites1 = EngData.LoadFavoriteItems()
+EngData.EnableFilter(Enable=False)
+library1 = EngData.OpenLibrary(
+    Name="General Materials",
+    Source="General_Materials.xml")
+library2 = EngData.OpenLibrary(
+    Name="ANSYS GRANTA Materials Data for Simulation (Sample)",
+    Source="Granta_Design_Typical_Materials.xml")
+library3 = EngData.OpenLibrary(
+    Name="Thermal Materials",
+    Source="Thermal_Materials.xml")
+library4 = EngData.OpenLibrary(
+    Name="Explicit Materials",
+    Source="Explicit_Materials.xml")
+matl2 = engineeringData1.ImportMaterial(
+    Name="NICKEL",
+    Source="Explicit_Materials.xml")
+EngData.EnableFilter()
+Save(Overwrite=True)
+Save(Overwrite=True)
+EngData.EnableFilter(Enable=False)
+EngData.EnableFilter()
+material1 = engineeringData1.GetMaterial(Name="Acier standard")
+matl3 = material1.Duplicate(TargetContainer=engineeringData1)
+matl3.DisplayName = "PilesLiPo"
+matlProp1 = matl3.GetProperty(Name="Density")
+matlProp1.SetData(
+    Variables=["Density"],
+    Values=[["2200 [kg m^-3]"]])
+Save(Overwrite=True)
+Save(Overwrite=True)
+matl4 = engineeringData1.ImportMaterial(
+    Name="NICKEL-200",
+    Source="Explicit_Materials.xml")
+Save(Overwrite=True)
+matl2.Delete()
+Save(Overwrite=True)
+matl4.Unlink()
+matlProp2 = matl4.CreateProperty(
+    Name="Elasticity",
+    Behavior="Isotropic",
+    Qualifiers={"Definition": "", "Behavior": "Isotropic"})
+matlProp2.SetData(
+    Index=-1,
+    Variables=["Young's Modulus"],
+    Values=[["200 [Pa]"]])
+matlProp2.SetVariableProperty(
+    VariableName="Young's Modulus",
+    Property="Unit",
+    Value="GPa")
+matlProp2.SetData(
+    Variables=["Young's Modulus"],
+    Values=[["2.0000000000000002E-07 [GPa]"]])
+matlProp2.SetData(
+    Variables=["Young's Modulus"],
+    Values=[["220 [GPa]"]])
+matlProp2.SetData(
+    Variables=["Poisson's Ratio"],
+    Values=[["0.305"]])
+Save(Overwrite=True)
+template3 = GetTemplate(TemplateName="External Model")
+system5 = template3.CreateSystem(
+    Position="Below",
+    RelativeTo=system1)
+system5.Delete()
+Save(Overwrite=True)
+template4 = GetTemplate(TemplateName="External Data")
+system6 = template4.CreateSystem(
+    Position="Below",
+    RelativeTo=system1)
+system6.Delete()
+library5 = EngData.OpenLibrary(
+    Name="output",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl5 = engineeringData1.ImportMaterial(
+    Name="ALUMINA",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl6 = engineeringData1.ImportMaterial(
+    Name="BARIUMTITANATE",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl7 = engineeringData1.ImportMaterial(
+    Name="CALCIUM ZIRCONATE",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl8 = engineeringData1.ImportMaterial(
+    Name="COPPER",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl9 = engineeringData1.ImportMaterial(
+    Name="EPOXYENCAPSULANT",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl10 = engineeringData1.ImportMaterial(
+    Name="FERRITE",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl11 = engineeringData1.ImportMaterial(
+    Name="COPPER",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl12 = engineeringData1.ImportMaterial(
+    Name="PM0003",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl13 = engineeringData1.ImportMaterial(
+    Name="PM0002",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl14 = engineeringData1.ImportMaterial(
+    Name="PM0001",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+matl15 = engineeringData1.ImportMaterial(
+    Name="PCB",
+    Source="Z:/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/global/MECH/SYS/output.xml")
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+system7 = GetSystem(Name="SYS 1")
+setup1 = system7.GetContainer(ComponentName="Setup")
+setup1.Edit()
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+setup1.Edit()
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+Extensions.AddToDefaultExtensions(Id="e58f9c27-8401-45e5-83b8-72af00fdd1a2")
+Extensions.LoadExtension(Id="e58f9c27-8401-45e5-83b8-72af00fdd1a2")
+Extensions.RemoveFromDefaultExtensions(Id="e58f9c27-8401-45e5-83b8-72af00fdd1a2")
+Extensions.UnloadExtension(Id="e58f9c27-8401-45e5-83b8-72af00fdd1a2")
+Extensions.AddToDefaultExtensions(Id="e58f9c27-8401-45e5-83b8-72af00fdd1a2")
+Extensions.LoadExtension(Id="e58f9c27-8401-45e5-83b8-72af00fdd1a2")
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
+Save(Overwrite=True)
