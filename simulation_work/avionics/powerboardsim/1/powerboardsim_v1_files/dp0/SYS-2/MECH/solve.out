@@ -1,0 +1,959 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.02       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.02  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ BladeModeler 2026 R1
+ BladeModeler 2026 R1.01 
+ BladeModeler 2026 R1.02 
+ CFX (includes CFD-Post) 2026 R1 
+ CFX (includes CFD-Post) 2026 R1.01  
+ CFX (includes CFD-Post) 2026 R1.02  
+ CFD-Post only 2026 R1   
+ CFD-Post only 2026 R1.01
+ CFD-Post only 2026 R1.02
+ Chemkin 2026 R1 
+ Chemkin 2026 R1.01  
+ Chemkin 2026 R1.02  
+ EnSight 2026 R1 
+ EnSight 2026 R1.01  
+ EnSight 2026 R1.02  
+ FENSAP-ICE 2026 R1  
+ FENSAP-ICE 2026 R1.01   
+ FENSAP-ICE 2026 R1.02   
+ Fluent (includes CFD-Post) 2026 R1  
+ Fluent (includes CFD-Post) 2026 R1.01   
+ Fluent (includes CFD-Post) 2026 R1.02   
+ Polyflow (includes CFD-Post) 2026 R1
+ Polyflow (includes CFD-Post) 2026 R1.01 
+ Polyflow (includes CFD-Post) 2026 R1.02 
+ Forte (includes EnSight) 2026 R1
+ Forte (includes EnSight) 2026 R1.01 
+ Forte (includes EnSight) 2026 R1.02 
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ RBF Morph Fluids UDF 2026 R1
+ RBF Morph Fluids UDF 2026 R1.01 
+ RBF Morph Fluids UDF 2026 R1.02 
+ RBF Morph Libraries 2026 R1 
+ RBF Morph Libraries 2026 R1.01  
+ RBF Morph Libraries 2026 R1.02  
+ Rocky 2026 R1   
+ Rocky 2026 R1.01
+ Rocky 2026 R1.02
+ Thermal Desktop: AutoCAD 2026 R1
+ Thermal Desktop: AutoCAD 2026 R1.01 
+ Thermal Desktop: AutoCAD 2026 R1.02 
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1   
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.01
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.02
+ Thermal Desktop: Sinda Solver 2026 R1   
+ Thermal Desktop: Sinda Solver 2026 R1.01
+ Thermal Desktop: Sinda Solver 2026 R1.02
+ TurboGrid 2026 R1   
+ TurboGrid 2026 R1.01
+ TurboGrid 2026 R1.02
+ Granta EduPack 2026 R1  
+ Granta EduPack 2026 R1.01   
+ Granta EduPack 2026 R1.02   
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Designer 2026 R1   
+ Material Designer 2026 R1.01
+ Material Designer 2026 R1.02
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  DISTRIBUTED MEMORY PARALLEL REQUESTED
+      12 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF    12 CORES REQUESTED
+  INPUT FILE NAME              = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr5393\dummy.dat
+  OUTPUT FILE NAME             = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr5393\solve.out
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+
+ RELEASE= 2026 R1.02           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file0  16:44:24  OCT 04, 2026  Elapsed Time=       0.344
+
+
+ PARAMETER _DS_PROGRESS =     999.0000000    
+
+ /INPUT FILE= ds.dat  LINE=       0
+
+
+
+ *** NOTE ***                            ELAPSED TIME =       7.480   TIME= 16:44:26
+ The /CONFIG,NOELDB command is not valid in a distributed memory         
+ parallel solution.  Command is ignored.                                 
+
+ *GET  _WALLSTRT  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.208506964E-02
+
+ TITLE= 
+ powerboardsim_v1--PCB670_Bolt preload - load then lock (C5)                   
+
+  ACT Extensions:
+      LSDYNA, 2026.1
+      5f463412-bd3e-484b-87e7-cbc0a665e474, wbex
+      ANSYSMotion, 2026.1
+      20180725-3f81-49eb-9f31-41364844c769, wbex
+      Sherlock_App, 2026.1
+      22267810-43dd-444c-b69c-948d1736da5a, wbex
+      BoltTools, 2024.1
+      e58f9c27-8401-45e5-83b8-72af00fdd1a2, wbex
+
+ SET PARAMETER DIMENSIONS ON  _WB_PROJECTSCRATCH_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_PROJECTSCRATCH_DIR(1) = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr5393\
+
+ SET PARAMETER DIMENSIONS ON  _WB_SOLVERFILES_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_SOLVERFILES_DIR(1) = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\dp0\SYS-2\MECH\
+
+ SET PARAMETER DIMENSIONS ON  _WB_USERFILES_DIR
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_USERFILES_DIR(1) = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\user_files\
+ --- Data in consistent MKS units. See Solving Units in the help system for more
+
+ MKS UNITS SPECIFIED FOR INTERNAL    
+  LENGTH        (l)  = METER (M)
+  MASS          (M)  = KILOGRAM (KG)
+  TIME          (t)  = SECOND (SEC)
+  TEMPERATURE   (T)  = CELSIUS (C)
+  TOFFSET            = 273.0
+  CHARGE        (Q)  = COULOMB
+  FORCE         (f)  = NEWTON (N) (KG-M/SEC2)
+  HEAT               = JOULE (N-M)
+
+  PRESSURE           = PASCAL (NEWTON/M**2)
+  ENERGY        (W)  = JOULE (N-M)
+  POWER         (P)  = WATT (N-M/SEC)
+  CURRENT       (i)  = AMPERE (COULOMBS/SEC)
+  CAPACITANCE   (C)  = FARAD
+  INDUCTANCE    (L)  = HENRY
+  MAGNETIC FLUX      = WEBER
+  RESISTANCE    (R)  = OHM
+  ELECTRIC POTENTIAL = VOLT
+
+ INPUT  UNITS ARE ALSO SET TO MKS 
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   16:44:26  OCT 04, 2026 Elapsed Time=      7.514
+
+ powerboardsim_v1--PCB670_Bolt preload - load then lock (C5)                   
+
+
+
+          ***** MAPDL ANALYSIS DEFINITION (PREP7) *****
+ *********** Send User Defined Coordinate System(s) ***********
+ *********** Nodes for the whole assembly ***********
+ *********** Elements for Body 1 'COMP_C1|COMP_C1' ***********
+ *********** Elements for Body 2 'COMP_C2|COMP_C2' ***********
+ *********** Elements for Body 3 'COMP_C3|COMP_C3' ***********
+ *********** Elements for Body 4 'COMP_C4|COMP_C4' ***********
+ *********** Elements for Body 5 'COMP_C5|COMP_C5' ***********
+ *********** Elements for Body 6 'COMP_C6|COMP_C6' ***********
+ *********** Elements for Body 7 'COMP_C7|COMP_C7' ***********
+ *********** Elements for Body 8 'COMP_C8|COMP_C8' ***********
+ *********** Elements for Body 9 'COMP_C9|COMP_C9' ***********
+ *********** Elements for Body 10 'COMP_C10|COMP_C10' ***********
+ *********** Elements for Body 11 'COMP_C11|COMP_C11' ***********
+ *********** Elements for Body 12 'COMP_C12|COMP_C12' ***********
+ *********** Elements for Body 13 'COMP_C13|COMP_C13' ***********
+ *********** Elements for Body 14 'COMP_C14|COMP_C14' ***********
+ *********** Elements for Body 15 'COMP_C15|COMP_C15' ***********
+ *********** Elements for Body 16 'COMP_C16|COMP_C16' ***********
+ *********** Elements for Body 17 'COMP_C17|COMP_C17' ***********
+ *********** Elements for Body 18 'COMP_C18|COMP_C18' ***********
+ *********** Elements for Body 19 'COMP_C19|COMP_C19' ***********
+ *********** Elements for Body 20 'COMP_C20|COMP_C20' ***********
+ *********** Elements for Body 21 'COMP_C21|COMP_C21' ***********
+ *********** Elements for Body 22 'COMP_C22|COMP_C22' ***********
+ *********** Elements for Body 23 'COMP_C23|COMP_C23' ***********
+ *********** Elements for Body 24 'COMP_C24|COMP_C24' ***********
+ *********** Elements for Body 25 'COMP_C25|COMP_C25' ***********
+ *********** Elements for Body 26 'COMP_C26|COMP_C26' ***********
+ *********** Elements for Body 27 'COMP_C27|COMP_C27' ***********
+ *********** Elements for Body 28 'COMP_C28|COMP_C28' ***********
+ *********** Elements for Body 29 'COMP_C29|COMP_C29' ***********
+ *********** Elements for Body 30 'COMP_C30|COMP_C30' ***********
+ *********** Elements for Body 31 'COMP_C31|COMP_C31' ***********
+ *********** Elements for Body 32 'COMP_C32|COMP_C32' ***********
+ *********** Elements for Body 33 'COMP_C33|COMP_C33' ***********
+ *********** Elements for Body 34 'COMP_C34|COMP_C34' ***********
+ *********** Elements for Body 35 'COMP_C35|COMP_C35' ***********
+ *********** Elements for Body 36 'COMP_C36|COMP_C36' ***********
+ *********** Elements for Body 37 'COMP_C37|COMP_C37' ***********
+ *********** Elements for Body 38 'COMP_C38|COMP_C38' ***********
+ *********** Elements for Body 39 'COMP_C39|COMP_C39' ***********
+ *********** Elements for Body 40 'COMP_C40|COMP_C40' ***********
+ *********** Elements for Body 41 'COMP_C41|COMP_C41' ***********
+ *********** Elements for Body 42 'COMP_C42|COMP_C42' ***********
+ *********** Elements for Body 43 'COMP_C43|COMP_C43' ***********
+ *********** Elements for Body 44 'COMP_C44|COMP_C44' ***********
+ *********** Elements for Body 45 'COMP_C45|COMP_C45' ***********
+ *********** Elements for Body 46 'COMP_C46|COMP_C46' ***********
+ *********** Elements for Body 47 'COMP_C47|COMP_C47' ***********
+ *********** Elements for Body 48 'COMP_C48|COMP_C48' ***********
+ *********** Elements for Body 49 'COMP_C49|COMP_C49' ***********
+ *********** Elements for Body 50 'COMP_C50|COMP_C50' ***********
+ *********** Elements for Body 51 'COMP_C51|COMP_C51' ***********
+ *********** Elements for Body 52 'COMP_C52|COMP_C52' ***********
+ *********** Elements for Body 53 'COMP_C53|COMP_C53' ***********
+ *********** Elements for Body 54 'COMP_C54|COMP_C54' ***********
+ *********** Elements for Body 55 'COMP_C55|COMP_C55' ***********
+ *********** Elements for Body 56 'COMP_C56|COMP_C56' ***********
+ *********** Elements for Body 57 'COMP_C57|COMP_C57' ***********
+ *********** Elements for Body 58 'COMP_C58|COMP_C58' ***********
+ *********** Elements for Body 59 'COMP_C59|COMP_C59' ***********
+ *********** Elements for Body 60 'COMP_C60|COMP_C60' ***********
+ *********** Elements for Body 61 'COMP_C61|COMP_C61' ***********
+ *********** Elements for Body 62 'COMP_C62|COMP_C62' ***********
+ *********** Elements for Body 63 'COMP_C63|COMP_C63' ***********
+ *********** Elements for Body 64 'COMP_C64|COMP_C64' ***********
+ *********** Elements for Body 65 'COMP_C65|COMP_C65' ***********
+ *********** Elements for Body 66 'COMP_C66|COMP_C66' ***********
+ *********** Elements for Body 67 'COMP_C67|COMP_C67' ***********
+ *********** Elements for Body 68 'COMP_C68|COMP_C68' ***********
+ *********** Elements for Body 69 'COMP_C69|COMP_C69' ***********
+ *********** Elements for Body 70 'COMP_C70|COMP_C70' ***********
+ *********** Elements for Body 71 'COMP_C71|COMP_C71' ***********
+ *********** Elements for Body 72 'COMP_C72|COMP_C72' ***********
+ *********** Elements for Body 73 'COMP_C73|COMP_C73' ***********
+ *********** Elements for Body 74 'COMP_C74|COMP_C74' ***********
+ *********** Elements for Body 75 'COMP_D1|COMP_D1' ***********
+ *********** Elements for Body 76 'COMP_D2|COMP_D2' ***********
+ *********** Elements for Body 77 'COMP_D3|COMP_D3' ***********
+ *********** Elements for Body 78 'COMP_D4|COMP_D4' ***********
+ *********** Elements for Body 79 'COMP_D5|COMP_D5' ***********
+ *********** Elements for Body 80 'COMP_D6|COMP_D6' ***********
+ *********** Elements for Body 81 'COMP_D7|COMP_D7' ***********
+ *********** Elements for Body 82 'COMP_D8|COMP_D8' ***********
+ *********** Elements for Body 83 'COMP_D9|COMP_D9' ***********
+ *********** Elements for Body 84 'COMP_D10|COMP_D10' ***********
+ *********** Elements for Body 85 'COMP_IC1|COMP_IC1' ***********
+ *********** Elements for Body 86 'COMP_IC2|COMP_IC2' ***********
+ *********** Elements for Body 87 'COMP_IC3|COMP_IC3' ***********
+ *********** Elements for Body 88 'COMP_IC4|COMP_IC4' ***********
+ *********** Elements for Body 89 'COMP_IC5|COMP_IC5' ***********
+ *********** Elements for Body 90 'COMP_IC7|COMP_IC7' ***********
+ *********** Elements for Body 91 'COMP_IC8|COMP_IC8' ***********
+ *********** Elements for Body 92 'COMP_IC9|COMP_IC9' ***********
+ *********** Elements for Body 93 'COMP_IC10|COMP_IC10' ***********
+ *********** Elements for Body 94 'COMP_IC11|COMP_IC11' ***********
+ *********** Elements for Body 95 'COMP_IC12|COMP_IC12' ***********
+ *********** Elements for Body 96 'COMP_IC13|COMP_IC13' ***********
+ *********** Elements for Body 97 'COMP_IC14|COMP_IC14' ***********
+ *********** Elements for Body 98 'COMP_IC15|COMP_IC15' ***********
+ *********** Elements for Body 99 'COMP_J1|COMP_J1' ***********
+ *********** Elements for Body 100 'COMP_J2|COMP_J2' ***********
+ *********** Elements for Body 101 'COMP_J3|COMP_J3' ***********
+ *********** Elements for Body 102 'COMP_J4|COMP_J4' ***********
+ *********** Elements for Body 103 'COMP_J5|COMP_J5' ***********
+ *********** Elements for Body 104 'COMP_J6|COMP_J6' ***********
+ *********** Elements for Body 105 'COMP_L1|COMP_L1' ***********
+ *********** Elements for Body 106 'COMP_L2|COMP_L2' ***********
+ *********** Elements for Body 107 'COMP_L3|COMP_L3' ***********
+ *********** Elements for Body 108 'COMP_L4|COMP_L4' ***********
+ *********** Elements for Body 109 'COMP_L5|COMP_L5' ***********
+ *********** Elements for Body 110 'COMP_L6|COMP_L6' ***********
+ *********** Elements for Body 111 'COMP_Q1|COMP_Q1' ***********
+ *********** Elements for Body 112 'COMP_Q2|COMP_Q2' ***********
+ *********** Elements for Body 113 'COMP_Q3|COMP_Q3' ***********
+ *********** Elements for Body 114 'COMP_Q4|COMP_Q4' ***********
+ *********** Elements for Body 115 'COMP_R1|COMP_R1' ***********
+ *********** Elements for Body 116 'COMP_R2|COMP_R2' ***********
+ *********** Elements for Body 117 'COMP_R3|COMP_R3' ***********
+ *********** Elements for Body 118 'COMP_R4|COMP_R4' ***********
+ *********** Elements for Body 119 'COMP_R5|COMP_R5' ***********
+ *********** Elements for Body 120 'COMP_R6|COMP_R6' ***********
+ *********** Elements for Body 121 'COMP_R7|COMP_R7' ***********
+ *********** Elements for Body 122 'COMP_R8|COMP_R8' ***********
+ *********** Elements for Body 123 'COMP_R9|COMP_R9' ***********
+ *********** Elements for Body 124 'COMP_R10|COMP_R10' ***********
+ *********** Elements for Body 125 'COMP_R11|COMP_R11' ***********
+ *********** Elements for Body 126 'COMP_R12|COMP_R12' ***********
+ *********** Elements for Body 127 'COMP_R13|COMP_R13' ***********
+ *********** Elements for Body 128 'COMP_R14|COMP_R14' ***********
+ *********** Elements for Body 129 'COMP_R15|COMP_R15' ***********
+ *********** Elements for Body 130 'COMP_R16|COMP_R16' ***********
+ *********** Elements for Body 131 'COMP_R17|COMP_R17' ***********
+ *********** Elements for Body 132 'COMP_R18|COMP_R18' ***********
+ *********** Elements for Body 133 'COMP_R19|COMP_R19' ***********
+ *********** Elements for Body 134 'COMP_R20|COMP_R20' ***********
+ *********** Elements for Body 135 'COMP_R21|COMP_R21' ***********
+ *********** Elements for Body 136 'COMP_R22|COMP_R22' ***********
+ *********** Elements for Body 137 'COMP_R23|COMP_R23' ***********
+ *********** Elements for Body 138 'COMP_R24|COMP_R24' ***********
+ *********** Elements for Body 139 'COMP_R25|COMP_R25' ***********
+ *********** Elements for Body 140 'COMP_R26|COMP_R26' ***********
+ *********** Elements for Body 141 'COMP_R27|COMP_R27' ***********
+ *********** Elements for Body 142 'COMP_R28|COMP_R28' ***********
+ *********** Elements for Body 143 'COMP_R29|COMP_R29' ***********
+ *********** Elements for Body 144 'COMP_R30|COMP_R30' ***********
+ *********** Elements for Body 145 'COMP_R31|COMP_R31' ***********
+ *********** Elements for Body 146 'COMP_R32|COMP_R32' ***********
+ *********** Elements for Body 147 'COMP_R33|COMP_R33' ***********
+ *********** Elements for Body 148 'COMP_R34|COMP_R34' ***********
+ *********** Elements for Body 149 'COMP_R35|COMP_R35' ***********
+ *********** Elements for Body 150 'COMP_R36|COMP_R36' ***********
+ *********** Elements for Body 151 'COMP_R37|COMP_R37' ***********
+ *********** Elements for Body 152 'COMP_R38|COMP_R38' ***********
+ *********** Elements for Body 153 'COMP_R39|COMP_R39' ***********
+ *********** Elements for Body 154 'COMP_R40|COMP_R40' ***********
+ *********** Elements for Body 155 'COMP_R41|COMP_R41' ***********
+ *********** Elements for Body 156 'COMP_R42|COMP_R42' ***********
+ *********** Elements for Body 157 'COMP_R43|COMP_R43' ***********
+ *********** Elements for Body 158 'COMP_R44|COMP_R44' ***********
+ *********** Elements for Body 159 'COMP_R45|COMP_R45' ***********
+ *********** Elements for Body 160 'COMP_R46|COMP_R46' ***********
+ *********** Elements for Body 161 'COMP_R47|COMP_R47' ***********
+ *********** Elements for Body 162 'COMP_R48|COMP_R48' ***********
+ *********** Elements for Body 163 'COMP_R49|COMP_R49' ***********
+ *********** Elements for Body 164 'COMP_R50|COMP_R50' ***********
+ *********** Elements for Body 165 'COMP_R51|COMP_R51' ***********
+ *********** Elements for Body 166 'COMP_R52|COMP_R52' ***********
+ *********** Elements for Body 167 'COMP_R53|COMP_R53' ***********
+ *********** Elements for Body 168 'COMP_R54|COMP_R54' ***********
+ *********** Elements for Body 169 'COMP_R55|COMP_R55' ***********
+ *********** Elements for Body 170 'COMP_R56|COMP_R56' ***********
+ *********** Elements for Body 171 'COMP_RefDes|COMP_RefDes' ***********
+ *********** Elements for Body 172 'COMP_U1|COMP_U1' ***********
+ *********** Elements for Body 173 'Power_Board_Batt_Screw_defeatured_2|Part 13[
+ *********** Elements for Body 174 'Power_Board_Batt_Screw_defeatured_2|Part 28[
+ *********** Elements for Body 175 'Power_Board_Batt_Screw_defeatured_2|Part 12[
+ *********** Elements for Body 176 'Power_Board_Batt_Screw_defeatured_2|Part 27[
+ *********** Elements for Body 177 'Power_Board_Batt_Screw_defeatured_2|Part 11[
+ *********** Elements for Body 178 'Power_Board_Batt_Screw_defeatured_2|Part 26[
+ *********** Elements for Body 179 'Power_Board_Batt_Screw_defeatured_2|Part 3[1
+ *********** Elements for Body 180 'Power_Board_Batt_Screw_defeatured_2|Part 25[
+ *********** Elements for Body 181 'Power_Board_Batt_Screw_defeatured_2|Part 2[1
+ *********** Elements for Body 182 'Power_Board_Batt_Screw_defeatured_2|Part 24[
+ *********** Elements for Body 183 'Power_Board_Batt_Screw_defeatured_2|Part 4[1
+ *********** Elements for Body 184 'Power_Board_Batt_Screw_defeatured_2|Part 23[
+ *********** Elements for Body 185 'Power_Board_Batt_Screw_defeatured_2|Part 22[
+ *********** Elements for Body 186 'Power_Board_Batt_Screw_defeatured_2|Part 6[1
+ *********** Elements for Body 187 'Power_Board_Batt_Screw_defeatured_2|Part 5[1
+ *********** Elements for Body 188 'Power_Board_Batt_Screw_defeatured_2|Part 33[
+ *********** Elements for Body 189 'Power_Board_Batt_Screw_defeatured_2|Part 17[
+ *********** Elements for Body 190 'Power_Board_Batt_Screw_defeatured_2|Part 1[1
+ *********** Elements for Body 191 'Power_Board_Batt_Screw_defeatured_2|Part 16[
+ *********** Elements for Body 192 'Power_Board_Batt_Screw_defeatured_2|Part 15[
+ *********** Elements for Body 193 'Power_Board_Batt_Screw_defeatured_2|Part 14[
+ *********** Elements for Body 194 'Power_Board_Batt_Screw_defeatured_2|Part 31[
+ *********** Elements for Body 195 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 196 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 197 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 198 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 199 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 200 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 201 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 202 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 203 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 204 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 205 'Power_Board_Batt_Screw_defeatured_2|Part 30[
+ *********** Elements for Body 206 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 207 'Power_Board_Batt_Screw_defeatured_2|LPattern
+ *********** Elements for Body 208 'PCB|PCB' ***********
+ *********** Set Reference Temperature ***********
+ *********** Send Materials ***********
+ *********** Create Contact "Zone de contact 181" ***********
+             Real Constant Set For Above Contact Is 210 & 209
+ *********** Create Contact "Zone de contact 182" ***********
+             Real Constant Set For Above Contact Is 212 & 211
+ *********** Create Contact "Zone de contact 183" ***********
+             Real Constant Set For Above Contact Is 214 & 213
+ *********** Create Contact "Zone de contact 184" ***********
+             Real Constant Set For Above Contact Is 216 & 215
+ *********** Create Contact "Zone de contact 185" ***********
+             Real Constant Set For Above Contact Is 218 & 217
+ *********** Create Contact "Zone de contact 186" ***********
+             Real Constant Set For Above Contact Is 220 & 219
+ *********** Create Contact "Zone de contact 187" ***********
+             Real Constant Set For Above Contact Is 222 & 221
+ *********** Create Contact "Zone de contact 188" ***********
+             Real Constant Set For Above Contact Is 224 & 223
+ *********** Create Contact "Zone de contact 189" ***********
+             Real Constant Set For Above Contact Is 226 & 225
+ *********** Create Contact "Zone de contact 190" ***********
+             Real Constant Set For Above Contact Is 228 & 227
+ *********** Create Contact "Zone de contact 191" ***********
+             Real Constant Set For Above Contact Is 230 & 229
+ *********** Create Contact "Zone de contact 192" ***********
+             Real Constant Set For Above Contact Is 232 & 231
+ *********** Create Contact "Zone de contact 193" ***********
+             Real Constant Set For Above Contact Is 234 & 233
+ *********** Create Contact "Zone de contact 194" ***********
+             Real Constant Set For Above Contact Is 236 & 235
+ *********** Create Contact "Zone de contact 195" ***********
+             Real Constant Set For Above Contact Is 238 & 237
+ *********** Create Contact "Zone de contact 196" ***********
+             Real Constant Set For Above Contact Is 240 & 239
+ *********** Create Contact "Zone de contact 197" ***********
+             Real Constant Set For Above Contact Is 242 & 241
+ *********** Create Contact "Zone de contact 198" ***********
+             Real Constant Set For Above Contact Is 244 & 243
+ *********** Create Contact "Zone de contact 199" ***********
+             Real Constant Set For Above Contact Is 246 & 245
+ *********** Create Contact "Zone de contact 200" ***********
+             Real Constant Set For Above Contact Is 248 & 247
+ *********** Create Contact "Zone de contact 201" ***********
+             Real Constant Set For Above Contact Is 250 & 249
+ *********** Create Contact "Zone de contact 202" ***********
+             Real Constant Set For Above Contact Is 252 & 251
+ *********** Create Contact "Zone de contact 203" ***********
+             Real Constant Set For Above Contact Is 254 & 253
+ *********** Create Contact "Zone de contact 204" ***********
+             Real Constant Set For Above Contact Is 256 & 255
+ *********** Create Contact "Zone de contact 205" ***********
+             Real Constant Set For Above Contact Is 258 & 257
+ *********** Create Contact "Zone de contact 206" ***********
+             Real Constant Set For Above Contact Is 260 & 259
+ *********** Create Contact "Zone de contact 207" ***********
+             Real Constant Set For Above Contact Is 262 & 261
+ *********** Create Contact "Zone de contact 208" ***********
+             Real Constant Set For Above Contact Is 264 & 263
+ *********** Create Contact "Zone de contact" ***********
+             Real Constant Set For Above Contact Is 266 & 265
+ *********** Create Contact "Zone de contact 2" ***********
+             Real Constant Set For Above Contact Is 268 & 267
+ *********** Create Contact "Zone de contact 3" ***********
+             Real Constant Set For Above Contact Is 270 & 269
+ *********** Create Contact "Zone de contact 4" ***********
+             Real Constant Set For Above Contact Is 272 & 271
+ *********** Create Contact "Zone de contact 5" ***********
+             Real Constant Set For Above Contact Is 274 & 273
+ *********** Create Contact "Zone de contact 6" ***********
+             Real Constant Set For Above Contact Is 276 & 275
+ *********** Create Contact "Zone de contact 7" ***********
+             Real Constant Set For Above Contact Is 278 & 277
+ *********** Create Contact "Zone de contact 8" ***********
+             Real Constant Set For Above Contact Is 280 & 279
+ *********** Create Contact "Zone de contact 9" ***********
+             Real Constant Set For Above Contact Is 282 & 281
+ *********** Create Contact "Zone de contact 10" ***********
+             Real Constant Set For Above Contact Is 284 & 283
+ *********** Create Contact "Zone de contact 11" ***********
+             Real Constant Set For Above Contact Is 286 & 285
+ *********** Create Contact "Zone de contact 12" ***********
+             Real Constant Set For Above Contact Is 288 & 287
+ *********** Create Contact "Zone de contact 13" ***********
+             Real Constant Set For Above Contact Is 290 & 289
+ *********** Create Contact "Zone de contact 14" ***********
+             Real Constant Set For Above Contact Is 292 & 291
+ *********** Create Contact "Zone de contact 15" ***********
+             Real Constant Set For Above Contact Is 294 & 293
+ *********** Create Contact "Zone de contact 16" ***********
+             Real Constant Set For Above Contact Is 296 & 295
+ *********** Create Contact "Zone de contact 17" ***********
+             Real Constant Set For Above Contact Is 298 & 297
+ *********** Create Contact "Zone de contact 18" ***********
+             Real Constant Set For Above Contact Is 300 & 299
+ *********** Create Contact "Zone de contact 19" ***********
+             Real Constant Set For Above Contact Is 302 & 301
+ *********** Create Contact "Zone de contact 20" ***********
+             Real Constant Set For Above Contact Is 304 & 303
+ *********** Create Contact "Zone de contact 21" ***********
+             Real Constant Set For Above Contact Is 306 & 305
+ *********** Create Contact "Zone de contact 22" ***********
+             Real Constant Set For Above Contact Is 308 & 307
+ *********** Create Contact "Zone de contact 23" ***********
+             Real Constant Set For Above Contact Is 310 & 309
+ *********** Create Contact "Zone de contact 24" ***********
+             Real Constant Set For Above Contact Is 312 & 311
+ *********** Create Contact "Zone de contact 25" ***********
+             Real Constant Set For Above Contact Is 314 & 313
+ *********** Create Contact "Zone de contact 26" ***********
+             Real Constant Set For Above Contact Is 316 & 315
+ *********** Create Contact "Zone de contact 27" ***********
+             Real Constant Set For Above Contact Is 318 & 317
+ *********** Create Contact "Zone de contact 28" ***********
+             Real Constant Set For Above Contact Is 320 & 319
+ *********** Create Contact "Zone de contact 29" ***********
+             Real Constant Set For Above Contact Is 322 & 321
+ *********** Create Contact "Zone de contact 30" ***********
+             Real Constant Set For Above Contact Is 324 & 323
+ *********** Create Contact "Zone de contact 31" ***********
+             Real Constant Set For Above Contact Is 326 & 325
+ *********** Create Contact "Zone de contact 32" ***********
+             Real Constant Set For Above Contact Is 328 & 327
+ *********** Create Contact "Zone de contact 33" ***********
+             Real Constant Set For Above Contact Is 330 & 329
+ *********** Create Contact "Zone de contact 34" ***********
+             Real Constant Set For Above Contact Is 332 & 331
+ *********** Create Contact "Zone de contact 35" ***********
+             Real Constant Set For Above Contact Is 334 & 333
+ *********** Create Contact "Zone de contact 36" ***********
+             Real Constant Set For Above Contact Is 336 & 335
+ *********** Create Contact "Zone de contact 37" ***********
+             Real Constant Set For Above Contact Is 338 & 337
+ *********** Create Contact "Zone de contact 38" ***********
+             Real Constant Set For Above Contact Is 340 & 339
+ *********** Create Contact "Zone de contact 39" ***********
+             Real Constant Set For Above Contact Is 342 & 341
+ *********** Create Contact "Zone de contact 40" ***********
+             Real Constant Set For Above Contact Is 344 & 343
+ *********** Create Contact "Zone de contact 41" ***********
+             Real Constant Set For Above Contact Is 346 & 345
+ *********** Create Contact "Zone de contact 42" ***********
+             Real Constant Set For Above Contact Is 348 & 347
+ *********** Create Contact "Zone de contact 43" ***********
+             Real Constant Set For Above Contact Is 350 & 349
+ *********** Create Contact "Zone de contact 44" ***********
+             Real Constant Set For Above Contact Is 352 & 351
+ *********** Create Contact "Zone de contact 45" ***********
+             Real Constant Set For Above Contact Is 354 & 353
+ *********** Create Contact "Zone de contact 46" ***********
+             Real Constant Set For Above Contact Is 356 & 355
+ *********** Create Contact "Zone de contact 47" ***********
+             Real Constant Set For Above Contact Is 358 & 357
+ *********** Create Contact "Zone de contact 48" ***********
+             Real Constant Set For Above Contact Is 360 & 359
+ *********** Create Contact "Zone de contact 49" ***********
+             Real Constant Set For Above Contact Is 362 & 361
+ *********** Create Contact "Zone de contact 50" ***********
+             Real Constant Set For Above Contact Is 364 & 363
+ *********** Create Contact "Zone de contact 51" ***********
+             Real Constant Set For Above Contact Is 366 & 365
+ *********** Create Contact "Zone de contact 52" ***********
+             Real Constant Set For Above Contact Is 368 & 367
+ *********** Create Contact "Zone de contact 53" ***********
+             Real Constant Set For Above Contact Is 370 & 369
+ *********** Create Contact "Zone de contact 54" ***********
+             Real Constant Set For Above Contact Is 372 & 371
+ *********** Create Contact "Zone de contact 55" ***********
+             Real Constant Set For Above Contact Is 374 & 373
+ *********** Create Contact "Zone de contact 56" ***********
+             Real Constant Set For Above Contact Is 376 & 375
+ *********** Create Contact "Zone de contact 57" ***********
+             Real Constant Set For Above Contact Is 378 & 377
+ *********** Create Contact "Zone de contact 58" ***********
+             Real Constant Set For Above Contact Is 380 & 379
+ *********** Create Contact "Zone de contact 59" ***********
+             Real Constant Set For Above Contact Is 382 & 381
+ *********** Create Contact "Zone de contact 60" ***********
+             Real Constant Set For Above Contact Is 384 & 383
+ *********** Create Contact "Zone de contact 61" ***********
+             Real Constant Set For Above Contact Is 386 & 385
+ *********** Create Contact "Zone de contact 62" ***********
+             Real Constant Set For Above Contact Is 388 & 387
+ *********** Create Contact "Zone de contact 63" ***********
+             Real Constant Set For Above Contact Is 390 & 389
+ *********** Create Contact "Zone de contact 64" ***********
+             Real Constant Set For Above Contact Is 392 & 391
+ *********** Create Contact "Zone de contact 65" ***********
+             Real Constant Set For Above Contact Is 394 & 393
+ *********** Create Contact "Zone de contact 66" ***********
+             Real Constant Set For Above Contact Is 396 & 395
+ *********** Create Contact "Zone de contact 67" ***********
+             Real Constant Set For Above Contact Is 398 & 397
+ *********** Create Contact "Zone de contact 68" ***********
+             Real Constant Set For Above Contact Is 400 & 399
+ *********** Create Contact "Zone de contact 69" ***********
+             Real Constant Set For Above Contact Is 402 & 401
+ *********** Create Contact "Zone de contact 70" ***********
+             Real Constant Set For Above Contact Is 404 & 403
+ *********** Create Contact "Zone de contact 71" ***********
+             Real Constant Set For Above Contact Is 406 & 405
+ *********** Create Contact "Zone de contact 72" ***********
+             Real Constant Set For Above Contact Is 408 & 407
+ *********** Create Contact "Zone de contact 73" ***********
+             Real Constant Set For Above Contact Is 410 & 409
+ *********** Create Contact "Zone de contact 74" ***********
+             Real Constant Set For Above Contact Is 412 & 411
+ *********** Create Contact "Zone de contact 75" ***********
+             Real Constant Set For Above Contact Is 414 & 413
+ *********** Create Contact "Zone de contact 76" ***********
+             Real Constant Set For Above Contact Is 416 & 415
+ *********** Create Contact "Zone de contact 77" ***********
+             Real Constant Set For Above Contact Is 418 & 417
+ *********** Create Contact "Zone de contact 78" ***********
+             Real Constant Set For Above Contact Is 420 & 419
+ *********** Create Contact "Zone de contact 79" ***********
+             Real Constant Set For Above Contact Is 422 & 421
+ *********** Create Contact "Zone de contact 80" ***********
+             Real Constant Set For Above Contact Is 424 & 423
+ *********** Create Contact "Zone de contact 81" ***********
+             Real Constant Set For Above Contact Is 426 & 425
+ *********** Create Contact "Zone de contact 82" ***********
+             Real Constant Set For Above Contact Is 428 & 427
+ *********** Create Contact "Zone de contact 83" ***********
+             Real Constant Set For Above Contact Is 430 & 429
+ *********** Create Contact "Zone de contact 84" ***********
+             Real Constant Set For Above Contact Is 432 & 431
+ *********** Create Contact "Zone de contact 85" ***********
+             Real Constant Set For Above Contact Is 434 & 433
+ *********** Create Contact "Zone de contact 86" ***********
+             Real Constant Set For Above Contact Is 436 & 435
+ *********** Create Contact "Zone de contact 87" ***********
+             Real Constant Set For Above Contact Is 438 & 437
+ *********** Create Contact "Zone de contact 88" ***********
+             Real Constant Set For Above Contact Is 440 & 439
+ *********** Create Contact "Zone de contact 89" ***********
+             Real Constant Set For Above Contact Is 442 & 441
+ *********** Create Contact "Zone de contact 90" ***********
+             Real Constant Set For Above Contact Is 444 & 443
+ *********** Create Contact "Zone de contact 91" ***********
+             Real Constant Set For Above Contact Is 446 & 445
+ *********** Create Contact "Zone de contact 92" ***********
+             Real Constant Set For Above Contact Is 448 & 447
+ *********** Create Contact "Zone de contact 93" ***********
+             Real Constant Set For Above Contact Is 450 & 449
+ *********** Create Contact "Zone de contact 94" ***********
+             Real Constant Set For Above Contact Is 452 & 451
+ *********** Create Contact "Zone de contact 95" ***********
+             Real Constant Set For Above Contact Is 454 & 453
+ *********** Create Contact "Zone de contact 96" ***********
+             Real Constant Set For Above Contact Is 456 & 455
+ *********** Create Contact "Zone de contact 97" ***********
+             Real Constant Set For Above Contact Is 458 & 457
+ *********** Create Contact "Zone de contact 98" ***********
+             Real Constant Set For Above Contact Is 460 & 459
+ *********** Create Contact "Zone de contact 99" ***********
+             Real Constant Set For Above Contact Is 462 & 461
+ *********** Create Contact "Zone de contact 100" ***********
+             Real Constant Set For Above Contact Is 464 & 463
+ *********** Create Contact "Zone de contact 101" ***********
+             Real Constant Set For Above Contact Is 466 & 465
+ *********** Create Contact "Zone de contact 102" ***********
+             Real Constant Set For Above Contact Is 468 & 467
+ *********** Create Contact "Zone de contact 103" ***********
+             Real Constant Set For Above Contact Is 470 & 469
+ *********** Create Contact "Zone de contact 104" ***********
+             Real Constant Set For Above Contact Is 472 & 471
+ *********** Create Contact "Zone de contact 105" ***********
+             Real Constant Set For Above Contact Is 474 & 473
+ *********** Create Contact "Zone de contact 106" ***********
+             Real Constant Set For Above Contact Is 476 & 475
+ *********** Create Contact "Zone de contact 107" ***********
+             Real Constant Set For Above Contact Is 478 & 477
+ *********** Create Contact "Zone de contact 108" ***********
+             Real Constant Set For Above Contact Is 480 & 479
+ *********** Create Contact "Zone de contact 109" ***********
+             Real Constant Set For Above Contact Is 482 & 481
+ *********** Create Contact "Zone de contact 110" ***********
+             Real Constant Set For Above Contact Is 484 & 483
+ *********** Create Contact "Zone de contact 111" ***********
+             Real Constant Set For Above Contact Is 486 & 485
+ *********** Create Contact "Zone de contact 112" ***********
+             Real Constant Set For Above Contact Is 488 & 487
+ *********** Create Contact "Zone de contact 113" ***********
+             Real Constant Set For Above Contact Is 490 & 489
+ *********** Create Contact "Zone de contact 114" ***********
+             Real Constant Set For Above Contact Is 492 & 491
+ *********** Create Contact "Zone de contact 115" ***********
+             Real Constant Set For Above Contact Is 494 & 493
+ *********** Create Contact "Zone de contact 116" ***********
+             Real Constant Set For Above Contact Is 496 & 495
+ *********** Create Contact "Zone de contact 117" ***********
+             Real Constant Set For Above Contact Is 498 & 497
+ *********** Create Contact "Zone de contact 118" ***********
+             Real Constant Set For Above Contact Is 500 & 499
+ *********** Create Contact "Zone de contact 119" ***********
+             Real Constant Set For Above Contact Is 502 & 501
+ *********** Create Contact "Zone de contact 120" ***********
+             Real Constant Set For Above Contact Is 504 & 503
+ *********** Create Contact "Zone de contact 121" ***********
+             Real Constant Set For Above Contact Is 506 & 505
+ *********** Create Contact "Zone de contact 122" ***********
+             Real Constant Set For Above Contact Is 508 & 507
+ *********** Create Contact "Zone de contact 123" ***********
+             Real Constant Set For Above Contact Is 510 & 509
+ *********** Create Contact "Zone de contact 124" ***********
+             Real Constant Set For Above Contact Is 512 & 511
+ *********** Create Contact "Zone de contact 125" ***********
+             Real Constant Set For Above Contact Is 514 & 513
+ *********** Create Contact "Zone de contact 126" ***********
+             Real Constant Set For Above Contact Is 516 & 515
+ *********** Create Contact "Zone de contact 127" ***********
+             Real Constant Set For Above Contact Is 518 & 517
+ *********** Create Contact "Zone de contact 128" ***********
+             Real Constant Set For Above Contact Is 520 & 519
+ *********** Create Contact "Zone de contact 129" ***********
+             Real Constant Set For Above Contact Is 522 & 521
+ *********** Create Contact "Zone de contact 130" ***********
+             Real Constant Set For Above Contact Is 524 & 523
+ *********** Create Contact "Zone de contact 131" ***********
+             Real Constant Set For Above Contact Is 526 & 525
+ *********** Create Contact "Zone de contact 132" ***********
+             Real Constant Set For Above Contact Is 528 & 527
+ *********** Create Contact "Zone de contact 133" ***********
+             Real Constant Set For Above Contact Is 530 & 529
+ *********** Create Contact "Zone de contact 134" ***********
+             Real Constant Set For Above Contact Is 532 & 531
+ *********** Create Contact "Zone de contact 135" ***********
+             Real Constant Set For Above Contact Is 534 & 533
+ *********** Create Contact "Zone de contact 136" ***********
+             Real Constant Set For Above Contact Is 536 & 535
+ *********** Create Contact "Zone de contact 137" ***********
+             Real Constant Set For Above Contact Is 538 & 537
+ *********** Create Contact "Zone de contact 138" ***********
+             Real Constant Set For Above Contact Is 540 & 539
+ *********** Create Contact "Zone de contact 139" ***********
+             Real Constant Set For Above Contact Is 542 & 541
+ *********** Create Contact "Zone de contact 140" ***********
+             Real Constant Set For Above Contact Is 544 & 543
+ *********** Create Contact "Zone de contact 141" ***********
+             Real Constant Set For Above Contact Is 546 & 545
+ *********** Create Contact "Zone de contact 142" ***********
+             Real Constant Set For Above Contact Is 548 & 547
+ *********** Create Contact "Zone de contact 143" ***********
+             Real Constant Set For Above Contact Is 550 & 549
+ *********** Create Contact "Zone de contact 144" ***********
+             Real Constant Set For Above Contact Is 552 & 551
+ *********** Create Contact "Zone de contact 145" ***********
+             Real Constant Set For Above Contact Is 554 & 553
+ *********** Create Contact "Zone de contact 146" ***********
+             Real Constant Set For Above Contact Is 556 & 555
+ *********** Create Contact "Zone de contact 147" ***********
+             Real Constant Set For Above Contact Is 558 & 557
+ *********** Create Contact "Zone de contact 148" ***********
+             Real Constant Set For Above Contact Is 560 & 559
+ *********** Create Contact "Zone de contact 149" ***********
+             Real Constant Set For Above Contact Is 562 & 561
+ *********** Create Contact "Zone de contact 150" ***********
+             Real Constant Set For Above Contact Is 564 & 563
+ *********** Create Contact "Zone de contact 151" ***********
+             Real Constant Set For Above Contact Is 566 & 565
+ *********** Create Contact "Zone de contact 152" ***********
+             Real Constant Set For Above Contact Is 568 & 567
+ *********** Create Contact "Zone de contact 153" ***********
+             Real Constant Set For Above Contact Is 570 & 569
+ *********** Create Contact "Zone de contact 154" ***********
+             Real Constant Set For Above Contact Is 572 & 571
+ *********** Create Contact "Zone de contact 155" ***********
+             Real Constant Set For Above Contact Is 574 & 573
+ *********** Create Contact "Zone de contact 156" ***********
+             Real Constant Set For Above Contact Is 576 & 575
+ *********** Create Contact "Zone de contact 157" ***********
+             Real Constant Set For Above Contact Is 578 & 577
+ *********** Create Contact "Zone de contact 158" ***********
+             Real Constant Set For Above Contact Is 580 & 579
+ *********** Create Contact "Zone de contact 159" ***********
+             Real Constant Set For Above Contact Is 582 & 581
+ *********** Create Contact "Zone de contact 160" ***********
+             Real Constant Set For Above Contact Is 584 & 583
+ *********** Create Contact "Zone de contact 161" ***********
+             Real Constant Set For Above Contact Is 586 & 585
+ *********** Create Contact "Zone de contact 162" ***********
+             Real Constant Set For Above Contact Is 588 & 587
+ *********** Create Contact "Zone de contact 163" ***********
+             Real Constant Set For Above Contact Is 590 & 589
+ *********** Create Contact "Zone de contact 164" ***********
+             Real Constant Set For Above Contact Is 592 & 591
+ *********** Create Contact "Zone de contact 165" ***********
+             Real Constant Set For Above Contact Is 594 & 593
+ *********** Create Contact "Zone de contact 166" ***********
+             Real Constant Set For Above Contact Is 596 & 595
+ *********** Create Contact "Zone de contact 167" ***********
+             Real Constant Set For Above Contact Is 598 & 597
+ *********** Create Contact "Zone de contact 168" ***********
+             Real Constant Set For Above Contact Is 600 & 599
+ *********** Create Contact "Zone de contact 169" ***********
+             Real Constant Set For Above Contact Is 602 & 601
+ *********** Create Contact "Zone de contact 170" ***********
+             Real Constant Set For Above Contact Is 604 & 603
+ *********** Create Contact "Zone de contact 171" ***********
+             Real Constant Set For Above Contact Is 606 & 605
+ *********** Create Contact "Zone de contact 172" ***********
+             Real Constant Set For Above Contact Is 608 & 607
+ *********** Create Contact "Zone de contact 173" ***********
+             Real Constant Set For Above Contact Is 610 & 609
+ *********** Create Contact "Zone de contact 174" ***********
+             Real Constant Set For Above Contact Is 612 & 611
+ *********** Create Contact "Zone de contact 175" ***********
+             Real Constant Set For Above Contact Is 614 & 613
+ *********** Create Contact "Zone de contact 176" ***********
+             Real Constant Set For Above Contact Is 616 & 615
+ *********** Create Contact "Zone de contact 177" ***********
+             Real Constant Set For Above Contact Is 618 & 617
+ *********** Create Contact "Zone de contact 178" ***********
+             Real Constant Set For Above Contact Is 620 & 619
+ *********** Create Contact "Zone de contact 179" ***********
+             Real Constant Set For Above Contact Is 622 & 621
+ *********** Create Contact "Zone de contact 180" ***********
+             Real Constant Set For Above Contact Is 624 & 623
+ *********** Send Named Selection as Element Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Element Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Element Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Element Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Element Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Element Component ***********
+ *********** Send Named Selection as Node Component ***********
+ *********** Send Named Selection as Node Component ***********
+ ****** Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt ******
+
+ *** FATAL ***                           ELAPSED TIME =       8.973   TIME= 16:44:28
+ PCB bolt exceeded its reserved node range.  Run stopped.                
+
+ ALL CURRENT MAPDL DATA WRITTEN TO FILE NAME= ansabort.db
+  FOR POSSIBLE RESUME FROM THIS POINT
+
+ ************************************************************************
+ The above error is non-recoverable by ANSYS                             
+  ANSYS run terminated by the indicated error                            
+  Current data base saved if possible.                                   
+ ************************************************************************

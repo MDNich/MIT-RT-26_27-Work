@@ -1,0 +1,56 @@
+<Part PartType='Nut'>
+  <Description>Example Nut</Description>
+
+  <Inputs>
+    <Pre>
+      <Input ApdlName='HeadType' Description='Head Type' Type='Text'>Hex</Input>
+      <Input ApdlName='Radius' Description='Radius' Type='Quantity' QuantityName = 'Length'>5.788 [mm]</Input>
+      <Input ApdlName='Height' Description='height' Type='Quantity' QuantityName = 'Length'>5 [mm]</Input>
+      <Input ApdlName='mu' Description='Frictional Coef' Type='Float'>0.1</Input>
+    </Pre>
+    <Solve>
+    </Solve>
+    <Post>
+    </Post>
+  </Inputs>
+
+  <GraphicsDisplay>
+    <Nut Radius='Radius' Height='Height' HeadType='HeadType' Red='100' Green='100'></Nut>
+  </GraphicsDisplay>
+
+  <ApdlInputFiles>
+    <Pre>
+      <Part>
+        <!-- Add Nodes/Elems and mat & Elem Types in "Part" level -->
+        <File CopyAs=''>Mat_StructuralSteel.mac</File>
+        <File CopyAs=''>MoveAndCopyElements.mac</File>
+        <File SendOnceOnly='true'>DummyFile.inp</File>
+        <UpdateMechRefIds AttributeName='Setup'/>
+        <File>NutSetup1.inp</File>
+        <File IterateBlockIds='true'>FE_Nut.inp</File>
+        <File>NutSetup2.inp</File>
+        <IterateMechRefIds Node='6216' Element='1218' PerCoordinateSystem='true'/>
+      </Part>
+      <Assembly>
+        <!-- Do Contacts at "Assembly" level -->
+        <File CopyAs=''>Contact_CreateTypes.mac</File>
+        <File CopyAs=''>Contact_CreateFromCylCoords.mac</File>
+        <UpdateMechRefIds AttributeName='Contacts'/>
+        <File>RunCreateNutContacts.inp</File><!-- Creates flat Contact/Target, Thread is done by bolt.-->
+        <IterateMechRefIds Element='2000' Type='2' PerCoordinateSystem='true'/>
+      </Assembly>
+    </Pre>
+    <Solve>
+      <Part>
+      </Part>
+      <Assembly>
+      </Assembly>
+    </Solve>
+    <Post>
+      <Part>
+      </Part>
+      <Assembly>
+      </Assembly>
+    </Post>
+  </ApdlInputFiles>
+</Part>

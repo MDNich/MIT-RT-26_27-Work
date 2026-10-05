@@ -1,0 +1,60 @@
+/COM, Create Pretension loads for bolt assembly.
+/PREP7
+*GET,NumCs,PARM,_ApdlBoltCsIds,DIM,1
+!Loop through CS Ids and establish contacts
+Type = _MechElemTypeId
+ALLSEL,ALL,ALL
+*DIM,PreTenPilotNds_%_MechObjId%,ARRAY,NumCs
+*DO,i,1,NumCs
+    CSYS,0
+    !Make Pilot node at local Pretension CS.
+    ALLSEL,ALL,ALL
+    *GET,MaxNodeId,NODE,0,NUM,MAX
+    NodeId = MaxNodeId+1
+    N,NodeId,0,0,0
+    NSEL,S,NODE,,NodeId
+    CM,'PretenPilotNd_%CsId%',NODE
+    PreTenPilotNds_%_MechObjId%(i) = NodeId
+
+    CsId = _ApdlBoltCsIds(i)
+    /COM, Create Pretension loads for assembly at CS: %CsId%
+
+    CSYS,CsId
+    *Get,CsMaxNum,CDSY,0,NUM,MAX
+    PreTensionCs = CsMaxNum+1
+    CLOCAL,PreTensionCs,0,0,0,PreloadLoc+_BoltZLoc
+    NMOD,NodeId,0,0,0,,,,1      ! move pretension node to bolt center, don't update centroid
+
+    et,Type,179
+    type,Type
+    real,Type
+    mat,Type
+    secnum,Type
+    CMSEL,S,'Bolt_%CsId%'
+
+    !Do the meshing of the section.
+    *get,_echck1,elem,,num,max    ! make sure psmesh command was successful 
+    psmesh,Type,,NodeId,all,,PreTensionCs,z,0.0,,0,Type,'PretenEl_%CsId%','PretenNd_%CsId%'
+
+    *get,_echck2,elem,,num,max    ! make sure psmesh command was successful 
+    *if,_echck1,eq,_echck2,then
+      *msg,error
+      THE PRETENSION LOAD WAS NOT ABLE TO BE APPLIED. & 
+      MAKE SURE THE LOAD WAS NOT APPLIED TO A HOLE AND THAT &
+      THE LOAD IS NOT APPLIED MORE THAN ONCE PER SURFACE
+    *endif
+
+    Type=Type+1
+*ENDDO
+
+
+NSEL,U,NODE,,ALL
+*DO,i,1,NumCs
+    NSEL,A,NODE,,PreTenPilotNds_%_MechObjId%(i)
+*ENDDO
+/COM, Createa a component of all the pilot nodes - PreTenPilotNds_%_MechObjId%
+CM,PreTenPilotNds_%_MechObjId%,NODE
+
+ALLSEL,ALL,ALL
+csys,0
+/SOLU

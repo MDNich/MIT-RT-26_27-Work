@@ -1,0 +1,25 @@
+<Part PartType="Bolt">
+  <Description>Existing power-board solid bolt: rigid PCB anchorage, 670 N pretension, then locked length. No added bolt geometry or mass.</Description>
+  <Inputs>
+    <Pre>
+      <Input Description="Project bolt setting" ApdlName="PBCutZ" Type="Quantity" QuantityName="Length">-2 [mm]</Input>
+      <Input Description="Project bolt setting" ApdlName="PBTopZ" Type="Quantity" QuantityName="Length">-1 [mm]</Input>
+      <Input Description="Project bolt setting" ApdlName="PBMaxZ" Type="Quantity" QuantityName="Length">2 [mm]</Input>
+      <Input Description="Project bolt setting" ApdlName="PBPinb" Type="Quantity" QuantityName="Length">1.5 [mm]</Input>
+    </Pre>
+    <Solve><Input Description="Project bolt setting" ApdlName="PBLoad" Type="Quantity" QuantityName="Force">670 [N]</Input></Solve>
+    <Post/>
+  </Inputs>
+  <GraphicsDisplay/>
+  <ApdlInputFiles>
+    <Pre><Part/>
+      <Assembly>
+        <UpdateMechRefIds AttributeName="PCBPreload"/>
+        <File>PCB_ExistingBolt_Pre.inp</File>
+        <IterateMechRefIds Node="2000" Element="2000" Type="3" PerCoordinateSystem="true"/>
+      </Assembly>
+    </Pre>
+    <Solve><Part/><Assembly><File>PCB_ExistingBolt_Load.inp</File></Assembly></Solve>
+    <Post><Part/><Assembly/></Post>
+  </ApdlInputFiles>
+</Part>

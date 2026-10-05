@@ -1,0 +1,79 @@
+
+DATAMODEL: <type 'MechanicalDataModel'>
+AddSessionVariable, AnalysisById, AnalysisByName, AnalysisList, AnalysisNames, AreEqual, CleanUp, ComponentById, Components, CoordinateSystemById, CoordinateSystems, CreateChild, CreateObjRef, CreateObject, CreateObjectCommand, CurrentConsistentUnitFromQuantityName, CurrentUnitFromQuantityName, DataModelObject, Delete, DeleteSessionVariable, DummyNodeRemoveAndFillObjects, EngineeringData, Equals, GeoData, GetHashCode, GetLifetimeService, GetObjectById, GetObjectsByName, GetObjectsByType, GetSessionVariableValue, GetType, GetUserObjectById, GetUserObjects, InitializeLifetimeService, Instance, InternalDataObjects, InternalObject, MemberwiseClone, MeshDataByName, MeshDataNames, ObjectIdentifier, ObjectLocation, ObjectTags, ObjectType, Parent, Project, RecomputeState, ReferenceEquals, Remove, ShouldSuspendStateEngineForDelete, SupportedLocations, Suppress, ToString, Tree, Unsuppress, WorkingDir, __class__, __delattr__, __doc__, __format__, __getattribute__, __hash__, __init__, __new__, __reduce__, __reduce_ex__, __repr__, __setattr__, __sizeof__, __str__, __subclasshook__
+Ansys.ACT.Interfaces.UserObject.IUserObject GetUserObjectById(Int32)
+System.Collections.Generic.IEnumerable`1[Ansys.ACT.Interfaces.UserObject.IUserObject] GetUserObjects(System.String)
+System.Collections.Generic.IEnumerable`1[Ansys.ACT.Interfaces.UserObject.IUserObject] GetUserObjects(Ansys.ACT.Interfaces.Common.IExtension)
+System.Collections.Generic.IList`1[System.String] get_AnalysisNames()
+System.Collections.Generic.IList`1[Ansys.ACT.Interfaces.Analysis.IAnalysis] get_AnalysisList()
+Ansys.ACT.Interfaces.Analysis.IAnalysis AnalysisByName(System.String)
+Ansys.ACT.Interfaces.Analysis.IAnalysis AnalysisById(Int32)
+Ansys.ACT.Interfaces.UserObject.IUserObject CreateChild(System.String, Ansys.ACT.Interfaces.Common.IExtension, System.Object)
+
+MODEL: <type 'Model'>
+AEDTImportManager, AMProcess, Accept, Activate, AddAIShapeClusterGroup, AddAMProcess, AddBodyMergeSequence, AddBoundaryConditionsGroup, AddChart, AddCoSimulationPin, AddComment, AddCompositeFailureCriteria, AddCondensedGeometry, AddConnections, AddConstructionGeometry, AddCoordinateSystemInternal, AddCoupledFieldHarmonic, AddCoupledFieldModal, AddCoupledFieldStatic, AddCoupledFieldTransient, AddCrossSections, AddDesignAssessmentAnalysis, AddDesignLifeAnalysis, AddEigenvalueBucklingAnalysis, AddElectricAnalysis, AddExplicitDynamicsAnalysis, AddFatigueCombination, AddFeatureDetection, AddFigure, AddForcedResponseAnalysis, AddFracture, AddGeometryImportGroup, AddHarmonicAcousticAnalysis, AddHarmonicResponseAnalysis, AddImage, AddImagePlane, AddLSDynaAcousticsAnalysis, AddLSDynaAnalysis, AddLSDynaRestartAnalysis, AddMagnetostaticAnalysis, AddMeasures, AddMeshEdit, AddMeshNumbering, AddMeshWorkflowGroup, AddModalAcousticAnalysis, AddModalAnalysis, AddMotionAnalysis, AddNamedSelection, AddNamedSelectionFromSelectedConnections, AddParameterVariableGroup, AddPartTransform, AddPythonCodeEventBased, AddPythonResult, AddRandomVibrationAnalysis, AddRemotePoint, AddRemotePointInternal, AddResponseSpectrumAnalysis, AddRigidDynamicsAnalysis, AddSolutionCombination, AddStaticAcousticAnalysis, AddStaticStructuralAnalysis, AddSteadyStateThermalAnalysis, AddSubstructureGenerationAnalysis, AddSymmetry, AddTableGroup, AddThermalElectricAnalysis, AddTopologyOptimizationAnalysis, AddTransientStructuralAnalysis, AddTransientThermalAnalysis, AddTreeGroupingFolder, AddVirtualTopology, Ambient, Analyses, AttachedRefs, AutoFilter, AwaitObjectDuplicate, BaseObject, BodyMergeSequence, BoundaryConditionsGroup, CellId, CenterOfMass, Children, ClearGeneratedData, ClsId, Color, Comments, CondensedGeometry, Connections, ConstructionGeometry, Control, CoordinateSystems, CopyTo, CreateCylindricalBolt, CreateCylindricalNut, CreateHexBolt, CreateHexNut, CreateObjRef, CreateParameter, CreatePartInstance, CrossSections, DataModelObjectCategory, DeleteParts, Diffuse, DisableFilter, Duplicate, Environments, Equals, EvaluateScriptDefinedResults, FeatureDetection, Figures, Fracture, FreezeMeshOnSelectedParts, Geometry, GeometryImportGroup, GetAPIName, GetAllFECommandsRepositoriesFullSourceFileIdentifiers, GetAllFECommandsRepositoriesFullSourceFileIdentifiersInputFiles, GetAllProperties, GetChildren, GetDetailsView, GetEnumName, GetFECommandsRepositoriesLocation, GetFECommandsRepositoriesNumberOfCopies, GetFECommandsRepository, GetHashCode, GetIconFile, GetLifetimeService, GetObjectData, GetParameter, GetPath, GetPropertyName, GetPropertyValue, GetResults, GetTransformationOnPart, GetType, GetVisibleProperties, GetVisiblePropertyNames, GroupAllSimilarChildren, GroupSimilarObjects, GroupingFolder, HasDetermined2D3D, IconName, Images, ImportModelFromDisco, ImportedReinforcements, InitializeLifetimeService, InternalObject, Is2DGeometry, IsPropertyEditable, IsPropertyVisible, LoadResultFile, Materials, Measures, MemberwiseClone, Mesh, MeshEdit, MeshNumbering, MeshWorkflowGroup, Name, NamedSelections, ObjectId, ObjectState, ObjectTags, ParameterVariableGroup, Parent, PartTransformGroup, Properties, PropertyByAPIName, PropertyById, PropertyByName, ReferenceEquals, RefreshMaterials, RemotePoints, RemoveParameter, ReplaceGeometryAndMesh, SendGeometrySelectionFromActiveObjectsToMeshWorkflowByType, SendGeometrySelectionFromGraphicsToMeshWorkflowByType, SetTransformationOnPart, Solve, Specular, State, Symmetry, SystemCaption, TableGroup, ToString, UnfreezeMeshOnSelectedParts, UpdateGeometryFromSource, VirtualTopology, VisibleProperties, __class__, __delattr__, __doc__, __eq__, __format__, __getattribute__, __hash__, __init__, __new__, __reduce__, __reduce_ex__, __repr__, __setattr__, __sizeof__, __str__, __subclasshook__, _selMgr
+System.Collections.Generic.IList`1[Ansys.Mechanical.DataModel.Interfaces.IDataModelObject] get_Children()
+System.Collections.Generic.IList`1[ChildrenType] GetChildren[ChildrenType](Boolean, System.Collections.Generic.IList`1[ChildrenType])
+System.Collections.Generic.IList`1[Ansys.Mechanical.DataModel.Interfaces.IDataModelObject] GetChildren(Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory, Boolean, System.Collections.Generic.IList`1[Ansys.Mechanical.DataModel.Interfaces.IDataModelObject])
+Ansys.ACT.Automation.Mechanical.Analysis AddStaticStructuralAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddTransientStructuralAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddRigidDynamicsAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddHarmonicResponseAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddModalAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddSubstructureGenerationAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddExplicitDynamicsAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddSteadyStateThermalAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddTransientThermalAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddMagnetostaticAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddElectricAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddDesignAssessmentAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddThermalElectricAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddModalAcousticAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddHarmonicAcousticAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddStaticAcousticAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddTopologyOptimizationAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddEigenvalueBucklingAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddResponseSpectrumAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddRandomVibrationAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddLSDynaAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddLSDynaRestartAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddLSDynaAcousticsAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddMotionAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddDesignLifeAnalysis()
+Ansys.ACT.Automation.Mechanical.Analysis AddForcedResponseAnalysis()
+Void GroupAllSimilarChildren()
+EXT LSDYNA 5f463412-bd3e-484b-87e7-cbc0a665e474
+EXT ANSYSMotion 20180725-3f81-49eb-9f31-41364844c769
+EXT Sherlock_App 22267810-43dd-444c-b69c-948d1736da5a
+EXT BoltTools e58f9c27-8401-45e5-83b8-72af00fdd1a2
+
+EXTENSION: <type 'MechanicalExtension'>
+AddAssemblyToScope, AddVariable, AllCreatedObjects, ApplicationContext, ApplicationDefinitions, Assemblies, Attributes, CleanUp, CreateObjectController, CreateOrUseModule, CreateStaticMethodInfo, CreateWizardDefinition, CurrentAssembly, DataModel, DatabaseIdentifier, DefaultReturnFalseCb, DefaultReturnTrueCb, Definition, Engine, Equals, ExecuteCommand, ExecuteFile, ExtensionAPI, FindImage, GetAttributeValue, GetAttributeValueAsString, GetFilterCB, GetFilterDefinitionByName, GetHashCode, GetImageDirectories, GetModule, GetPostCommands, GetPreCommands, GetReader, GetSolveCommands, GetSourceFiles, GetType, Id, Identifier, Init, InitUserInterface, InstallDir, Interface, LoadFromBuffer, LoadFromString, LogErrorMessage, MemberwiseClone, MinorVersion, Name, RaiseOnAfterGeometryUpdate, RaiseOnBodySuppressStateChange, RaiseOnReady, RaiseOnUnitsChanged, ReadImageDataModel, Reader, ReferenceEquals, ReplaceControlsUsingTemplates, SaveToBuffer, SaveToString, ScriptEngine, ScriptEngineScope, ScriptEngineType, ScriptScope, ScriptingEngine, SetAttributeValue, SetAttributeValueWithSync, SetUsedFor, SetupScripting, SimulationDataManager, ToString, UniqueId, UpdateAttributes, Used, Version, WizardDefinitions, Workflows, __class__, __delattr__, __doc__, __format__, __getattribute__, __hash__, __init__, __new__, __reduce__, __reduce_ex__, __repr__, __setattr__, __sizeof__, __str__, __subclasshook__, _engine, _interface, _loadedCurrentWizard, _persistentWizards, _simulationDataManager, _tmpExt, _usedFor
+Ansys.ACT.Core.ExtensionAPI get_ExtensionAPI()
+Ansys.ACT.Core.ACTModule CreateOrUseModule(System.String)
+IronPython.Runtime.PythonModule GetModule()
+Void InitUserInterface()
+USER ApdlBoltManager APDL Bolt Manager 41
+
+USER OBJECT: <type 'MechanicalUserLoad'>
+Accept, Activate, AffectsSolution, AllChildrenProperties, AllProperties, Analysis, Attributes, Caption, Children, ChildrenProperties, Class, ClearSelectionBySubset, Color, Controller, CreateChild, CreateObjRef, DSAttachedObject, DataModelObjectCategory, Duplicate, Entity, Equals, Extension, GetAttributeValue, GetAttributeValueAsString, GetHashCode, GetLifetimeService, GetNewSubsetId, GetPath, GetType, GroupingFolder, Icon, Id, Import, InitializeLifetimeService, InternalCaption, InternalObject, IsLoad, IsSupport, MemberwiseClone, Name, NotifyChange, ObjectId, ObjectLocation, ObjectState, ObjectTags, ObjectType, Parent, Properties, PropertiesByNameDictionary, PropertyById, PropertyByName, PropertyByUniqueName, ReferenceEquals, SetAttributeValue, SetCoordinateSystem, SetDefaultSelection, SetSelectionBySubset, State, SupportedLocations, Suppressed, ToString, Version, __class__, __delattr__, __doc__, __eq__, __format__, __getattribute__, __hash__, __init__, __new__, __reduce__, __reduce_ex__, __repr__, __setattr__, __sizeof__, __str__, __subclasshook__
+Ansys.ACT.Interfaces.Common.IExtension get_Extension()
+System.Collections.Generic.IEnumerable`1[Ansys.ACT.Interfaces.UserObject.IUserObject] get_Children()
+Ansys.ACT.Interfaces.UserObject.IUserLoad CreateChild(System.String)
+Ansys.ACT.Interfaces.Analysis.IAnalysis get_Analysis()
+System.Collections.Generic.IList`1[Ansys.ACT.Interfaces.UserObject.ISimProperty] get_ChildrenProperties()
+System.Collections.Generic.IList`1[Ansys.ACT.Interfaces.UserObject.ISimProperty] get_AllChildrenProperties()
+
+CONTROLLER: <type 'instance'>
+AnsysObj, GetMechanicalObj, __doc__, __init__, __module__, oninit, onremove
+
+CONTROLLER ANSYSOBJ: <type 'MechanicalUserLoad'>
+Accept, Activate, AffectsSolution, AllChildrenProperties, AllProperties, Analysis, Attributes, Caption, Children, ChildrenProperties, Class, ClearSelectionBySubset, Color, Controller, CreateChild, CreateObjRef, DSAttachedObject, DataModelObjectCategory, Duplicate, Entity, Equals, Extension, GetAttributeValue, GetAttributeValueAsString, GetHashCode, GetLifetimeService, GetNewSubsetId, GetPath, GetType, GroupingFolder, Icon, Id, Import, InitializeLifetimeService, InternalCaption, InternalObject, IsLoad, IsSupport, MemberwiseClone, Name, NotifyChange, ObjectId, ObjectLocation, ObjectState, ObjectTags, ObjectType, Parent, Properties, PropertiesByNameDictionary, PropertyById, PropertyByName, PropertyByUniqueName, ReferenceEquals, SetAttributeValue, SetCoordinateSystem, SetDefaultSelection, SetSelectionBySubset, State, SupportedLocations, Suppressed, ToString, Version, __class__, __delattr__, __doc__, __eq__, __format__, __getattribute__, __hash__, __init__, __new__, __reduce__, __reduce_ex__, __repr__, __setattr__, __sizeof__, __str__, __subclasshook__
+Ansys.ACT.Interfaces.Common.IExtension get_Extension()
+System.Collections.Generic.IEnumerable`1[Ansys.ACT.Interfaces.UserObject.IUserObject] get_Children()
+Ansys.ACT.Interfaces.UserObject.IUserLoad CreateChild(System.String)
+Ansys.ACT.Interfaces.Analysis.IAnalysis get_Analysis()
+System.Collections.Generic.IList`1[Ansys.ACT.Interfaces.UserObject.ISimProperty] get_ChildrenProperties()
+System.Collections.Generic.IList`1[Ansys.ACT.Interfaces.UserObject.ISimProperty] get_AllChildrenProperties()
+ANALYSIS Modale Modal
+READ_ONLY_COMPLETE

@@ -1,0 +1,15 @@
+! Static step 1: tensile preload. Step 2: lock achieved adjustment.
+! Prestressed modal obtains the locked state from its linked static solution.
+*GET,PBAnalysis,ACTIVE,0,SOLU,ANTYPE
+*IF,PBAnalysis,EQ,0,THEN
+PBPN=PBPilot%PBIndex%
+*IF,_MechAnalysisStep,EQ,1,THEN
+F,PBPN,FX,PBLoad
+/COM,PCB_BOLT_%PBIndex% PRELOAD %PBLoad% N
+*ELSEIF,_MechAnalysisStep,GT,1,THEN
+FDELE,PBPN,FX
+D,PBPN,UX,%_FIX%
+/COM,PCB_BOLT_%PBIndex% LOCK
+*ENDIF
+*ENDIF
+ALLSEL,ALL

@@ -1,0 +1,23 @@
+/PREP7
+*GET,NumCs,PARM,_ApdlBoltCsIds,DIM,1
+!Loop through CS Ids and establish contacts
+Type = _MechElemTypeId
+*DO,i,1,NumCs
+    CsId = _ApdlBoltCsIds(i)
+    CompName = '%PartNameInAssembly%_%CsId%'        !Name convention from when created.
+
+    !This is the interface between the washer and non-bolt part
+    *IF,PartNameInAssembly,EQ,'BoltWasher',THEN
+      Z = 0
+    *ELSE
+      Z = _NutWasherZLoc
+    *ENDIF
+    ZTol = 0.01
+    RTol = 2  !Use Radius*RTol for radial selection.
+
+    *USE,'Contact_CreateTypes.mac',FrictCoef,Type   !Creates cid,tid
+    *USE,Contact_CreateFromCylCoords.mac,Z-ZTol,Z+ZTol,0,Radius*RTol,CompName,cid,tid,CsId,1
+    Type=Type+2
+*ENDDO
+
+

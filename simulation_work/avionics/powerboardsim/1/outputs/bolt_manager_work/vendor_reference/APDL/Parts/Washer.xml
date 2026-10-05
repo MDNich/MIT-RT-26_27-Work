@@ -1,0 +1,53 @@
+<Part PartType='Washer'>
+  <Description>Washer 6.2735mm thick 7mm radius</Description>
+
+  <!--Inputs sent to APDL input file-->
+  <Inputs>
+    <Pre>
+      <Input ApdlName='Radius' Description='Radius' Type='Quantity' QuantityName = 'Length'>6.2735 [mm]</Input>
+      <Input ApdlName='Height' Description='height' Type='Quantity' QuantityName = 'Length'>1 [mm]</Input>
+      <Input ApdlName='mu' Description='Frictional Coef' Type='Float'>0.1</Input>
+    </Pre>
+    <Solve>
+    </Solve>
+    <Post>
+    </Post>
+  </Inputs>
+
+  <GraphicsDisplay>
+    <Washer Radius='Radius' Height='Height' Red='0' Green='200'></Washer>
+  </GraphicsDisplay>
+
+  <ApdlInputFiles>
+    <Pre>
+      <Part>
+        <File CopyAs=''>Mat_AluminumAlloy.mac</File>
+        <File CopyAs=''>MoveAndCopyElements.mac</File>
+        <UpdateMechRefIds AttributeName='Setup'/>
+        <File>WasherSetup1.inp</File>
+        <File IterateBlockIds='true'>FE_Washer.inp</File>
+        <File>WasherSetup2.inp</File>
+        <IterateMechRefIds Node='2600' Element='468' PerCoordinateSystem='true'/>
+      </Part>
+      <Assembly>
+        <File CopyAs=''>Contact_CreateTypes.mac</File>
+        <File CopyAs=''>Contact_CreateFromCylCoords.mac</File>
+        <UpdateMechRefIds AttributeName='Contacts'/>
+        <File>RunCreateWasherContacts.inp</File><!-- only non-bolt/nut contact.  bolt/nut contacts created by those parts.-->
+        <IterateMechRefIds Element='2000' Type='2' PerCoordinateSystem='true'/>
+      </Assembly>
+    </Pre>
+    <Solve>
+      <Part>
+      </Part>
+      <Assembly>
+      </Assembly>
+    </Solve>
+    <Post>
+      <Part>
+      </Part>
+      <Assembly>
+      </Assembly>
+    </Post>
+  </ApdlInputFiles>
+</Part>
