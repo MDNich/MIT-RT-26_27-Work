@@ -1,0 +1,40 @@
+Ansys.Mechanical.Graphics.ResultAnimationOptions
+Ansys.Common.Interop.Gfx.IDSGraphics _graphics
+Ansys.Common.Interop.DSGfx.IAnimationController _animationControl
+Void SetGfxStream(System.Object, IntPtr)
+Void SetResult(System.Object)
+Void SetPostData(System.Object)
+Int32 get_NumberOfFrames()
+Void set_NumberOfFrames(Int32)
+Double get_PlayLength()
+Void set_PlayLength(Double)
+Int32 get_ForwardBackwardMode()
+Void set_ForwardBackwardMode(Int32)
+Int16 get_AnimationStyle()
+Void set_AnimationStyle(Int16)
+Void set_DrawDuringCreation(Int32)
+Void resetNumberOfFrames()
+Boolean get_CanEngageMultiViewportAnimation()
+Boolean get_MultiViewportAnimation()
+Void set_MultiViewportAnimation(Boolean)
+Boolean get_AcceleratedAnimationWillBeUsed()
+Void Play()
+Void Pause()
+Void Stop()
+Void NextFrame()
+Void PreviousFrame()
+Int32 get_FrameNumber()
+Void set_FrameNumber(Int32)
+Int32 get_Animating()
+Int32 get_Paused()
+Void SaveToFile(System.String, Int32)
+Void set_KeepTemporaryAnimationFrameImages(Int32)
+Void SetExportStreamWidthHeight(Int32, Int32)
+Int32 get_NumberOfBMPFrames()
+Void SetTempAnimBMPFilesPath(System.String)
+Void SetFrameExportType(Int32)
+Void OnTerm()
+Ansys.Mechanical.Graphics.ResultPreference
+Ansys.Common.Interop.Gfx.IDSGraphics _graphics
+Ansys.Common.Interop.DSGUIState.IDSGUIState _guiState
+Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.DeformationScaling _defScaling

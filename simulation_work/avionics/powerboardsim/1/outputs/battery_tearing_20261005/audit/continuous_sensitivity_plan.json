@@ -1,0 +1,20 @@
+{
+  "status": "All cases prepared; no automatic structural queue. Currenttoleranceanalysisstillrunning.",
+  "nominal": "cont_nominal",
+  "refinement": "cont_fine (sameprotocol; fourfoldshellcount)",
+  "hardening": "cont_plateau",
+  "law_grid": [
+    "cont_e10u03",
+    "cont_e10u12",
+    "cont_e10u24",
+    "cont_e30u03",
+    "cont_nominal",
+    "cont_e30u24",
+    "cont_e60u03",
+    "cont_e60u12",
+    "cont_e60u24"
+  ],
+  "adaptive_requirement": "Inspect nominal response before sensitivity launches. If8mmdoesnotreachdamageorpeak, extend in a fresh validated sibling or verified restart continuation; do notinterpretendpointmaximumasrupture. Do notrepeatfailedsolves without diagnosis. AddnegativeXcomparison tocheckdirectioneffect.",
+  "acceptance": "Nativeconvergence+loadhistoryaudit+clamptransfer+forcebalance+finitefields. Report meshchange rather thanclaimconvergence fromonesize.",
+  "direction": "cont_minusx: generated and native preflight passed; unrun. Same physical model and1e-5 tolerance as strictcont_nominal, UXsign=-1."
+}

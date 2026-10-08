@@ -5,51 +5,52 @@
  = multifrontal statistics =
  ===========================
 
-     number of equations                     =          251382
-     no. of nonzeroes in lower triangle of a =        15400809
-     no. of nonzeroes in the factor l        =       103995440
-     ratio of nonzeroes in factor (min/max)  =          0.4270
-     number of super nodes                   =            7048
-     maximum order of a front matrix         =            1476
-     maximum size of a front matrix          =         1090026
-     maximum size of a front trapezoid       =         1090026
+     number of equations                     =         1071426
+     no. of nonzeroes in lower triangle of a =        78451842
+     no. of nonzeroes in the factor l        =       777596319
+     ratio of nonzeroes in factor (min/max)  =          0.4797
+     number of super nodes                   =           26115
+     maximum order of a front matrix         =            6111
+     maximum size of a front matrix          =        18675216
+     maximum size of a front trapezoid       =        13139088
      ParMETIS reordering method used (speed) 
-     no. of floating point ops for factor    =      6.4584D+10
-     no. of floating point ops for solve     =      3.9666D+08
-     ratio of flops for factor (min/max)     =          0.5617
-     ratio of allocated memory (max/min)     =          2.5781
-     number of positive pivots               =          251146
-     number of negative pivots               =             236
+     ParMETIS method 2 used
+     no. of floating point ops for factor    =      1.3986D+12
+     no. of floating point ops for solve     =      9.0456D+09
+     ratio of flops for factor (min/max)     =          0.6450
+     ratio of allocated memory (max/min)     =          1.8642
+     number of positive pivots               =         1071426
+     number of negative pivots               =               0
      number of near-zero pivots              =               0
      partial pivoting tolerance used         =      0.0000D+00
      factorization panel size                =             128
      number of processes used                =              12
      number of threads per process used      =               1
      number of cores used                    =              12
-     time (cpu & wall) for structure input   =        0.031250        0.018000
-     time (cpu & wall) for ordering          =        0.734375        0.787000
+     time (cpu & wall) for structure input   =        0.000000        0.078000
+     time (cpu & wall) for ordering          =       13.312500       15.190000
      time (cpu & wall) for other matrix prep =        0.000000        0.000000
      time (cpu & wall) for value input       =        0.000000        0.000000
-     time (cpu & wall) for matrix distrib.   =        0.328125        0.345000
-     time (cpu & wall) for numeric factor    =        0.734375        0.761000
-     computational rate (gflops) for factor  =       87.944354       84.867457
-     time (cpu & wall) for numeric solve     =        0.031250        0.026000
-     computational rate (gflops) for solve   =       12.692967       15.255970
-     effective I/O rate (GB/sec) for solve   =       47.288740       56.837428
+     time (cpu & wall) for matrix distrib.   =        7.359375        8.468000
+     time (cpu & wall) for numeric factor    =       62.062500       70.758000
+     computational rate (gflops) for factor  =       22.535615       19.766197
+     time (cpu & wall) for numeric solve     =        0.671875        0.734000
+     computational rate (gflops) for solve   =       13.463228       12.323714
+     effective I/O rate (GB/sec) for solve   =       50.158413       45.913057
 
      no input or output performed
 
-  Solver Memory allocated on core    0       =      125.429 MB
-  Solver Memory allocated on core    1       =      116.273 MB
-  Solver Memory allocated on core    2       =       77.433 MB
-  Solver Memory allocated on core    3       =       65.400 MB
-  Solver Memory allocated on core    4       =      129.311 MB
-  Solver Memory allocated on core    5       =      111.269 MB
-  Solver Memory allocated on core    6       =      121.456 MB
-  Solver Memory allocated on core    7       =      110.006 MB
-  Solver Memory allocated on core    8       =      111.322 MB
-  Solver Memory allocated on core    9       =       85.932 MB
-  Solver Memory allocated on core   10       =      104.275 MB
-  Solver Memory allocated on core   11       =      168.607 MB
-  Total Solver Memory allocated by all cores =     1326.713 MB
+  Solver Memory allocated on core    0       =      803.225 MB
+  Solver Memory allocated on core    1       =      625.030 MB
+  Solver Memory allocated on core    2       =     1001.700 MB
+  Solver Memory allocated on core    3       =      724.533 MB
+  Solver Memory allocated on core    4       =      586.830 MB
+  Solver Memory allocated on core    5       =      830.058 MB
+  Solver Memory allocated on core    6       =      681.365 MB
+  Solver Memory allocated on core    7       =      622.047 MB
+  Solver Memory allocated on core    8       =     1093.953 MB
+  Solver Memory allocated on core    9       =      647.517 MB
+  Solver Memory allocated on core   10       =      633.139 MB
+  Solver Memory allocated on core   11       =      818.753 MB
+  Total Solver Memory allocated by all cores =     9068.150 MB
 

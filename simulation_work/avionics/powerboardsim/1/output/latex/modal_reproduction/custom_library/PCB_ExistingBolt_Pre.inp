@@ -1,0 +1,83 @@
+! Existing solid bolt. PBBody/PBShaft/PBHole are geometry-based nodal components.
+! Intentional rigid attachment at PCB hole; clearance is bridged by MPC.
+! Pretension plane is below the PCB anchorage and above the screw-head seat.
+/PREP7
+ALLSEL,ALL
+CSYS,0
+PBPT=_MechElemTypeId
+PBTG=PBPT+1
+PBCT=PBPT+2
+PBPN=_MechNodeId
+PBPilot%PBIndex%=PBPN
+PBSection%PBIndex%=PBPT
+NUMSTR,NODE,_MechNodeId+1
+NUMSTR,ELEM,_MechElemId
+ET,PBPT,179
+N,PBPN,0,0,PBCutZ
+CMSEL,S,%PBBody%,ELEM
+NSLE,S
+ESEL,R,ENAME,,185,187
+*GET,PBCount,ELEM,0,COUNT
+*IF,PBCount,LT,1,THEN
+*MSG,FATAL
+PCB bolt body selection is empty. Run stopped.
+*ENDIF
+PSMESH,PBPT,,PBPN,ALL,,0,Z,PBCutZ,,0,PBPT
+ALLSEL,ALL
+ESEL,S,TYPE,,PBPT
+*GET,PBPreCount,ELEM,0,COUNT
+*IF,PBPreCount,LT,1,THEN
+*MSG,FATAL
+PCB bolt pretension cut produced no elements. Run stopped.
+*ENDIF
+! Target on existing upper shaft only, clear of the pretension section.
+ET,PBTG,170
+ET,PBCT,174
+R,PBCT
+RMODIF,PBCT,6,-PBPinb
+KEYOPT,PBCT,2,2
+KEYOPT,PBCT,4,1
+KEYOPT,PBCT,9,1
+KEYOPT,PBCT,12,5
+KEYOPT,PBCT,18,1
+ALLSEL,ALL
+ESEL,S,ENAME,,185,187
+CMSEL,S,%PBShaft%,NODE
+NSEL,R,LOC,Z,PBTopZ,PBMaxZ
+TYPE,PBTG
+REAL,PBCT
+ESURF
+ALLSEL,ALL
+ESEL,S,TYPE,,PBTG
+*GET,PBTgtCount,ELEM,0,COUNT
+*IF,PBTgtCount,LT,1,THEN
+*MSG,FATAL
+PCB bolt upper shaft target is empty. Run stopped.
+*ENDIF
+ALLSEL,ALL
+ESEL,S,ENAME,,185,187
+CMSEL,S,%PBHole%,NODE
+TYPE,PBCT
+REAL,PBCT
+ESURF
+ALLSEL,ALL
+ESEL,S,TYPE,,PBCT
+*GET,PBCntCount,ELEM,0,COUNT
+*IF,PBCntCount,LT,1,THEN
+*MSG,FATAL
+PCB hole contact selection is empty. Run stopped.
+*ENDIF
+ALLSEL,ALL
+*GET,PBMaxNd,NODE,0,NUM,MAX
+*GET,PBMaxEl,ELEM,0,NUM,MAX
+*IF,PBMaxNd,GT,_MechNodeId+2000,THEN
+*MSG,FATAL
+PCB bolt exceeded its reserved node range. Run stopped.
+*ENDIF
+*IF,PBMaxEl,GT,_MechElemId+2000,THEN
+*MSG,FATAL
+PCB bolt exceeded its reserved element range. Run stopped.
+*ENDIF
+/COM,PCB_BOLT_%PBIndex%: pretension=%PBPreCount% target=%PBTgtCount% contact=%PBCntCount%
+CSYS,0
+/SOLU

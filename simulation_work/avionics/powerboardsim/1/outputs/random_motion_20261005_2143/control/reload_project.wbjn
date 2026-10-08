@@ -1,0 +1,9 @@
+import System,traceback
+try:
+ Reset()
+ Open(FilePath=r'Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1.wbpj')
+ m=GetSystem(Name='SYS 4').GetContainer(ComponentName='Results')
+ m.Edit(Interactive=True)
+ m.SendCommand(Language='Python',Command="execfile(r'C:\\Temp\\pbmotion_bridge.py')")
+except:
+ System.IO.File.WriteAllText(r'C:\Temp\pbmotion_reopen3_error.txt',traceback.format_exc())

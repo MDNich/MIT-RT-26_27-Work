@@ -1,0 +1,21 @@
+{
+  "time": "2026-10-07T04:29:39.348449-04:00",
+  "status": "Read-only documentation review; no deck generated and no solver setting changed",
+  "sources": [
+    {
+      "url": "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_cmd/Hlp_C_CNVTOL.html",
+      "finding": "CNVTOL uses NORM=2 (L2) for force by default; NORM=1 selects sum of absolute residual terms. Explicit VALUE fixes the reference, and TOLER multiplies it. Other convergence labels remain unchanged."
+    },
+    {
+      "url": "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_thry/thy_tool10.html",
+      "finding": "Convergence compares a residual vector norm with reference times tolerance. Constrained displacement DOFs use restoring forces for the reference; contact can influence calculated minimum references. Predictor extrapolates prior displacement history."
+    },
+    {
+      "url": "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_MPC184link.html",
+      "finding": "Lagrange rigid links retain participating DOFs. Documentation cautions against overconstraint and unnecessarily many elements. Direct elimination has different reaction-output limitations, so switching formulation would require separate physical validation."
+    }
+  ],
+  "analyst_inference": "A scalar L2 residual criterion is not identical to a global component reaction sum. For an untransformed nodal residual vector, Cauchy-Schwarz permits a component sum up to sqrt(N) times its L2 norm. This does not establish the source of the observed imbalance in this constrained model; native all-node PRRSOL independently confirms the failed balance.",
+  "candidate_next_numerical_check": "After the current run ends and its full outcome is diagnosed, consider a fresh short fine-mesh sibling with explicit absolute L1 force residual control during pull, while keeping preload, geometry, material, contact and moment/displacement controls unchanged. A possible screening value is CNVTOL,F,1,0.005,1 (0.005 N absolute-sum force residual). This is a candidate, not a verified fix or committed next launch. It must pass native preflight/proof and every existing independent acceptance check.",
+  "restrictions": "No current solve changes or stops. No threshold relaxation, no automatic retry, no direct-elimination change, no replacement of the original evidence. Material and direction sensitivity remains outstanding."
+}

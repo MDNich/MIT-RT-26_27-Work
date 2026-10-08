@@ -1,0 +1,5 @@
+md=ExtAPI.DataModel.MeshDataByName('Global')
+reg=md.MeshRegionById(42342)
+System.IO.File.WriteAllText(RV_ROOT+r'\pcb_nodes.txt','\n'.join(str(x) for x in reg.NodeIds))
+System.IO.File.WriteAllText(RV_ROOT+r'\pcb_elements.txt','\n'.join(str(x) for x in reg.ElementIds))
+System.IO.File.WriteAllText(RV_ROOT+r'\pcb_mesh_scope.txt','PCB nodes %s elements %s'%(len(list(reg.NodeIds)),len(list(reg.ElementIds))))

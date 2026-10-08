@@ -1,0 +1,30 @@
+\clearpage
+\PageTitle{Verification of the preload history}
+A one-core attachment proof carries preload, locking and two pull increments through one uninterrupted solution session. Its native log and independently extracted result sets agree on the sequence: load steps 1, 2, 3 and 4, with 23 converged substeps and no native errors.
+
+\begin{center}
+\begin{tabular}{p{.65\linewidth}r}\toprule
+Verification quantity & Result\\\midrule
+Each clamp reaction immediately after locking & 750.000 N\\
+Sideways displacement at the final proof state & 0.500 mm\\
+Lateral battery reaction at that state & 11.333 N\\
+Each clamp reaction after the pull & 768.950 N\\
+Maximum reported equivalent plastic strain & 0.01124\\
+Maximum reported damage & 0\\
+Worst relative X force imbalance & 0.0282\%\\
+Worst absolute Z force imbalance & 0.0126 N\\\bottomrule
+\end{tabular}
+\end{center}
+The clamp reactions increase after locking because platen separation is fixed while the strips deform. The 750 N value is the initial preload, not a constant force maintained throughout pulling. The 11.333 N value is an elastic--plastic response check, not a tearing load or an observed force maximum beyond the proof interval.
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=.93\linewidth,height=70mm,xlabel={Battery sideways displacement (mm)},ylabel={Battery lateral reaction (N)},
+grid=major,xmin=0,xmax=.5,ymin=0,tick label style={font=\small}]
+\addplot[Teal,very thick,mark=*,mark size=1.1pt] table[x=ux_mm,y=fx_N,col sep=comma]{tearing_data/continuous_proof.csv};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+Native convergence warnings were retained and reviewed. They concern constraints at the common rigid battery pilot, the inherited nickel section reference on a contact element, and sparse-solver pivoting. No negative-pivot or constraint failure occurred. Finite result fields, the locked-preload reactions and independent force balance pass the stated checks.
+
+The rejected earlier implementation is not restarted or reused as a solution checkpoint. Corrected cases begin from fresh sealed model inputs. A guard checks the cumulative load-step number after every solve, and the result audit rejects resets in time, load-step number or cumulative iterations.

@@ -1,0 +1,37 @@
+--- 
++++ 
+@@ -5,5 +5,5 @@
+ /com,*********** Resuming The ANSYS db File from Modal Solution ***********
+ resume,file,db
+-/title,powerboardsim_v1--RANDOM VIBE - X - 2pct damping (F5)
++/title,powerboardsim_v1--RANDOM VIBE - Z - 2pct damping (D5)
+ ! ****** Begin Custom Load Command Snippet ******
+ /COM, ACT Extensions:
+@@ -20,7 +20,7 @@
+ /solu
+ *DIM,_wb_ProjectScratch_dir_PSD,string,248
+-_wb_ProjectScratch_dir_PSD(1) = 'C:\Temp\PCBRV_20261005_X_local_v2\'
++_wb_ProjectScratch_dir_PSD(1) = 'C:\Temp\PCBRV_20261005_Z_local\'
+ *DIM,_wb_SolverFiles_dir_PSD,string,248
+-_wb_SolverFiles_dir_PSD(1) = 'C:\Temp\PCBRV_20261005_X_local_v2\'
++_wb_SolverFiles_dir_PSD(1) = 'C:\Temp\PCBRV_20261005_Z_local\'
+ *DIM,_wb_userfiles_dir_PSD,string,248
+ _wb_userfiles_dir_PSD(1) = 'Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\user_files\'
+@@ -121,6 +121,6 @@
+    -149806    149808    149860    149862
+ cmsel,s,USERSELFSU
+-nsel,r,d,ux,0
+-d,all,ux,1
++nsel,r,d,uz,0
++d,all,uz,1
+ nsel,all
+ cmsel,all
+@@ -437,6 +437,6 @@
+ ! ****** End   Custom Load Command Snippet ******
+ pfact,1,base
+-nsel,s,d,ux,1
+-d,all,ux,0
++nsel,s,d,uz,1
++d,all,uz,0
+ nsel,all
+ outpr,nsol,all

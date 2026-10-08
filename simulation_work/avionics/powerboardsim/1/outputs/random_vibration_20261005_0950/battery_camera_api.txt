@@ -1,0 +1,20 @@
+ZoomFactor writable=True
+FocalPoint writable=True
+UpVector writable=True
+ViewVector writable=True
+SceneHeight writable=True
+SceneWidth writable=True
+ViewportHeight writable=False
+ViewportWidth writable=False
+InternalObject writable=False
+Double get_ZoomFactor()
+Void set_ZoomFactor(Double)
+Void SetFit(Ansys.ACT.Interfaces.Common.ISelectionInfo)
+Ansys.Core.Units.Quantity get_SceneHeight()
+Void set_SceneHeight(Ansys.Core.Units.Quantity)
+Ansys.Core.Units.Quantity get_SceneWidth()
+Void set_SceneWidth(Ansys.Core.Units.Quantity)
+Void Zoom(Double)
+Void Pan(Ansys.Core.Units.Quantity, Ansys.Core.Units.Quantity)
+Void ZoomRectPixels(Int32, Int32, Int32, Int32)
+Void ZoomRectSubpixels(Double, Double, Double, Double)

@@ -1,0 +1,14 @@
+{
+  "updated": "2026-10-06T18:01:47.526240-04:00",
+  "input_bug": "POST1 SET followed by entering SOLU without restart reset native loadstep/time;6 resets in rejected nominal_coarse",
+  "corrective_action": "one continuous SOLU session; separate immutable post.dat; native CNVG and NCMLS gate after every SOLVE",
+  "verification_plan": [
+    "one-core .5mm proof:4 consecutive loadsteps",
+    "750N locked reactions at step2",
+    "native-log and result-set monotonicity",
+    "force equilibrium inXYZ",
+    "same production4core settings with monitored initialsteps"
+  ],
+  "rejected_evidence": "runtime/nominal_coarse/REJECTED_LOAD_HISTORY.json",
+  "report": "Historical attachment values withdrawn; updated6pageworkingdraft compiled without layout warnings; page3visuallychecked."
+}

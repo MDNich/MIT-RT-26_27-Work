@@ -1,0 +1,69 @@
+{
+  "status": "Exploratory engineering assumption, not calibrated; no FE solve performed",
+  "date": "2026-10-05",
+  "material_assumption": "Soft/annealed commercially pure nickel, 20 C, quasi-static",
+  "units": {
+    "length": "mm",
+    "stress": "MPa",
+    "force": "N",
+    "strain": "dimensionless"
+  },
+  "thickness_mm": 0.15,
+  "damage_initiation": {
+    "reference_eta": 0.3333333333333333,
+    "reference_strain_cases": [
+      0.1,
+      0.3,
+      0.6
+    ],
+    "nominal_reference_strain": 0.3,
+    "beta": 1.5,
+    "formula": "eps_i(eta)=eps0*exp(-beta*max(eta-1/3,0)) for eta>=0",
+    "compression_domain": "Unspecified for eta<0; do not extrapolate or interpret as infinite fracture resistance",
+    "low_triaxiality": "Plateau below eta=1/3 is an analyst assumption; Lode/shear dependence omitted",
+    "accumulator": "omega=integral(d_equivalent_plastic_strain/eps_i(eta)); initiation at omega=1"
+  },
+  "damage_evolution": {
+    "type": "Linear scalar damage versus relative equivalent plastic displacement",
+    "u_full_mm_cases": [
+      0.03,
+      0.12,
+      0.24
+    ],
+    "nominal_u_full_mm": 0.12,
+    "formula": "u_p=integral(L_ch*d_equivalent_plastic_strain) after initiation; d=min(u_p/u_full,1)",
+    "length_note": "Use verified solver characteristic length; 0.15 mm is only an assumed physical band used to estimate u_full."
+  },
+  "derivation": {
+    "bar_reduction_of_area_21C": [
+      0.66,
+      0.78
+    ],
+    "axial_log_fracture_strain_proxy": [
+      1.07880966137193,
+      1.5141277326297757
+    ],
+    "nominal_band_mm": 0.15,
+    "unrounded_u_full_mm": 0.11682144920578949,
+    "basis": "Special Metals Table 13 bar data plus assumed onset and band; not a thin-strip test",
+    "engineering_elongation_log_scale": 0.3364722366212129,
+    "log_scale_note": "Context for choosing 0.3 only, not conversion of gauge elongation into local damage strain"
+  },
+  "hardening": {
+    "measured_proxy_end_plastic_strain": 0.199999,
+    "end_stress_MPa": 530.429,
+    "tail_log_fit_exponent": 0.3161930942101825,
+    "extrapolation_A": "Hold true stress at last exported value",
+    "extrapolation_B": "sigma=sigma_end*(p/p_end)^n, n from log-log regression for p>=0.15 in exported data",
+    "note": "Both extensions beyond 0.199999 are assumed and must be varied independently of damage",
+    "extension_stop_strain": 1.6
+  },
+  "source_csv_sha256": "5af130b36b107f83548838bd7fa249bf3ae8b43c0468da23d76a608a29b08553",
+  "existing_FE": {
+    "ux_mm": 0.5,
+    "reaction_N": 8.1244061726,
+    "peak_summary_EPPL": 0.022279217374,
+    "note": "Different plasticity law, no damage, no triaxiality path; not used to estimate rupture force"
+  },
+  "implementation": "Conceptual material proposal; no native APDL compatibility proof or material assignment"
+}

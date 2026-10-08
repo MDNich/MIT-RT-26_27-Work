@@ -1,0 +1,31 @@
+\clearpage
+\PageTitle{Material-law verification}
+Three native tensile-coupon runs used the same estimated material. The coupon is a 1 mm square, 0.15 mm thick; its force is \textbf{not the battery attachment force}. All curves below exclude ANSYS's unconverged debugging result set (substep 999999).
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=.93\linewidth,height=63mm,xlabel={Coupon extension (mm)},ylabel={Coupon tensile force (N)},
+grid=major,xmin=0,ymin=0,legend style={font=\footnotesize,at={(.98,.98)},anchor=north east},tick label style={font=\small}]
+\addplot[Navy,thick] table[x=ux_mm,y=fx_N,col sep=comma]{tearing_data/coupon_nominal_v4.csv};
+\addlegendentry{Full integration: initial settings}
+\addplot[Teal,dashed,thick] table[x=ux_mm,y=fx_N,col sep=comma]{tearing_data/coupon_unsym.csv};
+\addlegendentry{Full integration: revised settings}
+\end{axis}
+\end{tikzpicture}
+
+\begin{tikzpicture}
+\begin{axis}[width=.93\linewidth,height=63mm,xlabel={Accumulated plastic strain},ylabel={Damage $d$},
+grid=major,xmin=.25,xmax=.54,ymin=0,ymax=1,legend style={font=\footnotesize,at={(.02,.98)},anchor=north west},tick label style={font=\small}]
+\addplot[Navy,thick] table[x=eppl,y=damage,col sep=comma]{tearing_data/coupon_nominal_v4.csv};
+\addlegendentry{Full integration: initial}
+\addplot[Teal,dashed,thick] table[x=eppl,y=damage,col sep=comma]{tearing_data/coupon_unsym.csv};
+\addlegendentry{Full integration: revised}
+\addplot[gray,dashdotted,thick] table[x=eppl,y=damage,col sep=comma]{tearing_data/coupon_uniform.csv};
+\addlegendentry{One in-plane point, uniform edge}
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+The revised full-integration proof reached 456 converged states: fitted damage onset 0.30203, final damage 0.99323, and maximum logarithmic-strain consistency residual $1.53\times10^{-6}$. Peak coupon force changed from 66.870 to 66.891 N (0.031\%) when the solver and substep controls were tightened.
+
+The one-point uniform-edge diagnostic reached damage 0.98619 and fitted onset 0.30055. Its steeper damage curve reflects the different in-plane characteristic length; it does not replace the fully integrated attachment mesh. All three runs eventually stopped with excessive shell-thickness-change errors. These checks support initiation and nearly complete softening, but do not establish robust continuation through zero stiffness or geometric separation.

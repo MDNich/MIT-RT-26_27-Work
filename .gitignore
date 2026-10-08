@@ -16,3 +16,48 @@
 *ansystmp
 simulation_work/solidprop/phenolic_case_study/tmp
 *.pyc
+
+# ANSYS result, matrix, modal-coordinate, and restart binaries.
+*.[rR][sS][tT]
+*.mode
+*.emat
+*.full
+*.mcf
+*.r[0-9][0-9][0-9]
+/simulation_work/**/*.db
+
+# Local caches, locks, and temporary editor files.
+.DS_Store
+__pycache__/
+.texpadtmp/
+*.aux
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+/simulation_work/**/.lock
+/simulation_work/**/.project_cache
+/simulation_work/**/ORSave*.tmp
+
+# Reproducible animation intermediates; keep finished MP4s and report figures.
+AnimationFrame*.png
+AnimationFrame*.bmp
+/simulation_work/avionics/powerboardsim/*/outputs/**/frames/
+/simulation_work/avionics/powerboardsim/*/outputs/**/native_frames/
+/simulation_work/avionics/powerboardsim/*/outputs/**/sequence/
+/simulation_work/avionics/powerboardsim/*/outputs/**/pilot_modal_frames/
+/simulation_work/avionics/powerboardsim/*/outputs/**/rejected_viewport_frames/
+/simulation_work/avionics/powerboardsim/*/outputs/**/rejected_viewport_sequence/
+/simulation_work/avionics/powerboardsim/*/outputs/**/interrupted_native_frames*/
+/simulation_work/avionics/powerboardsim/*/outputs/video_*/**/frame_[0-9]*.png
+/simulation_work/avionics/powerboardsim/*/outputs/**/*.bmp
+
+# Files currently larger than 100 MB (100,000,000 bytes).
+# Git ignore rules cannot express file sizes; these paths were size-checked.
+/simulation_work/avionics/powerboardsim/1/outputs/random_motion_20261005_2143/reference_q_X.npy
+/simulation_work/avionics/powerboardsim/1/outputs/random_motion_20261005_2143/reference_q_Y.npy
+/simulation_work/avionics/powerboardsim/1/outputs/random_motion_20261005_2143/reference_q_Z.npy
+/simulation_work/avionics/powerboardsim/1/outputs/random_motion_20261005_2143/transient_X/modal_coordinates.npy
+/simulation_work/avionics/powerboardsim/1/outputs/random_motion_20261005_2143/transient_Y/modal_coordinates.npy
+/simulation_work/avionics/powerboardsim/1/outputs/random_motion_20261005_2143/transient_Z/modal_coordinates.npy
+/simulation_work/generic/openrocket/OpenRocket2026/2627_official/20267.demonstrator.iteration3.ork

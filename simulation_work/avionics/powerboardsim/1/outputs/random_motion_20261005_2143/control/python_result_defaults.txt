@@ -1,0 +1,53 @@
+def post_started(sender, analysis):# Do not edit this line
+    define_dpf_workflow(analysis)
+
+def table_retrieve_result(value):# Do not edit this line
+    import mech_dpf
+    import Ans.DataProcessing as dpf
+    wf = dpf.Workflow(this.WorkflowId)
+    wf.Connect('contour_selector', value)
+    this.Evaluate()
+
+def define_dpf_workflow(analysis):
+    import mech_dpf
+    import Ans.DataProcessing as dpf
+    mech_dpf.setExtAPI(ExtAPI)
+    dataSource = dpf.DataSources(analysis.ResultFileName)
+    model = dpf.Model(dataSource)
+    u = dpf.operators.result.displacement()
+    nrm = dpf.operators.math.norm_fc()
+
+    time_freq_support = dpf.operators.metadata.time_freq_provider()
+    time_freq_support.inputs.data_sources.Connect(dataSource)
+    n_sets = time_freq_support.outputs.time_freq_support.GetData().NumberSets
+
+    timeScop = dpf.Scoping()
+    
+    # This template makes use of custom properties defined in the "Property Provider"
+    # Tab of the Python result. Choice of computing the time history, time point selection and 
+    # result scaling are available
+    if this.GetCustomPropertyByPath("Time History Results/Activate Time History Results").ValueString == "Yes":
+        # Compute time history
+        time_steps = range(1, n_sets + 1)
+        timeScop.Ids = time_steps
+    else:
+        if this.GetCustomPropertyByPath("Time History Results/Result At").ValueString == "Last":
+            # Retrieve last time point
+            timeScop.Ids = [n_sets]
+        else:
+            # Retrieve user defined step
+            timeScop.Ids = [int(this.GetCustomPropertyByPath("Time History Results/Set Number").Value)]
+
+    u.inputs.time_scoping.Connect(timeScop)
+    u.inputs.data_sources.Connect(dataSource)
+    nrm.Connect(u)
+    dpf_workflow = dpf.Workflow()
+    dpf_workflow.Add(u)
+    dpf_workflow.Add(nrm)
+    dpf_workflow.SetInputName(u, 0, 'time')
+    dpf_workflow.Connect('time', timeScop)
+    if this.GetCustomPropertyByPath("Result Scaling/Activate Result Scaling").ValueString == "Yes":
+        dpf_workflow.SetOutputWarpField(u)
+    dpf_workflow.SetOutputContour(nrm)
+    dpf_workflow.Record('wf_id', False)
+    this.WorkflowId = dpf_workflow.GetRecordedId()

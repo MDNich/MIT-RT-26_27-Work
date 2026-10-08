@@ -1,0 +1,11 @@
+{
+  "time": "2026-10-07T04:06:18.028954-04:00",
+  "failure": "Read-only Get-FileHash of source run.dat failed because running ANSYS holds that input file open.",
+  "observations": {
+    "guest_destination_created": false,
+    "source_lock_present": true,
+    "source_solver6172_active": true
+  },
+  "change": "Fresh snapshot02 will copy only results/database/logs, as prior successful snapshots did. Preserve the sealed local source hash and prelaunch verification, rather than reading the locked input. No source file or calculation changed.",
+  "rejected_attempt": "cont_fine_snapshot01; host failure evidence and copy launcher retained."
+}

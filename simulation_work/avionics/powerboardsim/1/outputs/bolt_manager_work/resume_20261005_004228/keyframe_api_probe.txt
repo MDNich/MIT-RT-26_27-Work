@@ -1,0 +1,80 @@
+TYPE keyframe Ansys.ACT.Common.Graphics.KeyframeAnimationUtility
+P Int32 KeyframeCount write=False
+P System.Collections.Generic.List`1[System.Int32] KeyframeList write=False
+P Boolean IsPlaying write=False
+P System.Tuple`2[System.Int32,System.Int32] CurrentFrame write=False
+P Boolean Loop write=True
+M Void AddKeyframe(Int32)
+M Void ClearKeyframes()
+M Int32 GetSubframeCount(Int32)
+M Double GetTotalTime()
+M Void ModifySubframeCount(Int32, Int32)
+M Void ModifyTotalTime(Double)
+M Void Pause()
+M Void Play()
+M Void RemoveKeyframe(Int32)
+M Void SetCurrentFrame(Int32, Int32)
+M Void Stop()
+M Void NextFrame(Boolean)
+M Void PreviousFrame(Boolean)
+M Void InsertKeyframe(Int32, Int32)
+M Void ReplaceKeyframe(Int32, Int32)
+M Void SaveAnimation()
+M Void LoadAnimation()
+M Void ExportAnimationVideo()
+M Boolean Equals(System.Object)
+M Int32 GetHashCode()
+M System.Type GetType()
+M System.String ToString()
+TYPE animation Ansys.Mechanical.Graphics.ResultAnimationOptions
+P Int32 NumberOfFrames write=True
+P Ansys.Core.Units.Quantity Duration write=True
+P Ansys.Mechanical.DataModel.Enums.ResultAnimationRangeType RangeType write=True
+P Boolean UpdateContourRangeAtEachFrame write=True
+P Boolean FitDeformationScalingToAnimation write=True
+P Int32 TimeDecayCycles write=True
+P Boolean TimeDecay write=True
+P Boolean CanEngageMultiViewportAnimation write=False
+P Boolean MultiViewportAnimation write=True
+P Boolean AcceleratedAnimationWillBeUsed write=False
+P Boolean DisplacementTraces write=True
+M Boolean Equals(System.Object)
+M Int32 GetHashCode()
+M System.Type GetType()
+M System.String ToString()
+TYPE view Ansys.Mechanical.Graphics.ViewOptions
+P Ansys.Mechanical.Graphics.VectorDisplay VectorDisplay write=False
+P Ansys.Mechanical.Graphics.ResultPreference ResultPreference write=False
+P Ansys.Mechanical.Graphics.AnnotationPreferences AnnotationPreferences write=False
+P Boolean ShowShellThickness write=True
+P Boolean ShowBeamThickness write=True
+P Boolean ShowSPHExpansion write=True
+P Boolean ShowMesh write=True
+P Boolean ShowRandomColors write=True
+P Boolean ShowVertices write=True
+P Boolean ShowClusteredVertices write=True
+P Boolean ShowEdgeDirection write=True
+P Boolean ShowMeshConnection write=True
+P Boolean ShowThickEdgeScoping write=True
+P Ansys.Mechanical.DataModel.Enums.ModelDisplay ModelDisplay write=True
+P Ansys.Mechanical.DataModel.Enums.ModelColoring ModelColoring write=True
+P Boolean ShowCoordinateSystems write=True
+P Ansys.Core.Units.Quantity ClusteredVertexTolerance write=True
+P Boolean ShowLegend write=True
+P Boolean ShowLogo write=True
+P Boolean ShowTriad write=True
+P Boolean ShowRuler write=True
+P Boolean ShowResultVectors write=True
+P Boolean ShowRemotePointConnections write=True
+P Boolean ShowBoundingMeshEdges write=True
+P Boolean SeamWeldReview write=True
+P Boolean DisplayGraphOverlay write=True
+M Void RescaleAnnotations()
+M Void ZoomToWeld()
+M Void Reset()
+M Boolean Equals(System.Object)
+M Int32 GetHashCode()
+M System.Type GetType()
+M System.String ToString()
+Graphics.AcceleratedGraphics ProgramControlled
+Graphics.AdvancedRenderingIsSupported True

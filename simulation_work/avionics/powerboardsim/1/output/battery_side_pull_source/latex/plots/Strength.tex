@@ -1,0 +1,5 @@
+\begin{tikzpicture}\begin{axis}[width=\linewidth,height=65mm,xlabel={Battery centre displacement magnitude (mm)},ylabel={Lateral reaction magnitude (N)},xmin=0,xmax=.5,grid=both,minor tick num=1,legend style={font=\footnotesize,at={(.98,.03)},anchor=south east,fill=white},tick label style={font=\small},xticklabel style={/pgf/number format/fixed,/pgf/number format/precision=2},label style={font=\small}]
+\addplot+[color=Teal,thick,mark=none] table[col sep=comma,x=displacement_mm,y=force_N] {data/grip_soft_lagrange_curve.csv};\addlegendentry{Yield 105 MPa}
+\addplot+[color=Navy,thick,mark=none] table[col sep=comma,x=displacement_mm,y=force_N] {data/grip_lagrange_curve.csv};\addlegendentry{Yield 148 MPa}
+\addplot+[color=orange!85!black,thick,mark=none] table[col sep=comma,x=displacement_mm,y=force_N] {data/grip_strong_lagrange_curve.csv};\addlegendentry{Yield 210 MPa}
+\end{axis}\end{tikzpicture}

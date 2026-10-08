@@ -1,0 +1,12 @@
+$ErrorActionPreference='Stop'
+$lic=& 'C:\Program Files\ANSYS Inc\v261\licensingclient\winx64\lmutil.exe' lmstat -f ansys -c 1055@MARCDNICHITBF25
+if(($lic -join ' ') -notmatch 'Total of 0 licenses? in use'){throw 'Structural seat busy'}
+New-Item -ItemType Directory -Path 'C:\Temp\PBMotion_20261005_stress_X_saved' -ErrorAction Stop | Out-Null
+Get-ChildItem 'C:\Temp\PBMotion_20261005_basis_saved' -File | Where-Object { $_.Name -match '^file\d*\.(db|mode|full|mlv|enf)$' } | Copy-Item -Destination 'C:\Temp\PBMotion_20261005_stress_X_saved'
+Copy-Item '\\Mac\Home\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\outputs\random_motion_20261005_2143\stress_X_saved\run.dat','\\Mac\Home\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\outputs\random_motion_20261005_2143\stress_X_saved\preflight.dat' 'C:\Temp\PBMotion_20261005_stress_X_saved'
+Copy-Item '\\Mac\Home\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\outputs\random_motion_20261005_2143\inputs\X_acc.txt' 'C:\Temp\PBMotion_20261005_stress_X_saved\acc.txt'
+$p=Start-Process 'C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe' -ArgumentList '-b nolist -smp -np 1 -p ansys -j file -i preflight.dat -o preflight.out' -WorkingDirectory 'C:\Temp\PBMotion_20261005_stress_X_saved' -PassThru -Wait
+Copy-Item 'C:\Temp\PBMotion_20261005_stress_X_saved\preflight.out','C:\Temp\PBMotion_20261005_stress_X_saved\file.err' '\\Mac\Home\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\outputs\random_motion_20261005_2143\stress_X_saved'
+$p.ExitCode | Out-File '\\Mac\Home\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\outputs\random_motion_20261005_2143\stress_X_saved\preflight_exit.txt'
+
+Copy-Item 'C:\Temp\PBMotion_20261005_stress_X_saved\basis_frequencies.csv' '\\Mac\Home\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\outputs\random_motion_20261005_2143\stress_X_saved'

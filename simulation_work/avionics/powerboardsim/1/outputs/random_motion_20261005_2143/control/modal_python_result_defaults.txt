@@ -1,0 +1,67 @@
+def post_started(sender, analysis):# Do not edit this line
+    define_dpf_workflow(analysis)
+
+def table_retrieve_result(value):# Do not edit this line
+    import mech_dpf
+    import Ans.DataProcessing as dpf
+    wf = dpf.Workflow(this.WorkflowId)
+    wf.Connect('contour_selector', value)
+    this.Evaluate()
+
+def define_dpf_workflow(analysis):
+  # Importing required modules
+  import mech_dpf
+  import Ans.DataProcessing as dpf
+  
+  # Setting the ExtAPI for mech_dpf
+  mech_dpf.setExtAPI(ExtAPI)
+  
+  # Creating a data source using the Result File path extrated from analysis
+  dataSource = dpf.DataSources(analysis.ResultFileName)
+  
+  # Creating a displacement operator
+  u = dpf.operators.result.displacement()
+  
+  # Creating a math operator for computing the norm
+  nrm = dpf.operators.math.norm_fc()
+  
+  # Connecting the data source to the displacement operator
+  u.inputs.data_sources.Connect(dataSource)
+  
+  # Creating a time_freq_provider operator to get time/frequency information
+  time_freq_op = dpf.operators.metadata.time_freq_provider()
+  
+  # Connecting the data source to the time_freq_provider operator
+  time_freq_op.inputs.data_sources.Connect(dataSource)
+  
+  # Extracting time/frequency support data
+  time_freq_support = time_freq_op.outputs.gettime_freq_support()
+  
+  # Extracting the frequency list from the time/frequency support data
+  frequency_list = time_freq_support.TimeFreqs.Data
+  
+  # Generating a list of indices for the frequency list
+  frequency_list_indices = range(1, frequency_list.Count + 1, 1)
+  
+  # Connecting the frequency list indices to the displacement operator
+  u.inputs.time_scoping.Connect(frequency_list_indices)
+  
+  # Connecting the displacement operator to the norm operator
+  nrm.Connect(u)
+  
+  # Creating a new DPF workflow
+  dpf_workflow = dpf.Workflow()
+  
+  # Adding the displacement and norm operators to the workflow
+  dpf_workflow.Add(u)
+  dpf_workflow.Add(nrm)
+  
+  # Setting the norm operator as the output contour
+  dpf_workflow.SetOutputContour(nrm)
+  
+  # Setting the displacement operator as the output warp field
+  dpf_workflow.SetOutputWarpField(u)
+  
+  # Recording the workflow 
+  dpf_workflow.Record('wf_id', False)
+  this.WorkflowId = dpf_workflow.GetRecordedId()

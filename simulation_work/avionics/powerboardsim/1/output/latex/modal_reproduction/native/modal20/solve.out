@@ -1,0 +1,2473 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.02       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.02  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ BladeModeler 2026 R1
+ BladeModeler 2026 R1.01 
+ BladeModeler 2026 R1.02 
+ CFX (includes CFD-Post) 2026 R1 
+ CFX (includes CFD-Post) 2026 R1.01  
+ CFX (includes CFD-Post) 2026 R1.02  
+ CFD-Post only 2026 R1   
+ CFD-Post only 2026 R1.01
+ CFD-Post only 2026 R1.02
+ Chemkin 2026 R1 
+ Chemkin 2026 R1.01  
+ Chemkin 2026 R1.02  
+ EnSight 2026 R1 
+ EnSight 2026 R1.01  
+ EnSight 2026 R1.02  
+ FENSAP-ICE 2026 R1  
+ FENSAP-ICE 2026 R1.01   
+ FENSAP-ICE 2026 R1.02   
+ Fluent (includes CFD-Post) 2026 R1  
+ Fluent (includes CFD-Post) 2026 R1.01   
+ Fluent (includes CFD-Post) 2026 R1.02   
+ Polyflow (includes CFD-Post) 2026 R1
+ Polyflow (includes CFD-Post) 2026 R1.01 
+ Polyflow (includes CFD-Post) 2026 R1.02 
+ Forte (includes EnSight) 2026 R1
+ Forte (includes EnSight) 2026 R1.01 
+ Forte (includes EnSight) 2026 R1.02 
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ RBF Morph Fluids UDF 2026 R1
+ RBF Morph Fluids UDF 2026 R1.01 
+ RBF Morph Fluids UDF 2026 R1.02 
+ RBF Morph Libraries 2026 R1 
+ RBF Morph Libraries 2026 R1.01  
+ RBF Morph Libraries 2026 R1.02  
+ Rocky 2026 R1   
+ Rocky 2026 R1.01
+ Rocky 2026 R1.02
+ Thermal Desktop: AutoCAD 2026 R1
+ Thermal Desktop: AutoCAD 2026 R1.01 
+ Thermal Desktop: AutoCAD 2026 R1.02 
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1   
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.01
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.02
+ Thermal Desktop: Sinda Solver 2026 R1   
+ Thermal Desktop: Sinda Solver 2026 R1.01
+ Thermal Desktop: Sinda Solver 2026 R1.02
+ TurboGrid 2026 R1   
+ TurboGrid 2026 R1.01
+ TurboGrid 2026 R1.02
+ Granta EduPack 2026 R1  
+ Granta EduPack 2026 R1.01   
+ Granta EduPack 2026 R1.02   
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Designer 2026 R1   
+ Material Designer 2026 R1.01
+ Material Designer 2026 R1.02
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  DISTRIBUTED MEMORY PARALLEL REQUESTED
+      12 PARALLEL PROCESSES REQUESTED WITH SINGLE THREAD PER PROCESS
+    TOTAL OF    12 CORES REQUESTED
+  INPUT FILE NAME              = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968\dummy.dat
+  OUTPUT FILE NAME             = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968\solve.out
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+
+ RELEASE= 2026 R1.02           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=file0  22:50:30  OCT 04, 2026  Elapsed Time=       0.250
+
+
+ PARAMETER _DS_PROGRESS =     999.0000000    
+
+ /INPUT FILE= ds.dat  LINE=       0
+
+
+
+ *** NOTE ***                            ELAPSED TIME =      10.335   TIME= 22:50:35
+ The /CONFIG,NOELDB command is not valid in a distributed memory         
+ parallel solution.  Command is ignored.                                 
+
+ *GET  _WALLSTRT  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.289084248E-02
+
+ ASSIGN FILE RSTP TO file.rst                                                                                                                                                                                                                                                            
+
+ *** NOTE ***                            ELAPSED TIME =      10.518   TIME= 22:50:35
+ File= file.rst does not exist and will be created.                      
+
+ *****  MAPDL SOLUTION ROUTINE  *****
+
+ CONTACT PAIR INFO IS WRITTEN TO FILE= file.cnm                                                                                                                                                                                                                                                            
+
+
+ PERFORM A STATIC ANALYSIS
+  RESTART WILL BE PERFORMED FOR THE ANALYSIS OF LINEAR PERTURBATION
+  RESTART WILL BE PERFORMED BASED ON: 
+   PREVIOUS LOADSTEP =      2 SUBSTEP =      4
+
+ RESUME ANSYS DATA FROM FILE NAME=file.rdb                                                                                                                                                                                                                                                            
+     DO NOT PLOT ANYTHING
+
+ *** MAPDL GLOBAL STATUS *** 
+
+ TITLE = powerboardsim_v1--BOLT750 - preload then locked length (B5)           
+ ANALYSIS TYPE =  STATIC (STEADY-STATE)
+       646 ELEM TYPES DEFINED    MAX ELEM TYPE NUMBER =           651
+    248516 ELEMENTS DEFINED      MAX ELEMENT NUMBER =          341323
+    369590 NODES DEFINED         MAX NODE NUMBER =             379902
+       208 MATERIALS DEFINED     MAX MATERIAL NUMBER =            208
+       426 REAL CONSTS DEFINED   MAX REAL CONST NUMBER =          651
+         6 SECTIONS DEFINED      MAX SECTION NUMBER =             649
+         6 COORD SYS DEFINED     MAX COORD SYS NUMBER =            17
+     34989 CONSTRNT EQNS DEFINED MAX CONSTRNT EQN NUMBER =      52251
+ 
+ ACTIVE COORDINATE SYSTEM             =          0  (CARTESIAN)
+ NUMBER OF DEFINED NODAL CONSTRAINTS  =       2343
+ NUMBER OF DEFINED NODAL LOADS        =          6
+ NUMBER OF DEFINED COMPONENTS         =         20
+ NUMBER OF DEFINED ELEM SURFACE LOADS =          0
+ NUMBER OF DEFINED ELEM BODY LOADS    =          0
+ NUMBER OF DEFINED NODE BODY FORCES   =          0
+ CURRENT LOAD CASE =      0 OF      0
+ LOAD SET   =       1
+ SUBSTEP    =       1
+ TIME/FREQ  =   0.20000    
+
+ INITIAL JOBNAME = file0
+ CURRENT JOBNAME = file0
+
+ RESTART PROCEDURE RE-BUILDS BOUNDARY CONDITIONS
+ AND LOADING INFO UPTO THE CURRENT LOADSTEP 
+
+ READ ANSYS LOADS DATA FROM FILE= file.ldhi                                                                                                                                                                                                                                                           
+
+ DELETE SOLID MODEL BOUNDARY CONDITIONS
+ 
+ NUMBER OF NODAL CONSTRAINTS DELETED                       =      2343
+ NUMBER OF NODAL FORCES DELETED                            =         6
+
+ SET PARAMETER DIMENSIONS ON  _WB_PROJECTSCRATCH_DIR_MODAL
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_PROJECTSCRATCH_DIR_MODAL(1) = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968\
+
+ SET PARAMETER DIMENSIONS ON  _WB_SOLVERFILES_DIR_MODAL
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_SOLVERFILES_DIR_MODAL(1) = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\dp0\SYS-1\MECH\
+
+ SET PARAMETER DIMENSIONS ON  _WB_USERFILES_DIR_MODAL
+  TYPE=STRI  DIMENSIONS=      248        1        1
+
+ PARAMETER _WB_USERFILES_DIR_MODAL(1) = Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\user_files\
+
+ TITLE= 
+ powerboardsim_v1--BOLTED750 - 20 undamped prestressed modes (C5)              
+
+  ACT Extensions:
+      LSDYNA, 2026.1
+      5f463412-bd3e-484b-87e7-cbc0a665e474, wbex
+      ANSYSMotion, 2026.1
+      20180725-3f81-49eb-9f31-41364844c769, wbex
+      BoltTools, 2024.1
+      e58f9c27-8401-45e5-83b8-72af00fdd1a2, wbex
+      Sherlock_App, 2026.1
+      22267810-43dd-444c-b69c-948d1736da5a, wbex
+
+ PERTURB: Enabling perturbation analysis with prestressed modal solution.
+ PERTURB: Enabling perturbation contact status remains the same as in restart step.
+ PERTURB: Enabling perturbation to delete all boundary conditions except for constraints and temperatures and also put all non-zero displacement constraints to zero values.
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:50:38  OCT 04, 2026 Elapsed Time=     13.636
+
+ powerboardsim_v1--BOLTED750 - 20 undamped prestressed modes (C5)              
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ  
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .STATIC (STEADY-STATE)
+      RESTART. . . . . . . . . . . . . . . . . . .ON
+   LINEAR PERTURBATION . . . . . . . . . . . . . .ON
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
+   NONLINEAR GEOMETRIC EFFECTS . . . . . . . . . .ON
+   STRESS-STIFFENING . . . . . . . . . . . . . . .ON
+
+ *** WARNING ***                         ELAPSED TIME =      14.251   TIME= 22:50:39
+ Material number 628 (used by element 330976) should normally have at    
+ least one MP or one TB type command associated with it.  Output of      
+ energy by material may not be available.                                
+
+ *** NOTE ***                            ELAPSED TIME =      14.267   TIME= 22:50:39
+ The step data was checked and warning messages were found.              
+  Please review output or errors file (                                  
+ Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avio 
+ nics\powerboardsim\1\_ProjectScratch\Scr9968\file0.err ) for these      
+ warning messages.                                                       
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:50:59  OCT 04, 2026 Elapsed Time=     34.921
+
+ powerboardsim_v1--BOLTED750 - 20 undamped prestressed modes (C5)              
+
+
+
+                      L O A D   S T E P   O P T I O N S
+
+   SOLUTION TO BE PERTURBED CORRESPONDS TO
+      TIME . . . . . . . . . . . . . . . . . . . .  2.0000    
+      LOAD STEP. . . . . . . . . . . . . . . . . .     2
+      SUBSTEP. . . . . . . . . . . . . . . . . . .     4
+
+ *** NOTE ***                            ELAPSED TIME =      34.928   TIME= 22:50:59
+ This SOLVE command is only used to generate the matrices needed to      
+ perform the linear perturbation analysis.  The linear perturbation      
+ analysis corresponds to time = 2 (load step = 2, substep = 4).  No      
+ results are being written.                                              
+
+ >>>> PRETENSION ELEMENT STATUS <<<<
+ SECTION NAME     PT.NODE  --------STATUS--------------------  ----LOAD SOURCE----
+   629             369771  FIXED RELATIVE MOTION=  0.0000      D COMMAND
+   637             373773  FIXED RELATIVE MOTION=  0.0000      D COMMAND
+   633             371772  FIXED RELATIVE MOTION=  0.0000      D COMMAND
+   645             377775  FIXED RELATIVE MOTION=  0.0000      D COMMAND
+   641             375774  FIXED RELATIVE MOTION=  0.0000      D COMMAND
+   649             379776  FIXED RELATIVE MOTION=  0.0000      D COMMAND
+
+
+ LINEAR PERTURBATION ANALYSIS PROCEDURE DELETES ALL
+ BOUNDARY CONDITIONS EXCEPT CONSTRAINTS AND TEMPERATURES FROM DATABASE
+
+ PARAMETER _THICKRATIO =    0.7210000000E-01
+
+ THERMAL STRAINS ARE NOT INCLUDED IN THE LOAD VECTOR.
+
+
+ USE SYM. BLOCK LANCZOS MODE EXTRACTION METHOD
+  EXTRACT    20 MODES
+  EXTRACT FREQUENCIES IN THE RANGE   1.0000     TO   10000.    
+  NORMALIZE THE MODE SHAPES TO THE MASS MATRIX
+
+ ERASE THE CURRENT DATABASE OUTPUT CONTROL TABLE.
+
+
+ WRITE ALL  ITEMS TO THE DATABASE WITH A FREQUENCY OF NONE
+   FOR ALL APPLICABLE ENTITIES
+
+ WRITE NSOL ITEMS TO THE DATABASE WITH A FREQUENCY OF ALL 
+   FOR ALL APPLICABLE ENTITIES
+
+
+ EXPAND ALL EXTRACTED MODES
+  DO NOT CALCULATE ELEMENT RESULTS
+
+ DO NOT COMBINE ELEMENT SAVE DATA FILES (.esav) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ DO NOT COMBINE ELEMENT MATRIX FILES (.emat) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ DO NOT COMBINE ASSEMBLED MATRIX FILES (.full) AFTER DISTRIBUTED PARALLEL SOLUTION
+
+ PARAMETER _MECHOBJID =     4139.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     1.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     161.590   TIME= 22:53:06
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER PBINDEX =     1.000000000    
+
+ PARAMETER PBBODY = PCB670_01_BODY  
+
+ PARAMETER PBSHAFT = PCB670_01_SHAFT 
+
+ PARAMETER PBHOLE = PCB670_01_HOLE  
+ ****** Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt ******
+
+ PARAMETER PARTNAMEINASSEMBLY = Bolt    
+
+ PARAMETER INPUTLEVEL = ASSEMBLY
+
+ PARAMETER PARTFILENAME = PCB_ExistingBolt_670N.xml       
+
+ PARAMETER PBLOAD =     750.0000000    
+
+ *GET  PBANALYSIS  FROM  ACTI  ITEM=ANTY       VALUE=  2.00000000    
+
+ *IF  PBAnalysis  ( =   2.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+ Done Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt
+
+ PARAMETER _MECHOBJID =     4147.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     1.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     161.597   TIME= 22:53:06
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER PBINDEX =     2.000000000    
+
+ PARAMETER PBBODY = PCB670_02_BODY  
+
+ PARAMETER PBSHAFT = PCB670_02_SHAFT 
+
+ PARAMETER PBHOLE = PCB670_02_HOLE  
+ ****** Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt ******
+
+ PARAMETER PARTNAMEINASSEMBLY = Bolt    
+
+ PARAMETER INPUTLEVEL = ASSEMBLY
+
+ PARAMETER PARTFILENAME = PCB_ExistingBolt_670N.xml       
+
+ PARAMETER PBLOAD =     750.0000000    
+
+ *GET  PBANALYSIS  FROM  ACTI  ITEM=ANTY       VALUE=  2.00000000    
+
+ *IF  PBAnalysis  ( =   2.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+ Done Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt
+
+ PARAMETER _MECHOBJID =     4155.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     1.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     161.600   TIME= 22:53:06
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER PBINDEX =     3.000000000    
+
+ PARAMETER PBBODY = PCB670_03_BODY  
+
+ PARAMETER PBSHAFT = PCB670_03_SHAFT 
+
+ PARAMETER PBHOLE = PCB670_03_HOLE  
+ ****** Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt ******
+
+ PARAMETER PARTNAMEINASSEMBLY = Bolt    
+
+ PARAMETER INPUTLEVEL = ASSEMBLY
+
+ PARAMETER PARTFILENAME = PCB_ExistingBolt_670N.xml       
+
+ PARAMETER PBLOAD =     750.0000000    
+
+ *GET  PBANALYSIS  FROM  ACTI  ITEM=ANTY       VALUE=  2.00000000    
+
+ *IF  PBAnalysis  ( =   2.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+ Done Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt
+
+ PARAMETER _MECHOBJID =     4163.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     1.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     161.611   TIME= 22:53:06
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER PBINDEX =     4.000000000    
+
+ PARAMETER PBBODY = PCB670_04_BODY  
+
+ PARAMETER PBSHAFT = PCB670_04_SHAFT 
+
+ PARAMETER PBHOLE = PCB670_04_HOLE  
+ ****** Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt ******
+
+ PARAMETER PARTNAMEINASSEMBLY = Bolt    
+
+ PARAMETER INPUTLEVEL = ASSEMBLY
+
+ PARAMETER PARTFILENAME = PCB_ExistingBolt_670N.xml       
+
+ PARAMETER PBLOAD =     750.0000000    
+
+ *GET  PBANALYSIS  FROM  ACTI  ITEM=ANTY       VALUE=  2.00000000    
+
+ *IF  PBAnalysis  ( =   2.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+ Done Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt
+
+ PARAMETER _MECHOBJID =     4171.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     1.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     161.614   TIME= 22:53:06
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER PBINDEX =     5.000000000    
+
+ PARAMETER PBBODY = PCB670_05_BODY  
+
+ PARAMETER PBSHAFT = PCB670_05_SHAFT 
+
+ PARAMETER PBHOLE = PCB670_05_HOLE  
+ ****** Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt ******
+
+ PARAMETER PARTNAMEINASSEMBLY = Bolt    
+
+ PARAMETER INPUTLEVEL = ASSEMBLY
+
+ PARAMETER PARTFILENAME = PCB_ExistingBolt_670N.xml       
+
+ PARAMETER PBLOAD =     750.0000000    
+
+ *GET  PBANALYSIS  FROM  ACTI  ITEM=ANTY       VALUE=  2.00000000    
+
+ *IF  PBAnalysis  ( =   2.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+ Done Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt
+
+ PARAMETER _MECHOBJID =     4179.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     1.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     161.616   TIME= 22:53:06
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER PBINDEX =     6.000000000    
+
+ PARAMETER PBBODY = PCB670_06_BODY  
+
+ PARAMETER PBSHAFT = PCB670_06_SHAFT 
+
+ PARAMETER PBHOLE = PCB670_06_HOLE  
+ ****** Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt ******
+
+ PARAMETER PARTNAMEINASSEMBLY = Bolt    
+
+ PARAMETER INPUTLEVEL = ASSEMBLY
+
+ PARAMETER PARTFILENAME = PCB_ExistingBolt_670N.xml       
+
+ PARAMETER PBLOAD =     750.0000000    
+
+ *GET  PBANALYSIS  FROM  ACTI  ITEM=ANTY       VALUE=  2.00000000    
+
+ *IF  PBAnalysis  ( =   2.00000     )  EQ  
+      0  ( =   0.00000     )  THEN    
+
+ *ENDIF
+
+ SELECT ALL ENTITIES OF TYPE= ALL  AND BELOW
+ Done Sending PCB_ExistingBolt_670N.xml at ASSEMBLY Level as Bolt
+
+ *****  MAPDL SOLVE    COMMAND  *****
+
+ *** WARNING ***                         ELAPSED TIME =     162.158   TIME= 22:53:06
+ Element shape errors, if any, are currently shown as warnings only.     
+ Issue SHPP,ON to restore shape error traps, if desired.                 
+
+ *** WARNING ***                         ELAPSED TIME =     162.965   TIME= 22:53:07
+ No shape testing has been performed on 115061 of the 248516 selected    
+ elements.  To perform shape testing on these elements and see any       
+ warning messages about the others, please issue the CHECK command.      
+
+ *** NOTE ***                            ELAPSED TIME =     162.966   TIME= 22:53:07
+ The model data was checked and warning messages were found.             
+  Please review output or errors file (                                  
+ Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avio 
+ nics\powerboardsim\1\_ProjectScratch\Scr9968\file0.err ) for these      
+ warning messages.                                                       
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:53:08  OCT 04, 2026 Elapsed Time=    163.461
+
+ powerboardsim_v1--BOLTED750 - 20 undamped prestressed modes (C5)              
+
+
+
+                       S O L U T I O N   O P T I O N S
+
+   PROBLEM DIMENSIONALITY. . . . . . . . . . . . .3-D                  
+   DEGREES OF FREEDOM. . . . . . UX   UY   UZ  
+   ANALYSIS TYPE . . . . . . . . . . . . . . . . .MODAL                
+      EXTRACTION METHOD. . . . . . . . . . . . . .BLOCK LANCZOS
+   LINEAR PERTURBATION . . . . . . . . . . . . . .ON
+   OFFSET TEMPERATURE FROM ABSOLUTE ZERO . . . . .  273.15    
+   THERMAL EXPANSION . . . . . . . . . . . . . . .OFF
+   PRESTRESS EFFECTS INCLUDED IF AVAILABLE . . . .YES
+   NUMBER OF MODES TO EXTRACT. . . . . . . . . . .    20
+   MODAL EXTRACTION RANGE. . . . . . . . . . . . .  1.0000     TO   10000.    
+   GLOBALLY ASSEMBLED MATRIX . . . . . . . . . . .SYMMETRIC  
+   NUMBER OF MODES TO EXPAND . . . . . . . . . . .ALL
+   ELEMENT RESULTS CALCULATION . . . . . . . . . .OFF
+
+ *** NOTE ***                            ELAPSED TIME =     163.584   TIME= 22:53:08
+ The initial memory allocation (-m) has been exceeded.                   
+  Supplemental memory allocations are being used.                        
+
+ *** WARNING ***                         ELAPSED TIME =     163.925   TIME= 22:53:08
+ Material number 628 (used by element 330976) should normally have at    
+ least one MP or one TB type command associated with it.  Output of      
+ energy by material may not be available.                                
+
+ *** NOTE ***                            ELAPSED TIME =     163.936   TIME= 22:53:08
+ The step data was checked and warning messages were found.              
+  Please review output or errors file (                                  
+ Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avio 
+ nics\powerboardsim\1\_ProjectScratch\Scr9968\file0.err ) for these      
+ warning messages.                                                       
+
+                      L O A D   S T E P   O P T I O N S
+
+   LOAD STEP NUMBER. . . . . . . . . . . . . . . .     1
+   THERMAL STRAINS INCLUDED IN THE LOAD VECTOR . .    NO
+   PRINT OUTPUT CONTROLS . . . . . . . . . . . . .NO PRINTOUT
+   DATABASE OUTPUT CONTROLS
+      ITEM     FREQUENCY   COMPONENT
+       ALL       NONE               
+      NSOL        ALL               
+
+
+ *** WARNING ***                         ELAPSED TIME =     174.654   TIME= 22:53:19
+ Brick element 2926 has a ratio of the determinants of the Jacobian      
+ matrices of 31.75, which exceeds the warning limit of 30.  Midside      
+ nodes, if any, may be poorly positioned.                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.655   TIME= 22:53:19
+ Brick element 2929 has a ratio of the determinants of the Jacobian      
+ matrices of 32.16, which exceeds the warning limit of 30.  Midside      
+ nodes, if any, may be poorly positioned.                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.765   TIME= 22:53:19
+ Brick element 6134 has a ratio of the determinants of the Jacobian      
+ matrices of 38.5, which exceeds the warning limit of 30.  Midside       
+ nodes, if any, may be poorly positioned.                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.809   TIME= 22:53:19
+ Brick element 6137 has a ratio of the determinants of the Jacobian      
+ matrices of 38.37, which exceeds the warning limit of 30.  Midside      
+ nodes, if any, may be poorly positioned.                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.826   TIME= 22:53:19
+ Tetrahedron element 8610 has an angle between adjacent edges of 167.2   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.826   TIME= 22:53:19
+ Tetrahedron element 8613 has an aspect ratio of 22.15, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.827   TIME= 22:53:19
+ Tetrahedron element 8613 has an angle between adjacent edges of 169.5   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.828   TIME= 22:53:19
+ Tetrahedron element 8615 has an aspect ratio of 22.59, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.828   TIME= 22:53:19
+ Tetrahedron element 8615 has an angle between adjacent edges of 169.1   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.828   TIME= 22:53:19
+ Tetrahedron element 8617 has an aspect ratio of 21.58, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.829   TIME= 22:53:19
+ Tetrahedron element 8631 has an aspect ratio of 22.62, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.830   TIME= 22:53:19
+ Tetrahedron element 8631 has an angle between adjacent edges of 170.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.831   TIME= 22:53:19
+ Tetrahedron element 8632 has an aspect ratio of 21.14, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.832   TIME= 22:53:19
+ Tetrahedron element 8633 has an aspect ratio of 21.11, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.835   TIME= 22:53:19
+ Tetrahedron element 8634 has an aspect ratio of 21.32, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.836   TIME= 22:53:19
+ Tetrahedron element 8635 has an aspect ratio of 21.08, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.837   TIME= 22:53:19
+ Tetrahedron element 8635 has an angle between adjacent edges of 167.1   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.838   TIME= 22:53:19
+ Tetrahedron element 8637 has an aspect ratio of 20.76, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.839   TIME= 22:53:19
+ Tetrahedron element 8637 has an angle between adjacent edges of 169.8   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.840   TIME= 22:53:19
+ Tetrahedron element 8638 has an aspect ratio of 38.88, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.842   TIME= 22:53:19
+ Tetrahedron element 8638 has an angle between adjacent edges of 172.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.842   TIME= 22:53:19
+ Tetrahedron element 8640 has an aspect ratio of 24.03, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.844   TIME= 22:53:19
+ Tetrahedron element 8641 has an aspect ratio of 38.17, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.844   TIME= 22:53:19
+ Tetrahedron element 8641 has an angle between adjacent edges of 171     
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.845   TIME= 22:53:19
+ Tetrahedron element 8642 has an aspect ratio of 36.67, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.846   TIME= 22:53:19
+ Tetrahedron element 8642 has an angle between adjacent edges of 173.6   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.846   TIME= 22:53:19
+ Tetrahedron element 8644 has an aspect ratio of 24.09, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.849   TIME= 22:53:19
+ Tetrahedron element 8644 has an angle between adjacent edges of 171     
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.850   TIME= 22:53:19
+ Tetrahedron element 8645 has an aspect ratio of 21.45, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.852   TIME= 22:53:19
+ Tetrahedron element 8645 has an angle between adjacent edges of 167.3   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.853   TIME= 22:53:19
+ Tetrahedron element 8647 has an aspect ratio of 23.81, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.853   TIME= 22:53:19
+ Tetrahedron element 8647 has an angle between adjacent edges of 169.8   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.854   TIME= 22:53:19
+ Tetrahedron element 8648 has an aspect ratio of 28.85, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.855   TIME= 22:53:19
+ Tetrahedron element 8648 has an angle between adjacent edges of 172.5   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.856   TIME= 22:53:19
+ Tetrahedron element 8649 has an aspect ratio of 21.99, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.857   TIME= 22:53:19
+ Tetrahedron element 8649 has an angle between adjacent edges of 168.2   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.893   TIME= 22:53:19
+ Tetrahedron element 8652 has an aspect ratio of 25.04, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.910   TIME= 22:53:19
+ Tetrahedron element 8652 has an angle between adjacent edges of 170.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.932   TIME= 22:53:19
+ Tetrahedron element 8654 has an aspect ratio of 23.19, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.950   TIME= 22:53:19
+ Tetrahedron element 8655 has an aspect ratio of 27.17, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.951   TIME= 22:53:19
+ Tetrahedron element 8655 has an angle between adjacent edges of 172     
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     174.954   TIME= 22:53:19
+ Tetrahedron element 8656 has an aspect ratio of 63.89, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     174.962   TIME= 22:53:19
+ Tetrahedron element 8656 has an angle between adjacent edges of 173     
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.005   TIME= 22:53:19
+ Tetrahedron element 8657 has an aspect ratio of 22.67, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.006   TIME= 22:53:19
+ Tetrahedron element 8657 has an angle between adjacent edges of 170.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.031   TIME= 22:53:19
+ Tetrahedron element 8658 has an aspect ratio of 22.48, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.048   TIME= 22:53:19
+ Tetrahedron element 8658 has an angle between adjacent edges of 170.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.067   TIME= 22:53:19
+ Tetrahedron element 8660 has an aspect ratio of 73.36, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.068   TIME= 22:53:19
+ Tetrahedron element 8660 has an angle between adjacent edges of 175.9   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.068   TIME= 22:53:19
+ Tetrahedron element 8662 has an aspect ratio of 78.78, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.090   TIME= 22:53:19
+ Tetrahedron element 8662 has an angle between adjacent edges of 174.2   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.109   TIME= 22:53:19
+ Tetrahedron element 8663 has an aspect ratio of 45.56, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.149   TIME= 22:53:19
+ Tetrahedron element 8663 has an angle between adjacent edges of 173.3   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.152   TIME= 22:53:19
+ Tetrahedron element 8664 has an aspect ratio of 54.91, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.153   TIME= 22:53:19
+ Tetrahedron element 8664 has an angle between adjacent edges of 173.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.155   TIME= 22:53:19
+ Tetrahedron element 8665 has an aspect ratio of 37.78, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.155   TIME= 22:53:19
+ Tetrahedron element 8665 has an angle between adjacent edges of 169.5   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.156   TIME= 22:53:19
+ Tetrahedron element 8667 has an aspect ratio of 27.9, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.158   TIME= 22:53:19
+ Tetrahedron element 8668 has an aspect ratio of 38.28, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.159   TIME= 22:53:19
+ Tetrahedron element 8668 has an angle between adjacent edges of 168.9   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.159   TIME= 22:53:19
+ Tetrahedron element 8669 has an aspect ratio of 30.59, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.160   TIME= 22:53:19
+ Tetrahedron element 8671 has an aspect ratio of 33.85, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.160   TIME= 22:53:19
+ Tetrahedron element 8671 has an angle between adjacent edges of 166     
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.161   TIME= 22:53:19
+ Tetrahedron element 8672 has an aspect ratio of 33.53, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.162   TIME= 22:53:19
+ Tetrahedron element 8672 has an angle between adjacent edges of 165.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.162   TIME= 22:53:19
+ Tetrahedron element 8674 has an aspect ratio of 47.98, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.162   TIME= 22:53:19
+ Tetrahedron element 8674 has an angle between adjacent edges of 174.8   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.163   TIME= 22:53:19
+ Tetrahedron element 8675 has an aspect ratio of 47.53, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.163   TIME= 22:53:19
+ Tetrahedron element 8675 has an angle between adjacent edges of 172.2   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.164   TIME= 22:53:19
+ Tetrahedron element 8677 has an aspect ratio of 25.5, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.164   TIME= 22:53:19
+ Tetrahedron element 8677 has an angle between adjacent edges of 168.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.164   TIME= 22:53:19
+ Tetrahedron element 8678 has an aspect ratio of 24.42, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.165   TIME= 22:53:19
+ Tetrahedron element 8678 has an angle between adjacent edges of 170.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.165   TIME= 22:53:19
+ Tetrahedron element 8680 has an aspect ratio of 27.99, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.166   TIME= 22:53:19
+ Tetrahedron element 8681 has an aspect ratio of 23.74, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.168   TIME= 22:53:19
+ Tetrahedron element 8681 has an angle between adjacent edges of 170.1   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.168   TIME= 22:53:19
+ Tetrahedron element 8682 has an aspect ratio of 30.28, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.169   TIME= 22:53:19
+ Tetrahedron element 8682 has an angle between adjacent edges of 166.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.169   TIME= 22:53:19
+ Tetrahedron element 8683 has an aspect ratio of 28.17, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.170   TIME= 22:53:19
+ Tetrahedron element 8683 has an angle between adjacent edges of 167.8   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.172   TIME= 22:53:19
+ Tetrahedron element 8684 has an aspect ratio of 33.01, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.172   TIME= 22:53:19
+ Tetrahedron element 8684 has an angle between adjacent edges of 172.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.172   TIME= 22:53:19
+ Tetrahedron element 8685 has an aspect ratio of 29.7, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.173   TIME= 22:53:19
+ Tetrahedron element 8685 has an angle between adjacent edges of 172.3   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.173   TIME= 22:53:19
+ Tetrahedron element 8686 has an angle between adjacent edges of 165.1   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.174   TIME= 22:53:19
+ Tetrahedron element 8687 has an aspect ratio of 25.49, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.174   TIME= 22:53:19
+ Tetrahedron element 8688 has an aspect ratio of 21.63, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.175   TIME= 22:53:19
+ Tetrahedron element 8689 has an aspect ratio of 24.43, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.177   TIME= 22:53:19
+ Tetrahedron element 8690 has an aspect ratio of 25.67, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.178   TIME= 22:53:19
+ Tetrahedron element 8691 has an angle between adjacent edges of 166.5   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.178   TIME= 22:53:19
+ Tetrahedron element 8692 has an aspect ratio of 37.1, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.179   TIME= 22:53:19
+ Tetrahedron element 8692 has an angle between adjacent edges of 173.8   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.179   TIME= 22:53:19
+ Tetrahedron element 8693 has an aspect ratio of 25.07, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.179   TIME= 22:53:19
+ Tetrahedron element 8694 has an aspect ratio of 27.84, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.180   TIME= 22:53:19
+ Tetrahedron element 8696 has an aspect ratio of 22.78, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.180   TIME= 22:53:19
+ Tetrahedron element 8698 has an aspect ratio of 39.71, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.180   TIME= 22:53:19
+ Tetrahedron element 8698 has an angle between adjacent edges of 172.8   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.181   TIME= 22:53:19
+ Tetrahedron element 8701 has an aspect ratio of 23.63, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.181   TIME= 22:53:19
+ Tetrahedron element 8701 has an angle between adjacent edges of 169.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.181   TIME= 22:53:19
+ Tetrahedron element 8702 has an aspect ratio of 24.66, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.182   TIME= 22:53:19
+ Tetrahedron element 8704 has an aspect ratio of 21.91, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.182   TIME= 22:53:19
+ Tetrahedron element 8705 has an angle between adjacent edges of 166.9   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.182   TIME= 22:53:19
+ Tetrahedron element 8706 has an aspect ratio of 30.49, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.183   TIME= 22:53:19
+ Tetrahedron element 8706 has an angle between adjacent edges of 171.6   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.183   TIME= 22:53:19
+ Tetrahedron element 8707 has an aspect ratio of 22.19, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.184   TIME= 22:53:19
+ Tetrahedron element 8711 has an aspect ratio of 29.35, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.184   TIME= 22:53:19
+ Tetrahedron element 8711 has an angle between adjacent edges of 171.1   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.185   TIME= 22:53:19
+ Tetrahedron element 8713 has an aspect ratio of 29.79, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.186   TIME= 22:53:19
+ Tetrahedron element 8713 has an angle between adjacent edges of 172.6   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.186   TIME= 22:53:19
+ Tetrahedron element 8714 has an aspect ratio of 21.96, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.187   TIME= 22:53:19
+ Tetrahedron element 8715 has an aspect ratio of 25.66, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.187   TIME= 22:53:19
+ Tetrahedron element 8716 has an aspect ratio of 24.01, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.188   TIME= 22:53:19
+ Tetrahedron element 8717 has an aspect ratio of 24.14, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.188   TIME= 22:53:19
+ Tetrahedron element 8718 has an aspect ratio of 22.31, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.189   TIME= 22:53:19
+ Tetrahedron element 8719 has an aspect ratio of 30.36, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.189   TIME= 22:53:19
+ Tetrahedron element 8719 has an angle between adjacent edges of 172.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.190   TIME= 22:53:19
+ Tetrahedron element 8720 has an aspect ratio of 24.16, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.190   TIME= 22:53:19
+ Tetrahedron element 8721 has an aspect ratio of 51.19, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.191   TIME= 22:53:19
+ Tetrahedron element 8721 has an angle between adjacent edges of 170.2   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.191   TIME= 22:53:19
+ Tetrahedron element 8722 has an aspect ratio of 51.64, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.192   TIME= 22:53:19
+ Tetrahedron element 8722 has an angle between adjacent edges of 166.1   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.193   TIME= 22:53:19
+ Tetrahedron element 8723 has an aspect ratio of 24.49, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.193   TIME= 22:53:19
+ Tetrahedron element 8724 has an aspect ratio of 25.17, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.194   TIME= 22:53:19
+ Tetrahedron element 8725 has an angle between adjacent edges of 166.5   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.194   TIME= 22:53:19
+ Tetrahedron element 8726 has an aspect ratio of 66.55, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.195   TIME= 22:53:19
+ Tetrahedron element 8726 has an angle between adjacent edges of 173.9   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.195   TIME= 22:53:19
+ Tetrahedron element 8727 has an aspect ratio of 30.79, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.195   TIME= 22:53:19
+ Tetrahedron element 8728 has an aspect ratio of 62.4, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.196   TIME= 22:53:19
+ Tetrahedron element 8729 has an aspect ratio of 74.25, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.206   TIME= 22:53:19
+ Tetrahedron element 8730 has an aspect ratio of 74.26, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.224   TIME= 22:53:19
+ Tetrahedron element 8731 has an aspect ratio of 90.98, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.242   TIME= 22:53:20
+ Tetrahedron element 8731 has an angle between adjacent edges of 167.6   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.243   TIME= 22:53:20
+ Tetrahedron element 8732 has an aspect ratio of 35.35, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.254   TIME= 22:53:20
+ Tetrahedron element 8733 has an aspect ratio of 26.2, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.294   TIME= 22:53:20
+ Tetrahedron element 8733 has an angle between adjacent edges of 169.2   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.320   TIME= 22:53:20
+ Tetrahedron element 8734 has an aspect ratio of 21.29, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.424   TIME= 22:53:20
+ Tetrahedron element 8735 has an aspect ratio of 30.59, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.432   TIME= 22:53:20
+ Tetrahedron element 8736 has an aspect ratio of 24.98, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.487   TIME= 22:53:20
+ Tetrahedron element 8737 has an aspect ratio of 38.1, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.488   TIME= 22:53:20
+ Tetrahedron element 8738 has an aspect ratio of 34.85, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.489   TIME= 22:53:20
+ Tetrahedron element 8738 has an angle between adjacent edges of 170.6   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.492   TIME= 22:53:20
+ Tetrahedron element 8739 has an aspect ratio of 23.77, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.492   TIME= 22:53:20
+ Tetrahedron element 8740 has an aspect ratio of 38.23, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.495   TIME= 22:53:20
+ Tetrahedron element 8740 has an angle between adjacent edges of 172.6   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.496   TIME= 22:53:20
+ Tetrahedron element 8744 has an aspect ratio of 27.94, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.498   TIME= 22:53:20
+ Tetrahedron element 8745 has an aspect ratio of 26.6, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.498   TIME= 22:53:20
+ Tetrahedron element 8746 has an aspect ratio of 25.19, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.499   TIME= 22:53:20
+ Tetrahedron element 8747 has an aspect ratio of 55.84, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.499   TIME= 22:53:20
+ Tetrahedron element 8748 has an aspect ratio of 27.93, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.500   TIME= 22:53:20
+ Tetrahedron element 8749 has an aspect ratio of 34.9, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.502   TIME= 22:53:20
+ Tetrahedron element 8750 has an aspect ratio of 31.12, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.503   TIME= 22:53:20
+ Tetrahedron element 8751 has an aspect ratio of 22.71, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.504   TIME= 22:53:20
+ Tetrahedron element 8752 has an aspect ratio of 29.17, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.505   TIME= 22:53:20
+ Tetrahedron element 8752 has an angle between adjacent edges of 171.6   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.506   TIME= 22:53:20
+ Tetrahedron element 8753 has an aspect ratio of 23.17, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.506   TIME= 22:53:20
+ Tetrahedron element 8753 has an angle between adjacent edges of 168.3   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.508   TIME= 22:53:20
+ Tetrahedron element 8757 has an aspect ratio of 26.39, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.509   TIME= 22:53:20
+ Tetrahedron element 8758 has an aspect ratio of 39.79, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.510   TIME= 22:53:20
+ Tetrahedron element 8758 has an angle between adjacent edges of 173.5   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.511   TIME= 22:53:20
+ Tetrahedron element 8759 has an aspect ratio of 25.89, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.512   TIME= 22:53:20
+ Tetrahedron element 8760 has an aspect ratio of 31.8, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.512   TIME= 22:53:20
+ Tetrahedron element 8761 has an aspect ratio of 22.58, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.513   TIME= 22:53:20
+ Tetrahedron element 8762 has an aspect ratio of 31.13, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.514   TIME= 22:53:20
+ Tetrahedron element 8763 has an aspect ratio of 24.09, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.515   TIME= 22:53:20
+ Tetrahedron element 8764 has an aspect ratio of 25.49, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.516   TIME= 22:53:20
+ Tetrahedron element 8765 has an aspect ratio of 36.8, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.517   TIME= 22:53:20
+ Tetrahedron element 8766 has an aspect ratio of 30.55, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.522   TIME= 22:53:20
+ Tetrahedron element 8767 has an aspect ratio of 25.42, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.522   TIME= 22:53:20
+ Tetrahedron element 8768 has an aspect ratio of 25.5, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.523   TIME= 22:53:20
+ Tetrahedron element 8769 has an aspect ratio of 35.06, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.523   TIME= 22:53:20
+ Tetrahedron element 8770 has an aspect ratio of 35.26, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.524   TIME= 22:53:20
+ Tetrahedron element 8771 has an aspect ratio of 36.77, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.525   TIME= 22:53:20
+ Tetrahedron element 8772 has an aspect ratio of 36.8, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.526   TIME= 22:53:20
+ Tetrahedron element 8773 has an aspect ratio of 37.29, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.527   TIME= 22:53:20
+ Tetrahedron element 8774 has an aspect ratio of 37.3, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.527   TIME= 22:53:20
+ Tetrahedron element 8775 has an aspect ratio of 47.74, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.528   TIME= 22:53:20
+ Tetrahedron element 8776 has an aspect ratio of 37.52, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.529   TIME= 22:53:20
+ Tetrahedron element 8777 has an aspect ratio of 27.01, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.529   TIME= 22:53:20
+ Tetrahedron element 8778 has an aspect ratio of 41.22, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.530   TIME= 22:53:20
+ Tetrahedron element 8778 has an angle between adjacent edges of 174.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.530   TIME= 22:53:20
+ Tetrahedron element 8779 has an aspect ratio of 28.51, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.531   TIME= 22:53:20
+ Tetrahedron element 8780 has an aspect ratio of 43.61, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.531   TIME= 22:53:20
+ Tetrahedron element 8780 has an angle between adjacent edges of 175.1   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.533   TIME= 22:53:20
+ Tetrahedron element 8781 has an aspect ratio of 40.14, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.689   TIME= 22:53:20
+ Tetrahedron element 8781 has an angle between adjacent edges of 170.4   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.772   TIME= 22:53:20
+ Tetrahedron element 8782 has an aspect ratio of 30.5, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.774   TIME= 22:53:20
+ Tetrahedron element 8783 has an aspect ratio of 48.02, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.774   TIME= 22:53:20
+ Tetrahedron element 8784 has an aspect ratio of 62.4, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.775   TIME= 22:53:20
+ Tetrahedron element 8784 has an angle between adjacent edges of 169.9   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.776   TIME= 22:53:20
+ Tetrahedron element 8785 has an aspect ratio of 52.16, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.776   TIME= 22:53:20
+ Tetrahedron element 8785 has an angle between adjacent edges of 166.7   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ *** WARNING ***                         ELAPSED TIME =     175.776   TIME= 22:53:20
+ Tetrahedron element 8786 has an aspect ratio of 45.38, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.777   TIME= 22:53:20
+ Tetrahedron element 8787 has an aspect ratio of 29.2, which exceeds     
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.778   TIME= 22:53:20
+ Tetrahedron element 8788 has an aspect ratio of 23.03, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.779   TIME= 22:53:20
+ Tetrahedron element 8789 has an aspect ratio of 74.29, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.779   TIME= 22:53:20
+ Tetrahedron element 8790 has an aspect ratio of 35.47, which exceeds    
+ the warning limit of 20.                                                
+
+ *** WARNING ***                         ELAPSED TIME =     175.780   TIME= 22:53:20
+ Tetrahedron element 8790 has an angle between adjacent edges of 173.8   
+ degrees, which exceeds the warning limit of 165 degrees.                
+
+ ************************************************************************
+ The number of ERROR and WARNING messages exceeds 200.                   
+ Additional messages suppressed.  See (                                  
+ Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avio 
+ nics\powerboardsim\1\_ProjectScratch\Scr9968\file0.err ) for            
+ suppressed messages.                                                    
+ ************************************************************************
+
+ ELEMENT GEOMETRY HAS BEEN UPDATED USING TOTAL
+ DISPLACEMENTS FROM THE BASE ANALYSIS AT THE RESTART POINT.
+
+ >>>> PRETENSION ELEMENT STATUS <<<<
+ SECTION NAME     PT.NODE  --------STATUS--------------------  ----LOAD SOURCE----
+   629             369771  FIXED RELATIVE MOTION=  0.0000
+   637             373773  FIXED RELATIVE MOTION=  0.0000
+   633             371772  FIXED RELATIVE MOTION=  0.0000
+   645             377775  FIXED RELATIVE MOTION=  0.0000
+   641             375774  FIXED RELATIVE MOTION=  0.0000
+   649             379776  FIXED RELATIVE MOTION=  0.0000
+
+
+                         ***********  PRECISE MASS SUMMARY  ***********
+
+   TOTAL RIGID BODY MASS MATRIX ABOUT ORIGIN
+               Translational mass               |   Coupled translational/rotational mass
+        0.25182        0.0000        0.0000     |     0.0000      -0.18186E-02  -0.15108E-01
+         0.0000       0.25182        0.0000     |    0.18186E-02    0.0000       0.89891E-02
+         0.0000        0.0000       0.25182     |    0.15108E-01  -0.89891E-02    0.0000    
+     ------------------------------------------ | ------------------------------------------
+                                                |         Rotational mass (inertia)
+                                                |    0.11412E-02  -0.54098E-03   0.61943E-04
+                                                |   -0.54098E-03   0.44609E-03   0.11079E-03
+                                                |    0.61943E-04   0.11079E-03   0.15286E-02
+
+   TOTAL MASS = 0.25182    
+     The mass principal axes coincide with the global Cartesian axes
+
+   CENTER OF MASS (X,Y,Z)=   0.35696E-01   0.59993E-01  -0.72216E-02
+
+   TOTAL INERTIA ABOUT CENTER OF MASS
+        0.22170E-03  -0.17048E-05  -0.29717E-05
+       -0.17048E-05   0.11208E-03   0.16886E-05
+       -0.29717E-05   0.16886E-05   0.30137E-03
+
+   PRINCIPAL INERTIAS =   0.22161E-03   0.11204E-03   0.30150E-03
+   ORIENTATION VECTORS OF THE INERTIA PRINCIPAL AXES IN GLOBAL CARTESIAN
+     ( 0.999,-0.015, 0.038) ( 0.015, 1.000,-0.009) (-0.037, 0.009, 0.999) 
+
+
+  *** MASS SUMMARY BY ELEMENT TYPE ***
+
+  TYPE      MASS
+     1  0.638749E-06
+     2  0.638750E-06
+     3  0.108763E-02
+     4  0.493159E-04
+     5  0.638750E-06
+     6  0.638749E-06
+     7  0.493158E-04
+     8  0.638750E-06
+     9  0.638750E-06
+    10  0.693504E-05
+    11  0.180600E-04
+    12  0.180600E-04
+    13  0.638749E-06
+    14  0.638749E-06
+    15  0.638749E-06
+    16  0.638749E-06
+    17  0.127500E-05
+    18  0.150500E-05
+    19  0.638751E-06
+    20  0.638750E-06
+    21  0.108763E-02
+    22  0.493158E-04
+    23  0.493158E-04
+    24  0.638750E-06
+    25  0.638750E-06
+    26  0.493159E-04
+    27  0.493159E-04
+    28  0.638750E-06
+    29  0.165550E-05
+    30  0.638751E-06
+    31  0.638750E-06
+    32  0.108763E-02
+    33  0.493158E-04
+    34  0.638750E-06
+    35  0.638750E-06
+    36  0.493159E-04
+    37  0.638750E-06
+    38  0.108763E-02
+    39  0.165551E-05
+    40  0.638751E-06
+    41  0.638752E-06
+    42  0.638751E-06
+    43  0.638752E-06
+    44  0.638751E-06
+    45  0.638752E-06
+    46  0.638753E-06
+    47  0.638751E-06
+    48  0.638752E-06
+    49  0.638753E-06
+    50  0.638752E-06
+    51  0.638750E-06
+    52  0.638749E-06
+    53  0.638749E-06
+    54  0.638749E-06
+    55  0.638749E-06
+    56  0.108763E-02
+    57  0.493158E-04
+    58  0.638750E-06
+    59  0.638749E-06
+    60  0.493158E-04
+    61  0.638750E-06
+    62  0.638751E-06
+    63  0.638751E-06
+    64  0.638751E-06
+    65  0.638751E-06
+    66  0.638751E-06
+    67  0.493159E-04
+    68  0.638751E-06
+    69  0.638751E-06
+    70  0.493158E-04
+    71  0.638751E-06
+    72  0.108763E-02
+    73  0.638750E-06
+    74  0.638750E-06
+    75  0.210240E-05
+    76  0.705020E-04
+    77  0.210240E-05
+    78  0.210240E-05
+    79  0.210240E-05
+    80  0.583200E-04
+    81  0.841428E-04
+    82  0.841430E-04
+    83  0.210240E-05
+    84  0.210240E-05
+    85  0.139172E-04
+    86  0.208080E-04
+    87  0.139172E-04
+    88  0.207935E-04
+    89  0.139172E-04
+    90  0.139173E-04
+    91  0.146880E-04
+    92  0.324904E-04
+    93  0.248831E-04
+    94  0.139172E-04
+    95  0.146880E-04
+    96  0.248834E-04
+    97  0.139172E-04
+    98  0.208081E-04
+    99  0.200880E-02
+   100  0.830879E-02
+   101  0.423386E-02
+   102  0.562937E-02
+   103  0.339231E-02
+   104  0.339231E-02
+   105  0.283865E-02
+   106  0.130894E-02
+   107  0.489892E-04
+   108  0.130894E-02
+   109  0.130894E-02
+   110  0.283865E-02
+   111  0.166616E-04
+   112  0.921854E-05
+   113  0.748583E-04
+   114  0.209386E-04
+   115  0.485888E-04
+   116  0.638750E-06
+   117  0.638750E-06
+   118  0.638749E-06
+   119  0.638749E-06
+   120  0.485888E-04
+   121  0.638748E-06
+   122  0.638750E-06
+   123  0.638749E-06
+   124  0.638748E-06
+   125  0.638749E-06
+   126  0.638748E-06
+   127  0.638750E-06
+   128  0.638750E-06
+   129  0.485889E-04
+   130  0.638750E-06
+   131  0.638750E-06
+   132  0.638750E-06
+   133  0.638750E-06
+   134  0.638750E-06
+   135  0.485888E-04
+   136  0.638750E-06
+   137  0.638750E-06
+   138  0.638750E-06
+   139  0.638750E-06
+   140  0.638750E-06
+   141  0.638750E-06
+   142  0.638753E-06
+   143  0.638751E-06
+   144  0.638751E-06
+   145  0.530739E-04
+   146  0.638752E-06
+   147  0.638751E-06
+   148  0.638751E-06
+   149  0.638752E-06
+   150  0.638753E-06
+   151  0.638751E-06
+   152  0.638752E-06
+   153  0.638751E-06
+   154  0.638751E-06
+   155  0.485889E-04
+   156  0.638749E-06
+   157  0.638749E-06
+   158  0.638749E-06
+   159  0.638749E-06
+   160  0.485888E-04
+   161  0.638750E-06
+   162  0.638749E-06
+   163  0.638749E-06
+   164  0.638751E-06
+   165  0.638751E-06
+   166  0.485889E-04
+   167  0.638749E-06
+   168  0.638751E-06
+   169  0.638751E-06
+   170  0.638750E-06
+   171  0.138600E-04
+   172  0.739058E-04
+   173  0.109551E-02
+   174  0.615316E-03
+   175  0.138425E-03
+   176  0.553788E-01
+   177  0.138451E-03
+   178  0.109551E-02
+   179  0.615308E-03
+   180  0.615316E-03
+   181  0.109551E-02
+   182  0.109551E-02
+   183  0.109551E-02
+   184  0.138424E-03
+   185  0.138424E-03
+   186  0.615319E-03
+   187  0.553772E-01
+   188  0.138430E-03
+   189  0.615313E-03
+   190  0.138424E-03
+   191  0.553784E-01
+   192  0.109551E-02
+   193  0.615313E-03
+   194  0.528164E-03
+   195  0.528163E-03
+   196  0.528166E-03
+   197  0.528170E-03
+   198  0.528179E-03
+   199  0.528175E-03
+   200  0.108948E-02
+   201  0.108480E-02
+   202  0.108839E-02
+   203  0.109309E-02
+   204  0.109266E-02
+   205  0.108676E-02
+   206  0.108500E-02
+   207  0.109089E-02
+   208  0.176971E-01
+
+  BLOCK LANCZOS CALCULATION OF UP TO    20 EIGENVECTORS.
+  NUMBER OF EQUATIONS              =      1071426
+  MAXIMUM WAVEFRONT                =         2121
+  MAXIMUM MODES STORED             =           20
+  MINIMUM EIGENVALUE               =  0.10000E+01
+  MAXIMUM EIGENVALUE               =  0.10000E+05
+
+
+
+  Memory allocated on only this MPI rank (rank     0)
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =   803.225 MB
+  Equation solver memory required for in-core mode     =   765.301 MB
+  Equation solver memory required for out-of-core mode =   301.520 MB
+  Total (solver and non-solver) memory allocated       =  4197.654 MB
+
+
+  Total memory summed across all MPI ranks on this machines
+  -------------------------------------------------------------------
+  Equation solver memory allocated                     =  9068.150 MB
+  Equation solver memory required for in-core mode     =  8639.944 MB
+  Equation solver memory required for out-of-core mode =  2823.682 MB
+  Total (solver and non-solver) memory allocated       = 25384.177 MB
+
+ *** NOTE ***                            ELAPSED TIME =     398.034   TIME= 22:57:02
+ The Distributed Sparse Matrix Solver is currently running in the        
+ in-core memory mode.  This memory mode uses the most amount of memory   
+ in order to avoid using the hard drive as much as possible, which most  
+ often results in the fastest solution time.  This mode is recommended   
+ if enough physical memory is present to accommodate all of the solver   
+ data.                                                                   
+
+  Process memory required for in-core LANCZOS Workspace             =     567.251968 MB
+  Process memory required for out-of-core LANCZOS Workspace         =     13.977188 MB
+
+  Total   memory required for in-core LANCZOS Workspace             =     4.028960 GB
+  Total   memory required for out-of-core LANCZOS Workspace         =     103.884155 MB
+
+  Lanczos Memory Mode : INCORE
+
+
+  >> Shift # 1 :  | | |                              : 20 Eigenvalues Converged
+
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:59:19  OCT 04, 2026 Elapsed Time=    534.275
+
+ powerboardsim_v1--BOLTED750 - 20 undamped prestressed modes (C5)              
+
+
+
+ *** FREQUENCIES FROM BLOCK LANCZOS ITERATION ***
+
+  MODE    FREQUENCY (HERTZ)      
+
+
+
+   FREQUENCY RANGE REQUESTED=   1.00000       10000.0    
+    1     485.9642682124    
+    2     596.9636137822    
+    3     645.4349432986    
+    4     781.3503271598    
+    5     820.2421728548    
+    6     826.2959235207    
+    7     1122.017799740    
+    8     1139.111902285    
+    9     1199.707847319    
+   10     1366.075890278    
+   11     1467.899918362    
+   12     1714.133858359    
+   13     1941.548283511    
+   14     2003.039343132    
+   15     2017.959246598    
+   16     2135.663217659    
+   17     2183.755233410    
+   18     2212.559556246    
+   19     2301.313886962    
+   20     2364.179119658    
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   22:59:36  OCT 04, 2026 Elapsed Time=    551.568
+
+ powerboardsim_v1--BOLTED750 - 20 undamped prestressed modes (C5)              
+
+
+
+
+
+          ***** PARTICIPATION FACTOR CALCULATION *****  X  DIRECTION
+                                                                                  CUMULATIVE     RATIO EFF.MASS
+  MODE   FREQUENCY       PERIOD      PARTIC.FACTOR     RATIO    EFFECTIVE MASS   MASS FRACTION   TO TOTAL MASS
+     1     485.964       0.20578E-02  -0.12089E-02    0.004318    0.146133E-05    0.101125E-04    0.580300E-05
+     2     596.964       0.16751E-02  -0.77488E-03    0.002768    0.600439E-06    0.142675E-04    0.238436E-05
+     3     645.435       0.15493E-02   0.24448        0.873354    0.597687E-01    0.413615        0.237343    
+     4     781.350       0.12798E-02   0.27993        1.000000    0.783596E-01    0.955866        0.311168    
+     5     820.242       0.12192E-02   0.31344E-01    0.111973    0.982476E-03    0.962665        0.390144E-02
+     6     826.296       0.12102E-02  -0.19191E-01    0.068558    0.368305E-03    0.965213        0.146255E-02
+     7     1122.02       0.89125E-03  -0.21325E-01    0.076181    0.454766E-03    0.968360        0.180589E-02
+     8     1139.11       0.87788E-03   0.18119E-01    0.064727    0.328292E-03    0.970632        0.130366E-02
+     9     1199.71       0.83354E-03   0.24672E-02    0.008814    0.608725E-05    0.970674        0.241726E-04
+    10     1366.08       0.73202E-03   0.12109E-01    0.043256    0.146620E-03    0.971689        0.582231E-03
+    11     1467.90       0.68125E-03   0.92422E-02    0.033016    0.854175E-04    0.972280        0.339195E-03
+    12     1714.13       0.58339E-03  -0.21067E-02    0.007526    0.443823E-05    0.972311        0.176243E-04
+    13     1941.55       0.51505E-03   0.19962E-01    0.071311    0.398484E-03    0.975068        0.158239E-02
+    14     2003.04       0.49924E-03  -0.25654E-01    0.091644    0.658118E-03    0.979622        0.261340E-02
+    15     2017.96       0.49555E-03  -0.51740E-01    0.184834    0.267704E-02    0.998148        0.106306E-01
+    16     2135.66       0.46824E-03   0.12216E-01    0.043638    0.149221E-03    0.999180        0.592562E-03
+    17     2183.76       0.45793E-03  -0.98745E-02    0.035275    0.975061E-04    0.999855        0.387199E-03
+    18     2212.56       0.45197E-03  -0.35948E-02    0.012842    0.129227E-04    0.999944        0.513163E-04
+    19     2301.31       0.43453E-03   0.60845E-03    0.002174    0.370210E-06    0.999947        0.147011E-05
+    20     2364.18       0.42298E-03  -0.27710E-02    0.009899    0.767839E-05     1.00000        0.304911E-04
+ -----------------------------------------------------------------------------------------------------------------
+   sum                                                            0.144508                        0.573845    
+ -----------------------------------------------------------------------------------------------------------------
+
+
+
+          ***** PARTICIPATION FACTOR CALCULATION *****  Y  DIRECTION
+                                                                                  CUMULATIVE     RATIO EFF.MASS
+  MODE   FREQUENCY       PERIOD      PARTIC.FACTOR     RATIO    EFFECTIVE MASS   MASS FRACTION   TO TOTAL MASS
+     1     485.964       0.20578E-02   0.33945E-01    0.085209    0.115226E-02    0.567297E-02    0.457565E-02
+     2     596.964       0.16751E-02  -0.22043E-01    0.055332    0.485889E-03    0.806517E-02    0.192948E-02
+     3     645.435       0.15493E-02  -0.26727E-02    0.006709    0.714357E-05    0.810034E-02    0.283673E-04
+     4     781.350       0.12798E-02  -0.16915E-03    0.000425    0.286112E-07    0.810048E-02    0.113616E-06
+     5     820.242       0.12192E-02   0.16167E-02    0.004058    0.261364E-05    0.811335E-02    0.103788E-04
+     6     826.296       0.12102E-02  -0.24153E-02    0.006063    0.583358E-05    0.814207E-02    0.231653E-04
+     7     1122.02       0.89125E-03  -0.17906E-02    0.004495    0.320628E-05    0.815785E-02    0.127322E-04
+     8     1139.11       0.87788E-03  -0.60871E-02    0.015280    0.370528E-04    0.834028E-02    0.147138E-03
+     9     1199.71       0.83354E-03   0.16354E-01    0.041053    0.267469E-03    0.965712E-02    0.106213E-02
+    10     1366.08       0.73202E-03   0.98534E-02    0.024734    0.970892E-04    0.101351E-01    0.385544E-03
+    11     1467.90       0.68125E-03   0.69278E-02    0.017390    0.479940E-04    0.103714E-01    0.190585E-03
+    12     1714.13       0.58339E-03  -0.29517E-02    0.007409    0.871230E-05    0.104143E-01    0.345968E-04
+    13     1941.55       0.51505E-03   0.20943E-01    0.052572    0.438619E-03    0.125738E-01    0.174177E-02
+    14     2003.04       0.49924E-03   0.48744E-01    0.122359    0.237601E-02    0.242717E-01    0.943519E-02
+    15     2017.96       0.49555E-03  -0.32096E-01    0.080567    0.103013E-02    0.293434E-01    0.409068E-02
+    16     2135.66       0.46824E-03   0.15530        0.389837    0.241181E-01    0.148085        0.957736E-01
+    17     2183.76       0.45793E-03   0.39837        1.000000    0.158700        0.929419        0.630202    
+    18     2212.56       0.45197E-03  -0.19810E-01    0.049727    0.392430E-03    0.931351        0.155835E-02
+    19     2301.31       0.43453E-03  -0.25987E-01    0.065233    0.675333E-03    0.934676        0.268176E-02
+    20     2364.18       0.42298E-03  -0.11519        0.289146    0.132682E-01     1.00000        0.526882E-01
+ -----------------------------------------------------------------------------------------------------------------
+   sum                                                            0.203114                        0.806571    
+ -----------------------------------------------------------------------------------------------------------------
+
+
+
+          ***** PARTICIPATION FACTOR CALCULATION *****  Z  DIRECTION
+                                                                                  CUMULATIVE     RATIO EFF.MASS
+  MODE   FREQUENCY       PERIOD      PARTIC.FACTOR     RATIO    EFFECTIVE MASS   MASS FRACTION   TO TOTAL MASS
+     1     485.964       0.20578E-02   0.91954E-01    0.307556    0.845563E-02    0.434646E-01    0.335775E-01
+     2     596.964       0.16751E-02   0.63605E-01    0.212737    0.404562E-02    0.642603E-01    0.160653E-01
+     3     645.435       0.15493E-02   0.11249E-01    0.037625    0.126547E-03    0.649108E-01    0.502523E-03
+     4     781.350       0.12798E-02  -0.70758E-02    0.023666    0.500668E-04    0.651682E-01    0.198817E-03
+     5     820.242       0.12192E-02  -0.24658E-01    0.082474    0.608041E-03    0.682937E-01    0.241455E-02
+     6     826.296       0.12102E-02   0.10069        0.336782    0.101390E-01    0.120411        0.402623E-01
+     7     1122.02       0.89125E-03  -0.29172E-02    0.009757    0.851030E-05    0.120455        0.337946E-04
+     8     1139.11       0.87788E-03   0.10371        0.346866    0.107553E-01    0.175741        0.427094E-01
+     9     1199.71       0.83354E-03  -0.38174E-01    0.127680    0.145727E-02    0.183231        0.578686E-02
+    10     1366.08       0.73202E-03   0.12674E-01    0.042390    0.160628E-03    0.184057        0.637856E-03
+    11     1467.90       0.68125E-03   0.11208        0.374859    0.125612E-01    0.248626        0.498809E-01
+    12     1714.13       0.58339E-03   0.10231        0.342183    0.104668E-01    0.302428        0.415639E-01
+    13     1941.55       0.51505E-03  -0.11709E-01    0.039161    0.137090E-03    0.303133        0.544389E-03
+    14     2003.04       0.49924E-03  -0.96423E-01    0.322502    0.929743E-02    0.350925        0.369203E-01
+    15     2017.96       0.49555E-03   0.40160E-01    0.134322    0.161284E-02    0.359215        0.640463E-02
+    16     2135.66       0.46824E-03  -0.86831E-01    0.290419    0.753959E-02    0.397971        0.299399E-01
+    17     2183.76       0.45793E-03   0.34937E-01    0.116851    0.122057E-02    0.404245        0.484690E-02
+    18     2212.56       0.45197E-03   0.29898        1.000000    0.893916E-01    0.863746        0.354976    
+    19     2301.31       0.43453E-03  -0.28558E-01    0.095517    0.815569E-03    0.867939        0.323864E-02
+    20     2364.18       0.42298E-03  -0.16029        0.536099    0.256913E-01     1.00000        0.102021    
+ -----------------------------------------------------------------------------------------------------------------
+   sum                                                            0.194541                        0.772526    
+ -----------------------------------------------------------------------------------------------------------------
+
+
+
+          ***** PARTICIPATION FACTOR CALCULATION *****ROTX DIRECTION
+                                                                                  CUMULATIVE     RATIO EFF.MASS
+  MODE   FREQUENCY       PERIOD      PARTIC.FACTOR     RATIO    EFFECTIVE MASS   MASS FRACTION   TO TOTAL MASS
+     1     485.964       0.20578E-02  -0.59008E-03    0.032761    0.348193E-06    0.434365E-03    0.305117E-03
+     2     596.964       0.16751E-02   0.83585E-02    0.464060    0.698650E-04    0.875900E-01    0.612218E-01
+     3     645.435       0.15493E-02   0.71131E-03    0.039492    0.505966E-06    0.882212E-01    0.443372E-03
+     4     781.350       0.12798E-02  -0.43031E-03    0.023891    0.185167E-06    0.884522E-01    0.162259E-03
+     5     820.242       0.12192E-02  -0.16964E-02    0.094186    0.287794E-05    0.920424E-01    0.252190E-02
+     6     826.296       0.12102E-02   0.69918E-02    0.388178    0.488848E-04    0.153026        0.428371E-01
+     7     1122.02       0.89125E-03   0.59236E-03    0.032887    0.350888E-06    0.153463        0.307479E-03
+     8     1139.11       0.87788E-03   0.79440E-02    0.441046    0.631073E-04    0.232189        0.553001E-01
+     9     1199.71       0.83354E-03  -0.46426E-02    0.257754    0.215538E-04    0.259077        0.188873E-01
+    10     1366.08       0.73202E-03   0.28483E-02    0.158137    0.811298E-05    0.269198        0.710930E-02
+    11     1467.90       0.68125E-03   0.65277E-02    0.362412    0.426106E-04    0.322354        0.373391E-01
+    12     1714.13       0.58339E-03   0.42548E-02    0.236221    0.181029E-04    0.344937        0.158633E-01
+    13     1941.55       0.51505E-03  -0.74107E-03    0.041144    0.549187E-06    0.345622        0.481246E-03
+    14     2003.04       0.49924E-03  -0.54114E-02    0.300439    0.292836E-04    0.382153        0.256608E-01
+    15     2017.96       0.49555E-03   0.24125E-02    0.133939    0.582003E-05    0.389413        0.510002E-02
+    16     2135.66       0.46824E-03  -0.30575E-02    0.169749    0.934819E-05    0.401075        0.819170E-02
+    17     2183.76       0.45793E-03   0.59999E-02    0.333111    0.359990E-04    0.445983        0.315455E-01
+    18     2212.56       0.45197E-03   0.18012E-01    1.000000    0.324423E-03    0.850697        0.284288    
+    19     2301.31       0.43453E-03  -0.20131E-02    0.111764    0.405242E-05    0.855752        0.355108E-02
+    20     2364.18       0.42298E-03  -0.10753E-01    0.597009    0.115631E-03     1.00000        0.101326    
+ -----------------------------------------------------------------------------------------------------------------
+   sum                                                            0.801612E-03                    0.702442    
+ -----------------------------------------------------------------------------------------------------------------
+
+
+
+          ***** PARTICIPATION FACTOR CALCULATION *****ROTY DIRECTION
+                                                                                  CUMULATIVE     RATIO EFF.MASS
+  MODE   FREQUENCY       PERIOD      PARTIC.FACTOR     RATIO    EFFECTIVE MASS   MASS FRACTION   TO TOTAL MASS
+     1     485.964       0.20578E-02  -0.37617E-02    0.442705    0.141502E-04    0.396806E-01    0.317205E-01
+     2     596.964       0.16751E-02  -0.33477E-02    0.393981    0.112068E-04    0.711074E-01    0.251225E-01
+     3     645.435       0.15493E-02  -0.46368E-02    0.545693    0.214996E-04    0.131398        0.481959E-01
+     4     781.350       0.12798E-02  -0.38662E-02    0.455004    0.149474E-04    0.173314        0.335076E-01
+     5     820.242       0.12192E-02   0.10203E-02    0.120079    0.104105E-05    0.176233        0.233373E-02
+     6     826.296       0.12102E-02  -0.60386E-02    0.710671    0.364645E-04    0.278489        0.817430E-01
+     7     1122.02       0.89125E-03  -0.65564E-03    0.077161    0.429865E-06    0.279694        0.963633E-03
+     8     1139.11       0.87788E-03  -0.15907E-02    0.187208    0.253035E-05    0.286790        0.567232E-02
+     9     1199.71       0.83354E-03   0.19942E-02    0.234694    0.397685E-05    0.297942        0.891494E-02
+    10     1366.08       0.73202E-03   0.44716E-03    0.052626    0.199953E-06    0.298503        0.448237E-03
+    11     1467.90       0.68125E-03  -0.43966E-02    0.517425    0.193298E-04    0.352709        0.433318E-01
+    12     1714.13       0.58339E-03  -0.40351E-02    0.474880    0.162818E-04    0.398367        0.364990E-01
+    13     1941.55       0.51505E-03   0.25168E-03    0.029620    0.633438E-07    0.398544        0.141998E-03
+    14     2003.04       0.49924E-03   0.50233E-02    0.591185    0.252336E-04    0.469306        0.565664E-01
+    15     2017.96       0.49555E-03  -0.21582E-02    0.253990    0.465765E-05    0.482367        0.104411E-01
+    16     2135.66       0.46824E-03   0.84970E-02    1.000000    0.721993E-04    0.684832        0.161850    
+    17     2183.76       0.45793E-03  -0.31463E-02    0.370277    0.989891E-05    0.712591        0.221905E-01
+    18     2212.56       0.45197E-03  -0.79697E-02    0.937940    0.635160E-04    0.890706        0.142384    
+    19     2301.31       0.43453E-03  -0.26588E-02    0.312914    0.706939E-05    0.910530        0.158475E-01
+    20     2364.18       0.42298E-03   0.56485E-02    0.664757    0.319050E-04     1.00000        0.715218E-01
+ -----------------------------------------------------------------------------------------------------------------
+   sum                                                            0.356601E-03                    0.799397    
+ -----------------------------------------------------------------------------------------------------------------
+
+
+
+          ***** PARTICIPATION FACTOR CALCULATION *****ROTZ DIRECTION
+                                                                                  CUMULATIVE     RATIO EFF.MASS
+  MODE   FREQUENCY       PERIOD      PARTIC.FACTOR     RATIO    EFFECTIVE MASS   MASS FRACTION   TO TOTAL MASS
+     1     485.964       0.20578E-02   0.14252E-02    0.084709    0.203114E-05    0.247859E-02    0.132877E-02
+     2     596.964       0.16751E-02  -0.12459E-02    0.074051    0.155217E-05    0.437270E-02    0.101543E-02
+     3     645.435       0.15493E-02  -0.14908E-01    0.886125    0.222263E-03    0.275599        0.145404    
+     4     781.350       0.12798E-02  -0.16824E-01    1.000000    0.283060E-03    0.621015        0.185177    
+     5     820.242       0.12192E-02  -0.19665E-02    0.116884    0.386710E-05    0.625734        0.252985E-02
+     6     826.296       0.12102E-02   0.11880E-02    0.070612    0.141134E-05    0.627456        0.923295E-03
+     7     1122.02       0.89125E-03   0.25701E-03    0.015276    0.660517E-07    0.627537        0.432109E-04
+     8     1139.11       0.87788E-03  -0.13899E-02    0.082610    0.193174E-05    0.629894        0.126374E-02
+     9     1199.71       0.83354E-03   0.50035E-03    0.029740    0.250351E-06    0.630200        0.163779E-03
+    10     1366.08       0.73202E-03  -0.91958E-03    0.054658    0.845636E-06    0.631232        0.553213E-03
+    11     1467.90       0.68125E-03  -0.46441E-03    0.027604    0.215680E-06    0.631495        0.141097E-03
+    12     1714.13       0.58339E-03  -0.29031E-03    0.017255    0.842771E-07    0.631598        0.551339E-04
+    13     1941.55       0.51505E-03   0.14281E-02    0.084884    0.203955E-05    0.634087        0.133427E-02
+    14     2003.04       0.49924E-03   0.56410E-02    0.335290    0.318214E-04    0.672918        0.208175E-01
+    15     2017.96       0.49555E-03   0.50916E-02    0.302629    0.259239E-04    0.704553        0.169594E-01
+    16     2135.66       0.46824E-03   0.50733E-02    0.301545    0.257384E-04    0.735961        0.168380E-01
+    17     2183.76       0.45793E-03   0.10468E-01    0.622198    0.109581E-03    0.869682        0.716877E-01
+    18     2212.56       0.45197E-03  -0.14474E-02    0.086030    0.209498E-05    0.872239        0.137053E-02
+    19     2301.31       0.43453E-03  -0.23403E-02    0.139103    0.547710E-05    0.878923        0.358311E-02
+    20     2364.18       0.42298E-03  -0.99609E-02    0.592053    0.992199E-04     1.00000        0.649094E-01
+ -----------------------------------------------------------------------------------------------------------------
+   sum                                                            0.819475E-03                    0.536099    
+ -----------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+ *** NOTE ***                            ELAPSED TIME =     551.728   TIME= 22:59:36
+ The modes requested are mass normalized (Nrmkey on MODOPT).  However,   
+ the modal masses and kinetic energies below are calculated with unit    
+ normalized modes.                                                       
+
+        ***** MODAL MASSES, KINETIC ENERGIES, AND TRANSLATIONAL EFFECTIVE MASSES SUMMARY *****
+
+                                                                         EFFECTIVE MASS
+  MODE  FREQUENCY   MODAL MASS     KENE      |      X-DIR      RATIO%   Y-DIR      RATIO%   Z-DIR      RATIO% 
+     1   486.0      0.4387E-02  0.2045E+05   |    0.1461E-05    0.00  0.1152E-02    0.46  0.8456E-02    3.36
+     2   597.0      0.3352E-02  0.2358E+05   |    0.6004E-06    0.00  0.4859E-03    0.19  0.4046E-02    1.61
+     3   645.4      0.2284E-01  0.1878E+06   |    0.5977E-01   23.73  0.7144E-05    0.00  0.1265E-03    0.05
+     4   781.4      0.3824E-01  0.4609E+06   |    0.7836E-01   31.12  0.2861E-07    0.00  0.5007E-04    0.02
+     5   820.2      0.3924E-01  0.5212E+06   |    0.9825E-03    0.39  0.2614E-05    0.00  0.6080E-03    0.24
+     6   826.3      0.2689E-02  0.3623E+05   |    0.3683E-03    0.15  0.5834E-05    0.00  0.1014E-01    4.03
+     7   1122.      0.3009E-02  0.7478E+05   |    0.4548E-03    0.18  0.3206E-05    0.00  0.8510E-05    0.00
+     8   1139.      0.1817E-02  0.4654E+05   |    0.3283E-03    0.13  0.3705E-04    0.01  0.1076E-01    4.27
+     9   1200.      0.6802E-02  0.1933E+06   |    0.6087E-05    0.00  0.2675E-03    0.11  0.1457E-02    0.58
+    10   1366.      0.8618E-03  0.3175E+05   |    0.1466E-03    0.06  0.9709E-04    0.04  0.1606E-03    0.06
+    11   1468.      0.3044E-02  0.1295E+06   |    0.8542E-04    0.03  0.4799E-04    0.02  0.1256E-01    4.99
+    12   1714.      0.1580E-02  0.9165E+05   |    0.4438E-05    0.00  0.8712E-05    0.00  0.1047E-01    4.16
+    13   1942.      0.3036E-02  0.2259E+06   |    0.3985E-03    0.16  0.4386E-03    0.17  0.1371E-03    0.05
+    14   2003.      0.2481E-02  0.1965E+06   |    0.6581E-03    0.26  0.2376E-02    0.94  0.9297E-02    3.69
+    15   2018.      0.1855E-02  0.1491E+06   |    0.2677E-02    1.06  0.1030E-02    0.41  0.1613E-02    0.64
+    16   2136.      0.2219E-01  0.1998E+07   |    0.1492E-03    0.06  0.2412E-01    9.58  0.7540E-02    2.99
+    17   2184.      0.8988E-01  0.8461E+07   |    0.9751E-04    0.04  0.1587       63.02  0.1221E-02    0.48
+    18   2213.      0.6822E-02  0.6592E+06   |    0.1292E-04    0.01  0.3924E-03    0.16  0.8939E-01   35.50
+    19   2301.      0.2518E-01  0.2632E+07   |    0.3702E-06    0.00  0.6753E-03    0.27  0.8156E-03    0.32
+    20   2364.      0.1951E-01  0.2153E+07   |    0.7678E-05    0.00  0.1327E-01    5.27  0.2569E-01   10.20
+ --------------------------------------------------------------------------------------------------------------
+   sum                                       |    0.1445       57.38  0.2031       80.66  0.1945       77.25
+ --------------------------------------------------------------------------------------------------------------
+
+
+ *** MAPDL BINARY FILE STATISTICS
+  BUFFER SIZE USED= 16384
+      390.375 MB WRITTEN ON ELEMENT MATRIX FILE: file0.emat
+      114.000 MB WRITTEN ON ELEMENT SAVED DATA FILE: file0.esav
+      274.375 MB WRITTEN ON ASSEMBLED MATRIX FILE: file0.full
+       26.000 MB WRITTEN ON MODAL MATRIX FILE: file0.mode
+       36.062 MB WRITTEN ON RESULTS FILE: file0.rst
+
+ DELETE ALL SPECIFIED NODAL LOADS FROM NODE         1 TO    379902 BY       1
+
+ NUMBER OF NODAL LOADS DELETED=       0
+
+ ACEL=    0.0000      0.0000      0.0000    
+
+  CMOMEGA on ALL components are being deleted.
+
+ CGOMGA=  0.0000      0.0000      0.0000    
+
+ CMDOMEGA on ALL components are being deleted.
+
+ DCGOMG=  0.0000      0.0000      0.0000    
+ *************** Write FE CONNECTORS *********
+
+ WRITE OUT CONSTRAINT EQUATIONS TO FILE= file.ce                                                                                                                                                                                                                                                             
+
+ *GET  _NMODALSOLPROC  FROM  ACTI  ITEM=NUMC       VALUE=  12.0000000    
+
+ FINISH SOLUTION PROCESSING
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =       609.297
+
+
+
+ PRINTOUT RESUMED BY /GOP
+
+ *GET  _WALLASOL  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.169257267    
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   23:00:34  OCT 04, 2026 Elapsed Time=    609.384
+
+ powerboardsim_v1--BOLTED750 - 20 undamped prestressed modes (C5)              
+
+
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ *** NOTE ***                            ELAPSED TIME =     609.385   TIME= 23:00:34
+ Reading results into the database (SET command) will update the current 
+ displacement and force boundary conditions in the database with the     
+ values from the results file for that load set.  Note that any          
+ subsequent solutions will use these values unless action is taken to    
+ either SAVE the current values or not overwrite them (/EXIT,NOSAVE).    
+
+ *** NOTE ***                            ELAPSED TIME =     609.386   TIME= 23:00:34
+ The nodal coordinates were updated from their original locations during 
+ a prior operation (an explicit UPCOORD or UPGEOM, or a linear           
+ perturbation analysis).                                                 
+
+ PRINTOUT RESUMED BY /GOP
+
+ PARAMETER _MECHOBJID =     4139.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     0.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     609.727   TIME= 23:00:34
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER _MECHOBJID =     4147.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     0.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     609.728   TIME= 23:00:34
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER _MECHOBJID =     4155.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     0.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     609.728   TIME= 23:00:34
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER _MECHOBJID =     4163.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     0.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     609.729   TIME= 23:00:34
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER _MECHOBJID =     4171.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     0.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     609.730   TIME= 23:00:34
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ PARAMETER _MECHOBJID =     4179.000000    
+
+ PARAMETER _MECHANALYSISSTEP =     0.000000000    
+
+ SET PARAMETER DIMENSIONS ON  _APDLBOLTCSIDS
+  TYPE=ARRA  DIMENSIONS=        1        1        1
+
+ *** WARNING ***                         ELAPSED TIME =     609.731   TIME= 23:00:34
+ Parameter _APDLBOLTCSIDS already exists.  It is deleted and redefined   
+ by the *DIM command.                                                    
+
+ PARAMETER _APDLBOLTCSIDS(1) =     12.00000000    
+
+ PARAMETER _BOLTZLOC =     0.000000000    
+
+ PARAMETER _NUTWASHERZLOC =     0.000000000    
+
+ PARAMETER _NUTZLOC =     0.000000000    
+
+ Set Encoding of XML File to:ISO-8859-1
+
+ Set Output of XML File to:
+     PARM,     ,     ,     ,     ,     ,     ,     ,     ,     ,     ,     ,
+         ,     ,     ,     ,     ,     ,     ,
+
+ DATABASE WRITTEN ON FILE  parm.xml                                                                                                                                                                                                                                                            
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =       609.735
+
+
+
+ PRINTOUT RESUMED BY /GOP
+
+ *GET  _WALLDONE  FROM  ACTI  ITEM=TIME WALL  VALUE= 0.169370864    
+
+ PARAMETER _PREPTIME =     20.19948792    
+
+ PARAMETER _SOLVTIME =     576.7306736    
+
+ PARAMETER _POSTTIME =    0.4089497083    
+
+ PARAMETER _TOTALTIM =     597.3391113    
+
+ *GET  _DLBRATIO  FROM  ACTI  ITEM=SOLU DLBR  VALUE=  1.82363490    
+
+ *GET  _COMBTIME  FROM  ACTI  ITEM=SOLU COMB  VALUE=  39.2478791    
+
+ *GET  _SSMODE   FROM  ACTI  ITEM=SOLU SSMM  VALUE=  2.00000000    
+
+ *GET  _NDOFS    FROM  ACTI  ITEM=SOLU NDOF  VALUE=  1071426.00    
+
+ /FCLEAN COMMAND REMOVING ALL LOCAL FILES
+ --- Total number of nodes = 369590
+ --- Total number of elements = 248516
+ --- Element load balance ratio = 1.8236349
+ --- Time to combine distributed files = 39.2478791
+ --- Sparse memory mode = 2
+ --- Number of DOF = 1071426
+
+ EXIT MAPDL WITHOUT SAVING DATABASE
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=       2250
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
+ *** WARNING ***                         ELAPSED TIME =     627.082   TIME= 23:00:51
+ During this session the elapsed time exceeds the CPU time by 35%.  This 
+ often indicates either a lack of physical memory (RAM) required to      
+ efficiently handle this simulation or a particularly slow hard drive    
+ configuration.  This simulation can be expected to run faster on        
+ identical hardware if additional RAM or a faster hard drive             
+ configuration is made available.  For more details, please see the      
+ Mechanical APDL Performance Guide which is part of the Ansys Help       
+ system.                                                                 
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2026 R1.02         Build: 26.1       Update: UP20260202   Platform: WINDOWS x64 
+Date Run: 10/04/2026   Time: 23:00     Process ID: 14872
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model:                           Virtual CPU @ 3.20GHz
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          AOCL-BLAS 5.1.1 Build 20251008
+          Intel(R) oneAPI Math Kernel Library Version 2024.2.3-Product Build 20250403
+
+Number of machines requested            :    1
+Total number of cores available         :   14
+Number of physical cores available      :   14
+Number of processes requested           :   12
+Number of threads per process requested :    1
+Total number of cores requested         :   12 (Distributed Memory Parallel)               
+MPI Type: INTELMPI
+MPI Version: Intel(R) MPI Library 2021.16 for Windows* OS
+
+
+GPU Acceleration: Not Requested
+
+Job Name: file0
+Input File: dummy.dat
+
+  Core                Machine Name   Working Directory
+ -----------------------------------------------------
+     0             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     1             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     2             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     3             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     4             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     5             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     6             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     7             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     8             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+     9             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+    10             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+    11             MARCDNICHITBF25   Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\_ProjectScratch\Scr9968
+ 
+Latency time from master to core     1 =   33.034 microseconds
+Latency time from master to core     2 =   32.744 microseconds
+Latency time from master to core     3 =  519.157 microseconds
+Latency time from master to core     4 =   38.090 microseconds
+Latency time from master to core     5 =   28.650 microseconds
+Latency time from master to core     6 =   30.027 microseconds
+Latency time from master to core     7 =  212.276 microseconds
+Latency time from master to core     8 =  257.830 microseconds
+Latency time from master to core     9 =   30.436 microseconds
+Latency time from master to core    10 =   32.467 microseconds
+Latency time from master to core    11 =  524.296 microseconds
+ 
+Communication speed from master to core     1 =  2020.32 MB/sec
+Communication speed from master to core     2 =   440.92 MB/sec
+Communication speed from master to core     3 =   290.94 MB/sec
+Communication speed from master to core     4 =   284.38 MB/sec
+Communication speed from master to core     5 =   332.17 MB/sec
+Communication speed from master to core     6 =   286.40 MB/sec
+Communication speed from master to core     7 =  2025.87 MB/sec
+Communication speed from master to core     8 =   291.88 MB/sec
+Communication speed from master to core     9 =   288.62 MB/sec
+Communication speed from master to core    10 =   283.96 MB/sec
+Communication speed from master to core    11 =   290.02 MB/sec
+
+Total CPU time for main thread                    :      463.3 seconds
+Total CPU time summed for all threads             :      502.3 seconds
+
+Elapsed time spent obtaining a license            :        0.6 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
+Elapsed time spent solution - preprocessing       :       35.4 seconds
+Elapsed time spent computing solution             :      499.7 seconds
+   Elapsed time in element formation & assembly   :      197.3 seconds
+   Elapsed time in equation solver                :      258.9 seconds
+   Elapsed time in element result calculations    :       10.1 seconds
+Elapsed time spent solution - postprocessing      :       39.2 seconds
+Elapsed time spent post-processing model (/POST1) :        0.4 seconds
+ 
+Eigensolver used                                  :            Block Lanczos
+Sparse direct equation solver computational rate  :       19.8 Gflops
+Sparse direct equation solver effective I/O rate  :       45.9 GB/sec
+
+Sum of disk space used on all processes           :     6757.0 MB
+
+Sum of memory used on all processes               :    19411.0 MB
+Sum of memory allocated on all processes          :    24855.0 MB
+Physical memory available                         :        112 GB
+Total amount of I/O written to disk               :        6.6 GB
+Total amount of I/O read from disk                :        9.1 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2026 R1.02      Build 26.1         UP20260202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)     1024 MB     Scratch Memory Requested   1024 MB |
+ |  Max Database Used(Master)    410 MB     Max Scratch Used(Master)   2278 MB |
+ |  Max Database Used(Workers)     1 MB     Max Scratch Used(Workers)  3586 MB |
+ |  Sum Database Used(All)       421 MB     Sum Scratch Used(All)     18990 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =        502.312       Time  =  23:00:51          |
+ |        Elapsed Time (sec) =        627.081       Date  =  10/04/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

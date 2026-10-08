@@ -1,0 +1,26 @@
+{
+  "case": "cont_force5em5",
+  "audited_at": "2026-10-07T02:17:03.413569-04:00",
+  "overall_acceptance": "REJECTED: native force nonconvergence and unchanged independent vertical-equilibrium limit exceeded",
+  "converged_sets": 794,
+  "pull_states": 785,
+  "last_ux_mm": 3.5391562,
+  "diagnostic_only_endpoint_force_N": 49.068963,
+  "diagnostic_only_max_damage": 0.041139718,
+  "diagnostic_only_final_peeq": 0.22191125,
+  "rejected_z_states": 339,
+  "max_abs_z_residual_N": 0.80115412,
+  "worst_z_ux_mm": 3.4173473,
+  "first_failed_z_ux_mm": 3.4013281,
+  "max_abs_y_residual_N": 0.001131485,
+  "max_abs_x_residual_N": 0.0026558822,
+  "limits": {
+    "x_relative": 0.001,
+    "y_N": 0.01,
+    "z_N": 0.1
+  },
+  "force_balance_thresholds_changed": false,
+  "native_convergence_does_not_imply_independent_acceptance": true,
+  "field_audit": "All785pullstates pass IDs/counts/finite/damagebounds; physical rejection unchanged.",
+  "next_case_rationale": "Use preflighted strict cont_fine for spatial discretization sensitivity with original 1e-5 force criterion. No relaxation of physical balances, contact physics, damage law or damping."
+}

@@ -1,0 +1,56 @@
+{
+  "task": "Representative physical vibration motion, user authorized new time-history calculation",
+  "ansys_release": "2026 R1 v261",
+  "operating_system": "Windows 11 ARM64 VM; ANSYS x64; macOS host",
+  "mode": "prestressed linear modal superposition, ANSYS Mechanical/MAPDL",
+  "source_modal_analysis": 4254,
+  "source_modal_directory": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/powerboardsim_v1_files/dp0/SYS-4/MECH",
+  "modal_basis_audit": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/outputs/random_vibration_20261005_0950/modal_basis/audit.json",
+  "preload_N_per_bolt": 750,
+  "bolts": 6,
+  "damping_ratio": 0.02,
+  "excitation_axes": [
+    "X",
+    "Y",
+    "Z"
+  ],
+  "PSD_Hz_g2_per_Hz": [
+    [
+      20,
+      0.026
+    ],
+    [
+      50,
+      0.16
+    ],
+    [
+      800,
+      0.16
+    ],
+    [
+      2000,
+      0.026
+    ]
+  ],
+  "units": "SI, global Cartesian; relative motion to common mounting base",
+  "authorization": "User explicitly selected Switch to representative vibration motion using a new time-history calculation. Existing model, materials, supports, and prior results preserved.",
+  "qualification": "Exploratory linear response about locked prestressed state; stochastic realization, not measured vibration.",
+  "ansys_build": "2026 R1.02 Build 26.1 UP20260202 WINDOWS x64",
+  "license_endpoint": "1055@MARCDNICHITBF25",
+  "solver_executable": "C:\\Program Files\\ANSYS Inc\\v261\\ansys\\bin\\winx64\\ANSYS261.exe",
+  "parallel_mode": "DMP, 12 ranks",
+  "job_name": "file",
+  "support_nodes": 781,
+  "source_database_nodes": 369590,
+  "source_database_elements": 248516,
+  "licensed_ui_policy": "Mechanical GUI stays read-only during native MAPDL runs; reactivate after standalone calculations finish.",
+  "resumed_20261006": {
+    "solver": "SMP 1 rank; identical modal coordinates to 12-rank pilot",
+    "rendering": "Mechanical Enterprise PrepPost; SetExportStreamWidthHeight(3840,2160) verified on native PNGs",
+    "production_fs_Hz": 65536,
+    "history_duration_s": 9,
+    "animation_frame_spacing_s": 6.103515625e-05,
+    "planned_frames": 480,
+    "fps": 60
+  }
+}

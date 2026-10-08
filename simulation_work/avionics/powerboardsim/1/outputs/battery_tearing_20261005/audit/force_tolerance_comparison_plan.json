@@ -1,0 +1,15 @@
+{
+  "dated": "2026-10-06T19:47:57.968148-04:00",
+  "reference": "cont_nominal converged states through3.347375mm",
+  "trial": "cont_force5em5",
+  "criterion_change": "OnlypullCNVTOL F1e-5->5e-5;preloadunchanged",
+  "physical_checks": "Unchanged Xrelative.001,Yabsolute.01N,Zabsolute.1N; loadhistory/clamp/finite/damage checks mandatory",
+  "curve_comparison": "Use sharedsaveddisplacements where available; interpolate only insideoverlappingdomain. CompareforceatcommonUX,clampnormalreactions,damagesummary anddetectedonsetbrackets. Neveruse endpointmaximumaspeak.",
+  "screening_thresholds": {
+    "force_relative_fraction": 0.01,
+    "clamp_relative_fraction": 0.005,
+    "damage_absolute": 0.005,
+    "onset_displacement_difference_mm": 0.05
+  },
+  "qualification": "Analyst numericalscreeningcriteria,notmaterialcalibration. Ifexceeded, inspectcause beforeextensionisaccepted."
+}
