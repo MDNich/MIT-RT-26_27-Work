@@ -1,0 +1,6 @@
+Run from recovery_work with requirements-recovery.txt and a Java 17 JDK. The original model path disappeared during this run, so use the preserved URRG scenario as input.
+
+python montecarlo_recovery.py --ork urrg_no_drogue_20261011_wind5ms/20267.demonstrator.iteration3.URRG.ork --wind-speed 5 --openrocket-jar /tmp/urrg-recovery-engine-5ms.jar --java-home /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home --trials 100 --seed 20261011 --output urrg_no_drogue_20261011_wind5ms_reproduction
+
+The temporary engine snapshot came from the local build recorded in diagnostics/engine_provenance.json. Use a matching hash for exact reproduction.
+All landing percentiles are CONDITIONAL on simulations reaching ground with the main deployed. Abort counts are part of the result.

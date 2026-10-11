@@ -1,0 +1,57 @@
+{
+  "trials": 1000,
+  "control_cases": 4,
+  "checks": {
+    "rocket_defaults_preserved": true,
+    "weather_ranges_and_500_strata_verified": true,
+    "weather_paired_across_motors": true,
+    "all_landings_have_main_deployment": true,
+    "radii_match_xy": true,
+    "all_four_quadrants_populated": true,
+    "geographic_points_match_landing_distances": true,
+    "four_steady_controls_match_prior_study": true,
+    "five_independent_replays_match": true,
+    "apogee_event_delay_confirmed": true
+  },
+  "motors": [
+    {
+      "motor": "HP-I500T",
+      "landed": 475,
+      "excluded_aborts": 25,
+      "landing_counts_by_quadrant_NE_SE_SW_NW": [
+        121,
+        117,
+        118,
+        119
+      ],
+      "main_deployment_minus_sampled_max_altitude_time_s": [
+        1.0,
+        1.0010000000000012
+      ],
+      "median_radius_m": 99.29053722,
+      "p95_radius_m": 201.309841851
+    },
+    {
+      "motor": "J570W",
+      "landed": 498,
+      "excluded_aborts": 2,
+      "landing_counts_by_quadrant_NE_SE_SW_NW": [
+        124,
+        124,
+        124,
+        126
+      ],
+      "main_deployment_minus_sampled_max_altitude_time_s": [
+        1.0,
+        1.045
+      ],
+      "median_radius_m": 235.25250649449998,
+      "p95_radius_m": 456.62784792855
+    }
+  ],
+  "apogee_timing_note": "mc_1_0151 was replayed to inspect events: deployment is exactly 1 s after the APOGEE event. That event is 0.045 s later than the sampled maximum-altitude time, consistent with native 1 cm drop detection and the 0.05 s integration timestep.",
+  "input_sha256": {
+    "cases.csv": "1949b6fb7e5cfc3210fa4c2960c330253eab0a95ec3802d7cc8312e22500d805",
+    "runs.csv": "f38bde7687203829f97c2e92e50a5759fbf0cb12a1b2f0b3e6296a3a50671129"
+  }
+}

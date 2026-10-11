@@ -1,0 +1,8 @@
+Run from recovery_work with Python packages in requirements-recovery.txt and a Java 17 JDK. A compatible MIT OpenRocket build is required for the custom tab-control fins.
+
+Command used:
+python montecarlo_recovery.py --openrocket-jar /Users/mdn/Developer/ActiveControl_MIT_RktTeam/clone/openrocket-release-24.12.RC.01/swing/build/libs/swing-24.12.RC.01-all.jar --java-home /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home --trials 100 --seed 20261011
+
+To redraw figures and fetch a satellite basemap without resimulating, add --analyze-only --basemap.
+Source and engine SHA-256 hashes are in summary.json; Python package versions are in environment.json.
+The original supplied script is retained as montecarlo_recovery_original.py.

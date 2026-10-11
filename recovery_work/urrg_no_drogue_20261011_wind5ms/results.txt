@@ -1,0 +1,45 @@
+URRG — no drogue; main at apogee + 1 second
+Site: 18TUN2061530290, 42.70416777, -77.19029502, 268.60 m MSL.
+Rocket defaults retained: one 1.92024 m main, Cd 0.68; vertical 1 m rail; ISA atmosphere.
+100 fresh OpenRocket flights per motor; seed 20261011 onward.
+Wind: 5 m/s FROM east (90 deg), 0.5 m/s pink-noise standard deviation.
+The wind uncertainty is within-flight turbulence, not an assumed launch-day weather distribution.
+
+HP-I500T
+  Complete landings: 36/100.
+  Incomplete simulations: 64/100.
+  No all-trials 95% landing radius can be claimed; percentiles below apply ONLY to completed flights.
+  Reasons: Messages[] ABORT: Stage began to tumble under thrust.
+  Median distance from pad: 220.1 m.
+  Central 95% interval: 211.3–228.1 m.
+  95th-percentile radius centred on launch: 227.0 m.
+  Observed minimum–maximum: 210.3–230.1 m.
+  Median apogee AGL: 365.8 m.
+  Median apogee-to-ground time: 50.5 s.
+  Median vertical touchdown speed: 7.23 m/s.
+
+J570W (default motor)
+  Complete landings: 97/100.
+  Incomplete simulations: 3/100.
+  No all-trials 95% landing radius can be claimed; percentiles below apply ONLY to completed flights.
+  Reasons: Messages[] ABORT: Stage began to tumble under thrust.
+  Median distance from pad: 486.1 m.
+  Central 95% interval: 470.5–502.3 m.
+  95th-percentile radius centred on launch: 497.6 m.
+  Observed minimum–maximum: 468.0–509.5 m.
+  Median apogee AGL: 822.4 m.
+  Median apogee-to-ground time: 111.9 s.
+  Median vertical touchdown speed: 7.23 m/s.
+
+Interpretation and limits:
+Distances are horizontal radii from the launch point; they are not footprint diameters.
+The source easterly wind carries the rocket approximately west. Changing wind direction rotates the footprint.
+Percentiles describe this fixed-design, fixed-mean-wind numerical scenario, not real-world containment confidence.
+Main inflation is idealized by OpenRocket. No chute failure, mass/Cd uncertainty, terrain landing height, or wind forecast is sampled.
+Incomplete runs are excluded from landing statistics and reported explicitly. A model abort is not a predicted landing or a quantified physical failure probability.
+The original script had a 110,000 ft apogee, inconsistent altitude units, a 105 m/s rail speed and cloud wind applied over the entire descent.
+Those assumptions were replaced by the supplied rocket model and user-confirmed file defaults.
+Elevation source: https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False
+OpenRocket wind convention: https://openrocket.readthedocs.io/en/latest/setup/preferences.html
+Launch-rail abort limitation: https://github.com/openrocket/openrocket/issues/3183
+The URRG .ork copy contains the changed site and clears outdated cached flight results; simulate it to populate new results.

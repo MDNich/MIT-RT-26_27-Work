@@ -1,0 +1,13 @@
+Run from: /Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work
+
+/tmp/urrg-recovery-venv/bin/python montecarlo_recovery.py --ork urrg_no_drogue_20261011/20267.demonstrator.iteration3.URRG.ork --openrocket-jar /tmp/urrg-recovery-engine-5ms.jar --java-home /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home --trials 500 --seed 20261011 --random-wind-max 5 --turbulence-min 0.05 --turbulence-max 0.20 --workers 2 --output urrg_no_drogue_20261011_randomwind0to5ms --basemap
+
+To redraw the saved results without rerunning flights, append --analyze-only.
+
+Inputs: cases.csv contains each flight's sampled mean speed, direction, turbulence intensity and seed. The same inputs are used for both motors. The ORK copy contains the nominal design and site, not all Monte Carlo scenarios.
+
+Weather assumptions: stratified uniform mean speed in [0,5] m/s, wind direction FROM [0,360) degrees, turbulence standard deviation / mean speed in [0.05,0.20]. Native OpenRocket pink noise varies speed within each flight; gusts may exceed 5 m/s. Direction and mean speed do not change with time or altitude. These distributions are user-requested scenarios, not a launch-day forecast.
+
+Recovery: no drogue, main at apogee + 1 second; vertical 1 m launch rail. Geometry, mass, thrust, chute diameter and drag, ISA atmosphere and flight integration settings follow the saved source model.
+
+Native engine: MIT OpenRocket snapshot; run_manifest.json records its checksum. The source URRG copy was preserved from the originally supplied rocket. The original path was moved externally during earlier work.

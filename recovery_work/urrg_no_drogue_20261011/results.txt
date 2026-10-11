@@ -1,0 +1,39 @@
+URRG — no drogue; main at apogee + 1 second
+Site: 18TUN2061530290, 42.70416777, -77.19029502, 268.60 m MSL.
+Rocket defaults retained: one 1.92024 m main, Cd 0.68; vertical 1 m rail; ISA atmosphere.
+100 fresh OpenRocket flights per motor; seed 20261011 onward.
+Source wind retained: 2 m/s FROM east (90 deg), 0.2 m/s pink-noise standard deviation.
+The wind uncertainty is within-flight turbulence, not an assumed launch-day weather distribution.
+
+HP-I500T
+  Complete landings: 100/100.
+  Median distance from pad: 83.1 m.
+  Central 95% interval: 79.0–87.6 m.
+  95th-percentile radius centred on launch: 87.0 m.
+  Observed minimum–maximum: 78.7–89.1 m.
+  Median apogee AGL: 367.7 m.
+  Median apogee-to-ground time: 50.7 s.
+  Median vertical touchdown speed: 7.23 m/s.
+
+J570W (default motor)
+  Complete landings: 100/100.
+  Median distance from pad: 188.9 m.
+  Central 95% interval: 182.5–197.4 m.
+  95th-percentile radius centred on launch: 194.8 m.
+  Observed minimum–maximum: 179.9–201.7 m.
+  Median apogee AGL: 826.7 m.
+  Median apogee-to-ground time: 112.3 s.
+  Median vertical touchdown speed: 7.24 m/s.
+
+Interpretation and limits:
+Distances are horizontal radii from the launch point; they are not footprint diameters.
+The source easterly wind carries the rocket approximately west. Changing wind direction rotates the footprint.
+Percentiles describe this fixed-design, fixed-mean-wind numerical scenario, not real-world containment confidence.
+Main inflation is idealized by OpenRocket. No chute failure, mass/Cd uncertainty, terrain landing height, or wind forecast is sampled.
+At stronger wind the 1 m rail causes incomplete simulations; these must never be counted as landings.
+The original script had a 110,000 ft apogee, inconsistent altitude units, a 105 m/s rail speed and cloud wind applied over the entire descent.
+Those assumptions were replaced by the supplied rocket model and user-confirmed file defaults.
+Elevation source: https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False
+OpenRocket wind convention: https://openrocket.readthedocs.io/en/latest/setup/preferences.html
+Launch-rail abort limitation: https://github.com/openrocket/openrocket/issues/3183
+The URRG .ork copy contains the changed site and clears outdated cached flight results; simulate it to populate new results.
