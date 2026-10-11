@@ -1,0 +1,64 @@
+{
+  "case": "cont_fine_snapshot02",
+  "time": "2026-10-07T04:11:48.434070-04:00",
+  "overall_acceptance": "REJECTED: three recorded states fail unchanged Z force-balance limit; source still solving",
+  "retained_converged_sets": 94,
+  "pull_states": 85,
+  "last_ux_mm": 2.5152664,
+  "diagnostic_only_endpoint_force_N": 31.797327,
+  "diagnostic_only_max_damage": 0.0040591526,
+  "diagnostic_only_onset_bracket_mm": [
+    2.425,
+    2.475
+  ],
+  "diagnostic_only_onset_bracket_N": [
+    30.421199,
+    31.175567
+  ],
+  "z_failures": [
+    {
+      "pull_step": 66,
+      "loadstep": 12,
+      "substep": 3,
+      "ux_mm": 2.3375,
+      "sum_RZ_N": -0.20628919
+    },
+    {
+      "pull_step": 68,
+      "loadstep": 12,
+      "substep": 5,
+      "ux_mm": 2.425,
+      "sum_RZ_N": 0.11299429
+    },
+    {
+      "pull_step": 69,
+      "loadstep": 12,
+      "substep": 6,
+      "ux_mm": 2.475,
+      "sum_RZ_N": -0.12725257
+    }
+  ],
+  "max_abs_z_N": 0.20628919,
+  "max_abs_y_N": 4.4899688e-06,
+  "max_x_relative": 3.683428788568618e-05,
+  "limits": {
+    "x_relative": 0.001,
+    "y_N": 0.01,
+    "z_N": 0.1
+  },
+  "limits_changed": false,
+  "history_and_750N_locking": "PASS",
+  "field_integrity": "85 pull states: counts, IDs, finite values, damage bounds PASS",
+  "independent_native_reaction_check": {
+    "completed": true,
+    "native_errors": 0,
+    "loadstep": 12,
+    "substep": 3,
+    "all_reaction_nodes_RZ_N": -0.20629,
+    "four_clamp_pilots_RZ_N": -0.20629,
+    "battery_pilot_RZ_N": 0,
+    "interpretation": "Confirms exported vertical imbalance; omitted support reaction is not its explanation."
+  },
+  "history_sha256": "4b04da85e6ce000701a3e1323bd6f9a455eef9b178373f85b48415a74d576918",
+  "balance_sha256": "c4d492b68dfa25addb46c97f43e5c6af6fe872d55af5b94bfc7e30972f482644"
+}

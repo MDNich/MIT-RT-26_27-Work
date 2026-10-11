@@ -1,0 +1,51 @@
+
+% BEGIN VALIDATED NOMINAL RESULTS
+\clearpage
+\PageTitle{First attachment damage: validated partial run}
+The strict nominal run preserves all preload and deformation history, but stops before the requested 8 mm endpoint. The retained 110 converged states span 16 consecutive load steps. \textbf{Damage is detected near 43 N; a breaking load has not been established.} The final reaction is still increasing, so its maximum is only the largest force observed before nonconvergence.
+
+\begin{center}
+\begin{tabular}{p{.62\linewidth}r}\toprule
+Quantity & Strict nominal result\\\midrule
+First detectable damage displacement bracket & 3.250--3.275 mm\\
+Reaction across that bracket & 42.870--43.372 N\\
+Last converged displacement / reaction & 3.3474 mm / 44.857 N\\
+Maximum reported damage at that state & 0.00887\\
+Maximum reported equivalent plastic strain & 0.19941\\
+Final normal reaction at each locked clamp & 871.43 N\\
+Worst X force imbalance / relative imbalance & 0.00233 N / 0.0282\%\\
+Worst Y / Z force imbalance & 0.0000061 N / 0.0127 N\\\bottomrule
+\end{tabular}
+\end{center}
+Detectable onset here means maximum top/mid/bottom element-summary damage exceeds $10^{-4}$. This brackets a reporting threshold; it is not the exact first damaged integration point. The first damage occurs in the flat strip beside the sharp bend, outside the washer footprint. No severed strip or postpeak force drop is demonstrated.
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=.93\linewidth,height=64mm,xlabel={Battery sideways displacement (mm)},ylabel={Battery lateral reaction (N)},
+grid=major,xmin=0,xmax=3.5,ymin=0,tick label style={font=\small}]
+\addplot[Teal,very thick] table[x=ux_mm,y=fx_N,col sep=comma]{tearing_data/cont_nominal.csv};
+\addplot[Navy,only marks,mark=*,mark size=2pt] coordinates {(3.275,43.37207)};
+\node[anchor=south east,font=\small] at (axis cs:3.22,44) {Damage detected};
+\end{axis}
+\end{tikzpicture}
+\begin{tikzpicture}
+\begin{axis}[width=.93\linewidth,height=49mm,xlabel={Battery sideways displacement (mm)},ylabel={Maximum summary damage},
+grid=major,xmin=3.2,xmax=3.4,ymin=0,ymax=.01,tick label style={font=\small},scaled y ticks=false]
+\addplot[Navy,thick,mark=*,mark size=1pt] table[x=ux_mm,y expr={max(\thisrow{dtop},max(\thisrow{dmid},\thisrow{dbot}))},col sep=comma]{tearing_data/cont_nominal.csv};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\clearpage
+\PageTitle{Damage location and numerical limit}
+\begin{center}
+\includegraphics[width=.85\linewidth]{tearing_figures/cont_nominal_step101_assembly_detail.png}
+
+\includegraphics[width=.64\linewidth]{tearing_figures/cont_nominal_step101_washer_detail.png}
+\end{center}
+{\small Both external figures show the last converged strict-nominal state. The detailed colour range is 0--0.01, not 0--1. Assembly deformation is at true scale; the lower panel uses undeformed material coordinates. The highlighted region lies near the bend, beyond the washer outer edge.}
+
+At the last state, maximum contact pressure is 91.72 MPa and reported accumulated tangential motion is 0.00500 mm. All 3072 contact elements are accounted for: 1536 have a highest integration-point status of sticking, and 1536 are open. These element statuses do not exclude slip at individual integration points or represent contact area fractions.
+
+The solve terminates at an attempted 3.3475 mm displacement: force residual 0.02709 N exceeds the 0.01751 N criterion after 60 iterations and cutback to a 0.000125 mm increment. Displacement and moment criteria pass. The unconverged debugging set is excluded. This numerical termination is not evidence of a tear. A fresh tolerance-sensitivity run is in progress; physical balance limits remain unchanged. Its results and the mesh/material/direction checks are not yet available.
+% END VALIDATED NOMINAL RESULTS

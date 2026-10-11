@@ -1,0 +1,5 @@
+{
+  "issue": "Newly prescribed platen UZ ramps from zero during the pull step with KBC=0, so the preload is unintentionally unloaded/reapplied rather than held. Final preload is near 750 N but history is not the requested protocol.",
+  "evidence": "friction_lagrange contact_history.csv: washer UZ follows time2 ramp to 0.00029621 mm.",
+  "revision": "Add an explicit KBC=1 lock transfer step with all battery DOFs held; then release non-UX DOFs and ramp UX in third step with KBC=0. Fresh cases, new preflight."
+}

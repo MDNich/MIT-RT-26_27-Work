@@ -1,0 +1,43 @@
+\clearpage
+\PageTitle{Attachment model and load sequence}
+\begin{center}\includegraphics[width=.98\linewidth]{tearing_figures/model_overview.png}\end{center}
+\ReportHeading{Geometry and constraints}
+The isolated model reconstructs the selected edge battery (CAD body 20157) and two nickel strips (bodies 20091 and 20348). Each strip is 0.15 mm thick and about 15 mm wide, with a sharp 90-degree bend. The hole radius is 2.704 mm; the washer outer radius is 5.5626 mm. These are model dimensions, not new measurements. Existing CAD gaps are assumed seated.
+
+The battery is represented by rigid links to its nickel attachment regions. No battery-to-PCB connection or contact is introduced. The backing and washer surfaces are rigid; PCB bending, bolt compliance, the actual spot-weld pattern and local weld fracture are excluded. Coulomb friction is 0.20, an analyst assumption. Broad rigid battery attachments and a sharp modeled bend can influence the location and force of damage initiation.
+
+\begin{enumerate}
+\item Hold the battery and ramp each of the two lower platens to 750 N normal force. This local model uses the two clamps of one edge battery, not all six full-board bolts.
+\item Record the lower-platen axial displacements. Replace the two forces with those locked displacements in a separate equilibrium step. Subsequent clamp reactions may change as the strips deform.
+\item Release battery translation in Y and Z and all three rotations. Prescribe only lateral X translation at its rigid pilot, near battery mid-height, increasing in 0.25 mm output increments. Load-step time is a numerical ramp parameter, not a measured loading speed.
+\item Use internal automatic substeps, large deformation and the unsymmetric sparse Newton solver. Record force, free motion, clamp reactions, plastic strain and damage after each converged output increment. No physical damping or viscous material regularization is included.
+\end{enumerate}
+
+\clearpage
+\PageTitle{Reproducing the native calculation}
+\ReportHeading{Saved input is the authoritative definition}
+The companion package separates source generators, sealed per-case inputs, solver evidence and exported results. Every case has \texttt{model.inp}, \texttt{preflight.dat}, \texttt{run.dat}, \texttt{config.json} and \texttt{input\_sha256.json}. Attachment cases also contain \texttt{mesh.json}. The complete material curve is embedded in each APDL deck; reproducing a sealed case does not require another Granta export.
+
+The historical \texttt{yield\_MPa} and \texttt{tangent\_MPa} keys retained in some generated configuration files describe the previous bilinear baseline. They are superseded by the MISO and CDM tables in the sealed APDL input; they are not parameters of this damage calculation.
+
+\ReportHeading{Run in ANSYS 2026 R1}
+\begin{enumerate}
+\item Create a fresh local Windows directory for the desired case. Copy its sealed inputs there. Do not overwrite a completed or failed runtime. Confirm file hashes against \texttt{input\_sha256.json}.
+\item Invoke the native executable in that working directory with the following preflight arguments. This deck contains no \texttt{SOLVE}:
+\begin{quote}\small\ttfamily
+ANSYS261.exe -b nolist -s noread -smp -np 1 -p preppost\par
+-j check -i preflight.dat -o preflight.out
+\end{quote}
+\item Require zero native preflight errors and the expected inventory: 4 nodes/1 element for the shell coupon, 4277/7700 for the coarse attachment, or 16229/30676 for the refined attachment. Shell counts alone are 2304 and 9216; remaining elements implement contacts and rigid links.
+\item Once the structural license is free, run the coupon with one SMP core, or the attachment with four SMP cores:
+\begin{quote}\small\ttfamily
+ANSYS261.exe -b nolist -s noread -smp -np 4 -p ansys\par
+-j tear -i run.dat -o run.out
+\end{quote}
+\item Preserve the entire runtime, including result and restart files. Read the error count and convergence history; a closing \emph{RUN COMPLETED} banner alone is insufficient. Do not relaunch a failed solve without diagnosis.
+\item Export and validate \texttt{history.csv}, \texttt{balance.csv}, \texttt{damage\_N.csv} and \texttt{nodes\_N.csv}. The supplied analysis checks monotone load time, finite fields, damage bounds and force balance. Rejected runs retain their error logs and are labeled separately from accepted states.
+\end{enumerate}
+The tested executable was \texttt{v261/ansys/bin/winx64/ANSYS261.exe}, release 2026 R1.02, build 26.1 UP20260202, Windows x64 in Parallels. Units are N, mm and MPa. Guest runtimes are named \texttt{C:\textbackslash Temp\textbackslash PBTear26\_<case>}.
+
+\ReportHeading{Figures and report}
+Figures use native exported displacements and damage summaries, with English labels. The grey battery outline follows a rigid fit to its solved attachment motion. Deformation is shown at true scale unless marked. Graphs use native \texttt{pgfplots} in \LaTeX\ and read external CSV data. Compile \texttt{nickel\_tearing\_estimate.tex} from its own directory with the accompanying \texttt{tearing\_figures} and \texttt{tearing\_data} folders; compile twice to resolve references.

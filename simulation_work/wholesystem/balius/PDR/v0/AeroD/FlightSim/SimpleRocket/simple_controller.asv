@@ -1,0 +1,31 @@
+%% SimpleController %%
+% Create simple Controller object
+
+function [ctrl] = simple_controller()
+
+    ctrl = Controller();
+    
+    %----------------------------------------------------------------------
+    %%% Function assignments %%%
+    
+    ctrl.calc_deltastar = @calc_deltastar;
+    ctrl.initialize_log = @initialize_log;
+    ctrl.log_data = @log_data;
+    %----------------------------------------------------------------------
+    %%% calc_deltastar %%%
+    
+        function [Vdothat] = calc_vdot(x, xdot)
+            Vdothat = xdot(4:6);
+        end
+    
+    %%% End calc_deltas %%%
+    %----------------------------------------------------------------------
+    %%% calc_omega %%%
+    
+        function [omegahat] = calc_omega(x, xdot)
+            omegahat = x(10:12);
+        end
+    
+    %%% End calc_omega %%%
+
+end

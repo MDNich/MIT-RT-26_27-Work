@@ -1,0 +1,3544 @@
+                  www.rasaero.com
+
+
+                        Rocket Aerodynamic Analysis
+   RASAero II           and Flight Simulation Software
+
+
+
+
+                  Rogers Aeroscience
+          Copyright © 2019, by Charles E. Rogers
+
+
+
+Rogers Aeroscience RASAero II Aerodynamic Analysis and
+               Flight Simulation Program
+
+
+                      Users Manual
+
+
+                     Version 1.0.2.0
+                    Copyright © 2019
+
+
+                    Charles E. Rogers
+                     David Cooper
+
+
+                    Rogers Aeroscience
+                     P.O. Box 10065
+                 Lancaster, CA 93584-0065
+
+
+
+
+                  www.rasaero.com
+              For RASAero II User Support, or to contact the RASAero II authors:
+
+              E-mail:        CRogers168@aol.com
+
+              Mail:          Rogers Aeroscience
+                             P.O. Box 10065
+                             Lancaster, CA
+                             93584-0065
+
+
+Table of Contents
+
+   RASAero II Aerodynamic Analysis and Flight Simulation Program                    4
+
+   Entering a Rocket into RASAero II                                                5
+
+      Main Screen                                                                   5
+
+      Nose Cone Inputs                                                             10
+
+      Body Tube, Fins and Rail Guide/Launch Lug/Launch Shoe Inputs                 11
+
+      Fin Airfoil Inputs                                                           14
+
+      Adding Multiple Body Tubes                                                   18
+
+      Rail Guide, Launch Lug and Launch Shoe Inputs                                19
+
+      Protuberance Inputs                                                          24
+
+      Transition Inputs                                                            30
+
+      Fin Canister Inputs                                                          32
+
+      Boattail Inputs                                                              34
+
+      Editing, Inserting or Deleting Rocket Components                             36
+
+      Adding a Booster Stage with a Nested Upper Stage                             39
+
+      Adding a Booster Stage that Does Not Have a Nested Upper Stage               45
+
+      Running an Orbital Launch Vehicle on RASAero II to Generate                  49
+      Aerodynamic Data for Ascent to Orbit Trajectory Simulations
+
+
+
+
+                                                                                    2
+   Additional RASAero II Inputs                                              52
+
+        Equivalent Sand Roughness (Surface Finish) Input                     52
+
+        Rogers Modified Barrowman Method Option                              54
+
+        All Turbulent Flow Option                                            55
+
+Loading a Rocket File from the Previous RASAero Software                     57
+
+Importing a RockSim File into RASAero II                                     57
+
+Scale Rocket Drawing                                                         61
+
+Aero Plots                                                                   64
+
+Launch Site Inputs                                                           78
+
+Recovery Inputs                                                              81
+
+Rocket Comments                                                              82
+
+Other Inputs                                                                 84
+
+   Mach-Alt Input for Matching Wind Tunnel or Flight Data Reynolds Number    84
+
+   Run Test                                                                  86
+
+RASAero II Rocket Motor Database                                             93
+
+User-Selected RASP Motor File                                                94
+
+Running the RASAero II Flight Simulation                                     98
+
+Running a Boosted Dart on RASAero II                                        112
+
+Marginal Stability and Unstable Rocket Warnings                             114
+
+Tips for Two Stage Rockets and Mach 3 and Mach 3+ Rockets                   115
+
+Example Rocket 1                                                            117
+
+Example Rocket 2                                                            130
+
+Example Rocket 3                                                            141
+
+
+
+
+                                                                              3
+The RASAero II Aerodynamic Analysis and Flight Simulation Program
+
+RASAero II is a combined aerodynamic analysis and flight simulation software package for
+model rockets and high power rockets, amateur rockets, and sounding rockets. RASAero II can
+also be used for predicting aerodynamic coefficients for use in other flight simulation programs
+for orbital rockets.
+
+The RASAero II aerodynamic prediction methods are the most accurate available for model, high
+power, and amateur rockets, and are of equivalent accuracy to professional engineering method
+aerodynamic analysis codes used for missiles, sounding rockets, and space launch vehicles.
+
+The RASAero II aerodynamic predictions include drag coefficient at zero degrees angle of
+attack, drag coefficient with a non-zero angle of attack, lift coefficient and normal force
+coefficient with angle of attack, for both power-on (thrust phase) and power-off (coast phase).
+Center of pressure is predicted both as a function of Mach number and as a function of angle of
+attack. Aerodynamic coefficients are predicted for the subsonic, transonic, supersonic, and
+hypersonic flight regimes, from Mach 0.01 to Mach 25. For subsonic center of pressure the
+standard (for model and high power rockets) Barrowman method can be used, or the Rogers
+Modified Barrowman method can be selected which includes a more accurate body normal force
+slope with angle of attack (CNalpha) at low angles of attack, inclusion of the body in the
+presence of the fins interference factor (Kbf) left out of the Barrowman method, and body
+viscous crossflow for forward movement of the rocket center of pressure with angle of attack.
+The effects of fin sweep angle, fin airfoil, nose cone shape, and nose and fin bluntness are
+included in the transonic, supersonic and hypersonic aerodynamic predictions. Airfoil options
+include hexagonal, NACA, double wedge, biconvex, hexagonal blunt base, single wedge,
+rounded, and square leading edge airfoils. The drag from launch lugs, rail guides, and launch
+shoes is included. The rail guide drag model for model and high power rockets is particularly
+accurate. The forward movement of center of pressure at high supersonic to hypersonic Mach
+numbers is predicted, an important effect for fin-stabilized rockets flying up to and over Mach 3,
+where depending on fin design by Mach 5 the Center of Pressure can move up to 60-70% of the
+body length from the nose.
+
+Two flight simulation options are available in the RASAero II software, a 2 degrees-of-freedom
+trajectory simulation with no wind, and a 3 degrees-of-freedom trajectory simulation with wind
+that includes dynamic stability and weathercocking of the rocket into the wind. If no wind is
+entered then the 2 degrees-of-freedom trajectory simulation is selected, if a wind is entered then
+the 3 degrees-of-freedom trajectory simulation with dynamic stability and weathercocking is
+selected. Thrust of the rocket motor is varied with altitude using the entered thrust curve, the
+altitude of the rocket, and the exit diameter of the rocket motor nozzle. All of the flight
+simulations include either ballistic or parachute recovery. If a parachute recovery is selected,
+there is a recovery event at apogee (deployment of a small drogue parachute or the main
+parachute), and if selected there is a recovery event at a user-specified altitude above the ground
+(deployment of the main parachute after descending on a drogue parachute).
+
+When the flight simulation portion of the software is run, the aerodynamic coefficients for the
+rocket are calculated during each time step based on the rocket Mach number, angle of attack,
+Reynolds number based on the altitude of the rocket, and whether the rocket is flying in the
+motor thrust phase (power-on) or the coast phase (power-off). For the 3 degrees-of-freedom
+trajectory with dynamic stability and wind, both static and dynamic stability derivatives for the
+
+
+
+                                                                                                      4
+rocket are calculated, including rocket aerodynamic damping coefficients and the jet damping
+coefficient from the rocket motor thrust during the powered flight phase.
+
+A scale drawing of the rocket is produced by RASAero II based on the entered rocket geometry.
+Extensive plots of the aerodynamic data for the rocket are produced, with the rocket aerodynamic
+coefficients plotted versus Mach number and angle of attack. Extensive plots of the flight
+simulation results are also produced, including the recovery phase of the flight.
+
+
+Entering a Rocket into RASAero II
+
+
+Main Screen
+
+To run the RASAero II software, the User double clicks on the RASAero II Icon on the computer
+desktop shown in Figure 1. After double clicking on the RASAero II icon on the computer
+desktop, the RASAero II Main Screen will appear as presented in Figure 2. For a new rocket the
+user immediately starts building the rocket by selecting a nose cone, and then adding a body tube.
+Fins and rail guides, launch lugs, or launch shoes are then added to the body tube. As will be
+detailed in later sections, a fin canister can be added with fins mounted on the fin canister, a
+boattail can be added at the base of the body tube, or one or two additional booster stages can be
+added.
+
+
+
+
+                       Figure 1 – RASAero II Icon on computer desktop.
+
+
+
+
+                                                                                                5
+                              Figure 2 – RASAero II Main Screen.
+
+
+As shown in Figures 3 and 4, to load an old, previously saved rocket, or to load a file from the
+previous RASAero software, click on <File>, and then <Open>, and then select the file to be
+opened.
+
+
+
+
+                                                                                                   6
+     Figure 3 – Opening a file in RASAero II.
+
+
+
+
+Figure 4 – Opening a file in RASAero II (continued).
+
+
+
+
+                                                       7
+Rockets saved on the previous RASAero software, saved as .ALX1 files, can be loaded into the
+RASAero II software, and then saved in the RASAero II .CDX1 file format.
+
+The Select Motor File feature will be described in the RASAero II Rocket Motor Database and
+the User-Selected RASP Motor File sections.
+
+As shown in Figure 5, and as will be detailed in a later section, RockSim rocket files (.RKT
+format files) can be loaded into RASAero II by selecting <File>, then <Import>, and then
+<RockSim> to load the RockSim file.
+
+
+
+
+                       Figure 5 – Importing a RockSim file into RASAero II.
+
+
+Some example rockets are stored in the Examples directory in the /My Documents/RASAero II
+directory.
+
+After the input data for the rocket is entered, as will be detailed in later sections, or the input data
+for a previously saved rocket is modified, the rocket can then be run to generate aerodynamic
+data or to run the flight simulation. After the runs are completed, as shown in Figures 6 and 7 the
+rocket can be saved by selecting <File>, and then <Save> or <Save As> to save the rocket under
+the old name or a new name. All RASAero II rocket files have the extension .CDX1, and are
+stored in the /My Documents/RASAero II directory.
+
+
+
+
+                                                                                                      8
+     Figure 6 – Saving a rocket in RASAero II.
+
+
+
+
+Figure 7 – Saving a rocket in RASAero II (continued).
+
+
+
+
+                                                        9
+Nose Cone Inputs
+
+To begin entering a new rocket into RASAero II, first the nose cone is entered by clicking on the
+Nose Cone Icon as shown in Figure 8. The RASAero II Nose Cone Inputs which are displayed
+after clicking on the Nose Cone Icon are shown in Figure 9. The available nose cone shapes are
+conical, tangent ogive, Von Karman ogive, power law, LV-Haack, parabolic, and elliptical. If
+the power law nose cone is selected, then the power law exponent “n” must be entered. The nose
+cone base diameter and length are entered, and a blunt (spherical) nose tip can be added by
+entering a nose tip radius. The inputs are saved by clicking on the <Save> button, or cancelled
+by clicking on the <Cancel> button.
+
+
+
+
+                                  Figure 8 – Nose Cone Icon.
+
+
+
+
+                                                                                              10
+                                Figure 9 – Nose Cone Inputs.
+
+
+Body Tube, Fins and Rail Guide/Launch Lug/Launch Shoe Inputs
+
+The rocket body tube is then added to the nose cone by clicking on the Rocket Body Tube and
+Fins Inputs Icon, as shown in Figure 10. Once the Rocket Body Tube and Fins Inputs Icon has
+been clicked on, the rocket Body Tube, Fins, Rail Guide/Launch Lug/Launch Shoe and
+Protuberance Inputs will appear as shown in Figure 11. The Protuberance Inputs will be
+described in the Protuberance Inputs section.
+
+
+
+
+                                                                                              11
+            Figure 10 – Rocket Body Tube and Fins Inputs Icon.
+
+
+
+
+Figure 11 – Rocket Body Tube, Fins, Rail Guide/Launch Lug/Launch Shoe and
+                           Protuberance Inputs.
+
+
+
+
+                                                                            12
+The Fin Inputs button is then clicked on, to open the Fin Inputs shown in Figure 12. If there are
+no fins on the body tube, the Fin Inputs button does not need to be clicked on, and no fins will be
+added to the body tube. The inputs are saved by clicking on the <Save> button, or cancelled by
+clicking on the <Cancel> button.
+
+
+
+
+                                      Figure 12 – Fin Inputs.
+
+
+Note on the Fin Inputs shown in Figure 12, “L.E. Diamond Airfoil Length” is the Fin Airfoil
+Leading Edge Diamond Airfoil Length, and “T.E. Diamond Airfoil Length” is the Fin Airfoil
+Trailing Edge Diamond Airfoil Length, both of which will be defined in the Fin Airfoil Inputs
+section.
+
+The Body and Fin Inputs geometry definitions are presented in Figure 13. All dimensions are in
+inches.
+
+Note in the Fin Inputs in Figure 12, and the Fin Inputs geometry definitions in Figure 13, that the
+“Distance from the base of the tube (in)” input is for the start of the fin (where the fin leading
+edge intersects the body tube), and is the distance from the start of the fin to the bottom of the
+body tube.
+
+The Fin Inputs are saved by clicking on the <OK> button, or cancelled by clicking on the
+<Cancel> button.
+
+
+
+
+                                                                                                 13
+                                                                          Sweep Distance (in)       Tip Chord (in)
+
+
+
+
+ Nose Cone Length (in)                                                                                           Fin Span (in)
+                                 Body Tube Diameter (in)
+
+
+                                                                                   Root Chord (in)
+                                                                           Distance from Base of Tube (in)
+
+
+
+                                                     Body Tube Length (in)
+
+
+
+                    Figure 13 – Rocket Body and Fin Inputs geometry definitions.
+
+
+Fin Airfoil Inputs
+
+The fin airfoils that can be selected in RASAero II are shown in Figures 14a through 14c.
+Hexagonal, NACA, double-wedge, biconvex, hexagonal blunt-base, single wedge, rounded, and
+square airfoils can be selected. Based on the airfoil selected, different airfoil geometry inputs are
+required which are described in Figures 14a through 14c. If a fin airfoil geometry input is not
+needed for a particular airfoil, then that geometry input will not be displayed on the input screen
+as no input is required. (Example; for the NACA airfoil the only input required is the fin
+thickness.) The leading edge diamond airfoil length and the trailing edge diamond airfoil length
+are measured parallel to the body tube.
+
+                                                    Leading Edge                                 Trailing Edge
+                                                    Diamond Airfoil Length (in)                  Diamond Airfoil Length (in)
+
+
+
+                                                                                                         Measured at
+                          Fin Thickness (in)                                                             Half-Span
+
+                                                               Diamond Airfoil Lengths
+                                                               Measured Parallel to Body Tube
+
+
+                                          Hexagonal Airfoil
+
+
+
+
+                 Fin Thickness (in)
+                 Measured at Maximum
+                 Thickness Point
+
+
+
+                                               NACA Airfoil
+
+
+
+
+                 Figure 14a – Fin airfoil types and airfoil input geometry definitions.
+
+
+
+                                                                                                                            14
+                                         Leading Edge
+                                         Diamond Airfoil Length (in)
+
+
+
+                                                                                     Measured at
+               Fin Thickness (in)                                                    Half-Span
+
+                                                    Diamond Airfoil Length
+                                                    Measured Parallel to Body Tube
+
+
+                            Double-Wedge Airfoil
+
+
+
+
+               Fin Thickness (in)
+
+
+
+
+                                Biconvex Airfoil
+
+
+
+
+                                         Leading Edge
+                                         Diamond Airfoil Length (in)
+
+
+
+                                                                                     Measured at
+               Fin Thickness (in)                                                    Half-Span
+
+                                                    Diamond Airfoil Length
+                                                    Measured Parallel to Body Tube
+
+
+                       Hexagonal Blunt-Base Airfoil
+
+
+
+
+                           Fin Thickness (in)
+
+
+
+
+                             Single-Wedge Airfoil
+
+
+
+
+Figure 14b – Fin airfoil types and airfoil input geometry definitions (Continued).
+
+
+
+                                                                                                   15
+                       Fin Thickness (in)
+
+
+
+
+                                        Rounded Airfoil
+
+
+
+
+                       Fin Thickness (in)
+
+
+
+
+                                            Square Airfoil
+
+
+
+
+        Figure 14c – Fin airfoil types and airfoil input geometry definitions (Concluded).
+
+
+A blunt (rounded) leading edge can be added to any airfoil, with the exceptions of the NACA and
+Rounded airfoils which already have rounded leading edges, and the Square airfoil which
+specifically has a non-rounded leading edge. The blunt (rounded) leading edge is a cylindrical
+section added to the leading edge of the airfoil, with the radius of the cylindrical blunt (rounded)
+leading edge entered as the Fin LE (Leading Edge) Radius input. For a sharp (no bluntness) fin
+leading edge, the Fin LE (Leading Edge) Radius input is left at the default value of zero.
+
+
+Fin Airfoil Inputs with Varying Leading Edge and Trailing Edge Diamond Airfoil
+Lengths
+
+When a leading edge and/or a trailing edge diamond airfoil length is required as a fin airfoil
+geometry input, and the fin leading edge and trailing edge diamond airfoil lengths vary along the
+fin span, the average leading edge diamond airfoil length and the average trailing edge diamond
+airfoil length are used as shown in Figure 15. If the fin thickness varies from the root of the fin
+to the tip of the fin, then the average fin thickness is used as shown in Figure 16.
+
+
+
+
+                                                                                                 16
+                              Leading Edge                                Trailing Edge
+                              Diamond Airfoil Length (in)                 Diamond Airfoil Length (in)
+
+
+
+                                                                                 Measured at
+                                                                                 Half-Span
+
+                                              Diamond Airfoil Lengths
+                                              Constant Along Fin Span
+
+
+
+Leading Edge                    Trailing Edge                           Leading Edge                      Trailing Edge Diamond
+Diamond Airfoil Length (in)     Diamond Airfoil Length (in)             Diamond Airfoil Length (in)       Airfoil Length (in)
+
+
+
+                                                 Measured at                                                          Measured at
+                                                 Half-Span                                                            Half-Span
+
+              Diamond Airfoil Lengths                                                     Diamond Airfoil Lengths
+              Vary Along Fin Span                                                         Vary Along Fin Span
+              Enter Diamond Airfoil Lengths                                               Enter Diamond Airfoil Lengths
+              Measured at Half-Span                                                       Measured at Half-Span
+              (Average Leading Edge                                                       (Average Leading Edge
+               Average Trailing Edge                                                       Average Trailing Edge
+               Diamond Airfoil Lengths)                                                    Diamond Airfoil Lengths)
+
+
+
+
+                                                        Leading Edge
+                                                        Diamond Airfoil Length (in)
+
+
+
+                                                                                                        Measured at
+                     Fin Thickness (in)                                                                 Half-Span
+
+                Double-Wedge Airfoil Max Thickness                 Enter Diamond Airfoil Length
+                Doesn’t Have to be at Half-Chord                   Measured at Half-Span
+                Location Can Vary Along Fin Span
+
+
+
+
+ Figure 15 – Average leading edge and trailing edge diamond airfoil lengths used when the fin
+                       diamond airfoil lengths vary along the fin span.
+
+
+                                                                  Fin Thickness at Tip
+
+
+
+
+                                                                              Enter Average Fin Thickness (in)
+
+
+
+
+                                                                 Fin Thickness at Root
+
+
+
+Figure 16 – Average fin thickness used when the fin thickness varies from the root of the fin to
+                                      the tip of the fin.
+
+
+                                                                                                                                17
+Adding Multiple Body Tubes
+
+As shown in Figure 17, multiple body tubes can be added in a row on each stage of the rocket by
+clicking on the Rocket Body Tube and Fins Inputs Icon, as was shown in Figure 10, and adding a
+body tube. When the body tube is added, the Fins Inputs Icon is not clicked, and fins are not
+added. Figure 17 shows multiple body tubes added in a row for the rocket body.
+
+
+
+
+               Figure 17 – Multiple body tubes added in a row for the rocket body.
+
+
+Note that from an aerodynamic prediction standpoint having multiple body tubes in a row versus
+one single body tube of the same total length has no effect on the aerodynamic predictions for the
+rocket. Adding multiple body tubes can be used to build up the rocket from the individual body
+tube lengths which are planned to be used, or to create a more representative drawing of the
+rocket showing the separation point for the recovery system, and the payload bay, as examples.
+
+Note that every time a body tube is added, a set of fins can be added anchored to that body tube
+by inputting fins for that body tube. Thus multiple sets of fins can be added to a single stage
+rocket, or each stage of a multi-stage rocket, by adding individual body tubes and inputting fins
+for each of the body tubes.
+
+
+
+
+                                                                                                18
+Rail Guide, Launch Lug and Launch Shoe Inputs
+
+The RASAero II software includes four options for rocket launch guides:
+
+    a) Rail Guides
+
+    b) Launch Lugs
+
+    c) Launch Shoes
+
+    d) None. (Tower-launched.)
+
+
+To select a rail guide, the rail guide box is checked as shown in Figure 18.
+
+
+
+
+                                   Figure 18 – Rail guide inputs.
+
+
+The rail guide inputs geometry definitions are presented in Figure 19. The rail guide diameter,
+and the rail guide height measured to the top of the retaining screw, are entered. The diameter
+and height for a single rail guide is entered, the software then calculates the rail guide drag based
+on two of the rail guides being mounted on the side of the rocket.
+
+
+
+
+                                                                                                   19
+                               Rail Guide Diameter (in)
+
+                                               Rail Guide Height (in)
+                                               (to Top of Screw Head)
+
+
+                                                          Enter Diameter and Height
+                                                          for One Rail Guide.
+                                                          Program Models Drag
+                                                          for Two Rail Guides.
+
+
+
+
+                                Rail Guides
+
+
+
+                            Figure 19 – Rail guide geometry inputs.
+
+
+To select a launch lug, the launch lug box is checked as shown in Figure 20.
+
+
+
+
+                                 Figure 20 – Launch lug inputs.
+
+
+To select a launch shoe, the launch shoe box is checked as shown in Figure 21.
+
+
+
+
+                                                                                      20
+                                       Figure 21 – Launch shoe inputs.
+
+
+Launch lug and launch shoe geometry inputs are presented in Figure 22. For launch lugs the
+outside diameter and length of a single launch lug is entered. The software then calculates the
+launch lug drag based on two of the launch lugs being mounted on the side of the rocket. For
+launch shoes the frontal area of a single launch shoe is entered in square inches. The software
+then calculates the launch shoe drag based on two launch shoes being mounted on the side of the
+rocket.
+
+
+
+    Launch Lug Outside Diameter (in)
+
+                              Enter Launch Lug                                Enter Frontal Area of
+                              Outside Diameter.                               One Launch Shoe.
+                              Program Models Drag                             Program Models Drag
+                              for Two Launch Lugs.                            for Two Launch Shoes.
+
+
+
+
+         Launch Lugs                                           Launch Shoes
+
+
+
+                       Figure 22 – Launch lug and launch shoe geometry inputs.
+
+
+
+
+                                                                                                      21
+If the rocket is tower launched (no rail guides, launch lugs or launch shoes), then none of the rail
+guide/launch lug/launch shoe boxes are checked, as shown in Figure 23.
+
+
+
+
+            Figure 23 – No rail guides, launch lugs or launch shoes (tower launched).
+
+
+The rail guide/launch lug/launch shoe inputs are saved by clicking on the <Save> button, or
+cancelled by clicking on the <Cancel> button.
+
+When rail guides, launch lugs or launch shoes have been added to the rocket; rail guides, launch
+lugs or launch shoes will be added to the rocket drawing, as shown in Figure 24.
+
+
+
+
+                                                                                                  22
+                                                          Rail Guides
+
+
+
+
+                                                         Launch Lugs
+
+
+
+
+                                                        Launch Shoes
+
+
+
+
+Figure 24 – Rail guides, launch lugs and launch shoes displayed on the rocket drawing.
+
+
+
+
+                                                                                         23
+Protuberance Inputs
+
+The RASAero II software includes four options for Protuberance Inputs:
+
+   a) Streamlined – No Base Drag
+
+   b) Streamlined – With Base Drag
+
+   c) Inclined Flat Plate
+
+   d) None.
+
+
+The Protuberance Inputs are made by clicking on the Protuberances button shown in Figure 25,
+which opens the Protuberance Inputs shown in Figure 26.
+
+
+
+
+                Figure 25 – Protuberances button to access Protuberance Inputs.
+
+
+
+
+                                                                                           24
+                                   Figure 26 – Protuberance Inputs.
+
+
+The plate angle of the inclined flat plate is measured from the body tube in degrees. It is the
+angle between the flat plate and the body tube, which will be less than 90 deg. (Although the
+RASAero II software allows a plate angle input of up to 90 deg, a vertical flat plate.) A plate
+angle of zero deg is the flat plate lying on the body tube, i.e., the flat plate is parallel to the body
+tube.
+
+Note that protuberances can be added for each body tube and fin canister on the rocket. (The fin
+canister will be described in the Fin Canister Inputs section.)
+
+If there are multiple Streamlined – No Base Drag Protuberances on a particular body tube or fin
+canister on the rocket, the frontal areas of all the Streamlined – No Base Drag Protuberances are
+added up for the total frontal area which is entered in the Protuberance Inputs shown in Figure
+26. The same is done if there are multiple Streamlined – With Base Drag Protuberances on a
+given body tube or fin canister. For multiple Inclined Flat Plate Protuberances, the frontal areas
+are also added up for the total frontal area, but the frontal areas being added up must be for
+inclined flat plates with the same plate angle.
+
+For no protuberances, the Protuberance Inputs are simply not accessed, and no protuberances are
+entered.
+
+The Protuberance Inputs are saved by clicking on the <Save> button, or cancelled by clicking on
+the <Cancel> button.
+
+Once protuberances have been entered, the protuberances can be removed by clicking on the
+Remove Protuberances button shown in Figure 27, which appears after protuberances have been
+entered and saved. This will remove all of the protuberances on that body tube or fin canister,
+but will not remove protuberances on other body tubes and fin canisters.
+
+
+
+                                                                                                      25
+                           Figure 27 – Remove Protuberance button.
+
+
+Examples of the different protuberance types are described in the paragraphs and figures which
+follow.
+
+Streamlined – No Base Drag Protuberances are protuberances with a streamlined front end and a
+streamlined or boattailed aft end. An example is a missile raceway on a Corporal missile shown
+in Figure 28.
+
+
+
+
+      Figure 28 – Example Streamlined – No Base Drag Protuberance, a missile raceway.
+
+
+
+
+                                                                                             26
+Streamlined – With Base Drag Protuberances are protuberances with a streamlined front end, but
+a blunt (flat) back end which has base drag. An ullage rocket cover on an S-IVB stage on a
+Saturn IB launch vehicle, shown in Figure 29, is a good example of a Streamlined – With Base
+Drag Protuberance.
+
+
+
+
+              Figure 29 – Example Streamlined – With Base Drag Protuberance,
+               ullage rocket cover on S-IVB stage on Saturn IB launch vehicle.
+
+Camera shrouds, like the Cineroc camera shroud shown in Figure 30, can be modeled as a
+Streamlined – With Base Drag Protuberance.
+
+
+
+
+ Figure 30 – Cineroc camera shroud, modeled as a Streamlined – With Base Drag Protuberance.
+
+
+                                                                                            27
+An example of Inclined Flat Plate Protuberances are fin brackets, shown in Figure 31. The angle
+of the front inclined flat plate, measured relative to the body tube, is inputted as the plate angle.
+The frontal areas of all of the fin brackets are added up for the total frontal area, which is entered
+with the plate angle as the Protuberance Input for the fin brackets.
+
+
+
+
+                                                Fin Brackets
+
+
+
+
+               Figure 31 – Example Inclined Flat Plate Protuberances, fin brackets.
+
+
+When Streamlined – No Base Drag, Streamlined – With Base Drag or Inclined Flat Plate
+Protuberances have been added to the rocket; Streamlined – No Base Drag, Streamlined – With
+Base Drag or Inclined Flat Plate Protuberance symbols will be added to the rocket drawing, as
+shown in Figure 32.
+
+
+
+
+                                                                                                    28
+                                  Streamlined – No Base Drag
+                                  Protuberance
+
+
+
+
+Streamlined – With Base Drag
+Protuberance
+
+
+
+
+                       Inclined Flat Plate
+                       Protuberance
+
+
+
+
+   Figure 32 – Streamlined – No Base Drag, Streamlined – With Base Drag and
+        Inclined Flat Plate Protuberances displayed on the rocket drawing.
+
+
+
+
+                                                                              29
+Transition Inputs
+
+A transition can be added to a body tube by clicking on the Transition Icon as shown in Figure
+33. The Transition Inputs are shown in Figure 34, with a rocket with a completed transition
+input and a body tube entered after the transition shown in Figure 35.
+
+
+
+
+                                  Figure 33 – Transition Icon.
+
+
+
+
+                                                                                                 30
+     Figure 34 – Transition Inputs.
+
+
+
+
+Figure 35 – Completed Transition Input.
+
+
+
+                                          31
+Fin Canister Inputs
+
+A Fin Canister can be added to a body tube by clicking on the Fin Canister Icon as shown in
+Figure 36. The Fin Canister Inputs are shown in Figure 37, with the Fin Canister geometry
+definitions shown in Figure 38.
+
+
+
+
+                                 Figure 36 – Fin Canister Icon.
+
+
+
+
+                                                                                              32
+                                   Figure 37 – Fin Canister Inputs.
+
+
+                                                                    Sweep Distance (in)      Tip Chord (in)
+
+
+
+
+                                                                                                          Fin Span (in)
+  Nose Cone Length (in)       Body Tube Diameter (in)
+
+
+                                                                           Root Chord (in)               Fin Canister
+                                                                                                         Diameter (in)
+
+
+
+
+                                                                     Fin Canister Length (in)
+                                                        Fin Canister
+                                                        Shoulder Length (in)
+
+
+                               Body Tube Length (in)
+
+
+
+                          Figure 38 – Fin Canister geometry definitions.
+
+
+Note as shown in Figure 38, the bottom of the fin canister is at the bottom of the body tube, the
+fin canister length then defines the location of the fin canister shoulder. Note in Figure 37 that
+there is a Fin Inputs button on the fin canister input screen, the Fin Inputs button is clicked on to
+enter the Fin Inputs for the fins which are mounted to the fin canister.
+
+The Fin Canister Inputs are saved by clicking on the <Save> button, or cancelled by clicking on
+the <Cancel> button.
+
+
+
+                                                                                                                     33
+Boattail Inputs
+
+A boattail can be added to the bottom of the rocket by clicking on the Boattail Icon as shown in
+Figure 39. The Boattail Inputs are shown in Figure 40, with the Boattail geometry definitions
+shown in Figure 41.
+
+
+
+
+                                    Figure 39 – Boattail Icon.
+
+
+
+
+                                                                                               34
+                                   Figure 40 – Boattail Inputs.
+
+
+                                                                        Boattail Length (in)
+                            Body Tube Diameter (in)
+
+
+                                                                                               Boattail
+                                                                                               Base
+                                                                                               Diameter (in)
+
+
+                                               Body Tube Length (in)
+
+
+
+                           Figure 41 – Boattail geometry definitions.
+
+
+The Boattail Inputs are saved by clicking on the <Save> button, or cancelled by clicking on the
+<Cancel> button.
+
+
+
+
+                                                                                                          35
+Editing, Inserting or Deleting Rocket Components
+
+Rocket components which have already been entered can be edited by double clicking on the
+rocket component in the upper left-hand rocket component box, which will open the input for
+that rocket component, as shown in Figure 42. By clicking the right-hand mouse button on the
+rocket component in the upper left-hand rocket component box, the Edit, Insert, or Delete rocket
+component options will be displayed, as shown in Figure 43.
+
+
+
+
+       Double Click on
+       Rocket Component
+            Rocket Component
+            Input is Displayed
+
+
+
+
+          Figure 42 – Double clicking on rocket component to edit rocket component.
+
+
+
+
+                                                                                              36
+                Figure 43 – Edit, Insert, or Delete options for rocket components.
+
+
+If the Edit option is selected, the input for the rocket component will be opened, and the rocket
+component can be edited.
+
+If the Delete option is selected, the user will be asked to confirm that the selected rocket
+component should be deleted as shown in Figure 44, and then the rocket component will be
+deleted.
+
+If the Insert option is selected, the user then selects which rocket component type to insert, as
+shown in Figure 45. The component will be inserted ahead of the original component which the
+right-hand mouse button was clicked on, which is highlighted, as shown in Figure 45.
+
+
+
+
+                                                                                                    37
+Figure 44 – Delete option; confirming that the selected rocket component should be deleted.
+
+
+
+
+                     Figure 45 – Insert options for rocket components.
+
+
+
+
+                                                                                              38
+Adding a Booster Stage with a Nested Upper Stage
+
+On many two stage high power rockets, the upper stage mounts into the booster stage by having
+the upper stage motor case extend beyond the bottom of the upper stage, so that the motor case
+slides into the front of the booster stage. (Sometimes with a sleeve on the motor case.) Thus part
+of the upper stage is nested within the booster stage, with part of the upper stage (the portion of
+the motor case extending below the bottom of the upper stage) not exposed until the upper stage
+separates from the booster stage. This is known as a nested upper stage, which the RASAero II
+software can handle using the inputs described below.
+
+To add a booster to a nested upper stage, first a very slight boattail is added to the upper stage.
+The length of this very slight boattail is the length of the upper stage which will nest within the
+front of the booster stage.
+
+Figures 46-48 show the very slight boattail being added to the upper stage. Note that the boattail
+rear diameter is only 0.01 inches less than the boattail front diameter.
+
+
+
+
+                  Figure 46 – Upper stage before addition of very slight boattail.
+
+
+
+
+                                                                                                      39
+               Figure 47 – Very slight boattail being added to upper stage.
+Note that rear diameter of boattail is only 0.01 inches less than front diameter of boattail.
+
+
+
+
+                 Figure 48 – Upper stage with very slight boattail added.
+     Very slight boattail will be portion of upper stage that will nest within booster.
+
+
+
+
+                                                                                                40
+The aerodynamic prediction methods in RASAero II will treat this very slight boattail as a
+boattail, but the boattail is so slight (the rear diameter is only 0.01 inches less than front
+diameter) that from an aerodynamic prediction standpoint the very slight boattail will be
+equivalent to adding an extra body tube section.
+
+The booster stage is then added to the rocket by clicking on the Add Booster button as shown in
+Figure 49, with the Booster Inputs shown in Figure 50.
+
+In the RASAero II nomenclature for a two stage rocket, the upper stage is called the sustainer
+stage, and the booster stage is called the booster stage. As will be presented in the Aero Plots
+and Flight Simulation sections, the aerodynamic data and portions of the flight simulation for
+each stage will be labeled as Sustainer and Booster.
+
+
+
+
+                    Figure 49 – Add Booster button for adding a booster stage.
+
+
+
+
+                                                                                                   41
+                                   Figure 50 – Booster Inputs.
+
+
+Again note that when a booster stage has been added to a rocket, the original rocket becomes the
+sustainer stage.
+
+For the Booster Inputs, all of the inputs used for a regular single stage rocket are repeated. Note
+in Figure 50 that the diameter of the previous stage is grayed-out (the front diameter of the
+boattail), as the diameter is already set by the previous stage which has already been entered.
+The diameter of the booster stage is then entered, and if the booster stage diameter is different
+than the previous stage diameter the transition length is entered for the conic transition between
+the two stages. If the two stages have the same diameter, the transition length input disappears as
+it is not needed (no transition is required).
+
+Figure 51 shows the two stage rocket (sustainer and booster), with the nested sustainer stage,
+with the Add Booster Inputs completed.
+
+
+
+
+                                                                                                 42
+        Figure 51 – Two stage (sustainer and booster) rocket, with nested sustainer stage,
+                             with Add Booster Inputs completed.
+
+
+Note in Figure 51 that the booster starts at the top of the very slight boattail, and the very slight
+boattail is the portion of the sustainer stage which is nested in the booster.
+
+A booster stage is treated as a rocket component, and can be edited by double clicking on the
+booster component in the upper left-hand rocket component box, which will open the Booster
+Stage Inputs. Or, by clicking the right-hand mouse button on the booster component in the upper
+left-hand rocket component box, the booster stage can be edited. By clicking the right-hand
+mouse button on the booster component in the upper left-hand rocket component box, the
+boosted stage can be deleted.
+
+A good technique for checking that the nested sustainer (upper) stage has been implemented
+correctly is, without saving the file, to remove (delete) the booster and see from the Rocket
+Drawing what the sustainer (upper) stage looks like, to make sure it has the correct configuration.
+This is shown in Figures 52 and 53. Again, after removing (deleting) the booster, do not save the
+file. (Or perform this test on a copy of the file.)
+
+
+
+
+                                                                                                        43
+Figure 52 – Check that the nested sustainer configuration is correct by deleting the booster stage.
+  (Do not save the file after performing this check, or perform this check on a copy of the file.)
+
+
+
+
+   Figure 53 – Check complete; booster deleted, sustainer remains, sustainer configuration is
+                                           correct.
+
+
+
+
+                                                                                                44
+Adding a Booster Stage that Does Not Have a Nested Upper Stage
+
+When a booster stage is added that does not have a nested upper stage, the booster stage is added
+to the rocket by clicking on the Add Booster button as shown in Figure 54.
+
+
+
+
+                  Figure 54 – Using Add Booster button to add a booster stage.
+
+
+Typical Booster Inputs are shown in Figure 55.
+
+
+
+
+                                                                                               45
+                               Figure 55 – Typical Booster Inputs.
+
+
+In addition to high power rockets which may not have a nested upper stage, adding a booster
+stage that does not have a nested upper stage is used when running launch vehicles on RASAero
+II to generate aerodynamic data for ascent to orbit trajectory simulations, which will be described
+in the later Running a Launch Vehicle on RASAero II to Generate Aerodynamic Data for Ascent
+to Orbit Trajectory Simulations section. The separation plane between stages on a launch
+vehicle are typically modeled as a non-nested upper stage with a booster added.
+
+Again note that when a booster stage has been added, the original rocket becomes the sustainer
+stage.
+
+For the Booster Inputs, all of the inputs used for a regular single stage rocket are repeated. Note
+in Figure 55 that the diameter of the previous stage is grayed-out (the diameter is already set by
+the previous stage which has already been entered), the diameter of the booster stage is entered,
+and if the booster stage diameter is different than the previous stage diameter the transition
+length is entered for the conic transition between the two stages. If the two stages have the same
+diameter, the transition length input disappears as it is not needed (no transition is required).
+
+Figure 56 shows a two stage rocket (sustainer and booster) with a non-nested upper stage with
+the Add Booster Inputs completed.
+
+
+
+
+                                                                                                 46
+  Figure 56 – Two stage (sustainer and booster) rocket with a non-nested upper stage with Add
+                                   Booster Inputs completed.
+
+
+A booster stage is treated as a rocket component, and can be edited by double clicking on the
+booster component in the upper left-hand rocket component box, which will open the Booster
+Stage Inputs. Or, by clicking the right-hand mouse button on the booster component in the upper
+left-hand rocket component box, the booster stage can be edited. By clicking the right-hand
+mouse button on the booster component in the upper left-hand rocket component box, the
+boosted stage can be deleted.
+
+As before a good technique for checking that the sustainer (upper) stage has been implemented
+correctly is, without saving the file, to remove (delete) the booster and see from the Rocket
+Drawing what the sustainer (upper) stage looks like, to make sure it has the correct configuration.
+This is shown in Figures 57 and 58. Again, after removing (deleting) the booster, do not save the
+file. (Or perform this test on a copy of the file.)
+
+
+
+
+                                                                                                47
+ Figure 57 – Check that the sustainer configuration is correct by deleting the booster stage.
+(Do not save the file after performing this check, or perform this check on a copy of the file.)
+
+
+
+
+ Figure 58 – Check complete; booster deleted, sustainer remains, sustainer configuration is
+                                         correct.
+
+
+
+
+                                                                                               48
+RASAero II can handle up to three stages (sustainer – booster – booster). A completed three
+stage rocket is shown in Figure 59.
+
+
+
+
+     Figure 59 – Three stage rocket (sustainer – booster - booster) entered into RASAero II.
+
+
+
+RASAero II is a combined aerodynamic analysis and flight simulation software package for
+model rockets and high power rockets, amateur rockets, and sounding rockets. RASAero II can
+also be used for predicting aerodynamic coefficients for use in other flight simulation programs
+for orbital rockets.
+
+
+Running an Orbital Launch Vehicle on RASAero II to Generate Aerodynamic Data
+for Ascent to Orbit Trajectory Simulations
+
+While RASAero II currently does not run ascent to orbit trajectories, RASAero II can be used to
+generate aerodynamic data for orbital launch vehicle configurations. The RASAero II predicted
+aerodynamic coefficients can be used as inputs for other flight simulation programs for orbital
+launch vehicles for ascent to orbit trajectories.
+
+RASAero II can be used to run trajectories for the lower stages of orbital launch vehicles to
+compare the actual delta-v from RASAero II to the ideal delta-v from the Tsiolkovsky ideal
+rocket equation, to determine the delta-v losses (gravity and drag losses) for the lower stages.
+Once these delta-v losses have been determined, they can be used in hand calculations or
+spreadsheets to subtract the delta-v losses from the ideal delta-v for each stage, to come up with
+
+
+
+                                                                                                 49
+an estimate for the total delta-v for the lower stages. The ideal delta-v can then be calculated for
+the upper stages (which can have small or negligible delta-v losses compared to the ideal delta-
+v), to come up with an estimate for the payload to orbit of the launch vehicle.
+
+The Minotaur I orbital launch vehicle, and the Minotaur I orbital launch vehicle modeled in
+RASAero II to obtain aerodynamic prediction data, are presented in Figure 60.
+
+
+
+
+                         From Jan 2006 Approved for Public Release Minotaur I Users Guide
+
+
+
+
+ Figure 60 – Minotaur I orbital launch vehicle, and Minotaur I orbital launch vehicle modeled in
+                      RASAero II to obtain aerodynamic prediction data.
+
+
+As a note when an orbital launch vehicle has multiple nozzles (multiple liquid rocket engine
+nozzles, or as on the Minotaur I a single solid rocket motor on Stage-1 with multiple nozzles), the
+nozzle exit areas of the multiple nozzles are added up to obtain the total nozzle exit area, and
+then this total nozzle exit area is converted to a single nozzle with the same nozzle exit area, and
+then the nozzle exit diameter for this single nozzle is entered into RASAero II for the stage for
+the power-on drag coefficient calculations.
+
+Note that aerodynamic data can be generated for an orbital launch vehicle in RASAero II without
+entering any Center of Gravity (CG) data. After the rocket geometry data is entered, on the
+Rocket Drawing the Center of Pressure (CP) for each stage will be displayed, but no CG will be
+displayed, as shown in Figure 60.
+
+The first stages of almost all orbital launch vehicles have no fins, but for a booster stage
+RASAero II requires fins to be entered. In general on RASAero II for each body tube fins do not
+
+
+
+                                                                                                  50
+need to be added, and the sustainer stage can have no fins if a very forward Center of Gravity
+(CG) is entered so that the rocket will be aerodynamically stable and thus will run on the
+RASAero II Flight Simulation. But RASAero II requires fins to be added to booster stages. The
+solution is to enter very small fins to the booster, shown for the Minotaur launch vehicle in
+Figure 61. From an aerodynamic prediction standpoint these very small fins have a negligible
+effect on the predicted aerodynamics for the launch vehicle. To run the launch vehicle on the
+RASAero II Flight Simulation the launch vehicle must be aerodynamically stable, so with the
+very small fins on the booster a very forward CG for the booster must be entered.
+
+
+
+
+    Figure 61 – Minotaur I orbital launch vehicle; very small fins added to booster (Stage-1),
+                          as RASAero II requires fins on the booster.
+
+
+For a trajectory to be run for the launch vehicle on the RASAero II Flight Simulation CG data
+must be entered for each stage, and each stage must have the CG ahead of the CP. As the actual
+launch vehicle will be actively stabilized with a guidance system, it will not be aerodynamically
+stable. To run the launch vehicle on the RASAero II Flight Simulation, a very forward CG must
+be entered for each stage to ensure that each stage of the launch vehicle will be aerodynamically
+stable.
+
+It is also important to have No Wind in the Launch Conditions Inputs when running an orbital
+launch vehicle trajectory on RASAero II. This will have the orbital launch vehicle fly the
+trajectory at zero degrees angle of attack, and the RASAero II dynamics models will be turned
+off, as they are not applicable as the actual launch vehicle will be actively stabilized with a
+guidance system.
+
+
+
+
+                                                                                                  51
+Additional RASAero II Inputs
+
+
+Equivalent Sand Roughness (Surface Finish) Input
+
+The surface roughness of the rocket can be specified using the Equivalent Sand Roughness
+(Surface Finish) Input. The RASAero II Equivalent Sand Roughness (Surface Finish) Input,
+which is located under the Options Tab, is shown in Figure 62.
+
+
+
+
+                Figure 62 – Equivalent Sand Roughness (Surface Finish) Input.
+
+
+
+
+                                                                                           52
+The default input is Smooth (aerodynamically smooth – zero roughness). Varying levels of
+surface roughness can be entered by using the pull-down menu. The equivalent sand roughness
+for each level of smoothness which can be entered is presented in Table 1.
+
+
+         Equivalent Sand Roughness                 Equivalent Sand Roughness (in)
+         Surface Finish Selection
+
+         Smooth (Zero Roughness)                   0.0
+         Polished                                  0.00005
+         Sheet Metal                               0.00016
+         Smooth Paint                              0.00025
+         Camouflage Paint                          0.0004
+         Rough Camouflage Paint                    0.0012
+         Galvanized Metal                          0.006
+         Cast Iron (Very Rough)                    0.01
+
+         Table 1 – Equivalent sand roughness for a given surface finish selection.
+
+
+
+
+                                                                                          53
+Rogers Modified Barrowman Method Option
+
+Under the Options Tab on the RASAero II Main Screen the option is available to select the
+Rogers Modified Barrowman Method for subsonic center of pressure.
+
+The default for the subsonic center of pressure calculations is the Barrowman Method as
+documented in Centuri Report TIR-33. If the Rogers Modified Barrowman Method is not
+checked, then the Barrowman Method will be used for the subsonic center of pressure
+calculations.
+
+Figure 63 shows the Rogers Modified Barrowman Method Not Checked (Not Selected), thus the
+default Barrowman Method will be used for the subsonic center of pressure.
+
+
+
+
+     Figure 63 – Rogers Modified Barrowman Method Not Checked (Not Selected), default
+                Barrowman Method will be used for subsonic center of pressure.
+
+
+Figure 64 shows the Rogers Modified Barrowman Method Checked (Selected), thus the Rogers
+Modified Barrowman Method will be used for the subsonic center of pressure.
+
+
+
+
+                                                                                            54
+    Figure 64 – Rogers Modified Barrowman Method Checked (Selected), Rogers Modified
+               Barrowman Method will be used for subsonic center of pressure.
+
+
+The Rogers Modified Barrowman Method includes a more accurate body normal force slope
+with angle of attack (CNalpha) at low angles of attack by including the influence of the body
+tube cylinder (left out of the Barrowman Method), includes the body in the presence of the fins
+interference factor (Kbf) (left out of the Barrowman Method), and includes body viscous
+crossflow using the Jorgensen Method for the forward movement of the rocket center of pressure
+with angle of attack (not included in the Barrowman Method).
+
+
+All Turbulent Flow Option
+
+Under the Options Tab on the RASAero II Main Screen the option is available to select All
+Turbulent Flow.
+
+In the RASAero II aerodynamic drag predictions the default for the skin friction calculations is
+laminar flow, transition to turbulent flow, and turbulent flow, with the flow transition Reynolds
+number used being the flat plate value of 500,000. There is some in-flight measured drag
+coefficient flight data for high power rockets, especially near and above Mach 3 where there is
+thermal damage to the rocket, or when there is a poorly faired-in transition between rocket
+stages, which indicate that there is an immediate transition to fully turbulent flow. An immediate
+transition to fully turbulent flow can be included in the aerodynamic predictions by selecting the
+All Turbulent Flow Option.
+
+
+
+
+                                                                                               55
+Figure 65 shows All Turbulent Flow Not Checked (Not Selected), thus the default laminar flow,
+transition to turbulent flow, and turbulent flow will be used for the skin friction calculations in
+the aerodynamic drag predictions.
+
+
+
+
+   Figure 65 – All Turbulent Flow Not Checked (Not Selected), default laminar, transition to
+            turbulent, and turbulent will be used for aerodynamic drag predictions.
+
+
+Figure 66 shows All Turbulent Flow Checked (Selected), thus an immediate transition to fully
+turbulent flow (all turbulent flow) will be used for the skin friction calculations in the
+aerodynamic drag predictions.
+
+
+
+
+                                                                                                 56
+Figure 66 – All Turbulent Flow Checked (Selected), immediate transition to fully turbulent flow
+               (all turbulent flow) will be used for aerodynamic drag predictions.
+
+
+Loading a Rocket File from the Previous RASAero Software
+
+As noted in an earlier section, .ALX1 format rocket files from the previous RASAero software
+can be loaded into RASAero II. After clicking on <File> and then <Open>, both .ALX1 format
+(RASAero format) and .CDX1 format (RASAero II format) files will be displayed, and can be
+selected to be opened in RASAero II. When the file is saved in RASAero II, it will be saved in
+the RASAero II .CDX1 format.
+
+
+Importing a RockSim File into RASAero II
+
+RASAero II has the feature of being able to import RockSim files, which can then be run on
+RASAero II. Only the external geometry of the rocket is imported from RockSim into RASAero
+II, none of the rocket internal components in RockSim are carried over to RASAero II.
+
+As shown in Figure 67, RockSim rocket files (.RKT format files) can be imported into RASAero
+II by selecting <File>, then <Import>, and then <RockSim> to load the RockSim file. .RKT
+RockSim format files will be displayed, and can be selected to be converted and opened in
+RASAero II.
+
+Example RockSim files which can be imported into RASAero II are included in the Examples
+directory in the /My Documents/RASAero II directory.
+
+
+
+                                                                                             57
+                     Figure 67 – Importing a RockSim file into RASAero II.
+
+
+Important Note
+
+When the RockSim file has been imported into RASAero II, the warning message shown in
+Figure 68 will be displayed before the rocket is displayed. Clicking on <OK> will retract the
+message and display the rocket. As noted in the message, because RASAero II has many more
+fin airfoil options than RockSim, the actual airfoils on the fins of the rocket may have been
+approximated in RockSim by other airfoils. The airfoils must now be changed to the correct
+airfoils in RASAero II. Rail guides and launch shoes in RockSim may have been approximated
+by launch lugs, or the rail guides and launch shoes may have been left off the rocket. The rail
+guides and launch shoes must now be entered into RASAero II.
+
+It is important to note that if the User does not go back and check the airfoil inputs and the rail
+guide and launch shoe inputs, the erroneous RockSim inputs will be transferred over to RASAero
+II, and RASAero II will run with the erroneous inputs.
+
+
+
+
+                                                                                                58
+            Figure 68 – Importing a RockSim file into RASAero II warning message.
+
+
+Figure 69 shows a RockSim file example rocket (AeroPac104KStageOne&Two.RKT) from the
+/My Documents/RASAero II/Examples directory after being imported into RASAero II. Note
+that while the external geometry of the rocket has been imported, the rocket motors that were
+loaded into the rocket and the rocket Center of Gravity (CG) information have not been
+transferred over from RockSim, and will have to be re-entered into RASAero II. Likewise, the
+rocket lift-off and burnout weights, loaded and unloaded weights, are not transferred over from
+RockSim, and will have to be re-entered into RASAero II.
+
+
+
+
+                                                                                              59
+             Figure 69 – Example RockSim file rocket imported into RASAero II.
+
+
+If some aspects of the rocket geometry in the RockSim file are not compatible with RASAero II,
+then the warning message shown in Figure 70 will be displayed, informing the User that
+RASAero II was unable to import the RockSim file. The rocket will then have to be manually
+entered into RASAero II.
+
+
+
+
+Figure 70 – Warning message for RASAero II being unable to import a RockSim file because of
+                  some rocket geometry incompatibility with RASAero II.
+
+
+                                                                                            60
+Scale Rocket Drawing
+
+As the Rocket Body and Fin Geometry Inputs are entered into RASAero II, a scale rocket
+drawing is created on the Main Screen. The rocket Center of Pressure (CP) of each stage will be
+displayed, which will shift depending on whether the default Barrowman Method is used, or the
+Rogers Modified Barrowman Method has been selected. Once the rocket Center of Gravity (CG)
+data has been entered (detailed in a later section), and the rocket motors have been added
+(detailed in a later section), the rocket CG is displayed and the rocket motors which have been
+loaded are displayed. The dot on the slider bar at the bottom of the scale rocket drawing can be
+moved to different Mach numbers; the CP of the rocket as displayed on the drawing will shift to
+the new CP location based on the new Mach Number.
+
+Besides creating a scale drawing of the rocket, the scale rocket drawing also allows the User to
+check that the rocket geometry has been entered correctly.
+
+Example scale rocket drawings on the RASAero II Main Screen are presented in Figure 71 for a
+single stage rocket, and in Figure 72 for a two stage rocket.
+
+
+
+
+   Figure 71 – Scale rocket drawing on the RASAero II Main Screen for a single stage rocket.
+
+
+
+
+                                                                                                   61
+    Figure 72 – Scale rocket drawing on the RASAero II Main Screen for a two stage rocket.
+
+
+As shown in Figure 73, the scale rocket drawing can be printed out by selecting <File>, <Print>
+or <Print Preview>. The Print Preview screen as ready to be printed out is shown in Figure 74.
+
+
+
+
+                                                                                              62
+Figure 73 – Printing out the scale rocket drawing by selecting Print or Print Preview.
+
+
+
+
+               Figure 74 – Print Preview for the scale rocket drawing.
+
+
+
+
+                                                                                         63
+Aero Plots
+
+After the rocket has been entered into RASAero II, the aerodynamic analysis code built into
+RASAero II can be run by clicking the Aero Plots button as shown in Figure 75, which will
+generate aerodynamic data plots for the rocket.
+
+
+
+
+          Figure 75 – Aero Plots button for generating rocket aerodynamic data plots.
+
+
+Figure 76 presents a typical aerodynamic data plot generated by RASAero II, the power-on and
+power-off drag coefficient (CD) versus Mach number.
+
+The reference area for the aerodynamic data generated by the RASAero II software is the
+maximum cross-sectional area of the rocket body, and is displayed on the Aero Plot plots labeled
+as “Sref” in square inches.
+
+
+
+
+                                                                                              64
+Figure 76 – Aerodynamic data plot; power-on and power-off drag coefficient (CD) versus Mach
+                                         number.
+
+
+In addition to the specific aerodynamic data plotted in the aero plot, all of the aerodynamic data
+for the rocket is also presented in the tabular output below the plot as a function of Mach
+number.
+
+As shown in Figure 77, the aerodynamic data can be plotted to Mach 3, 5, 8, 10, or 25 by using
+the <Plot Data to:> pull-down menu. After being selected to be plotted to Mach 3 in Figure 77,
+the aerodynamic data is plotted to Mach 3 in Figure 78.
+
+
+
+
+                                                                                                 65
+  Figure 77 – Plotting aerodynamic data to Mach 3, 5, 8, 10, or 25 by using pull-down menu.
+
+
+
+
+Figure 78 – Aerodynamic data plot; power-on and power-off drag coefficient (CD) versus Mach
+                  number, after being selected to Mach 3, plotted Mach 0-3.
+
+
+
+                                                                                              66
+Additionally, holding down the left mouse button will cause a “lasso” to be formed as the cursor
+is dragged around the plot, as shown in Figure 79. This square “lasso” allows portions of the
+aero plot be “zoomed in” (blown up). The power-on and power-off drag coefficient (CD) versus
+Mach number plot shown in Figure 77 is “lassoed” in Figure 79, and is shown after being blown
+up in Figure 80, showing the aerodynamic data plot zoomed-in to focus in on the Mach 0 to 5
+aero data.
+
+
+
+
+    Figure 79 – Mach 0-5 aerodynamic data being “lassoed” and blown-up from Mach 0-25
+                                 aerodynamic data plot.
+
+
+
+
+                                                                                              67
+  Figure 80 – Mach 0-5 aerodynamic data after being “lassoed” and blown-up from Mach 0-25
+                                  aerodynamic data plot.
+
+
+Using the left down arrow on the plot selection inputs on the Aero Plots screen, different
+aerodynamic data can be selected versus Mach number for the plots, the aerodynamic data which
+can be plotted versus Mach number is shown in Figure 81. Using the right down arrow the
+aerodynamic data can be plotted versus angle of attack, the aerodynamic data which can be
+plotted versus angle of attack is shown in Figure 82.
+
+
+
+
+                                                                                           68
+           Figure 81 – Aerodynamic data which can be plotted versus Mach number.
+
+
+
+
+           Figure 82 – Aerodynamic data which can be plotted versus angle of attack.
+Figure 83 shows an aerodynamic data plot with the center of pressure (CP) selected to be plotted
+versus Mach number. Note in Figure 83 the substantial forward movement of the center of
+
+
+                                                                                              69
+pressure with Mach number at high supersonic to hypersonic Mach numbers, an important effect
+which is accurately modeled in RASAero.
+
+
+
+
+ Figure 83 – Aerodynamic data plot; center of pressure (CP) versus Mach number, Mach 0-25.
+
+
+Figure 84 shows the power-off drag coefficient (CD) selected, and the plot versus angle of attack
+option selected, to plot the power-off drag coefficient (CD) versus angle of attack.
+
+
+
+
+                                                                                               70
+   Figure 84 – Aerodynamic data plot; power-off drag coefficient (CD) versus angle of attack.
+
+
+Figure 85 shows the normal force coefficient (CN) selected to be plotted versus angle of attack at
+Mach 0.5, with the Rogers Modified Barrowman Method option turned on. Note the additional
+normal force generated by viscous crossflow (labeled Viscous in Figure 85), an aerodynamic
+effect not included in the Barrowman Method. The Barrowman Method predicts Potential
+normal force only, with the Rogers Modified Barrowman Method having improved Potential
+normal force predictions with increased accuracy, in addition to adding the Viscous normal force
+not included in the Barrowman Method.
+
+
+
+
+                                                                                                71
+       Figure 85 – Normal force coefficient (CN) versus angle of attack at Mach 0.5 using
+                            Rogers Modified Barrowman Method.
+
+
+For a multi-stage rocket, like the rocket shown in Figure 86, when the Aero Plots button is
+clicked on as shown in Figure 86, the “Sustainer” and “Sustainer plus Booster” buttons will
+appear. The Sustainer plus Booster aerodynamic data will be plotted if Sustainer plus Booster is
+selected, as shown in Figure 87 and Figure 89; the Sustainer only aerodynamic data will be
+plotted if Sustainer only is selected, as shown in Figure 88 and Figure 90.
+
+The reference area for the aerodynamic data for each stage is the maximum cross-sectional area
+of the rocket body for that stage, and is displayed on the Aero Plot plots labeled as “Sref” in
+square inches. Note in Figure 87 and Figure 89 that the reference area (Sref) for the aerodynamic
+data for the Sustainer plus Booster is the maximum cross-sectional area of the Booster (the stage
+with the larger diameter), and the reference area is lower for the smaller in diameter Sustainer
+only stage, as shown in Figure 88 and Figure 90.
+
+If the rocket is a three stage rocket as shown in Figure 91, then “Sustainer”, “Sustainer plus
+Booster”, and “All Stages” buttons will appear on the Aero Plots screen as shown in Figure 92.
+
+
+
+
+                                                                                              72
+   Figure 86 – Aero Plots button selected for two stage rocket in RASAero II.
+
+
+
+
+Figure 87 – Sustainer plus Booster power-on and power-off drag coefficient (CD).
+
+
+
+
+                                                                                   73
+   Figure 88 – Sustainer only power-on and power-off drag coefficient (CD).
+
+
+
+
+Figure 89 – Sustainer plus Booster center of pressure (CP) versus Mach number.
+
+
+
+
+                                                                                 74
+       Figure 90 – Sustainer only center of pressure (CP) versus Mach number.
+
+
+
+
+Figure 91 – Three stage rocket (sustainer – booster - booster) entered into RASAero II.
+
+
+
+
+                                                                                          75
+   Figure 92 – Three stage rocket; All Stages power-on and power-off drag coefficient (CD).
+
+
+By pressing <Alt> <Print Scrn> the Aero Plot image can be copied for pasting into another file.
+
+As shown in Figure 93, the Aero Plot can be printed out by selecting <File>, <Print> or <Print
+Preview>.
+
+As shown in Figure 94, the Aero Plot aerodynamic data can be exported to an Excel CSV file by
+selecting <File>, <Export>, <To CSV File>.
+
+
+
+
+                                                                                                 76
+Figure 93 – Printing out an Aero Plot by selecting Print or Print Preview under File.
+
+
+
+
+     Figure 94 – Exporting Aero Plot aerodynamic data to an Excel CSV file.
+
+
+
+
+                                                                                        77
+Launch Site Inputs
+
+For running the RASAero II flight simulation the Launch Site conditions are entered by selecting
+Launch Site under the Options Tab on the RASAero II Main Screen, as shown in Figure 95.
+Figure 96 shows the Launch Site inputs, consisting of:
+
+    a) Launch site elevation (ft) above sea level.
+
+    b) Temperature (deg F).
+
+    c) Launch site barometric pressure (in-hg). This is not a mandatory input, and can be left
+       blank. Note that this is the barometric pressure at the launch site, like the atmospheric
+       pressure measurement obtained from a weather station or an airport.
+
+    d) Wind speed (mph). Positive wind speed is a headwind, which the rocket will
+       weathercock into, and which will blow the rocket on a parachute back towards the launch
+       pad. Negative wind speed is a tailwind, which will blow the rocket on a parachute away
+       from the launch pad.
+
+    e) Launch rail length (ft), (or launch rod length).
+
+    f) Launch angle, degrees from vertical. Zero degrees is straight-up. A positive launch
+       angle is angled downrange away from the launch controller and crowd.
+
+
+
+
+ Figure 95 – Selecting Launch Site Inputs under the Options Tab to enter launch site conditions.
+
+
+
+                                                                                                   78
+                                  Figure 96 – Launch Site Inputs.
+
+
+Clicking <OK> will save the launch site conditions, which are saved in the rocket file with the
+rest of the data for the rocket (the .CDX1 file). For a new rocket, the last launch site conditions
+used will initially be displayed, and then can be changed to the launch site conditions needed for
+the current rocket. It’s a good idea to verify for each rocket and for each rocket flight simulation
+run that the correct launch site elevation and temperature are being used for the launch site
+conditions, as the launch site elevation in particular has a strong effect on the altitude of the
+rocket.
+
+Generally, the typical flight simulation run on RASAero II is run using the launch site elevation
+and the launch site temperature. Few model or high power rocketeers measure barometric
+pressure at the launch site. The launch site elevation feature in RASAero II assumes a standard
+day, and internal to the program provides the launch site atmospheric pressure based on the
+elevation of the launch site. Thus all the user needs to know and enter into the software is the
+elevation of the launch site, and the temperature. Actual measured temperature is preferred, but
+the general temperature experienced at the launch site can be used. Thus most users will run the
+RASAero II flight simulation using the launch site elevation and the typical temperature at the
+site. The launch site barometric pressure can be left blank.
+
+If, for engineering purposes, the user wishes to run the flight simulation from sea level on a
+standard day, the user can enter a launch site elevation of zero ft, and a temperature of 59 deg F,
+the sea level standard day conditions.
+
+The atmosphere model in the RASAero II flight simulation uses the launch site elevation (or an
+entered barometric pressure and the launch site elevation), to anchor a model of atmospheric
+pressure (used for variation of thrust with altitude) as a function of altitude, the launch site
+temperature input anchors a model of temperature (from which speed of sound is calculated) as a
+function of altitude, and the launch site pressure and temperature are used to calculate the
+atmospheric density at the launch site, which then anchors a model of the atmospheric density
+
+
+
+
+                                                                                                  79
+(used to calculate the aerodynamic drag on the rocket) as a function of altitude. The atmosphere
+models extend to 1,000,000 ft altitude, and is based on the 1976 US Standard Atmosphere.
+
+For advance users, the barometric pressure as obtained from a weather station or airfield, or
+measured at the site, can be input in the program. Note that barometric pressure is the pressure
+that would be present at sea level, based on the measured pressure at the site, which then based
+on the elevation of the site is adjusted back to the sea level value based on a standard variation of
+pressure with altitude. Thus the elevation of the launch site is still required when entering the
+barometric pressure. This feature was built into RASAero II so that the easiest to obtain
+atmospheric pressure, the barometric pressure from a weather station or airfield, can be inputted
+into the program.
+
+Note that entering a wind speed, or not entering a wind speed, (wind or no wind), will determine
+what kind of flight simulation is run.
+
+    a) If no wind speed is entered, then a 2 degrees-of-freedom trajectory simulation with no
+       wind will be run, with no dynamic stability and no weathercocking.
+
+    b) If a wind speed is entered, then a 3 degrees-of-freedom trajectory simulation with wind
+       will be run that includes dynamic stability and weathercocking of the rocket into the
+       wind.
+
+    c) The above flight simulation modes are selected internal to the software and are
+       transparent to the User. The selection of the flight simulation mode is based on whether
+       the User has entered a wind speed or not.
+
+When the flight simulation portion of the RASAero II software is run, the aerodynamic
+coefficients for the rocket are calculated during each time step based on the rocket Mach number,
+angle of attack, Reynolds number based on the altitude of the rocket, and whether the rocket is
+flying in the motor thrust phase (power-on) or the coast phase (power-off). For the trajectory
+simulation with wind, with dynamic stability and weathercocking included, both static and
+dynamic stability derivatives for the rocket are calculated, including rocket aerodynamic
+damping coefficients and the jet damping coefficient from the rocket motor thrust during the
+powered flight phase.
+
+
+
+
+                                                                                                  80
+Recovery Inputs
+
+The RASAero II Recovery inputs are entered by selecting Recovery under the Options Tab on
+the RASAero II Main Screen, as shown in Figure 97. Figure 98 shows the Recovery Inputs.
+
+Two recovery events are allowed. Typical recovery sequences are as follows:
+
+   a) No recovery, flight through apogee, ballistic descent to impact. To select this option,
+      leave both Event 1 and Event 2 boxes unchecked. (Or Event 1 and Event 2 boxes can be
+      checked, but for the recovery device select None.)
+
+   b) Main parachute at apogee. Check Event 1, for Event Type specify Apogee (apogee
+      deployment), select parachute for Device, and then specify the parachute diameter.
+
+   c) Drogue parachute at apogee, main parachute at a selected altitude (example 1000 ft
+      above ground level). Check Event 1, for Event Type specify Apogee (apogee
+      deployment), select parachute for Device, and then specify the parachute diameter.
+      Check Event 2, for Event Type specify Altitude (deployment at a specified altitude above
+      the ground), enter the deployment altitude above ground level, select parachute for
+      Device, specify the main parachute diameter.
+
+
+
+
+                 Figure 97 – Selecting Recovery inputs under the Options Tab.
+
+
+
+
+                                                                                            81
+                                   Figure 98 – Recovery inputs.
+
+
+Note that the diameter of the parachute is the diameter with the parachute laid flat on the ground.
+This is the way most model and high power rocket parachutes are measured, and is the reference
+area convention used to develop the parachute drag coefficient data used in the RASAero II
+software.
+
+Note the default parachute drag coefficient (CD) of 1.33 is based on a study of high power rocket
+descent rates as a function of parachute size, but the User has the option of entering his own
+parachute CD based on descent rate flight data for the parachute being used.
+
+Clicking <OK> saves the Recovery inputs for the rocket.
+
+
+Rocket Comments
+
+Comments can be entered for the rocket by selecting Comments under the Options Tab on the
+RASAero II Main Screen, as shown in Figure 99. Figure 100 shows the Comments input screen
+with an example of some rocket comments. After the rocket comments are entered, they are
+saved by clicking on <OK>. Note that the comments are saved with the rocket in the rocket
+.CDX1 file.
+
+Saving comments for each rocket, describing any unique features of the rocket, and in particular
+noting altimeter altitude measurements for comparison with the RASAero II flight simulation
+altitude prediction is highly recommended by the RASAero II authors.
+
+
+
+
+                                                                                                 82
+Figure 99 – Selecting Comments inputs under the Options Tab.
+
+
+
+
+        Figure 100 – Rocket Comments input screen.
+
+
+
+
+                                                               83
+Other Inputs
+
+
+Mach-Alt Input for Matching Wind Tunnel or Flight Data Reynolds Number
+
+
+The RASAero II aerodynamic predictions which are displayed on the Aero Plots screen output
+and are included in the Run Test output file (described in the next section) are based on the
+rocket Reynolds number as a function of Mach number calculated at sea level. When making
+comparisons with wind tunnel data and flight data where there is a specified Reynolds number
+that goes with each test condition or flight condition Mach number, the Mach-Alt function in
+RASAero II allows the user to specify a particular altitude for a particular Mach number, with
+linear interpolation between the Mach-Altitude points, so that the rocket aerodynamics are
+predicted using the correct Reynolds number at each Mach number test point. The Mach-Alt
+option is only used with Run Test, and is typically used to do comparisons with wind tunnel data
+to match the Reynolds number for a particular Mach number from the wind tunnel tests.
+
+Note that the Mach-Alt input only affects the altitude and Reynolds number used when
+generating the Run Test output file. It has no effect on flight simulation runs.
+
+For rocket flight simulation runs, the Mach number at the beginning of the time step, and the
+altitude of the rocket at the beginning of the time step, are always used to calculate the rocket
+Reynolds number. The Mach-Alt input has no effect on the rocket flight simulation runs, and no
+entry is required in the Mach-Alt input to perform flight simulation runs.
+
+The Mach-Alt option can be selected under the Options Tab on the RASAero II Main Screen, as
+shown in Figure 101. After the Mach-Alt option is selected, the Mach-Alt input screen will
+appear, as shown in Figure 102.
+
+
+
+
+                                                                                               84
+                Figure 101 – Selecting Mach-Alt option under the Options Tab.
+
+
+
+
+                              Figure 102 – Mach-Alt input screen.
+
+
+Figure 103 shows a typical entry of Mach-Altitude on the Mach-Alt input screen, in this case to
+match the Reynolds number at several Mach number points along the trajectory of a sounding
+rocket. The first Mach-Alt point is always at Mach 0, and the final Mach-Alt point is always at
+Mach 25.
+
+
+
+
+                                                                                              85
+                              Figure 103 – Typical Mach-Alt input.
+
+
+After the Mach-Alt points have been entered, the Reynolds number at each Mach number can be
+checked in the tabular output on the Aero Plots output screen (Reynolds number is to the far
+right), or in the Run Test file output. For a given Mach number a lower altitude increases
+Reynolds number, a higher altitude decreases Reynolds number.
+
+Note that the default is no Mach-Alt points are entered, and for the Aero Plots output screen and
+tabular output and the Run Test output file the rocket aerodynamic predictions are run with the
+Reynolds number calculated at sea level.
+
+For the rocket flight simulation runs, the Mach number at the beginning of the time step, and the
+altitude of the rocket at the beginning of the time step, are always used to calculate the rocket
+Reynolds number. The Mach-Alt input has no effect on the rocket flight simulation runs, and no
+entry is required in the Mach-Alt input to perform flight simulation runs.
+
+
+Run Test
+
+In the Aero Plots output screen, the tabular output for the rocket aerodynamic predictions are
+presented for 0, 2, and 4 degrees angle of attack. To generate aerodynamic predictions for the
+rocket at any angle of attack between 0 deg and 15 deg, the Run Test option can be used.
+
+The Run Test option can be selected under the Tools Tab on the RASAero II Main Screen, as
+shown in Figure 104. After the Run Test option is selected, the Run Test input screen will
+appear, as shown in Figure 105 for a single stage rocket, and Figure 106 for a two stage rocket.
+
+In the Run Test input screen, a user-selected angle of attack can be specified and a tabular output
+file for the aerodynamic prediction run will be created when the user clicks on <Run Test>.
+
+Note for a two stage rocket as shown in Figure 106, the User can select to run with both stages
+(Sustainer plus Booster), or Sustainer only. The aerodynamic data will be generated for the
+Sustainer plus Booster, or Sustainer only, based on the selection.
+
+
+
+
+                                                                                                   86
+For single stage and two stage (and three stage) rockets, it is important to have the correct nozzle
+exit diameter for each stage to get the correct power-on drag coefficient (CD) for each stage.
+The nozzle exit diameter for each stage should copy over from the Flight Simulation input screen
+(covered in a later section), but the User may have changed the rocket motors selected, so it is a
+good idea to confirm that the correct nozzle exit diameters are present before running the aero
+data using Run Test.
+
+The Run Test output file name can be entered on the file name line shown in Figure 105 and
+Figure 106, or the <Browse> button can be used to locate the directory the file will be stored in
+and to enter the file name, as shown in Figure 107. The default directory for the Run Test output
+file is the /My Documents/RASAero II directory. Typically the Run Test output file is stored as
+a Text file (.txt), and can be read using the WordPad or NotePad programs, although as shown in
+Figure 107 the Run Test output file can be stored in various file formats with various file
+extensions.
+
+
+
+
+                Figure 104 – Selecting the Run Test option under the Tools Tab.
+
+
+
+
+                                                                                                 87
+Figure 105 – Run Test input screen for a single stage rocket.
+
+
+
+
+ Figure 106 – Run Test input screen for a two stage rocket.
+
+
+
+
+                                                                88
+Figure 107 – Using the Browse-Save File option to locate the directory and set the file name and
+                           extension for the Run Test output file.
+
+
+Using the Run Test option the rocket will be run to Mach 25 at the angle of attack that was
+specified. The Run Test output also provides additional breakdown in the components of the
+aerodynamic drag and normal force of the rocket. The rocket aerodynamic drag by rocket
+component and by drag type, potential and viscous normal force, and the power-on and power-
+off lift and drag and axial force and normal force of the rocket are included in the Run Test
+output file, as shown in Figure 108.
+
+
+
+
+                                                                                                89
+Subsonic
+Mach 0.01 to 0.90
+
+
+Mach   Alpha   CD       CD       Body     Body     Body    Fin      Fin     Fin   Pro- Reynolds No
+       deg     Power    Power    Frict    Press    Base    Frict    Inter- Base   tuber-
+               Off      On                                 &Press   ference       ance
+
+0.50   0.00    0.481    0.459    0.306    0.026    0.057   0.050    0.042   0.000 0.000   39146410
+
+
+Mach   CN      CP
+       Alpha   0-4
+       0-4     deg
+       deg
+
+Mach   Alpha   CN      CN
+       deg     Potent- Viscous
+               ial
+
+Mach   Alpha   CN       CP
+       deg     Total    Total
+
+Mach   Alpha   CL       CD        CN       CA
+       deg     Power    Power     Power    Power
+               Off      Off       Off      Off
+
+Mach   Alpha   CL       CD        CN       CA
+       deg     Power    Power     Power    Power
+               On       On        On       On
+
+0.50 19.51     98.115
+0.50 3.50       1.028    0.143
+0.50 3.50       1.172   98.619
+0.50 3.50       1.140    0.553   1.172    0.482
+0.50 3.50       1.141    0.532   1.172    0.461
+
+
+Note: Protuberance CD is Total of Rail Guide, Launch Lug, Launch Shoe, Streamlined No Base
+Drag, Streamlined With Base Drag, and Inclined Flat Plate Protuberances, if present.
+
+
+
+  Figure 108 – Run Test output file format; rocket aerodynamic drag by rocket component and
+drag type, potential and viscous normal force, and power-on and power-off lift and drag and axial
+                                     force and normal force.
+
+
+
+
+                                                                                                 90
+Transonic
+Mach 0.91 to 1.04
+
+
+Mach   Alpha   CD      CD      Reynolds No
+       deg     Power   Power
+               Off     On
+
+0.95   0.00    0.554   0.513   74378180
+
+
+Mach   CN      CP
+       Alpha   0-4
+       0-4     deg
+       deg
+
+Mach   Alpha   CN      CN
+       deg     Potent- Viscous
+               ial
+
+Mach   Alpha   CN      CP
+       deg     Total   Total
+
+Mach   Alpha   CL      CD        CN       CA
+       deg     Power   Power     Power    Power
+               Off     Off       Off      Off
+
+Mach   Alpha   CL      CD        CN       CA
+       deg     Power   Power     Power    Power
+               On      On        On       On
+
+0.95 19.94 101.059
+0.95 3.50    1.054   0.143
+0.95 3.50    1.198 101.600
+0.95 3.50    1.162   0.628       1.198    0.556
+0.95 3.50    1.164   0.587       1.198    0.515
+
+
+
+                       Figure 108 – Run Test output file format (continued).
+
+
+
+
+                                                                               91
+Supersonic-Hypersonic
+Mach 1.05 to Mach 25
+
+Mach   Alpha   CD      CD        Body     Nose      Body    Fin     Fin     Fin     Fin     Other   Pro- Reynolds No
+       deg     Power   Power     Frict    Cone      Base    Frict   Wave    Inter- Base     Body    tuber-
+               Off     On                 Wave                              ference Drag    Wave    ance
+                                                                                            Drag
+
+2.00   0.00    0.631   0.572     0.189    0.059     0.163   0.037   0.067   0.031   0.000   0.084   0.000   156585600
+
+
+Mach   CN      CP
+       Alpha   0-4
+       0-4     deg
+       deg
+
+Mach   Alpha   CN      CN
+       deg     Potent- Viscous
+               ial
+
+Mach   Alpha   CN      CP
+       deg     Total   Total
+
+Mach   Alpha   CL      CD         CN        CA
+       deg     Power   Power      Power     Power
+               Off     Off        Off       Off
+
+Mach   Alpha   CL      CD         CN        CA
+       deg     Power   Power      Power     Power
+               On      On         On        On
+
+2.00 20.64 105.712
+2.00 3.50    1.131   0.127
+2.00 3.50    1.258 105.798
+2.00 3.50    1.217   0.709       1.258     0.633
+2.00 3.50    1.221   0.650       1.258     0.575
+
+
+Note: Other Body Wave Drag CD is Wave Drag of Transition Sections, Reducers, Fin Canisters, and
+Boattails, if present. It is the part of the Body Wave Drag that is not Nose Cone Wave Drag, which is
+printed out in a separate column.
+
+
+Note: Protuberance CD is Total of Rail Guide, Launch Lug, Launch Shoe, Streamlined No Base
+Drag, Streamlined With Base Drag, and Inclined Flat Plate Protuberances, if present.
+
+
+
+                         Figure 108 – Run Test output file format (concluded).
+
+
+
+
+                                                                                                                    92
+RASAero II Rocket Motor Database
+
+An extensive selection of currently produced model and high power rocket motors is included in
+the RASAero II motor selection menu. Some historical rocket motors marked with (Hist) are
+also included, for comparison of the RASAero II flight simulation predicted altitude with
+historical optical tracking and barometric altimeter altitude data.
+
+RASAero II uses the RASP motor file format. The RASP motor file can be found in the
+/My Documents/RASAero II directory, with the file name rasp.eng.
+
+Advanced users familiar with the RASP motor file format can add rocket motor data from other
+sources, or input their own rocket motor data, in particular for rocket motors they have developed
+and built themselves in programs like the Tripoli EX (Tripoli Research) program. The new
+rocket motor data can be appended at the end of the rasp.eng file, and the rocket motor will show
+up in the motor selection menu in alphabetical order.
+
+The RASAero II authors recommend that before editing the rasp.eng file, that the user saves a
+copy of the original rasp.eng file in a separate directory in case the file is corrupted during
+editing. The RASAero II authors recommend that the original version of the rasp.eng file, and
+subsequent versions of the file, be archived as new rocket motors are appended to the file.
+
+For advanced users creating their own RASP format motor data the ThrustCurve.org web site
+( http://www.thrustcurve.org/ ) has detailed information on the RASP motor file format at
+http://www.thrustcurve.org/raspformat.shtml . The ThrustCurve.org web site also has extensive
+resources and applets for creating and manipulating RASP format motor files.
+
+Rocket motor nozzle exit diameter is not saved with the RASP motor data (it is not part of the
+RASP motor data format), and is instead saved with the rocket stage (Booster or Sustainer) in the
+.CDX1 file.
+
+The rocket motor nozzle exit diameter is not only used to determine the power-on drag
+coefficient (CD) for each stage, it is also used to vary the thrust with altitude for each stage.
+
+RASAero II varies the thrust with altitude for the rocket motor in each stage based on the nozzle
+exit area of each stage calculated from the entered nozzle exit diameter, based on the assumption
+that the thrust curve data in the rasp.eng file is sea level thrust curve data. RASAero II then
+compares the atmospheric pressure at altitude from the Flight Simulation atmosphere model to
+sea level atmospheric pressure, and based on the nozzle exit area determines the increase in
+thrust at altitude.
+
+Again, RASAero II assumes the thrust curve in the rasp.eng file is a sea level thrust curve. More
+sophisticated Users generating their own thrust curve data can correct their thrust stand thrust
+data to sea level to get more accurate altitude predictions from RASAero II.
+
+
+
+
+                                                                                                    93
+User-Selected RASP Motor File
+
+If the user does not wish to use the default RASAero II RASP motor file (rasp.eng located in the
+/My Documents/RASAero II directory), then a user-selected RASP motor file can be selected by
+selecting Select Motor File under the File Tab on the RASAero II Main Screen, as shown in
+Figure 109. The motor file is then selected as shown in Figure 110 by clicking on the RASP
+motor file, and then <Open>, to select the motor file.
+
+Note that the user does not have to select the default RASAero II RASP motor file (rasp.eng
+located in the /My Documents/RASAero II directory) the first time RASAero II is run. The first
+time RASAero II is run, the software will automatically load the default rasp.eng motor file, and
+will continue to load the default rasp.eng motor file for all subsequent runs unless Select Motor
+File is selected.
+
+
+
+
+               Figure 109 – Select Motor File for user-selected RASP motor file.
+
+
+
+
+                                                                                               94
+                           Figure 110 – Selecting the RASP motor file.
+
+
+For selecting a RASP motor file RASAero II will first open the /My Documents/RASAero II
+directory, although by browsing other directories can be selected. User-selected RASP motor
+files can be located in and pulled from any directory, but the RASP motor file must remain in
+that directory to be found by RASAero II for subsequent Flight Simulation runs. If the RASP
+motor file is moved out of that directory, or if the directory itself is moved, then RASAero II will
+not be able to find the motor file, and the error message shown in Figure 111 will be displayed.
+Thus the user should consider keeping their user RASP motor files in the /My Documents/
+RASAero II directory, as the location of this directory will not change as long as RASAero II is
+installed.
+
+
+
+
+              Figure 111 – Error from user-selected RASP motor file being moved
+                                   from it’s previous location.
+
+
+
+
+                                                                                                  95
+Important Note
+
+If the user never uses Select Motor File to select a user-selected RASP motor file, RASAero II
+will always use the default RASAero II RASP motor file (rasp.eng located in the /My
+Documents/RASAero II directory). Once a user-selected RASP motor file is selected using
+Select Motor File, then that user-selected RASP motor file will be used for all subsequent
+RASAero II Flight Simulation runs until a new user-selected RASP motor file has been selected,
+or the original RASAero II RASP motor file (rasp.eng located in the /My Documents/RASAero II
+directory) is selected.
+
+The user-selected RASP motor file is not saved with the rocket. The last RASP motor file used
+is used for all subsequent RASAero II Flight Simulation runs, until the RASP motor file selection
+is changed.
+
+If a user-selected RASP motor file has been selected, and if the motor for a later rocket is not in
+that motor file, the error message shown in Figure 112 will be displayed.
+
+
+
+
+       Figure 112 – Error from a later rocket needing a motor not in the last user-selected
+                                        RASP motor file.
+
+
+The user-selected RASP motor file needed by the rocket, or the default RASAero II rasp.eng
+RASP motor file if used by the rocket, will then need to be selected for the rocket Flight
+Simulation to be run.
+
+
+
+
+                                                                                                  96
+Important Note
+
+Note that rather than loading in different user-selected RASP motor files, the user can add the
+desired rocket motor data to the default RASAero II rasp.eng file (located in the /My Documents/
+RASAero II directory), by appending the motor data at the end of the rasp.eng file. Then Select
+Motor File never needs to be used, all of the motor data will be in the default RASAero II
+rasp.eng file, which will automatically be selected for every RASAero II Flight Simulation run.
+
+If a user-selected RASP motor file has previously been selected, and the user wishes to return to
+the default RASAero II rasp.eng file (located in the /My Documents/RASAero II directory), then
+the default rasp.eng file can be selected by using Select Motor File as shown in Figure 113, after
+which the default rasp.eng file will be used for all subsequent RASAero II Flight Simulation
+runs.
+
+
+
+
+         Figure 113 – Using Select Motor File to select the default RASAero II rasp.eng
+                                      RASP motor file.
+
+
+
+
+                                                                                                97
+Running the RASAero II Flight Simulation
+
+To run the RASAero II Flight Simulation for the rocket, the first step is to click on the Flight
+Simulation button shown in Figure 114. After clicking on the Flight Simulation button, the
+Flight Screen will be displayed as shown in Figure 115. The Flight Screen shown in Figure 115
+is for a single stage rocket.
+
+
+
+
+Figure 114 – Flight Simulation button for accessing Flight Screen and running Flight Simulation.
+
+
+
+
+                                                                                               98
+       Figure 115 – Flight Screen for running Flight Simulation for a single stage rocket.
+
+
+To open the motor selection for the rocket, and to enter the lift-off weight, lift-off center of
+gravity (CG), and nozzle exit diameter, as shown in Figure 116 the User must double click on the
+Motor(s) Loaded cell to access the FlightDataEntry Screen.
+
+
+
+
+             Double Click Here to Open
+             Motor Selection, Weight, and CG Inputs
+
+
+
+
+Figure 116 – Double clicking on Motor(s) Loaded cell to access FlightDataEntry Screen to enter
+    motor selection, lift-off weight, lift-off center of gravity (CG), and nozzle exit diameter.
+
+
+
+                                                                                              99
+The FlightDataEntry Screen for entering the motor selection, and for entering the lift-off weight,
+lift-off center of gravity (CG), and nozzle exit diameter inputs, shown for a single stage rocket, is
+presented in Figure 117.
+
+
+
+
+ Figure 117 – FlightDataEntry Screen for entering motor selection, lift-off weight, lift-off center
+               of gravity (CG), and nozzle exit diameter, for a single stage rocket.
+
+
+The Sustainer CG (in) and Sustainer Loaded Wt (Weight) lb inputs on the FlightDataEntry
+Screen in Figure 91 are the lift-off center of gravity (CG) and the lift-off weight. As this is a
+single stage rocket, the Sustainer stage is the only stage, the Sustainer stage is the rocket.
+
+The rocket motor for the rocket is selected on the FlightDataEntry Screen using the pull-down
+motor selection menu as shown in Figure 118 for a single stage rocket.
+
+
+
+
+                                                                                                    100
+     Figure 118 – Rocket motor selection menu for selecting a rocket motor for the rocket.
+
+
+Note as shown in Figure 119 that once a rocket motor has been selected, and the FlightDataEntry
+Screen is Saved, the rocket motor will appear in the Motor(s) Loaded cell on the Flight Screen.
+
+
+
+
+                                                                                             101
+Figure 119 – Motor successfully loaded, now appears in Motor(s) Loaded cell on Flight Screen.
+
+
+The Flight Screen for a two stage rocket is shown in Figure 120. Note that two motors are
+displayed in the Motor(s) Loaded cell, as this is a two stage rocket. The left motor is the
+Sustainer motor, the right motor is the Booster motor.
+
+
+
+
+ Figure 120 – Flight Screen for a two stage rocket, with two motors in the Motor(s) Loaded cell.
+
+
+
+
+                                                                                              102
+Figure 121 shows the FlightDataEntry Screen for a two stage rocket, with Sustainer and Booster
+motor selection and nozzle exit diameter, Sustainer and Booster lift-off weight and lift-off center
+of gravity (CG), and the separation delay on the Booster and ignition delay on the Sustainer. The
+separation delay on the Booster allows the User to specify that the Booster and Sustainer will
+coast together for the specified number of seconds after Booster burnout before the Booster
+separates. The Sustainer ignition delay is the time delay after the Booster separates, where the
+Sustainer by itself coasts, before the Sustainer motor is ignited. Including the Booster separation
+delay and the Sustainer ignition delay allows various delay staging strategies to be implemented
+for increased altitude.
+
+Note in Figure 121 that if the User does not want to include the Booster, and wants to fly the
+Sustainer as a single stage rocket, the Include Booster box can be un-checked, and the rocket will
+be flown as a single stage rocket using the Sustainer.
+
+
+
+
+ Figure 121 – FlightDataEntry Screen for a two stage rocket, with Sustainer and Booster motor
+ selection and nozzle exit diameter, Sustainer and Booster lift-off weight and lift-off center of
+       gravity (CG), separation delay on the Booster and ignition delay on the Sustainer.
+
+
+
+
+                                                                                               103
+The Launch Site Inputs and Recovery Inputs, covered in earlier sections, can also be accessed
+from the Flight Screen, under the Options Tab, as shown in Figure 122. The Launch Site Inputs
+and Recovery Inputs Screens appear the same as when accessed from the Main Screen, and the
+inputs will be saved when the inputs on the Flight Screen are saved. Most RASAero II Users
+access the Launch Site Inputs and the Recovery Inputs from the Flight Screen under the Options
+Tab when running Flight Simulations from the Flight Screen.
+
+
+
+
+Figure 122 – Accessing the Launch Site Inputs and Recovery Inputs from the Flight Screen using
+                                      the Options Tab.
+
+
+The Flight Simulation is run by highlighting the line of the specific Flight Simulation the User
+wants to run, and then under the Simulations Tab, selecting Rerun Selected Simulation as shown
+in Figure 123.
+
+
+
+
+                                                                                             104
+     Figure 123 – Running the Flight Simulation for the rocket by selecting Rerun Selected
+                           Simulation under the Simulations Tab.
+
+
+With the Flight Simulation completed, the summary flight data for the Flight Simulation is
+displayed as shown in Figure 124, and the Flight Simulation plots and tabular data can be
+accessed by clicking on the View Data button, as shown in Figure 124.
+
+
+
+
+                                                                                             105
+ Figure 124 – Summary flight data after running Flight Simulation, accessing plots and tabular
+                           data by clicking on View Data button.
+
+
+The altitude plot and the Flight Simulation complete tabular data are then displayed, as shown in
+Figure 125. The Max Altitude of the rocket is always displayed beneath the title of the rocket on
+the altitude plot, and the additional plots which follow.
+
+
+
+
+                                                                                             106
+ Figure 125 – Altitude plot and Flight Simulation tabular data after using View Data to display
+                        Flight Simulation plots and data for the rocket.
+
+
+The tabular data includes all of the output variables from the Flight Simulation. The Flight
+Simulation output variables can be individually plotted as shown in Figure 126, by using the
+pull-down menu. All of the Flight Simulation variables in the tabular output can be plotted, as
+shown in Figure 126.
+
+
+
+
+                  Figure 126 – Flight Simulation variables which can be plotted.
+
+
+Some additional example Flight Simulation plots are presented in Figure 127-129. Figure 125,
+presented previously, presents the altitude versus time for an example rocket. Note that this
+particular example rocket has no recovery system, so the rocket flies a ballistic no recovery flight
+to impact. Figure 127 presents acceleration versus time, Figure 128 presents Mach number
+
+
+
+                                                                                                107
+versus time, and Figure 129 presents center of gravity (CG) and center of pressure (CP) versus
+time.
+
+
+
+
+        Figure 127 – RASAero II Flight Simulation output plot, acceleration versus time.
+
+
+
+
+       Figure 128 – RASAero II Flight Simulation output plot, Mach number versus time.
+
+
+
+
+                                                                                             108
+  Figure 129 – RASAero II Flight Simulation output plot, center of gravity (CG) and center of
+                                 pressure (CP) versus time.
+
+
+By pressing <Alt> <Print Scrn> the RASAero II Flight Simulation output plot image can be
+copied for pasting into another file.
+
+As shown in Figure 130, the Flight Simulation tabular output data can be exported to an Excel
+(.CSV) file by selecting <Export> and <To CSV> under <File> on the Flight Simulation output
+screen. As shown in Figure 131, when exporting to an Excel (.CSV) file, the user can select the
+time increment for the data in the file from the options of 0.01 sec (the default), 0.10 sec, 0.50
+sec and 1.0 sec.
+
+
+
+
+        Figure 130 – Exporting the Flight Simulation tabular output data to an Excel file.
+
+
+
+
+                                                                                               109
+Figure 131 – Selecting the time increment for exporting the Flight Simulation tabular output data
+                                       to an Excel file.
+
+
+The Optimum Weight of the rocket can be determined by clicking on the Optimize Wt (Optimum
+Weight) button as shown in Figure 132. The resulting Optimum Weight for an example rocket,
+and the max altitude at that Optimum Weight, are presented in Figure 133.
+
+Note that for many larger high power rockets, and sounding rockets, the optimum weight is
+typically the lowest possible weight of the rocket. RASAero II will stop the optimum weight
+flight simulation trajectory iterations once the weight has gotten down to the motor loaded
+weight from the rasp.eng file, i.e., there is no weight left for the rocket airframe and other rocket
+systems. This optimum weight equal to the motor loaded weight will be displayed, even though
+it is an unrealistic weight. The optimum weight may be below any realistic weight for the rocket,
+again, RASAero II will display the optimum weight, the User will have to check and determine
+whether the rocket could actually be built for such a low weight.
+
+
+
+
+                                                                                                 110
+Figure 132 – Determining the Optimum Weight of the rocket by clicking on Optimize Wt
+                              (Optimum Weight) button.
+
+
+
+
+      Figure 133 – Optimum Weight, and Max Altitude at the Optimum Weight.
+
+
+
+
+                                                                                       111
+Running a Boosted Dart on RASAero II
+
+For running a Boosted Dart on RASAero II (an unpowered Sustainer stage which coasts after
+separating from the Booster), the Boosted Dart is entered as a Sustainer stage.
+
+When running the RASAero II Flight Simulation, when it is time to enter the Sustainer stage
+motor, the “Dart (NoThrust)” motor is selected out of the RASAero II motor database, as shown
+in Figures 134 and 135.
+
+The Nozzle Exit Diameter is also set to 0.0 inches for the Sustainer stage with the “Dart
+(NoThrust)” motor, as shown in Figure 135.
+
+When the “Dart (NoThrust)” motor is selected for the Sustainer stage, and the Sustainer stage
+Nozzle Exit Diameter is set to 0.0 inches, the Boosted Dart will have no thrust, and the Boosted
+Dart will have the correct power-off drag coefficient (CD).
+
+
+
+
+ Figure 134 – Entering the “Dart (NoThrust)” motor for the Sustainer stage for a Boosted Dart.
+
+
+
+
+                                                                                              112
+Figure 135 – “Dart (NoThrust)” motor entered, and Nozzle Exit Diameter set to 0.0 inches, for
+                          the Sustainer stage for a Boosted Dart.
+
+
+
+
+                                                                                          113
+Marginal Stability and Unstable Rocket Warnings
+
+The RASAero II Flight Simulation has built-in checks for rocket marginal stability, and for when
+a rocket goes unstable. Stability margin is CP – CG (distance measured from the nose, CG
+should be ahead of CP), divided by the rocket max diameter. Positive stability margin means the
+rocket CG is ahead of the CP, the rocket is stable. The RASAero II recommended stability
+margin for Subsonic Mach numbers is a stability margin of 1.0 calibers, for Transonic and
+Supersonic Mach numbers the recommended stability margin is 2.0 calibers. The RASAero II
+Flight Simulation checks for these stability margins only at low angles of attack (less than 5
+degrees angle of attack) because the rocket can have momentary marginal stability right off the
+launch rail with wind, and at high angles of attack at low velocity going through apogee.
+
+If during the RASAero II Flight Simulation the stability margin of the rocket at Subsonic Mach
+numbers falls below 1.0 calibers, or for Transonic and Supersonic Mach numbers falls below 2.0
+calibers, for angles of attack less than 5 degrees, the Marginal Stability warning message shown
+in Figure 136 will be displayed. The rocket will run on the Flight Simulation, but it is
+recommended that the user go back and check the CG and CP and assess whether to make
+changes to the rocket. The Marginal Stability warning message will be displayed after the rocket
+Flight Simulation run, and when the View Data button is clicked on to view the Flight Simulation
+plots and tabular data.
+
+
+
+
+                    Figure 136 – Rocket Marginal Stability warning message.
+
+
+If during the Flight Simulation the rocket goes unstable (CP is ahead of CG), even momentarily,
+the Unstable Rocket warning message, shown in Figure 137, will be displayed, and the Flight
+Simulation will stop at the point where the rocket went unstable. The Flight Simulation output
+plots and tabular data will only plot and print the Flight Simulation data to the point where the
+rocket went unstable and the Flight Simulation stopped.
+
+
+
+
+                                                                                              114
+                        Figure 137 – Unstable Rocket warning message.
+
+
+The Unstable Rocket warning message will be displayed after the rocket Flight Simulation run,
+and when the View Data button is clicked on to view the Flight Simulation plots and tabular data.
+
+
+Tips for Two Stage Rockets and Mach 3 and Mach 3+ Rockets
+
+From comparisons of the RASAero II Flight Simulation altitude predictions with flight data,
+some tips have been determined to increase the accuracy of the RASAero II altitude predictions
+for two stage and Mach 3 and Mach 3+ rockets.
+
+For two stage rockets where there is an increase in diameter from the Sustainer stage to the
+Booster stage, as shown in Figure 138, comparisons with flight data have shown that the
+expansion section from the smaller diameter to the larger diameter inevitably causes the flow to
+trip to turbulent flow on the Booster. Thus the Booster will have All Turbulent Flow, and for a
+conservative altitude prediction it is recommended to run the rocket with the All Turbulent Flow
+option selected.
+
+
+
+
+   Figure 138 – Two stage rocket with an increase in diameter from the Sustainer stage to the
+             Booster stage which should be run with All Turbulent Flow selected.
+
+
+Comparisons between RASAero II altitude predictions and flight data have been performed for
+many rockets flying near and over Mach 3, and most of these rockets were recovered after flight
+with thermal damage on the surface of the rocket from aerodynamic heating. This thermal
+
+
+                                                                                             115
+damage roughs up the surface of the rocket, causing the flow on the rocket to immediately trip to
+All Turbulent Flow. Additionally, the surface roughness of the rocket, after there has been
+thermal damage from aerodynamic heating, is more appropriately modeled by the Rough
+Camouflage Paint surface roughness setting, rather than other smoother surface roughness
+settings.
+
+For rockets run on RASAero II, it is recommended for Mach 3 and Mach 3+ rockets that the
+settings of All Turbulent Flow and Rough Camouflage Paint for surface roughness be used for a
+more accurate altitude prediction.
+
+
+
+
+                                                                                              116
+Example Rocket 1
+
+The first example rocket is a 3.10 in diameter I205 powered LOC/Precision Caliber ISP rocket
+with rail guides. The rocket geometry inputs, rocket motor used, launch site and launch angle
+data, and the rocket weight are presented in Figure 139. The liftoff center of gravity (CG) of the
+rocket was measured preflight, and was located 40.0 in from the nose of the rocket. The
+RASAero II rocket file for this rocket (CalIsp1.CDX1) is located in the /My
+Documents/RASAero II /Examples directory.
+
+
+                                               LOC/Precision Caliber IspTM
+                                      Blacksky AltAccTM Barometric Altitude = 3964 ft
+
+ Tangent Ogive Nose Cone                                                                                         4 Fins
+ Nose Cone Length = 11.25 in          Body Tube Diameter = 3.10 in              2 BlackSky 3/8 in
+                                                                                Rail Guides
+
+
+
+                                                                                                                    Cesaroni I205
+                                                                                                                    Nozzle
+                                                 Fin Location from Tip of Nose = 49.75 in                           Exit Dia
+                                                                                                                    = 0.630 in
+
+                                                           Body Tube Length = 48.0 in
+
+                               Rail Guide Dia = 0.375 in
+ Cesaroni Pro38 I205
+ 380.9 NS                                       Rail Guide Height = 0.3438 in
+ Liftoff Weight = 3.41 lbs                      (to Top of Screw Head)                                  Tip Chord = 0.75 in
+
+ Edwards AFB                         2 BlackSky 3/8 in Rail Guides
+ West PIRA PB-8 Launch Site          Diameter and Height of One Guide              Sweep Distance = 7.18 in
+                                     Entered into Program
+ CalIsp1 Example Run Case
+ Launch Site Elevation = 2302 MSL                                 Hexagonal                                               Fin Span
+ Temperature = 77 deg F                                           Airfoil                                                 3.5 in
+ Launch Angle = 3 deg (from vertical)
+                                                                                                                          (Root to Tip)
+ Predicted Altitude = 3870 ft
+                                                           Fin Leading Edge
+                                                           Diamond Airfoil              Root Chord = 8.5 in          Fin Trailing Edge
+                                                           Length = 0.4375 in                                        Diamond Airfoil
+                                                                                      Fin Thickness = 0.125 in       Length = 0.25 in
+
+
+
+
+  Figure 139 – Example Rocket 1, LOC/Precision Caliber ISP rocket on an I205 rocket motor.
+
+
+
+
+                                                                                                                                    117
+The RASAero II Main Screen with the scale rocket drawing for the LOC/Precision Caliber ISP
+rocket (Example Rocket 1) is presented in Figure 140.
+
+
+
+
+            Figure 140 - RASAero II Main Screen with scale rocket drawing for the
+                    LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+The Nose Cone Inputs, the Body Tube and Rail Guide Inputs, the Fin Inputs, and the Surface
+Finish Input for the LOC/Precision Caliber ISP rocket are presented in Figures 141-144.
+
+
+
+
+                                                                                             118
+Figure 141 – Nose Cone Inputs for LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+
+
+  Figure 142 – Body Tube and Rail Guide Inputs for LOC/Precision Caliber ISP rocket
+                               (Example Rocket 1).
+
+
+
+
+                                                                                      119
+    Figure 143 – Fin Inputs for LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+
+
+Figure 144 – Surface Finish Input for LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+
+
+                                                                                        120
+Figure 145 shows one of the aerodynamic data plots for the LOC/Precision Caliber ISP rocket,
+the power-on and power-off drag coefficient (CD) versus Mach number. As the rocket flight was
+subsonic, the zoom in feature has been used to zoom in the plot to Mach 0 to 1.2. Note that
+because of the small nozzle exit diameter (nozzle exit area), there is little difference between the
+power-on and power-off drag coefficients. The start of the transonic drag rise at approximately
+Mach 0.90 can be seen in the plot.
+
+
+
+
+Figure 145 – Aerodynamic data plot for LOC/Precision Caliber ISP rocket (Example Rocket 1);
+       power-on and power-off drag coefficient (CD) versus Mach number, Mach 0-1.2.
+
+
+Figure 146 shows the launch site data for the LOC/Precision Caliber ISP rocket. The rocket was
+flown on Edwards AFB, with a launch site elevation of 2302 ft. The launch site temperature at
+the time of launch was 77 deg F. The rocket was launched with a launch angle 3 deg from
+vertical from a 10 ft long launch rail. Wind speed is set to zero for this example run.
+
+
+
+
+                                                                                                121
+         Figure 146 – Launch site input data for the LOC/Precision Caliber ISP rocket
+                                     (Example Rocket 1).
+
+
+Figure 147 shows the recovery system inputs for the LOC/Precision Caliber ISP rocket. The
+rocket was flown with a 36 in diameter parachute which was opened at apogee.
+
+
+
+
+       Figure 147 - Recovery system input data for the LOC/Precision Caliber ISP rocket
+                                    (Example Rocket 1).
+
+
+
+
+                                                                                            122
+The RASAero II Flight Simulation FlightDataEntry Screen showing the input data for the
+LOC/Precision Caliber ISP rocket (Example Rocket 1) are presented in Figure 148. The rocket
+was flown on a Cesaroni Technology Incorporated (CTI) I205 rocket motor, which was selected
+from the motor selection menu. The rocket loaded weight with motor (the liftoff weight) as
+flown was 3.41 lb. The liftoff center of gravity (CG) of the rocket was measured preflight, and
+was located 40.0 in from the nose of the rocket
+
+
+
+
+  Figure 148 - Flight Simulation FlightDataEntry Screen for LOC/Precision Caliber ISP rocket
+(Example Rocket 1) with selected CTI I205 motor, lift-off center of gravity (CG), lift-off weight,
+                                and motor nozzle exit diameter.
+
+
+The summary flight data from the RASAero II Flight Simulation for the LOC/Precision Caliber
+ISP rocket (Example Rocket 1) with the CTI I205 motor is presented in Figure 149. The altitude
+versus time plot presented in Figure 150 shows both the powered flight and coast to apogee, with
+apogee occurring at approximately 14 sec, and then the rocket descent on the parachute. The
+actual altitude the rocket reached, measured by an on-board barometric altimeter, was 3964 ft.
+The RASAero II flight simulation predicted altitude is 3876 ft, an error of only -2.22% compared
+to the actual barometric altimeter measured altitude.
+
+
+
+
+                                                                                              123
+           Figure 149 – RASAero II Flight Simulation summary flight data for the
+                   LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+
+
+ Figure 150 – RASAero II Flight Simulation output for the LOC/Precision Caliber ISP rocket
+(Example Rocket 1), altitude versus time for powered flight and coast to apogee, rocket descent
+                                        on parachute.
+
+
+
+
+                                                                                            124
+The LOC/Precision Caliber ISP rocket (Example Rocket 1) carried a Blacksky AltAcc
+accelerometer and altimeter instrumentation unit, which included a barometric altimeter and an
+axial accelerometer. The on-board measured axial acceleration, accelerometer-based velocity,
+on-board measured barometric pressure, barometric altimeter altitude and accelerometer-based
+altitude for the LOC/Precision Caliber ISP rocket are presented in Figure 151. In the early part
+of the flight the accelerometer-based altitude and velocity are considered more accurate than the
+barometric altimeter altitude due to the absence of any pitot tube and pressure lag corrections to
+the on-board measured barometric pressure. At apogee the barometric altimeter altitude is
+considered more accurate than the accelerometer-based altitude, due to trajectory and attitude
+effects not taken into account in the 1-dimensional integration (assuming a straight-up flight) of
+the body axial acceleration data. For comparison the RASAero II flight simulation predicted
+acceleration and velocity are shown in Figure 152. For acceleration note the similarly shaped
+plot of acceleration versus time, with a peak acceleration of almost 500 ft/sec^2. For velocity
+note the similarly shaped plot of velocity versus time, with a peak velocity of just over 700 ft/sec.
+
+
+
+
+  Figure 151 – Measured axial acceleration, accelerometer-based velocity, on-board measured
+   barometric pressure, barometric altimeter altitude and accelerometer-based altitude for the
+                    LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+
+
+                                                                                                 125
+      Figure 152 – RASAero II flight simulation predicted acceleration and velocity for the
+                    LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+Figure 153 presents a summary plot of the barometric altimeter altitude and the accelerometer-
+based altitude for the LOC/Precision Caliber ISP rocket. Again at apogee the barometric
+altimeter altitude is considered to be more accurate than the accelerometer-based altitude. For
+comparison the RASAero II flight simulation predicted altitude versus time on a similar time-
+scale through apogee is presented in Figure 154. Again note the similarly shaped plot, in this
+case of altitude versus time through apogee.
+
+
+
+                                                                                              126
+Figure 153 – Barometric altimeter altitude and accelerometer-based altitude for the
+             LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+
+
+                                                                                      127
+Figure 154 – RASAero II flight simulation predicted altitude versus time plotted through apogee
+               for the LOC/Precision Caliber ISP rocket (Example Rocket 1).
+
+
+As noted previously the RASAero II flight simulation predicted altitude of 3876 ft has an error of
+only -2.22% compared to the barometric altimeter measured altitude of 3964 ft.
+
+Figure 155 presents the on-board measured barometric pressure and the barometric altimeter
+altitude from launch through apogee to landing, including the parachute descent. From apogee to
+landing the parachute descent time based on the barometric altimeter altitude was 241 sec. The
+RASAero II flight simulation prediction for altitude versus time from launch through apogee to
+landing, including the parachute descent, was presented in Figure 150, and is presented again in
+Figure 156. Note the similarly shaped plot of altitude versus time from launch through apogee,
+and then the parachute descent to landing. The RASAero II flight simulation predicted parachute
+descent time is 218.71 sec, an error of only -9.25% in the parachute descent time from apogee.
+
+
+
+
+                                                                                              128
+Figure 155 – On-board measured barometric pressure and barometric altimeter altitude from
+ launch through apogee to landing, including the parachute descent, for the LOC/Precision
+                         Caliber ISP rocket (Example Rocket 1).
+
+
+
+
+ Figure 156 – RASAero II flight simulation predicted altitude versus time through apogee to
+landing, including the parachute descent, for the LOC/Precision Caliber ISP rocket (Example
+                                          Rocket 1).
+
+
+
+
+                                                                                         129
+Example Rocket 2
+
+The second example rocket is the O10000 powered Full Metal Jacket - Flight 3 configuration
+rocket, which was optically tracked to 37981 ft at the BALLS 005 launch. The rocket geometry
+inputs, rocket motor used, launch site and launch angle data, and the rocket weight are presented
+in Figure 157. The Full Metal Jacket - Flight 3 configuration rocket was tower launched, and
+thus had no rail guides, launch lugs, or launch shoes. The RASAero II rocket file for this rocket
+(Full Metal Jacket1.CDX1) is located in the /My Documents/RASAero II/Examples directory.
+
+
+                                         Full Metal Jacket – Flight 3/BALLS 005
+                                              Optically Tracked to 37981 ft
+
+                                                                               Kosdon TRM O10000
+ Tangent Ogive Nose Cone                                                       21594 NS                                       3 Fins
+ Nose Cone Length = 16.0 in      Body Tube Diameter = 4.0 in                   Liftoff Weight = 70.0 lbs
+
+
+
+
+                                                                                                                           Nozzle
+                                            Fin Location from Tip of Nose = 118.8125 in                                    Exit Dia
+                                                                                                                           = 2.5 in
+
+                                                    Body Tube Length = 101.571 in
+
+
+
+                                                                               Tower Launched
+                    Fin Canister Length = 14.5 in                              No Rail Guides or Launch Lugs
+
+
+                                          Fin Canister
+                                          Diameter = 4.25 in           Sweep Distance = 8.5 in    Tip Chord = 4.0 in
+
+
+                                                               Hexagonal                                               Fin Span
+         Fin Canister
+                                                               Airfoil                                                 4.4 in
+         Shoulder Length = 0.2415 in
+                                                                                                                       (Root to Tip)
+
+                                                    Fin Leading Edge
+                                                    Diamond Airfoil              Root Chord = 12.5 in          Fin Trailing Edge
+                                                    Length = 0.25 in                                           Diamond Airfoil
+                                                                               Fin Thickness = 0.125 in        Length = 0.25 in
+
+
+
+
+ Figure 157 – Example Rocket 2, Full Metal Jacket - Flight 3 configuration rocket, powered by
+                    O10000 rocket motor, optically tracked to 37981 ft.
+
+
+
+
+                                                                                                                                 130
+The RASAero II Main Screen with the scale rocket drawing for the Full Metal Jacket - Flight 3
+configuration rocket (Example Rocket 2) is presented in Figure 158.
+
+
+
+
+            Figure 158 - RASAero II Main Screen with scale rocket drawing for the
+             Full Metal Jacket - Flight 3 configuration rocket (Example Rocket 2).
+
+
+The Nose Cone Inputs, the Body Tube Inputs, the Fin Canister Inputs, the Fin Inputs on the Fin
+Canister, and the Surface Finish Input for the Full Metal Jacket - Flight 3 configuration rocket
+(Example Rocket 2) are presented in Figures 159-163.
+
+
+
+
+                                                                                              131
+Figure 159 – Nose Cone Inputs Full Metal Jacket - Flight 3 configuration (Example Rocket 2).
+
+
+
+
+        Figure 160 – Body Tube Inputs for Full Metal Jacket - Flight 3 configuration
+                                  (Example Rocket 2).
+
+
+
+
+                                                                                         132
+Figure 161 – Fin Canister Inputs Full Metal Jacket - Flight 3 configuration (Example Rocket 2).
+
+
+
+
+ Figure 162 – Fin Inputs for Fins on Fin Canister for Full Metal Jacket - Flight 3 configuration
+                                      (Example Rocket 2).
+
+
+
+
+                                                                                              133
+         Figure 163 – Surface Finish Input for Full Metal Jacket - Flight 3 configuration
+                                      (Example Rocket 2).
+
+
+Figures 164 and 165 show one of the aerodynamic data plots for the Full Metal Jacket - Flight 3
+configuration rocket, the power-on and power-off drag coefficient (CD) versus Mach number.
+Note that with the large nozzle exit diameter (nozzle exit area) used on this rocket, a 2.5 in
+nozzle exit diameter compared to the 4.25 in diameter base area of the rocket, that there is a
+noticeable decrease in the power-on drag coefficient compared to the power-off drag coefficient.
+Figure 164 is the initial aerodynamic data plot generated by the software where the aerodynamic
+data is plotted for Mach 0-25, and in Figure 165 the <Plot Data to:> pull-down menu has been
+used to plot the data for Mach 0-3.
+
+
+
+
+                                                                                             134
+Figure 164 – Aerodynamic data plot for the Full Metal Jacket - Flight 3 configuration rocket
+ (Example Rocket 2); power-on and power-off drag coefficient (CD) versus Mach number.
+
+
+
+
+Figure 165 – Aerodynamic data plot for the Full Metal Jacket - Flight 3 configuration rocket;
+      power-on and power-off drag coefficient (CD) versus Mach number, Mach 0-3.
+
+
+
+                                                                                           135
+Figure 166 shows the launch site input data for the Full Metal Jacket - Flight 3 configuration
+rocket. The Flight 3 configuration of the Full Metal Jacket rocket was flown from the Black
+Rock Desert Dry Lakebed launch site, with a launch site elevation of 3933 ft. The launch site
+temperature at the time of launch was 80 deg F. For this flight simulation the launch angle is set
+to zero deg from vertical, with the wind speed set to zero mph. The launch tower was 12 ft tall.
+
+
+
+
+   Figure 166 – Launch site input data for the Full Metal Jacket - Flight 3 configuration rocket
+                                      (Example Rocket 2).
+
+
+The recovery system inputs are shown in Figure 167. The Full Metal Jacket - Flight 3
+configuration rocket had a small parachute, but since no parachute descent or landing data were
+recorded, and the primary flight data of interest was the peak altitude of the rocket measured by
+optical tracking, for this flight simulation the No Recovery ballistic descent to impact option was
+selected, by not checking either of the Recovery Event 1 or Event 2 boxes. (No Recovery Event,
+coasting flight through apogee, ballistic descent to impact.)
+
+
+
+
+                                                                                               136
+Figure 167 - Recovery system input data for the Full Metal Jacket - Flight 3 configuration rocket
+                                    (Example Rocket 2).
+
+The RASAero II Flight Simulation FlightDataEntry Screen showing the input data for the Full
+Metal Jacket - Flight 3 configuration rocket (Example Rocket 2) are presented in Figure 168.
+The rocket was flown on a Kosdon O10000 rocket motor, which was selected from the motor
+selection menu. The rocket loaded weight with motor (the liftoff weight) as flown was 70 lb.
+
+
+
+
+                                                                                             137
+   Figure 168 - Flight Simulation FlightDataEntry Screen for the Full Metal Jacket - Flight 3
+        configuration rocket (Example Rocket 2) with selected Kosdon O10000 motor,
+         lift-off center of gravity (CG), lift-off weight, and motor nozzle exit diameter.
+
+
+The summary flight data from the RASAero II Flight Simulation for the Full Metal Jacket -
+Flight 3 configuration rocket (Example Rocket 2) with the Kosdon O10000 motor is presented in
+Figure 169. The altitude versus time plot is presented in Figure 170, which shows the powered
+flight and coast to apogee, the coast through apogee, and the ballistic flight to impact since no
+recovery event was specified. (No recovery, ballistic flight to impact.)
+
+The Mach number versus time plot is presented in Figure 171, showing that the rocket reached
+Mach 2.27.
+
+The center of gravity (CG) and center of pressure (CP) versus time is presented in Figure 172.
+
+
+
+
+                                                                                                138
+       Figure 169 – RASAero II Flight Simulation summary flight data for the
+        Full Metal Jacket - Flight 3 configuration rocket (Example Rocket 2).
+
+
+
+
+Figure 170 – RASAero II Flight Simulation output for the Full Metal Jacket - Flight 3
+configuration rocket (Example Rocket 2), altitude versus time for powered flight and
+                     coast to apogee, ballistic descent to impact.
+
+
+
+
+                                                                                        139
+     Figure 171 – RASAero II Flight Simulation output for the Full Metal Jacket - Flight 3
+   configuration rocket (Example Rocket 2), Mach number versus time for powered flight and
+                           coast to apogee, ballistic descent to impact.
+
+
+
+
+     Figure 172 – RASAero II Flight Simulation output for the Full Metal Jacket - Flight 3
+  configuration rocket (Example Rocket 2), center of gravity (CG) and center of pressure (CP)
+                                        versus time.
+
+The Full Metal Jacket - Flight 3 configuration rocket (Example Rocket 2) was optically tracked
+to an altitude of 37981 ft. The altitude predicted by the RASAero flight simulation is 38772 ft,
+an error of only +2.08% compared to the optically tracked altitude.
+
+
+
+
+                                                                                              140
+Example Rocket 3
+
+The third example rocket is a two stage rocket, the AeroPac 104K Carmack Prize Rocket, which
+won the Carmack prize for the first rocket to use Global Positioning System (GPS) data to
+measure an apogee altitude for the rocket over 100K ft. The rocket reached an altitude of 104659
+ft, 17.1 miles downrange from the launch site, as measured by GPS data. The RASAero II rocket
+file for this rocket (AeroPac104KStageOne&Two-2.CDX1) is located in the /My Documents/
+RASAero II/Examples directory.
+
+The RASAero II Main Screen with the scale rocket drawing for the two stage AeroPac 104K
+Carmack Prize Rocket (Example Rocket 3) is presented in Figure 173. This rocket used a nested
+upper stage, where the upper stage motor case extended beyond the bottom of the upper stage, so
+that the motor case could slide into the front of the booster stage. The Comments inputs for the
+rocket are presented in Figure 174.
+
+
+
+
+       Figure 173 - RASAero II Main Screen with scale rocket drawing for the two stage
+                  AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+
+
+                                                                                             141
+      Figure 174 – Comments Input for the two stage AeroPac 104K Carmack Prize Rocket
+                                    (Example Rocket 3).
+
+
+The Nose Cone Inputs, the Sustainer Body Tube Inputs, the Sustainer Fin Inputs, the Sustainer
+Boattail Inputs to allow the upper stage to nest in the front of the Booster, the Booster Body and
+Launch Shoe Inputs, the Booster Fin Inputs, and the All Turbulent Flow and Surface Finish
+Inputs for the two stage AeroPac 104K Carmack Prize Rocket (Example Rocket 3) are presented
+in Figures 175-181.
+
+
+
+
+     Figure 175 – Nose Cone Inputs for the two stage AeroPac 104K Carmack Prize Rocket
+                                    (Example Rocket 3).
+
+
+
+
+                                                                                               142
+Figure 176 – Sustainer Body Tube Inputs for the two stage AeroPac 104K Carmack Prize Rocket
+                                    (Example Rocket 3).
+
+
+
+
+   Figure 177 – Sustainer Fin Inputs for the two stage AeroPac 104K Carmack Prize Rocket
+                                     (Example Rocket 3).
+
+
+
+                                                                                           143
+Figure 178 – Sustainer Boattail Inputs to allow the Sustainer stage to nest in the front of the
+          Booster stage for the two stage AeroPac 104K Carmack Prize Rocket
+                                   (Example Rocket 3).
+
+
+
+
+           Figure 179 – Booster Body and Launch Shoe Inputs for the two stage
+                AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+
+
+                                                                                              144
+Figure 180 – Booster Fin Inputs for the two stage AeroPac 104K Carmack Prize Rocket
+                                 (Example Rocket 3).
+
+
+
+
+  Figure 181 – All Turbulent Flow Selected, and Surface Finish Input for two stage
+             AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+
+
+                                                                                      145
+There was aerodynamic heating damage on the Sustainer stage from flight over Mach 3 that was
+discovered when the Sustainer stage was recovered. Based on this observed aerodynamic heating
+damage and the resultant increase in surface roughness of the rocket, the All Turbulent Flow
+option and a Surface Finish Input of Rough Camouflage Paint was selected for the rocket.
+
+Figures 182 and 183 show the power-on and power-off drag coefficient (CD) versus Mach
+number for the Sustainer plus Booster, and Sustainer only, for the two stage AeroPac 104K
+Carmack Prize Rocket (Example Rocket 3).
+
+Figures 184 and 185 show the center of pressure (CP) versus Mach number for the Sustainer plus
+Booster, and Sustainer only, for the two stage AeroPac 104K Carmack Prize Rocket (Example
+Rocket 3).
+
+
+
+
+ Figure 182 – Power-on and power-off drag coefficient (CD) versus Mach number for Sustainer
+        plus Booster for the AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+
+
+                                                                                            146
+   Figure 183 – Power-on and power-off drag coefficient (CD) versus Mach number for the
+      Sustainer Only for the AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+
+
+Figure 184 – Center of pressure (CP) versus Mach number for the Sustainer plus Booster for the
+                 AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+
+                                                                                           147
+    Figure 185 – Center of pressure (CP) versus Mach number for the Sustainer Only for the
+                  AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+Figure 186 shows the launch site input data for the two stage AeroPac 104K Carmack Prize
+Rocket. The rocket was flown from the Black Rock Desert Dry Lakebed launch site, with a
+launch site elevation of 3750 ft. For this flight simulation the launch site temperature was set to
+80 deg F. The wind speed was set to zero mph. The launch rail was 12 ft long. The Launch
+Angle was adjusted through a series of flight simulation runs until the downrange distance at
+apogee of 17.1 miles from the launch site was reached. A Launch Shoe guide broke off from the
+rocket while it was moving up the launch rail, lowering the Launch Angle by an amount that
+could not be determined post-flight. Note from the RASAero II flight simulation run that a
+Launch Angle 7.64 degrees from vertical was required to match the downrange distance at
+apogee of 17.1 miles recorded in the GPS flight data.
+
+
+
+
+                                                                                                148
+   Figure 186 – Launch site input data for the two stage AeroPac 104K Carmack Prize Rocket
+                                      (Example Rocket 3).
+
+
+The recovery system inputs for the AeroPac 104K Carmack Prize Rocket are shown in Figure
+187. Since the RASAero II flight simulation runs were run to determine the Launch Angle
+required to reach the 17.1 miles downrange distance at apogee, the rocket was run with the No
+Recovery ballistic descent to impact option, by not checking either of the Recovery Event 1 or
+Event 2 boxes. (No Recovery Event, coasting flight through apogee, ballistic descent to impact.)
+This allowed a more accurate determination from the flight simulation runs of the downrange
+distance at apogee.
+
+
+
+
+                                                                                             149
+     Figure 187 - Recovery system input data for the AeroPac 104K Carmack Prize Rocket
+                                    (Example Rocket 3).
+
+
+The RASAero II Flight Simulation FlightDataEntry Screen showing the input data for both the
+Sustainer and Booster Stages for the two stage AeroPac 104K Carmack Prize Rocket (Example
+Rocket 3) are presented in Figure 188. Note the ignition delay on the ignition of the Sustainer
+motor, which was based on in-flight measured axial acceleration from the flight.
+
+
+
+
+                                                                                             150
+   Figure 188 - Flight Simulation FlightDataEntry Screen showing data for both Sustainer and
+       Booster Stages for the AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+The summary flight data from the RASAero II Flight Simulation for the two stage AeroPac 104K
+Carmack Prize Rocket (Example Rocket 3) is presented in Figure 189. The altitude versus time
+plot is presented in Figure 190, which shows the powered flight and coast to apogee, the coast
+through apogee, and the ballistic flight to impact since no recovery event was specified for this
+flight simulation.
+
+The Mach number versus time plot is presented in Figure 191, showing that the rocket reached
+Mach 3.14.
+
+The thrust versus time plot for the flight, blown up to focus in on the burn time of the rocket
+motors, is presented in Figure 192.
+
+The center of gravity (CG) and center of pressure (CP) versus time is presented in Figure 193,
+and the stability margin in calibers (CG – CP) / D versus time is presented in Figure 194.
+
+
+
+
+                                                                                                  151
+      Figure 189 – RASAero II Flight Simulation summary flight data for the two stage
+                 AeroPac 104K Carmack Prize Rocket (Example Rocket 3).
+
+
+
+
+Figure 190 – RASAero II Flight Simulation output for the two stage AeroPac 104K Carmack
+Prize Rocket (Example Rocket 3), altitude versus time for powered flight and coast to apogee,
+                               ballistic descent to impact.
+
+
+
+
+                                                                                           152
+Figure 191 – RASAero II Flight Simulation output for the two stage AeroPac 104K Carmack
+    Prize Rocket (Example Rocket 3), Mach number versus time for powered flight and
+                      coast to apogee, ballistic descent to impact.
+
+
+
+
+Figure 192 – RASAero II Flight Simulation output for the two stage AeroPac 104K Carmack
+                 Prize Rocket (Example Rocket 3), thrust versus time.
+
+
+
+
+                                                                                     153
+  Figure 193 – RASAero II Flight Simulation output for the two stage AeroPac 104K Carmack
+  Prize Rocket (Example Rocket 3), center of gravity (CG) and center of pressure (CP) versus
+                                            time.
+
+
+
+
+  Figure 194 – RASAero II Flight Simulation output for the two stage AeroPac 104K Carmack
+           Prize Rocket (Example Rocket 3), stability margin in calibers versus time.
+
+
+The actual apogee altitude for the upper (Sustainer) stage of the AeroPac 104K Carmack Prize
+Rocket at the apogee point 17.1 miles downrange from the launch site based on GPS data was
+104659 ft. The RASAero II flight simulation predicted apogee altitude for the upper (Sustainer)
+stage at the apogee point 17.1 miles downrange from the launch site was 113786 ft, an error of
++8.72% compared to the GPS flight data.
+
+
+
+
+                                                                                            154
+

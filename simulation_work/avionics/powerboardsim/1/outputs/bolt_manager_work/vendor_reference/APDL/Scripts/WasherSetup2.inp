@@ -1,0 +1,16 @@
+/COM, Done Import Washer FE Data
+/COM, Copy Washer to all CS given by ACT object
+CompName =strcat(PartNameInAssembly,'_')        !PartNameInAssembly given by ACT to determine if Bolt or Nut Washer.
+!use the macro to copy and move each part.
+
+!These check values are standard names from the ACT
+!Determine what offset to use for what washer location this is.
+*IF,PartNameInAssembly,EQ,'BoltWasher',THEN
+  Z_Offset = _BoltZLoc
+*ELSE
+  Z_Offset = _NutWasherZLoc
+*ENDIF
+
+!Copy and move the part
+*USE,MoveAndCopyElements.mac,CompName,Z_Offset,_MechElemId
+ALLSEL,ALL,ALL

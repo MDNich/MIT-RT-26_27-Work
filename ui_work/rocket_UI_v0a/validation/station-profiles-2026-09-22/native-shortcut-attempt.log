@@ -1,0 +1,107 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+____________ test_all_shortcuts_work_across_views_and_serial_roles _____________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x117ef6f30>
+tmp_path = PosixPath('/private/var/folders/0h/g0tyr1fs37v321_hzk1h17pr0000gn/T/pytest-of-mdn/pytest-97/test_all_shortcuts_work_across0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x118836d20>
+
+    @pytest.mark.skipif(os.name == "nt", reason="POSIX pseudo-terminal test")
+    def test_all_shortcuts_work_across_views_and_serial_roles(qtbot, tmp_path, monkeypatch):
+        import pty
+
+        pairs = [pty.openpty(), pty.openpty()]
+        devices = [os.ttyname(pair[1]) for pair in pairs]
+        refreshes = []
+
+        def fake_ports():
+            refreshes.append(True)
+            return [dict(device=d) for d in devices]
+
+        monkeypatch.setattr("rocket_gnc_monitor.ui.ports", fake_ports)
+        w = MainWindow(tmp_path)
+        qtbot.addWidget(w)
+        c = w.controller
+        w.show()
+        w.activateWindow()
+        w.raise_()
+        qtbot.wait(100)
+
+        def refresh():
+            w.last_ui = w.last_table = 0
+            w.refresh()
+
+        def key(name):
+            refresh()
+            assert w.legacy_actions[name].isEnabled(), name
+            QTest.keySequence(w, w.legacy_actions[name].shortcut())
+            qtbot.wait(40)
+
+        def receive(fd, size):
+            output = bytearray()
+            while len(output) < size:
+                assert select.select([fd], [], [], 2)[0]
+                output.extend(os.read(fd, size - len(output)))
+            return bytes(output)
+
+        try:
+            if os.environ.get("QT_QPA_PLATFORM") == "cocoa" and not QTest.qWaitForWindowActive(w, 2000):
+                pytest.skip(
+                    "Native shortcut input requires an unlocked, active Mac desktop; offscreen test remains available"
+                )
+            assert sorted(
+                a.shortcut().toString(QKeySequence.SequenceFormat.PortableText) for a in w.legacy_actions.values()
+            ) == sorted(
+                QKeySequence(s).toString(QKeySequence.SequenceFormat.PortableText) for s in REFERENCE["shortcuts"]
+            )
+            key("refresh")
+            assert len(refreshes) == 2
+            w.port_widgets["pointer"][0].setCurrentIndex(1)
+            key("pointer")
+            qtbot.waitUntil(lambda: c.pointer_connected)
+            assert not c.ground_connected
+            for i, name in enumerate(["up", "down", "left", "right", "zero"]):
+                w.pages.setCurrentIndex(i + 1)
+                key(name)
+>               assert receive(pairs[1][0], 11) == pointer_packet(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^
+                    opcode={"up": 1, "down": 2, "left": 3, "right": 4, "zero": 5}[name]
+                )
+
+tests/test_parity.py:144:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+fd = 14, size = 11
+
+    def receive(fd, size):
+        output = bytearray()
+        while len(output) < size:
+>           assert select.select([fd], [], [], 2)[0]
+E           assert []
+
+tests/test_parity.py:121: AssertionError
+__________ test_settings_shortcut_cancel_validation_save_and_restart ___________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x118837e60>
+tmp_path = PosixPath('/private/var/folders/0h/g0tyr1fs37v321_hzk1h17pr0000gn/T/pytest-of-mdn/pytest-97/test_settings_shortcut_cancel_0')
+engine_file = PosixPath('/private/var/folders/0h/g0tyr1fs37v321_hzk1h17pr0000gn/T/pytest-of-mdn/pytest-97/test_settings_shortcut_cancel_0/Engine with spaces.jar')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x126b0c170>
+
+    def test_settings_shortcut_cancel_validation_save_and_restart(qtbot, tmp_path, engine_file, monkeypatch):
+        window = MainWindow(tmp_path)
+        qtbot.addWidget(window)
+        window.show()
+        window.activateWindow()
+        qtbot.wait(80)
+        assert window.settings_action.menuRole() == QAction.MenuRole.PreferencesRole
+        assert window.settings_action.shortcut() == QKeySequence("Ctrl+,")
+        assert len(window.legacy_actions) == 10
+        qtbot.keyClick(window, Qt.Key.Key_Comma, Qt.KeyboardModifier.ControlModifier)
+>       qtbot.waitUntil(lambda: window.settings_dialog is not None)
+E       pytestqt.exceptions.TimeoutError: waitUntil timed out in 5000 milliseconds
+
+tests/test_settings.py:88: TimeoutError
+=========================== short test summary info ============================
+FAILED tests/test_parity.py::test_all_shortcuts_work_across_views_and_serial_roles
+FAILED tests/test_settings.py::test_settings_shortcut_cancel_validation_save_and_restart
+2 failed in 8.71s

@@ -1,0 +1,20 @@
+{
+  "authorization": "User: Apply this to the sim and compile the results; preparation, coupon proof, local attachment and sensitivity solves, report authorized.",
+  "product": "ANSYS MAPDL 2026 R1.02; Build 26.1 UP20260202 Windows x64, native output verified",
+  "host": "macOS host; Windows 11 Parallels VM",
+  "solver": "Standalone MAPDL SMP; coupon 1 core, assembly 4 cores",
+  "license": "ansys 1055@MARCDNICHITBF25",
+  "unit_system": "N mm MPa",
+  "scope": "Local reconstructed edge battery and two nickel strips; two rigid washer clamps initially loaded to 750 N; no PCB/battery contact; no full-board structural solve",
+  "material": "Granta annealed sheet 20 C + explicitly assumed hardening and ductile damage",
+  "baseline": "Fresh continuous_solu_v2; coarse2304shells andfine9216shells, sealedsourcegeometry frompriorstudy",
+  "compression_extension": "Numerical negligible damage accumulation eta <= -1e-6 with threshold 1e6; steep transition to proposed threshold at eta=0. Tensile-tearing model only, not calibrated compression/shear failure.",
+  "damage_cap": 0.9999,
+  "qualification": "Exploratory material assumptions, modeled degradation distinct from observed fracture",
+  "native_workdir": "C:\\Temp\\PBTear26_<case>",
+  "study_directory": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/simulation_work/avionics/powerboardsim/1/outputs/battery_tearing_20261005",
+  "preflight_license": "preppost (available while Mechanical holds ansys)",
+  "solve_license": "ansys seat handed back by PCB Sim: Vibes October6; check anynewhold andliveavailability beforelaunch",
+  "native_hardening_endpoint": "Estimated table ends at p1.6; MISOholds final stress afterward. CorrectedcontinuousSOLU has no live strain stop; postprocessing flags top/mid/bottomelement-summary PEEQ>1.55. Summaries do not bound eachintegrationpoint.",
+  "postprocessing_qualification": "Damage and plastic strain maps are element summaries at shell top/mid/bottom, not individual integration-point histories."
+}

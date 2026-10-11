@@ -1,0 +1,1 @@
+Intermediate evidence only. The *-rasaero.csv files have invalid unquoted comma decimals from the original Windows locale; use ../I500T-flight.csv and ../J570W-flight.csv instead. The comma-decimals XML demonstrates the original save issue. iteration3.CDX1 is a duplicate raw export.

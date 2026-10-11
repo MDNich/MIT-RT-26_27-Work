@@ -1,0 +1,30 @@
+/COM, Done Import Bolt FE Data
+/COM, Copy Bolt to all CS given by ACT object
+*USE,MoveAndCopyElements.mac,'Bolt_',_BoltZLoc,_MechElemId
+
+DoStability = 1
+*IF,DoStability,EQ,1,THEN
+    /SOLU
+    /COM,Put D constraints on end of bolts for stability
+    *GET,NumCs,PARM,_ApdlBoltCsIds,DIM,1    !_ApdlBoltCsIds from ACT
+    *DO,i,1,NumCs
+        CsId = _ApdlBoltCsIds(i)
+        *GET,MaxCsId,CDSY,0,NUM,MAX
+        SelectCsId = MaxCsId+1        !CS used to select nodes that is CYL. and is offset in Z
+        CSYS,CsId
+        CLOCAL,SelectCsId,1,0,0,_BoltZLoc     !Create local CYL. CS with Z offset = _BoltZLoc
+        HoldStart = HeadH+ShankLen+ThreadLen/2
+        HoldEnd = HeadH+ShankLen+ThreadLen*1.01
+        ESEL,S,TYPE,,_MechElemTypeId
+        NSLE,S
+        NSLE,R,EXT
+        NSEL,R,LOC,Z,12,100
+        NSEL,R,LOC,X,0,ThreadR*1.05
+        CM,BoltFixNodes_%CsId%,NODE
+        D,ALL,ALL,0
+    *ENDDO
+*ENDIF
+
+/PREP7
+CSYS,0
+ALLSEL,ALL,ALL

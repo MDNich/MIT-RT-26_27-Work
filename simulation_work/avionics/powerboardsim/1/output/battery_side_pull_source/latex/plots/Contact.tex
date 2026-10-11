@@ -1,0 +1,6 @@
+\begin{tikzpicture}\begin{axis}[width=\linewidth,height=65mm,xlabel={Battery centre displacement magnitude (mm)},ylabel={Lateral reaction magnitude (N)},xmin=0,xmax=.5,grid=both,minor tick num=1,legend style={font=\footnotesize,at={(.98,.03)},anchor=south east,fill=white},tick label style={font=\small},xticklabel style={/pgf/number format/fixed,/pgf/number format/precision=2},label style={font=\small}]
+\addplot+[color=Teal,thick,mark=none] table[col sep=comma,x=displacement_mm,y=force_N] {data/grip_lagrange_curve.csv};\addlegendentry{Ideal fixed clamp}
+\addplot+[color=Navy,thick,mark=none] table[col sep=comma,x=displacement_mm,y=force_N] {data/friction_locked_curve.csv};\addlegendentry{750 N contact, +X}
+\addplot+[color=orange!85!black,thick,mark=none] table[col sep=comma,x=displacement_mm,y=force_N] {data/friction_locked_minus_curve.csv};\addlegendentry{750 N contact, -X}
+\addplot+[color=violet,thick,mark=none] table[col sep=comma,x=displacement_mm,y=force_N] {data/friction_locked_fine_curve.csv};\addlegendentry{750 N contact, fine}
+\end{axis}\end{tikzpicture}

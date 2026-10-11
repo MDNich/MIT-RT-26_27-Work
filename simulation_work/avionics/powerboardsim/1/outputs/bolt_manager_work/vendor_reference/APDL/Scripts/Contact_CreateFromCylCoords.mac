@@ -1,0 +1,72 @@
+!-------------------------------------------------------
+!Apply contact elements to nodes in Cyl pattern
+!To apply to a flat disk: ZMin & ZMax ~ 0
+!   This can be used for a head of a bolt
+!To apply to a cyl: XMin & XMax ~ Nominal Radius
+!Given CS can be cartesian, but a Cyl CS will be created for application if so.
+
+!ARG1 = ZMin
+!ARG2 = ZMax
+!ARG3 = RMin (X in cyl CS)
+!ARG4 = RMax (X in cyl CS)
+!ARG5 = Part CompName (Element Selection)
+!ARG6 = Contact Side Element TYPE
+!ARG7 = Target Side Element TYPE
+!ARG8 = CsId
+!ARG9 = 1 if Contact should be on part, 0 (or anything else) if target on part
+!-------------------------------------------------------
+
+!Evaluate the CS and ensure Cyl. and set to active for selection logic to follow.
+*Get,CsType,CDSY,ARG8,ATTR,KCS
+CSYS,ARG8
+!Ensure it is Cyl, or if not create one that is.
+*IF,CsType,NE,1,THEN
+  *Get,CsMaxNum,CDSY,0,NUM,MAX
+  CLOCAL,CsMaxNum+1,1       !KCS = 1 for Cyl.
+*ENDIF
+
+/COM, Creating Contact for CS %ARG8%
+
+!Determine if you want contact of target on the part
+*IF,ARG9,EQ,1,THEN
+  PartType = ARG6
+  MatingType = ARG7
+*ELSE
+  PartType = ARG7
+  MatingType = ARG6
+*ENDIF
+
+!ESURF the part side
+CMSEL,S,%ARG5%,ELEM      !Select the part elements
+NSLE,S      !Select nodes of the part
+NSEL,R,EXT  !Select exterior nodes
+NSEL,R,LOC,Z,ARG1,ARG2
+NSEL,R,LOC,X,ARG3,ARG4
+TYPE,PartType
+MAT,PartType
+REAL,ARG6           !RC is always the "contact side"
+SECNUM,PartType
+*GET,ElNum,ELEM,,COUNT
+ESURF
+*GET,ElNum2,ELEM,,COUNT
+*IF,ElNum,EQ,ElNum2,THEN
+  /COM, No Elements created for part side
+*ENDIF
+
+!ESURF the mating side
+ALLSEL,ALL,ALL
+CMSEL,U,%ARG5%,ELEM      !Select the part elements
+NSLE,S      !Select nodes of the part
+NSEL,R,EXT  !Select exterior nodes
+NSEL,R,LOC,Z,ARG1,ARG2
+NSEL,R,LOC,X,ARG3,ARG4
+TYPE,MatingType
+MAT,MatingType
+REAL,ARG6           !RC is always the "contact side"
+SECNUM,MatingType
+*GET,ElNum,ELEM,,COUNT
+ESURF
+*GET,ElNum2,ELEM,,COUNT
+*IF,ElNum,EQ,ElNum2,THEN
+  /COM, No Elements created for mating side
+*ENDIF

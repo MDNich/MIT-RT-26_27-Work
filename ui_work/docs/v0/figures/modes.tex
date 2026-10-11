@@ -1,0 +1,15 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\node[accentbox] (live) at (0,0) {LIVE\\explicit connection\\to hardware};
+\node[box] (demo) at (5.2,0) {DEMO\\recorded CSV playback};
+\node[box] (replay) at (10.4,0) {REPLAY\\session opens paused};
+\node[box,text width=126mm] (gate) at (5.2,-2.1) {Transition boundary: stop logging and tracking; close serial/video; invalidate old workers; clear visible history; install the selected source};
+\draw[flow] (live)--node[above,font=\footnotesize]{select}(demo);
+\draw[flow] (demo)--node[above,font=\footnotesize]{load}(replay);
+\draw[flow] (live)--(gate.north west);
+\draw[flow] (demo)--(gate);
+\draw[flow] (replay)--(gate.north east);
+\node[captionnode,text width=125mm] at (5.2,-3.45) {A planning-only flight returns to disconnected LIVE. A session-bearing flight restores paused REPLAY. Source-mode names are independent of the rocket's onboard flight state.};
+\end{tikzpicture}
+\caption{Mode isolation. Other mode selections use the same transition boundary; the upper arrows illustrate common operator paths rather than the only permitted transitions.}
+\end{figure}

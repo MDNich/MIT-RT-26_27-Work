@@ -1,0 +1,65 @@
+{
+  "reference": "cont_nominal",
+  "trial": "cont_force5em5_snapshot01",
+  "overlap_displacement_mm": [
+    0.025,
+    3.347375
+  ],
+  "points": 101,
+  "method": "Trial linearly interpolated only inside overlap onto reference saved states; no extrapolation. Magnitudes permit +/-X comparison.",
+  "hashes": {
+    "cont_nominal": "172419319941b09b37fb958c37012b92b3383d11ed0a0ab84ef788b3529e7391",
+    "cont_force5em5_snapshot01": "7c244cf6b4f691ba481322e7a9e6efee12ee088b369049315d07dab19ce9a104"
+  },
+  "fx_N": {
+    "max_abs_difference": 0.004470999999995229,
+    "max_relative_difference": 0.00010189509841492225,
+    "rms_difference": 0.0007068631282323241
+  },
+  "clamp1_N": {
+    "max_abs_difference": 0.05273999999997159,
+    "max_relative_difference": 6.459080585514012e-05,
+    "rms_difference": 0.008219097049693605
+  },
+  "clamp2_N": {
+    "max_abs_difference": 0.0525799999999208,
+    "max_relative_difference": 6.439485346719723e-05,
+    "rms_difference": 0.008198874534684457
+  },
+  "peeq": {
+    "max_abs_difference": 2.0560000000002798e-05,
+    "max_relative_difference": 2.0560000000002798e-05,
+    "rms_difference": 3.1487035207180354e-06
+  },
+  "damage_max_abs_difference": 3.455989999999985e-05,
+  "damage_onset_reference": {
+    "row": 91,
+    "ux_mm": 3.275,
+    "force_N": 43.37207,
+    "previous_ux_mm": 3.25,
+    "previous_force_N": 42.870412
+  },
+  "damage_onset_trial": {
+    "row": 91,
+    "ux_mm": 3.275,
+    "force_N": 43.373992,
+    "previous_ux_mm": 3.25,
+    "previous_force_N": 42.86998
+  },
+  "onset_displacement_difference_mm": 0.0,
+  "trial_source_case": "cont_force5em5",
+  "trial_is_snapshot": true,
+  "screening_thresholds": {
+    "force_relative_fraction": 0.01,
+    "clamp_relative_fraction": 0.005,
+    "damage_absolute": 0.005,
+    "onset_displacement_difference_mm": 0.05
+  },
+  "screening_checks": {
+    "force": true,
+    "clamps": true,
+    "damage": true,
+    "onset": true
+  },
+  "screening_passed": true
+}

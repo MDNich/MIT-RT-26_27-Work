@@ -1,0 +1,27 @@
+/PREP7
+*GET,NumCs,PARM,_ApdlBoltCsIds,DIM,1
+!Loop through CS Ids and establish contacts
+Type = _MechElemTypeId
+*DO,i,1,NumCs
+    CsId = _ApdlBoltCsIds(i)
+    FrictCoef = mu
+    Z = _BoltZLoc
+
+    ThreadStart = ShankLen
+    ThreadEnd = ShankLen+ThreadLen
+    RTol = 1.001    !Tight radial tolerance for this cyl selection.
+    CompName = 'Bolt_%CsId%'
+
+    /COM, Setup Bolt thread contacts
+    *USE,'Contact_CreateTypes.mac',0,Type       !Creates cid,tid
+    *USE,Contact_CreateFromCylCoords.mac,ThreadStart,ThreadEnd,0,ThreadR*RTol,CompName,cid,tid,CsId,1
+    Type=Type+2
+    ZTol = 0.01
+    RTol = 2  !Use Radius*RTol for radial selection.
+    /COM, Setup Bolt head contacts
+    *USE,'Contact_CreateTypes.mac',FrictCoef,Type   !Creates cid,tid
+    *USE,Contact_CreateFromCylCoords.mac,Z-ZTol,Z+ZTol,0,HeadR*RTol,CompName,cid,tid,CsId,1
+    Type=Type+2
+*ENDDO
+
+

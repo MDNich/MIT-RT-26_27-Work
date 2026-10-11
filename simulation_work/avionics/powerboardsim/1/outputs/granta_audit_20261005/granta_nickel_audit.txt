@@ -1,0 +1,38 @@
+GRANTA NICKEL DATA AUDIT — 5 OCTOBER 2026
+
+Scope and result
+Inspected Granta Selector 2026 R1 (installed v261; executable version 26.1.1), database Metals plus. Read JAHM Curve Data and the relevant MaterialUniverse grade-200 records. Exported a candidate plasticity material to a separate Workbench XML file. No simulation assignment, model change, or new solve was performed.
+
+1. JAHM Curve Data: Nickel 200, annealed sheet
+The tensile record is for annealed 0.787 mm sheet, longitudinal direction, tested at 20 C; strain rate is unknown. Its reference is ASM International (2002), p. 631, Figure Ni.001. The datasheet reports 0.2%-offset yield strength 185 MPa, ultimate engineering tensile strength 434 MPa, and elongation 40%. It states that the engineering curve was converted to true stress–strain.
+
+The native Workbench export contains multilinear isotropic hardening: 102 exported samples of true stress versus true plastic strain, all at 293.15 K (20 C). Plastic strain spans 0 to 0.199999, and true stress spans 185 to 530.429 MPa. These are exported functional-data samples, not necessarily 102 independent original measurements. XML parsing, matching column lengths, strictly increasing strain, nondecreasing stress, and a single 20 C curve were checked. The higher true-stress endpoint is not inconsistent with the 434 MPa engineering tensile strength; the measures differ. Neither the 0.2 curve endpoint nor the 40% engineering elongation is a calibrated local fracture strain.
+
+The XML also contains temperature-dependent density, Young's modulus and Poisson's ratio. The UI's default 23 C evaluation gives Out Of Range for the sheet's tensile curve; the exported curve correctly uses 20 C. The file's older EngineeringData schema version is an interchange-format field; its Notes explicitly identify Granta Selector 2026 R1.
+
+2. MaterialUniverse: commercially pure Nickel 200
+Annealed: yield 80–280 MPa, tensile strength 375–555 MPa, elongation 35–60%. Fracture toughness 266–296 MPa sqrt(m), explicitly marked estimated (*). Toughness (G) 340–436 kJ/m2; this field was not marked * in the copied record, but no specimen-specific fracture test provenance was present in the copied datasheet.
+Hard/spring temper: yield 480–795 MPa, tensile strength 620–900 MPa, elongation 2–15%. Fracture toughness 37.5–41.6 MPa sqrt(m), marked estimated (*). Toughness (G) 6.73–8.63 kJ/m2, also marked estimated (*).
+
+The large temper dependence means that 99.6% nickel purity alone cannot select the appropriate strength, hardening or fracture behavior. The annealed JAHM sheet is a sourced proxy for exploratory work, not a calibration of the actual 0.15 mm strip.
+
+3. What remains for a credible washer-tearing prediction
+The checked records and XML did not provide a calibrated damage-initiation strain versus stress triaxiality or a post-initiation damage-evolution law for this strip. Broad K/G ranges cannot be inserted directly as local strain-to-failure or a washer-interface failure law. The actual temper/cold work and thickness should be established; the plastic response should be checked against the actual stock. A tensile test taken through necking with local strain/area information, relevant notched/shear data where needed, and a representative washer-clamped pull test can calibrate and validate the local damage response and connection behavior. Mesh regularization and a mesh-sensitivity check remain necessary for damage evolution. The battery-to-nickel joint should be assessed separately if it fails before the washer region.
+
+ANSYS 2026 R1 documentation defines ductile initiation using a threshold versus stress triaxiality and regularized evolution using relative equivalent plastic displacement (or its inverse-length coefficient). This explains why elongation at break or a generic toughness number alone is insufficient.
+https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_mat/mat_damageall.html
+
+4. Reproducible inspection/export
+Open Granta Selector 2026 R1; select Metals plus; search Nickel 200. Expand JAHM Curve Data and open Nickel 200, annealed sheet. Use the native Copy command to retain the complete datasheet and references. Right-click the record, choose Export To > Ansys Workbench, choose Temperature-dependent properties and SI (Consistent), and export to a file. Verify the material name and Isotropic Hardening section in the XML; temperature must be 293.15 K for this curve. Extract paired Plastic Strain, Stress and Temperature arrays, keeping stress in Pa or explicitly converting to MPa. Inspect the two MaterialUniverse records separately to compare soft (annealed) and hard (spring temper) states.
+https://ansyshelp.ansys.com/public/Views/Secured/Granta/v261/en/Selector/sel_edu/export_cad_cae.html
+https://ansyshelp.ansys.com/public/Views/Secured/Granta/v261/en/Selector/sel_edu/functional_data.html
+
+Files
+records/nickel200_annealed_sheet_workbench.xml — native export
+records/nickel200_annealed_sheet_20C.csv — paired curve values extracted from XML
+records/curve_validation.json — checks, bounds and export hash
+records/nickel200_annealed_sheet_datasheet.txt — source and specimen notes
+records/materialuniverse_annealed_datasheet.txt — soft-state record
+records/materialuniverse_hard_datasheet.txt — hard-state record
+
+This is a targeted review of relevant nickel records, not an exhaustive audit of every database installed on the machine. Licensed data exports are retained locally for the user's analysis.

@@ -1,0 +1,419 @@
+{
+  "date": "2026-09-21",
+  "feature": "Virtual antenna pointer with mission location and OpenRocket trajectory playback; unclipped macOS dropdowns",
+  "tests": 101,
+  "tests_log": "build/virtual-pointer/tests.log",
+  "tests_log_sha256": "9b5b2620e54f7e3997402ec6f5464e2a5c15ea0901e0f43afe2c5ea0859aa7ca",
+  "checks": [
+    "Legacy pointer packet parsing, manual commands, bounded slew, hold and disconnect",
+    "WGS84 ECEF / ENU transformation with independent launch and antenna origins and ellipsoid heights",
+    "Cardinal bearings, interpolation, zero range, zenith, playback completion and mission/reference changes",
+    "Virtual/physical transport isolation and ground-station control locking",
+    "Mission and portable-flight persistence with backward-compatible pointer-site default",
+    "Virtual UI, timeline, playback speed, shortcut controls and trajectory markers",
+    "Full telemetry, dual-video, reciprocal serial exclusions, Settings and legacy shortcut regressions",
+    "Native Cocoa dark/daylight and compact-window visual inspection",
+    "Static Python checks"
+  ],
+  "native_dropdown_checks": {
+    "platform": "cocoa",
+    "checks": [
+      {
+        "name": "mode",
+        "daylight": false,
+        "viewport_width": 90,
+        "longest_text_width": 46,
+        "popup_hint": 0
+      },
+      {
+        "name": "projection",
+        "daylight": false,
+        "viewport_width": 188,
+        "longest_text_width": 115,
+        "popup_hint": 0
+      },
+      {
+        "name": "settings-theme",
+        "daylight": false,
+        "viewport_width": 585,
+        "longest_text_width": 52,
+        "popup_hint": 0
+      },
+      {
+        "name": "launch-site",
+        "daylight": false,
+        "viewport_width": 262,
+        "longest_text_width": 173,
+        "popup_hint": 0
+      },
+      {
+        "name": "coordinates",
+        "daylight": false,
+        "viewport_width": 262,
+        "longest_text_width": 126,
+        "popup_hint": 0
+      },
+      {
+        "name": "serial",
+        "daylight": false,
+        "viewport_width": 405,
+        "longest_text_width": 214,
+        "popup_hint": 0
+      },
+      {
+        "name": "camera",
+        "daylight": false,
+        "viewport_width": 360,
+        "longest_text_width": 316,
+        "popup_hint": 0
+      },
+      {
+        "name": "mode",
+        "daylight": true,
+        "viewport_width": 90,
+        "longest_text_width": 46,
+        "popup_hint": 0
+      },
+      {
+        "name": "projection",
+        "daylight": true,
+        "viewport_width": 188,
+        "longest_text_width": 115,
+        "popup_hint": 0
+      },
+      {
+        "name": "settings-theme",
+        "daylight": true,
+        "viewport_width": 585,
+        "longest_text_width": 52,
+        "popup_hint": 0
+      },
+      {
+        "name": "launch-site",
+        "daylight": true,
+        "viewport_width": 262,
+        "longest_text_width": 173,
+        "popup_hint": 0
+      },
+      {
+        "name": "coordinates",
+        "daylight": true,
+        "viewport_width": 262,
+        "longest_text_width": 126,
+        "popup_hint": 0
+      },
+      {
+        "name": "serial",
+        "daylight": true,
+        "viewport_width": 405,
+        "longest_text_width": 214,
+        "popup_hint": 0
+      },
+      {
+        "name": "camera",
+        "daylight": true,
+        "viewport_width": 360,
+        "longest_text_width": 316,
+        "popup_hint": 0
+      }
+    ]
+  },
+  "source_virtual_pointer_smoke": {
+    "mode": "LIVE",
+    "virtual_connected": true,
+    "physical_ports_open": false,
+    "samples": 0,
+    "telemetry_locked": true,
+    "pose": [
+      41.51604461669922,
+      87.04871368408203
+    ],
+    "target": [
+      41.51604461669922,
+      87.04871368408203
+    ],
+    "trajectory_time": 67.13881938,
+    "range_m": 2869.56645411385,
+    "paused": true,
+    "model_label": "OpenRocket nominal \u00b7 Rocket"
+  },
+  "package_report": {
+    "package": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/dist/RocketGNCMonitor.app",
+    "minimal_path": true,
+    "startup": {
+      "settings": {
+        "visible": true,
+        "shortcut": "Ctrl+,",
+        "bundled_engine": true,
+        "engine_status": "Bundled engine \u00b7 v6.2\n/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/dist/RocketGNCMonitor.app/Contents/Frameworks/vendor/openrocket.jar"
+      },
+      "samples": 0,
+      "mode": "LIVE",
+      "video_frames": 0,
+      "video_error": "",
+      "video_streams": {
+        "digital": {
+          "frames": 0,
+          "error": ""
+        },
+        "analog": {
+          "frames": 0,
+          "error": ""
+        }
+      },
+      "hardware_open": false,
+      "demo_recording": null,
+      "demo_progress_samples": 0,
+      "latest_demo_row": null,
+      "latest_recorded_utc": null,
+      "controls_locked": true,
+      "font_family": "Lucida Grande",
+      "bundled_font_families": [
+        "Lucida Grande",
+        "Lucida Grande",
+        ".Lucida Grande UI",
+        ".Lucida Grande UI"
+      ],
+      "location_checks": {
+        "mgrs": [
+          41.999997975128,
+          -93.00000000000001
+        ],
+        "pluscode": [
+          47.365562499999996,
+          8.5249375
+        ]
+      }
+    },
+    "flight": {
+      "mode": "REPLAY",
+      "samples": 5464,
+      "paused": true,
+      "hardware_open": false,
+      "site": "URRG",
+      "code": "18TUN2061530290",
+      "model_exists": true,
+      "reference_rows": 2,
+      "latest_row": 2850
+    },
+    "virtual_pointer": {
+      "mode": "LIVE",
+      "virtual_connected": true,
+      "physical_ports_open": false,
+      "samples": 0,
+      "telemetry_locked": true,
+      "pose": [
+        45.188926696777344,
+        11.99159049987793
+      ],
+      "target": [
+        45.188926696777344,
+        11.99159049987793
+      ],
+      "trajectory_time": 8.009752985,
+      "range_m": 160.3947262641931,
+      "paused": true,
+      "model_label": "OpenRocket nominal \u00b7 A simple model rocket"
+    },
+    "demo": {
+      "settings": {
+        "visible": true,
+        "shortcut": "Ctrl+,",
+        "bundled_engine": true,
+        "engine_status": "Bundled engine \u00b7 v6.2\n/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/dist/RocketGNCMonitor.app/Contents/Frameworks/vendor/openrocket.jar"
+      },
+      "samples": 2804,
+      "mode": "DEMO",
+      "video_frames": 144,
+      "video_error": "",
+      "video_streams": {
+        "digital": {
+          "frames": 144,
+          "error": ""
+        },
+        "analog": {
+          "frames": 145,
+          "error": ""
+        }
+      },
+      "hardware_open": false,
+      "demo_recording": {
+        "station": "GS2",
+        "file": "ZEPH_TEST_FLIGHT_GS2.csv.gz",
+        "source_filename": "ZEPH_TEST_FLIGHT_GS2.csv",
+        "sha256": "528df6e7bd5235b5198dce8ac4380f04788c257e5d86f25222118e96a76fc398",
+        "rows": 5464,
+        "duration_s": 330.23369812965393,
+        "launch_timestamp": 1775933255.5430558,
+        "flight_zero": 747.766
+      },
+      "demo_progress_samples": 75,
+      "latest_demo_row": 2805,
+      "latest_recorded_utc": 1775933254.9246407,
+      "controls_locked": false,
+      "font_family": "Lucida Grande",
+      "bundled_font_families": [
+        "Lucida Grande",
+        "Lucida Grande",
+        ".Lucida Grande UI",
+        ".Lucida Grande UI"
+      ],
+      "location_checks": {
+        "mgrs": [
+          41.999997975128,
+          -93.00000000000001
+        ],
+        "pluscode": [
+          47.365562499999996,
+          8.5249375
+        ]
+      }
+    },
+    "simulation": {
+      "rows": 1551,
+      "apogee_m": 51.19043072,
+      "manifest": {
+        "schema_version": 1,
+        "frame": "ENU",
+        "units": "m,s",
+        "altitude_datum": "launch_relative",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "name": "OpenRocket nominal \u00b7 A simple model rocket",
+        "motors": [
+          {
+            "designation": "A8",
+            "digest": "22aec01287ea1e3b8c6f66b26fe5fea6",
+            "manufacturer": "Estes"
+          }
+        ],
+        "saved_simulation": "Simulation 1",
+        "branch": 0,
+        "branch_count": 1,
+        "synthetic": false,
+        "controlled_model_validated": false,
+        "inertia_override": false,
+        "solver": "ModifiedEventSimulationEngine / useRK6=false",
+        "extensions": "disabled",
+        "turbulence_standard_deviation": 0,
+        "warnings": "Messages[]; Messages[]",
+        "rows": 1551,
+        "csv_sha256": "b82c2651fccd0386c36593f0b7c6c05112817452244255c58c4de561cc241942",
+        "engine_path": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/dist/RocketGNCMonitor.app/Contents/Frameworks/vendor/openrocket.jar",
+        "simulation_timeout": 120,
+        "engine_sha256": "c53e91389e9c580da60bb25f05b6eb7c7705490eaae08089bc95354cf2950e70",
+        "model_sha256": "c0fa223c6677950915abeafc6720e3653093985e4ddefc576e5934c50f0b332e",
+        "motor_sha256": {
+          "motor_0.eng": "c18d886508d26ad86eff21c1a7db51b7d25d389027a09e404c5fce3105168a0e"
+        },
+        "request": {
+          "schema_version": 1,
+          "model": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/simulation/model.ork",
+          "motor_files": [
+            "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/simulation/motor_0.eng"
+          ],
+          "bundled_motor_count": 1,
+          "simulation_index": 0,
+          "latitude": 0.0,
+          "longitude": 0.0,
+          "altitude": 0.0,
+          "origin_ellipsoid_altitude": 0.0,
+          "rail_length": 2.0,
+          "rail_tilt": 0.0,
+          "rail_heading": 0.0,
+          "seed": 42,
+          "wind": [
+            {
+              "height": 0.0,
+              "east": 0.0,
+              "north": 0.0
+            }
+          ],
+          "output": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/simulation",
+          "nominal": true,
+          "inertia_override": false
+        },
+        "job_directory": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/simulation"
+      }
+    },
+    "selected_model": {
+      "rows": 11626,
+      "apogee_m": 4551.9517756,
+      "manifest": {
+        "schema_version": 1,
+        "frame": "ENU",
+        "units": "m,s",
+        "altitude_datum": "launch_relative",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "name": "OpenRocket nominal \u00b7 Rocket",
+        "motors": [
+          {
+            "designation": "N8406",
+            "digest": "057a820844b93fe3307401623a92d4c6",
+            "manufacturer": "MITRT"
+          }
+        ],
+        "saved_simulation": "Simulation 1",
+        "branch": 0,
+        "branch_count": 1,
+        "synthetic": false,
+        "controlled_model_validated": false,
+        "inertia_override": false,
+        "solver": "ModifiedEventSimulationEngine / useRK6=false",
+        "extensions": "disabled",
+        "turbulence_standard_deviation": 0,
+        "warnings": "Messages[]; Messages[Body calculations may not be entirely accurate at supersonic speeds.]",
+        "rows": 11626,
+        "csv_sha256": "175369ac0f658dd525e27b19012ec40358db507609b957f0935cb610ae7b6b97",
+        "engine_path": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/dist/RocketGNCMonitor.app/Contents/Frameworks/vendor/openrocket.jar",
+        "simulation_timeout": 120,
+        "engine_sha256": "c53e91389e9c580da60bb25f05b6eb7c7705490eaae08089bc95354cf2950e70",
+        "model_sha256": "13ab9cd90ec4ce01232d72b982904eb40b2a71c0dfa4ac8efa927f2f174d4b98",
+        "motor_sha256": {
+          "motor_0.eng": "c18d886508d26ad86eff21c1a7db51b7d25d389027a09e404c5fce3105168a0e"
+        },
+        "request": {
+          "schema_version": 1,
+          "model": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/selected-model/model.ork",
+          "motor_files": [
+            "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/selected-model/motor_0.eng"
+          ],
+          "bundled_motor_count": 1,
+          "simulation_index": 0,
+          "latitude": 0.0,
+          "longitude": 0.0,
+          "altitude": 0.0,
+          "origin_ellipsoid_altitude": 0.0,
+          "rail_length": 2.0,
+          "rail_tilt": 0.0,
+          "rail_heading": 0.0,
+          "seed": 42,
+          "wind": [
+            {
+              "height": 0.0,
+              "east": 0.0,
+              "north": 0.0
+            }
+          ],
+          "output": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/selected-model",
+          "nominal": true,
+          "inertia_override": false
+        },
+        "job_directory": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0/build/virtual-pointer/package-verification/selected-model"
+      }
+    }
+  },
+  "mac_signature_verified": true,
+  "dmg_verified": true,
+  "dmg_sha256": "b0aa2a5eaa51dc089b7e0319c3db0c252d6ca57038dc6befc076028c520a21dd",
+  "windows_rebuilt": false,
+  "physical_hardware_qualification": false,
+  "motion_model": "Illustrative azimuth 90 degrees/s and elevation 60 degrees/s; not a measured hardware model"
+}

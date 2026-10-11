@@ -1,0 +1,11 @@
+--- tested-spec
++++ packaged-spec
+@@ -10,7 +10,7 @@
+ datas += [(str(root / "vendor"), "vendor"), (str(root / "docs"), "docs"), (str(root / "resources"), "resources")]
+ datas += [
+     (str(root / "references" / filename), "references")
+-    for filename in ("Ground Station Software Block Diagram.pdf", "GROUND_STATION_BOARD_NOTES.md")
++    for filename in ("Ground Station Software Block Diagram.pdf", "GROUND_STATION_BOARD_NOTES.md", "IRIS_STATION_ROUTING.png")
+ ]
+ for package in ("numpy", "pyserial", "imageio-ffmpeg", "PySide6-Essentials", "pyqtgraph", "mgrs", "openlocationcode"):
+     datas += copy_metadata(package)

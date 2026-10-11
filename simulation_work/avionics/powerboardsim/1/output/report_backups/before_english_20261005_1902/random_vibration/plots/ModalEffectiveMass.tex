@@ -1,0 +1,21 @@
+% Editable native PGFPlots figure. Data are plain numerical CSV files.
+\begin{tikzpicture}
+\begin{axis}[
+ width=.985\linewidth,height=6.4cm,xmin=0,xmax=4000,ymin=0,ymax=100,
+ xlabel={Frequency (Hz)},ylabel={Cumulative effective mass (\%)},
+ xtick={0,500,1000,1500,2000,2500,3000,3500,4000},
+ ytick={0,20,40,60,80,100},grid=major,grid style={gray!20},
+ tick label style={font=\footnotesize},label style={font=\footnotesize},
+ scaled ticks=false,legend pos=south east,
+ legend style={font=\scriptsize,draw=gray!35,fill=white,cells={anchor=west}}]
+\path[fill=Teal,fill opacity=0.08] (axis cs:20,0) rectangle (axis cs:2000,100);
+\addlegendimage{area legend,draw=Teal!30,fill=Teal!8}
+\addlegendentry{Input PSD range}
+\addplot[const plot,color=orange!80!black,line width=1pt] table[x=frequency_hz,y=cumulative_mass_percent,col sep=comma]{data/modal_mass_X.csv};
+\addlegendentry{X: 87.24\% retained}
+\addplot[const plot,color=Teal,line width=1pt] table[x=frequency_hz,y=cumulative_mass_percent,col sep=comma]{data/modal_mass_Y.csv};
+\addlegendentry{Y: 89.04\% retained}
+\addplot[const plot,color=Navy,line width=1pt] table[x=frequency_hz,y=cumulative_mass_percent,col sep=comma]{data/modal_mass_Z.csv};
+\addlegendentry{Z: 89.56\% retained}
+\end{axis}
+\end{tikzpicture}

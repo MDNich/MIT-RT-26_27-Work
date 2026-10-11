@@ -1,0 +1,76 @@
+........................................................................ [ 51%]
+....s..........s..................................s.F..F.s..........     [100%]
+================================== FAILURES ===================================
+________ test_valid_payload_is_read_only_and_rejects_external_symlink _________
+
+universal = <module 'rocket_universal_build' from 'C:\\RocketGNCBuild\\rocket_UI_v0a\\scripts\\package_macos_universal.py'>
+tmp_path = WindowsPath('C:/Users/mdn/AppData/Local/Temp/pytest-of-mdn/pytest-5/test_valid_payload_is_read_onl0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DAA969D710>
+
+    def test_valid_payload_is_read_only_and_rejects_external_symlink(universal, tmp_path, monkeypatch):
+        app = payload_fixture(tmp_path, universal)
+        before = {path.relative_to(app): path.read_bytes() for path in app.rglob("*") if path.is_file()}
+        calls = []
+        monkeypatch.setattr(universal, "run", lambda *args, **kwargs: calls.append(args))
+        monkeypatch.setattr(universal, "binary_architectures", lambda path: {"arm64"})
+        result = universal.validate_payload(app, "arm64")
+        assert result["native_files"] == 2
+        assert calls[0][1:4] == ("--verify", "--deep", "--strict")
+        assert before == {path.relative_to(app): path.read_bytes() for path in app.rglob("*") if path.is_file()}
+        outside = tmp_path / "external-library"
+        outside.write_bytes(b"external runtime")
+>       (app / "Contents/Frameworks/external.dylib").symlink_to(outside)
+
+tests\test_universal_package.py:68:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/mdn/AppData/Local/Temp/pytest-of-mdn/pytest-5/test_valid_payload_is_read_onl0/Source app.app/Contents/Frameworks/external.dylib')
+target = WindowsPath('C:/Users/mdn/AppData/Local/Temp/pytest-of-mdn/pytest-5/test_valid_payload_is_read_onl0/external-library')
+target_is_directory = False
+
+    def symlink_to(self, target, target_is_directory=False):
+        """
+        Make this path a symlink pointing to the target path.
+        Note the order of arguments (link, target) is the reverse of os.symlink.
+        """
+>       os.symlink(target, self, target_is_directory)
+E       OSError: [WinError 1314] Az ügyfélnek nincs meg a szükséges joga: 'C:\\Users\\mdn\\AppData\\Local\\Temp\\pytest-of-mdn\\pytest-5\\test_valid_payload_is_read_onl0\\external-library' -> 'C:\\Users\\mdn\\AppData\\Local\\Temp\\pytest-of-mdn\\pytest-5\\test_valid_payload_is_read_onl0\\Source app.app\\Contents\\Frameworks\\external.dylib'
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\pathlib\_local.py:789: OSError
+_____ test_output_guard_rejects_symlink_artifact_and_accepts_known_output _____
+
+universal = <module 'rocket_universal_build' from 'C:\\RocketGNCBuild\\rocket_UI_v0a\\scripts\\package_macos_universal.py'>
+tmp_path = WindowsPath('C:/Users/mdn/AppData/Local/Temp/pytest-of-mdn/pytest-5/test_output_guard_rejects_syml0')
+
+    def test_output_guard_rejects_symlink_artifact_and_accepts_known_output(universal, tmp_path):
+        output = tmp_path / "dist"
+        target = output / universal.OUTER_NAME
+        (target / "Contents/Resources").mkdir(parents=True)
+        (target / "Contents/Info.plist").write_bytes(plistlib.dumps(dict(CFBundleIdentifier=universal.BUNDLE_ID)))
+        (target / "Contents/Resources" / universal.MANIFEST_NAME).write_text(
+            json.dumps(dict(package_kind="universal-native-payloads")))
+        assert universal.validate_output(output, []) == output.resolve()
+        protected = tmp_path / "important.zip"
+        protected.write_text("important")
+>       (output / (universal.ARTIFACT_NAME + ".zip")).symlink_to(protected)
+
+tests\test_universal_package.py:116:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = WindowsPath('C:/Users/mdn/AppData/Local/Temp/pytest-of-mdn/pytest-5/test_output_guard_rejects_syml0/dist/RocketGNCMonitor-v0a-macOS-universal.zip')
+target = WindowsPath('C:/Users/mdn/AppData/Local/Temp/pytest-of-mdn/pytest-5/test_output_guard_rejects_syml0/important.zip')
+target_is_directory = False
+
+    def symlink_to(self, target, target_is_directory=False):
+        """
+        Make this path a symlink pointing to the target path.
+        Note the order of arguments (link, target) is the reverse of os.symlink.
+        """
+>       os.symlink(target, self, target_is_directory)
+E       OSError: [WinError 1314] Az ügyfélnek nincs meg a szükséges joga: 'C:\\Users\\mdn\\AppData\\Local\\Temp\\pytest-of-mdn\\pytest-5\\test_output_guard_rejects_syml0\\important.zip' -> 'C:\\Users\\mdn\\AppData\\Local\\Temp\\pytest-of-mdn\\pytest-5\\test_output_guard_rejects_syml0\\dist\\RocketGNCMonitor-v0a-macOS-universal.zip'
+
+C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\Lib\pathlib\_local.py:789: OSError
+=========================== short test summary info ===========================
+FAILED tests/test_universal_package.py::test_valid_payload_is_read_only_and_rejects_external_symlink
+FAILED tests/test_universal_package.py::test_output_guard_rejects_symlink_artifact_and_accepts_known_output
+2 failed, 134 passed, 4 skipped in 314.83s (0:05:14)

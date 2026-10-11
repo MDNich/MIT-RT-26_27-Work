@@ -1,0 +1,139 @@
+\clearpage
+\section{Interim results of September 26, 2026 (UTC)}
+\subsection{Accepted state at 6.375 seconds}
+This documentation snapshot, captured September 26 at 20:04 UTC
+(16:04 EDT), ends at accepted step 495. A clean pause is scheduled at
+\SI{6.5}{s}; the sealed horizon remains \SI{7}{s}. No future solver result is included. Only one row has been
+removed: \SI{0.01984375}{mm} removed and \SI{4.74265625}{mm} still present
+geometrically. The remaining thickness is not necessarily virgin material.
+The mean hot-face temperature reaches \SI{1519.16}{\celsius}. The exported
+nodal maximum also rounds to \SI{1519.16}{\celsius}; maximum local conversion is
+\(\alpha_{\max}=1\), without implying complete conversion of the liner. The face mean and nodal maximum remain
+distinct quantities.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_results_en.pdf}
+\caption{Accepted history: mean hot-face temperature, pyrolysed depth and
+geometric removal, cumulative masses, and balance errors. Masses are scaled
+to a full ring of \SI{50}{mm} length. The vertical dotted line marks the
+first row removal.}
+\end{figure}
+
+At the latest state, the relative energy error is 0.2367\,\% (5\,\% limit)
+and the relative hot-convection error is \(4.89\times10^{-8}\) (0.02 limit).
+Cumulative gas mass is \SI{14.0149}{g} and consumed-carbon mass is
+\SI{0.48707}{g}, on the full-ring scale. All accepted audits are below both
+limits. This validates these numerical checks, not the exploratory material
+laws.
+
+\clearpage
+\subsection{Pyrolysis-front progression}
+For consistency with the previous estimates, the front is defined by
+\(\bar\alpha\geq0.98\), where \(\bar\alpha\) is the volume-weighted mean of
+the 500 elements in a radial row. We retain the contiguous zone from the
+original bore and interpolate linearly between row centres bracketing the
+threshold. Already removed rows retain their last accepted conversion in
+this original-bore depth measure.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_conversion_en.pdf}
+\caption{Conversion profiles and depths of the 90, 98, and 99\,\% fronts.
+Profiles show the first \SI{1.3}{mm} of the original \SI{4.7625}{mm} thickness.
+Front histories sample every fourth checkpoint, supplemented by the latest
+accepted state and the previous comparison checkpoint.}
+\end{figure}
+
+At \SI{6.375}{s}, the 98\,\% front is at \SI{0.59039}{mm}, or 12.40\,\% of
+the initial thickness. The 90 and 99\,\% fronts are at \SI{0.72730}{mm} and
+\SI{0.54486}{mm}, respectively. The threshold is a post-processing definition:
+it changes neither the material law nor the removal rule.
+\textbf{Pyrolysed therefore means neither burned nor geometrically removed.}
+
+\clearpage
+\subsection{25, 50, and 75 percent projections}
+A least-squares straight line is fitted to the 98\,\% front depth over the
+latest available \SI{0.6625}{s}, using the same sampling. The current fit
+uses 14 points from \SI{5.7375}{s} to \SI{6.375}{s}. Its fitted speed is
+\SI{0.12298}{mm.s^{-1}}, versus \SI{0.12822}{mm.s^{-1}} in the comparison
+report at \SI{5.8875}{s} (index 456).
+
+\begin{table}[H]\centering
+\caption{Physical times since ignition, not wall-clock calculation durations.}
+\begin{tabular}{lrrr}\toprule
+Pyrolysed initial thickness & Previous [s] & Updated [s] & Change\\\midrule
+25\,\% & 11.03 & 11.25 & +2.0\,\%\\
+50\,\% & 20.32 & 20.93 & +3.0\,\%\\
+75\,\% & 29.60 & 30.61 & +3.4\,\%\\\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_projections_en.pdf}
+\caption{Left: accepted calculation in solid blue and extrapolations in
+dashes; shading extends beyond available results. Right: drift in predicted
+crossing times as new checkpoints enter the fitting window.}
+\end{figure}
+
+The projection at the \SI{6.5}{s} pause is approximately 12.73\,\% pyrolysed
+(14.02\,\% at \SI{7}{s}, beyond the requested pause). The
+25/50/75\,\% estimates rise by 2.0 to 3.4\,\% since the comparison report
+as the front slows. This drift does not establish predictive convergence. All these
+crossings lie beyond the requested pause and the sealed horizon. These are uncalibrated
+linear extrapolations, with no physical confidence interval; they do not
+demonstrate motor survivability. Uncertainty grows substantially at 50 and
+75\,\%.
+
+\clearpage
+\subsection{Scheduled pause at 6.5 seconds and estimated delay}
+At accepted step 495, \SI{6.375}{s}, 10 macro-steps of
+\SI{0.0125}{s} remain, covering \SI{0.125}{s} of physical time before the pause.
+All ten ranks are active; step 496 at \SI{6.3875}{s} has converged but is still finalising.
+Its work is not counted as accepted. No new error or row removal is observed.
+
+Throughput is calculated from accepted-audit modification timestamps over
+the last 10, 20, and 30 intervals between ordinary accepted post-restart steps,
+ending at step 495. Recovery of step 424 and the first acceptance interval
+ending at step 425 are excluded. Neither downtime nor current-step age is
+credited against remaining work. Subsequent wall-clock slowdowns remain included.
+The dates below start at snapshot capture, September 26 at 16:04 EDT,
+and assume constant subsequent throughput.
+\begin{table}[H]\centering
+\caption{Constant-throughput scenarios at snapshot capture.}
+\begin{tabular}{lrrl}\toprule
+Window & Minutes/step & Remaining [h] & Estimated finish (EDT)\\\midrule
+10 steps & 42.78 & 7.1 & September 26, around 23:12\\
+20 steps & 38.82 & 6.5 & September 26, around 22:33\\
+30 steps & 43.51 & 7.3 & September 26, around 23:20\\\bottomrule
+\end{tabular}
+\end{table}
+\textbf{Conservative planning envelope: approximately 7 to 10 hours from
+this snapshot}, or September 26 around 23:00 through September 27 around
+02:00 EDT (September 27 around 03:00 through 06:00 UTC). The last ten intervals
+range from about 35 to 58 minutes; the 30-step window includes the long step 467.
+This envelope addresses the new \SI{6.5}{s} target, rather than simply
+subtracting elapsed time from the previous \SI{7}{s} estimate.
+It is neither a confidence interval nor a guaranteed bound: writes, exports,
+or row removals may delay the stop further.
+
+The existing monitor checks the calculation every five minutes. During the
+step from \SI{6.4875}{s} to \SI{6.5}{s} (expected index 505), it is instructed
+to run \code{request_pause.ps1}, without changing sealed inputs. The controller
+finishes exports and balance checks, accepts the checkpoint, then stops before
+the next solve. The \code{PAUSED_AT_CHECKPOINT} status, normal exit, and all ten
+restart partitions must confirm the stop. At this snapshot the pause is
+\emph{scheduled, not yet completed}; it depends on monitor availability.
+A late check must disclose any overshoot and request a clean pause at the
+next checkpoint, never kill processes. Restart requires a new explicit request.
+
+\subsection{Sources and reproducibility}
+The \code{newmotor_v0_history.csv} history is a view of immutable JSON audits
+for each accepted step: time, thicknesses, masses, surface temperature,
+conversion, loads, and balances. Figures read accepted audits and conversion
+checkpoints directly, never a step still being exported. The reduced snapshot
+and source SHA-256 hashes are stored in
+\path{docs/analysis/accepted_results_snapshot.json}. The
+\code{make_results_figures.py} script rebuilds figures offline; its
+\code{--capture} option reads the runtime without changing the calculation.
+Text and tables in this edition are frozen at the same index 495. Audit
+timestamps and all three wall-clock scenarios are preserved in this snapshot.
+\clearpage

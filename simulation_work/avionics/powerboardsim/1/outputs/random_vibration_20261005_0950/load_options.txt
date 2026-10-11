@@ -1,0 +1,77 @@
+ConstantDamping ENUM ProgramControlled,Manual
+ModeSelectionMethod ENUM None,ModalEffectiveMass
+Direction ENUM XAxis,YAxis,ZAxis,XYAxis,XZAxis,YZAxis,XYZAxis,Total,None
+PROP ID None
+Name=ID
+APIName=None
+InternalValue=4276
+IsValid=True
+ReadOnly=False
+PROP BoundaryConditionSelection BoundaryCondition
+Name=BoundaryConditionSelection
+InternalValue=-99
+APIName=BoundaryCondition
+RecordableAPIName=BoundaryCondition
+StringValue=Aucun
+IsValid=False
+ReadOnly=False
+PROP LoadData LoadData
+Name=LoadData
+InternalValue=-1988246120
+APIName=LoadData
+RecordableAPIName=LoadData
+StringValue=Données tabulaires
+IsValid=False
+ReadOnly=False
+PROP Direction Direction
+Name=Direction
+InternalValue=-99
+APIName=Direction
+RecordableAPIName=Direction
+StringValue=Aucun
+IsValid=False
+ReadOnly=False
+PROP Component None
+Name=Component
+InternalValue=-1
+APIName=None
+StringValue=Aucun
+IsValid=True
+ReadOnly=False
+PROP Location None
+Name=Location
+InternalValue=Aucun
+APIName=None
+StringValue=Aucun
+IsValid=True
+ReadOnly=True
+PROP Suppressed Suppressed
+Name=Suppressed
+InternalValue=0
+APIName=Suppressed
+RecordableAPIName=Suppressed
+StringValue=Non
+IsValid=True
+ReadOnly=False
+PROP Source None
+Name=Source
+InternalValue=
+APIName=None
+StringValue=
+IsValid=True
+ReadOnly=True
+PROP ReadOnly None
+Name=ReadOnly
+InternalValue=False
+APIName=None
+StringValue=Non
+IsValid=True
+ReadOnly=False
+ANALYSIS 4254 RANDOM VIBE - expanded prestressed modal basis
+IC 4257 parentstatic <Ansys.ACT.Automation.Mechanical.Analysis object at 0x000000000000002D [Ansys.ACT.Automation.Mechanical.Analysis]> parentmodal None
+ANALYSIS 4259 RANDOM VIBE - X - 2pct damping
+IC 4262 parentstatic None parentmodal <Ansys.ACT.Automation.Mechanical.Analysis object at 0x000000000000006F [Ansys.ACT.Automation.Mechanical.Analysis]>
+ANALYSIS 4264 RANDOM VIBE - Y - 2pct damping
+IC 4267 parentstatic None parentmodal <Ansys.ACT.Automation.Mechanical.Analysis object at 0x000000000000006F [Ansys.ACT.Automation.Mechanical.Analysis]>
+ANALYSIS 4269 RANDOM VIBE - Z - 2pct damping
+IC 4272 parentstatic None parentmodal <Ansys.ACT.Automation.Mechanical.Analysis object at 0x000000000000006F [Ansys.ACT.Automation.Mechanical.Analysis]>

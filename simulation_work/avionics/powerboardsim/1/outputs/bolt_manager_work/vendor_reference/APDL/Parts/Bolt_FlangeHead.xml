@@ -1,0 +1,104 @@
+<Part PartType='Bolt'>
+  <Description>Bolt test for XML format</Description>
+
+  <!--Inputs sent to APDL input file
+      ApdlName = Name Sent to APDL Variable
+      Description = User note.  Not used in APDL
+      Type (Text, Quantity, Float)
+        Quantity inputs will be converted based on APDL current solver units.
+  -->
+  <Inputs>
+    <Pre>
+      <Input ApdlName='HeadType' Description='Head Type' Type='Text'>Hex</Input>
+      <Input ApdlName='HeadR' Description='Head Radius' Type='Quantity' QuantityName = 'Length'>5.788 [mm]</Input>
+      <Input ApdlName='HeadH' Description='Head Height' Type='Quantity' QuantityName = 'Length'>5 [mm]</Input>
+      <Input ApdlName='ShankR' Description='Shank Radius' Type='Quantity' QuantityName = 'Length'>2.6998 [mm]</Input>
+      <Input ApdlName='ShankLen' Description='Shank Length' Type='Quantity' QuantityName = 'Length'>4.46 [mm]</Input>
+      <Input ApdlName='ThreadR' Description='Shank Radius' Type='Quantity' QuantityName = 'Length'>2.6998 [mm]</Input>
+      <Input ApdlName='ThreadLen' Description='Thread Length' Type='Quantity' QuantityName = 'Length'>15 [mm]</Input>
+      <Input ApdlName='mu' Description='Frictional Coef' Type='Float'>0.1</Input>
+      <Input ApdlName='PreloadLoc' Description='Location of split along axis' Type='Quantity' QuantityName = 'Length'>2 [mm]</Input>
+      
+      <Input ApdlName='HeadFlangeH' Description='Flange Head Section Height' Type='Quantity' QuantityName = 'Length'>1.5 [mm]</Input>
+      <Input ApdlName='HeadFlangeR' Description='Flange Head Section Radius' Type='Quantity' QuantityName = 'Length'>6.5 [mm]</Input>
+    </Pre>
+    <Solve>
+      <Input ApdlName='PreloadVal' Description='Standard Preload on Bolt' Type='Quantity' QuantityName = 'Force'>1000 [N]</Input>
+    </Solve>
+    <Post>
+    </Post>
+  </Inputs>
+
+  <!-- Determines how it is displayed in Mechanical
+       Node Names (Head, Shank, Thread, BNut, Washer) based on Part Type.
+       Attributes link to the APDL inputs defined above.
+       Red, Blue, Green attributes can be used to set color between 0 and 255.
+  -->
+  <GraphicsDisplay>
+    <Head Radius='HeadR' Height='HeadH' HeadType='HeadType' Red='250'></Head>
+    <HeadFlange Radius='HeadFlangeR' Height='HeadFlangeH' Red='250'></HeadFlange>
+    <Shank Radius='ShankR' Height='ShankLen'></Shank>
+    <Thread Radius='ThreadR' Height='ThreadLen' Blue='250'></Thread>
+    <Preload Radius='ShankR' ZLoc='PreloadLoc' Red='250' Blue='0' Green='0'></Preload>
+  </GraphicsDisplay>
+
+  <ApdlInputFiles>
+    <!-- 
+    CopyAs='FileName'  > Does not put file text in APDL, but sends APDL commands to copy file as local file.
+        CopyAs=''  > Copies with the same name to the APDL solve directory.
+    IterateIds = 'true' > Iterates Ids in a EBLOCK, NBLOCK, CMBLOCK by the IDs starting prior to any files being sent.
+    -->
+    <Pre>
+      <!--Send "Part" files first for all parts, then "Assembly" files
+          Create part nodes/elems in "Part" files.  Create contacts and interactions in "Assembly"-->
+      <Part>
+        <!--Send macro files as CopyAs='true'
+        These files will only be copied to the solution folder and text not put into ds.dat
+        Only ensures they are there for use later.
+        uses /INQUIRE such as to only copy if not there (copied only once)-->
+        <File CopyAs=''>Mat_StructuralSteel.mac</File>
+        <File CopyAs=''>MoveAndCopyElements.mac</File>
+        <!--Update Node/Elem/ElemType Mechanical Input File writter Ids by 1.
+            Send new reference to APDL as "_MechNodeId", "_MechElemId", "_MechElemTypeId"
+            Also updates the internal python writter reference-->
+        <UpdateMechRefIds/>
+        <File>BoltSetup1.inp</File><!--Send file text to input file.'-->
+        <!--Send the FE Node/Elem info. 
+        IterateBlockIds='true' will update ids in this file to current Mech. Id refs.
+        Updates based on last <UpdateMechRefIds/> input-->
+        <File IterateBlockIds='true'>FE_Bolt.inp</File>
+        <File>BoltSetup2.inp</File>
+        <!-- Iterate the Mechanical internal Ids by the given amounts.
+             PerCoordinateSystem='true'  -> Multiple the values by num. of CS sent to the Mechanical object calling part creation.
+             Type should be the MAX of any created Sections, Materials, Real Const, Elem. Types
+        -->
+        <IterateMechRefIds Node='16103' Element='3573' PerCoordinateSystem='true'/><!-- Iterate by num*numCS-->
+        <UpdateMechRefIds/>
+        <File>Preload_Create.inp</File>
+        <!-- Assume new pilot node, Pretension Elements and Element Type/Section are created.-->
+        <IterateMechRefIds Node='1000' Element='300' Type='1' PerCoordinateSystem='true'/>
+      </Part>
+      <Assembly>
+        <File CopyAs=''>Contact_CreateTypes.mac</File>
+        <File CopyAs=''>Contact_CreateFromCylCoords.mac</File>
+        <UpdateMechRefIds/>
+        <File>RunCreateBoltContacts.inp</File><!-- Creates Thread & Head Contact/Target-->
+        <!-- Assume new contact elements and element types/real constants are created.-->
+        <IterateMechRefIds Element='4000' Type='4' PerCoordinateSystem='true'/>
+      </Assembly>
+    </Pre>
+    <Solve>
+      <Part>
+        <File>Preload_Apply.inp</File>
+      </Part>
+      <Assembly>
+      </Assembly>
+    </Solve>
+    <Post>
+      <Part>
+      </Part>
+      <Assembly>
+      </Assembly>
+    </Post>
+  </ApdlInputFiles>
+</Part>

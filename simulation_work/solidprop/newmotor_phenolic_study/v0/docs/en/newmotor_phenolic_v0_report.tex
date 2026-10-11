@@ -1,0 +1,374 @@
+\documentclass[oneside,openany]{amsdtx}
+\usepackage[margin=.75in]{geometry}
+\usepackage{graphicx,float,amsmath,amssymb,url,multicol,booktabs,bm,array,enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[allcolors=black]{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{siunitx}
+\usepackage{listingsutf8}
+\definecolor{b}{HTML}{3C78D8}\definecolor{B}{HTML}{08357E}\definecolor{g}{HTML}{38761D}
+\definecolor{r}{HTML}{7A0101}\definecolor{phenolic}{HTML}{A65A2E}\definecolor{aluminium}{HTML}{A8B0B8}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\protected\def\code#1{\texttt{\detokenize{#1}}}
+\sisetup{locale=US,per-mode=symbol,range-phrase=--,range-units=single}
+\setcounter{secnumdepth}{3}\setcounter{tocdepth}{2}
+\title{~\\[-2em]\sc Thermochemical Simulation v0: Interim Results\\
+for the New Phenolic Liner}
+\author{\sc MIT Rocket Team --- M. Nichitiu --- Solid Propulsion Simulations}
+\date{\sc September 26, 2026 (UTC)}
+
+\begin{document}
+\selectlanguage{english}
+\maketitle
+\begin{multicols}{2}
+{\color{white}.}~~~~~~~~~~~~~~~~~\includegraphics[scale=0.1]{logos/rtlogo.pdf}\\[1em]
+~\vspace{3.3em}~\\[-4.6em]{\color{white}.}~~~~~\includegraphics[scale=0.2]{logos/ansys.png}
+\end{multicols}
+~\\[-1em]
+\tableofcontents
+\vfill
+\begin{center}\begin{minipage}{0.96\textwidth}\small
+\textbf{Purpose of this document.} This report records the reproducible
+preparation of the first model version for the new motor. It strictly separates
+the requested geometry from assumptions inherited from the earlier simulations.
+The native Windows model, mesh, restart chain, and MAPDL preflight are validated.
+The transient calculation is running; this edition freezes accepted results at
+\SI{6.375}{s}, index 495, after an explicitly authorised recovery, with a clean
+pause scheduled at \SI{6.5}{s}. The primary goal is to compute,
+without ambiguous terminology, removed phenolic thickness, remaining thickness,
+pyrolysis-gas mass, and consumed-carbon mass at every time.
+\end{minipage}\end{center}
+\vfill
+
+\section{Definition of the new motor}
+\subsection{Imposed dimensions}
+The brief supplied for this study contains three diameters:
+\(D_{\mathrm{Al,out}}=\SI{6.000}{in}\),
+\(D_{\mathrm{Al,in}}=D_{\mathrm{ph,out}}=\SI{5.625}{in}\), and
+\(D_{\mathrm{ph,in}}=\SI{5.250}{in}\). Unlike the first two historical
+simulations, these dimensions are correctly treated as \emph{diameters} and
+divided by two before they become radial coordinates.
+
+\begin{table}[H]\centering
+\caption{Nominal radial interfaces.}
+\begin{tabular}{L{5.0cm}rrr}\toprule
+Interface & Diameter [in] & Diameter [mm] & Radius [mm]\\\midrule
+Phenolic bore & 5.250 & 133.350 & 66.6750\\
+Phenolic/aluminium & 5.625 & 142.875 & 71.4375\\
+Aluminium exterior & 6.000 & 152.400 & 76.2000\\\bottomrule
+\end{tabular}
+\end{table}
+
+The result is one \SI{4.7625}{mm} phenolic layer and an aluminium shell of
+the same thickness. There is no epoxy, second phenolic layer, or artificial
+intermediate contact. The simulation uses a \SI{50}{mm} axial coupon and a
+\(0.10^\circ\) sector, giving a 3,600 scale factor to the full ring of the same
+length. Because the actual motor length was not supplied, no total motor mass
+is extrapolated beyond this \SI{50}{mm} segment.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.94\textwidth]{../analysis/newmotor_geometry_en.pdf}
+\caption{Nominal two-layer cross-section.}
+\end{figure}
+
+As an analytical check, the full \SI{50}{mm} segment contains
+\(V_{\mathrm{ph},0}=\SI{1.033208e-4}{m^3}\), or
+\(m_{\mathrm{ph},0}=\SI{0.129151}{kg}\) at the reference density
+\(\rho_v=\SI{1250}{kg.m^{-3}}\). The corresponding sector mass is
+\SI{35.8753}{mg}. These are balance references, not measurements of the
+manufactured part.
+
+\subsection{Geometry files}
+The \code{geometry/newmotor_phenolic_v0.db} database is a native MAPDL 2026 R1
+file containing both glued volumes. It was created on Windows without a mesh
+or a \code{SOLVE} command. Its standalone, readable generator,
+\code{model/generate_geometry_mapdl.inp}, remains the geometry source. The
+exchange database uses global Z as its axis; the analytical solver mesh uses
+global Y. A rigid rotation relates them and changes no dimension or thermal
+condition.
+
+\section{Computational domain and mesh}
+\subsection{Discretization choices}
+The mesh is structured, conformal at the interface, and contains only linear
+SOLID278 thermal hexahedra. The two materials share interface nodes, so no
+contact elements are required. The phenolic has 240 radial rows:
+\[
+\Delta r_{\mathrm{ph}}=\frac{\SI{4.7625}{mm}}{240}
+=\SI{19.84375}{\micro m}.
+\]
+The aluminium has 64 rows of \SI{74.4141}{\micro m}. The axis is divided into
+250 intervals of \SI{0.20}{mm} and the angle into two intervals. Each
+potentially exposed phenolic row therefore has 500 faces.
+
+\begin{figure}[H]\centering
+\includegraphics[width=.98\textwidth]{../analysis/newmotor_mesh_en.pdf}
+\caption{Radial resolution and final mesh inventory.}
+\end{figure}
+
+The final model has 229,665 nodes and 152,000 hexahedra: 120,000 in phenolic
+and 32,000 in aluminium. The first 100-division axial mesh produced an aspect
+ratio of 25.2 and was archived in the temporary directory. Increasing to 250
+divisions reduces the ratio to approximately 10. The final native MAPDL
+preflight completes with zero warnings and zero errors.
+
+\subsection{Why a 0.10-degree sector}
+Two angular divisions retain three-dimensional topology and explicit
+convection faces, while 240 radial rows provide the resolution needed for
+progressive removal. The sector cannot represent large-scale circumferential
+nonuniformity. It is appropriate for a local axisymmetric response; any crack,
+joint, or localized jet requires a wider angular domain.
+
+\section{Physics and thermochemical model}
+\subsection{Energy conservation in the solids}
+The model solves transient heat conduction in the phenolic and aluminium. In
+the reactive phenolic, the local equation is
+\begin{equation}
+ \rho(\alpha)c_p(T,\alpha)\frac{\partial T}{\partial t}
+ =\nabla\!\cdot\!\left[k(T,\alpha)\nabla T\right]
+ -\rho\Delta H_p\dot\alpha-\rho\dot q_{g,s},
+ \label{eq:v0-energy}
+\end{equation}
+where \(\Delta H_p>0\) is the endothermic pyrolysis enthalpy and
+\(\dot q_{g,s}\) is sensible cooling by released gas. In aluminium the last
+two terms vanish and the properties are
+\(k=\SI{167}{W.m^{-1}.K^{-1}}\),
+\(c_p=\SI{896}{J.kg^{-1}.K^{-1}}\), and
+\(\rho=\SI{2700}{kg.m^{-3}}\). The conformal interface enforces continuity of
+temperature and normal heat flux; no thermal contact resistance is added.
+
+\subsection{Pyrolysis kinetics and evolving properties}
+The state variable \(0\leq\alpha\leq1\) is zero in virgin material and one in
+the char residue. The single reaction follows
+\begin{equation}
+ \dot\alpha=A\exp\!\left(-\frac{E_a}{RT}\right)(1-\alpha)^n,
+ \qquad
+ A=\SI{333}{s^{-1}},\quad E_a=\SI{64081}{J.mol^{-1}},\quad n=1.
+ \label{eq:v0-arrhenius}
+\end{equation}
+\code{UserMatTh} integrates this law analytically at the increment midpoint
+temperature:
+\begin{equation}
+ \alpha_{j+1}=1-(1-\alpha_j)\exp[-k_r(T_{j+1/2})\Delta t].
+\end{equation}
+It requests a MAPDL cutback when \(\Delta\alpha>0.05\). Density and thermal
+properties are interpolated between virgin and char states,
+\begin{equation}
+ X(T,\alpha)=(1-\alpha)X_v(T)+\alpha X_c(T),
+ \qquad X\in\{\rho,k,c_p\}.
+ \label{eq:v0-mixture}
+\end{equation}
+The reference densities are \(\rho_v=\SI{1250}{kg.m^{-3}}\) and
+\(\rho_c=\SI{600}{kg.m^{-3}}\), while the provisional pyrolysis enthalpy is
+\(\Delta H_p=\SI{418}{kJ.kg^{-1}}\). The \(k\) and \(c_p\) tables vary with
+temperature and must ultimately be replaced or validated with measurements of
+the manufactured material.
+
+\subsection{Gas generation and reduced evacuation model}
+Local condensed-mass loss generates pyrolysis gas:
+\begin{equation}
+ \dot\omega'''_g=Y_g(\rho_v-\rho_c)\dot\alpha,
+ \qquad Y_g=1\ \text{in v0}.
+ \label{eq:v0-gas-source}
+\end{equation}
+Gas mass is integrated over all live elements and retained in the balance. The
+model solves neither porosity, pore pressure, nor Darcy flow; it assumes that
+gas reaches the hot surface rapidly. Its sensible enthalpy is nevertheless
+removed from the solid through
+\begin{equation}
+ \dot q_{g,s}=f_g\,\frac{\dot\omega'''_g}{\rho}
+ c_{p,g}\max(T-T_{g,\mathrm{ref}},0),
+\end{equation}
+where \(f_g=1\), \(c_{p,g}=\SI{1600}{J.kg^{-1}.K^{-1}}\), and
+\(T_{g,\mathrm{ref}}=\SI{300}{K}\).
+
+The total gas flow reduces convective transfer through a blowing correction:
+\begin{equation}
+ B_h=\frac{\dot m''_g c_{p,g}}{h_0},\qquad
+ h_{\mathrm{eff}}=h_0\frac{B_h}{\exp(B_h)-1},\qquad
+ q''_{\mathrm{conv}}=h_{\mathrm{eff}}(T_g-T_s).
+ \label{eq:v0-blowing}
+\end{equation}
+The limit \(B_h\rightarrow0\) recovers \(h_{\mathrm{eff}}=h_0\). This closure
+retains the protective effect of outgassing without claiming to resolve pore
+flow or the chamber boundary layer.
+
+\subsection{Boundary conditions and chamber pressure}
+The hot face receives \(T_g=\SI{2230.85}{\degreeCelsius}\) and
+\(h_0=\SI{1000}{W.m^{-2}.K^{-1}}\). The framework includes
+\begin{equation}
+ q''_{\mathrm{rad}}=\varepsilon_h\sigma
+ \left(T_{g,\mathrm{rad}}^4-T_s^4\right),
+\end{equation}
+but \(\varepsilon_h=0\) in v0 so that an uncharacterized hot-side radiation
+load is not introduced. The outer face exchanges with a
+\SI{22}{\degreeCelsius} ambient through convection
+\(h=\SI{8}{W.m^{-2}.K^{-1}}\) and radiation
+\(\varepsilon=0.25\). Axial and lateral sector faces are adiabatic, representing
+a uniform local periodic slice.
+
+The specified nominal internal pressure is
+\(p_c=800\pm200\,\mathrm{psi}\), or
+\(\SI{5.52}{MPa}\pm\SI{1.38}{MPa}\), with a
+\SIrange{600}{1000}{psi} (\SIrange{4.14}{6.89}{MPa}) envelope. The nominal
+value is explicit in the configuration; the two bounds are sensitivity cases
+to be run once the other inputs are frozen.
+
+\subsection{Char consumption and recession}
+Pyrolysis creates char but does not automatically remove material. A second law
+acts only on the hot face. Its provisional kinetic rate is placed in series
+with a mass-transfer limit:
+\begin{align}
+ \dot m''_{\mathrm{kin}}&=\dot m''_{\mathrm{ref}}
+ \exp\!\left[-\frac{E_c}{R}\left(\frac1{T_s}-\frac1{T_{\mathrm{ref}}}\right)\right]
+ \left(a_r\frac{p_c}{p_{\mathrm{ref}}}\right)^{m},\\
+ \dot m''_{\mathrm{tr}}&=\dot m''_{\mathrm{cap}}
+ a_r\frac{p_c}{p_{\mathrm{ref}}},\qquad
+ \dot m''_c=\left(\frac1{\dot m''_{\mathrm{kin}}}
+ +\frac1{\dot m''_{\mathrm{tr}}}\right)^{-1}.
+ \label{eq:v0-char}
+\end{align}
+The exploratory values are \(E_c=\SI{100}{kJ.mol^{-1}}\),
+\(T_{\mathrm{ref}}=\SI{1500}{K}\), \(m=0.5\),
+\(\dot m''_{\mathrm{ref}}=\SI{0.01}{kg.m^{-2}.s^{-1}}\), and
+\(\dot m''_{\mathrm{cap}}=\SI{0.05}{kg.m^{-2}.s^{-1}}\). The applied rate is
+also bounded by the amount of char actually formed, by 20\,\% of char mass per
+macro-step, and by available net power:
+\begin{equation}
+ \dot m''_{c,\mathrm{applied}}\leq
+ \frac{\max(q''_{\mathrm{conv}}+q''_{\mathrm{rad}}-q''_{\mathrm{cond}},0)}
+ {H_{\mathrm{eff}}},\qquad H_{\mathrm{eff}}=\SI{35}{MJ.kg^{-1}}.
+ \label{eq:v0-energy-cap}
+\end{equation}
+Recession is therefore driven by disappearance of solid mass, not by
+\(\alpha=1\) alone.
+
+\subsection{Row removal and numerical coupling}
+Every macro-step restores the last accepted state, computes loads on the
+currently exposed face, solves the MAPDL thermal problem, exports converged
+fields, checks balances, and only then accepts a checkpoint. A row is scheduled
+for \code{EKILL} only when its residual solid mass falls below 0.1\,\% of its
+initial virgin mass. The row is deactivated at the next macro-step and hot-side
+conditions move to the newly exposed face. Residual mass and energy are logged
+before the topology changes.
+
+The nominal step is \SI{0.0125}{s}, reducible to \SI{0.0005}{s}; the reference
+horizon is \SI{7}{s}. After each converged state the controller closes
+\begin{equation}
+ m_0=m_{\mathrm{solid}}+m_g+m_c+m_{\mathrm{ejected\ residue}}
+\end{equation}
+and audits energy using native element terms and the internal sinks imposed by
+\code{UserMatTh}. In MAPDL 2026 R1, \code{SOLID278/NMISC,39} remains zero for
+these user sources; the controller therefore reconstructs the pyrolysis sink
+independently from \(\Delta\alpha\) and the gas sensible sink from state
+variable 5, while retaining the native channel as a diagnostic. A mass error
+above \(10^{-6}m_0\), an energy error above 5\,\%, or a hot-load discrepancy
+above 2\,\% blocks the next solve.
+Convection is integrated from the documented face heat rates
+\code{NMISC,29} (hot face 5) and \code{NMISC,17} (outer face 3). The aggregate
+\code{NMISC,40} rate, which under-reports the load here with \code{UserMatTh},
+is retained as a secondary diagnostic only.
+
+\begin{center}\fbox{\begin{minipage}{0.92\textwidth}\small
+\textbf{Validity domain.} Chamber pressure is now known, but gas composition,
+reactive fractions, and char-oxidation kinetics are not. The consumption law
+therefore remains \code{EXPLORATORY_NOT_CALIBRATED}. The calculation represents
+3D conduction, pyrolysis, evolving properties, enthalpy sinks, blowing,
+surface consumption, and discrete element removal. It does not represent the
+chamber flow, resolved porous transport, mechanical erosion, cracking,
+delamination, thermal expansion, or structural stress.
+\end{minipage}}\end{center}
+
+\section{Primary quantities and balances}
+\subsection{Remaining thickness}
+After \(N_k(t)\) rows have been accepted for removal,
+\[
+s_{\mathrm{removed}}(t)=N_k(t)\,\Delta r_{\mathrm{ph}},\qquad
+s_{\mathrm{remaining}}(t)=s_0-s_{\mathrm{removed}}(t),
+\quad s_0=\SI{4.7625}{mm}.
+\]
+The discrete thickness resolution is therefore \SI{19.84375}{\micro m}. The
+hot-wall coordinate is \(R_h(t)=R_i+s_{\mathrm{removed}}(t)\).
+
+\subsection{Consumed phenolic mass}
+Three quantities must not be conflated:
+\begin{enumerate}[nosep]
+\item cumulative gas mass produced by pyrolysis;
+\item carbon mass consumed at the exposed surface;
+\item virgin-equivalent mass of geometrically removed rows.
+\end{enumerate}
+For a full ring of length \(L\), the last quantity is
+\[
+m_{\mathrm{removed},0}(t)=\rho_v\,\pi L
+\left[\bigl(R_i+s_{\mathrm{removed}}(t)\bigr)^2-R_i^2\right].
+\]
+The history retains both sector values and values multiplied by 3,600. Every
+step closes mass between initial mass, remaining solid, pyrolysis gas, consumed
+carbon, and ejected residual. An error beyond tolerance automatically prevents
+the next solve.
+
+\input{../analysis/results_en.tex}
+
+\section{Windows execution, pause, and resume}
+All large files are isolated in Git-ignored \code{v0/ansystmp}. The \code{v0}
+directory is mapped to drive \code{V:} in Windows, and the runtime is
+\path{V:\ansystmp\windows}. It has no reference to
+the older project. The UserMatTh source and DLL are copied locally.
+
+Before the first calculation, \code{launch_v0.ps1 -Preflight} verifies input
+hashes, mesh, the local \code{1055@localhost} license, and reads the complete
+deck without \code{SOLVE}. The September 20, 2026 preflight confirms 229,665
+nodes, 152,000 elements, zero warnings, and zero errors. The transient run was
+subsequently explicitly launched on 10 ranks. On September 22, step 247 at
+\SI{3.275}{s} was recovered after a false POST1 export rejection following
+\code{EKILL}, without relaxing thresholds. The controller requires all live
+identifiers, rejects duplicates and foreign identifiers, and ignores only
+surplus rows already declared dead. The failure archive and
+\code{RECOVERY_PROVENANCE.json} preserve provenance.
+
+On September 25 (UTC), a separate exit-code \(-1\) failure required explicit
+user authorisation. Its exact cause remains unknown; this was not the earlier
+false POST1 rejection. The failed runtime is preserved in
+\path{windows_failed_exit_minus1_20260925_014712}. In a separate copy, results
+from all ten partitions reconstructed step 424 at \SI{5.4875}{s}. The same
+extraction at step 423 exactly reproduces all three original exports (nodal
+temperatures, element fields, and energy). The unchanged controller accepts
+step 424 and its balances. A ten-rank native restart setup check and a complete
+no-solve preflight finish with zero errors and warnings. Restart is explicitly
+launched from this checkpoint at 01:57 UTC. Acceptance of step 425 and subsequent
+progress through step 495 confirm complete continuation. Partition hashes and provenance are recorded in
+\path{RECOVERY_EXIT_MINUS1_PROVENANCE.json}.
+
+Launch requires explicit \code{-Run} and uses 10 DMP ranks. The script refuses
+to start when ANSYS/MPI already exists. The configured limit is six generations,
+but this failure inventory contains only \code{r001} (step 424) and \code{r006}
+(step 6): do not assume six recent restart points are available.
+\code{request_pause.ps1} requests a stop at the next accepted macro-step;
+\code{-Run -Resume} is allowed only from a \code{PAUSED_AT_CHECKPOINT} state
+whose inputs remain unchanged.
+
+\section{Run status and next decisions}
+\begin{table}[H]\centering
+\begin{tabular}{L{7.2cm}L{5.4cm}}\toprule
+Item & Status\\\midrule
+Two-volume geometry & created and archived in a native MAPDL database\\
+Structured mesh & validated: 229,665 nodes, 152,000 hexahedra\\
+Windows preflight & complete, 0 warnings, 0 errors, no solve\\
+Solver inputs & sealed with SHA-256\\
+Chamber pressure & \(800\pm200\,\mathrm{psi}\), nominal \SI{5.52}{MPa}\\
+Pause/resume & clean pause scheduled at \SI{6.5}{s}\\
+French/English reports & compiled from the same parameters\\
+Transient calculation & active on 10 ranks; frozen state at \SI{6.375}{s}, index 495\\\bottomrule
+\end{tabular}
+\end{table}
+
+To qualify the results, the actual burn duration, gas composition, and measured
+phenolic properties are still required. Without them, v0 is
+deliberately exploratory: its sealed horizon remains seven seconds, with an
+operational pause requested at \SI{6.5}{s}. Its structure is nonetheless
+ready to answer the primary question: how much phenolic was transformed or
+removed, and how much sound thickness remains at each time?
+
+\end{document}

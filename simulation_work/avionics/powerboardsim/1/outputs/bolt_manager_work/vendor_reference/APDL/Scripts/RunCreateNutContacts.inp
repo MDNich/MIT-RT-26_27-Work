@@ -1,0 +1,20 @@
+/PREP7
+*GET,NumCs,PARM,_ApdlBoltCsIds,DIM,1
+!Loop through CS Ids and establish contacts
+Type = _MechElemTypeId
+*DO,i,1,NumCs
+    CsId = _ApdlBoltCsIds(i)
+    FrictCoef = mu
+    
+    Z = _NutZLoc
+    ZTol = 0.01
+    RTol = 2  !Use Radius*RTol for radial selection.
+    CompName = 'Nut_%CsId%'
+
+    *USE,'Contact_CreateTypes.mac',FrictCoef,Type   !Creates cid,tid
+    /COM, Setup Nut head contacts
+    *USE,Contact_CreateFromCylCoords.mac,Z-ZTol,Z+ZTol,0,Radius*RTol,CompName,cid,tid,CsId,1
+    Type=Type+2
+*ENDDO
+
+

@@ -1,0 +1,7 @@
+import System,traceback
+try:
+ m=GetSystem(Name='SYS 4').GetContainer(ComponentName='Results')
+ m.Edit(Interactive=True)
+ m.SendCommand(Language='Python',Command="execfile(r'C:\\Temp\\pbmotion_bridge.py')")
+except:
+ System.IO.File.WriteAllText(r'C:\Temp\pbmotion_reopen2_error.txt',traceback.format_exc())

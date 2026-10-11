@@ -1,0 +1,261 @@
+% Power-board random vibration | report issued 5 October 2026.
+% Figures are ordinary external graphics in the figures/ directory.
+% Random-vibration results from 5 October 2026.
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm,headheight=14pt,headsep=7mm,footskip=10mm]{geometry}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\fi
+\usepackage{lmodern,amsmath,graphicx,booktabs,array,caption,xcolor,fancyhdr,hyperref}
+\definecolor{Navy}{HTML}{17354B}
+\definecolor{Teal}{HTML}{166979}
+\hypersetup{colorlinks=true,urlcolor=Teal,linkcolor=Teal,
+ pdftitle={Power board: random vibration},
+ pdfauthor={MIT Rocket Team -- simulation study}}
+\captionsetup{font=small,labelfont=bf,justification=raggedright,singlelinecheck=false,hypcap=false}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\color{Navy}MIT Rocket Team \enspace | \enspace Power board}
+\fancyhead[R]{\small\color{Navy}Random vibration}
+\fancyfoot[L]{\footnotesize Report issued 5 October 2026}
+\fancyfoot[R]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\renewcommand{\arraystretch}{1.07}
+\newcommand{\ReportHeading}[1]{\par\vspace{7pt}{\large\bfseries\color{Teal}#1}\par\vspace{3pt}}
+\newcommand{\PageTitle}[1]{{\LARGE\bfseries\color{Navy}#1}\par\vspace{7pt}}
+\newcommand{\ReportBody}{%
+\PageTitle{Power board: random vibration}
+{\large\color{Teal}Separate X, Y and Z base excitation \enspace | \enspace 2\% assumed damping}\par
+{\small Six locked bolts at 750 N each. ANSYS Mechanical/MAPDL 2026 R1.02.}\par
+Three separate random-vibration analyses were completed using the supplied 20--2000 Hz acceleration PSD and an exploratory constant modal damping ratio of 2\%. The model inherits the converged, locked six-bolt state from the 750 N-per-bolt static study. The calculated response uses all 38 prestressed modes between 485.964 and 3986.075 Hz.
+
+The largest PCB directional displacement RMS is 0.052674 mm under Z-axis excitation. The greatest PCB equivalent-stress RMS is 90.325 MPa under X-axis excitation. Results below are separate directional load cases; they are not a simultaneous three-axis environment.
+
+\ReportHeading{PCB random-response RMS}
+\begin{center}
+\begin{tabular}{c r c r}
+\toprule
+\textbf{Base axis} & \textbf{Max component u (mm)} & \textbf{Component} & \textbf{PCB stress (MPa)} \\
+\midrule
+X & 0.023366 & Z & 90.325 \\
+Y & 0.01945 & Z & 17.85 \\
+Z & 0.052674 & Z & 32.482 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Displacements are relative to the mounting supports. Stress is the unaveraged Segalman--Fulcher equivalent-stress RMS, excluding the static mean stress. These exploratory elastic values are not a pass/fail strength assessment.
+
+\textbf{Interpretation:} The highest whole-assembly elastic equivalent-stress RMS is 1443.2 MPa under X-axis excitation. The localized hardware maxima require mesh, connection and material validation; numerical completion is not evidence of structural adequacy.
+
+\ReportHeading{Specified acceleration spectrum}
+\begin{center}\begin{minipage}[c]{.32\linewidth}
+\begin{center}
+\begin{tabular}{r r}
+\toprule
+\textbf{Hz} & \textbf{PSD (g$^2$/Hz)} \\
+\midrule
+20 & 0.026 \\
+50 & 0.16 \\
+800 & 0.16 \\
+2000 & 0.026 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{minipage}\hfill\begin{minipage}[c]{.65\linewidth}\includegraphics[width=\linewidth]{figures/InputPSD}\end{minipage}
+\captionof{figure}{Specified PSD with power-law interpolation between the supplied points. Integrated input: 14.136 g RMS.}\end{center}
+The Mechanical load panel may display 15.310 g RMS because its display uses a linear trapezoidal integral of the four points. The piecewise log-log spectrum integrates to 14.136 g RMS; no input points were changed.
+
+\clearpage\PageTitle{Directional response results}
+\ReportHeading{PCB directional displacement RMS (mm)}
+\begin{center}
+\begin{tabular}{c r r r}
+\toprule
+\textbf{Base axis} & \textbf{X response} & \textbf{Y response} & \textbf{Z response} \\
+\midrule
+X & 0.002806 & 0.00069972 & 0.023366 \\
+Y & 0.00033604 & 0.00095143 & 0.01945 \\
+Z & 0.0016244 & 0.0023607 & 0.052674 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\ReportHeading{PCB absolute acceleration RMS (g)}
+\begin{center}
+\begin{tabular}{c r r r}
+\toprule
+\textbf{Base axis} & \textbf{X response} & \textbf{Y response} & \textbf{Z response} \\
+\midrule
+X & 15.282 & 1.9137 & 52.287 \\
+Y & 0.98316 & 16.735 & 31.582 \\
+Z & 4.6891 & 4.8063 & 154.66 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\ReportHeading{Whole-assembly directional displacement RMS (mm)}
+\begin{center}
+\begin{tabular}{c r r r}
+\toprule
+\textbf{Base axis} & \textbf{X response} & \textbf{Y response} & \textbf{Z response} \\
+\midrule
+X & 0.061425 & 0.0038971 & 0.028948 \\
+Y & 0.001215 & 0.012275 & 0.029746 \\
+Z & 0.014838 & 0.033204 & 0.0806 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\ReportHeading{Whole-assembly absolute acceleration RMS (g)}
+\begin{center}
+\begin{tabular}{c r r r}
+\toprule
+\textbf{Base axis} & \textbf{X response} & \textbf{Y response} & \textbf{Z response} \\
+\midrule
+X & 103.5 & 10.503 & 52.287 \\
+Y & 8.9608 & 22.867 & 31.582 \\
+Z & 50.032 & 36.436 & 154.66 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\ReportHeading{Stress and PCB strain}
+\begin{center}
+\begin{tabular}{c r r}
+\toprule
+\textbf{Base axis} & \textbf{PCB stress (MPa)} & \textbf{Assembly stress (MPa)} \\
+\midrule
+X & 90.325 & 1443.2 \\
+Y & 17.85 & 29.288 \\
+Z & 32.482 & 71.387 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{center}
+\begin{tabular}{c r r r}
+\toprule
+\textbf{Base axis} & \textbf{PCB strain X ($\mu\varepsilon$)} & \textbf{Y ($\mu\varepsilon$)} & \textbf{Z ($\mu\varepsilon$)} \\
+\midrule
+X & 2216.1 & 771.68 & 3044.7 \\
+Y & 200.71 & 353.58 & 389.94 \\
+Z & 1116.9 & 952.02 & 720.88 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Each table entry is a spatial maximum for that component; maxima need not occur at the same node. No vector sum of directional RMS maxima is reported. Three times a directional RMS value is a conventional 3-sigma estimate under a Gaussian assumption, not a guaranteed mission maximum. Equivalent stress is not Gaussian.
+
+\clearpage\PageTitle{PCB deformation under X and Y excitation}
+\begin{center}
+\includegraphics[width=.76\linewidth]{figures/DispX}
+\captionof{figure}{X-axis base excitation: PCB Z-direction RMS displacement. Spatial maximum 0.023366 mm. ANSYS native result contour; displayed legend uses metres. Colors show a statistical component response, not a modal eigenvector amplitude.}
+\end{center}
+\begin{center}
+\includegraphics[width=.76\linewidth]{figures/DispY}
+\captionof{figure}{Y-axis base excitation: PCB Z-direction RMS displacement. Spatial maximum 0.01945 mm. ANSYS native result contour; displayed legend uses metres. Colors show a statistical component response, not a modal eigenvector amplitude.}
+\end{center}
+Contours show the largest PCB displacement component for each excitation case. Any displayed geometric deformation is a visualization scale; an RMS field is not an instantaneous deformed configuration.
+
+\clearpage\PageTitle{PCB deformation and stress under random vibration}
+\begin{center}
+\includegraphics[width=.76\linewidth]{figures/DispZ}
+\captionof{figure}{Z-axis base excitation: PCB Z-direction RMS displacement. Spatial maximum 0.052674 mm. ANSYS native result contour; displayed legend uses metres. Colors show a statistical component response, not a modal eigenvector amplitude.}
+\end{center}
+\begin{center}
+\includegraphics[width=.76\linewidth]{figures/WorstStress}
+\captionof{figure}{Highest PCB equivalent-stress RMS occurs for X-axis base excitation: 90.325 MPa. Unaveraged Segalman--Fulcher result. Static clamp stress is separate; the native Gaussian probability label does not apply to equivalent stress.}
+\end{center}
+\clearpage\PageTitle{Model and numerical checks}
+\ReportHeading{Assembly and loading}
+The board lies in the global XY plane; Z is normal to the PCB. The same eight mounting faces are fixed, and a single coherent base motion is applied to their 781 mesh nodes in the specified axis. Native checks matched these nodes exactly to the geometry scopes. Standard gravity is 9.80665 m/s²; the four PSD ordinates were converted to SI acceleration²/Hz before solving.
+
+All six bolts inherit the locked equilibrium at static time 2, load step 2, substep 4. Verified locked reactions range from 749.9968 to 749.99945 N. Battery connections remain limited to the nickel strips; no battery-to-PCB bond was added.
+
+\ReportHeading{Mesh and modal basis}
+The shared refined quadratic mesh has 368,754 geometry-mesh nodes and 112,902 solid elements across 208 bodies. The solver has additional contact and pretension entities. PCB sizing is 0.7 mm and bolt sizing is 0.4 mm. This random-vibration study did not change that mesh.
+
+The modal extraction is undamped, starts at 1 Hz, and requests up to 60 modes through 4000 Hz. There are 38 modes in that interval. The first 20 frequencies match the accepted earlier bolt study to the exported precision. Stress and strain recovery were enabled before this solve.
+
+\ReportHeading{Numerical checks}
+The modal solve completed with zero errors. Extracted translational effective-mass fractions are X 87.24\%, Y 89.04\% and Z 89.56\%. The frequency range exceeds 1.5 times the 2000 Hz PSD limit, but a modal-basis convergence study has not been established.
+
+Each random case passed a native input check without PFACT or SOLVE, followed by an authorized solve. Input hashes, damping, spectrum ordinates, mounting nodes, solver completion and complete finite response fields were checked. All 781 supports reproduce the prescribed 14.136 g RMS acceleration in each case. No insignificant modes were excluded. Velocity and absolute acceleration were retained alongside relative displacement.
+
+\ReportHeading{Highest assembly stress location}
+The greatest assembly stress occurs under X-axis excitation in CAD body Part 24[1] (geometry ID 20466). Its exported maximum is at node 29373, element 7017. This localized fastener-model result requires validation before it can support a strength judgment.
+
+\begin{center}
+\begin{tabular}{c r r r r}
+\toprule
+\textbf{Case} & \textbf{Errors} & \textbf{Warnings} & \textbf{Finite fields} & \textbf{Support nodes} \\
+\midrule
+X & 0 & 22 & 17 / 17 & 781 / 781 \\
+Y & 0 & 22 & 17 / 17 & 781 / 781 \\
+Z & 0 & 22 & 17 / 17 & 781 / 781 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The three input decks were compared and differ only in excitation axis, analysis title and runtime location. Inherited warnings remain part of the qualification limits below.
+
+\clearpage\PageTitle{Prestressed modal basis}
+\begin{center}
+\begin{tabular}{r r r r}
+\toprule
+\textbf{Mode} & \textbf{Frequency (Hz)} & \textbf{Mode} & \textbf{Frequency (Hz)} \\
+\midrule
+1 & 485.964 & 20 & 2364.179 \\
+2 & 596.964 & 21 & 2369.941 \\
+3 & 645.435 & 22 & 2537.213 \\
+4 & 781.350 & 23 & 2704.288 \\
+5 & 820.242 & 24 & 2874.956 \\
+6 & 826.296 & 25 & 2923.998 \\
+7 & 1122.018 & 26 & 2950.883 \\
+8 & 1139.112 & 27 & 3016.715 \\
+9 & 1199.708 & 28 & 3201.733 \\
+10 & 1366.076 & 29 & 3237.676 \\
+11 & 1467.900 & 30 & 3368.526 \\
+12 & 1714.134 & 31 & 3460.285 \\
+13 & 1941.548 & 32 & 3551.455 \\
+14 & 2003.039 & 33 & 3597.699 \\
+15 & 2017.959 & 34 & 3654.570 \\
+16 & 2135.663 & 35 & 3692.040 \\
+17 & 2183.755 & 36 & 3775.152 \\
+18 & 2212.560 & 37 & 3911.142 \\
+19 & 2301.314 & 38 & 3986.075 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\begin{center}
+\includegraphics[width=.86\linewidth]{figures/ModalEffectiveMass}
+\captionof{figure}{Cumulative modal effective mass as a fraction of total directional mass. The shaded band is the 20--2000 Hz input range. A frequency cutoff alone does not establish response convergence.}
+\end{center}
+\clearpage\PageTitle{Qualification and traceability}
+\ReportHeading{Exploratory assumptions}
+The 2\% damping ratio was selected by the user as an exploratory assumption; no damping measurement was supplied. Peak response near resonance is damping-sensitive. This report does not establish a damping uncertainty interval.
+
+Inherited isotropic PCB properties are E = 23.33024 GPa, Poisson ratio 0.15 and density 1969.7774 kg/m³. Batteries use a homogeneous E = 200 GPa, Poisson ratio 0.3 and density 2200 kg/m³. These idealizations have not been correlated with the actual board laminate or cell construction.
+
+\ReportHeading{Contact and stress limitations}
+The bolt model uses existing solid shafts with pretension cuts and MPC shaft-to-hole connections. Washer-to-PCB frictionless seats use Adjust to Touch to bridge a 0.746 mm CAD gap. This is an assumed assembled seating condition. The random response is linearized about the locked state; it does not predict contact opening, slip transitions or bolt loosening.
+
+The inherited model contains thin nickel-strip mesh-quality warnings, including highly distorted tetrahedra, and hardware constraint-overlap warnings. The expanded modal solve reports 2251 warnings, including inherited shape warnings and repeated ACT parameter definitions. These warnings have not been eliminated.
+
+The static model previously produced a peak elastic equivalent stress of approximately 1.142 GPa. That localized value and the random stress maxima require mesh, contact and material validation before any strength conclusion. The static mean and random equivalent-stress RMS must not be added as if they were compatible stress tensors.
+
+\ReportHeading{Statistical interpretation}
+RMS displacement and acceleration characterize stationary zero-mean vibration. Three-sigma scaling is an estimate of excursions at a point, not a guaranteed maximum over a test or flight. Equivalent stress uses a non-Gaussian statistical measure. The generic 68.269\% / 1-sigma label on native ANSYS equivalent-stress plots must not be interpreted as a Gaussian coverage probability. A displayed time of 0 s is the stored result-set label, not an instantaneous vibration state. No test duration, fatigue law or acceptance limits were supplied, so no fatigue life or pass/fail margin is claimed.
+
+\ReportHeading{Evidence and reproducibility}
+The preserved run is outputs/random\_vibration\_20261005\_0950. It contains the input specification, native input decks, preflight logs, modal participation tables, solver logs, CSV/TSV result tables, and ANSYS contour images. Expanded modal analysis ID: 4254. Random analysis IDs: X 4259, Y 4264, Z 4269.
+
+Solver: ANSYS Mechanical/MAPDL 2026 R1.02, build 26.1 UP20260202, Windows 11 in Parallels; 12 distributed processes. Each random case was solved in an isolated Windows runtime, archived with SHA-256 hashes, and imported into its Mechanical analysis by reference for field recovery. This recovered a Mechanical result-handoff failure; the accepted numerical solutions have zero solver errors. The source project remains powerboardsim\_v1.wbpj. The prior default-contact/modal comparison is preserved separately. The report source references ordinary external figures in its figures/ folder.
+
+\ReportHeading{References}
+\begin{enumerate}
+\item \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/wb_sim/ds_spectral_analysis_type.html}{ANSYS Mechanical 2026 R1: Random Vibration Analysis}.
+\item \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_thry/thy_anproc7.html}{ANSYS Theory Reference 2026 R1: Spectrum Analysis}.
+\item \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_cmd/Hlp_C_PSDUNIT.html}{ANSYS 2026 R1: PSDUNIT and excitation units}.
+\item \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_cmd/Hlp_C_PSDGRAPH.html}{ANSYS 2026 R1: Input PSD curve-fit display}.
+\end{enumerate}
+}
+
+\begin{document}
+\ReportBody
+\end{document}

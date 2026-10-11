@@ -1,0 +1,825 @@
+
+ Ansys Mechanical Enterprise Academic Research     
+
+
+ *------------------------------------------------------------------*
+ |                                                                  |
+ |   W E L C O M E   T O   T H E   A N S Y S (R)  P R O G R A M     |
+ |                                                                  |
+ *------------------------------------------------------------------*
+
+
+
+
+ ***************************************************************
+ *         ANSYS MAPDL 2026 R1.02       LEGAL NOTICES          *
+ ***************************************************************
+ *                                                             *
+ * Copyright (c) 2026 Synopsys, Inc. and ANSYS, Inc.           *
+ * All rights reserved.                                        *
+ * Unauthorized use, distribution or duplication is            *
+ * prohibited.                                                 *
+ *                                                             *
+ * Ansys is a registered trademark of Ansys, Inc. or its       *
+ * subsidiaries in the United States or other countries.       *
+ * See the Ansys, Inc. online documentation or the Ansys, Inc. *
+ * documentation CD or online help for the complete Legal      *
+ * Notice.                                                     *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * THIS ANSYS SOFTWARE PRODUCT AND PROGRAM DOCUMENTATION       *
+ * INCLUDE TRADE SECRETS AND CONFIDENTIAL AND PROPRIETARY      *
+ * PRODUCTS OF ANSYS, INC., ITS SUBSIDIARIES, OR LICENSORS.    *
+ * The software products and documentation are furnished by    *
+ * Ansys, Inc. or its subsidiaries under a software license    *
+ * agreement that contains provisions concerning               *
+ * non-disclosure, copying, length and nature of use,          *
+ * compliance with exporting laws, warranties, disclaimers,    *
+ * limitations of liability, and remedies, and other           *
+ * provisions.  The software products and documentation may be *
+ * used, disclosed, transferred, or copied only in accordance  *
+ * with the terms and conditions of that software license      *
+ * agreement.                                                  *
+ *                                                             *
+ * Ansys, Inc. is a UL registered                              *
+ * ISO 9001:2015 company.                                      *
+ *                                                             *
+ ***************************************************************
+ *                                                             *
+ * This product is subject to U.S. laws governing export and   *
+ * re-export.                                                  *
+ *                                                             *
+ * For U.S. Government users, except as specifically granted   *
+ * by the Ansys, Inc. software license agreement, the use,     *
+ * duplication, or disclosure by the United States Government  *
+ * is subject to restrictions stated in the Ansys, Inc.        *
+ * software license agreement and FAR 12.212 (for non-DOD      *
+ * licenses).                                                  *
+ *                                                             *
+ ***************************************************************
+
+ 2026 R1.02  
+     
+ Point Releases and Patches installed:   
+     
+ Ansys Service Pack 2026 R1.01   
+ Ansys Service Pack 2026 R1.02   
+ Ansys, Inc. License Manager 2026 R1 
+ Ansys, Inc. License Manager 2026 R1.01  
+ Ansys, Inc. License Manager 2026 R1.02  
+ Discovery (reduced install) 2026 R1 
+ Discovery (reduced install) 2026 R1.01  
+ Discovery (reduced install) 2026 R1.02  
+ Core WB Files 2026 R1   
+ Core WB Files 2026 R1.01
+ Core WB Files 2026 R1.02
+ BladeModeler 2026 R1
+ BladeModeler 2026 R1.01 
+ BladeModeler 2026 R1.02 
+ CFX (includes CFD-Post) 2026 R1 
+ CFX (includes CFD-Post) 2026 R1.01  
+ CFX (includes CFD-Post) 2026 R1.02  
+ CFD-Post only 2026 R1   
+ CFD-Post only 2026 R1.01
+ CFD-Post only 2026 R1.02
+ Chemkin 2026 R1 
+ Chemkin 2026 R1.01  
+ Chemkin 2026 R1.02  
+ EnSight 2026 R1 
+ EnSight 2026 R1.01  
+ EnSight 2026 R1.02  
+ FENSAP-ICE 2026 R1  
+ FENSAP-ICE 2026 R1.01   
+ FENSAP-ICE 2026 R1.02   
+ Fluent (includes CFD-Post) 2026 R1  
+ Fluent (includes CFD-Post) 2026 R1.01   
+ Fluent (includes CFD-Post) 2026 R1.02   
+ Polyflow (includes CFD-Post) 2026 R1
+ Polyflow (includes CFD-Post) 2026 R1.01 
+ Polyflow (includes CFD-Post) 2026 R1.02 
+ Forte (includes EnSight) 2026 R1
+ Forte (includes EnSight) 2026 R1.01 
+ Forte (includes EnSight) 2026 R1.02 
+ ICEM CFD 2026 R1
+ ICEM CFD 2026 R1.01 
+ ICEM CFD 2026 R1.02 
+ RBF Morph Fluids UDF 2026 R1
+ RBF Morph Fluids UDF 2026 R1.01 
+ RBF Morph Fluids UDF 2026 R1.02 
+ RBF Morph Libraries 2026 R1 
+ RBF Morph Libraries 2026 R1.01  
+ RBF Morph Libraries 2026 R1.02  
+ Rocky 2026 R1   
+ Rocky 2026 R1.01
+ Rocky 2026 R1.02
+ Thermal Desktop: AutoCAD 2026 R1
+ Thermal Desktop: AutoCAD 2026 R1.01 
+ Thermal Desktop: AutoCAD 2026 R1.02 
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1   
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.01
+ Thermal Desktop: Thermal Desktop and TD Designer  2026 R1.02
+ Thermal Desktop: Sinda Solver 2026 R1   
+ Thermal Desktop: Sinda Solver 2026 R1.01
+ Thermal Desktop: Sinda Solver 2026 R1.02
+ TurboGrid 2026 R1   
+ TurboGrid 2026 R1.01
+ TurboGrid 2026 R1.02
+ Granta EduPack 2026 R1  
+ Granta EduPack 2026 R1.01   
+ Granta EduPack 2026 R1.02   
+ Granta Selector 2026 R1 
+ Granta Selector 2026 R1.01  
+ Granta Selector 2026 R1.02  
+ Dynamic Reporting 2026 R1   
+ Dynamic Reporting 2026 R1.01
+ Dynamic Reporting 2026 R1.02
+ Remote Solve Manager Standalone Services 2026 R1
+ Remote Solve Manager Standalone Services 2026 R1.01 
+ Remote Solve Manager Standalone Services 2026 R1.02 
+ Aqwa 2026 R1
+ Aqwa 2026 R1.01 
+ Aqwa 2026 R1.02 
+ Autodyn 2026 R1 
+ Autodyn 2026 R1.01  
+ Autodyn 2026 R1.02  
+ Customization Files for User Programmable Features 2026 R1  
+ Customization Files for User Programmable Features 2026 R1.01   
+ Customization Files for User Programmable Features 2026 R1.02   
+ LS-DYNA 2026 R1 
+ LS-DYNA 2026 R1.01  
+ LS-DYNA 2026 R1.02  
+ Material Calibration App 2026 R1
+ Material Calibration App 2026 R1.01 
+ Material Calibration App 2026 R1.02 
+ Material Designer 2026 R1   
+ Material Designer 2026 R1.01
+ Material Designer 2026 R1.02
+ Mechanical Products 2026 R1 
+ Mechanical Products 2026 R1.01  
+ Mechanical Products 2026 R1.02  
+ Motion 2026 R1  
+ Motion 2026 R1.01   
+ Motion 2026 R1.02   
+ RBF Morph 2026 R1   
+ RBF Morph 2026 R1.01
+ RBF Morph 2026 R1.02
+ Sherlock 2026 R1
+ Sherlock 2026 R1.01 
+ Sherlock 2026 R1.02 
+ Sound - SAS 2026 R1 
+ Sound - SAS 2026 R1.01  
+ Sound - SAS 2026 R1.02  
+ ACIS Geometry Interface 2026 R1 
+ ACIS Geometry Interface 2026 R1.01  
+ ACIS Geometry Interface 2026 R1.02  
+ AutoCAD Geometry Interface 2026 R1  
+ AutoCAD Geometry Interface 2026 R1.01   
+ AutoCAD Geometry Interface 2026 R1.02   
+ Catia, Version 4 Geometry Interface 2026 R1 
+ Catia, Version 4 Geometry Interface 2026 R1.01  
+ Catia, Version 4 Geometry Interface 2026 R1.02  
+ Catia, Version 5 Geometry Interface 2026 R1 
+ Catia, Version 5 Geometry Interface 2026 R1.01  
+ Catia, Version 5 Geometry Interface 2026 R1.02  
+ Catia, Version 6 Geometry Interface 2026 R1 
+ Catia, Version 6 Geometry Interface 2026 R1.01  
+ Catia, Version 6 Geometry Interface 2026 R1.02  
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.01 
+ Creo Elements/Direct Modeling Geometry Interface 2026 R1.02 
+ Creo Parametric Geometry Interface 2026 R1  
+ Creo Parametric Geometry Interface 2026 R1.01   
+ Creo Parametric Geometry Interface 2026 R1.02   
+ Inventor Geometry Interface 2026 R1 
+ Inventor Geometry Interface 2026 R1.01  
+ Inventor Geometry Interface 2026 R1.02  
+ JTOpen Geometry Interface 2026 R1   
+ JTOpen Geometry Interface 2026 R1.01
+ JTOpen Geometry Interface 2026 R1.02
+ NX Geometry Interface 2026 R1   
+ NX Geometry Interface 2026 R1.01
+ NX Geometry Interface 2026 R1.02
+ Parasolid Geometry Interface  2026 R1   
+ Parasolid Geometry Interface  2026 R1.01
+ Parasolid Geometry Interface  2026 R1.02
+ Solid Edge Geometry Interface 2026 R1   
+ Solid Edge Geometry Interface 2026 R1.01
+ Solid Edge Geometry Interface 2026 R1.02
+ SOLIDWORKS Geometry Interface 2026 R1   
+ SOLIDWORKS Geometry Interface 2026 R1.01
+ SOLIDWORKS Geometry Interface 2026 R1.02
+
+
+          *****  MAPDL COMMAND LINE ARGUMENTS  *****
+  INITIAL JOBNAME              = diag                                                                                                                                                                                                                                                    
+  BATCH MODE REQUESTED (-b)    = NOLIST
+  INPUT FILE COPY MODE (-c)    = COPY
+  SHARED MEMORY PARALLEL REQUESTED
+    SINGLE PROCESS WITH SINGLE THREAD REQUESTED
+    TOTAL OF     1 CORES REQUESTED
+  INPUT FILE NAME              = C:\Temp\PBTear26_coupon_unsym\diagnostic.dat
+  OUTPUT FILE NAME             = C:\Temp\PBTear26_coupon_unsym\diagnostic.out
+  START-UP FILE MODE           = NOREAD
+  STOP FILE MODE               = NOREAD
+
+ RELEASE= 2026 R1.02           BUILD= 26.1      UP20260202   VERSION=WINDOWS x64 
+ CURRENT JOBNAME=diag  18:17:40  OCT 05, 2026  Elapsed Time=       0.344
+
+
+ RESUME ANSYS DATA FROM FILE NAME=model.db                                                                                                                                                                                                                                                            
+
+ *** MAPDL GLOBAL STATUS *** 
+
+ TITLE =                                                                       
+         1 ELEM TYPES DEFINED    MAX ELEM TYPE NUMBER =             1
+         1 ELEMENTS DEFINED      MAX ELEMENT NUMBER =               1
+         4 NODES DEFINED         MAX NODE NUMBER =                  4
+         1 MATERIALS DEFINED     MAX MATERIAL NUMBER =              1
+         0 REAL CONSTS DEFINED   MAX REAL CONST NUMBER =            0
+         1 SECTIONS DEFINED      MAX SECTION NUMBER =               1
+         0 COORD SYS DEFINED     MAX COORD SYS NUMBER =             0
+ 
+ ACTIVE COORDINATE SYSTEM             =          0  (CARTESIAN)
+ NUMBER OF DEFINED NODAL CONSTRAINTS  =         20
+ NUMBER OF DEFINED NODAL LOADS        =          0
+ NUMBER OF DEFINED ELEM SURFACE LOADS =          0
+ NUMBER OF DEFINED ELEM BODY LOADS    =          0
+ NUMBER OF DEFINED NODE BODY FORCES   =          0
+
+ INITIAL JOBNAME = diag
+ CURRENT JOBNAME = diag
+
+ *** MAPDL - ENGINEERING ANALYSIS SYSTEM  RELEASE 2026 R1.02       26.1     ***
+ Ansys Mechanical Enterprise Academic Research     
+ 01196637  VERSION=WINDOWS x64   18:17:41  OCT 05, 2026 Elapsed Time=      9.526
+
+                                                                               
+
+
+
+          ***** MAPDL RESULTS INTERPRETATION (POST1) *****
+
+ *** NOTE ***                            ELAPSED TIME =       9.526   TIME= 18:17:41
+ Reading results into the database (SET command) will update the current 
+ displacement and force boundary conditions in the database with the     
+ values from the results file for that load set.  Note that any          
+ subsequent solutions will use these values unless action is taken to    
+ either SAVE the current values or not overwrite them (/EXIT,NOSAVE).    
+
+ DATA FILE CHANGED TO FILE= tear.rst
+
+
+  *****  INDEX OF DATA SETS ON RESULTS FILE  *****
+
+     SET   TIME/FREQ    LOAD STEP   SUBSTEP  CUMULATIVE
+       1 0.25000000E-02         1         1         3                  
+       2 0.50000000E-02         1         2         5                  
+       3 0.87500000E-02         1         3         7                  
+       4 0.13750000E-01         1         4         9                  
+       5 0.18750000E-01         1         5        11                  
+       6 0.23750000E-01         1         6        13                  
+       7 0.28750000E-01         1         7        15                  
+       8 0.33750000E-01         1         8        17                  
+       9 0.38750000E-01         1         9        19                  
+      10 0.43750000E-01         1        10        21                  
+      11 0.48750000E-01         1        11        23                  
+      12 0.53750000E-01         1        12        25                  
+      13 0.58750000E-01         1        13        27                  
+      14 0.63750000E-01         1        14        29                  
+      15 0.68750000E-01         1        15        31                  
+      16 0.73750000E-01         1        16        33                  
+      17 0.78750000E-01         1        17        35                  
+      18 0.83750000E-01         1        18        37                  
+      19 0.88750000E-01         1        19        39                  
+      20 0.93750000E-01         1        20        41                  
+      21 0.98750000E-01         1        21        43                  
+      22 0.10375000             1        22        45                  
+      23 0.10875000             1        23        47                  
+      24 0.11375000             1        24        49                  
+      25 0.11875000             1        25        51                  
+      26 0.12375000             1        26        53                  
+      27 0.12875000             1        27        55                  
+      28 0.13375000             1        28        57                  
+      29 0.13875000             1        29        59                  
+      30 0.14375000             1        30        61                  
+      31 0.14875000             1        31        63                  
+      32 0.15375000             1        32        65                  
+      33 0.15875000             1        33        67                  
+      34 0.16375000             1        34        69                  
+      35 0.16875000             1        35        71                  
+      36 0.17375000             1        36        73                  
+      37 0.17875000             1        37        75                  
+      38 0.18375000             1        38        77                  
+      39 0.18875000             1        39        79                  
+      40 0.19375000             1        40        81                  
+      41 0.19875000             1        41        83                  
+      42 0.20375000             1        42        85                  
+      43 0.20875000             1        43        87                  
+      44 0.21375000             1        44        89                  
+      45 0.21875000             1        45        91                  
+      46 0.22375000             1        46        93                  
+      47 0.22875000             1        47        95                  
+      48 0.23375000             1        48        97                  
+      49 0.23875000             1        49        99                  
+      50 0.24375000             1        50       101                  
+      51 0.24875000             1        51       103                  
+      52 0.25375000             1        52       105                  
+      53 0.25875000             1        53       107                  
+      54 0.26375000             1        54       109                  
+      55 0.26875000             1        55       111                  
+      56 0.27375000             1        56       113                  
+      57 0.27875000             1        57       115                  
+      58 0.28375000             1        58       117                  
+      59 0.28875000             1        59       119                  
+      60 0.29375000             1        60       121                  
+      61 0.29875000             1        61       123                  
+      62 0.30375000             1        62       125                  
+      63 0.30875000             1        63       127                  
+      64 0.31375000             1        64       129                  
+      65 0.31875000             1        65       131                  
+      66 0.32375000             1        66       133                  
+      67 0.32875000             1        67       135                  
+      68 0.33375000             1        68       137                  
+      69 0.33875000             1        69       139                  
+      70 0.34375000             1        70       141                  
+      71 0.34875000             1        71       143                  
+      72 0.35375000             1        72       145                  
+      73 0.35682561             1        73       148                  
+      74 0.35990121             1        74       150                  
+      75 0.36297682             1        75       152                  
+      76 0.36605242             1        76       154                  
+      77 0.36912803             1        77       156                  
+      78 0.37220363             1        78       158                  
+      79 0.37527924             1        79       160                  
+      80 0.37835485             1        80       162                  
+      81 0.38143045             1        81       164                  
+      82 0.38450606             1        82       166                  
+      83 0.38758166             1        83       168                  
+      84 0.39065727             1        84       170                  
+      85 0.39373288             1        85       172                  
+      86 0.39680848             1        86       174                  
+      87 0.39988409             1        87       176                  
+      88 0.40295969             1        88       178                  
+      89 0.40603530             1        89       180                  
+      90 0.40911090             1        90       182                  
+      91 0.41218651             1        91       184                  
+      92 0.41526212             1        92       186                  
+      93 0.41833772             1        93       188                  
+      94 0.42141333             1        94       190                  
+      95 0.42448893             1        95       192                  
+      96 0.42756454             1        96       194                  
+      97 0.43064015             1        97       196                  
+      98 0.43371575             1        98       198                  
+      99 0.43679136             1        99       200                  
+     100 0.43986696             1       100       202                  
+     101 0.44294257             1       101       204                  
+     102 0.44601817             1       102       206                  
+     103 0.44909378             1       103       208                  
+     104 0.45216939             1       104       210                  
+     105 0.45524499             1       105       212                  
+     106 0.45832060             1       106       214                  
+     107 0.46139620             1       107       216                  
+     108 0.46447181             1       108       218                  
+     109 0.46754741             1       109       220                  
+     110 0.47062302             1       110       222                  
+     111 0.47369863             1       111       224                  
+     112 0.47677423             1       112       226                  
+     113 0.47984984             1       113       228                  
+     114 0.48292544             1       114       230                  
+     115 0.48600105             1       115       232                  
+     116 0.48907666             1       116       234                  
+     117 0.49215226             1       117       236                  
+     118 0.49522787             1       118       238                  
+     119 0.49830347             1       119       240                  
+     120 0.50137908             1       120       242                  
+     121 0.50445468             1       121       244                  
+     122 0.50753029             1       122       246                  
+     123 0.51060590             1       123       248                  
+     124 0.51368150             1       124       250                  
+     125 0.51675711             1       125       252                  
+     126 0.51983271             1       126       254                  
+     127 0.52290832             1       127       256                  
+     128 0.52598393             1       128       258                  
+     129 0.52905953             1       129       260                  
+     130 0.53213514             1       130       263                  
+     131 0.53521074             1       131       266                  
+     132 0.53628720             1       132       268                  
+     133 0.53736367             1       133       270                  
+     134 0.53897836             1       134       272                  
+     135 0.54140040             1       135       274                  
+     136 0.54252780             1       136       276                  
+     137 0.54365520             1       137       278                  
+     138 0.54534630             1       138       280                  
+     139 0.54788295             1       139       282                  
+     140 0.54901270             1       140       284                  
+     141 0.55014244             1       141       286                  
+     142 0.55183706             1       142       288                  
+     143 0.55437898             1       143       290                  
+     144 0.55551113             1       144       292                  
+     145 0.55664328             1       145       294                  
+     146 0.55834150             1       146       296                  
+     147 0.55923307             1       147       298                  
+     148 0.56012464             1       148       300                  
+     149 0.56146199             1       149       302                  
+     150 0.56346801             1       150       304                  
+     151 0.56452118             1       151       306                  
+     152 0.56557434             1       152       308                  
+     153 0.56715409             1       153       310                  
+     154 0.56798346             1       154       312                  
+     155 0.56881282             1       155       314                  
+     156 0.57005687             1       156       316                  
+     157 0.57192295             1       157       318                  
+     158 0.57290264             1       158       320                  
+     159 0.57388233             1       159       322                  
+     160 0.57535186             1       160       324                  
+     161 0.57612337             1       161       326                  
+     162 0.57689487             1       162       328                  
+     163 0.57805213             1       163       330                  
+     164 0.57978802             1       164       332                  
+     165 0.58069936             1       165       334                  
+     166 0.58161070             1       166       336                  
+     167 0.58297771             1       167       338                  
+     168 0.58369539             1       168       340                  
+     169 0.58441307             1       169       342                  
+     170 0.58548959             1       170       344                  
+     171 0.58710437             1       171       346                  
+     172 0.58795213             1       172       348                  
+     173 0.58879989             1       173       350                  
+     174 0.59007154             1       174       352                  
+     175 0.59073915             1       175       354                  
+     176 0.59140676             1       176       356                  
+     177 0.59240817             1       177       358                  
+     178 0.59391030             1       178       360                  
+     179 0.59469892             1       179       362                  
+     180 0.59548753             1       180       364                  
+     181 0.59667046             1       181       366                  
+     182 0.59729149             1       182       368                  
+     183 0.59791253             1       183       370                  
+     184 0.59884408             1       184       372                  
+     185 0.60024141             1       185       374                  
+     186 0.60097501             1       186       376                  
+     187 0.60170860             1       187       378                  
+     188 0.60280900             1       188       380                  
+     189 0.60338671             1       189       382                  
+     190 0.60396442             1       190       384                  
+     191 0.60483098             1       191       386                  
+     192 0.60613082             1       192       388                  
+     193 0.60681324             1       193       390                  
+     194 0.60749566             1       194       392                  
+     195 0.60851928             1       195       394                  
+     196 0.60905669             1       196       396                  
+     197 0.60959409             1       197       398                  
+     198 0.61040020             1       198       400                  
+     199 0.61160936             1       199       402                  
+     200 0.61224417             1       200       404                  
+     201 0.61287897             1       201       406                  
+     202 0.61383119             1       202       408                  
+     203 0.61433110             1       203       410                  
+     204 0.61483101             1       204       412                  
+     205 0.61558088             1       205       414                  
+     206 0.61670568             1       206       415                  
+     207 0.61729620             1       207       417                  
+     208 0.61788672             1       208       419                  
+     209 0.61877250             1       209       420                  
+     210 0.61923754             1       210       422                  
+     211 0.61970257             1       211       424                  
+     212 0.62040012             1       212       425                  
+     213 0.62144645             1       213       426                  
+     214 0.62199577             1       214       428                  
+     215 0.62254510             1       215       430                  
+     216 0.62336908             1       216       431                  
+     217 0.62380167             1       217       433                  
+     218 0.62423426             1       218       434                  
+     219 0.62488315             1       219       435                  
+     220 0.62585648             1       220       436                  
+     221 0.62636748             1       221       438                  
+     222 0.62687848             1       222       439                  
+     223 0.62764498             1       223       440                  
+     224 0.62804739             1       224       442                  
+     225 0.62844980             1       225       443                  
+     226 0.62905342             1       226       444                  
+     227 0.62995884             1       227       445                  
+     228 0.63043419             1       228       446                  
+     229 0.63090954             1       229       447                  
+     230 0.63162256             1       230       448                  
+     231 0.63199690             1       231       449                  
+     232 0.63237124             1       232       450                  
+     233 0.63293274             1       233       451                  
+     234 0.63377500             1       234       452                  
+     235 0.63421719             1       235       453                  
+     236 0.63465937             1       236       454                  
+     237 0.63532265             1       237       455                  
+     238 0.63567087             1       238       456                  
+     239 0.63601909             1       239       457                  
+     240 0.63654143             1       240       458                  
+     241 0.63732492             1       241       459                  
+     242 0.63773626             1       242       460                  
+     243 0.63814760             1       243       461                  
+     244 0.63876460             1       244       462                  
+     245 0.63908853             1       245       463                  
+     246 0.63941246             1       246       464                  
+     247 0.63989835             1       247       465                  
+     248 0.64015344             1       248       466                  
+     249 0.64040853             1       249       467                  
+     250 0.64079117             1       250       468                  
+     251 0.64136513             1       251       469                  
+     252 0.64166646             1       252       470                  
+     253 0.64196779             1       253       471                  
+     254 0.64241978             1       254       472                  
+     255 0.64265708             1       255       473                  
+     256 0.64289437             1       256       474                  
+     257 0.64325032             1       257       475                  
+     258 0.64378423             1       258       476                  
+     259 0.64406454             1       259       477                  
+     260 0.64434484             1       260       478                  
+     261 0.64476530             1       261       479                  
+     262 0.64498604             1       262       480                  
+     263 0.64520678             1       263       481                  
+     264 0.64553790             1       264       482                  
+     265 0.64603456             1       265       483                  
+     266 0.64629531             1       266       484                  
+     267 0.64655606             1       267       485                  
+     268 0.64694719             1       268       486                  
+     269 0.64715253             1       269       487                  
+     270 0.64735787             1       270       488                  
+     271 0.64766588             1       271       489                  
+     272 0.64812790             1       272       490                  
+     273 0.64837046             1       273       491                  
+     274 0.64861302             1       274       492                  
+     275 0.64897685             1       275       493                  
+     276 0.64916787             1       276       494                  
+     277 0.64935888             1       277       495                  
+     278 0.64964541             1       278       496                  
+     279 0.65007519             1       279       497                  
+     280 0.65030083             1       280       498                  
+     281 0.65052646             1       281       499                  
+     282 0.65086492             1       282       500                  
+     283 0.65104261             1       283       501                  
+     284 0.65122030             1       284       502                  
+     285 0.65148683             1       285       503                  
+     286 0.65188663             1       286       504                  
+     287 0.65209652             1       287       505                  
+     288 0.65230642             1       288       506                  
+     289 0.65262126             1       289       507                  
+     290 0.65278655             1       290       508                  
+     291 0.65295185             1       291       509                  
+     292 0.65319978             1       292       510                  
+     293 0.65357169             1       293       511                  
+     294 0.65376694             1       294       512                  
+     295 0.65396219             1       295       513                  
+     296 0.65425507             1       296       514                  
+     297 0.65440883             1       297       515                  
+     298 0.65456259             1       298       516                  
+     299 0.65479323             1       299       517                  
+     300 0.65513919             1       300       518                  
+     301 0.65532082             1       301       519                  
+     302 0.65550245             1       302       520                  
+     303 0.65577490             1       303       521                  
+     304 0.65591793             1       304       522                  
+     305 0.65606097             1       305       523                  
+     306 0.65627552             1       306       524                  
+     307 0.65659734             1       307       525                  
+     308 0.65676630             1       308       526                  
+     309 0.65693526             1       309       527                  
+     310 0.65718869             1       310       528                  
+     311 0.65732175             1       311       529                  
+     312 0.65745480             1       312       530                  
+     313 0.65765438             1       313       531                  
+     314 0.65795376             1       314       532                  
+     315 0.65811093             1       315       533                  
+     316 0.65826810             1       316       534                  
+     317 0.65850385             1       317       535                  
+     318 0.65862763             1       318       536                  
+     319 0.65875140             1       319       537                  
+     320 0.65893706             1       320       538                  
+     321 0.65921554             1       321       539                  
+     322 0.65936175             1       322       540                  
+     323 0.65950795             1       323       541                  
+     324 0.65972726             1       324       542                  
+     325 0.65984240             1       325       543                  
+     326 0.65995754             1       326       544                  
+     327 0.66013024             1       327       545                  
+     328 0.66038930             1       328       546                  
+     329 0.66052530             1       329       547                  
+     330 0.66066131             1       330       548                  
+     331 0.66086532             1       331       549                  
+     332 0.66097242             1       332       550                  
+     333 0.66107953             1       333       551                  
+     334 0.66124018             1       334       552                  
+     335 0.66148117             1       335       553                  
+     336 0.66160768             1       336       554                  
+     337 0.66173420             1       337       555                  
+     338 0.66192398             1       338       556                  
+     339 0.66202361             1       339       557                  
+     340 0.66212324             1       340       558                  
+     341 0.66227269             1       341       559                  
+     342 0.66249686             1       342       560                  
+     343 0.66261455             1       343       561                  
+     344 0.66273224             1       344       562                  
+     345 0.66290878             1       345       563                  
+     346 0.66300146             1       346       564                  
+     347 0.66309414             1       347       565                  
+     348 0.66323316             1       348       566                  
+     349 0.66328316             1       349       567                  
+     350 0.66333316             1       350       568                  
+     351 0.66340816             1       351       569                  
+     352 0.66352066             1       352       570                  
+     353 0.66368941             1       353       571                  
+     354 0.66377800             1       354       572                  
+     355 0.66386660             1       355       573                  
+     356 0.66399949             1       356       574                  
+     357 0.66404949             1       357       575                  
+     358 0.66409949             1       358       576                  
+     359 0.66417449             1       359       577                  
+     360 0.66428699             1       360       578                  
+     361 0.66445574             1       361       579                  
+     362 0.66454433             1       362       580                  
+     363 0.66463293             1       363       581                  
+     364 0.66476582             1       364       582                  
+     365 0.66481582             1       365       583                  
+     366 0.66486582             1       366       584                  
+     367 0.66494082             1       367       585                  
+     368 0.66505332             1       368       586                  
+     369 0.66510332             1       369       587                  
+     370 0.66515332             1       370       588                  
+     371 0.66522832             1       371       589                  
+     372 0.66534082             1       372       590                  
+     373 0.66539082             1       373       591                  
+     374 0.66544082             1       374       592                  
+     375 0.66551582             1       375       593                  
+     376 0.66562832             1       376       594                  
+     377 0.66567832             1       377       595                  
+     378 0.66572832             1       378       596                  
+     379 0.66580332             1       379       597                  
+     380 0.66591582             1       380       598                  
+     381 0.66596582             1       381       599                  
+     382 0.66601582             1       382       600                  
+     383 0.66609082             1       383       601                  
+     384 0.66620332             1       384       602                  
+     385 0.66625332             1       385       603                  
+     386 0.66630332             1       386       604                  
+     387 0.66637832             1       387       605                  
+     388 0.66649082             1       388       606                  
+     389 0.66654082             1       389       607                  
+     390 0.66659082             1       390       608                  
+     391 0.66666582             1       391       609                  
+     392 0.66677832             1       392       610                  
+     393 0.66682832             1       393       611                  
+     394 0.66687832             1       394       612                  
+     395 0.66695332             1       395       613                  
+     396 0.66706582             1       396       614                  
+     397 0.66711582             1       397       615                  
+     398 0.66716582             1       398       616                  
+     399 0.66724082             1       399       617                  
+     400 0.66735332             1       400       618                  
+     401 0.66740332             1       401       619                  
+     402 0.66745332             1       402       620                  
+     403 0.66752832             1       403       621                  
+     404 0.66757832             1       404       622                  
+     405 0.66762832             1       405       623                  
+     406 0.66770332             1       406       624                  
+     407 0.66775332             1       407       625                  
+     408 0.66780332             1       408       626                  
+     409 0.66787832             1       409       627                  
+     410 0.66792832             1       410       628                  
+     411 0.66797832             1       411       629                  
+     412 0.66805332             1       412       630                  
+     413 0.66810332             1       413       631                  
+     414 0.66815332             1       414       632                  
+     415 0.66822832             1       415       633                  
+     416 0.66827832             1       416       634                  
+     417 0.66832832             1       417       635                  
+     418 0.66840332             1       418       636                  
+     419 0.66845332             1       419       637                  
+     420 0.66850332             1       420       638                  
+     421 0.66857832             1       421       639                  
+     422 0.66862832             1       422       640                  
+     423 0.66867832             1       423       641                  
+     424 0.66875332             1       424       642                  
+     425 0.66880332             1       425       643                  
+     426 0.66885332             1       426       644                  
+     427 0.66892832             1       427       645                  
+     428 0.66897832             1       428       646                  
+     429 0.66902832             1       429       647                  
+     430 0.66910332             1       430       648                  
+     431 0.66915332             1       431       649                  
+     432 0.66920332             1       432       650                  
+     433 0.66927832             1       433       651                  
+     434 0.66932832             1       434       652                  
+     435 0.66937832             1       435       653                  
+     436 0.66942832             1       436       654                  
+     437 0.66947832             1       437       655                  
+     438 0.66952832             1       438       656                  
+     439 0.66957832             1       439       657                  
+     440 0.66962832             1       440       658                  
+     441 0.66967832             1       441       659                  
+     442 0.66972832             1       442       660                  
+     443 0.66977832             1       443       661                  
+     444 0.66982832             1       444       662                  
+     445 0.66987832             1       445       663                  
+     446 0.66992832             1       446       664                  
+     447 0.66997832             1       447       665                  
+     448 0.67002832             1       448       666                  
+     449 0.67007832             1       449       667                  
+     450 0.67012832             1       450       668                  
+     451 0.67017832             1       451       669                  
+     452 0.67022832             1       452       670                  
+     453 0.67027832             1       453       671                  
+     454 0.67032832             1       454       672                  
+     455 0.67037832             1       455       673                  
+     456 0.67042832             1       456       674                  
+     457  1.0000000             1    999999       675                  
+
+
+ USE LAST SUBSTEP ON RESULT FILE  FOR LOAD CASE 0 
+
+ SET COMMAND GOT LOAD STEP=     1  SUBSTEP=999999  CUMULATIVE ITERATION=   675
+   TIME/FREQUENCY=  1.0000    
+ TITLE=                                                                         
+
+ *GET  NSET      FROM  ACTI  ITEM=SET  NSET  VALUE=  457.000000    
+
+ EXIT THE MAPDL POST1 DATABASE PROCESSOR
+
+
+ ***** ROUTINE COMPLETED *****  ELAPSED TIME =        11.823
+
+
+
+ EXIT MAPDL WITHOUT SAVING DATABASE
+
+
+ NUMBER OF WARNING MESSAGES ENCOUNTERED=          0
+ NUMBER OF ERROR   MESSAGES ENCOUNTERED=          0
+
++--------------------- M A P D L   S T A T I S T I C S ------------------------+
+
+Release: 2026 R1.02         Build: 26.1       Update: UP20260202   Platform: WINDOWS x64 
+Date Run: 10/05/2026   Time: 18:17     Process ID: 14140
+Operating System: Windows 11  (Build: 26200)
+
+Processor Model:                           Virtual CPU @ 3.20GHz
+
+Compiler: Intel(R) Fortran Compiler Classic Version 2021.9  (Build: 20230302)
+          Intel(R) C/C++ Compiler Classic Version 2021.9  (Build: 20230302)
+          AOCL-BLAS 5.1.1 Build 20251008
+          Intel(R) oneAPI Math Kernel Library Version 2024.2.3-Product Build 20250403
+
+Number of machines requested            :    1
+Total number of cores available         :   14
+Number of physical cores available      :   14
+Number of processes requested           :    1
+Number of threads per process requested :    1
+Total number of cores requested         :    1 (Shared Memory Parallel)                    
+
+GPU Acceleration: Not Requested
+
+Job Name: diag
+Input File: diagnostic.dat
+Working Directory: C:\Temp\PBTear26_coupon_unsym
+
+Total CPU time for main thread                    :        4.9 seconds
+Total CPU time summed for all threads             :        3.8 seconds
+
+Elapsed time spent obtaining a license            :        3.3 seconds
+Elapsed time spent pre-processing model (/PREP7)  :        0.0 seconds
+Elapsed time spent solution - preprocessing       :        0.0 seconds
+Elapsed time spent computing solution             :        0.0 seconds
+   Elapsed time in element formation & assembly   :        0.0 seconds
+   Elapsed time in equation solver                :        0.0 seconds
+   Elapsed time in element result calculations    :        0.0 seconds
+Elapsed time spent solution - postprocessing      :        0.0 seconds
+Elapsed time spent post-processing model (/POST1) :        2.3 seconds
+ 
+
+Sum of disk space used on all processes           :        0.0 MB
+
+Sum of memory used on all processes               :       16.0 MB
+Sum of memory allocated on all processes          :     2304.0 MB
+Physical memory available                         :        112 GB
+Total amount of I/O written to disk               :        0.0 GB
+Total amount of I/O read from disk                :        0.3 GB
+
++------------------ E N D   M A P D L   S T A T I S T I C S -------------------+
+
+
+ *-----------------------------------------------------------------------------*
+ |                                                                             |
+ |                               RUN COMPLETED                                 |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Ansys MAPDL 2026 R1.02      Build 26.1         UP20260202    WINDOWS x64   |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |  Database Requested(-db)  1024 MB     Scratch Memory Requested      1024 MB |
+ |  Maximum Database Used       1 MB     Maximum Scratch Memory Used     15 MB |
+ |                                                                             |
+ |-----------------------------------------------------------------------------|
+ |                                                                             |
+ |        CP Time      (sec) =          3.781       Time  =  18:17:54          |
+ |        Elapsed Time (sec) =         22.363       Date  =  10/05/2026        |
+ |                                                                             |
+ *-----------------------------------------------------------------------------*

@@ -1,0 +1,18 @@
+\begin{figure}[htbp]\centering
+\begin{tikzpicture}
+\node[box,text width=35mm] (stand) at (0,0) {Four-leg stand\\fixed world frame};
+\node[box,text width=35mm] (turn) at (5,0) {Turntable and supports\\azimuth rotation};
+\node[accentbox,text width=35mm] (beam) at (10,0) {Common pivot beam\\azimuth and elevation};
+\node[smallbox] (dish) at (5.7,-2) {Grid dish\\and aligned feed};
+\node[smallbox] (yagi) at (10,-2) {Long Yagi\\beam attachment};
+\node[smallbox] (helix) at (10,-3.8) {Avenger XR18\\beam attachment};
+\draw[flow] (stand)--(turn);
+\draw[flow] (turn)--(beam);
+\draw[flow] (beam.south west)--(dish.north);
+\draw[flow] (beam)--(yagi);
+\draw[flow] (beam.east) -- ++(.6,0) |- (helix.east);
+\node[captionnode,text width=42mm] at (.3,-2.8) {Orbit and zoom change the camera only. They do not change commanded azimuth or elevation.};
+\end{tikzpicture}
+\caption{Transform hierarchy of the procedural antenna model. Both outer antennas and the reflector belong to the same moving carrier; this diagram describes attachments, not dimensions or a photographic viewing direction.}
+\label{fig:mount}
+\end{figure}

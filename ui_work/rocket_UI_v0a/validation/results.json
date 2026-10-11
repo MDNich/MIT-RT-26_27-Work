@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "application": "Rocket GNC Monitor v0a",
+  "version": "0.1.1",
+  "date": "2026-09-22",
+  "recorded_utc": "2026-09-22T10:19:31.969724+00:00",
+  "platform": {
+    "system": "Darwin",
+    "macos": "26.5",
+    "machine": "arm64",
+    "python": "3.12.11"
+  },
+  "source_reference": {
+    "file": "references/Ground Station Software Block Diagram.pdf",
+    "sha256": "8685ef20c10e04ab3431a1737633fbc7a0a61eef363b93211ab654c8cf09f5aa"
+  },
+  "unit_integration_tests": {
+    "passed": 132,
+    "duration_s": 51.9,
+    "qt_platform": "offscreen",
+    "log": "pytest.txt"
+  },
+  "lint": {
+    "rules": "Ruff F",
+    "passed": true
+  },
+  "packaged_smoke_processes_passed": 11,
+  "package": {
+    "path": "dist/RocketGNCMonitor-v0a-Darwin-arm64.dmg",
+    "sha256": "98325de3f041ebf248c21b2d8584c23a1095588c5110c2e9062cb05f91b1c270",
+    "bytes": 205063516,
+    "bundled_openrocket": "v6.2",
+    "private_python_qt_java_ffmpeg": true,
+    "minimal_path_verified": true,
+    "local_signature_and_dmg_integrity_verified": true,
+    "notarized": false
+  },
+  "station_workspaces": {
+    "base": {
+      "windows": 2,
+      "visible_cards": 23
+    },
+    "away": {
+      "windows": 1,
+      "visible_cards": 6
+    }
+  },
+  "visual_review": {
+    "native_qt": "Cocoa",
+    "automated_window_size": [
+      1920,
+      1020
+    ],
+    "native_logical_window_size": [
+      1800,
+      1020
+    ],
+    "native_backing_image_size": [
+      3600,
+      2040
+    ],
+    "reviewed": [
+      "base-flight.png",
+      "base-systems.png",
+      "away.png",
+      "base-day.png",
+      "systems-day.png",
+      "virtual-native.png"
+    ],
+    "fixed_table_rows_visible": true,
+    "legacy_navigation_visible": false,
+    "two_physical_displays_tested": false
+  },
+  "regressions_verified": [
+    "Switching station mode retains controller, history, mission and virtual pointer connection",
+    "Legacy shortcuts dispatch once from the companion window; Settings shortcut is available",
+    "Required companion window stays open in base mode; owner close stops timers/workers",
+    "Escape does not dismiss the embedded 3D content; standalone viewer dismissal preserved",
+    "New reference synchronizes with the embedded 3D view immediately",
+    "USB video capture and video-only recording/replay work without a telemetry board",
+    "Camera and serial exclusivity preserved; Live hardware controls retain connection gating",
+    "APRS parsing and bounded read-only LAN exchange"
+  ],
+  "performance_note": "Short native all-panels probe measured approximately 22 fps for 3D, with two video test patterns and animated antenna. This is host/load dependent; it is not a 60 fps guarantee or a physical dual-display benchmark.",
+  "validation_limits": [
+    "Physical boards, USB receivers, APRS radio and LTU/AP equipment not connected",
+    "Dire Wolf external; uncompressed APRS position support only",
+    "LAN status snapshots only; no media relay, remote hardware commands or audio/video calling",
+    "LTU management and analog VRX tuning interfaces still required",
+    "Windows build retained but not exercised for v0a"
+  ],
+  "evidence_sha256": {
+    "packaged-verification.json": "3547a6ca9b261d98eac1217fa940ed279ddc84688700082a07a7d25504f02fa4",
+    "native-layout.json": "46a03cfc4eed17838cb7473c69b905b5e3ef3ab094b73580e4c3dfaef5ead8a5",
+    "native-performance.json": "42e72721d8ff5b64e5331a40106170d4121a14c61d870972c6a93875c9098c37",
+    "pytest.txt": "d7a495663bfd92e34bfc926189fc529eea51e2ecad49cfdf26a772f0448f06d8",
+    "package-integrity.json": "68712cecf317c451886180ee9e5e56529e709a2f3b3c29fc535c43a64f717705",
+    "lint.txt": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+    "package-source-sha256.json": "e5a133327eb529d6406be75892075f151445b83f1d85441eaace943a579359ff"
+  },
+  "source_hashes": "package-source-sha256.json",
+  "source_checkout_motor_digest_verified": true
+}

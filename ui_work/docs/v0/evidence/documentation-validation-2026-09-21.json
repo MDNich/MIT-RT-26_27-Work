@@ -1,0 +1,43 @@
+{
+  "date": "2026-09-21",
+  "scope": "Smooth antenna graphics and OpenRocket 3D flight animation, motion/events format, playback UI, implementation and validation.",
+  "pdf": {
+    "file": "Rocket_GNC_Monitor_v0.pdf",
+    "sha256": "e085b3640c0e5c239787b891f7680aec4aec441d0c942ac1099dad4dcde34d53",
+    "pages": 42,
+    "paper": "A4",
+    "embedded_latin_modern_fonts": true,
+    "raster_images": 0,
+    "tikz_figures": [
+      "figures/antenna-hierarchy.tex",
+      "figures/flight-scene.tex",
+      "figures/frames.tex",
+      "figures/modes.tex",
+      "figures/runtime.tex",
+      "figures/simulation.tex",
+      "figures/snapshot.tex",
+      "figures/system-overview.tex",
+      "figures/virtual-pointer.tex"
+    ]
+  },
+  "build": {
+    "latexmk": "pass",
+    "overfull_boxes": 0,
+    "undefined_references": 0
+  },
+  "visual_review": {
+    "all_pages_rendered": true,
+    "all_pages_reviewed": true,
+    "diagram_labels_and_pagination": "pass"
+  },
+  "implementation_checks": {
+    "source_file_hashes_verified": 83,
+    "source_links_verified": 44,
+    "mission_fields": 41,
+    "sample_fields": 20,
+    "legacy_csv_columns": 43,
+    "mission_wind_trajectory_examples": "loaded with the application validators"
+  },
+  "application_test_suite_rerun": true,
+  "application_validation": "application-validation-flight-3d-2026-09-21.json"
+}

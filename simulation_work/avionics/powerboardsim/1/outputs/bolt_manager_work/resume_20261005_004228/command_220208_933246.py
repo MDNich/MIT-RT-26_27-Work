@@ -1,0 +1,10 @@
+r=ExtAPI.DataModel.GetObjectById(4207)
+r.ClearGeneratedData();r.EvaluateAllResults();r.Activate()
+o=ExtAPI.Graphics.ResultAnimationOptions
+o.RangeType=Ansys.Mechanical.DataModel.Enums.ResultAnimationRangeType.ResultSets
+o.RangeType=Ansys.Mechanical.DataModel.Enums.ResultAnimationRangeType.Distributed
+o.NumberOfFrames=3;o.Duration=Quantity(.1,'s')
+pbs=Ansys.Mechanical.Graphics.AnimationExportSettings(3840,2160)
+pbs.TemporaryFramesPath=pbmotionroot+r'\control\test4k_frames'
+System.IO.Directory.CreateDirectory(pbs.TemporaryFramesPath)
+r.ExportAnimation(pbmotionroot+r'\control\test4k.mp4',Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat.MP4,pbs)

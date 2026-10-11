@@ -1,0 +1,55 @@
+!----------------------------------------------------------
+!Inputs
+!ARG1=FricCoef   if 0: Bonded, if > 0 frictional
+!ARG2 = Contact ID / Target ID = ARG2+1
+!----------------------------------------------------------
+/PREP7
+*set,tid,ARG2+1
+*set,cid,ARG2
+/com,            Creating Element Types and RC %tid% & %cid%
+r,tid
+r,cid
+et,tid,170
+et,cid,174
+
+*IF,ARG1,GT,0,THEN       !Frictional
+    keyo,cid,8,2               ! auto create asymmetric contact (from Program Controlled setting)
+    keyo,cid,10,0              ! adjust contact stiffness each NR iteration (from Program Controlled setting)
+    keyo,cid,12,0              ! standard contact
+    mp,mu,cid,ARG1       ! unitless
+    keyo,cid,18,1              ! small sliding turned on by application
+    keyo,cid,2,0               ! augmented Lagrange (from Program Controlled setting)
+    keyo,cid,4,0               ! on Gauss point (from Program Controlled setting)
+    keyo,cid,9,0               ! use real geometry with stepped effects
+    keyo,cid,7,0               ! No Prediction
+    rmod,tid,3,1.       ! FKN
+    rmod,tid,5,0.       ! ICONT
+    rmod,tid,6,0.       ! PINB
+    rmod,tid,10,0.      ! CNOF
+    rmod,tid,12,0.      ! FKT
+    rmod,cid,3,1.       ! FKN
+    rmod,cid,5,0.       ! ICONT
+    rmod,cid,6,0.       ! PINB
+    rmod,cid,10,0.      ! CNOF
+    rmod,cid,12,0.      ! FKT
+*ELSE               !Bonded
+    keyo,cid,8,2               ! auto create asymmetric contact (from Program Controlled setting)
+    keyo,cid,10,0              ! adjust contact stiffness each NR iteration (from Program Controlled setting)
+    keyo,cid,12,5              ! bonded always
+    keyo,cid,18,1              ! small sliding turned on by application
+    keyo,cid,2,0               ! augmented Lagrange (from Program Controlled setting)
+    keyo,cid,4,0               ! on Gauss point (from Program Controlled setting)
+    keyo,cid,9,1               ! ignore initial gaps/penetration
+    keyo,cid,7,0               ! No Prediction
+    rmod,tid,3,10.      ! FKN
+    rmod,tid,5,0.       ! ICONT
+    rmod,tid,6,0.       ! PINB
+    rmod,tid,10,0.      ! CNOF
+    rmod,tid,12,0.      ! FKT
+    rmod,cid,3,10.      ! FKN
+    rmod,cid,5,0.       ! ICONT
+    rmod,cid,6,0.       ! PINB
+    rmod,cid,10,0.      ! CNOF
+    rmod,cid,12,0.      ! FKT
+*ENDIF
+

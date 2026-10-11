@@ -1,0 +1,23 @@
+\begin{longtable}{@{}L{.22\linewidth}L{.20\linewidth}L{.51\linewidth}@{}}
+\toprule Field & Default & Meaning \\\midrule\endhead
+\code{t} & required & Device uptime seconds after wrap extension, or imported equivalent; align separately to flight zero. \\
+\code{sequence} & required & Packet counter; LIVE wire counter is uint16. \\
+\code{source} & required & Provenance such as LIVE, DEMO or LEGACY\_CSV. REPLAY is a controller mode, not a rewrite of sample source. \\
+\code{received} & runtime factory & Host monotonic receive time in seconds; replay refreshes this for current display freshness. \\
+\code{utc} & runtime factory & Unix reception timestamp in seconds; original UTC retained for imported/demo data. \\
+\code{altitude} & None & Reported filtered barometric altitude, metres, or unavailable. \\
+\code{velocity} & None & Reported integrated velocity, metres/second, or unavailable. \\
+\code{latitude} & None & Rocket WGS84 latitude in degrees, or unavailable. \\
+\code{longitude} & None & Rocket WGS84 longitude in degrees, or unavailable. \\
+\code{gps_altitude} & None & Reported GPS height in metres, with explicit mission interpretation. \\
+\code{gps_fix} & 0 & GPS fix code; geographic display requires at least 3. \\
+\code{attitude} & None & Optional three-element roll/pitch/yaw integrated rotations, degrees; not a qualified attitude solution. \\
+\code{rates} & None & Optional XYZ angular rates, degrees/second; legacy Y sign is retained. \\
+\code{acceleration} & None & Optional XYZ acceleration, metres/second squared. \\
+\code{enu} & None & Optional local east/north/up metres; frame/provenance must be known. \\
+\code{battery} & None & Optional total battery volts, sum of the three cells for LIVE. \\
+\code{rssi} & None & Optional receiver RSSI in dBm. \\
+\code{phase} & Unknown & Received or imported state label; unknown codes remain visible. \\
+\code{actuators} & runtime factory & Dictionary by channel name; demand/measured angles or legacy drive when actually available. \\
+\code{details} & runtime factory & Extensible decoded legacy values, boot/time metadata, receiver data, raw CSV provenance and quality notes. \\
+\bottomrule\end{longtable}

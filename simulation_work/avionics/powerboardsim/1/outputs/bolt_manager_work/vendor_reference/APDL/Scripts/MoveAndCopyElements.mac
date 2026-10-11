@@ -1,0 +1,55 @@
+!------------------------------------------------------------------------
+!ARG1 (string): Base Name of component i.e. 'Bolt_'
+!ARG2 = Z Offset value from the assembly CS
+!ARG3 = Starting Element Id of the last part import
+!------------------------------------------------------------------------
+!Part FE has been imported once to the global CS
+!Start to iterate over multiple CS.
+ALLSEL,ALL,ALL
+*GET,MaxElemId,ELEM,,NUM,MAX
+ESEL,S,ELEM,,ARG3,MaxElemId
+CsId1 = _ApdlBoltCsIds(1)
+/COM,Create component of imported elements
+CM,%ARG1%%CsId1%,ELEM
+NSLE,S
+*GET,NodeInc,NODE,0,COUNT
+
+*GET,NumCs,PARM,_ApdlBoltCsIds,DIM,1    !_ApdlBoltCsIds from ACT
+!Loop through CS Ids and copy/transfer it to the local CS.
+*IF,NumCs,GT,1,THEN
+    *DO,i,2,NumCs
+        !Get the Assembly CS and create a new CS that is Cartesian and offset in Z by ARg2
+        CsId = _ApdlBoltCsIds(i)
+        /COM,Moving Part to selected CS reference %CsId%
+        *GET,MaxCsId,CDSY,0,NUM,MAX
+        TransferCsId = MaxCsId+1        !CS used to transfer nodes that is cart. and is offset in Z
+        CSYS,CsId
+        CLOCAL,TransferCsId,0,0,0,ARG2     !Create local Cart. CS with Z offset = ARG2
+        CSYS,0
+
+        ALLSEL,ALL,ALL
+        *GET,MaxElemId,ELEM,,NUM,MAX
+        /COM, Max Elem Id is %MaxElemId%
+        CMSEL,S,%ARG1%%CsId1%        !Select elements for part to copy
+        EGEN,2,NodeInc*(i-1),ALL,,,0,0,0,0,0,0,0,0  !Copy the elements
+        ALLSEL,ALL,ELEM
+        *GET,MaxElemIdAfterCopy,ELEM,,NUM,MAX
+        /COM, Max Elem Id after copy is %MaxElemIdAfterCopy%
+        StartElemSelect = MaxElemId+1
+        /COM, Select Elements from %StartElemSelect% to %MaxElemIdAfterCopy%
+        ESEL,S,ELEM,,StartElemSelect,MaxElemIdAfterCopy
+        CM,%ARG1%%CsId%,ELEM
+        NSLE,S
+        TRANSFER,TransferCsId,0,ALL             !Transfer nodes of part to local system
+    *ENDDO
+*ENDIF
+
+*GET,MaxCsId,CDSY,0,NUM,MAX
+TransferCsId = MaxCsId+1        !CS used to transfer nodes that is cart. and is offset in Z
+CSYS,CsId1
+/COM,Moving Part to selected CS reference %CsId1%
+CLOCAL,TransferCsId,0,0,0,ARG2     !Create local Cart. CS with Z offset = ARG2
+CSYS,0
+CMSEL,S,%ARG1%%CsId1%,ELEM
+NSLE,S
+TRANSFER,TransferCsId,0,ALL             !Transfer nodes of part to local system

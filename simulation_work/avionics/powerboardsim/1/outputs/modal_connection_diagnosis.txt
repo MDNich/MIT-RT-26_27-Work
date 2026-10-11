@@ -1,0 +1,40 @@
+Modal connection diagnosis - saved 2026-10-04 14:52 solve
+
+Read-only analysis of saved 2026-10-04 14:52 modal solver input, contact initialization log and CAERep.xml. Active contact graph is a topology check, not a full constraint-rank calculation. Distances are closest mesh-node distances, not exact CAD surface gaps.
+
+Material assignment: prior report verified all 173 Sherlock bodies.
+Model: 208 bodies, 208 contact regions, three connected groups (190, 9, 9 bodies).
+Both nine-body groups have no path to any fixed-support node.
+Two free 3D groups allow twelve rigid-body modes, consistent with twelve zero-frequency results.
+
+Floating groups:
+Group 1:
+  Power_Board_Batt_Screw_defeatured_2|Part 13[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 12[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 22[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 17[1] [NICKEL-200]
+  Power_Board_Batt_Screw_defeatured_2|Part 16[1] [PilesLiPo]
+  Power_Board_Batt_Screw_defeatured_2|Part 15[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 14[1] [NICKEL-200]
+  Power_Board_Batt_Screw_defeatured_2|LPattern1[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|LPattern1[7] [Acier standard]
+Group 2:
+  Power_Board_Batt_Screw_defeatured_2|Part 28[1] [NICKEL-200]
+  Power_Board_Batt_Screw_defeatured_2|Part 27[1] [PilesLiPo]
+  Power_Board_Batt_Screw_defeatured_2|Part 26[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 25[1] [NICKEL-200]
+  Power_Board_Batt_Screw_defeatured_2|Part 24[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 23[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 33[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|Part 31[1] [Acier standard]
+  Power_Board_Batt_Screw_defeatured_2|LPattern1[6] [Acier standard]
+
+Contacts with no detected active connection:
+  Zone de contact 183: Power_Board_Batt_Screw_defeatured_2|Part 13[1] -> Power_Board_Batt_Screw_defeatured_2|LPattern1[9]
+  Zone de contact 195: Power_Board_Batt_Screw_defeatured_2|Part 2[1] -> Power_Board_Batt_Screw_defeatured_2|LPattern1[16]
+  Zone de contact 208: Power_Board_Batt_Screw_defeatured_2|Part 15[1] -> Power_Board_Batt_Screw_defeatured_2|LPattern1[15]
+
+Solver warnings: overlapping contact pairs, multiple MPC constraints at nodes, and an ill-conditioned eigenproblem.
+All twelve small negative frequencies (-0.335 to -0.216 Hz) were reset to zero.
+
+Repair the real attachment interfaces. Review duplicate contacts. Do not use a frequency cutoff to hide the disconnected assemblies.

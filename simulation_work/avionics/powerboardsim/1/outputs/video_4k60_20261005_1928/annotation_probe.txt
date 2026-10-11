@@ -1,0 +1,94 @@
+annotations Ansys.Mechanical.Graphics.AnnotationPreferences
+P Boolean ShowAllAnnotations = True
+P Boolean ShowCustomAnnotations = True
+P Boolean ShowLabels = True
+P Boolean ShowPointMasses = True
+P Boolean ShowBeams = True
+P Boolean ShowSprings = True
+P Boolean ShowBearings = True
+P Boolean ShowCracks = True
+P Boolean ShowForceArrows = True
+P Boolean ShowBodyScopings = True
+P Boolean ShowMeshAnnotations = True
+P Boolean ShowNodeNumbers = False
+P Boolean ShowElementNumbers = False
+P Boolean ShowNamedSelectionElements = False
+P Int32 PointMassSize = 50
+P Int32 SpringSize = 50
+M Void SetNodeNumbering(Int32, Int32, Int32)
+M Void SetElementNumbering(Int32, Int32, Int32)
+M Boolean Equals(System.Object)
+M Int32 GetHashCode()
+M System.Type GetType()
+M System.String ToString()
+F Ansys.Common.Interop.Gfx.IDSGraphics _graphics
+F Int32 _prefControlOption
+F Double _prefSliderOption
+F Int32 _prefMin
+F Int32 _prefMax
+F Int32 _prefInc
+legend Ansys.Mechanical.Graphics.GlobalLegendSettings
+P Ansys.Mechanical.DataModel.Enums.LegendOrientationType LegendOrientation = Vertical
+P Boolean ShowDateAndTime = True
+P Boolean ShowMinMax = True
+P Boolean ShowDeformingScaling = False
+M UInt32 GetDefaultBandColor(Int32)
+M Void SetDefaultBandColor(Int32, UInt32)
+M Void Reset()
+M Boolean Equals(System.Object)
+M Int32 GetHashCode()
+M System.Type GetType()
+M System.String ToString()
+F Ansys.Common.Interop.WBGfxUtility.IWBGfx _gfxutil
+F Ansys.Common.Interop.WBGfxControls.IWBLegend _legend
+F Ansys.Common.Interop.Gfx.IDSGraphics _graphics
+settings Ansys.Mechanical.Graphics.GraphicsImageExportSettings
+P Boolean CurrentGraphicsDisplay = True
+P Boolean AppendGraph = False
+P Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType Resolution = NormalResolution
+P Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType Capture = ImageAndLegend
+P Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType Background = GraphicsAppearanceSetting
+P Double FontMagnification = 1.0
+P Int32 Width = 0
+P Int32 Height = 0
+M Boolean Equals(System.Object)
+M Int32 GetHashCode()
+M System.Type GetType()
+M System.String ToString()
+F Boolean _bUseCurrentDisplay
+F Boolean _bAppendGraph
+F Ansys.Mechanical.DataModel.Enums.GraphicsResolutionType _resolutionType
+F Ansys.Mechanical.DataModel.Enums.GraphicsCaptureType _captureType
+F Ansys.Mechanical.DataModel.Enums.GraphicsBackgroundType _backgroundType
+F Double _fontMagnification
+F Int32 _width
+F Int32 _height
+keyframes Ansys.ACT.Common.Graphics.KeyframeAnimationUtility
+P Int32 KeyframeCount = 0
+P System.Collections.Generic.List`1[System.Int32] KeyframeList = List[int]()
+P Boolean IsPlaying = False
+P System.Tuple`2[System.Int32,System.Int32] CurrentFrame = (0, 0)
+P Boolean Loop = False
+M Void Play()
+M Void Stop()
+M Void Pause()
+M Void SetCurrentFrame(Int32, Int32)
+M Void AddKeyframe(Int32)
+M Void RemoveKeyframe(Int32)
+M Void ModifySubframeCount(Int32, Int32)
+M Void ModifyTotalTime(Double)
+M Void ClearKeyframes()
+M Int32 GetSubframeCount(Int32)
+M Double GetTotalTime()
+M Void NextFrame(Boolean)
+M Void PreviousFrame(Boolean)
+M Void InsertKeyframe(Int32, Int32)
+M Void ReplaceKeyframe(Int32, Int32)
+M Void SaveAnimation()
+M Void LoadAnimation()
+M Void ExportAnimationVideo()
+M System.Type GetType()
+M Boolean Equals(System.Object)
+M Int32 GetHashCode()
+M System.String ToString()
+F Ansys.Common.Interop.Gfx.IDSKeyframeAnimationUtility _keyframeAnimationUtility

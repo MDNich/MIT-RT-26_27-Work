@@ -1,0 +1,102 @@
+UTC 2026-10-05T13:50:20.1531313Z
+ANALYSIS 1656 BOLTED750 - 20 undamped prestressed modes Modal Solved
+DIR Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\dp0\SYS-1\MECH\
+ CHILD 1659 Précontrainte (PCB670_Bolt preload - load then lock) InitialCondition
+ CHILD 1660 Réglages de l'analyse ANSYSAnalysisSettings
+ CHILD 4113 Support fixe FixedSupport
+ CHILD 1657 Solution Solution
+ANALYSIS 4123 BOLT750 - preload then locked length Static Solved
+DIR Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\dp0\SYS-2\MECH\
+ CHILD 4126 Réglages de l'analyse ANSYSAnalysisSettings
+ CHILD 4127 PCB670_Existing mounting supports FixedSupport
+ CHILD 4209 Preserve full integration - prevent component hourglass modes CommandSnippet
+ CHILD 4124 Solution Solution
+ANALYSIS 4182 DEFAULT REFINED - 20 undamped modes above 1 Hz Modal Obsolete
+DIR Z:\Developer\MIT_Rkt_Team\2026-7\MIT-RT-26_27-Work\simulation_work\avionics\powerboardsim\1\powerboardsim_v1_files\dp0\SYS-3\MECH\
+ CHILD 4185 Précontrainte (Aucun) InitialCondition
+ CHILD 4186 Réglages de l'analyse ANSYSAnalysisSettings
+ CHILD 4187 Same eight mounting faces FixedSupport
+ CHILD 4216 Preserve full integration - component mesh CommandSnippet
+ CHILD 4183 Solution Solution
+OBJECT BOLTED750 - 20 undamped prestressed modes
+DataModelObjectCategory|Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory|Analysis
+LinkedEnvironments|System.Collections.Generic.IReadOnlyList`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]|<Ansys.Common.WB1ManagedUtils.SharedIntArrayWrapper object at 0x000000000000002C [Ansys.Common.WB1ManagedUtils.SharedIntArrayWrapper]>
+PredictResourceAfterInputFileGeneration|System.Boolean|False
+ImportableObjectSourceId|System.String|
+METHODS System.Collections.Generic.IReadOnlyList`1[System.Int32] get_LinkedEnvironments();Ansys.ACT.Automation.Mechanical.BoundaryConditions.Pressure AddPressure(Ansys.Mechanical.DataModel.MechanicalEnums.BoundaryConditions.DataRepresentation);Ansys.ACT.Automation.Mechanical.BoundaryConditions.BoltPretension AddBoltPretension();Void TransferDataFrom(Ansys.ACT.Automation.Mechanical.Analysis);Void UnlinkDataFrom(Ansys.ACT.Automation.Mechanical.Analysis);Boolean get_PredictResourceAfterInputFileGeneration();Void set_PredictResourceAfterInputFileGeneration(Boolean);Ansys.Mechanical.DataModel.Interfaces.IDataModelObject Duplicate();Ansys.ACT.Automation.Mechanical.BoundaryConditions.AcousticPressure AddAcousticPressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.AcousticStaticPressure AddAcousticStaticPressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.AcousticTransferAdmittanceMatrix AddAcousticTransferAdmittanceMatrix();Ansys.ACT.Automation.Mechanical.BoundaryConditions.CompressionOnlySupport AddCompressionOnlySupport();Ansys.ACT.Automation.Mechanical.BoundaryConditions.FluidPenetrationPressure AddFluidPenetrationPressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.HydrostaticPressure AddHydrostaticPressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.ImportedCFDPressure AddImportedCFDPressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.LinePressure AddLinePressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.NodalPressure AddNodalPressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.PipePressure AddPipePressure();Ansys.ACT.Automation.Mechanical.BoundaryConditions.PSDPressure AddPSDPressure();System.String get_TransferableObjectId();Void set_TransferableObjectId(System.String)
+OBJECT Réglages de l'analyse
+DataModelObjectCategory|Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory|ANSYSAnalysisSettings
+UserDefinedFrequencySteps|System.Collections.Generic.IList`1[[Ansys.Core.Units.Quantity, Ans.Core, Version=26.1.0.0, Culture=neutral, PublicKeyToken=null]]|None
+SkipExpansion|System.Boolean|False
+OnDemandExpansion|System.Boolean|False
+GlobalSizeRatioExpansion|System.Double|0.0
+MassCoefficient|System.Double|0.0
+DampingRatio|System.Double|0.0
+ConstantDampingRatio|System.Double|0.0
+StructuralDampingCoefficient|System.Double|0.0
+HDFCompressionLevel|System.UInt32|0
+ModalNumberOfPoints|System.UInt32|1
+ModeSignificanceLevel|System.Double|0.0
+NumberOfModesToUse|System.Int32|0
+NumericalDampingValue|System.Double|0.0
+MaximumModesToFind|System.Int32|20
+StabilizationDampingFactor|System.Double|0.0
+Frequency|Ansys.Core.Units.Quantity|0 [Hz]
+CentralFrequency|Ansys.Core.Units.Quantity|0 [Hz]
+KrylovSubspaceFrequency|Ansys.Core.Units.Quantity|0 [Hz]
+ModalRangeMaximum|Ansys.Core.Units.Quantity|0 [Hz]
+ModalRangeMinimum|Ansys.Core.Units.Quantity|0 [Hz]
+RpmCentralFrequency|Ansys.Core.Units.Quantity|0 [Hz]
+ConstantDamping|Ansys.Mechanical.DataModel.Enums.ConstantDampingType|ProgramControlled
+DampingDefineBy|Ansys.Mechanical.DataModel.Enums.DampingDefineBy|DampingRatio
+ExpandResultsFrom|Ansys.Mechanical.DataModel.Enums.ExpandResultFrom|ProgramControlled
+FrequencySpacing|Ansys.Mechanical.DataModel.Enums.FrequencySpacingType|Linear
+ModalFrequencyRange|Ansys.Mechanical.DataModel.Enums.ModalFrequencyRangeType|ProgramControlled
+StoreResultsAtAllFrequencies|Ansys.Mechanical.DataModel.Enums.HarmonicMSUPStorage|AllFrequencies
+HDFCompression|Ansys.Mechanical.DataModel.Enums.HDFCompressionType|ProgramControlled
+MeshRetainFilesAfterFullSolve|Ansys.Mechanical.DataModel.Enums.MeshRestartRetainFilesType|Yes
+ModeReuse|Ansys.Mechanical.DataModel.Enums.SolverControlsModeReuse|ProgramControlled
+ModesCombinationType|Ansys.Mechanical.DataModel.Enums.ModesCombinationType|NONE
+ModeSelectionMethod|Ansys.Mechanical.DataModel.Enums.ModeSelectionMethod|None
+OnDemandExpansionOption|Ansys.Mechanical.DataModel.Enums.OnDemandExpansionType|ProgramControlled
+NumericalDamping|Ansys.Mechanical.DataModel.Enums.TransientDampingType|NumericalDampingProgramControlled
+Expansion|Ansys.Mechanical.DataModel.Enums.ExpandResultsSubType|0
+RetainFilesAfterFullSolve|Ansys.Mechanical.DataModel.Enums.RestartRetainFilesType|Yes
+ResultFileCompression|Ansys.Mechanical.DataModel.Enums.ResultFileCompressionType|ProgramControlled
+RpmFrequencySpacing|Ansys.Mechanical.DataModel.Enums.FrequencySpacingType|Linear
+StoreModalResults|Ansys.Mechanical.DataModel.Enums.StoreModalResult|ProgramControlled
+RetainModesymFileAfterSolve|Ansys.Mechanical.DataModel.Enums.UseExistingModesymFile|No
+IgnoreAcousticDamping|System.Boolean|False
+BackStress|System.Boolean|False
+Stress|System.Boolean|False
+TStress|System.Boolean|False
+CyclicModeSuperposition|System.Boolean|False
+Damped|System.Boolean|False
+EqvDampingRatioFromModal|System.Boolean|False
+ExcludeInsignificantModes|System.Boolean|False
+UserDefinedFrequencies|System.Boolean|False
+KeepModalResults|System.Boolean|False
+KeepPreStressLoadPattern|System.Boolean|False
+SurfaceStress|System.Boolean|False
+METHODS UInt32 get_HDFCompressionLevel();Void set_HDFCompressionLevel(UInt32);Ansys.Mechanical.DataModel.Enums.HDFCompressionType get_HDFCompression();Void set_HDFCompression(Ansys.Mechanical.DataModel.Enums.HDFCompressionType);Ansys.Mechanical.DataModel.Enums.ResultFileCompressionType get_ResultFileCompression();Void set_ResultFileCompression(Ansys.Mechanical.DataModel.Enums.ResultFileCompressionType);Boolean get_KeepPreStressLoadPattern();Void set_KeepPreStressLoadPattern(Boolean);Ansys.Mechanical.DataModel.Interfaces.IDataModelObject Duplicate()
+OBJECT Précontrainte (PCB670_Bolt preload - load then lock)
+DataModelObjectCategory|Ansys.Mechanical.DataModel.Enums.DataModelObjectCategory|InitialCondition
+PreStressICEnvironment|Ansys.ACT.Automation.Mechanical.Analysis|<Ansys.ACT.Automation.Mechanical.Analysis object at 0x000000000000002D [Ansys.ACT.Automation.Mechanical.Analysis]>
+PreStressEnvironmentModalIC|Ansys.ACT.Automation.Mechanical.Analysis|<Ansys.ACT.Automation.Mechanical.Analysis object at 0x000000000000002D [Ansys.ACT.Automation.Mechanical.Analysis]>
+ModalEnvironmentRSIC|Ansys.ACT.Automation.Mechanical.Analysis|None
+ModalEnvironmentPSDIC|Ansys.ACT.Automation.Mechanical.Analysis|None
+PreStressEnvironmentHarmonicIC|Ansys.ACT.Automation.Mechanical.Analysis|None
+ModalEnvironmentHarmonicIC|Ansys.ACT.Automation.Mechanical.Analysis|None
+PreStressEnvironmentTransientIC|Ansys.ACT.Automation.Mechanical.Analysis|None
+ModalEnvironmentTransientMSUPIC|Ansys.ACT.Automation.Mechanical.Analysis|None
+ModalICEnvironment|Ansys.ACT.Automation.Mechanical.Analysis|None
+PreStressLoadStep|System.Double|0.0
+ExplicitPreStressTime|Ansys.Core.Units.Quantity|0 [sec]
+PreStressTime|Ansys.Core.Units.Quantity|0 [sec]
+PressureInitialization|Ansys.Mechanical.DataModel.Enums.PressureInitializationType|FromDeformedState
+Mode|Ansys.Mechanical.DataModel.Enums.PreStressMode|MaterialState
+PreStressDefineBy|Ansys.Mechanical.DataModel.Enums.PreStressStateType|ProgramControlled
+Suppressed|System.Boolean|False
+PreStressEnvironmentHarmonicMSUPModal|Ansys.ACT.Automation.Mechanical.Analysis|None
+PreStressEnvironmentTransientMSUPModal|Ansys.ACT.Automation.Mechanical.Analysis|None
+METHODS Ansys.ACT.Automation.Mechanical.Analysis get_PreStressICEnvironment();Void set_PreStressICEnvironment(Ansys.ACT.Automation.Mechanical.Analysis);Ansys.ACT.Automation.Mechanical.Analysis get_PreStressEnvironmentModalIC();Void set_PreStressEnvironmentModalIC(Ansys.ACT.Automation.Mechanical.Analysis);Ansys.ACT.Automation.Mechanical.Analysis get_PreStressEnvironmentHarmonicIC();Void set_PreStressEnvironmentHarmonicIC(Ansys.ACT.Automation.Mechanical.Analysis);Ansys.ACT.Automation.Mechanical.Analysis get_PreStressEnvironmentTransientIC();Void set_PreStressEnvironmentTransientIC(Ansys.ACT.Automation.Mechanical.Analysis);Double get_PreStressLoadStep();Void set_PreStressLoadStep(Double);Ansys.Core.Units.Quantity get_ExplicitPreStressTime();Void set_ExplicitPreStressTime(Ansys.Core.Units.Quantity);Ansys.Core.Units.Quantity get_PreStressTime();Void set_PreStressTime(Ansys.Core.Units.Quantity);Ansys.Mechanical.DataModel.Enums.PressureInitializationType get_PressureInitialization();Void set_PressureInitialization(Ansys.Mechanical.DataModel.Enums.PressureInitializationType);Ansys.Mechanical.DataModel.Enums.PreStressStateType get_PreStressDefineBy();Void set_PreStressDefineBy(Ansys.Mechanical.DataModel.Enums.PreStressStateType);Boolean get_Suppressed();Void set_Suppressed(Boolean);Ansys.ACT.Automation.Mechanical.Analysis get_PreStressEnvironmentHarmonicMSUPModal();Ansys.ACT.Automation.Mechanical.Analysis get_PreStressEnvironmentTransientMSUPModal();Void TransferLoadsFromLinkedModalSystem();Ansys.Mechanical.DataModel.Interfaces.IDataModelObject Duplicate()

@@ -1,0 +1,25 @@
+!_MechAnalysisStep -> Given by ACT
+!_MechObjId -> Given by ACT
+
+*IF,_MechAnalysisStep,EQ,1,THEN
+    /COM,, Apply the pretension load of %PreloadVal%
+    CMSEL,S,PreTenPilotNds_%_MechObjId%,NODE
+    F,ALL,FX,PreloadVal     !PreloadVal -> From part .xml
+*ELSEIF,_MechAnalysisStep,GT,1,THEN
+
+    *IF,DoStability,EQ,1,THEN
+        !Remove any constraints on the bolts for stability.
+        *GET,NumCs,PARM,_ApdlBoltCsIds,DIM,1    !_ApdlBoltCsIds from ACT
+        *DO,i,1,NumCs
+            CsId = _ApdlBoltCsIds(i)
+            CMSEL,S,BoltFixNodes_%CsId%,NODE
+            DDEL,ALL,ALL
+        *ENDDO
+    *ENDIF
+    
+    !/COM, Lock the pretension load at step %_MechAnalysisStep%
+    CMSEL,S,PreTenPilotNds_%_MechObjId%,NODE
+    FDEL,ALL,ALL
+    D,ALL,UX,%_FIX%
+*ENDIF
+ALLSEL,ALL,ALL

@@ -1,0 +1,64 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{report-style}[2026/09/21 Rocket monitor report style]
+% Adapted from the user-supplied GenMAPS architecture report's visual style.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,textcomp,microtype}
+\usepackage[english]{babel}
+\usepackage[margin=18mm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,xcolor}
+\usepackage{longtable,booktabs,array,tabularx,calc}
+\usepackage{scrlayer-scrpage,lastpage,etoolbox,colortbl,ragged2e,needspace,placeins,float}
+\usepackage{listings,upquote}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric}
+\usepackage{hyperref,bookmark,xurl}
+\definecolor{cernblue}{HTML}{08357E}
+\definecolor{tablealt}{HTML}{F4F7FB}
+\definecolor{codebg}{HTML}{F5F7FA}
+\definecolor{teal}{HTML}{176C6A}
+\definecolor{muted}{HTML}{526477}
+\addtokomafont{title}{\color{cernblue}}
+\addtokomafont{part}{\color{cernblue}}
+\addtokomafont{section}{\color{cernblue}}
+\addtokomafont{subsection}{\color{cernblue}}
+\addtokomafont{subsubsection}{\color{cernblue}}
+\setkomafont{author}{\large}
+\setkomafont{date}{\normalsize}
+\KOMAoptions{parskip=half}
+\setlength{\emergencystretch}{3em}
+\clubpenalty=10000\widowpenalty=10000\displaywidowpenalty=10000
+\setlength{\tabcolsep}{5pt}\renewcommand{\arraystretch}{1.18}
+\setlength{\LTpre}{.6em}\setlength{\LTpost}{.8em}
+\arrayrulecolor{cernblue!35}
+\AtBeginEnvironment{longtable}{\small\rowcolors{2}{tablealt}{white}}
+\AfterEndEnvironment{longtable}{\rowcolors{2}{}{}}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\lstset{basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{codebg},
+ frame=single,rulecolor=\color{black!20},breaklines=true,breakatwhitespace=false,
+ columns=fullflexible,keepspaces=true,showstringspaces=false,upquote=true,
+ aboveskip=.6em,belowskip=.6em,tabsize=2}
+\clearpairofpagestyles
+\ihead{\small\color{cernblue}Rocket GNC Monitor v0}
+\ohead{\small Functionality and developer reference}
+\cfoot{\thepage\ of \pageref*{LastPage}}
+\pagestyle{scrheadings}\setlength{\headheight}{14pt}
+\hypersetup{colorlinks=true,linkcolor=cernblue,urlcolor=cernblue,citecolor=cernblue,
+ pdftitle={Rocket GNC Monitor v0: Functionality and Developer Documentation},
+ pdfauthor={MIT Rocket Team},pdflang={en},pdfcreator={LaTeX with TikZ}}
+\urlstyle{tt}
+\RedeclareSectionCommand[tocbeforeskip=.5em]{section}
+\pretocmd{\section}{\FloatBarrier\Needspace{10\baselineskip}}{}{}
+\pretocmd{\subsection}{\Needspace{6\baselineskip}}{}{}
+\newcommand{\src}[1]{\href{../../rocket_UI_v0/#1}{\nolinkurl{#1}}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\ui}[1]{\textbf{#1}}
+\newcommand{\statusnote}[2]{\par\noindent\colorbox{tablealt}{\parbox{\dimexpr\linewidth-2\fboxsep-10pt\relax}{\textbf{\color{cernblue}#1}\quad #2}}\par}
+\tikzset{every node/.style={font=\small},
+ box/.style={draw=cernblue!65,fill=tablealt,rounded corners=2pt,align=center,
+ minimum height=11mm,inner sep=5pt,text width=34mm},
+ smallbox/.style={box,text width=28mm},
+ accentbox/.style={box,draw=teal,fill=teal!7},
+ flow/.style={-{Latex[length=2mm]},draw=cernblue,line width=.7pt},
+ optional/.style={flow,dashed},
+ captionnode/.style={font=\footnotesize,text=muted,align=center}}

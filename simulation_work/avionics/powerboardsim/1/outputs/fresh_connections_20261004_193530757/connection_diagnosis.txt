@@ -1,0 +1,72 @@
+FRESH CONNECTION AUDIT — powerboardsim_v1
+Audit: 4 October 2026, 15:35 EDT (19:35 UTC)
+Solver evidence: user's completed solve at 15:34 EDT; copied before audit.
+
+RESULT
+208 bodies, 208 unsuppressed Bonded/MPC contacts, 8 directly fixed bodies.
+Every existing logical contact has detection on its retained solver side.
+199 bodies form a group with a path to fixed supports.
+9 bodies form one separate group with no path to any support or PCB.
+No shared mesh nodes join the groups. No other joints/springs were exported.
+
+DISCONNECTED GROUP — LEFT BATTERY AND MOUNTING HARDWARE
+Part 27[1] (battery; centroid X=10.804 mm)
+Part 28[1], Part 26[1], Part 25[1], Part 24[1], Part 23[1],
+Part 33[1], Part 31[1], LPattern1[6].
+All names above have prefix Power_Board_Batt_Screw_defeatured_2|.
+The nine bodies are joined internally by eight detected contact regions.
+
+MISSING MOUNTING INTERFACES
+1. Part 24[1] (geometry 20466) -> LPattern1[14] (geometry 23209)
+   Near X=10.812 mm, Y=17.907 mm.
+   Washer top plane 20454; adjoining inner fillets 20450, 20459.
+   Opposing support end face 23197.
+2. Part 26[1] (geometry 20246) -> Part 30[1] (geometry 23389)
+   Near X=10.812 mm, Y=102.907 mm.
+   Washer top plane 20234; adjoining inner fillets 20230, 20239.
+   Opposing support end face 23377.
+Neither body pair has any contact in either orientation in the current model.
+Top-plane to support-end plane separation is approximately 0.1745 mm at
+both ends. Face scopes above are candidate local mounting scopes, not
+newly applied or validated contact definitions. Check actual contact
+coverage when creating the rigid clamp idealization confirmed by user.
+
+WHAT WAS VERIFIED FROM SCRATCH
+- All 208 contact IDs, face scopes, body owners, Bonded/MPC settings,
+  radius and interface treatment agree between the fresh live export
+  and the latest solver CAERep.xml.
+- All 208 body node sets agree with the latest ds.dat.
+- All bodies are meshed, flexible, unsuppressed, with assigned materials.
+- Every contact source and target has mesh nodes and elements.
+- No body has internally disconnected solid-element mesh islands.
+- The solver has positive EX and density values for all 208 body materials.
+- The current contact graph has components of 199 and 9 bodies.
+  Fixed supports belong only to the 199-body component.
+- The centre and right battery assemblies are in the 199-body component.
+
+LIMITATIONS AND REMAINING MODAL ISSUE
+The audit Contact Tool exported only column headings: its default worksheet
+had no contact rows. It is NOT evidence of a successful initial-contact
+check. Contact activation conclusions use the matching latest file.cnm,
+with the inactive half of each auto-asymmetric pair excluded.
+A detected path does not prove sufficient constraint rank or valid stiffness.
+The latest solve reports all 20 requested frequencies as zero, after
+clipping small negative frequencies (approximately -0.335 to -0.129 Hz).
+The free assembly establishes a missing-connection defect, but alone is
+not enough evidence to explain all 20 zero modes.
+Solver warnings also report overlapping MPC contact pairs and removal of
+some internal MPC constraints, including node 88321 on the PCB.
+Examples: real sets 426 and 284 correspond to contact regions 109 and 38;
+real sets 210 and 320 correspond to regions 1 and 56.
+These overlapping constraints require separate investigation; do not
+blanket-add more contacts or increase all pinball radii as a diagnosis.
+The latest mesh uses 179 SOLID186 body types with explicit full integration
+and 29 SOLID187 types. The earlier reduced-integration warning should not
+be used to diagnose this current solve without new evidence.
+
+NEXT CORRECTION
+Add and verify the two physical left battery mounting interfaces above,
+consistent with the user's rigid clamp/bolt idealization. Check detection
+and constraint coverage, then reassess modal stability and MPC overlap.
+No contact definitions, supports, materials or mesh settings were changed
+by this analysis; no new modal solve was launched.

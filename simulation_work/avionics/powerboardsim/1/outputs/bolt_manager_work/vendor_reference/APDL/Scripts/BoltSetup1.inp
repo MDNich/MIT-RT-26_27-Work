@@ -1,0 +1,19 @@
+/PREP7
+ALLSEL,ALL,ALL
+TypeNum=_MechElemTypeId
+!Create Materials
+*USE,Mat_StructuralSteel.mac,TypeNum    !TypeNum from ACT
+
+!Create the Element types.
+ET,TypeNum,186
+KEYOPT,TypeNum,2,1          ! set full integration on SOLID186
+
+!Get count info before Import of part FE data
+*GET,MaxNodeId,NODE,,NUM,MAX
+*GET,MaxElemId,ELEM,,NUM,MAX
+FirstImportNodeIdStart = MaxNodeId+1
+FirstImportElemIdStart = MaxElemId+1
+
+!Ensure global system is active.
+CSYS,0
+/COM,Import Bolt Part FE Data

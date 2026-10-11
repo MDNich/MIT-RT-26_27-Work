@@ -1,0 +1,463 @@
+<!-- <extension version="1000" minorversion="1" name="BoltTools">-->
+<extension version="2024" minorversion="1" name="BoltTools" isNative="True" masked="True">
+  <guid shortid="BoltTools">E58F9C27-8401-45E5-83B8-72AF00FDD1A2</guid>
+  <script src="Script.py"/>
+  <interface context="Mechanical">
+    <images>images</images>
+    <callbacks>
+      <oninit>MechanicalInit</oninit>
+      <OnBeforeSolve>MechanicalBeforeSolve</OnBeforeSolve>
+      <OnAfterGeometryUpdate>MechanicalOnAfterGeometryUpdate</OnAfterGeometryUpdate>
+      <gettooltips>GetToolTips</gettooltips>
+    </callbacks>
+    <toolbar name="Bolt Tools" caption="Bolt Tools">
+      <entry name="Selection" icon="body_select">
+        <entry name="Select Instance Bodies" icon="body_select">
+          <callbacks>
+            <onclick>SelectInstancesFromSelection</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Select Instance Pattern Bodies" icon="body_select">
+          <callbacks>
+            <onclick>SelectInstancePatternFromSelection</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Select Bodies in Groups Active in Tree" icon="body_select">
+          <callbacks>
+            <onclick>SelectBodiesFromGroups</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Activate Group from Graphics Selection" icon="body_select">
+          <callbacks>
+            <onclick>SelectInstanceGroupFromGraphicSelection</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Select Equal Geom across Instances" icon="extendto_instances">
+          <callbacks>
+            <onclick>SelectEqualGeomInInstanceGroup</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Select Similar Geom on Body" icon="extendto_instances">
+          <callbacks>
+            <onclick>SelectSimilarInBody</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Select Bolt Geometry" icon="body_select">
+          <callbacks>
+            <onclick>SelectBoltGeom</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Go To Selection in Tree" icon="body_select">
+          <callbacks>
+            <onclick>GoToTreeSel</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="Contacts" icon="connections_contact">
+        <entry name="Show Bodies In Contact" icon="show_bodies">
+          <callbacks>
+            <onclick>ShowBodiesInContact</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Activate Contacts from Selection" icon="connections_contact">
+          <callbacks>
+            <onclick>ActivateContactsForSelection</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Remove Selection from All Contacts" icon="connections_contact">
+          <callbacks>
+            <onclick>RemoveEntityFromAllContacts</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Remove Selection from Active Contacts" icon="connections_contact">
+          <callbacks>
+            <onclick>RemoveEntityFromSelectedContacts</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Keep Contact Faces By Face Type" icon="connections_contact">
+          <callbacks>
+            <onclick>KeepOnlyEntityFromSelectedContactsBySurfaceType</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Activate Named Selection for Contacts" icon="namedselection">
+          <callbacks>
+            <onclick>GoToNamedSelectionsScopings</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Contact Results Wizard" icon="contact_tool_pressure">
+          <callbacks>
+            <onclick>ShowContactResultsWizard</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Contact Status Export Wizard" icon="contact_tool_pressure">
+          <callbacks>
+            <onclick>ShowContactStatusWizard</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="Meshing" icon="mesh_obj">
+        <entry name="Add Mesh Copy" icon="mesh_controls_mesh_copy_beta">
+          <callbacks>
+            <onclick>AddMeshCopy</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="CoordinateSystems" icon="coordinatesystems">
+        <entry name="Add CS for Each in Selection" icon="coordinatesystems">
+          <callbacks>
+            <onclick>AddCsForSel</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Flip Z Axis" icon="coordinatesystems">
+          <callbacks>
+            <onclick>FlipZAxis</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Add Bolt CS" icon="coordinatesystems">
+          <callbacks>
+            <onclick>AddCsForBolt</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Get Bolt CS" icon="coordinatesystems">
+          <callbacks>
+            <onclick>GetBoltCs</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="Preloads" icon="environment_structural_bolt_pretension">
+        <entry name="Assign Preload CS" icon="coordinatesystems">
+          <callbacks>
+            <onclick>AssignPreloadCs</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Move Preload CS" icon="coordinatesystems">
+          <callbacks>
+            <onclick>MovePreloadsCs</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Get Preload From CS" icon="environment_structural_bolt_pretension">
+          <callbacks>
+            <onclick>GetPreloadsFromCs</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Get CS From Preload" icon="coordinatesystems">
+          <callbacks>
+            <onclick>GetCsFromPreloads</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Get Preloads From Selection" icon="environment_structural_bolt_pretension">
+          <callbacks>
+            <onclick>GetPreloadsFromSelection</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Set Selection From Preloads" icon="body_select">
+          <callbacks>
+            <onclick>SetGraphicSelectionFromPreloads</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Get Preloads From Probes" icon="solution_probe">
+          <callbacks>
+            <onclick>GetPreloadsFromProbes</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Rename Preloads Based On Def" icon="environment_structural_bolt_pretension">
+          <callbacks>
+            <onclick>RenamePreloadsBasedOnDef</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Export Preload Values" icon="environment_structural_bolt_pretension">
+          <callbacks>
+            <onclick>ExportPreloadValues</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Import Preload Values" icon="environment_structural_bolt_pretension">
+          <callbacks>
+            <onclick>ImportPreloadValues</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="Beams" icon="connections_beam">
+        <entry name="Show Summary Table" icon="layout_tabular_data">
+          <callbacks>
+            <onclick>ShowObjSummaryTable</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Create Beams From Solids" icon="body_select">
+          <callbacks>
+            <onclick>CreateBeamsFromSolids</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="PostProcessing" icon="solution_probe">
+        <entry name="Show Summary Table" icon="layout_tabular_data">
+          <callbacks>
+            <onclick>ShowObjSummaryTable</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Reaction Probes Wizard" icon="solution_probe">
+          <callbacks>
+            <onclick>ShowReactionResultsPanel</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Connections Post Wizard" icon="bolt_tool_adjustment">
+          <callbacks>
+            <onclick>ShowPostWizard</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="Tree Helper" icon="tree">
+        <entry name="Object Connections Tree" icon="tree">
+          <callbacks>
+            <onclick>ShowObjConnectionTree</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Show Tree Helper" icon="tree">
+          <callbacks>
+            <onclick>ShowTreeHelper</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Tree Group Helper" icon="folder">
+          <callbacks>
+            <onclick>ShowTreeGroupSelector</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Object External Data Viewer" icon="layout_tabular_data">
+          <callbacks>
+            <onclick>ShowObjectExtDataViewer</onclick>
+          </callbacks>
+        </entry>|
+        <entry name="Object Selector" icon="tree">
+          <callbacks>
+            <onclick>ShowObjectSelector</onclick>
+          </callbacks>
+        </entry>|
+      </entry>
+      <entry name="Wizards" icon="wizard">
+        <entry name="Setup Wizard" icon="wizard">
+          <callbacks>
+            <onclick>ShowSetupWizard</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <!--  				<entry name="Solid Body Hole Detection Wizard" icon="feature_detection"><callbacks><onclick>ShowSolidBodyHoleDetectionWizard</onclick></callbacks></entry>-->
+        <entry name="Surface Body Hole Detection Wizard" icon="feature_detection">
+          <callbacks>
+            <onclick>ShowHoleDetectionWizard</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Cone of Compression Imprint" icon="Contacts">
+          <callbacks>
+            <onclick>ShowConeOfCompressionWizard</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Reaction Probes Wizard" icon="solution_probe">
+          <callbacks>
+            <onclick>ShowReactionResultsPanel</onclick>
+          </callbacks>
+        </entry>
+        <entry name="Connections Post Wizard" icon="bolt_tool_adjustment">
+          <callbacks>
+            <onclick>ShowPostWizard</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Contact Results Wizard" icon="contact_tool_pressure">
+          <callbacks>
+            <onclick>ShowContactResultsWizard</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <entry name="Instances" icon="extendto_instances">
+        <entry name="Instance Manager" icon="extendto_instances" userobject='GroupManager'></entry>
+        <entry name="Rename All Groups From Standard Part" icon="extendto_instances">
+          <callbacks>
+            <onclick>RenameAllGroupsFromStandardPart</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Parts Library" icon="part">
+          <callbacks>
+            <onclick>ShowPartsLibrary</onclick>
+          </callbacks>
+        </entry>
+        <separator/>
+        <entry name="Run Standard Part Scripts for Selected" icon="part">
+          <callbacks>
+            <onclick>RunStandardPartScript</onclick>
+          </callbacks>
+        </entry>
+      </entry>
+      <!-- <entry name="ApdlBolt" icon="bolt_tool_adjustment" userobject='ApdlBoltManager'></entry> -->
+      <entry name="Help" icon="help_1">
+        <callbacks>
+          <onclick>ShowHelpDoc</onclick>
+        </callbacks>
+      </entry>
+    </toolbar>
+  </interface>
+  <simdata context="Mechanical">
+    <object name="GroupManager" class='GroupManager' affectsSolution="false" version="1" caption="Instance Manager" icon="icon_extendto_instances_16x16" isload="false" color="#0000FF">
+      <target type="datamodel"/>
+      <callbacks>
+        <CanAdd>CanAdd_GroupManager</CanAdd>
+        <CanDuplicate>CanDuplicate_GroupManager</CanDuplicate>
+        <action name="CreateGroup" caption="Create Group" icon="icon_mesh_edit_node_merge_group_16x16">CreateGroup</action>
+        <action name="CreateGroupsFromModel" caption="Create Groups From Geometry" icon="icon_mesh_edit_node_merge_group_16x16">CreateGroupsFromModel</action>
+      </callbacks>
+      <property name="OnSelection"  caption= "On Selection" control="select" default="Select Bodies">
+        <attributes options="Hide Others,Hide Others And Fit,Select Bodies,Highlight Bodies" />
+      </property>
+      <propertygroup name='AutoCreation' caption = "Auto Creation" visible = 'true'>
+        <property name="Tolerance"  caption= "Tolerance" control="float" default="0.001"></property>
+        <property name="MinNumber"  caption= "Min. Number" control="integer" default="2"></property>
+      </propertygroup>
+    </object>
+
+    <object name="Group" class='Group' version="1" affectsSolution="false" caption="Group" icon="icon_mesh_edit_node_merge_group_16x16" isload="false" color="#0000FF">
+      <target type="userobject" name = "GroupManager"/>
+      <callbacks>
+        <CanDuplicate>CanDuplicate_Group</CanDuplicate>
+        <action name="RenameFromStandardPart" caption="Rename From Standard Part" icon="icon_mesh_edit_node_merge_group_16x16">RenameFromStandardPart</action>
+        <action name="RenameTreeBodiesFromGroup" caption="Rename Bodies From Group" icon="icon_mesh_edit_node_merge_group_16x16">RenameTreeBodiesFromGroup</action>
+      </callbacks>
+      <property name="Geometry"  caption= "Geometry" control="scoping">
+        <attributes selection_filter="body" />
+        <callbacks>
+          <OnValidate>Group_Geometry_OnValidate</OnValidate>
+        </callbacks>
+      </property>
+      <property name="OnSelection"  caption= "On Selection" control="select" default="Default">
+        <attributes options="Default, Hide Others,Hide Others And Fit,Select Bodies,Highlight Bodies" />
+      </property>
+      <property name="IsStandardPart"  caption= "Is Standard Part" control="select" default="No">
+        <attributes options="Yes,No" />
+        <callbacks>
+          <OnValidate>OnValidate_Group_IsStandardPart</OnValidate>
+        </callbacks>
+      </property>
+      <propertygroup name='StandardPartData' caption = "Standard Part Data" visible = 'false'>
+        <property name="Name"  caption= "Name" control="select" default="None">
+          <attributes options="None" />
+          <callbacks>
+            <OnActivate>OnActivate_Group_StandardPart</OnActivate>
+            <OnValidate>OnValidate_Group_StandardPart</OnValidate>
+          </callbacks>
+        </property>
+        <property name="Description"  caption= "Description" control="text" default = "NA" readonly='true'></property>
+        <property name="PyFileName"  caption= "Py File" control="select" default = "NA">
+          <attributes options="NA" />
+        </property>
+        <property name="UserArg1"  caption= "User Arg 1" control="Text" default = "None"></property>
+        <property name="UserArg2"  caption= "User Arg 2" control="Text" default = "None"></property>
+        <property name="UserArg3"  caption= "User Arg 3" control="Text" default = "None"></property>
+      </propertygroup>
+    </object>
+
+    <object name="ApdlBoltManager" class='ApdlBoltManager' affectsSolution="false" version="1" caption="APDL Bolt Manager" icon="icon_bolt_tool_adjustment_16x16" isload="false" color="#0000FF">
+      <target type="datamodel"/>
+      <callbacks>
+        <CanAdd>CanAdd_ApdlBoltManager</CanAdd>
+        <CanDuplicate>CanDuplicate_ApdlBoltManager</CanDuplicate>
+        <action name="CreateApdlBolt" caption="Create ApdlBolt" icon="bolt_tool_adjustment">CreateApdlBolt</action>
+      </callbacks>
+    </object>
+
+    <object name="ApdlBolt" class = "ApdlBolt" version="1" caption="Bolt" icon="icon_bolt_tool_adjustment_16x16" isload="false" color="#0000FF">
+      <target type="userobject" name = "ApdlBoltManager"/>
+      <callbacks>
+        <!-- Callbacks for APDL commands at various points in the input file. -->
+        <GetCommands location='pre'>ApdlBolt_GetCommands_Pre</GetCommands>
+        <GetCommands location='solve'>ApdlBolt_GetCommands_Solve</GetCommands>
+        <GetCommands location='post'>ApdlBolt_GetCommands_Post</GetCommands>
+        <action name="ActivateCS" caption="Activate CS" icon="icon_coordinatesystems_16x16">ActivateObjCs</action>
+      </callbacks>
+
+      <propertygroup name='Parts' caption = "Parts">
+        <property name='BoltName' caption = "Bolt Name" control='select'>
+          <attributes options="" />
+          <callbacks>
+            <OnActivate>ApdlBoltNameActivate</OnActivate>
+            <OnValidate>ApdlBoltValidate</OnValidate>
+          </callbacks>
+        </property>
+        <property name='BoltWasherName' caption = "Bolt Washer Name" control='select' default='None'>
+          <attributes options="None" />
+          <callbacks>
+            <OnActivate>ApdlBoltNameActivate</OnActivate>
+            <OnValidate>ApdlBoltValidate</OnValidate>
+          </callbacks>
+        </property>
+        <property name='NutName' caption = "Nut Name" control='select' default='None'>
+          <attributes options="None" />
+          <callbacks>
+            <OnActivate>ApdlBoltNameActivate</OnActivate>
+            <OnValidate>ApdlBoltValidate</OnValidate>
+          </callbacks>
+        </property>
+        <property name='NutLoc' caption = "Nut Location" control='float' unit='Length' isparameter="true" default="0 [mm]">
+          <callbacks>
+            <OnValidate>ApdlBoltValidate</OnValidate>
+          </callbacks>
+        </property>
+        <property name='NutWasherName' caption = "Nut Washer Name" control='select' default='None'>
+          <attributes options="None" />
+          <callbacks>
+            <OnActivate>ApdlBoltNameActivate</OnActivate>
+            <OnValidate>ApdlBoltValidate</OnValidate>
+          </callbacks>
+        </property>
+      </propertygroup>
+
+      <propertygroup name='CS' caption = "Coordinate Systems Selection">
+        <property name="SelectCs"  caption= "Select Coordinate System Now" control="select" default="No">
+          <attributes options="No,Yes" />
+          <callbacks>
+            <OnValidate>SelectCoordinateSystems</OnValidate>
+          </callbacks>
+        </property>
+        <property name="CsIds" caption = "Coordinate Systems" control="Text" readonly="true" default="None" />
+      </propertygroup>
+      <propertygroup name='Cmds' caption = "User APDL">
+        <property name="UserApdlCommands" caption="User APDL" Default='Click to Edit' control="applycancel" >
+          <callbacks>
+            <onapply>ApplyUserApdlCommands</onapply>
+          </callbacks>
+        </property>
+      </propertygroup>
+      <propertygroup name='Display'>
+        <property name="Visible" control="select" default="Yes" needupdate='false'>
+          <attributes options="No,Yes" />
+        </property>
+        <property name="DepthTest"  caption= "Depth Test" control="select" default="Yes" needupdate='false'>
+          <attributes options="No,Yes" />
+          <callbacks>
+            <OnValidate>ApdlBolt_Display_Validate</OnValidate>
+          </callbacks>
+        </property>
+        <property name="Transparency" control="float" default="0" needupdate='false'>
+          <callbacks>
+            <OnValidate>ApdlBolt_Display_Validate</OnValidate>
+          </callbacks>
+        </property>
+      </propertygroup>
+    </object>
+  </simdata>
+</extension>
+
+

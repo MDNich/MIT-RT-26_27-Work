@@ -1,0 +1,55 @@
+UTC 2026-10-05T19:28:09.2096996Z
+result Ansys.ACT.Automation.Mechanical.Results.DeformationResults.TotalDeformation
+P Double ScaleFactorValue write=True
+P Ansys.Core.Units.Quantity CyclicPhase write=True
+P Ansys.Core.Units.Quantity SweepingPhase write=True
+P Ansys.Core.Units.Quantity PhaseIncrement write=True
+P Ansys.Mechanical.DataModel.Enums.ScaleFactorType ScaleFactor write=True
+P Boolean AllowPhaseSweep write=True
+M Void ExportToTextFile(Boolean, System.String)
+M Void ExportToTextFile(System.String)
+M Void ExportToSTLFile(System.String)
+M Void ExportAnimation(System.String, Ansys.Mechanical.DataModel.Enums.GraphicsAnimationExportFormat, Ansys.Mechanical.Graphics.AnimationExportSettings)
+graphics Ansys.ACT.Common.Graphics.MechanicalGraphicsWrapper
+P Ansys.ACT.Common.Graphics.KeyframeAnimationUtility KeyframeAnimationUtility write=False
+P Ansys.Mechanical.Graphics.ResultAnimationOptions ResultAnimationOptions write=False
+P Boolean ImageExportRescaleGraphOverlayPreference write=True
+M Ansys.ACT.Common.Graphics.KeyframeAnimationUtility get_KeyframeAnimationUtility()
+M Ansys.Mechanical.Graphics.ResultAnimationOptions get_ResultAnimationOptions()
+M Void ExportScreenToImage(System.String)
+M Void ExportImage(System.String, Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat, Ansys.Mechanical.Graphics.GraphicsImageExportSettings)
+M Void ExportImageToClipboard(Ansys.Mechanical.Graphics.GraphicsImageExportSettings)
+M Void ExportViewportImage(Int32, System.String, Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat, Ansys.Mechanical.Graphics.GraphicsImageExportSettings)
+M Void ExportViewportChart(Int32, System.String, Int32, Int32, Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat)
+M Void ExportViewports(System.String, Ansys.Mechanical.DataModel.Enums.GraphicsImageExportFormat, Ansys.Mechanical.Graphics.GraphicsViewportsExportSettings)
+M Void Export3D(System.String, Ansys.Mechanical.DataModel.Enums.Graphics3DExportFormat, Ansys.Mechanical.Graphics.Graphics3DExportSettings)
+M Boolean get_ImageExportRescaleGraphOverlayPreference()
+M Void set_ImageExportRescaleGraphOverlayPreference(Boolean)
+pref Ansys.Mechanical.Graphics.ResultPreference
+P Boolean LargeVertexContours write=True
+P Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.GeometryView GeometryView write=True
+P Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ContourView ContourView write=True
+P Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ExtraModelDisplay ExtraModelDisplay write=True
+P Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.DeformationScaling DeformationScaling write=True
+P Double DeformationScaleMultiplier write=True
+P Ansys.Core.Units.Quantity IsoSurfaceValue write=True
+P Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.CappingType CappingType write=True
+P Ansys.Mechanical.DataModel.MechanicalEnums.Graphics.ScopingDisplay ScopingDisplay write=True
+P Boolean ShowMinimum write=True
+P Boolean ShowMaximum write=True
+camera Ansys.ACT.Common.Graphics.MechanicalCameraWrapper
+P Double ZoomFactor write=True
+P Ansys.Mechanical.Graphics.Point FocalPoint write=True
+P Ansys.ACT.Math.Vector3D UpVector write=True
+P Ansys.ACT.Math.Vector3D ViewVector write=True
+P Ansys.Core.Units.Quantity SceneHeight write=True
+P Ansys.Core.Units.Quantity SceneWidth write=True
+P Int32 ViewportHeight write=False
+P Int32 ViewportWidth write=False
+P Ansys.Common.Interop.GraphicsDataModel.IDSCameraItf InternalObject write=False
+GraphicsTypes AnalysisSettingsGraph, AnimationExportSettings, AnnotationPreferences, BoundaryConditionVisibilityDictionary, GlobalLegendSettings, Graphics3DExportSettings, GraphicsImageExportSettings, GraphicsState, GraphicsViewportsExportSettings, Labels, MechanicalGraphicsAddin, OverlayManager, Point, ResultAnimationOptions, ResultPreference, ScenegraphGenerator, SectionPlane, SectionPlaneList, SectionPlanes, Tools, VectorDisplay, ViewOptions
+ANALYSIS 1656 BOLTED750 - 20 undamped prestressed modes Solved Modal
+ANALYSIS 4182 DEFAULT REFINED - 20 undamped modes above 1 Hz Obsolete Modal
+ANALYSIS 4259 RANDOM VIBE - X - 2pct damping Solved Random Vibration
+ANALYSIS 4264 RANDOM VIBE - Y - 2pct damping Solved Random Vibration
+ANALYSIS 4269 RANDOM VIBE - Z - 2pct damping Solved Random Vibration

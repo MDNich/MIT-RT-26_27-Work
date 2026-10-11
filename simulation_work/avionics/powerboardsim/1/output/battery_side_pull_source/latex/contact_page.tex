@@ -1,0 +1,7 @@
+\clearpage\PageTitle{Contact localization and clamp reactions}
+\begin{center}\includegraphics[width=.76\linewidth,height=102mm,keepaspectratio]{figures/friction_locked_fine_plastic_plan.png}
+\captionof{figure}{Refined 750 N contact model at $u_X=+0.5$ mm. The lower nickel flat leg is shown in deformed coordinates at scale 1:1. Colour is the maximum of top/bottom shell element-summary plastic strain, not a fracture index.}\end{center}
+\begin{center}\input{plots/ClampForces.tex}
+\captionof{figure}{Normal reaction at the first lower platen during the pull; the second platen gives essentially the same result. Both start at 750 N after the force-to-lock transfer. The fixed platen separation permits reaction to change under bending.}\end{center}
+The refined contact calculation reports a maximum element-averaged penetration of 0.424 micrometres (0.283\% of strip thickness) over its saved history. The greatest accumulated plastic slip among the exported contact corner values is 1.071 micrometres. These contact quantities use a different sampling convention from the element-averaged sliding in the main table.\par
+The pressure and sliding depend on the assumed friction coefficient, contact stiffness and rigid support idealization. Their numerical convergence and constitutive calibration are distinct questions. Small penetration is a numerical contact check; it does not establish that the real nickel, washer or PCB avoids indentation or tearing.

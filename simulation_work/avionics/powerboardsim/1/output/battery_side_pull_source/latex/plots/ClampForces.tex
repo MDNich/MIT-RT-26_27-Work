@@ -1,0 +1,4 @@
+\begin{tikzpicture}\begin{axis}[width=.98\linewidth,height=56mm,xlabel={Battery centre displacement (mm)},ylabel={Normal platen reaction (N)},xmin=0,xmax=.5,grid=both,legend style={font=\footnotesize,at={(.03,.97)},anchor=north west},xticklabel style={/pgf/number format/fixed,/pgf/number format/precision=2},tick label style={font=\small},label style={font=\small}]
+\addplot+[color=Teal,thick,mark=none] table[col sep=comma,x=u,y=washer1] {data/friction_locked_clamp.csv};\addlegendentry{Coarse mesh}
+\addplot+[color=Navy,thick,mark=none] table[col sep=comma,x=u,y=washer1] {data/friction_locked_fine_clamp.csv};\addlegendentry{Fine mesh}
+\end{axis}\end{tikzpicture}

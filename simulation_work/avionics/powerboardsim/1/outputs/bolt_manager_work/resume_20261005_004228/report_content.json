@@ -1,0 +1,250 @@
+{
+  "summary": [
+    "The six bolts were tightened to 750 N each and locked. Static equilibrium and all three modal calculations completed with zero solver errors. Each modal case contains 20 real, undamped frequencies extracted above 1 Hz.",
+    "The lowest retained frequency is 62.805 Hz for the original default model, 66.611 Hz for the refined default reference, and 485.964 Hz with the preloaded bolts. The default network contains a disconnected nine-body battery subassembly; the 1 Hz cutoff excludes its rigid-body motions. The comparison changes the fastening constraints and preload together.",
+    "Exploratory results: washer seating is assumed, the thin nickel strips retain poor element shapes, and the inherited battery/PCB material models are unvalidated. These limits matter despite numerical convergence."
+  ],
+  "frequency_headers": [
+    "Rank",
+    "Original default (Hz)",
+    "Refined default (Hz)",
+    "750 N bolts (Hz)"
+  ],
+  "frequency_widths": [
+    36,
+    152,
+    152,
+    171
+  ],
+  "frequency_rows": [
+    [
+      "1",
+      "62.805",
+      "66.611",
+      "485.964"
+    ],
+    [
+      "2",
+      "124.875",
+      "154.798",
+      "596.964"
+    ],
+    [
+      "3",
+      "163.988",
+      "468.804",
+      "645.435"
+    ],
+    [
+      "4",
+      "558.615",
+      "553.652",
+      "781.350"
+    ],
+    [
+      "5",
+      "567.111",
+      "585.781",
+      "820.242"
+    ],
+    [
+      "6",
+      "689.808",
+      "820.889",
+      "826.296"
+    ],
+    [
+      "7",
+      "860.353",
+      "975.693",
+      "1122.018"
+    ],
+    [
+      "8",
+      "945.371",
+      "1080.312",
+      "1139.112"
+    ],
+    [
+      "9",
+      "1210.789",
+      "1128.582",
+      "1199.708"
+    ],
+    [
+      "10",
+      "1281.230",
+      "1186.046",
+      "1366.076"
+    ],
+    [
+      "11",
+      "1403.894",
+      "1346.580",
+      "1467.900"
+    ],
+    [
+      "12",
+      "1522.247",
+      "1443.782",
+      "1714.134"
+    ],
+    [
+      "13",
+      "1705.406",
+      "1701.164",
+      "1941.548"
+    ],
+    [
+      "14",
+      "1744.806",
+      "1847.746",
+      "2003.039"
+    ],
+    [
+      "15",
+      "1819.420",
+      "1873.051",
+      "2017.959"
+    ],
+    [
+      "16",
+      "1894.293",
+      "1904.194",
+      "2135.663"
+    ],
+    [
+      "17",
+      "2083.235",
+      "1969.429",
+      "2183.755"
+    ],
+    [
+      "18",
+      "2116.840",
+      "2010.061",
+      "2212.560"
+    ],
+    [
+      "19",
+      "2131.571",
+      "2222.743",
+      "2301.314"
+    ],
+    [
+      "20",
+      "2205.547",
+      "2247.595",
+      "2364.179"
+    ]
+  ],
+  "frequency_note": "Rows are frequencies in ascending order, not tracked equivalent mode shapes. Refinement also retains full integration and makes component-to-PCB contact direction explicit, so this is not an isolated mesh-convergence test.",
+  "default_figures": [
+    {
+      "path": "default_refined/mode_01_battery_view.png",
+      "caption": "Figure 1. Refined default, rank 1: 66.611 Hz. The visible shape is dominated by battery and nickel-support motion; the PCB moves comparatively little."
+    },
+    {
+      "path": "default_refined/mode_20.png",
+      "caption": "Figure 2. Refined default, rank 20: 2247.595 Hz. The PCB bends with pronounced motion along a long edge and its mounted components. Battery motion is comparatively small."
+    }
+  ],
+  "bolt_summary": [
+    "The nonlinear static analysis converged at 750 N per bolt, then locked the six achieved tightening displacements. Final reactions were 749.997-749.999 N; tightening adjustments were 18.597-30.457 micrometres. Maximum static displacement was 0.04746 mm.",
+    "The modal solve uses the last locked static state (load step 2, substep 4). The results remain provisional because washer seating and the inherited material idealizations have not been confirmed against the physical assembly.",
+    "The first bolted mode (485.964 Hz) is dominated by motion at the lower PCB edge and its components. Modes 3 and 4 (645.435 and 781.350 Hz) include substantial battery motion. Mode 10 (1366.076 Hz) bends the upper edge; mode 20 shows broader PCB warping and coupled battery motion."
+  ],
+  "bolt_figures": [
+    {
+      "path": "bolted750_modal/mode_20.png",
+      "caption": "Figure 3. Six bolts at 750 N, rank 20: 2364.179 Hz. The PCB bends between the fixed stand-off locations, with coupled battery motion. This is an automatically scaled, mass-normalized mode shape; the legend is not a physical travel prediction."
+    }
+  ],
+  "bolt_rows": [
+    [
+      "Left / upper",
+      "750.000",
+      "749.999"
+    ],
+    [
+      "Centre / upper",
+      "750.000",
+      "749.999"
+    ],
+    [
+      "Right / upper",
+      "750.000",
+      "749.999"
+    ],
+    [
+      "Left / lower",
+      "750.000",
+      "749.997"
+    ],
+    [
+      "Centre / lower",
+      "750.000",
+      "749.999"
+    ],
+    [
+      "Right / lower",
+      "750.000",
+      "749.999"
+    ]
+  ],
+  "method_sections": [
+    [
+      "Common model and modal settings",
+      [
+        "ANSYS Mechanical/MAPDL 2026 R1.02, build 26.1, UP20260202, Windows 11 in Parallels. Solves use 12 distributed processes and consistent metre-kilogram-second-newton units. The assembled model has 208 bodies and approximately 0.25182 kg total mass.",
+        "Twenty real, undamped modes are requested with Block Lanczos over 1-10000 Hz. Eight existing stand-off end faces are fixed. The bolted modal analysis inherits supports, contact status and stress from the final locked static state."
+      ]
+    ],
+    [
+      "Mesh and contact numerics",
+      [
+        "Original mesh: 95,215 nodes and 32,843 solid elements. Refined common mesh: 368,754 nodes and 112,902 solid elements; quadratic interpolation, 0.7 mm PCB sizing and 0.4 mm bolt sizing. No formal mesh convergence or experimental correlation has been established.",
+        "The solver originally reset full-integration SOLID186 elements to reduced integration. Full integration is retained in the refined analyses to avoid coarse-component hourglass modes. Existing component-to-PCB interfaces use explicit asymmetric MPC, with component faces as the constrained side. This numerical change also affects the spectrum.",
+        "Mesh-quality warnings remain in 1,498 tetrahedral elements, mostly in the thin nickel strips (maximum aspect ratio 216.3). These critical connections need improved meshes and a convergence study before the frequencies can be treated as validated predictions."
+      ]
+    ],
+    [
+      "Bolt and battery idealizations",
+      [
+        "Six existing solid screws are cut with PRETS179 pretension sections. Each is loaded to 750 N in static step 1, then its achieved shortening is locked in step 2. Shaft-to-hole MPC ties bridge the CAD clearance; they idealize rigid fastening, not detailed threads or friction.",
+        "Provisional seating assumption: six metal washers bear against the PCB underside. Frictionless bearing contacts close the approximately 0.746 mm initial CAD gap through contact offsets. Four incidental washer-to-stand-off bonds are replaced in the bolted case. This seating arrangement remains to be confirmed against the real hardware. Batteries have no direct PCB contact or bond; their only connections are to nickel strips."
+      ]
+    ],
+    [
+      "Material and interpretation limits",
+      [
+        "Stored PCB properties are isotropic: E = 23.330 GPa, Poisson ratio = 0.15, density = 1969.78 kg/m3; thickness is 1.10236 mm. Stored battery properties are homogeneous: E = 200 GPa, Poisson ratio = 0.30, density = 2200 kg/m3. These inherited battery and PCB idealizations were not independently validated.",
+        "The requested comparison changes fastening constraints and prestress together. It does not isolate the effect of preload magnitude alone. Modal contour amplitudes are normalized, and a frequency cutoff does not establish overall constraint adequacy or structural stability.",
+        "Peak elastic static von Mises stress is 1.142 GPa; no local stress convergence or strength validation has been performed. Hardware MPC-overlap warnings also remain."
+      ]
+    ]
+  ],
+  "evidence": [
+    "Run evidence: outputs/bolt_manager_work/resume_20261005_004228. Accepted cases retain native inputs, solver logs, result files, frequency CSVs and Mechanical images. Input/result hashes and solver-log cross-checks are recorded in accepted_results_audit.json. Failed attempts are preserved separately and excluded.",
+    "Final static time: 2.0, load step 2, substep 4. Locked pilot reactions: 749.997-749.999 N. Independent washer bearing forces: 749.877-750.120 N; no contact damping force or excessive-penetration flag was recorded at the final state. Battery contact and shared-node audits passed.",
+    "The live project is left in the bolted configuration. Default results in this report come from preserved reference solves; rerunning a default analysis requires restoring its contact and bolt suppression settings."
+  ],
+  "references": [
+    [
+      "ANSYS: modal analysis and prestress workflow",
+      "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/wb_sim/ds_modal_analysis_type.html"
+    ],
+    [
+      "ANSYS: ETCONTROL and automatic element-technology changes",
+      "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_cmd/Hlp_C_ETCONTROL.html"
+    ],
+    [
+      "ANSYS: singular matrices and hourglass modes",
+      "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_bas/Hlp_G_BAS3_15.html"
+    ],
+    [
+      "ANSYS: PRETS179 pretension element",
+      "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_PRETS179.html"
+    ]
+  ]
+}

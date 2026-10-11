@@ -1,0 +1,40 @@
+{
+  "study": "Random vibration of power board with six 750 N locked bolts",
+  "frequency_hz": [
+    20.0,
+    50.0,
+    800.0,
+    2000.0
+  ],
+  "acceleration_psd_g2_per_hz": [
+    0.026,
+    0.16,
+    0.16,
+    0.026
+  ],
+  "interpolation": "log-log (power-law segments)",
+  "integrated_input_grms": 14.135613719133904,
+  "linear_trapezoidal_display_grms": 15.309800782505302,
+  "standard_gravity_m_s2": 9.80665,
+  "excitation_cases": [
+    "X",
+    "Y",
+    "Z"
+  ],
+  "damping_ratio": 0.02,
+  "source_static_analysis_id": 4123,
+  "source_modal_analysis_id": 1656,
+  "modal_search_min_hz": 1,
+  "modal_search_max_hz": 4000,
+  "modal_requested_modes": 60,
+  "units": "m kg s N",
+  "solver": "Mechanical/MAPDL 2026 R1.02 UP20260202 on Windows 11 Parallels; 12 distributed ranks",
+  "authorization": "User requested new study and separate X Y Z cases; prepare and solve new analyses, preserve previous accepted results.",
+  "limitations": [
+    "Inherited nickel strip mesh warnings",
+    "Assumed washer seating",
+    "Unvalidated inherited PCB and battery properties",
+    "Linear response about locked preloaded state; no contact opening or bolt loosening prediction"
+  ],
+  "damping_source": "User selected 2 percent as exploratory assumption"
+}

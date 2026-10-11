@@ -1,0 +1,1274 @@
+Compiled from "RK4SimulationStepper.java"
+public class info.openrocket.core.simulation.RK4SimulationStepper extends info.openrocket.core.simulation.AbstractSimulationStepper {
+  private static final org.slf4j.Logger log;
+
+  private static final info.openrocket.core.l10n.Translator trans;
+
+  private static final int SEED_RANDOMIZATION;
+
+  public static final double RECOMMENDED_TIME_STEP;
+
+  public static final double RECOMMENDED_MAX_TIME;
+
+  public static final double RECOMMENDED_ANGLE_STEP;
+
+  public static final double PITCH_YAW_RANDOM;
+
+  private static final double MAX_ROLL_STEP_ANGLE;
+
+  private static final double MAX_ROLL_RATE_CHANGE;
+
+  private static final double MAX_PITCH_YAW_CHANGE;
+
+  private java.util.Random random;
+
+  info.openrocket.core.simulation.AbstractSimulationStepper$DataStore store;
+
+  public info.openrocket.core.simulation.RK4SimulationStepper();
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method info/openrocket/core/simulation/AbstractSimulationStepper."<init>":()V
+       4: aload_0
+       5: new           #9                  // class info/openrocket/core/simulation/AbstractSimulationStepper$DataStore
+       8: dup
+       9: invokespecial #11                 // Method info/openrocket/core/simulation/AbstractSimulationStepper$DataStore."<init>":()V
+      12: putfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+      15: return
+
+  public info.openrocket.core.simulation.SimulationStatus initialize(info.openrocket.core.simulation.SimulationStatus);
+    Code:
+       0: new           #18                 // class info/openrocket/core/simulation/SimulationStatus
+       3: dup
+       4: aload_1
+       5: invokespecial #20                 // Method info/openrocket/core/simulation/SimulationStatus."<init>":(Linfo/openrocket/core/simulation/SimulationStatus;)V
+       8: astore_2
+       9: aload_2
+      10: aload_1
+      11: invokevirtual #23                 // Method info/openrocket/core/simulation/SimulationStatus.getWarnings:()Linfo/openrocket/core/logging/WarningSet;
+      14: invokevirtual #27                 // Method info/openrocket/core/simulation/SimulationStatus.setWarnings:(Linfo/openrocket/core/logging/WarningSet;)V
+      17: aload_1
+      18: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+      21: astore_3
+      22: aload_0
+      23: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+      26: new           #35                 // class info/openrocket/core/util/Coordinate
+      29: dup
+      30: aload_3
+      31: invokevirtual #37                 // Method info/openrocket/core/simulation/SimulationConditions.getLaunchRodAngle:()D
+      34: invokestatic  #43                 // Method java/lang/Math.sin:(D)D
+      37: ldc2_w        #47                 // double 1.5707963267948966d
+      40: aload_3
+      41: invokevirtual #49                 // Method info/openrocket/core/simulation/SimulationConditions.getLaunchRodDirection:()D
+      44: dsub
+      45: invokestatic  #52                 // Method java/lang/Math.cos:(D)D
+      48: dmul
+      49: aload_3
+      50: invokevirtual #37                 // Method info/openrocket/core/simulation/SimulationConditions.getLaunchRodAngle:()D
+      53: invokestatic  #43                 // Method java/lang/Math.sin:(D)D
+      56: ldc2_w        #47                 // double 1.5707963267948966d
+      59: aload_3
+      60: invokevirtual #49                 // Method info/openrocket/core/simulation/SimulationConditions.getLaunchRodDirection:()D
+      63: dsub
+      64: invokestatic  #43                 // Method java/lang/Math.sin:(D)D
+      67: dmul
+      68: aload_3
+      69: invokevirtual #37                 // Method info/openrocket/core/simulation/SimulationConditions.getLaunchRodAngle:()D
+      72: invokestatic  #52                 // Method java/lang/Math.cos:(D)D
+      75: invokespecial #55                 // Method info/openrocket/core/util/Coordinate."<init>":(DDD)V
+      78: putfield      #58                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.launchRodDirection:Linfo/openrocket/core/util/Coordinate;
+      81: aload_0
+      82: new           #62                 // class java/util/Random
+      85: dup
+      86: aload_1
+      87: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+      90: invokevirtual #64                 // Method info/openrocket/core/simulation/SimulationConditions.getRandomSeed:()I
+      93: ldc           #68                 // int 602120223
+      95: ixor
+      96: i2l
+      97: invokespecial #69                 // Method java/util/Random."<init>":(J)V
+     100: putfield      #72                 // Field random:Ljava/util/Random;
+     103: aload_2
+     104: areturn
+
+  public void step(info.openrocket.core.simulation.SimulationStatus, double) throws info.openrocket.core.simulation.exception.SimulationException;
+    Code:
+       0: aload_1
+       1: invokevirtual #76                 // Method info/openrocket/core/simulation/SimulationStatus.storeData:()V
+       4: aload_0
+       5: aload_1
+       6: aload_0
+       7: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+      10: invokevirtual #79                 // Method calculateFlightConditions:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)V
+      13: aload_0
+      14: aload_1
+      15: aload_0
+      16: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+      19: invokevirtual #83                 // Method computeParameters:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)Linfo/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters;
+      22: astore        5
+      24: dload_2
+      25: invokestatic  #87                 // Method java/lang/Double.isNaN:(D)Z
+      28: ifeq          57
+      31: aload_0
+      32: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+      35: dload_2
+      36: putfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+      39: aload_0
+      40: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+      43: aload_1
+      44: invokevirtual #97                 // Method info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.storeData:(Linfo/openrocket/core/simulation/SimulationStatus;)V
+      47: aload_0
+      48: aload_1
+      49: aload_0
+      50: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+      53: invokevirtual #99                 // Method landedValues:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)V
+      56: return
+      57: bipush        8
+      59: newarray       double
+      61: astore        9
+      63: aload         9
+      65: ldc2_w        #102                // double 1.7976931348623157E308d
+      68: invokestatic  #104                // Method java/util/Arrays.fill:([DD)V
+      71: aload         9
+      73: iconst_0
+      74: aload_1
+      75: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+      78: invokevirtual #110                // Method info/openrocket/core/simulation/SimulationConditions.getTimeStep:()D
+      81: ldc2_w        #113                // double 0.001d
+      84: invokestatic  #115                // Method info/openrocket/core/util/MathUtil.max:(DD)D
+      87: dastore
+      88: aload_1
+      89: invokestatic  #121                // Method info/openrocket/core/simulation/listeners/FlightControllerSimulatorListener.active:(Linfo/openrocket/core/simulation/SimulationStatus;)Linfo/openrocket/core/simulation/listeners/FlightControllerSimulatorListener;
+      92: ifnonnull     108
+      95: aload         9
+      97: iconst_0
+      98: getstatic     #127                // Field info/openrocket/core/simulation/listeners/MidControlStepLauncher.wantedTimeStep:D
+     101: ldc2_w        #113                // double 0.001d
+     104: invokestatic  #115                // Method info/openrocket/core/util/MathUtil.max:(DD)D
+     107: dastore
+     108: aload         9
+     110: iconst_1
+     111: dload_2
+     112: dastore
+     113: aload         9
+     115: iconst_2
+     116: aload_1
+     117: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+     120: invokevirtual #132                // Method info/openrocket/core/simulation/SimulationConditions.getMaximumAngleStep:()D
+     123: aload_0
+     124: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     127: getfield      #135                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.lateralPitchRate:D
+     130: ddiv
+     131: dastore
+     132: aload         9
+     134: iconst_3
+     135: ldc2_w        #138                // double 0.9885544883295881d
+     138: aload_0
+     139: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     142: getfield      #140                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.flightConditions:Linfo/openrocket/core/aerodynamics/FlightConditions;
+     145: invokevirtual #144                // Method info/openrocket/core/aerodynamics/FlightConditions.getRollRate:()D
+     148: ddiv
+     149: invokestatic  #149                // Method java/lang/Math.abs:(D)D
+     152: dastore
+     153: aload         9
+     155: iconst_4
+     156: ldc2_w        #152                // double 0.03490658503988659d
+     159: aload_0
+     160: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     163: getfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+     166: invokevirtual #158                // Method info/openrocket/core/simulation/AccelerationData.getRotationalAccelerationRC:()Linfo/openrocket/core/util/Coordinate;
+     169: getfield      #164                // Field info/openrocket/core/util/Coordinate.z:D
+     172: ddiv
+     173: invokestatic  #149                // Method java/lang/Math.abs:(D)D
+     176: dastore
+     177: aload         9
+     179: iconst_5
+     180: ldc2_w        #167                // double 0.06981317007977318d
+     183: aload_0
+     184: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     187: getfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+     190: invokevirtual #158                // Method info/openrocket/core/simulation/AccelerationData.getRotationalAccelerationRC:()Linfo/openrocket/core/util/Coordinate;
+     193: getfield      #169                // Field info/openrocket/core/util/Coordinate.x:D
+     196: invokestatic  #149                // Method java/lang/Math.abs:(D)D
+     199: aload_0
+     200: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     203: getfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+     206: invokevirtual #158                // Method info/openrocket/core/simulation/AccelerationData.getRotationalAccelerationRC:()Linfo/openrocket/core/util/Coordinate;
+     209: getfield      #172                // Field info/openrocket/core/util/Coordinate.y:D
+     212: invokestatic  #149                // Method java/lang/Math.abs:(D)D
+     215: invokestatic  #115                // Method info/openrocket/core/util/MathUtil.max:(DD)D
+     218: ddiv
+     219: invokestatic  #149                // Method java/lang/Math.abs:(D)D
+     222: dastore
+     223: aload_1
+     224: invokevirtual #175                // Method info/openrocket/core/simulation/SimulationStatus.isLaunchRodCleared:()Z
+     227: ifne          292
+     230: aload         9
+     232: iconst_0
+     233: dup2
+     234: daload
+     235: ldc2_w        #179                // double 5.0d
+     238: ddiv
+     239: dastore
+     240: aload         9
+     242: bipush        6
+     244: aload_1
+     245: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+     248: invokevirtual #181                // Method info/openrocket/core/simulation/SimulationConditions.getLaunchRodLength:()D
+     251: aload         5
+     253: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+     256: invokevirtual #189                // Method info/openrocket/core/util/Coordinate.length:()D
+     259: ddiv
+     260: ldc2_w        #192                // double 10.0d
+     263: ddiv
+     264: dastore
+     265: aload_1
+     266: invokestatic  #121                // Method info/openrocket/core/simulation/listeners/FlightControllerSimulatorListener.active:(Linfo/openrocket/core/simulation/SimulationStatus;)Linfo/openrocket/core/simulation/listeners/FlightControllerSimulatorListener;
+     269: ifnull        292
+     272: aload_1
+     273: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+     276: invokevirtual #181                // Method info/openrocket/core/simulation/SimulationConditions.getLaunchRodLength:()D
+     279: dconst_0
+     280: dcmpl
+     281: ifne          292
+     284: aload         9
+     286: bipush        6
+     288: ldc2_w        #194                // double Infinityd
+     291: dastore
+     292: aload         9
+     294: bipush        7
+     296: ldc2_w        #196                // double 1.5d
+     299: aload_0
+     300: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     303: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     306: dmul
+     307: dastore
+     308: aload_0
+     309: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     312: ldc2_w        #102                // double 1.7976931348623157E308d
+     315: putfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     318: iconst_m1
+     319: istore        10
+     321: iconst_0
+     322: istore        11
+     324: iload         11
+     326: aload         9
+     328: arraylength
+     329: if_icmpge     370
+     332: aload         9
+     334: iload         11
+     336: daload
+     337: aload_0
+     338: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     341: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     344: dcmpg
+     345: ifge          364
+     348: aload_0
+     349: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     352: aload         9
+     354: iload         11
+     356: daload
+     357: putfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     360: iload         11
+     362: istore        10
+     364: iinc          11, 1
+     367: goto          324
+     370: aload_1
+     371: invokestatic  #121                // Method info/openrocket/core/simulation/listeners/FlightControllerSimulatorListener.active:(Linfo/openrocket/core/simulation/SimulationStatus;)Linfo/openrocket/core/simulation/listeners/FlightControllerSimulatorListener;
+     374: astore        11
+     376: aload         11
+     378: ifnull        445
+     381: aload_0
+     382: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     385: aload_0
+     386: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     389: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     392: aload         11
+     394: aload_1
+     395: dload_2
+     396: invokevirtual #198                // Method info/openrocket/core/simulation/listeners/FlightControllerSimulatorListener.limitStep:(Linfo/openrocket/core/simulation/SimulationStatus;D)D
+     399: invokestatic  #202                // Method java/lang/Math.min:(DD)D
+     402: putfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     405: aload_0
+     406: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     409: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     412: aload_1
+     413: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+     416: invokestatic  #208                // Method java/lang/Math.ulp:(D)D
+     419: dcmpg
+     420: ifgt          570
+     423: new           #211                // class info/openrocket/core/simulation/exception/SimulationException
+     426: dup
+     427: aload         9
+     429: invokestatic  #213                // Method java/util/Arrays.toString:([D)Ljava/lang/String;
+     432: aload_1
+     433: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+     436: invokedynamic #217,  0            // InvokeDynamic #0:makeConcatWithConstants:(Ljava/lang/String;D)Ljava/lang/String;
+     441: invokespecial #221                // Method info/openrocket/core/simulation/exception/SimulationException."<init>":(Ljava/lang/String;)V
+     444: athrow
+     445: aload_0
+     446: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     449: getstatic     #224                // Field info/openrocket/core/simulation/listeners/MidControlStepLauncher.theTimeStep:D
+     452: putfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     455: aload_1
+     456: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+     459: getstatic     #224                // Field info/openrocket/core/simulation/listeners/MidControlStepLauncher.theTimeStep:D
+     462: invokevirtual #227                // Method info/openrocket/core/simulation/SimulationConditions.setTimeStep:(D)V
+     465: aload_1
+     466: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+     469: invokevirtual #110                // Method info/openrocket/core/simulation/SimulationConditions.getTimeStep:()D
+     472: ldc2_w        #231                // double 20.0d
+     475: ddiv
+     476: dstore        12
+     478: dload_2
+     479: aload_0
+     480: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     483: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     486: dsub
+     487: invokestatic  #149                // Method java/lang/Math.abs:(D)D
+     490: dload         12
+     492: dcmpg
+     493: ifge          524
+     496: aload_0
+     497: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     500: dload_2
+     501: putfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     504: getstatic     #233                // Field log:Lorg/slf4j/Logger;
+     507: aload_0
+     508: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     511: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     514: invokedynamic #237,  0            // InvokeDynamic #1:makeConcatWithConstants:(D)Ljava/lang/String;
+     519: invokeinterface #240,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     524: aload_0
+     525: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     528: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     531: dload         12
+     533: dcmpg
+     534: ifge          570
+     537: getstatic     #233                // Field log:Lorg/slf4j/Logger;
+     540: aload_0
+     541: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     544: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     547: iload         10
+     549: dload         12
+     551: invokedynamic #245,  0            // InvokeDynamic #2:makeConcatWithConstants:(DID)Ljava/lang/String;
+     556: invokeinterface #240,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     561: aload_0
+     562: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     565: dload         12
+     567: putfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     570: aload_0
+     571: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     574: aload_1
+     575: invokevirtual #97                 // Method info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.storeData:(Linfo/openrocket/core/simulation/SimulationStatus;)V
+     578: aload_0
+     579: aload_0
+     580: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     583: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     586: ldc           #248                // String store.timeStep
+     588: invokevirtual #250                // Method checkNaN:(DLjava/lang/String;)V
+     591: aload_1
+     592: invokevirtual #254                // Method info/openrocket/core/simulation/SimulationStatus.clone:()Linfo/openrocket/core/simulation/SimulationStatus;
+     595: astore        4
+     597: aload         4
+     599: aload_1
+     600: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+     603: aload_0
+     604: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     607: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     610: ldc2_w        #258                // double 2.0d
+     613: ddiv
+     614: dadd
+     615: invokevirtual #260                // Method info/openrocket/core/simulation/SimulationStatus.setSimulationTime:(D)V
+     618: aload         4
+     620: aload_1
+     621: invokevirtual #263                // Method info/openrocket/core/simulation/SimulationStatus.getRocketPosition:()Linfo/openrocket/core/util/Coordinate;
+     624: aload         5
+     626: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+     629: aload_0
+     630: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     633: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     636: ldc2_w        #258                // double 2.0d
+     639: ddiv
+     640: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     643: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     646: invokevirtual #274                // Method info/openrocket/core/simulation/SimulationStatus.setRocketPosition:(Linfo/openrocket/core/util/Coordinate;)V
+     649: aload         4
+     651: aload_1
+     652: invokevirtual #278                // Method info/openrocket/core/simulation/SimulationStatus.getRocketVelocity:()Linfo/openrocket/core/util/Coordinate;
+     655: aload         5
+     657: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+     660: aload_0
+     661: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     664: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     667: ldc2_w        #258                // double 2.0d
+     670: ddiv
+     671: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     674: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     677: invokevirtual #284                // Method info/openrocket/core/simulation/SimulationStatus.setRocketVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+     680: aload         4
+     682: aload_1
+     683: invokevirtual #287                // Method info/openrocket/core/simulation/SimulationStatus.getRocketOrientationQuaternion:()Linfo/openrocket/core/util/Quaternion;
+     686: aload         5
+     688: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+     691: aload_0
+     692: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     695: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     698: ldc2_w        #258                // double 2.0d
+     701: ddiv
+     702: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     705: invokestatic  #294                // Method info/openrocket/core/util/Quaternion.rotation:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Quaternion;
+     708: invokevirtual #300                // Method info/openrocket/core/util/Quaternion.multiplyLeft:(Linfo/openrocket/core/util/Quaternion;)Linfo/openrocket/core/util/Quaternion;
+     711: invokevirtual #304                // Method info/openrocket/core/simulation/SimulationStatus.setRocketOrientationQuaternion:(Linfo/openrocket/core/util/Quaternion;)V
+     714: aload         4
+     716: aload_1
+     717: invokevirtual #308                // Method info/openrocket/core/simulation/SimulationStatus.getRocketRotationVelocity:()Linfo/openrocket/core/util/Coordinate;
+     720: aload         5
+     722: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+     725: aload_0
+     726: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     729: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     732: ldc2_w        #258                // double 2.0d
+     735: ddiv
+     736: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     739: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     742: invokevirtual #314                // Method info/openrocket/core/simulation/SimulationStatus.setRocketRotationVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+     745: aload_0
+     746: aload         4
+     748: aload_0
+     749: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     752: invokevirtual #83                 // Method computeParameters:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)Linfo/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters;
+     755: astore        6
+     757: aload_1
+     758: invokevirtual #254                // Method info/openrocket/core/simulation/SimulationStatus.clone:()Linfo/openrocket/core/simulation/SimulationStatus;
+     761: astore        4
+     763: aload         4
+     765: aload_1
+     766: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+     769: aload_0
+     770: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     773: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     776: ldc2_w        #258                // double 2.0d
+     779: ddiv
+     780: dadd
+     781: invokevirtual #260                // Method info/openrocket/core/simulation/SimulationStatus.setSimulationTime:(D)V
+     784: aload         4
+     786: aload_1
+     787: invokevirtual #263                // Method info/openrocket/core/simulation/SimulationStatus.getRocketPosition:()Linfo/openrocket/core/util/Coordinate;
+     790: aload         6
+     792: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+     795: aload_0
+     796: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     799: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     802: ldc2_w        #258                // double 2.0d
+     805: ddiv
+     806: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     809: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     812: invokevirtual #274                // Method info/openrocket/core/simulation/SimulationStatus.setRocketPosition:(Linfo/openrocket/core/util/Coordinate;)V
+     815: aload         4
+     817: aload_1
+     818: invokevirtual #278                // Method info/openrocket/core/simulation/SimulationStatus.getRocketVelocity:()Linfo/openrocket/core/util/Coordinate;
+     821: aload         6
+     823: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+     826: aload_0
+     827: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     830: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     833: ldc2_w        #258                // double 2.0d
+     836: ddiv
+     837: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     840: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     843: invokevirtual #284                // Method info/openrocket/core/simulation/SimulationStatus.setRocketVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+     846: aload         4
+     848: aload         4
+     850: invokevirtual #287                // Method info/openrocket/core/simulation/SimulationStatus.getRocketOrientationQuaternion:()Linfo/openrocket/core/util/Quaternion;
+     853: aload         6
+     855: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+     858: aload_0
+     859: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     862: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     865: ldc2_w        #258                // double 2.0d
+     868: ddiv
+     869: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     872: invokestatic  #294                // Method info/openrocket/core/util/Quaternion.rotation:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Quaternion;
+     875: invokevirtual #300                // Method info/openrocket/core/util/Quaternion.multiplyLeft:(Linfo/openrocket/core/util/Quaternion;)Linfo/openrocket/core/util/Quaternion;
+     878: invokevirtual #304                // Method info/openrocket/core/simulation/SimulationStatus.setRocketOrientationQuaternion:(Linfo/openrocket/core/util/Quaternion;)V
+     881: aload         4
+     883: aload_1
+     884: invokevirtual #308                // Method info/openrocket/core/simulation/SimulationStatus.getRocketRotationVelocity:()Linfo/openrocket/core/util/Coordinate;
+     887: aload         6
+     889: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+     892: aload_0
+     893: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     896: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     899: ldc2_w        #258                // double 2.0d
+     902: ddiv
+     903: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     906: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     909: invokevirtual #314                // Method info/openrocket/core/simulation/SimulationStatus.setRocketRotationVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+     912: aload_0
+     913: aload         4
+     915: aload_0
+     916: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     919: invokevirtual #83                 // Method computeParameters:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)Linfo/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters;
+     922: astore        7
+     924: aload_1
+     925: invokevirtual #254                // Method info/openrocket/core/simulation/SimulationStatus.clone:()Linfo/openrocket/core/simulation/SimulationStatus;
+     928: astore        4
+     930: aload         4
+     932: aload_1
+     933: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+     936: aload_0
+     937: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     940: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     943: dadd
+     944: invokevirtual #260                // Method info/openrocket/core/simulation/SimulationStatus.setSimulationTime:(D)V
+     947: aload         4
+     949: aload_1
+     950: invokevirtual #263                // Method info/openrocket/core/simulation/SimulationStatus.getRocketPosition:()Linfo/openrocket/core/util/Coordinate;
+     953: aload         7
+     955: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+     958: aload_0
+     959: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     962: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     965: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     968: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     971: invokevirtual #274                // Method info/openrocket/core/simulation/SimulationStatus.setRocketPosition:(Linfo/openrocket/core/util/Coordinate;)V
+     974: aload         4
+     976: aload_1
+     977: invokevirtual #278                // Method info/openrocket/core/simulation/SimulationStatus.getRocketVelocity:()Linfo/openrocket/core/util/Coordinate;
+     980: aload         7
+     982: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+     985: aload_0
+     986: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+     989: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+     992: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     995: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     998: invokevirtual #284                // Method info/openrocket/core/simulation/SimulationStatus.setRocketVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+    1001: aload         4
+    1003: aload         4
+    1005: invokevirtual #287                // Method info/openrocket/core/simulation/SimulationStatus.getRocketOrientationQuaternion:()Linfo/openrocket/core/util/Quaternion;
+    1008: aload         7
+    1010: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+    1013: aload_0
+    1014: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1017: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1020: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1023: invokestatic  #294                // Method info/openrocket/core/util/Quaternion.rotation:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Quaternion;
+    1026: invokevirtual #300                // Method info/openrocket/core/util/Quaternion.multiplyLeft:(Linfo/openrocket/core/util/Quaternion;)Linfo/openrocket/core/util/Quaternion;
+    1029: invokevirtual #304                // Method info/openrocket/core/simulation/SimulationStatus.setRocketOrientationQuaternion:(Linfo/openrocket/core/util/Quaternion;)V
+    1032: aload         4
+    1034: aload_1
+    1035: invokevirtual #308                // Method info/openrocket/core/simulation/SimulationStatus.getRocketRotationVelocity:()Linfo/openrocket/core/util/Coordinate;
+    1038: aload         7
+    1040: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+    1043: aload_0
+    1044: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1047: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1050: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1053: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1056: invokevirtual #314                // Method info/openrocket/core/simulation/SimulationStatus.setRocketRotationVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+    1059: aload_0
+    1060: aload         4
+    1062: aload_0
+    1063: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1066: invokevirtual #83                 // Method computeParameters:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)Linfo/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters;
+    1069: astore        8
+    1071: aload         6
+    1073: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+    1076: aload         7
+    1078: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+    1081: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1084: ldc2_w        #258                // double 2.0d
+    1087: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1090: aload         5
+    1092: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+    1095: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1098: aload         8
+    1100: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+    1103: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1106: aload_0
+    1107: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1110: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1113: ldc2_w        #317                // double 6.0d
+    1116: ddiv
+    1117: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1120: astore        12
+    1122: aload         6
+    1124: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+    1127: aload         7
+    1129: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+    1132: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1135: ldc2_w        #258                // double 2.0d
+    1138: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1141: aload         5
+    1143: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+    1146: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1149: aload         8
+    1151: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+    1154: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1157: aload_0
+    1158: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1161: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1164: ldc2_w        #317                // double 6.0d
+    1167: ddiv
+    1168: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1171: astore        13
+    1173: aload         6
+    1175: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+    1178: aload         7
+    1180: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+    1183: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1186: ldc2_w        #258                // double 2.0d
+    1189: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1192: aload         5
+    1194: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+    1197: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1200: aload         8
+    1202: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+    1205: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1208: aload_0
+    1209: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1212: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1215: ldc2_w        #317                // double 6.0d
+    1218: ddiv
+    1219: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1222: astore        14
+    1224: aload         6
+    1226: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+    1229: aload         7
+    1231: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+    1234: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1237: ldc2_w        #258                // double 2.0d
+    1240: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1243: aload         5
+    1245: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+    1248: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1251: aload         8
+    1253: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+    1256: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1259: aload_0
+    1260: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1263: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1266: ldc2_w        #317                // double 6.0d
+    1269: ddiv
+    1270: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+    1273: astore        15
+    1275: aload_1
+    1276: aload_1
+    1277: invokevirtual #278                // Method info/openrocket/core/simulation/SimulationStatus.getRocketVelocity:()Linfo/openrocket/core/util/Coordinate;
+    1280: aload         12
+    1282: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1285: invokevirtual #284                // Method info/openrocket/core/simulation/SimulationStatus.setRocketVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+    1288: aload_1
+    1289: aload_1
+    1290: invokevirtual #263                // Method info/openrocket/core/simulation/SimulationStatus.getRocketPosition:()Linfo/openrocket/core/util/Coordinate;
+    1293: aload         13
+    1295: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1298: invokevirtual #274                // Method info/openrocket/core/simulation/SimulationStatus.setRocketPosition:(Linfo/openrocket/core/util/Coordinate;)V
+    1301: aload_1
+    1302: aload_1
+    1303: invokevirtual #308                // Method info/openrocket/core/simulation/SimulationStatus.getRocketRotationVelocity:()Linfo/openrocket/core/util/Coordinate;
+    1306: aload         14
+    1308: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+    1311: invokevirtual #314                // Method info/openrocket/core/simulation/SimulationStatus.setRocketRotationVelocity:(Linfo/openrocket/core/util/Coordinate;)V
+    1314: aload_1
+    1315: aload_1
+    1316: invokevirtual #287                // Method info/openrocket/core/simulation/SimulationStatus.getRocketOrientationQuaternion:()Linfo/openrocket/core/util/Quaternion;
+    1319: aload         15
+    1321: invokestatic  #294                // Method info/openrocket/core/util/Quaternion.rotation:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Quaternion;
+    1324: invokevirtual #300                // Method info/openrocket/core/util/Quaternion.multiplyLeft:(Linfo/openrocket/core/util/Quaternion;)Linfo/openrocket/core/util/Quaternion;
+    1327: invokevirtual #319                // Method info/openrocket/core/util/Quaternion.normalizeIfNecessary:()Linfo/openrocket/core/util/Quaternion;
+    1330: invokevirtual #304                // Method info/openrocket/core/simulation/SimulationStatus.setRocketOrientationQuaternion:(Linfo/openrocket/core/util/Quaternion;)V
+    1333: aload_1
+    1334: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+    1337: invokevirtual #322                // Method info/openrocket/core/simulation/SimulationConditions.getLaunchSite:()Linfo/openrocket/core/util/WorldCoordinate;
+    1340: astore        16
+    1342: aload_1
+    1343: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+    1346: invokevirtual #326                // Method info/openrocket/core/simulation/SimulationConditions.getGeodeticComputation:()Linfo/openrocket/core/util/GeodeticComputationStrategy;
+    1349: aload         16
+    1351: aload_1
+    1352: invokevirtual #263                // Method info/openrocket/core/simulation/SimulationStatus.getRocketPosition:()Linfo/openrocket/core/util/Coordinate;
+    1355: invokevirtual #330                // Method info/openrocket/core/util/GeodeticComputationStrategy.addCoordinate:(Linfo/openrocket/core/util/WorldCoordinate;Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/WorldCoordinate;
+    1358: astore        16
+    1360: aload_1
+    1361: aload         16
+    1363: invokevirtual #336                // Method info/openrocket/core/simulation/SimulationStatus.setRocketWorldPosition:(Linfo/openrocket/core/util/WorldCoordinate;)V
+    1366: dconst_0
+    1367: aload_0
+    1368: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1371: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1374: dcmpg
+    1375: ifle          1398
+    1378: new           #340                // class java/lang/IllegalArgumentException
+    1381: dup
+    1382: aload_0
+    1383: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1386: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1389: invokedynamic #342,  0            // InvokeDynamic #3:makeConcatWithConstants:(D)Ljava/lang/String;
+    1394: invokespecial #343                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+    1397: athrow
+    1398: aload_1
+    1399: aload_1
+    1400: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+    1403: aload_0
+    1404: getfield      #12                 // Field store:Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;
+    1407: getfield      #93                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.timeStep:D
+    1410: dadd
+    1411: invokevirtual #260                // Method info/openrocket/core/simulation/SimulationStatus.setSimulationTime:(D)V
+    1414: aload_1
+    1415: invokevirtual #278                // Method info/openrocket/core/simulation/SimulationStatus.getRocketVelocity:()Linfo/openrocket/core/util/Coordinate;
+    1418: invokevirtual #344                // Method info/openrocket/core/util/Coordinate.length2:()D
+    1421: ldc2_w        #347                // double 1.0E18d
+    1424: dcmpl
+    1425: ifgt          1456
+    1428: aload_1
+    1429: invokevirtual #263                // Method info/openrocket/core/simulation/SimulationStatus.getRocketPosition:()Linfo/openrocket/core/util/Coordinate;
+    1432: invokevirtual #344                // Method info/openrocket/core/util/Coordinate.length2:()D
+    1435: ldc2_w        #347                // double 1.0E18d
+    1438: dcmpl
+    1439: ifgt          1456
+    1442: aload_1
+    1443: invokevirtual #308                // Method info/openrocket/core/simulation/SimulationStatus.getRocketRotationVelocity:()Linfo/openrocket/core/util/Coordinate;
+    1446: invokevirtual #344                // Method info/openrocket/core/util/Coordinate.length2:()D
+    1449: ldc2_w        #347                // double 1.0E18d
+    1452: dcmpl
+    1453: ifle          1479
+    1456: new           #349                // class info/openrocket/core/simulation/exception/SimulationCalculationException
+    1459: dup
+    1460: getstatic     #351                // Field trans:Linfo/openrocket/core/l10n/Translator;
+    1463: ldc_w         #355                // String error.valuesTooLarge
+    1466: invokeinterface #357,  2          // InterfaceMethod info/openrocket/core/l10n/Translator.get:(Ljava/lang/String;)Ljava/lang/String;
+    1471: aload_1
+    1472: invokevirtual #363                // Method info/openrocket/core/simulation/SimulationStatus.getFlightDataBranch:()Linfo/openrocket/core/simulation/FlightDataBranch;
+    1475: invokespecial #367                // Method info/openrocket/core/simulation/exception/SimulationCalculationException."<init>":(Ljava/lang/String;Linfo/openrocket/core/simulation/FlightDataBranch;)V
+    1478: athrow
+    1479: return
+
+  private info.openrocket.core.simulation.RK4SimulationStepper$RK4Parameters computeParameters(info.openrocket.core.simulation.SimulationStatus, info.openrocket.core.simulation.AbstractSimulationStepper$DataStore) throws info.openrocket.core.simulation.exception.SimulationException;
+    Code:
+       0: new           #185                // class info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters
+       3: dup
+       4: invokespecial #370                // Method info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters."<init>":()V
+       7: astore_3
+       8: aload_0
+       9: aload_1
+      10: aload_2
+      11: invokevirtual #371                // Method calculateAcceleration:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)V
+      14: aload_3
+      15: aload_2
+      16: getfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+      19: invokevirtual #374                // Method info/openrocket/core/simulation/AccelerationData.getLinearAccelerationWC:()Linfo/openrocket/core/util/Coordinate;
+      22: putfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+      25: aload_3
+      26: aload_2
+      27: getfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+      30: invokevirtual #377                // Method info/openrocket/core/simulation/AccelerationData.getRotationalAccelerationWC:()Linfo/openrocket/core/util/Coordinate;
+      33: putfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+      36: aload_3
+      37: aload_1
+      38: invokevirtual #278                // Method info/openrocket/core/simulation/SimulationStatus.getRocketVelocity:()Linfo/openrocket/core/util/Coordinate;
+      41: putfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+      44: aload_3
+      45: aload_1
+      46: invokevirtual #308                // Method info/openrocket/core/simulation/SimulationStatus.getRocketRotationVelocity:()Linfo/openrocket/core/util/Coordinate;
+      49: putfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+      52: aload_0
+      53: aload_3
+      54: getfield      #281                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.a:Linfo/openrocket/core/util/Coordinate;
+      57: ldc_w         #380                // String params.a
+      60: invokevirtual #382                // Method checkNaN:(Linfo/openrocket/core/util/Coordinate;Ljava/lang/String;)V
+      63: aload_0
+      64: aload_3
+      65: getfield      #311                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.ra:Linfo/openrocket/core/util/Coordinate;
+      68: ldc_w         #385                // String params.ra
+      71: invokevirtual #382                // Method checkNaN:(Linfo/openrocket/core/util/Coordinate;Ljava/lang/String;)V
+      74: aload_0
+      75: aload_3
+      76: getfield      #184                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.v:Linfo/openrocket/core/util/Coordinate;
+      79: ldc_w         #387                // String params.v
+      82: invokevirtual #382                // Method checkNaN:(Linfo/openrocket/core/util/Coordinate;Ljava/lang/String;)V
+      85: aload_0
+      86: aload_3
+      87: getfield      #291                // Field info/openrocket/core/simulation/RK4SimulationStepper$RK4Parameters.rv:Linfo/openrocket/core/util/Coordinate;
+      90: ldc_w         #389                // String params.rv
+      93: invokevirtual #382                // Method checkNaN:(Linfo/openrocket/core/util/Coordinate;Ljava/lang/String;)V
+      96: aload_3
+      97: areturn
+
+  void calculateAcceleration(info.openrocket.core.simulation.SimulationStatus, info.openrocket.core.simulation.AbstractSimulationStepper$DataStore) throws info.openrocket.core.simulation.exception.SimulationException;
+    Code:
+       0: aload_2
+       1: aload_1
+       2: invokestatic  #391                // Method info/openrocket/core/simulation/listeners/SimulationListenerHelper.firePreAccelerationCalculation:(Linfo/openrocket/core/simulation/SimulationStatus;)Linfo/openrocket/core/simulation/AccelerationData;
+       5: putfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+       8: aload_2
+       9: getfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+      12: ifnonnull     25
+      15: aload_2
+      16: aload_0
+      17: aload_1
+      18: aload_2
+      19: invokevirtual #397                // Method computeAcceleration:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)Linfo/openrocket/core/simulation/AccelerationData;
+      22: putfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+      25: aload_2
+      26: aload_1
+      27: aload_2
+      28: getfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+      31: invokestatic  #401                // Method info/openrocket/core/simulation/listeners/SimulationListenerHelper.firePostAccelerationCalculation:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AccelerationData;)Linfo/openrocket/core/simulation/AccelerationData;
+      34: putfield      #154                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.accelerationData:Linfo/openrocket/core/simulation/AccelerationData;
+      37: return
+
+  protected double calculateThrust(info.openrocket.core.simulation.SimulationStatus, info.openrocket.core.simulation.AbstractSimulationStepper$DataStore) throws info.openrocket.core.simulation.exception.SimulationException;
+    Code:
+       0: aload_1
+       1: invokestatic  #405                // Method info/openrocket/core/simulation/listeners/SimulationListenerHelper.firePreThrustCalculation:(Linfo/openrocket/core/simulation/SimulationStatus;)D
+       4: dstore_3
+       5: dload_3
+       6: invokestatic  #87                 // Method java/lang/Double.isNaN:(D)Z
+       9: ifne          14
+      12: dload_3
+      13: dreturn
+      14: dconst_0
+      15: dstore_3
+      16: aload_1
+      17: invokevirtual #409                // Method info/openrocket/core/simulation/SimulationStatus.getActiveMotors:()Ljava/util/Collection;
+      20: astore        5
+      22: aload         5
+      24: invokeinterface #413,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      29: astore        6
+      31: aload         6
+      33: invokeinterface #419,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      38: ifeq          68
+      41: aload         6
+      43: invokeinterface #424,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      48: checkcast     #428                // class info/openrocket/core/simulation/MotorClusterState
+      51: astore        7
+      53: dload_3
+      54: aload         7
+      56: aload_1
+      57: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+      60: invokevirtual #430                // Method info/openrocket/core/simulation/MotorClusterState.getThrust:(D)D
+      63: dadd
+      64: dstore_3
+      65: goto          31
+      68: aload_1
+      69: dload_3
+      70: invokestatic  #433                // Method info/openrocket/core/simulation/listeners/SimulationListenerHelper.firePostThrustCalculation:(Linfo/openrocket/core/simulation/SimulationStatus;D)D
+      73: dstore_3
+      74: aload_0
+      75: dload_3
+      76: ldc_w         #436                // String thrust
+      79: invokevirtual #250                // Method checkNaN:(DLjava/lang/String;)V
+      82: dload_3
+      83: dreturn
+
+  private info.openrocket.core.simulation.AccelerationData computeAcceleration(info.openrocket.core.simulation.SimulationStatus, info.openrocket.core.simulation.AbstractSimulationStepper$DataStore) throws info.openrocket.core.simulation.exception.SimulationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #438                // Method calculateStructureMass:(Linfo/openrocket/core/simulation/SimulationStatus;)Linfo/openrocket/core/masscalc/RigidBody;
+       5: astore        5
+       7: aload_2
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #442                // Method calculateMotorMass:(Linfo/openrocket/core/simulation/SimulationStatus;)Linfo/openrocket/core/masscalc/RigidBody;
+      13: putfield      #445                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.motorMass:Linfo/openrocket/core/masscalc/RigidBody;
+      16: aload_2
+      17: aload         5
+      19: aload_2
+      20: getfield      #445                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.motorMass:Linfo/openrocket/core/masscalc/RigidBody;
+      23: invokevirtual #449                // Method info/openrocket/core/masscalc/RigidBody.add:(Linfo/openrocket/core/masscalc/RigidBody;)Linfo/openrocket/core/masscalc/RigidBody;
+      26: putfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+      29: aload_2
+      30: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+      33: invokevirtual #457                // Method info/openrocket/core/masscalc/RigidBody.getMass:()D
+      36: ldc2_w        #460                // double 1.0E-8d
+      39: dcmpg
+      40: ifge          50
+      43: aload_1
+      44: getstatic     #462                // Field info/openrocket/core/logging/SimulationAbort$Cause.ACTIVE_MASS_ZERO:Linfo/openrocket/core/logging/SimulationAbort$Cause;
+      47: invokevirtual #468                // Method info/openrocket/core/simulation/SimulationStatus.abortSimulation:(Linfo/openrocket/core/logging/SimulationAbort$Cause;)V
+      50: aload_0
+      51: aload_1
+      52: aload_2
+      53: invokevirtual #472                // Method calculateForces:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)V
+      56: ldc2_w        #475                // double 0.5d
+      59: aload_2
+      60: getfield      #140                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.flightConditions:Linfo/openrocket/core/aerodynamics/FlightConditions;
+      63: invokevirtual #477                // Method info/openrocket/core/aerodynamics/FlightConditions.getAtmosphericConditions:()Linfo/openrocket/core/models/atmosphere/AtmosphericConditions;
+      66: invokevirtual #481                // Method info/openrocket/core/models/atmosphere/AtmosphericConditions.getDensity:()D
+      69: dmul
+      70: aload_2
+      71: getfield      #140                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.flightConditions:Linfo/openrocket/core/aerodynamics/FlightConditions;
+      74: invokevirtual #486                // Method info/openrocket/core/aerodynamics/FlightConditions.getVelocity:()D
+      77: invokestatic  #489                // Method info/openrocket/core/util/MathUtil.pow2:(D)D
+      80: dmul
+      81: dstore        6
+      83: aload_2
+      84: getfield      #140                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.flightConditions:Linfo/openrocket/core/aerodynamics/FlightConditions;
+      87: invokevirtual #492                // Method info/openrocket/core/aerodynamics/FlightConditions.getRefArea:()D
+      90: dstore        8
+      92: aload_2
+      93: getfield      #140                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.flightConditions:Linfo/openrocket/core/aerodynamics/FlightConditions;
+      96: invokevirtual #495                // Method info/openrocket/core/aerodynamics/FlightConditions.getRefLength:()D
+      99: dstore        10
+     101: aload_2
+     102: aload_2
+     103: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     106: invokevirtual #502                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCDaxial:()D
+     109: dload         6
+     111: dmul
+     112: dload         8
+     114: dmul
+     115: putfield      #507                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.dragForce:D
+     118: aload_2
+     119: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     122: invokevirtual #510                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCN:()D
+     125: dload         6
+     127: dmul
+     128: dload         8
+     130: dmul
+     131: dstore        12
+     133: aload_2
+     134: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     137: invokevirtual #513                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCside:()D
+     140: dload         6
+     142: dmul
+     143: dload         8
+     145: dmul
+     146: dstore        14
+     148: aload_2
+     149: aload_0
+     150: aload_1
+     151: aload_2
+     152: invokevirtual #516                // Method calculateThrust:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)D
+     155: putfield      #520                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.thrustForce:D
+     158: aload_2
+     159: getfield      #520                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.thrustForce:D
+     162: aload_2
+     163: getfield      #507                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.dragForce:D
+     166: dsub
+     167: dstore        16
+     169: new           #35                 // class info/openrocket/core/util/Coordinate
+     172: dup
+     173: dload         12
+     175: dneg
+     176: aload_2
+     177: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     180: invokevirtual #457                // Method info/openrocket/core/masscalc/RigidBody.getMass:()D
+     183: ddiv
+     184: dload         14
+     186: dneg
+     187: aload_2
+     188: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     191: invokevirtual #457                // Method info/openrocket/core/masscalc/RigidBody.getMass:()D
+     194: ddiv
+     195: dload         16
+     197: aload_2
+     198: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     201: invokevirtual #457                // Method info/openrocket/core/masscalc/RigidBody.getMass:()D
+     204: ddiv
+     205: invokespecial #55                 // Method info/openrocket/core/util/Coordinate."<init>":(DDD)V
+     208: astore_3
+     209: aload_2
+     210: getfield      #523                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.thetaRotation:Linfo/openrocket/core/util/Rotation2D;
+     213: aload_3
+     214: invokevirtual #527                // Method info/openrocket/core/util/Rotation2D.rotateZ:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     217: astore_3
+     218: aload_1
+     219: invokevirtual #287                // Method info/openrocket/core/simulation/SimulationStatus.getRocketOrientationQuaternion:()Linfo/openrocket/core/util/Quaternion;
+     222: aload_3
+     223: invokevirtual #532                // Method info/openrocket/core/util/Quaternion.rotate:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     226: astore_3
+     227: aload_2
+     228: aload_0
+     229: aload_1
+     230: invokevirtual #535                // Method modelGravity:(Linfo/openrocket/core/simulation/SimulationStatus;)D
+     233: putfield      #538                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.gravity:D
+     236: aload_3
+     237: dconst_0
+     238: dconst_0
+     239: aload_2
+     240: getfield      #538                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.gravity:D
+     243: invokevirtual #541                // Method info/openrocket/core/util/Coordinate.sub:(DDD)Linfo/openrocket/core/util/Coordinate;
+     246: astore_3
+     247: aload_2
+     248: aload_1
+     249: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+     252: invokevirtual #326                // Method info/openrocket/core/simulation/SimulationConditions.getGeodeticComputation:()Linfo/openrocket/core/util/GeodeticComputationStrategy;
+     255: aload_1
+     256: invokevirtual #545                // Method info/openrocket/core/simulation/SimulationStatus.getRocketWorldPosition:()Linfo/openrocket/core/util/WorldCoordinate;
+     259: aload_1
+     260: invokevirtual #278                // Method info/openrocket/core/simulation/SimulationStatus.getRocketVelocity:()Linfo/openrocket/core/util/Coordinate;
+     263: invokevirtual #548                // Method info/openrocket/core/util/GeodeticComputationStrategy.getCoriolisAcceleration:(Linfo/openrocket/core/util/WorldCoordinate;Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     266: putfield      #552                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.coriolisAcceleration:Linfo/openrocket/core/util/Coordinate;
+     269: aload_3
+     270: aload_2
+     271: getfield      #552                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.coriolisAcceleration:Linfo/openrocket/core/util/Coordinate;
+     274: invokevirtual #270                // Method info/openrocket/core/util/Coordinate.add:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     277: astore_3
+     278: aload_1
+     279: invokevirtual #555                // Method info/openrocket/core/simulation/SimulationStatus.isLiftoff:()Z
+     282: ifne          306
+     285: getstatic     #558                // Field info/openrocket/core/util/Coordinate.NUL:Linfo/openrocket/core/util/Coordinate;
+     288: astore        4
+     290: aload_3
+     291: getfield      #164                // Field info/openrocket/core/util/Coordinate.z:D
+     294: dconst_0
+     295: dcmpg
+     296: ifge          505
+     299: getstatic     #561                // Field info/openrocket/core/util/Coordinate.ZERO:Linfo/openrocket/core/util/Coordinate;
+     302: astore_3
+     303: goto          505
+     306: aload_1
+     307: invokevirtual #175                // Method info/openrocket/core/simulation/SimulationStatus.isLaunchRodCleared:()Z
+     310: ifne          337
+     313: aload_2
+     314: getfield      #58                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.launchRodDirection:Linfo/openrocket/core/util/Coordinate;
+     317: aload_3
+     318: aload_2
+     319: getfield      #58                 // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.launchRodDirection:Linfo/openrocket/core/util/Coordinate;
+     322: invokevirtual #564                // Method info/openrocket/core/util/Coordinate.dot:(Linfo/openrocket/core/util/Coordinate;)D
+     325: invokevirtual #266                // Method info/openrocket/core/util/Coordinate.multiply:(D)Linfo/openrocket/core/util/Coordinate;
+     328: astore_3
+     329: getstatic     #558                // Field info/openrocket/core/util/Coordinate.NUL:Linfo/openrocket/core/util/Coordinate;
+     332: astore        4
+     334: goto          505
+     337: aload_2
+     338: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     341: invokevirtual #568                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCm:()D
+     344: aload_2
+     345: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     348: invokevirtual #510                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCN:()D
+     351: aload_2
+     352: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     355: invokevirtual #571                // Method info/openrocket/core/masscalc/RigidBody.getCM:()Linfo/openrocket/core/util/Coordinate;
+     358: getfield      #169                // Field info/openrocket/core/util/Coordinate.x:D
+     361: dmul
+     362: dload         10
+     364: ddiv
+     365: dsub
+     366: dstore        18
+     368: aload_2
+     369: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     372: invokevirtual #574                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCyaw:()D
+     375: aload_2
+     376: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     379: invokevirtual #513                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCside:()D
+     382: aload_2
+     383: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     386: invokevirtual #571                // Method info/openrocket/core/masscalc/RigidBody.getCM:()Linfo/openrocket/core/util/Coordinate;
+     389: getfield      #169                // Field info/openrocket/core/util/Coordinate.x:D
+     392: dmul
+     393: dload         10
+     395: ddiv
+     396: dsub
+     397: dstore        20
+     399: dload         20
+     401: dneg
+     402: dload         6
+     404: dmul
+     405: dload         8
+     407: dmul
+     408: dload         10
+     410: dmul
+     411: dstore        22
+     413: dload         18
+     415: dload         6
+     417: dmul
+     418: dload         8
+     420: dmul
+     421: dload         10
+     423: dmul
+     424: dstore        24
+     426: aload_2
+     427: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     430: invokevirtual #577                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCroll:()D
+     433: dload         6
+     435: dmul
+     436: dload         8
+     438: dmul
+     439: dload         10
+     441: dmul
+     442: dstore        26
+     444: new           #35                 // class info/openrocket/core/util/Coordinate
+     447: dup
+     448: dload         22
+     450: aload_2
+     451: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     454: invokevirtual #580                // Method info/openrocket/core/masscalc/RigidBody.getLongitudinalInertia:()D
+     457: ddiv
+     458: dload         24
+     460: aload_2
+     461: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     464: invokevirtual #580                // Method info/openrocket/core/masscalc/RigidBody.getLongitudinalInertia:()D
+     467: ddiv
+     468: dload         26
+     470: aload_2
+     471: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+     474: invokevirtual #583                // Method info/openrocket/core/masscalc/RigidBody.getRotationalInertia:()D
+     477: ddiv
+     478: invokespecial #55                 // Method info/openrocket/core/util/Coordinate."<init>":(DDD)V
+     481: astore        4
+     483: aload_2
+     484: getfield      #523                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.thetaRotation:Linfo/openrocket/core/util/Rotation2D;
+     487: aload         4
+     489: invokevirtual #527                // Method info/openrocket/core/util/Rotation2D.rotateZ:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     492: astore        4
+     494: aload_1
+     495: invokevirtual #287                // Method info/openrocket/core/simulation/SimulationStatus.getRocketOrientationQuaternion:()Linfo/openrocket/core/util/Quaternion;
+     498: aload         4
+     500: invokevirtual #532                // Method info/openrocket/core/util/Quaternion.rotate:(Linfo/openrocket/core/util/Coordinate;)Linfo/openrocket/core/util/Coordinate;
+     503: astore        4
+     505: new           #159                // class info/openrocket/core/simulation/AccelerationData
+     508: dup
+     509: aconst_null
+     510: aconst_null
+     511: aload_3
+     512: aload         4
+     514: aload_1
+     515: invokevirtual #287                // Method info/openrocket/core/simulation/SimulationStatus.getRocketOrientationQuaternion:()Linfo/openrocket/core/util/Quaternion;
+     518: invokespecial #586                // Method info/openrocket/core/simulation/AccelerationData."<init>":(Linfo/openrocket/core/util/Coordinate;Linfo/openrocket/core/util/Coordinate;Linfo/openrocket/core/util/Coordinate;Linfo/openrocket/core/util/Coordinate;Linfo/openrocket/core/util/Quaternion;)V
+     521: areturn
+
+  private void calculateForces(info.openrocket.core.simulation.SimulationStatus, info.openrocket.core.simulation.AbstractSimulationStepper$DataStore) throws info.openrocket.core.simulation.exception.SimulationException;
+    Code:
+       0: aload_2
+       1: aload_1
+       2: invokestatic  #589                // Method info/openrocket/core/simulation/listeners/SimulationListenerHelper.firePreAerodynamicCalculation:(Linfo/openrocket/core/simulation/SimulationStatus;)Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+       5: putfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+       8: aload_2
+       9: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+      12: ifnull        16
+      15: return
+      16: aload_0
+      17: aload_1
+      18: aload_2
+      19: invokevirtual #79                 // Method calculateFlightConditions:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/simulation/AbstractSimulationStepper$DataStore;)V
+      22: aload_1
+      23: invokevirtual #593                // Method info/openrocket/core/simulation/SimulationStatus.recordWarnings:()Z
+      26: ifeq          39
+      29: new           #596                // class info/openrocket/core/logging/WarningSet
+      32: dup
+      33: invokespecial #598                // Method info/openrocket/core/logging/WarningSet."<init>":()V
+      36: goto          40
+      39: aconst_null
+      40: astore_3
+      41: aload_2
+      42: aload_1
+      43: invokevirtual #31                 // Method info/openrocket/core/simulation/SimulationStatus.getSimulationConditions:()Linfo/openrocket/core/simulation/SimulationConditions;
+      46: invokevirtual #599                // Method info/openrocket/core/simulation/SimulationConditions.getAerodynamicCalculator:()Linfo/openrocket/core/aerodynamics/AerodynamicCalculator;
+      49: aload_1
+      50: invokevirtual #603                // Method info/openrocket/core/simulation/SimulationStatus.getConfiguration:()Linfo/openrocket/core/rocketcomponent/FlightConfiguration;
+      53: aload_2
+      54: getfield      #140                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.flightConditions:Linfo/openrocket/core/aerodynamics/FlightConditions;
+      57: aload_3
+      58: invokeinterface #607,  4          // InterfaceMethod info/openrocket/core/aerodynamics/AerodynamicCalculator.getAerodynamicForces:(Linfo/openrocket/core/rocketcomponent/FlightConfiguration;Linfo/openrocket/core/aerodynamics/FlightConditions;Linfo/openrocket/core/logging/WarningSet;)Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+      63: putfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+      66: aconst_null
+      67: aload_3
+      68: if_acmpeq     207
+      71: aload_1
+      72: invokevirtual #603                // Method info/openrocket/core/simulation/SimulationStatus.getConfiguration:()Linfo/openrocket/core/rocketcomponent/FlightConfiguration;
+      75: iconst_0
+      76: invokevirtual #613                // Method info/openrocket/core/rocketcomponent/FlightConfiguration.isStageActive:(I)Z
+      79: istore        4
+      81: aload_2
+      82: getfield      #454                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.rocketMass:Linfo/openrocket/core/masscalc/RigidBody;
+      85: invokevirtual #571                // Method info/openrocket/core/masscalc/RigidBody.getCM:()Linfo/openrocket/core/util/Coordinate;
+      88: getfield      #169                // Field info/openrocket/core/util/Coordinate.x:D
+      91: aload_2
+      92: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+      95: invokevirtual #619                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCP:()Linfo/openrocket/core/util/Coordinate;
+      98: getfield      #169                // Field info/openrocket/core/util/Coordinate.x:D
+     101: dcmpg
+     102: ifge          109
+     105: iconst_1
+     106: goto          110
+     109: iconst_0
+     110: istore        5
+     112: iconst_0
+     113: istore        6
+     115: aload_1
+     116: invokevirtual #622                // Method info/openrocket/core/simulation/SimulationStatus.getEventQueue:()Linfo/openrocket/core/simulation/EventQueue;
+     119: invokevirtual #626                // Method info/openrocket/core/simulation/EventQueue.iterator:()Ljava/util/Iterator;
+     122: astore        7
+     124: aload         7
+     126: invokeinterface #419,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     131: ifeq          180
+     134: aload         7
+     136: invokeinterface #424,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     141: checkcast     #629                // class info/openrocket/core/simulation/FlightEvent
+     144: astore        8
+     146: aload         8
+     148: invokevirtual #631                // Method info/openrocket/core/simulation/FlightEvent.getType:()Linfo/openrocket/core/simulation/FlightEvent$Type;
+     151: getstatic     #635                // Field info/openrocket/core/simulation/FlightEvent$Type.RECOVERY_DEVICE_DEPLOYMENT:Linfo/openrocket/core/simulation/FlightEvent$Type;
+     154: if_acmpne     177
+     157: aload         8
+     159: invokevirtual #641                // Method info/openrocket/core/simulation/FlightEvent.getTime:()D
+     162: aload_1
+     163: invokevirtual #205                // Method info/openrocket/core/simulation/SimulationStatus.getSimulationTime:()D
+     166: ldc2_w        #475                // double 0.5d
+     169: dadd
+     170: dcmpg
+     171: ifge          177
+     174: iconst_1
+     175: istore        6
+     177: goto          124
+     180: iload         4
+     182: ifne          202
+     185: iload         5
+     187: ifeq          195
+     190: iload         6
+     192: ifeq          202
+     195: aload_3
+     196: getstatic     #644                // Field info/openrocket/core/logging/Warning.OPEN_AIRFRAME_FORWARD:Linfo/openrocket/core/logging/Warning;
+     199: invokevirtual #650                // Method info/openrocket/core/logging/WarningSet.filterOut:(Linfo/openrocket/core/logging/Message;)V
+     202: aload_1
+     203: aload_3
+     204: invokevirtual #654                // Method info/openrocket/core/simulation/SimulationStatus.addWarnings:(Linfo/openrocket/core/logging/WarningSet;)V
+     207: aload_2
+     208: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     211: aload_2
+     212: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     215: invokevirtual #568                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCm:()D
+     218: ldc2_w        #113                // double 0.001d
+     221: aload_0
+     222: getfield      #72                 // Field random:Ljava/util/Random;
+     225: invokevirtual #657                // Method java/util/Random.nextDouble:()D
+     228: ldc2_w        #475                // double 0.5d
+     231: dsub
+     232: dmul
+     233: dadd
+     234: invokevirtual #660                // Method info/openrocket/core/aerodynamics/AerodynamicForces.setCm:(D)V
+     237: aload_2
+     238: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     241: aload_2
+     242: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     245: invokevirtual #574                // Method info/openrocket/core/aerodynamics/AerodynamicForces.getCyaw:()D
+     248: ldc2_w        #113                // double 0.001d
+     251: aload_0
+     252: getfield      #72                 // Field random:Ljava/util/Random;
+     255: invokevirtual #657                // Method java/util/Random.nextDouble:()D
+     258: ldc2_w        #475                // double 0.5d
+     261: dsub
+     262: dmul
+     263: dadd
+     264: invokevirtual #663                // Method info/openrocket/core/aerodynamics/AerodynamicForces.setCyaw:(D)V
+     267: aload_2
+     268: aload_1
+     269: aload_2
+     270: getfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     273: invokestatic  #666                // Method info/openrocket/core/simulation/listeners/SimulationListenerHelper.firePostAerodynamicCalculation:(Linfo/openrocket/core/simulation/SimulationStatus;Linfo/openrocket/core/aerodynamics/AerodynamicForces;)Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     276: putfield      #498                // Field info/openrocket/core/simulation/AbstractSimulationStepper$DataStore.forces:Linfo/openrocket/core/aerodynamics/AerodynamicForces;
+     279: return
+
+  static {};
+    Code:
+       0: ldc           #13                 // class info/openrocket/core/simulation/RK4SimulationStepper
+       2: invokestatic  #670                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #233                // Field log:Lorg/slf4j/Logger;
+       8: invokestatic  #676                // Method info/openrocket/core/startup/Application.getTranslator:()Linfo/openrocket/core/l10n/Translator;
+      11: putstatic     #351                // Field trans:Linfo/openrocket/core/l10n/Translator;
+      14: return
+}
