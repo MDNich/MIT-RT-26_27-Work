@@ -1,0 +1,48 @@
+{
+  "source": "/Users/mdn/Developer/MIT_Rkt_Team/admin/URRG_perimeter_MGRS_1000.txt",
+  "source_sha256": "33f6847334067f7b803f76b91011a14ce614e9d625b2371f6fd33c6504eabaa6",
+  "point_count": 1000,
+  "utm_crs": "EPSG:32618",
+  "area_m2": 4713027.500000572,
+  "area_km2": 4.713027500000572,
+  "launch_inside": true,
+  "launch_to_boundary_m": 192.46298345620684,
+  "boundary_rule": "Connect points in file order; close last to first. Boundary counts as inside.",
+  "coordinate_convention": "MGRS grid-cell southwest corner; same convention as the telemetry launch preset.",
+  "launch_site": {
+    "name": "URRG",
+    "mgrs": "18TUN2061530290",
+    "latitude_deg": 42.70416776971639,
+    "longitude_deg": -77.19029501648315,
+    "elevation_m": 268.603118896,
+    "elevation_source": "https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False",
+    "coordinate_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py",
+    "coordinate_source_sha256": "ae16e8902eba4c1421fc182545c6d1316453d2ae74bc57eaa3de74d10d2a566d"
+  },
+  "weather": "Mean wind uniform 0\u20135 m/s; direction uniform 0\u2013360\u00b0; turbulence intensity uniform 5%\u201320%.",
+  "denominator": "Completed Monte Carlo flights with main deployment; aborts and control flights excluded.",
+  "configs": [
+    {
+      "motor": "HP-I500T",
+      "default_motor": false,
+      "inside_green_area": 474,
+      "outside_green_area": 1,
+      "completed_flights": 475,
+      "excluded_incomplete": 25,
+      "inside_percent": 99.78947368421052,
+      "closest_landing_to_boundary_m": 5.672723383247911,
+      "landings_within_1m_of_boundary": 0
+    },
+    {
+      "motor": "J570W",
+      "default_motor": true,
+      "inside_green_area": 468,
+      "outside_green_area": 30,
+      "completed_flights": 498,
+      "excluded_incomplete": 2,
+      "inside_percent": 93.97590361445783,
+      "closest_landing_to_boundary_m": 0.8569143274396093,
+      "landings_within_1m_of_boundary": 1
+    }
+  ]
+}

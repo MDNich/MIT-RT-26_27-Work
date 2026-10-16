@@ -17,6 +17,7 @@ Example:
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import hashlib
 import json
@@ -48,11 +49,26 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def site():
-    lat, lon = mgrs.MGRS().toLatLon(DEFAULT_MGRS)
-    return {'name': 'URRG', 'mgrs': DEFAULT_MGRS, 'latitude_deg': lat,
+def site(presets_path=None):
+    code = DEFAULT_MGRS
+    provenance = {}
+    if presets_path is not None:
+        # Read the coordinate literal without importing/executing UI code.
+        source = Path(presets_path).resolve()
+        tree = ast.parse(source.read_text())
+        matches = [ast.literal_eval(node.value) for node in tree.body
+                   if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+                   and target.id == 'URRG_LAUNCH_MGRS' for target in node.targets)]
+        if len(matches) != 1 or not isinstance(matches[0], str):
+            raise ValueError('Expected one literal URRG_LAUNCH_MGRS in the telemetry site presets.')
+        code = matches[0]
+        if code != DEFAULT_MGRS:
+            raise ValueError('Telemetry pad has moved; obtain its elevation before reusing the old site elevation.')
+        provenance = {'coordinate_source': str(source), 'coordinate_source_sha256': digest(source)}
+    lat, lon = mgrs.MGRS().toLatLon(code)
+    return {'name': 'URRG', 'mgrs': code, 'latitude_deg': lat,
             'longitude_deg': lon, 'elevation_m': URRG_ELEVATION_M,
-            'elevation_source': ELEVATION_SOURCE}
+            'elevation_source': ELEVATION_SOURCE, **provenance}
 
 
 def read_design(path):
@@ -163,6 +179,7 @@ def run_engine(args, cases, results, launch):
     if not javac or not java:
         raise RuntimeError('Java and javac are required; pass --java-home.')
     receipt = {'source_ork': str(args.ork.resolve()), 'source_ork_sha256': digest(args.ork),
+               'launch_site': launch,
                'engine_jar': str(jar), 'engine_jar_sha256': digest(jar),
                'trials_per_motor': args.trials, 'first_seed': args.seed,
                'wind_speed_override_mps': args.wind_speed,
@@ -172,6 +189,14 @@ def run_engine(args, cases, results, launch):
                'sampling': ('Latin hypercube, independent uniform marginals, paired weather across motors'
                             if args.random_wind_max is not None else 'Fixed mean weather, varying pink-noise seeds'),
                'workers': args.workers}
+    if getattr(args, 'trace_dir', None) is not None:
+        receipt['trajectory_export'] = {
+            'directory': str(args.trace_dir),
+            'virtual_floor_depth_m': args.virtual_floor_depth,
+            'note': 'Physical launch altitude preserved; raw endpoints are on a virtual floor. Intersect trajectories with terrain before reporting landings.'}
+    if args.perimeter_mgrs is not None:
+        receipt['perimeter_source'] = str(args.perimeter_mgrs.resolve())
+        receipt['perimeter_sha256'] = digest(args.perimeter_mgrs)
     (args.output/'run_manifest.json').write_text(json.dumps(receipt, indent=2)+'\n')
     with tempfile.TemporaryDirectory(prefix='urrg-recovery-') as build:
         subprocess.run([javac, '-cp', str(jar), '-d', build, str(HERE / 'RecoveryBatch.java')], check=True)
@@ -179,8 +204,10 @@ def run_engine(args, cases, results, launch):
                'RecoveryBatch', str(args.ork.resolve())]
         coords = [str(launch['latitude_deg']), str(launch['longitude_deg']), str(launch['elevation_m'])]
         def run_part(index, case_path, result_path):
+            trace_args = ([str(args.trace_dir), str(args.virtual_floor_depth)]
+                          if getattr(args, 'trace_dir', None) is not None else [])
             with (args.output / f'engine_{index}.log').open('w') as log:
-                subprocess.run(cmd + [str(case_path), str(result_path)] + coords,
+                subprocess.run(cmd + [str(case_path), str(result_path)] + coords + trace_args,
                                stdout=log, stderr=log, check=True)
         with cases.open() as f:
             reader = csv.DictReader(f)
@@ -458,6 +485,8 @@ def main():
     p.add_argument('--turbulence-min', type=float, default=.05)
     p.add_argument('--turbulence-max', type=float, default=.20)
     p.add_argument('--workers', type=int, default=1, help='Number of independent Java workers.')
+    p.add_argument('--telemetry-site-presets', type=Path, help='Read URRG_LAUNCH_MGRS from the telemetry UI site_presets.py.')
+    p.add_argument('--perimeter-mgrs', type=Path, help='Ordered perimeter MGRS points; close the polygon and classify landings inside it.')
     p.add_argument('--output', type=Path)
     p.add_argument('--analyze-only', action='store_true', help='Regenerate summaries and plots from existing runs.csv.')
     p.add_argument('--basemap', action='store_true', help='Also download an Esri satellite basemap (requires contextily and rasterio).')
@@ -475,6 +504,7 @@ def main():
     if args.output is None:
         args.output = HERE/('urrg_no_drogue_20261011'+suffix)
     args.output=args.output.resolve(); args.output.mkdir(parents=True, exist_ok=True)
+    receipt = {}
     if args.analyze_only and (args.output/'run_manifest.json').exists():
         receipt = json.loads((args.output/'run_manifest.json').read_text())
         args.trials = receipt.get('trials_per_motor', args.trials)
@@ -489,7 +519,17 @@ def main():
     root,configs,chute=read_design(design)
     if args.wind_speed is not None:
         override_wind(root, configs, args.wind_speed)
-    launch=site()
+    launch=receipt.get('launch_site') if args.analyze_only else None
+    launch=launch or site(args.telemetry_site_presets)
+    boundary = None
+    if args.analyze_only and (args.output/'perimeter_mgrs.txt').exists():
+        args.perimeter_mgrs = args.output/'perimeter_mgrs.txt'
+    if args.perimeter_mgrs is not None:
+        from recovery_perimeter import load_perimeter
+        boundary = load_perimeter(args.perimeter_mgrs, launch)
+        saved_boundary = args.output/'perimeter_mgrs.txt'
+        if args.perimeter_mgrs.resolve() != saved_boundary.resolve():
+            shutil.copy2(args.perimeter_mgrs, saved_boundary)
     if copy.resolve()==args.ork.resolve(): raise ValueError('Refusing to replace source .ork.')
     if not args.analyze_only:
         write_site_copy(args.ork,copy,root,launch)
@@ -504,6 +544,10 @@ def main():
         if actual != args.trials: raise ValueError(f'Expected {args.trials} trials, found {actual}.')
     summary=summarize(args,configs,chute,launch,rows)
     plot(args,summary,rows)
+    if boundary is not None:
+        from recovery_perimeter import analyze_perimeter
+        summary['green_area'] = analyze_perimeter(args, summary, rows, boundary)
+        (args.output/'summary.json').write_text(json.dumps(json_finite(summary), indent=2, allow_nan=False)+'\n')
 
 
 if __name__=='__main__':

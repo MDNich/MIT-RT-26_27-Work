@@ -1,0 +1,19 @@
+URRG perimeter study — 16 October 2026
+
+Run from: /Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work
+
+/tmp/urrg-recovery-20261016-venv/bin/python montecarlo_recovery.py --ork urrg_no_drogue_20261011/20267.demonstrator.iteration3.URRG.ork --openrocket-jar /tmp/urrg-recovery-engine-20261016.jar --java-home /Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home --telemetry-site-presets ../ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py --perimeter-mgrs /Users/mdn/Developer/MIT_Rkt_Team/admin/URRG_perimeter_MGRS_1000.txt --trials 500 --seed 20261011 --random-wind-max 5 --turbulence-min 0.05 --turbulence-max 0.20 --workers 4 --output urrg_no_drogue_20261016_perimeter --basemap
+
+Append --analyze-only to rebuild the summaries and plots from saved flights. That mode uses the saved perimeter and launch-coordinate receipt.
+
+The source model is the preserved iteration3 rocket used in the previous recovery study. Main deploys at apogee + 1 second; no drogue; 1 m vertical rail.
+
+The launch MGRS comes from the telemetry UI URRG_LAUNCH_MGRS constant, using the same mgrs library convention as the UI. The site elevation is retained from the prior USGS 3DEP query.
+
+All 1,000 MGRS perimeter points are connected in file order and the polygon is closed. A point on the boundary counts inside. Classification uses UTM 18N; map plots use a local azimuthal equidistant projection in true metres.
+
+Percentage denominator: completed Monte Carlo flights with main deployment, separately per motor. Tumble aborts and four steady-wind control cases are excluded and listed separately.
+
+Weather: uniform mean speed 0–5 m/s, direction 0–360 degrees, turbulence intensity 5–20%, stratified and paired between motors; seed 20261011. Native pink-noise speed turbulence varies during flight. Gusts may exceed 5 m/s; mean wind and direction are constant with altitude. These distributions are assumptions, not a weather forecast.
+
+The current MIT engine snapshot has a different archive hash from the earlier temporary JAR. Four control flights matched the prior engine results to 1e-8; the exact snapshot hash is in run_manifest.json.

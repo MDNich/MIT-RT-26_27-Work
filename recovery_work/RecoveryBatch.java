@@ -9,15 +9,22 @@ import info.openrocket.core.plugin.PluginModule;
 import info.openrocket.core.simulation.*;
 import info.openrocket.core.simulation.listeners.AbstractSimulationListener;
 import info.openrocket.core.startup.Application;
+import info.openrocket.core.util.Coordinate;
+import info.openrocket.core.util.WorldCoordinate;
 import info.openrocket.swing.startup.GuiModule;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.zip.GZIPOutputStream;
 
 /** Run the MIT OpenRocket engine on explicit, reproducible wind cases. */
 public class RecoveryBatch {
     public static void main(String[] args) throws Exception {
-        if (args.length != 6) throw new IllegalArgumentException("ORK CASES.csv RESULTS.csv LAT LON ELEVATION_M");
+        if (args.length != 6 && args.length != 8) throw new IllegalArgumentException("ORK CASES.csv RESULTS.csv LAT LON ELEVATION_M [TRACE_DIR VIRTUAL_FLOOR_DEPTH_M]");
+        final double floorDepth = args.length == 8 ? Double.parseDouble(args[7]) : 0;
+        if (floorDepth < 0 || !Double.isFinite(floorDepth)) throw new IllegalArgumentException("Invalid virtual floor depth");
+        final Path traceDir = args.length == 8 ? Path.of(args[6]) : null;
+        if (traceDir != null) Files.createDirectories(traceDir);
         Locale.setDefault(Locale.US);
         System.setProperty("openrocket.bypass.presets", "true");
         System.setProperty("openrocket.bypass.motors", "true");
@@ -52,6 +59,8 @@ public class RecoveryBatch {
                 opts.setLaunchAltitude(elevation);
                 opts.setISAAtmosphere(true);
                 double ground = Double.parseDouble(c[2]), cloud = Double.parseDouble(c[3]);
+                if (floorDepth > 0 && ground != cloud)
+                    throw new IllegalArgumentException("Virtual floor export requires altitude-independent wind");
                 double direction = Math.toRadians(Double.parseDouble(c[4]));
                 double turbulence = Double.parseDouble(c[5]);
                 final int seed = Integer.parseInt(c[6]);
@@ -75,12 +84,41 @@ public class RecoveryBatch {
                 }
                 final WindModel seededWind = configuredWind;
                 simulation.simulate(new AbstractSimulationListener() {
+                    private boolean lowered = false;
                     @Override public void startSimulation(SimulationStatus status) {
                         status.getSimulationConditions().setWindModel(seededWind);
+                    }
+                    @Override public boolean preStep(SimulationStatus status) {
+                        // Shift the numerical origin only late in main-chute descent,
+                        // after all ascent and deployment events. Physical position,
+                        // velocity and world altitude remain unchanged. Doing this
+                        // at launch can perturb 1 ms event rounding at deployment.
+                        if (floorDepth > 0 && !lowered && !status.getDeployedRecoveryDevices().isEmpty()
+                                && status.getRocketVelocity().z < 0 && status.getRocketPosition().z < 30) {
+                            status.setRocketPosition(status.getRocketPosition().add(new Coordinate(0, 0, floorDepth)));
+                            status.getSimulationConditions().setLaunchSite(new WorldCoordinate(
+                                Double.parseDouble(args[3]), Double.parseDouble(args[4]), elevation-floorDepth));
+                            lowered = true;
+                        }
+                        return true;
                     }
                 });
                 var data = simulation.getSimulatedData();
                 var b = data.getBranch(0);
+                if (traceDir != null) {
+                    Path tracePath = traceDir.resolve(c[0] + "_sim" + simIndex + ".csv.gz");
+                    try (var trace = new PrintWriter(new OutputStreamWriter(new GZIPOutputStream(Files.newOutputStream(tracePath)), java.nio.charset.StandardCharsets.UTF_8))) {
+                        trace.println("time_s,east_m,north_m,height_above_pad_m,vertical_velocity_mps");
+                        var times = b.get(FlightDataType.TYPE_TIME);
+                        var xs = b.get(FlightDataType.TYPE_POSITION_X);
+                        var ys = b.get(FlightDataType.TYPE_POSITION_Y);
+                        var zs = b.get(FlightDataType.TYPE_ALTITUDE_ABOVE_SEA);
+                        var vzs = b.get(FlightDataType.TYPE_VELOCITY_Z);
+                        for (int j = 0; j < b.getLength(); j++) {
+                            trace.printf("%.9f,%.9f,%.9f,%.9f,%.9f%n", times.get(j), xs.get(j), ys.get(j), zs.get(j)-elevation, vzs.get(j));
+                        }
+                    }
+                }
                 var groundHit = b.getLastEvent(FlightEvent.Type.GROUND_HIT);
                 var deployment = b.getLastEvent(FlightEvent.Type.RECOVERY_DEVICE_DEPLOYMENT);
                 double east = b.getLast(FlightDataType.TYPE_POSITION_X);

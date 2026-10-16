@@ -1,0 +1,148 @@
+{
+  "launch_site": {
+    "name": "URRG",
+    "mgrs": "18TUN2061530290",
+    "latitude_deg": 42.70416776971639,
+    "longitude_deg": -77.19029501648315,
+    "elevation_m": 268.603118896,
+    "elevation_source": "https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False",
+    "coordinate_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py",
+    "coordinate_source_sha256": "ae16e8902eba4c1421fc182545c6d1316453d2ae74bc57eaa3de74d10d2a566d"
+  },
+  "terrain_pad_elevation_navd88_m": 268.6031188965434,
+  "trajectory_vertical_alignment_m": 5.433662408904638e-10,
+  "dem_source": "https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer",
+  "dem_resolution_m": 2,
+  "dem_sha256": "ba76f06f5902a309a5f5df1946f9978b7750c8db71179d4ad8ead1a4ed526b02",
+  "source_at_pad": "USGS 1 m NY_FingerLakes_2020_A20, resampled by USGS 3DEP to a 2 m grid",
+  "vertical_datum": "NAVD88; trajectory launch aligned to the bilinear DEM pad elevation",
+  "intersection_method": "First post-apogee zero of piecewise-linear native trajectory height minus bilinear DEM height; bracket sampling <=0.5 m horizontal and <=0.125 s, then Brent root solve.",
+  "numerical_ground_plane": "20 m below pad; numerical origin shifted only below 30 m during main-chute descent, with physical altitude unchanged",
+  "denominator": "Completed Monte Carlo flights with main deployment only; tumble aborts excluded.",
+  "weather": "Mean wind uniform 0\u20135 m/s; direction uniform 0\u2013360\u00b0; turbulence intensity uniform 5%\u201320%.",
+  "uncertainty_scope": "Uniform scenario distributions for mean wind, direction and turbulence intensity; native speed turbulence within flights. Same weather draws across motors. No wind shear or within-flight direction changes; all design parameters fixed.",
+  "recovery": "No drogue; main at apogee + 1 s; 1 m vertical launch rail; preserved iteration3 model.",
+  "perimeter": {
+    "source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_no_drogue_20261016_terrain/perimeter_mgrs.txt",
+    "source_sha256": "33f6847334067f7b803f76b91011a14ce614e9d625b2371f6fd33c6504eabaa6",
+    "point_count": 1000,
+    "utm_crs": "EPSG:32618",
+    "area_m2": 4713027.500000572,
+    "area_km2": 4.713027500000572,
+    "launch_inside": true,
+    "launch_to_boundary_m": 192.46298345620684,
+    "boundary_rule": "Connect points in file order; close last to first. Boundary counts as inside.",
+    "coordinate_convention": "MGRS grid-cell southwest corner; same convention as the telemetry launch preset."
+  },
+  "configs": [
+    {
+      "motor": "HP-I500T",
+      "default_motor": false,
+      "attempted": 500,
+      "completed": 475,
+      "excluded_tumble_aborts": 25,
+      "inside": 474,
+      "outside": 1,
+      "inside_percent": 99.78947368421052,
+      "changed_classification": 0,
+      "radius_m": {
+        "min": 0.2114859027751552,
+        "p2_5": 5.105454639951815,
+        "p5": 9.819211431742303,
+        "median": 99.3204928757978,
+        "p95": 201.0099593771948,
+        "p97_5": 206.75894788411293,
+        "max": 225.3602078471833
+      },
+      "terrain_elevation_navd88_m": {
+        "min": 268.28822718065373,
+        "p2_5": 268.37808574190495,
+        "p5": 268.4191456593622,
+        "median": 268.6417083072231,
+        "p95": 269.6148157660907,
+        "p97_5": 270.039925804011,
+        "max": 271.050411118719
+      },
+      "horizontal_change_from_flat_m": {
+        "min": 2.9117681254866476e-07,
+        "p2_5": 0.00013738190050824282,
+        "p5": 0.0003327671395657415,
+        "median": 0.02955687143260429,
+        "p95": 0.46915012840473425,
+        "p97_5": 0.7034260500688755,
+        "max": 1.1569809727503568
+      },
+      "landings_within_1m_of_boundary": 0
+    },
+    {
+      "motor": "J570W",
+      "default_motor": true,
+      "attempted": 500,
+      "completed": 498,
+      "excluded_tumble_aborts": 2,
+      "inside": 468,
+      "outside": 30,
+      "inside_percent": 93.97590361445783,
+      "changed_classification": 0,
+      "radius_m": {
+        "min": 0.6922282693150195,
+        "p2_5": 12.440813270201444,
+        "p5": 23.880148957940495,
+        "median": 235.1576689899369,
+        "p95": 456.31762942990025,
+        "p97_5": 473.4500780480794,
+        "max": 495.45829082348905
+      },
+      "terrain_elevation_navd88_m": {
+        "min": 267.0378654613092,
+        "p2_5": 268.16389290491117,
+        "p5": 268.2305011204749,
+        "median": 268.7039501915997,
+        "p95": 270.771249311088,
+        "p97_5": 271.70710114979704,
+        "max": 274.42712122760935
+      },
+      "horizontal_change_from_flat_m": {
+        "min": 1.1889946510963722e-06,
+        "p2_5": 0.00026847831643735245,
+        "p5": 0.0008206163508420667,
+        "median": 0.07137487873733224,
+        "p95": 0.937216701166359,
+        "p97_5": 1.5580831772589487,
+        "max": 4.179638808307838
+      },
+      "landings_within_1m_of_boundary": 1
+    }
+  ],
+  "validation": {
+    "completed_terrain_intersections": 973,
+    "max_intersection_residual_m": 4.7634785005357116e-11,
+    "max_ascent_or_deployment_difference_from_flat": 0.0,
+    "flat_plane_horizontal_interpolation_difference_m": {
+      "min": 1.0445533116612296e-06,
+      "p2_5": 3.638130230979922e-05,
+      "p5": 6.979430577460212e-05,
+      "median": 0.0018871456208026526,
+      "p95": 0.013348713012628174,
+      "p97_5": 0.01752333628551507,
+      "max": 0.04428666866626494
+    },
+    "completion_status_identical_to_flat": true,
+    "note": "Flat-plane endpoint differences quantify interpolation and native final-step clipping, separate from terrain corrections."
+  },
+  "rendered_terrain_patch": {
+    "east_range_m": [
+      -700,
+      700
+    ],
+    "north_range_m": [
+      -700,
+      700
+    ],
+    "min_elevation_navd88_m": 265.98470863241556,
+    "max_elevation_navd88_m": 292.3589847080038,
+    "relief_m": 26.374276075588227,
+    "render_grid_m": 10,
+    "vertical_exaggeration": 1
+  }
+}

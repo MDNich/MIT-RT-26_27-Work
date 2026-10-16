@@ -1,0 +1,58 @@
+URRG — terrain-intersected Monte Carlo recovery
+Generated 2026-10-16
+
+Launch: telemetry UI URRG preset, 18TUN2061530290.
+42.70416776971639 N, -77.19029501648315 E. Pad elevation 268.603 m NAVD88.
+Preserved original-study iteration3 rocket; no drogue; main at apogee + 1 s; 1 m vertical rail.
+500 trials per motor. Mean wind uniform 0–5 m/s, direction 0–360°, turbulence intensity 5–20%.
+Stratified uniform inputs paired across motors; seed 20261011 onward. Native pink-noise speed turbulence.
+Instantaneous gusts can exceed 5 m/s. No within-flight direction changes or vertical wind shear.
+
+Results (completed flights only; tumble aborts excluded):
+HP-I500T: 474/475 inside = 99.7895%; 1 outside; 25 aborts excluded.
+  Median radius 99.32 m; central 95% interval 5.11–206.76 m; 95th-percentile radius 201.01 m.
+  Largest shift from the prior flat-plane landing: 1.157 m.
+J570W: 468/498 inside = 93.9759%; 30 outside; 2 aborts excluded.
+  Median radius 235.16 m; central 95% interval 12.44–473.45 m; 95th-percentile radius 456.32 m.
+  Largest shift from the prior flat-plane landing: 4.180 m.
+
+Terrain method:
+First post-apogee zero of piecewise-linear native trajectory height minus bilinear DEM height; bracket sampling <=0.5 m horizontal and <=0.125 s, then Brent root solve.
+Native simulator trajectories continue to a virtual floor 20 m below the pad. The numerical origin is shifted only below 30 m during main descent, preserving physical position, world altitude, velocity and original ascent/deployment events.
+Every complete path is cut at its first descending terrain contact, including landings on ground below pad elevation. Contact positions are not just old endpoints draped onto terrain.
+USGS 3DEP bare-earth DEM, 2 m export with bilinear resampling; 1 m Finger Lakes 2020 source at pad; NAVD88.
+Trajectory launch height aligned to DEM pad elevation. Green area connects the 1000 supplied MGRS points in file order, closed last-to-first, with no convex hull or reordering.
+Contact calculations use all native trace points and 2 m DEM samples. 3D rendering uses a 10 m ground mesh and up to 101 display points per flight. The exact contact is always retained. Vertical exaggeration = 1.
+
+Validation:
+All 973 completed trajectories intersect the terrain; all 27 aborted trajectories are excluded.
+Apogee, apogee time, launch-rail speed and deployment time exactly match the original flat runs at stored precision.
+Independent bilinear interpolation, MGRS polygon decoding and point-in-polygon checks agree. Saved path endpoints match landing coordinates.
+Maximum horizontal difference at the old flat plane is 0.0443 m, attributable to track interpolation versus the original clipped final integration step.
+Green-area classifications are unchanged by terrain correction; one J570W landing is within 1 m of the supplied boundary.
+Numerical root residuals are not DEM accuracy estimates.
+
+Interpretation:
+Percentages describe these assumed numerical scenarios conditional on completed simulations, not a measured launch-day probability.
+Bare-earth DEM excludes crops, trees and structures. DEM, wind-profile, rocket mass/Cd and parachute-opening uncertainty are not sampled.
+Imagery acquisition date is not determined; 2026-10-16 is the retrieval date. Satellite imagery and parcel outlines are different sources; only the supplied perimeter is drawn.
+
+Files:
+index.html — gallery of all 11 final figures, with the interactive 3D link.
+terrain_landings_2d.png — motor-by-motor satellite map; terrain_site_2d.png — full enclosed site.
+terrain_tracks_3d.png — static 3D comparison; terrain_tracks_3d.html — standalone interactive 3D, works offline.
+terrain_landings.csv / .geojson — all 973 terrain-corrected landing locations.
+cases.csv — all 1000 weather inputs; extended_runs.csv — raw virtual-floor diagnostics, NOT actual landing positions.
+traces/ — full native tracks, including paths below actual ground; terrain_tracks/ — all 973 tracks cut at ground contact.
+run_manifest.json, terrain_summary.json, validation.json — inputs, sources, methods and checks.
+All eight earlier Monte Carlo diagnostic figures have been regenerated using corrected terrain landings.
+
+Sources:
+https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer
+https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer
+Imagery credit: Esri, Maxar, Earthstar Geographics and GIS community. Elevation: USGS 3DEP.
+
+Reproduction:
+Use the requirements-recovery.txt environment and the MIT OpenRocket engine JAR matching run_manifest.json (custom fin type required).
+Run rerun_trajectories.py for native traces, then recovery_terrain.py --output <this folder> --flat-reference <previous flat folder>.
+Cached DEM and satellite rasters make rendering independent of live data changes. The live .ork changed after the original study; this run uses the preserved rocket copy packaged here.

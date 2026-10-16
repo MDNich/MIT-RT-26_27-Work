@@ -36,6 +36,8 @@ def plot_randomized(args, summary, rows):
 
     def save(fig, name, heading, note=footer):
         fig.suptitle(heading, fontsize=16, fontweight='bold')
+        if getattr(args, 'landing_surface_description', None):
+            note += '\n' + args.landing_surface_description
         fig.supxlabel(note, fontsize=9)
         fig.savefig(args.output/name, dpi=190)
         plt.close(fig)
