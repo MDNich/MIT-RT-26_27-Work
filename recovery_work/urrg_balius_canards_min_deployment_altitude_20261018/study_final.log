@@ -1,0 +1,53 @@
+100 ft: 30/30 pass; worst final-second error 0.917%; minimum settled duration 2.719 s
+50 ft: 0/30 pass; worst final-second error 9.748%; minimum settled duration 0.559 s
+25 ft: 0/30 pass; worst final-second error 232.869%; minimum settled duration 0.000 s
+57 ft: 25/30 pass; worst final-second error 6.541%; minimum settled duration 0.856 s
+60 ft: 29/30 pass; worst final-second error 5.134%; minimum settled duration 0.986 s
+Started 62 ft AGL
+Started 61 ft AGL
+Completed 61 ft AGL
+61 ft: 30/30 pass; worst final-second error 4.806%; minimum settled duration 1.021 s
+Completed 62 ft AGL
+62 ft: 30/30 pass; worst final-second error 4.447%; minimum settled duration 1.063 s
+61 ft: 30/30 pass; worst final-second error 4.806%; minimum settled duration 1.021 s
+{
+  "minimum_tested_passing_trigger_ft": 61.0,
+  "minimum_tested_passing_trigger_m": 18.5928,
+  "highest_tested_failing_trigger_ft": 60.0,
+  "resolution_ft": 1.0,
+  "criterion": "All 30 paired flights have vertical descent speed within +/-5% of their own apogee+1s baseline for every point in the final 1.0 seconds before ground contact, after deployment.",
+  "final": {
+    "altitude_setting_ft": 61.0,
+    "altitude_setting_m": 18.5928,
+    "passed": 30,
+    "completed": 30,
+    "worst_final_second_error_pct": 4.805597465963663,
+    "minimum_settled_duration_s": 1.020907688084698,
+    "impact_descent_mean_mps": 7.0365072271775455,
+    "impact_descent_sd_mps": 0.16408033078513748,
+    "actual_deployment_height_mean_ft": 60.825251838368814,
+    "actual_deployment_height_min_ft": 60.739445962391564,
+    "actual_deployment_height_max_ft": 60.92470930934753,
+    "estimated_required_height_max_ft": 60.27510721492303
+  },
+  "failed": {
+    "altitude_setting_ft": 60.0,
+    "altitude_setting_m": 18.288,
+    "passed": 29,
+    "completed": 30,
+    "worst_final_second_error_pct": 5.1343279304270295,
+    "minimum_settled_duration_s": 0.9861327985416466,
+    "impact_descent_mean_mps": 7.0349793444161755,
+    "impact_descent_sd_mps": 0.16382385611523914,
+    "actual_deployment_height_mean_ft": 59.84190950785254,
+    "actual_deployment_height_min_ft": 59.73958487610482,
+    "actual_deployment_height_max_ft": 59.928712042501544,
+    "estimated_required_height_max_ft": 58.393962595282886
+  },
+  "baseline_descent_mean_fps": 23.08880798923786,
+  "native_ensemble_file": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_canards_min_deployment_altitude_20261018/altitude_0061.00ft/J800T_native_ensemble.ork",
+  "total_simulated_flights": 210,
+  "same_draws_as_prior_30": true,
+  "selected_native_ensemble_saved": true,
+  "selected_case_rerun_for_export": false
+}

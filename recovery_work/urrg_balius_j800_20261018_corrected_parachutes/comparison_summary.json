@@ -1,0 +1,324 @@
+{
+  "map_half_width_m": 700.0,
+  "same_weather_as_previous_study": true,
+  "comparison": [
+    {
+      "design": {
+        "source_path": "/Users/mdn/Downloads/balius-cdr-canards.ork",
+        "source_sha256": "a328f0e238407dae35eba181b4c9504a867eee648b9291fa2b4ea6e8e0239fe1",
+        "motor": "J800T",
+        "motor_digest": "cb788683f45b481a33176306e89d3c3e",
+        "motor_configuration_id": "e1126e36-6c10-48bc-85d2-be61c9d2b2d5",
+        "simulation_index": 3,
+        "simulation_name": "Balius (Canards)",
+        "equivalent_j800_simulations": [
+          2,
+          3
+        ],
+        "rocket_xml_sha256": "58d8a30451c31fdafe3be729064da35b22e40fc47b2db9b2d738954994e0a0c9",
+        "rail_length_m": 1.0,
+        "rail_angle_deg": 0.0,
+        "timestep_s": 0.05,
+        "geodetic_method": "spherical",
+        "main_diameter_m": 2.109216,
+        "main_cd_setting": "0.68",
+        "deployment_event": "apogee",
+        "deployment_delay_s": 1.0,
+        "recovery_override_selected": true,
+        "simulation_extensions": 0,
+        "control_note": "No active flight-control extension is stored in these simulations; geometry and mass effects are simulated as saved.",
+        "label": "Balius CDR \u00b7 Canards",
+        "key": "canards",
+        "color": "#39deec",
+        "launch_site": {
+          "name": "URRG",
+          "mgrs": "18TUN2061530290",
+          "latitude_deg": 42.70416776971639,
+          "longitude_deg": -77.19029501648315,
+          "elevation_m": 268.603118896,
+          "elevation_source": "https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False",
+          "coordinate_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py",
+          "coordinate_source_sha256": "ae16e8902eba4c1421fc182545c6d1316453d2ae74bc57eaa3de74d10d2a566d"
+        }
+      },
+      "launch_site": {
+        "name": "URRG",
+        "mgrs": "18TUN2061530290",
+        "latitude_deg": 42.70416776971639,
+        "longitude_deg": -77.19029501648315,
+        "elevation_m": 268.603118896,
+        "elevation_source": "https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False",
+        "coordinate_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py",
+        "coordinate_source_sha256": "ae16e8902eba4c1421fc182545c6d1316453d2ae74bc57eaa3de74d10d2a566d"
+      },
+      "attempted": 500,
+      "completed": 426,
+      "excluded_incomplete": 74,
+      "excluded_reasons": [
+        "Messages[] ABORT: Stage began to tumble under thrust."
+      ],
+      "inside": 400,
+      "outside": 26,
+      "inside_percent": 93.89671361502347,
+      "denominator": "Completed flights with main deployment only; incomplete/tumble aborts excluded.",
+      "main_cd_resolved_by_engine": 0.68,
+      "terrain_pad_elevation_navd88_m": 268.6031188965434,
+      "weather": "Mean wind uniform 0\u20135 m/s, direction uniform 0\u2013360\u00b0, turbulence intensity uniform 5\u201320%; seed 20261011, 500 paired strata.",
+      "uncertainty_scope": "Native pink-noise speed turbulence within each flight. Direction and mean speed fixed within flight and altitude; no control actuation, wind shear, mass/Cd or chute-inflation uncertainty.",
+      "terrain_method": "First post-apogee intersection of piecewise-linear native trajectory with bilinear USGS 3DEP DEM; paths extended below pad plane.",
+      "terrain_dem_resolution_m": 2,
+      "terrain_datum": "NAVD88",
+      "vertical_exaggeration": 1,
+      "landings_within_1m_of_boundary": 0,
+      "radius_m": {
+        "min": 0.7482565571322691,
+        "p2_5": 11.945665822411737,
+        "p5": 23.982231531302872,
+        "median": 232.0429416535868,
+        "p95": 471.1467850302024,
+        "p97_5": 500.7167645379296,
+        "max": 559.1501374640116
+      },
+      "apogee_m": {
+        "min": 906.172738881,
+        "p2_5": 908.4370546145001,
+        "p5": 908.7719197105,
+        "median": 911.4161823229999,
+        "p95": 912.4793408925,
+        "p97_5": 912.488850108,
+        "max": 912.492831222
+      },
+      "vertical_landing_mps": {
+        "min": 7.006673421434927,
+        "p2_5": 7.0604977284046315,
+        "p5": 7.0659106847420565,
+        "median": 7.078508898889842,
+        "p95": 7.0791926399950444,
+        "p97_5": 7.079279198967793,
+        "max": 7.080225553597971
+      },
+      "flight_time_s": {
+        "min": 139.0754630612013,
+        "p2_5": 139.36014612143657,
+        "p5": 139.54325522457793,
+        "median": 139.9577434184033,
+        "p95": 140.06961118394082,
+        "p97_5": 140.07330068745432,
+        "max": 140.08862658360127
+      },
+      "launch_mass_kg": {
+        "min": 7.863470488,
+        "p2_5": 7.863470488,
+        "p5": 7.863470488,
+        "median": 7.863470488,
+        "p95": 7.863470488,
+        "p97_5": 7.863470488,
+        "max": 7.863470488
+      },
+      "landing_mass_kg": {
+        "min": 7.250158488,
+        "p2_5": 7.250158488,
+        "p5": 7.250158488,
+        "median": 7.250158488,
+        "p95": 7.250158488,
+        "p97_5": 7.250158488,
+        "max": 7.250158488
+      },
+      "rail_speed_mps": {
+        "min": 13.885118452,
+        "p2_5": 13.885141630124998,
+        "p5": 13.8851510815,
+        "median": 13.8856931865,
+        "p95": 13.886635927,
+        "p97_5": 13.88665396125,
+        "max": 13.886660107
+      },
+      "terrain_elevation_navd88_m": {
+        "min": 267.2820805884608,
+        "p2_5": 268.201623516384,
+        "p5": 268.23104125891746,
+        "median": 268.70133881905645,
+        "p95": 271.0133737473619,
+        "p97_5": 272.28953876233487,
+        "max": 273.6962042781888
+      },
+      "terrain_horizontal_shift_m": {
+        "min": 9.204217843983483e-07,
+        "p2_5": 0.00016937455479879672,
+        "p5": 0.0005533145142675323,
+        "median": 0.06034445381375511,
+        "p95": 0.922137196411104,
+        "p97_5": 1.6358859942658939,
+        "max": 2.3595554156807323
+      },
+      "apogee_to_landing_s": {
+        "min": 125.3254630612013,
+        "p2_5": 125.61358362143656,
+        "p5": 125.80253346260454,
+        "median": 126.20440926318545,
+        "p95": 126.31211118394083,
+        "p97_5": 126.31580068745434,
+        "max": 126.34362658360126
+      }
+    },
+    {
+      "design": {
+        "source_path": "/Users/mdn/Downloads/balius-cdr-co2.ork",
+        "source_sha256": "3906761a21ae374dffb992f2fb1983441b02d1f94e15c34c6848423fe7826738",
+        "motor": "J800T",
+        "motor_digest": "cb788683f45b481a33176306e89d3c3e",
+        "motor_configuration_id": "e1126e36-6c10-48bc-85d2-be61c9d2b2d5",
+        "simulation_index": 3,
+        "simulation_name": "Balius",
+        "equivalent_j800_simulations": [
+          2,
+          3
+        ],
+        "rocket_xml_sha256": "9f955912a381762de4a47d53e9b9952b40db7b0c62f354cb6454ad840303e462",
+        "rail_length_m": 1.0,
+        "rail_angle_deg": 0.0,
+        "timestep_s": 0.05,
+        "geodetic_method": "spherical",
+        "main_diameter_m": 2.109216,
+        "main_cd_setting": "0.68",
+        "deployment_event": "apogee",
+        "deployment_delay_s": 1.0,
+        "recovery_override_selected": true,
+        "simulation_extensions": 0,
+        "control_note": "No active flight-control extension is stored in these simulations; geometry and mass effects are simulated as saved.",
+        "label": "Balius CDR \u00b7 CO\u2082",
+        "key": "co2",
+        "color": "#ffb955",
+        "launch_site": {
+          "name": "URRG",
+          "mgrs": "18TUN2061530290",
+          "latitude_deg": 42.70416776971639,
+          "longitude_deg": -77.19029501648315,
+          "elevation_m": 268.603118896,
+          "elevation_source": "https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False",
+          "coordinate_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py",
+          "coordinate_source_sha256": "ae16e8902eba4c1421fc182545c6d1316453d2ae74bc57eaa3de74d10d2a566d"
+        }
+      },
+      "launch_site": {
+        "name": "URRG",
+        "mgrs": "18TUN2061530290",
+        "latitude_deg": 42.70416776971639,
+        "longitude_deg": -77.19029501648315,
+        "elevation_m": 268.603118896,
+        "elevation_source": "https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False",
+        "coordinate_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py",
+        "coordinate_source_sha256": "ae16e8902eba4c1421fc182545c6d1316453d2ae74bc57eaa3de74d10d2a566d"
+      },
+      "attempted": 500,
+      "completed": 500,
+      "excluded_incomplete": 0,
+      "excluded_reasons": [],
+      "inside": 466,
+      "outside": 34,
+      "inside_percent": 93.2,
+      "denominator": "Completed flights with main deployment only; incomplete/tumble aborts excluded.",
+      "main_cd_resolved_by_engine": 0.68,
+      "terrain_pad_elevation_navd88_m": 268.6031188965434,
+      "weather": "Mean wind uniform 0\u20135 m/s, direction uniform 0\u2013360\u00b0, turbulence intensity uniform 5\u201320%; seed 20261011, 500 paired strata.",
+      "uncertainty_scope": "Native pink-noise speed turbulence within each flight. Direction and mean speed fixed within flight and altitude; no control actuation, wind shear, mass/Cd or chute-inflation uncertainty.",
+      "terrain_method": "First post-apogee intersection of piecewise-linear native trajectory with bilinear USGS 3DEP DEM; paths extended below pad plane.",
+      "terrain_dem_resolution_m": 2,
+      "terrain_datum": "NAVD88",
+      "vertical_exaggeration": 1,
+      "landings_within_1m_of_boundary": 0,
+      "radius_m": {
+        "min": 0.8525965601570918,
+        "p2_5": 14.20992027675875,
+        "p5": 26.925488534111764,
+        "median": 267.2422654213465,
+        "p95": 517.5466427087274,
+        "p97_5": 534.7491836280875,
+        "max": 557.4166108253843
+      },
+      "apogee_m": {
+        "min": 951.124773067,
+        "p2_5": 953.0384785723751,
+        "p5": 953.75459698575,
+        "median": 960.0832762715,
+        "p95": 962.54935680505,
+        "p97_5": 962.568919567775,
+        "max": 962.577076056
+      },
+      "vertical_landing_mps": {
+        "min": 6.902829753492721,
+        "p2_5": 6.964043902834591,
+        "p5": 6.973620167652408,
+        "median": 6.988790644777126,
+        "p95": 6.989880344397262,
+        "p97_5": 6.990028439281356,
+        "max": 6.990623418223903
+      },
+      "flight_time_s": {
+        "min": 146.9655875371184,
+        "p2_5": 147.67249989236782,
+        "p5": 147.90793438700973,
+        "median": 148.60818994480394,
+        "p95": 148.86783903808418,
+        "p97_5": 148.87316483735512,
+        "max": 148.88495732867273
+      },
+      "launch_mass_kg": {
+        "min": 7.681750045,
+        "p2_5": 7.681750045,
+        "p5": 7.681750045,
+        "median": 7.681750045,
+        "p95": 7.681750045,
+        "p97_5": 7.681750045,
+        "max": 7.681750045
+      },
+      "landing_mass_kg": {
+        "min": 7.068438045,
+        "p2_5": 7.068438045,
+        "p5": 7.068438045,
+        "median": 7.068438045,
+        "p95": 7.068438045,
+        "p97_5": 7.068438045,
+        "max": 7.068438045
+      },
+      "rail_speed_mps": {
+        "min": 14.016818239,
+        "p2_5": 14.016838948750001,
+        "p5": 14.016846681099999,
+        "median": 14.017245451,
+        "p95": 14.0182482898,
+        "p97_5": 14.018272621474999,
+        "max": 14.018282672
+      },
+      "terrain_elevation_navd88_m": {
+        "min": 266.32861667682994,
+        "p2_5": 268.1097779338694,
+        "p5": 268.22515947176987,
+        "median": 268.7186005812905,
+        "p95": 271.2859216249603,
+        "p97_5": 272.63463597405547,
+        "max": 275.0892872052005
+      },
+      "terrain_horizontal_shift_m": {
+        "min": 1.1371196688935025e-06,
+        "p2_5": 0.0002918904860604932,
+        "p5": 0.0008119348743100089,
+        "median": 0.08164215490300189,
+        "p95": 1.4415433221632785,
+        "p97_5": 2.0357991624767395,
+        "max": 4.389145128581685
+      },
+      "apogee_to_landing_s": {
+        "min": 132.89058753711842,
+        "p2_5": 133.5997839135994,
+        "p5": 133.82817146905606,
+        "median": 134.50223138302988,
+        "p95": 134.75533903808417,
+        "p97_5": 134.7606648373551,
+        "max": 134.77245732867271
+      }
+    }
+  ],
+  "engine_jar_sha256": "ab430c861dfa63eb4af2a6ee5061a850ba6ca6b9f5250f14c898182c9cd86bec",
+  "source_orks_unchanged_by_run": true
+}

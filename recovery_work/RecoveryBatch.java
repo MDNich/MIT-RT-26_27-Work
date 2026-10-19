@@ -6,6 +6,7 @@ import info.openrocket.core.document.*;
 import info.openrocket.core.file.*;
 import info.openrocket.core.models.wind.*;
 import info.openrocket.core.plugin.PluginModule;
+import info.openrocket.core.rocketcomponent.Parachute;
 import info.openrocket.core.simulation.*;
 import info.openrocket.core.simulation.listeners.AbstractSimulationListener;
 import info.openrocket.core.startup.Application;
@@ -41,17 +42,32 @@ public class RecoveryBatch {
         var doc = loader.load();
         System.out.println("Loader warnings: " + loader.getWarnings());
         var cases = Files.readAllLines(Path.of(args[1]));
+        var auditedConfigurations = new HashSet<Integer>();
         try (var out = new PrintWriter(Files.newBufferedWriter(Path.of(args[2])))) {
             out.println("case_id,simulation_index,ground_wind_mps,cloud_wind_mps,wind_from_deg,turbulence,seed,elevation_m,apogee_m,flight_time_s,east_m,north_m,radius_m,vertical_landing_mps,apogee_time_s,launch_mass_kg,landing_mass_kg,rail_speed_mps,deployment_time_s,deployment_speed_mps,ground_hit,warnings");
             for (int row = 1; row < cases.size(); row++) {
                 var c = cases.get(row).split(",");
                 int simIndex = Integer.parseInt(c[1]);
                 var simulation = doc.getSimulation(simIndex);
-                // The two non-FC source simulations are used without design or recovery edits.
+                // Select the requested source simulation without design or recovery edits.
                 if (!simulation.getSimulationExtensions().isEmpty())
                     throw new IllegalArgumentException("Use an unextended source simulation");
                 if (!simulation.getActiveConfiguration().hasMotors())
                     throw new IllegalStateException("Unresolved motor in " + simulation.getName());
+                if (auditedConfigurations.add(simIndex)) {
+                    var configuration = simulation.getActiveConfiguration();
+                    for (var motor : configuration.getActiveMotors()) {
+                        System.out.println("CONFIG_AUDIT simulation=" + simIndex + " motor=" + motor.getMotor().getDesignation());
+                    }
+                    for (var component : configuration.getRocket()) {
+                        if (component instanceof Parachute chute) {
+                            var deployment = chute.getDeploymentConfigurations().get(configuration.getFlightConfigurationID());
+                            System.out.println("RECOVERY_AUDIT simulation=" + simIndex + " diameter_m=" + chute.getDiameter()
+                                + " cd=" + chute.getCD() + " automatic_cd=" + chute.isCDAutomatic()
+                                + " event=" + deployment.getDeployEvent().name() + " delay_s=" + deployment.getDeployDelay());
+                        }
+                    }
+                }
                 var opts = simulation.getOptions();
                 opts.setLaunchLatitude(Double.parseDouble(args[3]));
                 opts.setLaunchLongitude(Double.parseDouble(args[4]));

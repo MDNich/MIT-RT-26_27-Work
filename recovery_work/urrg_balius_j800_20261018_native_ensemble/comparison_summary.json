@@ -1,0 +1,28 @@
+{
+  "comparison": [
+    {
+      "design": "Canards",
+      "completed": 500,
+      "mean_max_altitude_m": 911.011365100703,
+      "stdev_max_altitude_m": 54.58187387167282,
+      "mean_time_to_apogee_s": 13.739634999999442,
+      "stdev_time_to_apogee_s": 0.3058166557413453
+    },
+    {
+      "design": "CO\u2082",
+      "completed": 500,
+      "mean_max_altitude_m": 960.4403798530433,
+      "stdev_max_altitude_m": 57.61179010195086,
+      "mean_time_to_apogee_s": 14.092384999999373,
+      "stdev_time_to_apogee_s": 0.3152540157775762
+    }
+  ],
+  "native_band_validation_passed": true,
+  "paired_identical_mass_cd_draws": true,
+  "settings": "500 runs; normal mass sigma 5%, normal Cd sigma 2%; all other ensemble sigmas zero.",
+  "wind": "Source 2 m/s from east, 10% baseline turbulence; identical native wind realization across the ensemble.",
+  "altitude_reference": "Height above URRG launch pad; pad 268.603 m elevation.",
+  "mass_definition": "Native whole-active-vehicle mass and inertia multiplier, including remaining propellant; CG retained.",
+  "cd_definition": "Native overall aerodynamic drag multiplier, also applied to recovery descent drag. Nominal 2.109216 m main and Cd 0.68 unchanged.",
+  "uncertainty": "Mean \u00b1 sample standard deviation across all completed runs; pointwise altitude bands are native OR outputs, not confidence bands."
+}

@@ -1,0 +1,26 @@
+{
+  "app": "/Applications/OpenRocket_MIT.app",
+  "app_jar": "/Applications/OpenRocket_MIT.app/Contents/Resources/app/jar/OpenRocket-24.12.jar",
+  "app_jar_resolved": "/Users/mdn/Developer/ActiveControl_MIT_RktTeam/clone/openrocket-release-24.12.RC.01/build/libs/OpenRocket-24.12.RC.01.jar",
+  "app_jar_sha256": "d18be8b40da3949848f938a7159bf868d33b1135cf6f6db22c0de35f54fa3633",
+  "runtime": "/Applications/OpenRocket_MIT.app/Contents/Resources/jre.bundle/Contents/Home/bin/java",
+  "runs_per_design": 30,
+  "seed": 20261018,
+  "mass_distribution": "Normal(mean=1, sigma=0.05), constant multiplier per flight",
+  "cd_distribution": "Normal(mean=1, sigma=0.02), constant multiplier per flight",
+  "other_ensemble_sigmas": 0,
+  "wind": "Source 2 m/s wind and 10% turbulence; fixed native realization across runs",
+  "native_feature": "Simulation.simulate with enabled EnsembleSettings; no custom perturbation listener",
+  "source_inputs": {
+    "canards": {
+      "path": "/Users/mdn/Downloads/balius-cdr-canards.ork",
+      "sha256": "a328f0e238407dae35eba181b4c9504a867eee648b9291fa2b4ea6e8e0239fe1"
+    },
+    "co2": {
+      "path": "/Users/mdn/Downloads/balius-cdr-co2.ork",
+      "sha256": "3906761a21ae374dffb992f2fb1983441b02d1f94e15c34c6848423fe7826738"
+    }
+  },
+  "paired_subset": "First 30 native draws of the continuing 500-flight ensembles",
+  "engine_snapshot": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_j800_20261018_native_ensemble/engine.jar"
+}

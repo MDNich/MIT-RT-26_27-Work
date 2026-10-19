@@ -1,0 +1,814 @@
+13:34:49.824 [DatabaseLoadingThread] WARN info.openrocket.core.database.MotorDatabaseLoader -- User-defined motor file /Users/mdn/MSFT/Massachusetts Institute of Technology/MIT Rocket Team - Dokumentumok/Zephyrus/Simulations/Pmotor_v3.eng is neither file nor directory
+13:34:49.868 [main] INFO info.openrocket.core.file.openrocket.importt.OpenRocketLoader -- Loading .ork file
+13:34:49.982 [main] DEBUG info.openrocket.core.file.DatabaseMotorFinder -- type Single-use, manufacturer AeroTech, designation HP-I500T, diameter NaN, length NaN, digest 97f440a5abdc634633b433d244cc279b, warnings Messages[]
+13:34:49.983 [main] DEBUG info.openrocket.core.file.DatabaseMotorFinder -- motor is HP-I500T
+13:34:49.984 [main] DEBUG info.openrocket.core.file.DatabaseMotorFinder -- type Reloadable, manufacturer AeroTech, designation J570W, diameter NaN, length NaN, digest 14373c65485521035497b1db20e110d3, warnings Messages[]
+13:34:49.985 [main] DEBUG info.openrocket.core.file.DatabaseMotorFinder -- motor is J570W
+13:34:49.986 [main] DEBUG info.openrocket.core.file.DatabaseMotorFinder -- type Reloadable, manufacturer AeroTech, designation J800T, diameter NaN, length NaN, digest cb788683f45b481a33176306e89d3c3e, warnings Messages[]
+13:34:49.989 [main] DEBUG info.openrocket.core.file.DatabaseMotorFinder -- motor is J800T
+13:34:50.112 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=954.887 maxVelocity=146.537 maxAcceleration=99.847 maxMachNumber=0.431 timeToApogee=14.052 flightTime=149.648 groundHitVelocity=7.248 launchRodVelocity=14.019 optimumDelay=12.01249999999937
+13:34:50.117 [main] INFO info.openrocket.core.file.openrocket.importt.OpenRocketLoader -- Loading done
+Loader warnings: Messages[]
+Wind: mean=4.47040000 m/s, direction=90.000 deg, turbulence=0.10000, deviation=0.44704000 m/s
+ENSEMBLE start EnsembleSettings[enabled=true, runs=30, motorSigma=0.0, noiseInterval=0.05, temperatureSigma=0.0, pressureSigma=0.0, windSigma=0.0, seed=20261018, massSigma=0.05, dragSigma=0.02, rollForceSigma=0.0, rollDampingSigma=0.0, windDirectionSigma=0.0, threads=2]; workers=2; thrust=max(0,T(t)+e(t)); fixed per-flight mass/coefficient/wind-bearing offsets; fixed baseline turbulence
+ENSEMBLE run 2/30 EnsembleRunParameters[number=2, motorSeed=5294263796712319172, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=-0.0, massMultiplier=1.0055585836926273, dragMultiplier=1.0054536401685568, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 1/30 EnsembleRunParameters[number=1, motorSeed=-7875109773346394311, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=1.0133820019720117, dragMultiplier=1.0000731661196305, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 1 wind_direction_offset_deg=-0.000000000
+ENSEMBLE run 2 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:34:50.146 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+13:34:50.146 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+[JAVA] Simulator Init
+13:34:50.152 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:34:50.152 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+13:34:50.152 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:34:50.152 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+[JAVA] Confirmed start of simulation.
+13:34:50.160 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:34:50.160 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:34:50.160 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:34:50.161 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:34:50.780 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:34:50.795 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:34:52.000 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+13:34:52.010 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:34:52.013 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:145.0240249441843    finTime:145.0240249441843
+13:34:52.014 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=939.6645469929535 maxVelocity=144.48524137365723 maxAcceleration=98.38901972221804 maxMachNumber=0.4276502998869776 timeToApogee=14.00749999999939 flightTime=145.0240249441843 groundHitVelocity=8.404537355594499 launchRodVelocity=14.043814981353323 optimumDelay=11.96249999999938
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=1 apogee_m=939.6645469929535
+[JAVA] Ended Simulation.                           
+13:34:52.020 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:147.01790539312282    finTime:147.01790539312282
+13:34:52.021 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=947.7611481496216 maxVelocity=145.62247027137116 maxAcceleration=99.23074406496502 maxMachNumber=0.43101327337708195 timeToApogee=14.044999999999382 flightTime=147.01790539312282 groundHitVelocity=8.233351787974204 launchRodVelocity=13.930759278417254 optimumDelay=12.002499999999372
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=2 apogee_m=947.7611481496216
+13:34:53.556 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=939.6645469929535 maxVelocity=144.48524137365723 maxAcceleration=98.38901972221804 maxMachNumber=0.4276502998869776 timeToApogee=14.00749999999939 flightTime=145.0240249441843 groundHitVelocity=8.404537355594499 launchRodVelocity=14.043814981353323 optimumDelay=11.96249999999938
+ENSEMBLE saved run=1/30
+ENSEMBLE run 3/30 EnsembleRunParameters[number=3, motorSeed=-5020664108686231768, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=0.0, massMultiplier=0.9983496072243251, dragMultiplier=0.9661947866175434, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 3 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:34:53.859 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:34:53.859 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:34:53.859 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:34:53.860 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:34:53.861 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:34:54.024 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:34:54.933 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:34:54.941 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:147.54313983199404    finTime:147.54313983199404
+13:34:54.942 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=966.4145849610233 maxVelocity=146.93502178377543 maxAcceleration=100.01808446401697 maxMachNumber=0.4348932777173752 timeToApogee=14.182499999999354 flightTime=147.54313983199404 groundHitVelocity=8.511232466191393 launchRodVelocity=14.042791975054262 optimumDelay=12.137499999999346
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=3 apogee_m=966.4145849610233
+13:34:55.377 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=947.7611481496216 maxVelocity=145.62247027137116 maxAcceleration=99.23074406496502 maxMachNumber=0.43101327337708195 timeToApogee=14.044999999999382 flightTime=147.01790539312282 groundHitVelocity=8.233351787974204 launchRodVelocity=13.930759278417254 optimumDelay=12.002499999999372
+ENSEMBLE saved run=2/30
+ENSEMBLE run 4/30 EnsembleRunParameters[number=4, motorSeed=4278737561021698159, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=0.9819424854226899, dragMultiplier=1.0191133228330227, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 4 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:34:55.662 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:34:55.662 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:34:55.662 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:34:55.663 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:34:55.663 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:34:55.809 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:34:56.693 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:34:56.701 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:153.13662620264535    finTime:153.13662620264535
+13:34:56.704 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=972.9930919997768 maxVelocity=149.16082756806884 maxAcceleration=101.85295728484012 maxMachNumber=0.441472979713176 timeToApogee=14.167499999999357 flightTime=153.13662620264535 groundHitVelocity=8.317792685991536 launchRodVelocity=14.30321151279934 optimumDelay=12.122499999999349
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=4 apogee_m=972.9930919997768
+13:34:57.165 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=966.4145849610233 maxVelocity=146.93502178377543 maxAcceleration=100.01808446401697 maxMachNumber=0.4348932777173752 timeToApogee=14.182499999999354 flightTime=147.54313983199404 groundHitVelocity=8.511232466191393 launchRodVelocity=14.042791975054262 optimumDelay=12.137499999999346
+ENSEMBLE saved run=3/30
+ENSEMBLE run 5/30 EnsembleRunParameters[number=5, motorSeed=1994921487831837401, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=0.9580602577495411, dragMultiplier=1.0012039941236002, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 5 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:34:57.462 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:34:57.463 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:34:57.463 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:34:57.464 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:34:57.464 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:34:57.611 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:34:58.526 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:34:58.535 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:158.65161512445783    finTime:158.65161512445783
+13:34:58.536 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1007.639152955382 maxVelocity=153.08852602518525 maxAcceleration=104.63621681063427 maxMachNumber=0.45308238014059 timeToApogee=14.364999999999318 flightTime=158.65161512445783 groundHitVelocity=8.106453383356403 launchRodVelocity=14.450835205314455 optimumDelay=12.31999999999931
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=5 apogee_m=1007.639152955382
+13:34:58.977 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=972.9930919997768 maxVelocity=149.16082756806884 maxAcceleration=101.85295728484012 maxMachNumber=0.441472979713176 timeToApogee=14.167499999999357 flightTime=153.13662620264535 groundHitVelocity=8.317792685991536 launchRodVelocity=14.30321151279934 optimumDelay=12.122499999999349
+ENSEMBLE saved run=4/30
+ENSEMBLE run 6/30 EnsembleRunParameters[number=6, motorSeed=-1892004112645226095, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=1.0161159718817796, dragMultiplier=0.9898300792487517, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 6 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:34:59.277 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:34:59.278 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:34:59.278 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:34:59.279 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:34:59.279 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:34:59.426 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:00.309 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:00.317 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:144.07194131241872    finTime:144.07194131241872
+13:35:00.317 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=938.8259045668073 maxVelocity=144.13625649815873 maxAcceleration=98.09793502516003 maxMachNumber=0.42661856612654364 timeToApogee=14.009999999999389 flightTime=144.07194131241872 groundHitVelocity=8.482367848904119 launchRodVelocity=14.001817241977703 optimumDelay=11.96749999999938
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=6 apogee_m=938.8259045668073
+13:35:00.793 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1007.639152955382 maxVelocity=153.08852602518525 maxAcceleration=104.63621681063427 maxMachNumber=0.45308238014059 timeToApogee=14.364999999999318 flightTime=158.65161512445783 groundHitVelocity=8.106453383356403 launchRodVelocity=14.450835205314455 optimumDelay=12.31999999999931
+ENSEMBLE saved run=5/30
+ENSEMBLE run 7/30 EnsembleRunParameters[number=7, motorSeed=-8314736449188724241, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=0.0, massMultiplier=0.993344631142186, dragMultiplier=0.9867380268341016, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 7 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:01.091 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:01.092 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:01.092 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:01.093 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:01.093 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:01.240 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:02.132 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:02.139 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:149.38812558862486    finTime:149.38812558862486
+13:35:02.140 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=967.3459822900331 maxVelocity=147.5839119847445 maxAcceleration=100.57138205045354 maxMachNumber=0.43681155529326227 timeToApogee=14.167499999999357 flightTime=149.38812558862486 groundHitVelocity=8.617169864915986 launchRodVelocity=14.121302385738149 optimumDelay=12.124999999999348
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=7 apogee_m=967.3459822900331
+13:35:02.609 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=938.8259045668073 maxVelocity=144.13625649815873 maxAcceleration=98.09793502516003 maxMachNumber=0.42661856612654364 timeToApogee=14.009999999999389 flightTime=144.07194131241872 groundHitVelocity=8.482367848904119 launchRodVelocity=14.001817241977703 optimumDelay=11.96749999999938
+ENSEMBLE saved run=6/30
+ENSEMBLE run 8/30 EnsembleRunParameters[number=8, motorSeed=1098532395398760393, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=-0.0, massMultiplier=0.967260033761431, dragMultiplier=1.027493991072091, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 8 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:02.903 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:02.903 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:02.903 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:02.904 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:02.904 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:03.049 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:03.941 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:03.950 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:157.05516261526006    finTime:157.05516261526006
+13:35:03.950 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=988.8209419184923 maxVelocity=151.4333206872142 maxAcceleration=103.5477682059577 maxMachNumber=0.44819045749711967 timeToApogee=14.242499999999342 flightTime=157.05516261526006 groundHitVelocity=8.17618688906547 launchRodVelocity=14.29867525553775 optimumDelay=12.197499999999334
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=8 apogee_m=988.8209419184923
+13:35:04.411 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=967.3459822900331 maxVelocity=147.5839119847445 maxAcceleration=100.57138205045354 maxMachNumber=0.43681155529326227 timeToApogee=14.167499999999357 flightTime=149.38812558862486 groundHitVelocity=8.617169864915986 launchRodVelocity=14.121302385738149 optimumDelay=12.124999999999348
+ENSEMBLE saved run=7/30
+ENSEMBLE run 9/30 EnsembleRunParameters[number=9, motorSeed=-1965878319722442304, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=-0.0, massMultiplier=1.059587989923159, dragMultiplier=1.0177021878556776, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 9 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:04.704 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:04.705 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:04.705 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:04.706 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:04.706 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:04.850 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:05.717 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:05.723 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:135.13587109125015    finTime:135.13587109125015
+13:35:05.723 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=881.7402393842676 maxVelocity=137.82003375931674 maxAcceleration=93.67115412564883 maxMachNumber=0.40794503073193294 timeToApogee=13.657499999999459 flightTime=135.13587109125015 groundHitVelocity=8.232365263267544 launchRodVelocity=13.583310393311182 optimumDelay=11.61499999999945
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=9 apogee_m=881.7402393842676
+13:35:06.220 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=988.8209419184923 maxVelocity=151.4333206872142 maxAcceleration=103.5477682059577 maxMachNumber=0.44819045749711967 timeToApogee=14.242499999999342 flightTime=157.05516261526006 groundHitVelocity=8.17618688906547 launchRodVelocity=14.29867525553775 optimumDelay=12.197499999999334
+ENSEMBLE saved run=8/30
+ENSEMBLE run 10/30 EnsembleRunParameters[number=10, motorSeed=5470138333674084309, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=0.0, massMultiplier=1.0294085243236486, dragMultiplier=1.0164838221782753, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 10 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:06.514 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:06.515 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:06.515 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:06.516 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:06.516 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:06.663 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:07.535 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:07.542 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:141.81077193745404    finTime:141.81077193745404
+13:35:07.542 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=916.8606853008846 maxVelocity=142.0583063979116 maxAcceleration=96.70466183845654 maxMachNumber=0.4204754918896785 timeToApogee=13.864999999999418 flightTime=141.81077193745404 groundHitVelocity=8.458136798964697 launchRodVelocity=13.800448023513146 optimumDelay=11.819999999999409
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=10 apogee_m=916.8606853008846
+13:35:08.016 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=881.7402393842676 maxVelocity=137.82003375931674 maxAcceleration=93.67115412564883 maxMachNumber=0.40794503073193294 timeToApogee=13.657499999999459 flightTime=135.13587109125015 groundHitVelocity=8.232365263267544 launchRodVelocity=13.583310393311182 optimumDelay=11.61499999999945
+ENSEMBLE saved run=9/30
+ENSEMBLE run 11/30 EnsembleRunParameters[number=11, motorSeed=-3314588073503809049, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=0.0, massMultiplier=1.0240264607526208, dragMultiplier=1.011804387389198, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 11 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:08.298 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:08.298 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:08.298 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:08.299 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:08.299 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:08.444 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:09.316 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:09.323 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:142.90255565405    finTime:142.90255565405
+13:35:09.323 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=924.2496542452185 maxVelocity=142.86077448094852 maxAcceleration=97.26441304697701 maxMachNumber=0.4228479187333834 timeToApogee=13.909999999999409 flightTime=142.90255565405 groundHitVelocity=8.519380700635294 launchRodVelocity=13.88132291366873 optimumDelay=11.8649999999994
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=11 apogee_m=924.2496542452185
+13:35:09.811 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=916.8606853008846 maxVelocity=142.0583063979116 maxAcceleration=96.70466183845654 maxMachNumber=0.4204754918896785 timeToApogee=13.864999999999418 flightTime=141.81077193745404 groundHitVelocity=8.458136798964697 launchRodVelocity=13.800448023513146 optimumDelay=11.819999999999409
+ENSEMBLE saved run=10/30
+ENSEMBLE run 12/30 EnsembleRunParameters[number=12, motorSeed=-6034787737421135420, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=0.992673084081564, dragMultiplier=1.009587170945778, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 12 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:10.096 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:10.097 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:10.097 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:10.098 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:10.098 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:10.241 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:11.128 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:11.135 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:150.2349153300674    finTime:150.2349153300674
+13:35:11.135 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=962.3391589786161 maxVelocity=147.55498865341067 maxAcceleration=100.64602412137744 maxMachNumber=0.43672612541886763 timeToApogee=14.119999999999367 flightTime=150.2349153300674 groundHitVelocity=8.467823013452021 launchRodVelocity=14.131800002211937 optimumDelay=12.074999999999358
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=12 apogee_m=962.3391589786161
+13:35:11.600 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=924.2496542452185 maxVelocity=142.86077448094852 maxAcceleration=97.26441304697701 maxMachNumber=0.4228479187333834 timeToApogee=13.909999999999409 flightTime=142.90255565405 groundHitVelocity=8.519380700635294 launchRodVelocity=13.88132291366873 optimumDelay=11.8649999999994
+ENSEMBLE saved run=11/30
+ENSEMBLE run 13/30 EnsembleRunParameters[number=13, motorSeed=-4862651645718418733, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=1.058747396199393, dragMultiplier=1.001967955502724, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 13 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:11.886 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:11.886 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:11.886 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:11.887 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:11.887 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:12.030 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:12.882 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:12.888 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:134.8592532745421    finTime:134.8592532745421
+13:35:12.889 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=885.9500208904001 maxVelocity=138.0096246841601 maxAcceleration=93.75331850943958 maxMachNumber=0.40850568649712726 timeToApogee=13.694999999999451 flightTime=134.8592532745421 groundHitVelocity=8.325915149890541 launchRodVelocity=13.595439942705223 optimumDelay=11.652499999999442
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=13 apogee_m=885.9500208904001
+13:35:13.382 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=962.3391589786161 maxVelocity=147.55498865341067 maxAcceleration=100.64602412137744 maxMachNumber=0.43672612541886763 timeToApogee=14.119999999999367 flightTime=150.2349153300674 groundHitVelocity=8.467823013452021 launchRodVelocity=14.131800002211937 optimumDelay=12.074999999999358
+ENSEMBLE saved run=12/30
+ENSEMBLE run 14/30 EnsembleRunParameters[number=14, motorSeed=6217502010404772325, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=-0.0, massMultiplier=0.9864678665505279, dragMultiplier=0.9966252196185288, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 14 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:13.704 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:13.705 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:13.705 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:13.706 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:13.706 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:13.854 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:14.740 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:14.747 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:151.36025947104696    finTime:151.36025947104696
+13:35:14.747 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=973.2842090238619 maxVelocity=148.58907455900186 maxAcceleration=101.34078009825133 maxMachNumber=0.43978285000019857 timeToApogee=14.189999999999353 flightTime=151.36025947104696 groundHitVelocity=8.377631361064036 launchRodVelocity=14.230559200410271 optimumDelay=12.147499999999344
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=14 apogee_m=973.2842090238619
+13:35:15.204 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=885.9500208904001 maxVelocity=138.0096246841601 maxAcceleration=93.75331850943958 maxMachNumber=0.40850568649712726 timeToApogee=13.694999999999451 flightTime=134.8592532745421 groundHitVelocity=8.325915149890541 launchRodVelocity=13.595439942705223 optimumDelay=11.652499999999442
+ENSEMBLE saved run=13/30
+ENSEMBLE run 15/30 EnsembleRunParameters[number=15, motorSeed=-901850281520944850, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=1.0492235192210997, dragMultiplier=0.9975275801372693, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 15 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:15.482 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:15.483 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:15.483 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:15.484 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:15.484 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:15.627 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:16.488 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:16.495 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:136.81153809738862    finTime:136.81153809738862
+13:35:16.495 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=897.9074543620438 maxVelocity=139.3475469916273 maxAcceleration=94.69328849972706 maxMachNumber=0.4124607552845018 timeToApogee=13.769999999999436 flightTime=136.81153809738862 groundHitVelocity=8.420359306269809 launchRodVelocity=13.733464077358951 optimumDelay=11.724999999999428
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=15 apogee_m=897.9074543620438
+13:35:16.990 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=973.2842090238619 maxVelocity=148.58907455900186 maxAcceleration=101.34078009825133 maxMachNumber=0.43978285000019857 timeToApogee=14.189999999999353 flightTime=151.36025947104696 groundHitVelocity=8.377631361064036 launchRodVelocity=14.230559200410271 optimumDelay=12.147499999999344
+ENSEMBLE saved run=14/30
+ENSEMBLE run 16/30 EnsembleRunParameters[number=16, motorSeed=2456683890491756916, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=0.0, massMultiplier=0.9721047115945773, dragMultiplier=1.0111993853821994, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 16 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:17.281 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:17.282 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:17.282 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:17.283 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:17.283 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:17.427 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:18.319 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:18.327 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:155.35826245879792    finTime:155.35826245879792
+13:35:18.327 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=987.2168585285423 maxVelocity=150.7602524432802 maxAcceleration=102.98289882828978 maxMachNumber=0.4462014136992175 timeToApogee=14.249999999999341 flightTime=155.35826245879792 groundHitVelocity=8.119665021997104 launchRodVelocity=14.219852293887577 optimumDelay=12.204999999999332
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=16 apogee_m=987.2168585285423
+13:35:18.786 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=897.9074543620438 maxVelocity=139.3475469916273 maxAcceleration=94.69328849972706 maxMachNumber=0.4124607552845018 timeToApogee=13.769999999999436 flightTime=136.81153809738862 groundHitVelocity=8.420359306269809 launchRodVelocity=13.733464077358951 optimumDelay=11.724999999999428
+ENSEMBLE saved run=15/30
+ENSEMBLE run 17/30 EnsembleRunParameters[number=17, motorSeed=7480398907431747043, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=-0.0, massMultiplier=0.9893804528908496, dragMultiplier=1.005379281598903, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 17 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:19.065 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:19.065 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:19.065 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:19.066 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:19.066 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:19.211 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:20.098 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:20.105 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:150.90775054691403    finTime:150.90775054691403
+13:35:20.105 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=967.434296796604 maxVelocity=148.08640724559206 maxAcceleration=101.0135894561449 maxMachNumber=0.4382970124116298 timeToApogee=14.15249999999936 flightTime=150.90775054691403 groundHitVelocity=8.491959654969374 launchRodVelocity=14.184036594353465 optimumDelay=12.107499999999352
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=17 apogee_m=967.434296796604
+13:35:20.572 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=987.2168585285423 maxVelocity=150.7602524432802 maxAcceleration=102.98289882828978 maxMachNumber=0.4462014136992175 timeToApogee=14.249999999999341 flightTime=155.35826245879792 groundHitVelocity=8.119665021997104 launchRodVelocity=14.219852293887577 optimumDelay=12.204999999999332
+ENSEMBLE saved run=16/30
+ENSEMBLE run 18/30 EnsembleRunParameters[number=18, motorSeed=-5670473687689725355, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=-0.0, massMultiplier=1.002530314192116, dragMultiplier=0.9650554649625283, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 18 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:20.864 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:20.864 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:20.864 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:20.865 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:20.865 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:21.009 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:21.897 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:21.904 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:146.4969817736777    finTime:146.4969817736777
+13:35:21.904 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=961.5108913833607 maxVelocity=146.30532292973027 maxAcceleration=99.56012682303746 maxMachNumber=0.4330318786237702 timeToApogee=14.15749999999936 flightTime=146.4969817736777 groundHitVelocity=8.323939805463988 launchRodVelocity=13.977735512739438 optimumDelay=12.11249999999935
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=18 apogee_m=961.5108913833607
+13:35:22.365 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=967.434296796604 maxVelocity=148.08640724559206 maxAcceleration=101.0135894561449 maxMachNumber=0.4382970124116298 timeToApogee=14.15249999999936 flightTime=150.90775054691403 groundHitVelocity=8.491959654969374 launchRodVelocity=14.184036594353465 optimumDelay=12.107499999999352
+ENSEMBLE saved run=17/30
+ENSEMBLE run 19/30 EnsembleRunParameters[number=19, motorSeed=3656690696529610457, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=0.0, massMultiplier=0.917675361676385, dragMultiplier=1.013635581670024, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 19 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:22.653 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:22.654 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:22.654 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:22.655 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:22.655 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:22.797 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:23.707 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:23.716 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:169.83402435405267    finTime:169.83402435405267
+13:35:23.716 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1056.0310144732523 maxVelocity=159.84731229758023 maxAcceleration=109.67224462945666 maxMachNumber=0.47305508137911856 timeToApogee=14.587499999999274 flightTime=169.83402435405267 groundHitVelocity=7.896519762304332 launchRodVelocity=14.89392917466101 optimumDelay=12.542499999999265
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=19 apogee_m=1056.0310144732523
+13:35:24.156 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=961.5108913833607 maxVelocity=146.30532292973027 maxAcceleration=99.56012682303746 maxMachNumber=0.4330318786237702 timeToApogee=14.15749999999936 flightTime=146.4969817736777 groundHitVelocity=8.323939805463988 launchRodVelocity=13.977735512739438 optimumDelay=12.11249999999935
+ENSEMBLE saved run=18/30
+ENSEMBLE run 20/30 EnsembleRunParameters[number=20, motorSeed=6517362603864756665, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=-0.0, massMultiplier=0.9030979584253138, dragMultiplier=1.0200662431851066, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 20 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:24.443 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:24.444 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:24.444 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:24.445 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:24.445 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:24.588 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:25.511 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:25.520 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:174.0770056277072    finTime:174.0770056277072
+13:35:25.520 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1072.979149845747 maxVelocity=162.39449856679323 maxAcceleration=111.60067725150878 maxMachNumber=0.4805816389175285 timeToApogee=14.65749999999926 flightTime=174.0770056277072 groundHitVelocity=7.7430059097428705 launchRodVelocity=14.893381640858415 optimumDelay=12.612499999999251
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=20 apogee_m=1072.979149845747
+13:35:25.944 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1056.0310144732523 maxVelocity=159.84731229758023 maxAcceleration=109.67224462945666 maxMachNumber=0.47305508137911856 timeToApogee=14.587499999999274 flightTime=169.83402435405267 groundHitVelocity=7.896519762304332 launchRodVelocity=14.89392917466101 optimumDelay=12.542499999999265
+ENSEMBLE saved run=19/30
+ENSEMBLE run 21/30 EnsembleRunParameters[number=21, motorSeed=5465164570446619811, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=0.9641413691974752, dragMultiplier=1.0076712800671712, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 21 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:26.238 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:26.238 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:26.238 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:26.239 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:26.239 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:26.383 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:27.282 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:27.290 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:157.28073577870958    finTime:157.28073577870958
+13:35:27.290 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=998.1382019225284 maxVelocity=152.0592201217069 maxAcceleration=103.91443116658601 maxMachNumber=0.4500403187219871 timeToApogee=14.309999999999329 flightTime=157.28073577870958 groundHitVelocity=8.17305699848383 launchRodVelocity=14.349985509927812 optimumDelay=12.26499999999932
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=21 apogee_m=998.1382019225284
+13:35:27.742 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1072.979149845747 maxVelocity=162.39449856679323 maxAcceleration=111.60067725150878 maxMachNumber=0.4805816389175285 timeToApogee=14.65749999999926 flightTime=174.0770056277072 groundHitVelocity=7.7430059097428705 launchRodVelocity=14.893381640858415 optimumDelay=12.612499999999251
+ENSEMBLE saved run=20/30
+ENSEMBLE run 22/30 EnsembleRunParameters[number=22, motorSeed=452509406231314744, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=-0.0, massMultiplier=0.9878140101246751, dragMultiplier=1.0177567422608875, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 22 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:28.039 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:28.040 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:28.040 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:28.041 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:28.041 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:28.184 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:29.071 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:29.078 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:151.66005031622265    finTime:151.66005031622265
+13:35:29.078 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=966.1754410927099 maxVelocity=148.25608552116222 maxAcceleration=101.18930009745982 maxMachNumber=0.4387986189662652 timeToApogee=14.132499999999364 flightTime=151.66005031622265 groundHitVelocity=8.355589469003524 launchRodVelocity=14.208939764278947 optimumDelay=12.087499999999356
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=22 apogee_m=966.1754410927099
+13:35:29.541 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=998.1382019225284 maxVelocity=152.0592201217069 maxAcceleration=103.91443116658601 maxMachNumber=0.4500403187219871 timeToApogee=14.309999999999329 flightTime=157.28073577870958 groundHitVelocity=8.17305699848383 launchRodVelocity=14.349985509927812 optimumDelay=12.26499999999932
+ENSEMBLE saved run=21/30
+ENSEMBLE run 23/30 EnsembleRunParameters[number=23, motorSeed=468260999365332200, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=1.03313016195779, dragMultiplier=1.0163812897267384, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 23 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:29.835 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:29.836 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:29.836 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:29.837 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:29.837 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:29.980 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:30.848 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:30.855 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:140.96825221942345    finTime:140.96825221942345
+13:35:30.855 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=912.5330506402428 maxVelocity=141.5250810773973 maxAcceleration=96.32099982878121 maxMachNumber=0.418899095056806 timeToApogee=13.839999999999423 flightTime=140.96825221942345 groundHitVelocity=8.144227420290626 launchRodVelocity=13.745031440378778 optimumDelay=11.794999999999414
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=23 apogee_m=912.5330506402428
+13:35:31.339 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=966.1754410927099 maxVelocity=148.25608552116222 maxAcceleration=101.18930009745982 maxMachNumber=0.4387986189662652 timeToApogee=14.132499999999364 flightTime=151.66005031622265 groundHitVelocity=8.355589469003524 launchRodVelocity=14.208939764278947 optimumDelay=12.087499999999356
+ENSEMBLE saved run=22/30
+ENSEMBLE run 24/30 EnsembleRunParameters[number=24, motorSeed=821529213591909649, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=-0.0, massMultiplier=0.9750335994700626, dragMultiplier=0.9959014064509389, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 24 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:31.631 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:31.632 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:31.632 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:31.632 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:31.633 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:31.782 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:32.675 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:32.683 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:154.17367136920763    finTime:154.17367136920763
+13:35:32.683 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=987.6931726326555 maxVelocity=150.3887261004072 maxAcceleration=102.64413108214687 maxMachNumber=0.4451033513022042 timeToApogee=14.267499999999337 flightTime=154.17367136920763 groundHitVelocity=7.9365464111733885 launchRodVelocity=14.172604366966974 optimumDelay=12.222499999999329
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=24 apogee_m=987.6931726326555
+13:35:33.139 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=912.5330506402428 maxVelocity=141.5250810773973 maxAcceleration=96.32099982878121 maxMachNumber=0.418899095056806 timeToApogee=13.839999999999423 flightTime=140.96825221942345 groundHitVelocity=8.144227420290626 launchRodVelocity=13.745031440378778 optimumDelay=11.794999999999414
+ENSEMBLE saved run=23/30
+ENSEMBLE run 25/30 EnsembleRunParameters[number=25, motorSeed=-2561054080797086666, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=-0.0, massMultiplier=0.9481751393221234, dragMultiplier=1.0081441446429753, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 25 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:33.426 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:33.426 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:33.426 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:33.427 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:33.427 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:33.569 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:34.480 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:34.488 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:161.42259411746934    finTime:161.42259411746934
+13:35:34.488 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1018.2478576688284 maxVelocity=154.67282682426537 maxAcceleration=105.82924533873553 maxMachNumber=0.45776442198281875 timeToApogee=14.40999999999931 flightTime=161.42259411746934 groundHitVelocity=8.266101030495522 launchRodVelocity=14.61743874598171 optimumDelay=12.3649999999993
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=25 apogee_m=1018.2478576688284
+13:35:34.931 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=987.6931726326555 maxVelocity=150.3887261004072 maxAcceleration=102.64413108214687 maxMachNumber=0.4451033513022042 timeToApogee=14.267499999999337 flightTime=154.17367136920763 groundHitVelocity=7.9365464111733885 launchRodVelocity=14.172604366966974 optimumDelay=12.222499999999329
+ENSEMBLE saved run=24/30
+ENSEMBLE run 26/30 EnsembleRunParameters[number=26, motorSeed=-8353998234016398912, temperature=286.404079727176, pressure=98174.73554792651, windEast=0.0, windNorth=-0.0, massMultiplier=1.0734349874804774, dragMultiplier=0.9815840156775963, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 26 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:35.226 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:35.227 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:35.227 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:35.228 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:35.228 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:35.371 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:36.222 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:36.228 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:131.08792829899602    finTime:131.08792829899602
+13:35:36.228 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=873.248048556852 maxVelocity=136.1134683060389 maxAcceleration=92.33642569951343 maxMachNumber=0.4028998719500346 timeToApogee=13.632499999999464 flightTime=131.08792829899602 groundHitVelocity=8.650415302880106 launchRodVelocity=13.605013582058616 optimumDelay=11.589999999999455
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=26 apogee_m=873.248048556852
+13:35:36.729 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1018.2478576688284 maxVelocity=154.67282682426537 maxAcceleration=105.82924533873553 maxMachNumber=0.45776442198281875 timeToApogee=14.40999999999931 flightTime=161.42259411746934 groundHitVelocity=8.266101030495522 launchRodVelocity=14.61743874598171 optimumDelay=12.3649999999993
+ENSEMBLE saved run=25/30
+ENSEMBLE run 27/30 EnsembleRunParameters[number=27, motorSeed=8921368711890471194, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=0.9827701933777403, dragMultiplier=0.9921462897600346, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 27 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:37.026 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:37.026 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:37.027 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:37.027 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:37.027 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:37.169 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:38.059 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:38.066 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:152.1383959721314    finTime:152.1383959721314
+13:35:38.066 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=979.0475645362773 maxVelocity=149.19237865494537 maxAcceleration=101.75895149132057 maxMachNumber=0.441566157302241 timeToApogee=14.227499999999345 flightTime=152.1383959721314 groundHitVelocity=8.36797585742843 launchRodVelocity=14.289986726177741 optimumDelay=12.182499999999337
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=27 apogee_m=979.0475645362773
+13:35:38.527 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=873.248048556852 maxVelocity=136.1134683060389 maxAcceleration=92.33642569951343 maxMachNumber=0.4028998719500346 timeToApogee=13.632499999999464 flightTime=131.08792829899602 groundHitVelocity=8.650415302880106 launchRodVelocity=13.605013582058616 optimumDelay=11.589999999999455
+ENSEMBLE saved run=26/30
+ENSEMBLE run 28/30 EnsembleRunParameters[number=28, motorSeed=8964360657104372235, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=-0.0, massMultiplier=0.9878459686821215, dragMultiplier=0.9919967550640547, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 28 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:38.805 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:38.805 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:38.805 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:38.806 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:38.806 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:38.950 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:39.847 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:39.854 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:150.88421193529064    finTime:150.88421193529064
+13:35:39.854 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=972.7850752184106 maxVelocity=148.40233839922064 maxAcceleration=101.18573763198495 maxMachNumber=0.43923085846421894 timeToApogee=14.192499999999352 flightTime=150.88421193529064 groundHitVelocity=8.43418687787333 launchRodVelocity=14.208555425695085 optimumDelay=12.147499999999344
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=28 apogee_m=972.7850752184106
+13:35:40.311 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=979.0475645362773 maxVelocity=149.19237865494537 maxAcceleration=101.75895149132057 maxMachNumber=0.441566157302241 timeToApogee=14.227499999999345 flightTime=152.1383959721314 groundHitVelocity=8.36797585742843 launchRodVelocity=14.289986726177741 optimumDelay=12.182499999999337
+ENSEMBLE saved run=27/30
+ENSEMBLE run 29/30 EnsembleRunParameters[number=29, motorSeed=-362646621862398578, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=0.9529528475454125, dragMultiplier=1.0314846167233982, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=-0.0]
+ENSEMBLE run 29 wind_direction_offset_deg=-0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:40.605 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:40.605 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:40.605 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:40.606 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:40.606 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:40.749 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:41.647 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:41.655 [ensemble-c0a4ce2e-1] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:160.84000201789524    finTime:160.84000201789524
+13:35:41.655 [ensemble-c0a4ce2e-1] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1005.5183901440183 maxVelocity=153.72979430361792 maxAcceleration=105.24950271273549 maxMachNumber=0.4549775501603262 timeToApogee=14.322499999999327 flightTime=160.84000201789524 groundHitVelocity=8.186714708845596 launchRodVelocity=14.536345852663526 optimumDelay=12.277499999999318
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=29 apogee_m=1005.5183901440183
+13:35:42.108 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=972.7850752184106 maxVelocity=148.40233839922064 maxAcceleration=101.18573763198495 maxMachNumber=0.43923085846421894 timeToApogee=14.192499999999352 flightTime=150.88421193529064 groundHitVelocity=8.43418687787333 launchRodVelocity=14.208555425695085 optimumDelay=12.147499999999344
+ENSEMBLE saved run=28/30
+ENSEMBLE run 30/30 EnsembleRunParameters[number=30, motorSeed=8032072136380554957, temperature=286.404079727176, pressure=98174.73554792651, windEast=-0.0, windNorth=0.0, massMultiplier=0.9967524510453937, dragMultiplier=1.023287051748319, rollForceMultiplier=1.0, rollDampingMultiplier=1.0, windDirectionOffset=0.0]
+ENSEMBLE run 30 wind_direction_offset_deg=0.000000000
+[JAVA] Installing Simulation Listeners
+[JAVA] Installing Simulation Listeners
+13:35:42.393 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.document.Simulation -- Simulation: calling simulator
+[JAVA] Calling Simulator
+[JAVA] Simulator Init
+13:35:42.393 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- !! WARNING !! 
+THIS IS THE CUSTOM SIMULATION ENGINE
+IT MOST DEFINITELY HAS BUGS
+BEWARE
+13:35:42.393 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- >>Starting simulation of branch: Sustainer
+[JAVA] Confirmed start of simulation.
+13:35:42.394 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- Queueing Ignition Event for:                  FinCan/e3e123d9 / J800T - Armed @: 0.0
+13:35:42.394 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine --   Igniting motor:                  FinCan/e3e123d9 / J800T - Armed @0.0
+13:35:42.535 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine --  detected Motor Burnout for motor J800T@ 2.09  on stage 0: Sustainer
+13:35:43.426 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.ModifiedEventSimulationEngine -- deployed recovery devices: 1
+[JAVA] Ended Simulation.                           
+13:35:43.434 [ensemble-c0a4ce2e-2] INFO info.openrocket.core.simulation.ModifiedEventSimulationEngine -- <<Finished simulating branch: Sustainer    curTime:149.64638508325191    finTime:149.64638508325191
+13:35:43.434 [ensemble-c0a4ce2e-2] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=953.9699073733963 maxVelocity=146.85294811848883 maxAcceleration=100.19399239397463 maxMachNumber=0.43465089426664505 timeToApogee=14.062499999999378 flightTime=149.64638508325191 groundHitVelocity=8.548040382589235 launchRodVelocity=14.067520424052951 optimumDelay=12.01749999999937
+Simulation: returning from simulator, simulation took 1s
+ENSEMBLE complete run=30 apogee_m=953.9699073733963
+13:35:43.916 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1005.5183901440183 maxVelocity=153.72979430361792 maxAcceleration=105.24950271273549 maxMachNumber=0.4549775501603262 timeToApogee=14.322499999999327 flightTime=160.84000201789524 groundHitVelocity=8.186714708845596 launchRodVelocity=14.536345852663526 optimumDelay=12.277499999999318
+ENSEMBLE saved run=29/30
+13:35:45.707 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=953.9699073733963 maxVelocity=146.85294811848883 maxAcceleration=100.19399239397463 maxMachNumber=0.43465089426664505 timeToApogee=14.062499999999378 flightTime=149.64638508325191 groundHitVelocity=8.548040382589235 launchRodVelocity=14.067520424052951 optimumDelay=12.01749999999937
+ENSEMBLE saved run=30/30
+13:35:46.044 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=962.5319041445166 maxVelocity=147.57548894057464 maxAcceleration=100.66233340999332 maxMachNumber=0.4367851195170424 timeToApogee=14.122499999999366 flightTime=131.00715881392492 groundHitVelocity=NaN launchRodVelocity=14.14998491796242 optimumDelay=NaN
+ENSEMBLE complete: Mass + Drag: 30 runs; mean ±1 sample standard deviation; full_results_retained=30
+13:35:46.228 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=939.6645469929535 maxVelocity=144.48524137365723 maxAcceleration=98.38901972221804 maxMachNumber=0.4276502998869776 timeToApogee=14.00749999999939 flightTime=145.0240249441843 groundHitVelocity=8.404537355594499 launchRodVelocity=14.043814981353323 optimumDelay=11.96249999999938
+13:35:46.382 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=947.7611481496216 maxVelocity=145.62247027137116 maxAcceleration=99.23074406496502 maxMachNumber=0.43101327337708195 timeToApogee=14.044999999999382 flightTime=147.01790539312282 groundHitVelocity=8.233351787974204 launchRodVelocity=13.930759278417254 optimumDelay=12.002499999999372
+13:35:46.531 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=966.4145849610233 maxVelocity=146.93502178377543 maxAcceleration=100.01808446401697 maxMachNumber=0.4348932777173752 timeToApogee=14.182499999999354 flightTime=147.54313983199404 groundHitVelocity=8.511232466191393 launchRodVelocity=14.042791975054262 optimumDelay=12.137499999999346
+13:35:46.668 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=972.9930919997768 maxVelocity=149.16082756806884 maxAcceleration=101.85295728484012 maxMachNumber=0.441472979713176 timeToApogee=14.167499999999357 flightTime=153.13662620264535 groundHitVelocity=8.317792685991536 launchRodVelocity=14.30321151279934 optimumDelay=12.122499999999349
+13:35:46.804 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1007.639152955382 maxVelocity=153.08852602518525 maxAcceleration=104.63621681063427 maxMachNumber=0.45308238014059 timeToApogee=14.364999999999318 flightTime=158.65161512445783 groundHitVelocity=8.106453383356403 launchRodVelocity=14.450835205314455 optimumDelay=12.31999999999931
+13:35:46.940 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=938.8259045668073 maxVelocity=144.13625649815873 maxAcceleration=98.09793502516003 maxMachNumber=0.42661856612654364 timeToApogee=14.009999999999389 flightTime=144.07194131241872 groundHitVelocity=8.482367848904119 launchRodVelocity=14.001817241977703 optimumDelay=11.96749999999938
+13:35:47.073 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=967.3459822900331 maxVelocity=147.5839119847445 maxAcceleration=100.57138205045354 maxMachNumber=0.43681155529326227 timeToApogee=14.167499999999357 flightTime=149.38812558862486 groundHitVelocity=8.617169864915986 launchRodVelocity=14.121302385738149 optimumDelay=12.124999999999348
+13:35:47.207 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=988.8209419184923 maxVelocity=151.4333206872142 maxAcceleration=103.5477682059577 maxMachNumber=0.44819045749711967 timeToApogee=14.242499999999342 flightTime=157.05516261526006 groundHitVelocity=8.17618688906547 launchRodVelocity=14.29867525553775 optimumDelay=12.197499999999334
+13:35:47.342 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=881.7402393842676 maxVelocity=137.82003375931674 maxAcceleration=93.67115412564883 maxMachNumber=0.40794503073193294 timeToApogee=13.657499999999459 flightTime=135.13587109125015 groundHitVelocity=8.232365263267544 launchRodVelocity=13.583310393311182 optimumDelay=11.61499999999945
+13:35:47.480 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=916.8606853008846 maxVelocity=142.0583063979116 maxAcceleration=96.70466183845654 maxMachNumber=0.4204754918896785 timeToApogee=13.864999999999418 flightTime=141.81077193745404 groundHitVelocity=8.458136798964697 launchRodVelocity=13.800448023513146 optimumDelay=11.819999999999409
+13:35:47.611 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=924.2496542452185 maxVelocity=142.86077448094852 maxAcceleration=97.26441304697701 maxMachNumber=0.4228479187333834 timeToApogee=13.909999999999409 flightTime=142.90255565405 groundHitVelocity=8.519380700635294 launchRodVelocity=13.88132291366873 optimumDelay=11.8649999999994
+13:35:47.744 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=962.3391589786161 maxVelocity=147.55498865341067 maxAcceleration=100.64602412137744 maxMachNumber=0.43672612541886763 timeToApogee=14.119999999999367 flightTime=150.2349153300674 groundHitVelocity=8.467823013452021 launchRodVelocity=14.131800002211937 optimumDelay=12.074999999999358
+13:35:47.874 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=885.9500208904001 maxVelocity=138.0096246841601 maxAcceleration=93.75331850943958 maxMachNumber=0.40850568649712726 timeToApogee=13.694999999999451 flightTime=134.8592532745421 groundHitVelocity=8.325915149890541 launchRodVelocity=13.595439942705223 optimumDelay=11.652499999999442
+13:35:48.005 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=973.2842090238619 maxVelocity=148.58907455900186 maxAcceleration=101.34078009825133 maxMachNumber=0.43978285000019857 timeToApogee=14.189999999999353 flightTime=151.36025947104696 groundHitVelocity=8.377631361064036 launchRodVelocity=14.230559200410271 optimumDelay=12.147499999999344
+13:35:48.132 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=897.9074543620438 maxVelocity=139.3475469916273 maxAcceleration=94.69328849972706 maxMachNumber=0.4124607552845018 timeToApogee=13.769999999999436 flightTime=136.81153809738862 groundHitVelocity=8.420359306269809 launchRodVelocity=13.733464077358951 optimumDelay=11.724999999999428
+13:35:48.262 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=987.2168585285423 maxVelocity=150.7602524432802 maxAcceleration=102.98289882828978 maxMachNumber=0.4462014136992175 timeToApogee=14.249999999999341 flightTime=155.35826245879792 groundHitVelocity=8.119665021997104 launchRodVelocity=14.219852293887577 optimumDelay=12.204999999999332
+13:35:48.395 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=967.434296796604 maxVelocity=148.08640724559206 maxAcceleration=101.0135894561449 maxMachNumber=0.4382970124116298 timeToApogee=14.15249999999936 flightTime=150.90775054691403 groundHitVelocity=8.491959654969374 launchRodVelocity=14.184036594353465 optimumDelay=12.107499999999352
+13:35:48.525 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=961.5108913833607 maxVelocity=146.30532292973027 maxAcceleration=99.56012682303746 maxMachNumber=0.4330318786237702 timeToApogee=14.15749999999936 flightTime=146.4969817736777 groundHitVelocity=8.323939805463988 launchRodVelocity=13.977735512739438 optimumDelay=12.11249999999935
+13:35:48.660 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1056.0310144732523 maxVelocity=159.84731229758023 maxAcceleration=109.67224462945666 maxMachNumber=0.47305508137911856 timeToApogee=14.587499999999274 flightTime=169.83402435405267 groundHitVelocity=7.896519762304332 launchRodVelocity=14.89392917466101 optimumDelay=12.542499999999265
+13:35:48.801 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1072.979149845747 maxVelocity=162.39449856679323 maxAcceleration=111.60067725150878 maxMachNumber=0.4805816389175285 timeToApogee=14.65749999999926 flightTime=174.0770056277072 groundHitVelocity=7.7430059097428705 launchRodVelocity=14.893381640858415 optimumDelay=12.612499999999251
+13:35:48.934 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=998.1382019225284 maxVelocity=152.0592201217069 maxAcceleration=103.91443116658601 maxMachNumber=0.4500403187219871 timeToApogee=14.309999999999329 flightTime=157.28073577870958 groundHitVelocity=8.17305699848383 launchRodVelocity=14.349985509927812 optimumDelay=12.26499999999932
+13:35:49.067 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=966.1754410927099 maxVelocity=148.25608552116222 maxAcceleration=101.18930009745982 maxMachNumber=0.4387986189662652 timeToApogee=14.132499999999364 flightTime=151.66005031622265 groundHitVelocity=8.355589469003524 launchRodVelocity=14.208939764278947 optimumDelay=12.087499999999356
+13:35:49.198 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=912.5330506402428 maxVelocity=141.5250810773973 maxAcceleration=96.32099982878121 maxMachNumber=0.418899095056806 timeToApogee=13.839999999999423 flightTime=140.96825221942345 groundHitVelocity=8.144227420290626 launchRodVelocity=13.745031440378778 optimumDelay=11.794999999999414
+13:35:49.332 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=987.6931726326555 maxVelocity=150.3887261004072 maxAcceleration=102.64413108214687 maxMachNumber=0.4451033513022042 timeToApogee=14.267499999999337 flightTime=154.17367136920763 groundHitVelocity=7.9365464111733885 launchRodVelocity=14.172604366966974 optimumDelay=12.222499999999329
+13:35:49.466 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1018.2478576688284 maxVelocity=154.67282682426537 maxAcceleration=105.82924533873553 maxMachNumber=0.45776442198281875 timeToApogee=14.40999999999931 flightTime=161.42259411746934 groundHitVelocity=8.266101030495522 launchRodVelocity=14.61743874598171 optimumDelay=12.3649999999993
+13:35:49.592 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=873.248048556852 maxVelocity=136.1134683060389 maxAcceleration=92.33642569951343 maxMachNumber=0.4028998719500346 timeToApogee=13.632499999999464 flightTime=131.08792829899602 groundHitVelocity=8.650415302880106 launchRodVelocity=13.605013582058616 optimumDelay=11.589999999999455
+13:35:49.721 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=979.0475645362773 maxVelocity=149.19237865494537 maxAcceleration=101.75895149132057 maxMachNumber=0.441566157302241 timeToApogee=14.227499999999345 flightTime=152.1383959721314 groundHitVelocity=8.36797585742843 launchRodVelocity=14.289986726177741 optimumDelay=12.182499999999337
+13:35:49.852 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=972.7850752184106 maxVelocity=148.40233839922064 maxAcceleration=101.18573763198495 maxMachNumber=0.43923085846421894 timeToApogee=14.192499999999352 flightTime=150.88421193529064 groundHitVelocity=8.43418687787333 launchRodVelocity=14.208555425695085 optimumDelay=12.147499999999344
+13:35:49.989 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=1005.5183901440183 maxVelocity=153.72979430361792 maxAcceleration=105.24950271273549 maxMachNumber=0.4549775501603262 timeToApogee=14.322499999999327 flightTime=160.84000201789524 groundHitVelocity=8.186714708845596 launchRodVelocity=14.536345852663526 optimumDelay=12.277499999999318
+13:35:50.126 [main] DEBUG info.openrocket.core.simulation.FlightData -- Computed flight values: maxAltitude=953.9699073733963 maxVelocity=146.85294811848883 maxAcceleration=100.19399239397463 maxMachNumber=0.43465089426664505 timeToApogee=14.062499999999378 flightTime=149.64638508325191 groundHitVelocity=8.548040382589235 launchRodVelocity=14.067520424052951 optimumDelay=12.01749999999937
+13:35:50.158 [main] INFO info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving .ork file
+13:35:50.158 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Storing file version 1.10
+13:35:50.158 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Rocket
+Looking for info.openrocket.core.file.openrocket.savers.RocketSaver
+13:35:50.160 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Stage
+Looking for info.openrocket.core.file.openrocket.savers.AxialStageSaver
+13:35:50.160 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Nose Cone
+Looking for info.openrocket.core.file.openrocket.savers.NoseConeSaver
+13:35:50.162 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Bulkhead
+Looking for info.openrocket.core.file.openrocket.savers.BulkheadSaver
+13:35:50.163 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Body Tube
+Looking for info.openrocket.core.file.openrocket.savers.BodyTubeSaver
+13:35:50.163 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Parachute
+Looking for info.openrocket.core.file.openrocket.savers.ParachuteSaver
+13:35:50.164 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Mass Component
+Looking for info.openrocket.core.file.openrocket.savers.MassComponentSaver
+13:35:50.164 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Tube Coupler
+Looking for info.openrocket.core.file.openrocket.savers.TubeCouplerSaver
+13:35:50.165 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Body Tube
+Looking for info.openrocket.core.file.openrocket.savers.BodyTubeSaver
+13:35:50.165 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Mass Component
+Looking for info.openrocket.core.file.openrocket.savers.MassComponentSaver
+13:35:50.165 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Bulkhead
+Looking for info.openrocket.core.file.openrocket.savers.BulkheadSaver
+13:35:50.165 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Centering Ring
+Looking for info.openrocket.core.file.openrocket.savers.CenteringRingSaver
+13:35:50.165 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Pod Set
+Looking for info.openrocket.core.file.openrocket.savers.PodSetSaver
+Looking for info.openrocket.core.file.openrocket.savers.ComponentAssemblySaver
+13:35:50.165 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Nose Cone
+Looking for info.openrocket.core.file.openrocket.savers.NoseConeSaver
+13:35:50.165 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Nose Cone
+Looking for info.openrocket.core.file.openrocket.savers.NoseConeSaver
+13:35:50.166 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Body Tube
+Looking for info.openrocket.core.file.openrocket.savers.BodyTubeSaver
+13:35:50.166 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Centering Ring
+Looking for info.openrocket.core.file.openrocket.savers.CenteringRingSaver
+13:35:50.166 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Mass Component
+Looking for info.openrocket.core.file.openrocket.savers.MassComponentSaver
+13:35:50.166 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Tube Coupler
+Looking for info.openrocket.core.file.openrocket.savers.TubeCouplerSaver
+13:35:50.166 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving component Trapezoidal Fin Set
+Looking for info.openrocket.core.file.openrocket.savers.TrapezoidFinSetSaver
+ENSEMBLE save full_results=30
+13:36:02.078 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving Photo Settings
+13:36:02.079 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Saving Document Preferences
+13:36:02.079 [main] DEBUG info.openrocket.core.file.openrocket.OpenRocketSaver -- Writing complete, flushing buffers
+Saved native ensemble ORK; warnings=Messages[]
+RESULT {"source_path":"/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_j800_20261018_native_ensemble_30_10mph/co2/balius-cdr-co2.ork","source_sha256":"3906761a21ae374dffb992f2fb1983441b02d1f94e15c34c6848423fe7826738","engine":"Native EnsembleRunner from /Applications/OpenRocket_MIT.app","motor":"J800T","settings":{"enabled":"true","motorsigma":"0.0","rollforcesigma":"0.0","windsigma":"0.0","winddirectionsigma":"0.0","dragsigma":"0.02","seed":"20261018","temperaturesigma":"0.0","rolldampingsigma":"0.0","noiseinterval":"0.05","masssigma":"0.05","runs":"30","threads":"2","pressuresigma":"0.0"},"recovery":{"diameter_m":2.109216,"nominal_cd":0.68,"deployment":"APOGEE","delay_s":1.0},"completed":30,"attempted":30,"excluded":0,"wind_mean_mps":4.4704,"wind_direction_deg":90.0,"wind_speed_deviation_mps":0.44704,"wind_turbulence_intensity":0.1,"wind_realization_fixed":true,"launch_latitude_deg":42.70416776971639,"launch_longitude_deg":-77.19029501648315,"launch_elevation_m":268.603118896,"rail_length_m":1.0,"apogee_mean_m":962.8108565610936,"apogee_stdev_m":46.894491647921534,"apogee_time_mean_s":14.119916666666033,"apogee_time_stdev_s":0.24851323711819442,"minimum_member_apogee_m":873.248048556852,"maximum_member_apogee_m":1072.979149845747,"standard_deviation":"sample N-1; flight-to-flight spread, not confidence interval of mean","plot_data":"Unmodified native ensemble mean and pointwise sample standard deviation","mass_definition":"Whole vehicle mass and inertias scaled, including remaining propellant; CG fixed","cd_definition":"Native drag multiplier scales aerodynamic Cd and recovery-phase drag; nominal parachute unchanged","warnings":"Messages[]"}

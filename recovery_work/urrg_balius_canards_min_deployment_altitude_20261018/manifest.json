@@ -1,0 +1,38 @@
+{
+  "app": "/Applications/OpenRocket_MIT.app",
+  "app_jar": "/Applications/OpenRocket_MIT.app/Contents/Resources/app/jar/OpenRocket-24.12.jar",
+  "app_jar_resolved": "/Users/mdn/Developer/ActiveControl_MIT_RktTeam/clone/openrocket-release-24.12.RC.01/build/libs/OpenRocket-24.12.RC.01.jar",
+  "app_jar_sha256": "d18be8b40da3949848f938a7159bf868d33b1135cf6f6db22c0de35f54fa3633",
+  "runtime": "/Applications/OpenRocket_MIT.app/Contents/Resources/jre.bundle/Contents/Home/bin/java",
+  "runs_per_design": 30,
+  "seed": 20261018,
+  "mass_distribution": "Normal(mean=1, sigma=0.05), constant multiplier per flight",
+  "cd_distribution": "Normal(mean=1, sigma=0.02), constant multiplier per flight",
+  "other_ensemble_sigmas": 0,
+  "wind": "Mean 10 mph (4.4704 m/s), direction 90 degrees, 10% turbulence; fixed native realization across runs",
+  "native_feature": "Simulation.simulate with enabled EnsembleSettings; no custom perturbation listener",
+  "source_inputs": {
+    "canards": {
+      "path": "/Users/mdn/Downloads/balius-cdr-canards.ork",
+      "sha256": "a328f0e238407dae35eba181b4c9504a867eee648b9291fa2b4ea6e8e0239fe1"
+    }
+  },
+  "engine_snapshot": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_canards_min_deployment_altitude_20261018/engine.jar",
+  "wind_mean_mph": 10,
+  "wind_mean_mps": 4.4704,
+  "wind_standard_deviation_mps": 0.44704,
+  "paired_with_previous_30": true,
+  "design": "canards",
+  "criterion": "All 30 paired flights have vertical descent speed within +/-5% of their own apogee+1s baseline for every point in the final 1.0 seconds before ground contact, after deployment.",
+  "tolerance_fraction": 0.05,
+  "altitude_reference": "Height above flat ground at URRG launch-pad elevation; no DEM correction",
+  "deployment_model": "Native instantaneous full CdA; no canopy inflation or opening-load failure model",
+  "nominal_launch_mass_kg": 7.863470488381001,
+  "refinement_method": "Native altitude-triggered ensembles with adaptive refinement to a one-foot passing/failing bracket",
+  "settled_duration_s": 1,
+  "altitude_resolution_ft": 1,
+  "trigger": "Main deploys on descending crossing of the AGL threshold with zero additional delay",
+  "baseline_results": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_canards_deployment_delay_20261018/delay_0001.000s",
+  "status": "complete",
+  "completed_flights_in_reported_ensembles": 210
+}

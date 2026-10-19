@@ -1,0 +1,35 @@
+{
+  "source_ork": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_j800_20261018_corrected_parachutes/canards/balius-cdr-canards.URRG.ork",
+  "source_ork_sha256": "0acf1425cb21f513d29c1eee97126576279f552a7c0dce404d1ab1d93d60aaa3",
+  "launch_site": {
+    "name": "URRG",
+    "mgrs": "18TUN2061530290",
+    "latitude_deg": 42.70416776971639,
+    "longitude_deg": -77.19029501648315,
+    "elevation_m": 268.603118896,
+    "elevation_source": "https://epqs.nationalmap.gov/v1/json?x=-77.19029501648315&y=42.70416776971639&units=Meters&wkid=4326&includeDate=False",
+    "coordinate_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/ui_work/rocket_UI_v0a/src/rocket_gnc_monitor/site_presets.py",
+    "coordinate_source_sha256": "ae16e8902eba4c1421fc182545c6d1316453d2ae74bc57eaa3de74d10d2a566d"
+  },
+  "engine_jar": "/private/tmp/urrg-recovery-engine-20261016.jar",
+  "engine_jar_sha256": "ab430c861dfa63eb4af2a6ee5061a850ba6ca6b9f5250f14c898182c9cd86bec",
+  "trials_per_motor": 4,
+  "first_seed": 20261011,
+  "wind_speed_override_mps": null,
+  "random_wind_max_mps": 5.0,
+  "turbulence_intensity_range": [
+    0.05,
+    0.2
+  ],
+  "cases_sha256": "7efd5e6beb4a3c88825704e6bf5c62e6d9b5c9518859c2343c76919e8b390fa0",
+  "java_runner_sha256": "48eb6e18aba711d16f6968c685e68a975aac1879c3aeb101a2d84ecad1604d2e",
+  "sampling": "Latin hypercube, independent uniform marginals, paired weather across motors",
+  "workers": 1,
+  "trajectory_export": {
+    "directory": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_j800_20261018_corrected_parachutes/canards/controls_extended/traces",
+    "virtual_floor_depth_m": 20,
+    "note": "Physical launch altitude preserved; raw endpoints are on a virtual floor. Intersect trajectories with terrain before reporting landings."
+  },
+  "perimeter_source": "/Users/mdn/Developer/MIT_Rkt_Team/2026-7/MIT-RT-26_27-Work/recovery_work/urrg_balius_j800_20261018_corrected_parachutes/earth_data/perimeter_mgrs.txt",
+  "perimeter_sha256": "33f6847334067f7b803f76b91011a14ce614e9d625b2371f6fd33c6504eabaa6"
+}

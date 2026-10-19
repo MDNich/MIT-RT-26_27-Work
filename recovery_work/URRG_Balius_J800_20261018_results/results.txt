@@ -1,0 +1,39 @@
+URRG · Balius J800T Monte Carlo · 2026-10-18
+
+500 paired weather trials for each supplied ORK, J800T only. Telemetry UI URRG pad: 18TUN2061530290.
+Mean wind uniform 0–5 m/s; direction uniform 0–360°; turbulence intensity uniform 5–20%.
+Same 500 Latin-hypercube weather draws and seeds as the previous study. Native pink-noise speed variation; direction and mean fixed within each flight and with altitude. Instantaneous gusts can exceed the mean-speed cap.
+Both files: main diameter 0.6096 m, automatic Cd resolves to 0.8, configuration-specific deployment at apogee + 1 s, vertical 1 m rail, ISA atmosphere. No drogue.
+Descriptive J800T simulation index 3 selected in each file; its conditions match the generic J800T simulation index 2. I500T and J570W configurations are not run.
+No active-control extension is present in these ORKs; canards and CO2 components contribute as stored geometry/mass. No unprovided control law or actuation is assumed.
+
+Balius CDR · Canards
+Inside / completed: 426/426 = 100.00%; 0 outside; 74 incomplete excluded from 500 attempts.
+Horizontal radius: median 42.1 m; central 95% 2.4–103.4 m; conditional 95th-percentile radius 96.6 m; maximum 127.0 m.
+Median apogee 911.4 m above pad; vertical touchdown speed 22.61 m/s.
+Largest horizontal terrain correction versus the track's pad-plane crossing: 0.211 m.
+
+Balius CDR · CO₂
+Inside / completed: 500/500 = 100.00%; 0 outside; 0 incomplete excluded from 500 attempts.
+Horizontal radius: median 28.4 m; central 95% 1.6–74.9 m; conditional 95th-percentile radius 68.8 m; maximum 88.9 m.
+Median apogee 960.1 m above pad; vertical touchdown speed 22.32 m/s.
+Largest horizontal terrain correction versus the track's pad-plane crossing: 0.145 m.
+
+Terrain and validation:
+Full native trajectories continue to a numerical floor 20 m below the pad. The origin shift occurs below 30 m during main descent without changing physical altitude or velocity. Paired flat/extended controls preserve ascent, rail exit and deployment timing; repeated seeds produce identical outputs.
+Each completed trajectory stops at its first descending intersection with a bilinear USGS 3DEP DEM exported at 2 m. All native track samples are used; the 3D display alone is thinned to about 100 points per trajectory and a 10 m terrain mesh. Vertical exaggeration is 1.
+USGS source at pad: NY_FingerLakes_2020_A20 1 m survey; vertical datum NAVD88. Cached DEM and Esri World Imagery from the previous 2026-10-16 run are reused for a consistent comparison.
+Boundary: ordered 1000-point MGRS perimeter, closed last-to-first; no convex hull. Containment was also checked using independently decoded MGRS digits and a separate point-in-polygon implementation. Bilinear elevation roots checked independently.
+Percentages and landing ranges are conditional on simulations finishing with main deployment; excluded tumble aborts have no modelled landing point. These are assumed numerical scenarios, not a measured launch-day probability. Bare-earth elevation does not include crops, trees or structures; model and terrain uncertainty are not sampled.
+
+Artifacts:
+Each design folder contains its satellite landing plot, green-area map, 3D snapshot, standalone interactive 3D HTML, raw inputs and outputs, terrain-corrected CSV/GeoJSON and validation.
+The diagnostics folder contains the comparative Monte Carlo distributions, wind inputs, completion and flight metrics. The compact ZIP includes figures, HTML, tables, ORKs, validation and source code; full tracks and cached earth rasters remain in the workspace output folder.
+extended_runs.csv contains virtual-floor endpoints; use terrain_landings.csv for actual terrain landing positions.
+
+Sources:
+https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer
+https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer
+Imagery credit: Esri, Maxar, Earthstar Geographics and GIS community. Elevation: USGS 3DEP.
+
+Reproduction: use the hash-matched MIT engine and recorded Python dependencies. Run balius_recovery_study.py --stage all. Source inputs are the untouched ORKs, copied with hashes; site copies change location and clear cached results only.
