@@ -1,0 +1,60 @@
+.....................s.................................................. [ 12%]
+.....................................................................s.. [ 24%]
+........................................................................ [ 37%]
+....................................................FFF................. [ 49%]
+.........................................................s.............. [ 62%]
+........................................................................ [ 74%]
+........................................................................ [ 87%]
+..ssssssss.............................................................. [ 99%]
+..                                                                       [100%]
+================================== FAILURES ===================================
+___________________ test_compact_and_tall_rendering[size0] ____________________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x0000021B0183E0A0>, size = (550, 150)
+
+    @pytest.mark.parametrize("size", [(550, 150), (550, 180), (550, 450)])
+    def test_compact_and_tall_rendering(qtbot, size):
+        view = make_view(qtbot, pose((35, 20, -15), motor=True, parachute=True, inflation=1), size=size)
+        image = view.grab()
+>       assert (image.width(), image.height()) == size
+E       assert (1100, 300) == (550, 150)
+E
+E         At index 0 diff: 1100 != 550
+E         Use -v to get more diff
+
+tests\test_rocket_pose_view.py:192: AssertionError
+___________________ test_compact_and_tall_rendering[size1] ____________________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x0000021B0185F070>, size = (550, 180)
+
+    @pytest.mark.parametrize("size", [(550, 150), (550, 180), (550, 450)])
+    def test_compact_and_tall_rendering(qtbot, size):
+        view = make_view(qtbot, pose((35, 20, -15), motor=True, parachute=True, inflation=1), size=size)
+        image = view.grab()
+>       assert (image.width(), image.height()) == size
+E       assert (1100, 360) == (550, 180)
+E
+E         At index 0 diff: 1100 != 550
+E         Use -v to get more diff
+
+tests\test_rocket_pose_view.py:192: AssertionError
+___________________ test_compact_and_tall_rendering[size2] ____________________
+
+qtbot = <pytestqt.qtbot.QtBot object at 0x0000021B0185F3E0>, size = (550, 450)
+
+    @pytest.mark.parametrize("size", [(550, 150), (550, 180), (550, 450)])
+    def test_compact_and_tall_rendering(qtbot, size):
+        view = make_view(qtbot, pose((35, 20, -15), motor=True, parachute=True, inflation=1), size=size)
+        image = view.grab()
+>       assert (image.width(), image.height()) == size
+E       assert (1100, 900) == (550, 450)
+E
+E         At index 0 diff: 1100 != 550
+E         Use -v to get more diff
+
+tests\test_rocket_pose_view.py:192: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_rocket_pose_view.py::test_compact_and_tall_rendering[size0]
+FAILED tests/test_rocket_pose_view.py::test_compact_and_tall_rendering[size1]
+FAILED tests/test_rocket_pose_view.py::test_compact_and_tall_rendering[size2]
+3 failed, 564 passed, 11 skipped in 233.79s (0:03:53)

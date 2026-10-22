@@ -1,0 +1,31 @@
+{
+  "application_source_commit": "7e646afa1bda2be91bf0c852605541a7bc909d0e",
+  "repository_source_commit": "e6d6ac85",
+  "platform": "Windows 11 ARM VM, x64 application under emulation",
+  "archive": "RocketGNCMonitor-v0a-Windows-x64.zip",
+  "bytes": 214921087,
+  "sha256": "2f6d82cd045976b86f5c2f51db408a7d503d22ff53932bcd0050312d1579b51e",
+  "source_tests": {
+    "full_run": {
+      "passed": 564,
+      "failed": 3,
+      "skipped": 11
+    },
+    "initial_failure": "Screenshot tests compared physical pixels with logical widget size at Windows display scaling 200%.",
+    "correction": "Tests now verify exact Qt-rounded physical size and the device pixel ratio; production code unchanged.",
+    "affected_module_rerun": {
+      "passed": 21,
+      "failed": 0
+    },
+    "mac_rendering_reruns": {
+      "scale_1": 3,
+      "scale_1_25": 3
+    }
+  },
+  "packaged_checks": 20,
+  "minimal_path": true,
+  "x64_native_binaries": 238,
+  "zip_crc_valid": true,
+  "physical_hardware_tested": false,
+  "production_code_changes": false
+}

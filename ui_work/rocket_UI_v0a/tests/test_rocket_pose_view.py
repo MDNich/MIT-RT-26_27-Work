@@ -3,7 +3,7 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from PySide6.QtCore import QPoint, QPointF, Qt
+from PySide6.QtCore import QPoint, QPointF, QSizeF, Qt
 from PySide6.QtGui import QWheelEvent
 from PySide6.QtWidgets import QApplication
 
@@ -189,5 +189,8 @@ def test_no_drag_double_click_or_wheel_camera_controls(qtbot):
 def test_compact_and_tall_rendering(qtbot, size):
     view = make_view(qtbot, pose((35, 20, -15), motor=True, parachute=True, inflation=1), size=size)
     image = view.grab()
-    assert (image.width(), image.height()) == size
+    assert (view.width(), view.height()) == size
+    assert image.devicePixelRatio() == view.devicePixelRatioF()
+    # Grabs contain physical pixels; Qt rounds fractional-DPI dimensions.
+    assert image.size() == (QSizeF(*size) * image.devicePixelRatio()).toSize()
     assert not image.isNull()
