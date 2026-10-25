@@ -1,0 +1,61 @@
+{
+  "v": 1,
+  "kind": "telemetry.observation",
+  "node_id": "11111111-1111-4111-8111-111111111111",
+  "boot_id": "22222222-2222-4222-8222-222222222222",
+  "mission_id": "33333333-3333-4333-8333-333333333333",
+  "source_mode": "live",
+  "event_seq": "41",
+  "sent_mono_ms": "150000",
+  "sent_time_utc": "2026-10-25T18:00:00.000Z",
+  "payload": {
+    "observation_id": "11111111-1111-4111-8111-111111111111:22222222-2222-4222-8222-222222222222:12",
+    "receiver": {
+      "station": "gs1",
+      "board_id": "downlink",
+      "connection_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+      "rssi_dbm": -83.0,
+      "rx_rssi_dbm": null,
+      "decoder_gaps": "0",
+      "rejected_packets": "0"
+    },
+    "vehicle": {"id": "sustainer", "basis": "packet_id", "target_epoch": null},
+    "packet": {
+      "protocol": "documentation-fixture",
+      "protocol_version": "1",
+      "decoder_version": "example-1",
+      "type": "navigation",
+      "sequence": "42",
+      "device_boot_id": null,
+      "device_time_ms": null,
+      "raw_b64": "RE9DLU9OTFktUEFDS0VULTQy",
+      "raw_sha256": "db02a19db5954d8274a922dec9abdd3d8581659bbb1852a0efef77a40050205c"
+    },
+    "timing": {
+      "received_mono_ms": "149980",
+      "received_time_utc": "2026-10-25T17:59:59.980Z",
+      "clock_quality": "unknown",
+      "clock_uncertainty_ms": null
+    },
+    "values": {
+      "state": {"code": null, "name": "PREFLIGHT"},
+      "position": {"lat_deg": 42.7, "lon_deg": -77.2, "alt_m": null, "alt_datum": "unknown", "fix": true},
+      "baro_altitude": {"value_m": 0.0, "datum": "agl_launch"},
+      "velocity_enu_m_s": null,
+      "orientation": null,
+      "flight_status": {
+        "motor_ignited": null,
+        "motor_burning": null,
+        "parachute_deployed": null,
+        "evidence_source": null
+      },
+      "native_schema": "documentation-fixture/1",
+      "native": {"temperature_c": 21.5}
+    },
+    "quality": {
+      "validation": "accepted",
+      "attribution_confidence": "explicit_id",
+      "warnings": ["Documentation fixture; not Zephyrus wire bytes."]
+    }
+  }
+}

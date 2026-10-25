@@ -1,0 +1,32 @@
+\section{Example exchanges}
+These complete JSON files illustrate the normative field names. UUIDs, addresses,
+tokens and measurements are synthetic. \code{raw_b64} in the observation example
+encodes a documentation fixture, not a valid Zephyrus packet; its digest is real
+for those fixture bytes. The example decoder and native schema names are not
+claims about production firmware. Token values must be generated at runtime.
+
+\subsection{Telemetry service identity}
+\lstinputlisting{examples/info.json}
+\subsection{Client subscription}
+This client has previously accepted event 40 from the indicated service boot.
+The server may replay 41 onward only if that cursor remains in its retained range.
+\lstinputlisting{examples/subscribe.json}
+\clearpage
+\subsection{Received observation}
+The source has a known Sustainer attribution from a hypothetical packet identifier.
+Real Zephyrus packets without such identity must use the actual supported basis.
+Orientation and motor/recovery state remain unknown.
+\lstinputlisting{examples/observation.json}
+\clearpage
+\subsection{Video session request and response}
+The media publisher is the separate GS1 Video node, not GS1 Telemetry. HTTP 201
+returns the already listening endpoint. The token shown here is illustrative and
+must never be deployed as a constant. \code{latency_ms} is the requested baseline;
+actual negotiated latency becomes available after the SRT handshake in session
+status.
+\lstinputlisting{examples/video-request.json}
+\lstinputlisting{examples/video-response.json}
+\subsection{Expired resume cursor}
+The client records a discontinuity, then consumes the following snapshot at
+the new barrier. It does not fabricate observations 41--89.
+\lstinputlisting{examples/reset.json}

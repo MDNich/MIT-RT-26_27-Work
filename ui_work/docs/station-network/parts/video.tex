@@ -1,0 +1,189 @@
+\section{H.264 media profile and SRT transport}\label{sec:video}
+\subsection{Codec, container and transport are separate choices}
+\req{VID-01}{Protocol 1.0 SHALL carry H.264/AVC video in MPEG-TS over SRT live
+mode. HTTP advertises and allocates streams; WebSocket carries status. Video bytes
+SHALL not share the telemetry WebSocket. SRT is the proposed transport binding;
+H.264 was the explicitly accepted codec choice.}
+
+The video node is the SRT \emph{listener and sender}; Launch Video is the SRT
+\emph{caller and receiver}. Caller/listener describes who establishes the
+connection, not who produces the video. Connections are unicast on the LAN.
+No Internet rendezvous service, browser or external media server is needed.
+SRT's receive buffer trades delay for recovery of late/retransmitted packets;
+its latency setting is not the complete camera-to-screen latency \cite{srtlatency}.
+
+\begin{longtable}{L{39mm}L{122mm}}
+\toprule Item & Required baseline\\\midrule
+\endfirsthead
+\toprule Item & Required baseline\\\midrule
+\endhead
+H.264 decoder profile & Constrained Baseline, level at most 3.1, progressive 8-bit 4:2:0. No B-frames. Other profiles require an explicitly advertised extension.\\
+Random access & IDR at least once per second; repeat SPS/PPS at every IDR. New subscribers begin with parameter sets and a decodable IDR.\\
+MPEG-TS & One program with one H.264 video elementary stream (stream type 0x1B); Annex-B NAL representation, PTS and PCR. Audio absent in 1.0. Receivers use PAT/PMT rather than hard-coded PIDs.\\
+Tables and timing & PAT/PMT at startup and at least every 100 ms; PCR interval at most 40 ms. PTS uses the 90 kHz timebase; handle its 33-bit wrap. These are selected application-profile limits.\\
+SRT mode & Live, caller/listener, timestamp-based packet delivery, too-late packet drop enabled. Baseline receiver latency 120 ms; the session reports actual negotiated value.\\
+Payload & Up to 1316 bytes (seven 188-byte TS packets) per SRT application send; shorter final groups are permitted. Do not append a custom JSON header to media.\\
+Connect/read behavior & Connect timeout 3 s; no decoded frame for 2 s is stale, for 5 s unavailable. An explicit closed connection is immediately unavailable. Reconnect uses the session procedure below.\\
+Resource boundaries & One capture per device; one encoder per active channel/rendition; fan out encoded data to distinct per-viewer SRT sessions. A slow viewer cannot block other viewers.\\
+\bottomrule
+\end{longtable}
+
+MPEG-TS parameters and SRT option mappings must be checked against the packaged
+media library. FFmpeg documents these muxer and protocol options
+\cite{ffmpegformats,ffmpegprotocols}; using another compliant library is allowed.
+In particular, an adapter must convert this document's millisecond values to the
+units required by that API. FFmpeg SRT latency options use microseconds.
+
+\subsection{Renditions and manifests}
+\begin{longtable}{L{27mm}L{43mm}L{39mm}L{47mm}}
+\toprule Rendition & Image/FPS ceiling & Proposed video bitrate & Intended use\\\midrule
+\endfirsthead
+\toprule Rendition & Image/FPS ceiling & Proposed video bitrate & Intended use\\\midrule
+\endhead
+\code{preview} & Fit within $320\times180$; 10 fps & 250 kbit/s target; 300 kbit/s cap & Eight small remote views\\
+\code{main} & Fit within $1280\times720$; 30 fps & 3 Mbit/s target; 4 Mbit/s cap & Selected large channel\\
+\bottomrule
+\end{longtable}
+
+Preserve aspect ratio with even dimensions; do not distort a 4:3 analog capture.
+Do not invent frames to claim a source FPS it does not deliver. Encoder output
+and source FPS SHALL both be reported. These are network rendition ceilings,
+not assumptions about the capture device's native resolution. A profile may
+deliver lower quality when declared in its actual encoding parameters. Full-HD,
+audio and additional codecs are extensions, not baseline requirements.
+
+\code{/streams} returns \code{streams}, an array of entries with:
+\code{stream_id}, \code{channel_id}, \code{station}, \code{vehicle},
+\code{radio_type}, \code{source_mode}, \code{capture_state},
+\code{rf_lock}, \code{media_epoch}, and \code{renditions}. A stream ID is
+\code{station.channel_id}, for example \code{gs4.booster.analog}; globally
+identify a publisher with node/boot as well. Each rendition describes name,
+codec, container, transport, actual resolution/FPS, target/cap bitrate and
+\code{available} plus reason. A configured disconnected camera remains in the
+manifest with unavailable renditions. No hardware camera identifier is needed
+by remote clients.
+
+\code{media_epoch} is a UUID for the channel's current capture/encoding timeline.
+It changes on camera replacement, capture restart, or encoder/timestamp reset.
+Starting a previously unused rendition alone may join the existing timeline;
+any change that invalidates its timing requires a new channel epoch and restarts
+all sessions for that channel. The service boot and media epoch are independent.
+Send \code{streams.changed} before issuing new sessions for a changed epoch.
+
+\subsection{Session allocation, connection and lease}
+The client discovers metadata first; it does not guess a media port. To receive
+one rendition it POSTs the following body to \code{/video/sessions}:
+\begin{lstlisting}
+{
+  "request_id": "<UUID>", "client_node_id": "<UUID>",
+  "client_boot_id": "<UUID>", "mission_id": "<UUID>",
+  "expected_server_boot_id": "<UUID>",
+  "stream_id": "gs1.sustainer.digital",
+  "rendition": "main", "expected_media_epoch": "<UUID>"
+}
+\end{lstlisting}
+\code{request_id} makes session creation idempotent: within a service boot,
+repeating the same ID and identical fields returns the original session result.
+Different fields return 409. Keep that record until at least 60 seconds after
+the session ends; an expired recorded result returns 410, never a fresh session.
+Clients SHALL retry an uncertain POST only within this interval with the same ID;
+afterward perform cleanup/reconciliation and create a new explicit request.
+For the owning client, \code{/streams} MAY include its active session IDs to aid
+reconciliation; this optional convenience is not needed for baseline operation.
+
+The service validates mission, boot, channel assignment, source mode, media epoch,
+capacity and camera state; starts/reuses the encoder; binds one available UDP
+listener in its configured pool; then returns HTTP 201. Do not return success
+before a listener is ready. The response includes \code{session_id},
+\code{session_token}, \code{server_boot_id}, \code{media_epoch},
+\code{stream_id}, \code{rendition}, \code{transport},
+\code{lease_ms=30000} and actual encoding parameters. \code{transport} contains
+resolvable host, UDP port, \code{mode=caller} (for the client),
+\code{srt_streamid}, \code{latency_ms=120}, \code{container=mpegts} and
+\code{codec=h264}. Use the selected reachable interface, never \code{0.0.0.0}
+as the advertised destination.
+
+The SRT Stream ID is the ASCII string \code{rt1:<session_id>:<session_token>}.
+The token is 128 bits of cryptographically random data encoded as 32 lower-case
+hex digits. The caller sends it at connection setup; the listener compares it
+exactly before accepting one receiver. Stream ID is connection metadata available
+to the listener \cite{srtoptions}. This token prevents accidental session mixups;
+on this plaintext LAN profile it does not provide encryption or strong peer trust.
+Do not include it in logs, DNS records or screenshots.
+
+Each allocated listener serves exactly one client session; additional connection
+attempts are rejected. Sharing one source therefore means sharing encoded bytes
+across independent SRT sockets, not assuming a single socket automatically
+broadcasts. Baseline capacity is four active sessions per video node, with at
+most two main and two preview sessions. Unavailable capacity returns 429 and a
+one-second retry hint. These limits support the current video wall, including
+two promoted channels at the same Away station.
+
+The client renews every 10 seconds with PATCH, body
+\code{\{"lease_ms":30000\}}, and header
+\code{Authorization: Bearer <session_token>}. Only 30000 is accepted in 1.0.
+Expiry uses the server's monotonic clock, extended to 30 seconds from successful
+renewal. PATCH success returns the remaining lease; no cross-computer comparison
+of absolute expiry timestamps is required. Expiry or DELETE closes that session,
+returns its UDP port and stops unused encoding after a two-second grace period.
+DELETE uses the same header and returns 204 even after prior deletion; unknown
+tokens cannot affect another live session. Invalid tokens return 403.
+
+On media loss, DELETE/release the previous session and allocate a new one with
+a new request ID after rechecking boot/epoch. Do not reuse an accepted SRT session
+token for a second socket. A server boot change invalidates all leases and tokens.
+Loss of the status WebSocket alone need not destroy healthy media immediately;
+mark status stale and retain media only while its own lease/frames remain valid.
+
+\input{figures/media}
+
+\subsection{Promotion, bandwidth and failure recovery}
+\req{VID-02}{Launch Video SHALL normally request previews for all eight Away
+feeds. Promoting a feed requests its main rendition, retains the preview until
+the first main IDR is decoded, then uses that same main decode for its thumbnail
+and releases the now-redundant preview session. Demotion performs the reverse.}
+\req{VID-03}{No main rendition SHALL be requested for a logical channel that
+the publishing station does not possess. A source swap SHALL update the label
+and epoch before displaying new pixels. A failed swap SHALL leave the previous
+view intact with an explicit error; it SHALL not mislabel old pixels.}
+
+A conservative budget for eight previews at the cap and three main feeds is
+$8(0.3)+3(4)=14.4$ Mbit/s of encoded video. Adding a provisional 30\% allowance
+for encapsulation/retransmission gives 18.72 Mbit/s. This deliberately counts
+previews also shown from main and so overestimates steady-state use. It does not
+include Wi-Fi airtime contention, recording transfer, other users or unusually
+high loss. It is not a claim of LTU throughput. Measure every Away path and the
+shared Launch link under concurrent load; provision at least twice this planned
+load as measured sustained application capacity for the initial deployment.
+
+If capacity falls, reduce preview rate/bitrate first, then offer reduced main
+quality explicitly. Prioritize serial ingestion, event publication and heartbeat
+processing over video work. Separate sockets alone cannot guarantee QoS on a
+saturated radio; encoder caps, admission limits and network configuration are
+part of acceptance testing. Initial implementation MAY use fixed profiles with
+operator quality selection; automatic congestion adaptation is not assumed to
+be supplied by SRT.
+
+\subsection{Media timing and recording}
+The receiver SHALL use decoder PTS for playback and its own monotonic arrival
+clock for frame-staleness display. Capture time means receipt of a USB frame by
+the publishing host, not the rocket camera's exposure time. The receiver/RF path
+may add unknown latency before USB capture. SRT timestamps do not provide rocket
+camera timestamps.
+
+For correlation, each active rendition's status SHALL report \code{media_epoch},
+\code{pts_90k} as a decimal unwrapped counter, \code{capture_mono_ms},
+\code{capture_time_utc}, and clock uncertainty for one identified encoded frame
+at least once per second. TS PTS is that counter modulo $2^{33}$. Two rendition
+encoders SHALL derive times from the same capture timeline; frames may be omitted
+for preview. Resetting the timeline changes the epoch. This mapping supports
+approximate telemetry/video correlation; accurate cross-station overlays remain
+unqualified until clock and capture delays are measured.
+
+Local recording SHALL be independent of remote viewer quality. When the operator
+enables recording, keep local video/telemetry with source IDs, mission, epochs,
+timestamps, clock quality, decoder/codec settings and gap events. Launch recording
+can archive what it receives but SHALL not claim to contain frames lost upstream.
+Disk-full or recording failure SHALL be visible without blocking live acquisition.
+After a video gap, resume on an IDR and reset the decoder as needed; do not display
+corrupted inter-frame predictions as a current reliable image.

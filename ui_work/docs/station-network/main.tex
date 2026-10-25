@@ -1,0 +1,28 @@
+\documentclass[english,10pt,a4paper,titlepage]{scrartcl}
+\usepackage{report-style}
+\title{Ground Station Network}
+\subtitle{Requirements and communication protocol\\Design revision 0.1 / proposed wire protocol 1.0}
+\author{MIT Rocket Team\\Avionics and GNC}
+\date{25 October 2026}
+\begin{document}
+\maketitle
+\input{parts/summary}
+\clearpage
+{\footnotesize\tableofcontents}
+\clearpage
+\part{System and operator requirements}
+\input{parts/requirements}
+\clearpage
+\part{Communication protocol}
+\input{parts/discovery}
+\input{parts/events}
+\input{parts/video}
+\clearpage
+\part{Verification and implementation boundaries}
+\input{parts/verification}
+\clearpage
+\appendix
+\input{parts/examples}
+\clearpage
+\input{parts/references}
+\end{document}

@@ -1,0 +1,17 @@
+\begin{figure}[H]\centering
+\begin{tikzpicture}[node distance=7mm]
+\node[box,text width=30mm] (usb) {USB capture\\one device owner};
+\node[box,text width=38mm,right=7mm of usb] (enc) {H.264 encoders\\preview + main};
+\node[box,text width=38mm,right=7mm of enc] (srt) {MPEG-TS / SRT\\one socket per viewer};
+\draw[flow] (usb)--(enc); \draw[flow] (enc)--(srt);
+\node[accentbox,text width=118mm,below=12mm of enc] (api)
+{HTTP: allocate / renew / release session\\WebSocket: camera state, manifest, timing and errors};
+\draw[optional] (api.north east)--(srt.south);
+\node[box,text width=118mm,below=8mm of api] (wall)
+{Launch Video: decode selected sources\\main feed can also supply its own thumbnail};
+\draw[flow] (srt.east)--++(7mm,0)|-(wall.east);
+\draw[flow,<->] (api)--(wall);
+\end{tikzpicture}
+\caption{Video pixels and control/status travel separately. An HTTP session
+establishes a specific channel, rendition and media epoch before SRT begins.}
+\end{figure}

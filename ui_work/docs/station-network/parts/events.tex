@@ -1,0 +1,206 @@
+\section{WebSocket lifecycle and event delivery}\label{sec:events}
+WebSocket framing, masking, close and ping/pong behavior follow RFC 6455
+\cite{websocket}; use a maintained library. Application messages are one UTF-8
+JSON object per WebSocket text message, regardless of underlying frame
+fragmentation. Binary messages and compression extensions are not used in 1.0.
+The server SHALL select \code{rt-gs.v1} during upgrade or reject the upgrade.
+
+\subsection{Connection setup and synchronization}
+\begin{enumerate}
+\item Client resolves a service, reads \code{/info}, checks identity, mission,
+major version and capabilities, then opens \code{/events}.
+\item Server sends \code{hello} within one second. Its payload contains the
+same identity, limits, available retained-event range and heartbeat interval.
+The client SHALL compare boot/node identity with its HTTP result.
+\item Client sends \code{subscribe} within five seconds. Required payload:
+\code{client_node_id}, \code{client_boot_id}, \code{mission_id},
+\code{accept_source_modes} and \code{resume}. The last field is \code{null}
+or an object containing the server's previous \code{boot_id} and
+\code{after_event_seq}. Default accepted mode list is \code{["live"]}.
+\item Server rejects an identity/mission/mode mismatch with an \code{error}
+message then closes 1008. Otherwise it sends \code{ready} describing
+\code{sync_mode}, a captured barrier \code{through_event_seq}, and the retained
+range. It atomically captures the barrier and registers subsequent live events.
+\item For a valid retained resume cursor, deliver events strictly after the
+cursor through the barrier. With no cursor, send \code{snapshot}; with an expired
+cursor or changed boot, send \code{reset} followed by \code{snapshot}. A snapshot
+is atomic at the barrier and includes status, latest observations and streams.
+It does not recreate the lost event history.
+\item Send \code{sync.complete} at that same barrier, then queued/live events
+in ascending event order. A display can show the snapshot immediately, but SHALL
+not call synchronization complete before this message.
+\end{enumerate}
+
+Protocol 1.0 subscribes to all supported events on that node, not filtered topics.
+Consumers may ignore unused event payloads but SHALL advance the event cursor.
+This keeps sequence gaps unambiguous. Initial synchronization SHALL complete
+within five seconds or disconnect with 1013. Heartbeats continue during replay.
+If a replay cannot fit the per-client limits, issue an explicit reset and fresh
+snapshot at a new barrier; do not loop indefinitely replaying the same backlog.
+
+\input{figures/handshake}
+
+\subsection{Message envelope and journal}
+\begin{longtable}{L{35mm}L{126mm}}
+\toprule Envelope field & Normative meaning\\\midrule
+\endfirsthead
+\toprule Envelope field & Normative meaning\\\midrule
+\endhead
+\code{v} & Integer 1; major wire version.\\
+\code{kind} & One of the message kinds below, or a future optional extension.\\
+\code{node_id}, \code{boot_id} & Identity of the message origin, not its network relay.\\
+\code{mission_id} & Mission UUID or null before association.\\
+\code{source_mode} & \code{live}, \code{replay} or \code{simulation}.\\
+\code{event_seq} & Decimal-string journal sequence for retained events; null for control/heartbeat messages. Starts at 1 per boot, strictly increasing by one.\\
+\code{sent_mono_ms} & Milliseconds since origin service start, monotonic, decimal string. Replays carry original event timing in payload and current send time here.\\
+\code{sent_time_utc} & UTC send time or null; never used alone to establish freshness.\\
+\code{payload} & Object defined by the message kind; unknown optional fields are ignored.\\
+\bottomrule
+\end{longtable}
+
+\begin{longtable}{L{38mm}L{20mm}L{103mm}}
+\toprule Kind & Retained? & Payload contract\\\midrule
+\endfirsthead
+\toprule Kind & Retained? & Payload contract\\\midrule
+\endhead
+\code{hello} & No & Identity, retained range, heartbeat and limits.\\
+\code{subscribe} & Client & Client identity, mission, accepted source modes, resume cursor. Client control messages use the same envelope with null event sequence.\\
+\code{ready}, \code{sync.complete} & No & Synchronization mode and barrier; completion repeats that barrier.\\
+\code{reset} & No & Reason (\code{new_boot}, \code{cursor_expired}, \code{overflow}), old cursor and new barrier. Marks discontinuity in the receiver archive.\\
+\code{snapshot} & No & Barrier and complete current status/latest/streams state.\\
+\code{heartbeat} & No & Heartbeat counter, source monotonic send time, current event head, boot identity and latest source-age summaries.\\
+\code{heartbeat.ack} & Client & Echo heartbeat counter; server can measure round-trip time without clock synchronization.\\
+\code{telemetry.observation} & Yes & Received packet, decoded values and provenance (Section~\ref{sec:observations}).\\
+\code{status.changed} & Yes & Full replacement status object, not a partial patch.\\
+\code{streams.changed} & Yes & Full replacement manifest after camera, rendition or media-epoch changes.\\
+\code{error} & No & Error code, human-readable message, retryable flag and relevant request/cursor.\\
+\bottomrule
+\end{longtable}
+
+The journal retains up to 30 seconds or 16 MiB of serialized retained messages,
+whichever limit is reached first. It SHALL advertise the actual first/head
+sequence; clients SHALL not assume a full 30-second window. Recording archives
+are distinct and can retain more history. Delivery is at least once across
+reconnects; consumers deduplicate by \code{(node_id, boot_id, event_seq)}.
+Repeated sequences with different payloads are a protocol error.
+
+The per-client send queue is limited to 2 MiB and two seconds of oldest pending
+message age. Exceeding either limit disconnects that client with 1013; the serial
+worker and journal continue. If possible send an error before closure, but the
+client SHALL infer a discontinuity from its next cursor negotiation even when
+the socket dies first. Server implementations SHALL not drop telemetry events
+silently to protect a slow screen. UI rendering may coalesce its own copies.
+
+Malformed UTF-8 closes 1007, excess size closes 1009, and invalid required fields
+close 1008. A normal shutdown closes 1000. Receivers SHALL log the reason and last
+accepted cursor. Backoff after transport failure is 0.5, 1, 2, 4, then 8 seconds,
+each with uniform $\pm20\%$ jitter; reset after 30 seconds of healthy operation.
+Conflict, mission mismatch and incompatibility require changed configuration or
+new discovery evidence rather than continuous retry.
+
+\subsection{Liveness, clock handling and freshness}
+Server application heartbeats occur every 1 second; the client acknowledges
+them. Standard WS ping/pong may additionally detect socket failure but does not
+replace application heartbeat. A client measures age using its own monotonic
+clock: below 3 seconds is ONLINE, 3 to below 10 is STALE, and at 10 seconds is
+OFFLINE. A definite socket closure is immediately DISCONNECTED. A new heartbeat
+can restore ONLINE, but each board/RF/feed status retains its own age and state.
+These thresholds are proposed defaults and SHALL be reported in the UI settings.
+
+Monotonic values from different computers SHALL never be subtracted. An
+observation contains source reception time and source send time in the same boot
+clock. Source age at send is their difference; the receiver can then add local
+time since arrival. That value is a lower-bound age, since one-way network delay
+is not measured. Label it accordingly when clocks are unsynchronized. RTT/2 is
+not an exact one-way delay. Cross-station time alignment requires clock offset
+and uncertainty from an actual clock-synchronization scheme, with quality
+\code{unknown}, \code{estimated} or \code{synchronized}. UTC presence alone
+does not establish synchronization. Unknown uncertainty is \code{null}.
+
+Default RF telemetry stale threshold is 2 seconds and lost threshold is 10
+seconds after source reception; deployments with intentionally slower packet
+rates SHALL configure and publish appropriate values. A new network heartbeat
+SHALL not reset packet age. Original device time and boot identity are retained
+when available; ground monotonic time is not a rocket timestamp.
+
+\section{Telemetry observation and status contracts}\label{sec:observations}
+\subsection{Packet provenance and vehicle attribution}
+Each \code{telemetry.observation} payload SHALL contain these objects:
+\begin{longtable}{L{34mm}L{127mm}}
+\toprule Object & Required contents and interpretation\\\midrule
+\endfirsthead
+\toprule Object & Required contents and interpretation\\\midrule
+\endhead
+\code{observation_id} & Origin node UUID, boot UUID and a decimal observation counter, joined with colons. Unique even when packet bytes repeat.\\
+\code{receiver} & Station, logical board ID and a \code{connection_id} UUID that changes on each serial reconnect. RSSI/RX-RSSI in dBm or null; observed decoder gaps and reject counts are receiver statistics.\\
+\code{vehicle} & ID: \code{balius}, \code{sustainer}, \code{booster} or \code{unknown}; basis: \code{packet_id}, \code{confirmed_switch}, \code{operator_assignment} or \code{unknown}; target epoch UUID or null.\\
+\code{packet} & Serial protocol name/version, decoder version, packet type, original sequence and device boot/time when available, \code{raw_b64}, \code{raw_sha256}. Raw bytes exclude ground-network framing.\\
+\code{timing} & Source \code{received_mono_ms}, \code{received_time_utc}, wall-clock quality and uncertainty; original device time is retained separately in packet metadata.\\
+\code{values} & Canonical measurements below, plus the decoder's complete non-canonical fields under \code{native}. No legacy fields are intentionally dropped.\\
+\code{quality} & Validation result, attribution confidence and warnings; unknowns explicitly represented. Only accepted decoded packets enter this event kind.\\
+\bottomrule
+\end{longtable}
+
+\code{raw_b64} uses standard padded Base64; the SHA-256 digest covers the exact
+decoded byte sequence and is lower-case hexadecimal. Both may be null only when
+the upstream source cannot supply bytes, with a reason in quality. The baseline
+serial ingestion SHALL preserve bytes. Bad-checksum/malformed packets are counted
+and optionally retained in a diagnostic archive; they SHALL not become accepted
+telemetry merely because the network transports them successfully.
+
+\req{TEL-01}{Iris observations attributed only by desired switch position SHALL
+remain \code{vehicle.id=unknown}. A static operator assignment MAY label a source,
+but its basis remains visible and SHALL not count as hardware confirmation.
+Confirmed switch changes create a new target epoch and a transition interval
+in which delayed buffered packets remain unknown unless packet-level identity
+resolves them. The firmware contract must define that interval before use.}
+
+Packet deduplication is distinct from event deduplication. When the rocket has a
+reliable vehicle/boot/packet sequence, use that identity plus payload consistency
+to group multiple receptions. Otherwise identical raw hashes, packet type and
+bounded time proximity provide only a duplicate candidate. Repeated identical
+packets at different times are possible. Keep every receiver observation; do not
+merge unknown vehicle/boot sequences or average duplicate rocket measurements.
+
+\subsection{Canonical values and physical frames}
+\begin{longtable}{L{47mm}L{114mm}}
+\toprule Field under \code{values} & Representation and units\\\midrule
+\endfirsthead
+\toprule Field under \code{values} & Representation and units\\\midrule
+\endhead
+\code{state} & Object with original numeric \code{code} (or null) and decoded \code{name} (or null); retain unrecognized original codes.\\
+\code{position} & \code{lat_deg}, \code{lon_deg} on WGS84; \code{alt_m}, \code{alt_datum}, \code{fix}. Datum: \code{wgs84_ellipsoid}, \code{msl}, \code{agl_launch} or \code{unknown}. Missing fix never becomes $(0,0)$.\\
+\code{baro_altitude} & Value in metres and explicit datum; launch-relative is not MSL.\\
+\code{velocity_enu_m_s} & Three-element east/north/up vector only if available in that frame; otherwise null. A scalar integrated velocity is a separate native field.\\
+\code{orientation} & Null or body-to-ENU quaternion \code{quaternion_wxyz}, right handed, scalar first, nose body $+Z$, explicit body-axis definition. Unit norm within 0.001 before normalization.\\
+\code{flight_status} & \code{motor_ignited}, \code{motor_burning}, \code{parachute_deployed}: true, false or null independently, with evidence source. Do not infer confirmation from flight phase.\\
+\code{native} & Complete decoder-specific JSON object, with \code{native_schema} identifier. Documents units, meanings and validity under that decoder version.\\
+\bottomrule
+\end{longtable}
+
+The existing Zephyrus roll/pitch/yaw integrals are not Euler attitude. They
+remain native values; they SHALL not populate orientation. Three-axis rendering
+requires a validated orientation source. Future estimator output SHALL use a
+distinct source/type with input observation IDs, frame, time, uncertainty and
+validity; this protocol does not select or qualify a sensor-fusion algorithm.
+
+\subsection{Status and stream health}
+The status object contains \code{application}, \code{telemetry_board},
+\code{pointer}, \code{video_inputs}, \code{network} and \code{clock} objects.
+Inapplicable hardware is \code{null}, not disconnected. Each hardware object
+includes availability (\code{unsupported}, \code{disconnected}, \code{connected},
+\code{error}), a change timestamp and a human-readable reason. Telemetry adds last
+observation identity/age, validity counts, RF metrics and desired/confirmed target
+and uplink enable states. Pointer adds mode, commanded azimuth/elevation and
+nullable measured pose/acknowledgement. Commanded azimuth is degrees clockwise
+from true north in $[0,360)$; elevation is above the local horizon, in degrees.
+If calibration to true north is unavailable, report that fact and do not pretend
+the encoder reference is true north. Physical travel limits are separate.
+
+Each video input reports capture connection, last source-frame age, source
+resolution/FPS, pipeline error and nullable RF lock/quality with its evidence.
+Network status reports interface and observed endpoint information; LTU signal
+metrics remain null until a documented adapter supplies them. Complete status
+is sent on meaningful change and at most twice per second; heartbeat age summaries
+update every second. Store original change times, so retransmitting a status
+does not make stale hardware look freshly measured.

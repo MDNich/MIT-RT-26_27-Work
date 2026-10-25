@@ -1,0 +1,148 @@
+\section{Identity, discovery and mission association}\label{sec:discovery}
+\subsection{Identity model}
+\begin{longtable}{L{34mm}L{127mm}}
+\toprule Field & Definition\\\midrule
+\endfirsthead
+\toprule Field & Definition\\\midrule
+\endhead
+\code{node_id} & Persistent UUID for an application installation; independent of hostname, IP and chosen role. Cloned installations must generate distinct IDs.\\
+\code{boot_id} & Fresh UUID on every service process start. Sequences and monotonic times are meaningful only within this boot.\\
+\code{station} & Exactly \code{launch}, \code{gs1}, \code{gs2}, \code{gs3} or \code{gs4}.\\
+\code{role} & Exactly \code{telem} or \code{video}. Together with station, identifies a logical slot.\\
+\code{mission_id} & UUID shared deliberately across the ten computers; \code{null} until assigned. A human-readable mission name is not a unique identity.\\
+\code{vehicle_mode} & \code{balius} or \code{iris}; must agree with the mission.\\
+\code{protocol} & Object containing integer \code{major} and \code{minor}; this draft specifies 1.0. App version is a separate string.\\
+\bottomrule
+\end{longtable}
+
+\req{ID-01}{Two live nodes claiming the same slot SHALL create a visible
+conflict. Neither SHALL replace the existing selected node automatically.
+DNS name conflict resolution does not resolve logical slot conflicts. Concurrent
+endpoints presenting the same node ID with different live boots SHALL also be
+flagged as an identity conflict rather than merged.}
+\req{ID-02}{The wizard's remember checkbox MAY persist user choices; permanent
+node identity is separate. Changing station, role, mission or source mode while
+serving SHALL end current subscriptions/media sessions and start a new boot
+identity. Network data from the previous identity SHALL not leak into the new
+session. No sequence reset is permitted inside one boot.}
+
+Mission assignment is explicit: Launch Telemetry creates or opens a mission
+UUID; operators join it in the other applications or supply it on the CLI.
+A receiving UI can display a mismatched peer in diagnostics, but SHALL exclude
+its data from that mission's telemetry/video workspace. If Launch Telemetry is
+absent, a previously shared mission UUID still works. There is no implicit
+assignment from an SSID, a Bonjour name, or identical text such as ``Iris Launch.''
+
+\subsection{DNS-SD records and names}
+The proposed private service type is \code{_rt-gs._tcp.local.}; this document
+does not claim an IANA service-name registration. An example instance is
+\code{rt-gs1-telem._rt-gs._tcp.local.}. PTR browsing finds instances;
+SRV supplies the HTTP host/port; TXT supplies compact hints. These are standard
+DNS-SD mechanisms \cite{dnssd}. The app SHALL publish after its API is listening
+and withdraw the service on clean shutdown.
+
+\begin{lstlisting}
+Service type: _rt-gs._tcp.local.
+Instance:     rt-gs1-telem
+SRV target:   rt-gs1-telem.local.
+SRV port:     8766
+TXT: p=1; node=<UUID>; station=gs1; role=telem; api=/api/v1
+\end{lstlisting}
+Each TXT key/value is a separate DNS TXT string; the semicolon layout above is
+display notation only. Total TXT payload SHALL be at most 512 bytes in this
+profile. No credentials, telemetry samples or rapidly changing status belong
+there. The HTTP identity response is authoritative; TXT is an untrusted discovery
+hint. A disagreement SHALL block normal attachment until rediscovery resolves it.
+
+Preferred hostnames follow the user's \code{rt-base-*}/\code{rt-gsN-*}
+convention. If an application cannot safely publish that hostname, SRV MAY target
+the machine's existing resolvable hostname or app-owned mDNS host name. Clients
+SHALL use SRV/A/AAAA resolution and SHALL not construct a URL by appending
+\code{.local} to the service instance. Global OS hostname changes are unnecessary.
+
+mDNS operates on the local link using UDP 5353; cached records are not heartbeats
+\cite{mdns}. Access points must permit peer traffic and multicast. Routed VLANs
+require an explicitly configured discovery gateway or manual endpoints. The
+protocol SHALL support direct unicast IPv4 and IPv6 endpoints; link-local IPv6
+addresses require the local interface scope. URLs use bracketed IPv6 literals.
+
+\subsection{Ports and compatibility}
+\begin{longtable}{L{35mm}L{34mm}L{92mm}}
+\toprule Function & Proposed default & Rule\\\midrule
+\endfirsthead
+\toprule Function & Proposed default & Rule\\\midrule
+\endhead
+mDNS & UDP 5353 & Managed by the discovery implementation.\\
+HTTP + WebSocket & TCP 8766 & Configurable; advertise the actual bound port. Do not silently bind a different service at the requested port.\\
+SRT video sessions & UDP 50000--50063 & Configurable listener allocation range on video nodes; return actual session endpoints. Client source ports are OS-assigned.\\
+Old snapshot link & TCP 8765 & Existing v0a protocol is distinct. No wire compatibility or automatic bridge is implied.\\
+\bottomrule
+\end{longtable}
+
+\req{DISC-01}{Automatic discovery SHALL fall back to an operator-entered
+HTTP endpoint. Manual endpoints undergo the same identity/mission/version checks.
+An IP change SHALL trigger re-resolution and a new handshake, not a new logical
+station. Duplicate appearances of the same node SHALL merge only when boot and
+identity agree.}
+\req{DISC-02}{Major-version mismatch SHALL be incompatible. For major 1,
+unknown optional fields SHALL be ignored and missing required fields rejected.
+New required behavior needs capability negotiation or a new major version.
+An unsupported event kind SHALL be logged and ignored without losing its cursor.}
+
+\section{HTTP API and common encoding}\label{sec:http}
+The normative monitoring baseline uses HTTP/1.1 and WebSocket on a team-controlled
+LAN. It provides no cryptographic peer authentication or confidentiality. A node
+UUID and discovery name are identifiers, not proof of trust. Network publication
+SHALL be visible to the operator. Expose no arbitrary files or shell execution.
+HTTPS/WSS with provisioned identities is a future compatible transport profile;
+it is required to be designed before enabling remote hardware commands on an
+untrusted network. This draft's network interface cannot actuate flight hardware.
+
+All JSON uses UTF-8 and \code{application/json}; no NaN or infinity is legal.
+Unavailable measurements use \code{null}, never zero or an empty string.
+Counters that can grow beyond JavaScript's exact integer range use decimal
+strings with no leading zeros except \code{"0"}. UUIDs use canonical lower-case
+hyphenated form. UTC timestamps use RFC 3339 with \code{Z}; \code{null} is allowed
+when wall-clock time is unavailable. Monotonic milliseconds are decimal strings.
+Request bodies are limited to 64 KiB; JSON responses and WS messages to 256 KiB.
+Raw packets within a message are limited to 64 KiB decoded bytes. Larger future
+payloads require another negotiated profile, not silent truncation.
+
+\begin{longtable}{L{19mm}L{61mm}L{80mm}}
+\toprule Method & Path under \code{/api/v1} & Semantics\\\midrule
+\endfirsthead
+\toprule Method & Path under \code{/api/v1} & Semantics\\\midrule
+\endhead
+GET & \code{/info} & Identity, capabilities, clocks and protocol version.\\
+GET & \code{/status} & Atomic current hardware/network state with its event watermark.\\
+GET & \code{/telemetry/latest} & Latest accepted observation per known vehicle; unknown attribution is a separate entry. Empty array on video-only nodes.\\
+GET & \code{/streams} & Channel/rendition manifest; empty array on telemetry-only nodes.\\
+GET (WS) & \code{/events} & WS event subscription; subprotocol \code{rt-gs.v1}.\\
+POST & \code{/video/sessions} & Create one authorized-by-profile receive session, detailed in Section~\ref{sec:video}.\\
+PATCH & \code{/video/sessions/\{id\}} & Renew that session's lease.\\
+DELETE & \code{/video/sessions/\{id\}} & Release its resources; repeat is harmless.\\
+POST & \code{/commands} & Reserved; return 501 \code{unsupported} in this revision. No dispatch.\\
+\bottomrule
+\end{longtable}
+
+GET responses SHALL include \code{Cache-Control: no-store}. No telemetry endpoint
+is backed by a constantly rewritten \code{telem.txt}. Clients SHOULD use a
+five-second HTTP timeout and cancel obsolete requests after identity changes.
+The server SHALL reject non-local browser origins by default rather than provide
+wildcard cross-origin access; this is not a substitute for authentication.
+
+Every successful GET body includes \code{protocol}, \code{node_id},
+\code{boot_id}, \code{mission_id} and \code{generated_mono_ms}, followed by its
+endpoint payload. Snapshot endpoints also include \code{as_of_event_seq}, the
+atomic journal watermark. A health response is independent of packet freshness.
+\code{/info} additionally contains station, role, vehicle mode, app version,
+source mode, supported event kinds, resource limits and capabilities. Capability
+Booleans describe actual implementation; a role label is not a capability.
+
+Error bodies contain \code{error.code}, \code{error.message},
+\code{error.retryable} and optional \code{request_id}. HTTP status mapping:
+400 malformed JSON; 404 unknown resource; 405 method; 409 identity/mission or
+idempotency conflict; 410 expired session; 413 size; 415 content type; 422 invalid
+field or channel; 429 capacity (with \code{Retry-After}); 501 unsupported operation;
+503 device/pipeline unavailable. Errors SHALL not expose secrets or stack traces.
+GET never changes hardware state.

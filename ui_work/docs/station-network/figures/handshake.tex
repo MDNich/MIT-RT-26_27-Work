@@ -1,0 +1,17 @@
+\begin{figure}[H]\centering
+\begin{tikzpicture}[x=1mm,y=1mm]
+\node[box,text width=39mm] at (28,0) {Launch client};
+\node[box,text width=39mm] at (130,0) {Away service};
+\draw[dashed,gray] (28,-7)--(28,-83);
+\draw[dashed,gray] (130,-7)--(130,-83);
+\draw[flow] (28,-15)--node[above,font=\footnotesize]{GET info; verify identity}(130,-15);
+\draw[flow] (28,-26)--node[above,font=\footnotesize]{WebSocket upgrade}(130,-26);
+\draw[flow] (130,-37)--node[above,font=\footnotesize]{hello: boot + retained range}(28,-37);
+\draw[flow] (28,-48)--node[above,font=\footnotesize]{subscribe: mission + resume cursor}(130,-48);
+\draw[flow] (130,-59)--node[above,font=\footnotesize]{ready; replay OR reset + snapshot}(28,-59);
+\draw[flow] (130,-70)--node[above,font=\footnotesize]{sync.complete; ordered live events}(28,-70);
+\draw[flow,<->] (28,-81)--node[above,font=\footnotesize]{heartbeat / acknowledgement}(130,-81);
+\end{tikzpicture}
+\caption{Synchronization has an atomic event barrier. A snapshot repairs
+current state; a reset explicitly records unavailable history.}
+\end{figure}

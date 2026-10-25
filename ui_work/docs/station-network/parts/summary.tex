@@ -1,0 +1,44 @@
+\section*{Document status and decision record}
+\addcontentsline{toc}{section}{Document status and decision record}
+\statusnote{Design specification; not an implementation report}{This document
+defines requirements for a future station network. It does not claim that the
+released v0a application implements these services or has passed the tests below.}
+
+The agreed deployment comprises ten computers on one reachable local network:
+Launch Telemetry, Launch Video, and Telemetry/Video computers at each of four
+Away stations. The user has accepted the embedded-service architecture and H.264
+video. This revision makes the proposed network protocol precise enough to guide
+implementation and interoperability tests. Transport defaults, rates and resource
+limits below are engineering proposals, to be qualified on the actual network.
+
+\begin{longtable}{L{35mm}L{126mm}}
+\toprule Decision & Baseline in this revision\\\midrule
+\endfirsthead
+\toprule Decision & Baseline in this revision\\\midrule
+\endhead
+Discovery & Bonjour-compatible mDNS and DNS-SD; one advertised application service per computer. Manual endpoint fallback.\\
+Metadata and snapshots & HTTP API with JSON; current values come from memory, not a repeatedly rewritten text file.\\
+Live telemetry and health & WebSocket event stream, independent of video, with source identity, sequence numbers, bounded resumption and explicit gaps.\\
+Video & H.264/AVC, MPEG transport stream container, SRT live transport over UDP. Preview and main renditions.\\
+Station naming & UI says Launch station. Requested network aliases retain \code{rt-base-*}; Away aliases use \code{rt-gs1-*} through \code{rt-gs4-*}.\\
+Hardware commands & Existing serial protocols remain separate. Unspecified uplink/target-switch/remote-control commands are unsupported in protocol 1.0.\\
+Reference application & The released v0a/0.1.1 manual remains historical evidence of implemented behavior. This specification is a forward design.\\
+\bottomrule
+\end{longtable}
+
+\textbf{Reading convention.} SHALL is required to claim conformance to this
+proposed protocol; SHOULD permits a documented engineering exception; MAY is
+optional. These words define requirements, not a claim of user approval of every
+numeric default. All times are milliseconds unless a unit is stated. JSON field
+names and enum values are case-sensitive. Source listings are illustrative where
+identified; complete machine-readable examples accompany this report.
+
+\textbf{Scope.} Discovery, identity, mission association, monitoring, raw telemetry
+provenance, video transport, reconnection, UI behavior, limits and verification.
+The design runs locally without a cloud service or Internet access. It does not
+specify a navigation estimator, board firmware, LTU management API, RF modulation,
+voice communications or launch authorization procedure.
+
+\textbf{Revision history.} Revision 0.1, 25 October 2026: first requirements and
+protocol draft following the ten-computer network discussion. No application
+source changes are part of this document.

@@ -1,0 +1,18 @@
+\begin{figure}[H]\centering
+\begin{tikzpicture}[node distance=8mm]
+\node[box,text width=64mm] (lt) {Launch Telemetry\\local telemetry board; network monitor};
+\node[box,text width=64mm,right=10mm of lt] (lv) {Launch Video\\local digital; two/three main views};
+\node[accentbox,text width=139mm,below=12mm of $(lt.south)!0.5!(lv.south)$] (lan)
+{Shared IP network: Wi-Fi access points and LTU-XR links\\Bonjour discovery; HTTP/WS events; separate SRT video};
+\node[box,text width=64mm,below=12mm of lan.south west,anchor=north west] (at)
+{Away Telemetry $\times4$\\one downlink board + one pointer each};
+\node[box,text width=64mm,below=12mm of lan.south east,anchor=north east] (av)
+{Away Video $\times4$\\two local capture inputs each};
+\draw[flow,<->] (lt.south)--(lt.south|-lan.north);
+\draw[flow,<->] (lv.south)--(lv.south|-lan.north);
+\draw[flow,<->] (at.north)--(at.north|-lan.south);
+\draw[flow,<->] (av.north)--(av.north|-lan.south);
+\end{tikzpicture}
+\caption{Ten independent application services. The network is shared;
+device ownership stays local. Arrows indicate network reachability, not command authority.}
+\end{figure}

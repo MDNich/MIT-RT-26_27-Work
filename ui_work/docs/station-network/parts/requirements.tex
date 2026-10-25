@@ -1,0 +1,112 @@
+\section{Topology, ownership and channel assignment}
+\input{figures/topology}
+
+\begin{longtable}{L{31mm}L{45mm}L{85mm}}
+\toprule Logical slot & Service instance / preferred alias stem & Local responsibilities\\\midrule
+\endfirsthead
+\toprule Logical slot & Service instance / preferred alias stem & Local responsibilities\\\midrule
+\endhead
+\code{launch/telem} & \code{rt-base-telem} & One telemetry board; local downlink; future software-enabled uplink. No physical pointer. Monitor all eight Away computers and Launch Video.\\
+\code{launch/video} & \code{rt-base-video} & One local digital capture input; receive and display all Away video feeds.\\
+\code{gsN/telem} & \code{rt-gsN-telem}, $N=1\ldots4$ & Own the station's downlink telemetry board and antenna pointer board. Publish their independent status and telemetry observations.\\
+\code{gsN/video} & \code{rt-gsN-video}, $N=1\ldots4$ & Own the station's USB camera inputs; publish encoded video and capture/stream status.\\
+\bottomrule
+\end{longtable}
+
+\req{SYS-01}{The application SHALL support all ten slots simultaneously. A
+station number, role and vehicle mode SHALL come from the wizard or equivalent
+CLI options. Discovery SHALL not silently change those choices.}
+\req{SYS-02}{Each physical serial device or camera SHALL have one local owner.
+Network clients subscribe to that owner's data. A second view SHALL reuse the
+capture pipeline rather than open the same camera again. Duplicate camera
+assignment and duplicate serial ownership SHALL remain prohibited.}
+\req{SYS-03}{Launch Telemetry SHALL receive remote observations in addition to
+its own board input. Remote data SHALL retain its source and SHALL not masquerade
+as a local board connection. Away stations SHALL remain useful when either Launch
+computer is absent. Launch Video SHALL operate independently of Launch Telemetry.}
+
+The network consists logically of one LAN. The physical LTU-XR links, PoE hardware
+and access points carry IP traffic; they are not telemetry sources by themselves.
+An LTU-XR bridge and a Wi-Fi access point may be separate devices. The application
+must not assume that an LTU radio itself implements a client Wi-Fi access point.
+
+\Needspace{16\baselineskip}
+\begin{longtable}{L{24mm}L{34mm}L{65mm}L{32mm}}
+\toprule Mode & Publishing slot & Local channel IDs & Launch main slots\\\midrule
+\endfirsthead
+\toprule Mode & Publishing slot & Local channel IDs & Launch main slots\\\midrule
+\endhead
+Balius & Launch Video & \code{balius.digital} & Digital; Analog\\
+Balius & Away Video 1--4 & \code{balius.digital}, \code{balius.analog} & Same two logical channels\\
+Iris & Launch Video & \code{sustainer.digital} & Sustainer Digital; Sustainer Analog; Booster Analog\\
+Iris & Away Video 1--3 & \code{sustainer.digital}, \code{sustainer.analog} & Matching logical channel\\
+Iris & Away Video 4 & \code{sustainer.digital}, \code{booster.analog} & Matching logical channel\\
+\bottomrule
+\end{longtable}
+
+\req{SYS-04}{Iris SHALL expose three system channels while each Away station
+has two local camera feeds under the latest hardware diagram. Older references
+to three cameras at every Away station are superseded by this mapping.}
+\req{SYS-05}{Iris target selection SHALL represent desired and confirmed targets
+separately. Until firmware identifies a packet's vehicle or confirms the board
+switch, reception alone SHALL not establish its vehicle. The Launch board remains
+one board, not separate uplink and downlink serial devices.}
+
+\section{Operator-facing requirements}
+\req{UI-01}{Launch Telemetry SHALL show four station rows with distinct Telemetry
+and Video computer cells, plus a separate Launch Video companion indicator.
+Discovery, app heartbeat, hardware connection, RF reception and video freshness
+SHALL be independently visible without changing tabs.}
+\req{UI-02}{A cell SHALL expose station/role, IP endpoint, connection state,
+last heartbeat age, protocol compatibility and mission identity. Details SHALL
+include board state, packet age, observed loss/gaps, RSSI when provided, pointer
+mode and commanded pose. Measured pose SHALL remain unknown when unavailable.}
+\req{UI-03}{Network health SHALL use text plus color: online/green,
+stale/amber, offline/red, undiscovered or inapplicable/gray. Conflict and
+incompatible states SHALL be explicit. Rocket state colors remain the existing
+independent convention: green GROUND\_TESTING, blue PREFLIGHT, red FLIGHT,
+orange recovery/post-apogee, black other.}
+\req{UI-04}{A connected pointer SHALL not imply a rocket RF link. USB frames
+SHALL not imply receiver RF lock: a receiver may produce a no-signal screen.
+Absent RF metrics SHALL display unknown rather than a fabricated quality score.}
+\req{UI-05}{Launch Video SHALL display two large channels for Balius, three for
+Iris, and all eight Away feeds as station-labeled thumbnails. Double-clicking a
+thumbnail SHALL replace only its matching large logical channel. The operator
+SHALL be able to restore local digital or choose another matching source.}
+\req{UI-06}{Source selection SHALL remain visible on the large view. On loss,
+the last image MAY remain with an unmistakable stale/offline overlay and age.
+The UI SHALL not silently substitute another source. An unavailable main rendition
+MAY show that same source's preview with a visible reduced-quality label.}
+\req{UI-07}{Wi-Fi selection SHALL present the intended network and actual OS
+connection separately. Permission denial, client isolation, blocked multicast
+and inaccessible endpoints SHALL yield actionable status and manual-IP entry.
+No public Internet connection SHALL be required for operation.}
+
+\clearpage
+\section{Data integrity, resource and packaging requirements}
+\req{DATA-01}{Every accepted telemetry observation SHALL carry original bytes
+when available, decoder identity, station/node identity, vehicle attribution
+basis, mission, source mode, timing and reception metadata. Unknown values
+SHALL remain unknown. Forwarding SHALL preserve provenance.}
+\req{DATA-02}{The receive archive SHALL preserve observations independently of
+UI refresh and network delivery. Multiple stations receiving one rocket packet
+SHALL remain separate reception records but SHALL not count as independent
+rocket measurements in a future estimator.}
+\req{DATA-03}{LIVE, REPLAY and SIMULATION sources SHALL never silently mix.
+Non-live network publication SHALL be explicitly enabled and conspicuously
+labeled. The default subscription accepts LIVE only. This does not require a
+new user-facing simulation mode in the application.}
+\req{NET-01}{Telemetry/status and video SHALL use separate connections, worker
+queues and resource budgets. A blocked media receiver SHALL not block serial
+ingestion, event journaling, heartbeats or local controls.}
+\req{NET-02}{All queues and messages SHALL have finite limits. Event loss SHALL
+produce an explicit gap or disconnect, never silent success. Video SHALL favor
+bounded live latency over displaying an ever-growing backlog.}
+\req{PKG-01}{macOS and Windows packages SHALL contain the discovery, HTTP,
+WebSocket, H.264 and SRT runtime dependencies. No separately installed media
+server, Python, FFmpeg command, or Bonjour installer SHALL be required by the
+operator. OS network/camera permissions remain normal platform requirements.}
+\req{PKG-02}{Packaging SHALL verify actual codec, MPEG-TS and SRT availability
+in the bundled binaries; finding an FFmpeg executable is insufficient. Software
+encoding SHALL be available when qualified hardware encoding is unavailable.
+Dependency licenses and notices SHALL accompany distributions.}

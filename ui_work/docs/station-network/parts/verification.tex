@@ -1,0 +1,107 @@
+\section{Performance targets and conformance checks}
+\statusnote{Targets, not measurements}{No network or media implementation was
+built or benchmarked for this document. The following figures are acceptance
+targets for the proposed design and must be validated on the production machines.}
+
+\begin{longtable}{L{42mm}L{41mm}L{78mm}}
+\toprule Quantity & Proposed acceptance target & Measurement boundary\\\midrule
+\endfirsthead
+\toprule Quantity & Proposed acceptance target & Measurement boundary\\\midrule
+\endhead
+Discovery and attachment & Within 5 s after service publication on a healthy LAN & Publication to valid identity shown, using a fresh browse.\\
+Telemetry forwarding & p95 at most 100 ms; p99 at most 250 ms & Accepted serial packet at publisher to event delivery at Launch, with qualified synchronized clocks or a loopback measurement. Excludes RF delay.\\
+UI update & At least 10 Hz for changing displayed values & Render coalescing permitted; archive and event history must preserve full input.\\
+Main video latency & p95 at most 500 ms & USB frame acquisition at Away host to Launch presentation; camera/RF delay measured separately.\\
+Thumbnail promotion & First main frame within 2 s & User selection to first correctly labeled main frame on a healthy LAN.\\
+Health indication & Stale at 3 s; offline at 10 s & Since last valid app heartbeat; closure is immediate disconnect.\\
+Video freshness & Stale at 2 s; unavailable at 5 s & Since last decoded new frame, using receiver-local monotonic time.\\
+Endurance & 2 h with ten nodes, eight previews and up to three mains & No unbounded queues/memory; no unreported event loss; UI remains responsive.\\
+Telemetry capacity fixture & 100 observations/s at 2 KiB per telemetry node & Five publishers; sustained aggregate roughly 1 MiB/s before framing. Replace with measured actual worst-case rates if higher.\\
+\bottomrule
+\end{longtable}
+
+The fixture rate is a test workload, not a claim about Zephyrus transmission rate.
+Bandwidth calculations in the video section exclude this telemetry workload.
+Use synthetic packets for network stress and separate recorded real packets for
+decoder fidelity. Measure camera-to-screen delay with a timed visual stimulus
+or frame-tagged capture; do not substitute ping latency or configured SRT latency.
+Publish machine specs, network topology, encoding settings, clock uncertainty,
+percentiles and errors with results.
+
+\begin{longtable}{L{16mm}L{35mm}L{110mm}}
+\toprule Test & Requirement coverage & Required evidence / pass condition\\\midrule
+\endfirsthead
+\toprule Test & Requirement coverage & Required evidence / pass condition\\\midrule
+\endhead
+T01 & SYS-01, DISC-01 & Start all ten roles in mixed Mac/Windows deployment. All slots resolve once; DHCP address change and manual endpoint reconnect preserve node identity.\\
+T02 & ID-01, ID-02 & Launch duplicate slot and cloned node IDs. Show conflict; no automatic source takeover. Changing role/mission creates a new boot and closes old sessions.\\
+T03 & DISC-02 & Reject major mismatch and malformed identity. Accept an unknown optional field/event while retaining cursor continuity.\\
+T04 & UI-01--04 & Unplug serial while network remains online; stop RF packets while USB remains open; feed a receiver no-signal image. Correct independent states and unknown RF lock.\\
+T05 & SYS-02, PKG-01 & Duplicate camera/serial selections stay prohibited. Two local views and remote viewers use one capture owner; no extra external runtime installation.\\
+T06 & SYS-03 & Close either Launch app and interrupt one Away path. Other peers, local recording and the remaining Launch app keep working.\\
+T07 & SYS-04, UI-05 & Balius and Iris matrices exactly match station assignments. Eight thumbnails; promotion only to a matching channel; local digital remains available.\\
+T08 & SYS-05, TEL-01 & Unconfirmed Iris switch never labels a packet as confirmed. Test delayed packets after confirmed switch/serial reconnect and preserve target epochs.\\
+T09 & DATA-01--02 & Preserve raw bytes/digest, full native fields and receiver RSSI from GS1/GS2/GS3 recordings. Same packet at three sites becomes three observations and one candidate rocket measurement.\\
+T10 & DATA-03 & Inject replay and simulation advertisements into a live mission. No silent mixing; identity/mode mismatch is visible.\\
+T11 & NET-02 & Disconnect inside and outside retention window, then restart publisher. Resume without duplicate processing; reset/snapshot declares gaps and new boot.\\
+T12 & NET-01--02 & Stall a subscriber; exceed size/age limits. Only that client is disconnected; journal/serial ingestion continue. No silent event loss.\\
+T13 & UI-02, DATA-01 & Skew wall clock by 5 min and step it backward; disconnect clock sync. Local freshness still works; interstation time precision becomes unknown.\\
+T14 & VID-01, PKG-02 & Inspect codec/profile, SPS/PPS/IDR cadence, TS tables and timestamps. Decode each supported Mac/Windows sender/receiver pairing; verify packaged SRT and fallback encoder.\\
+T15 & VID-02--03 & Repeatedly promote/demote thumbnails at capacity. Main decode supplies thumbnail; unused session/encoder resources are released; labels never mismatch pixels.\\
+T16 & UI-06, VID-03 & Lose a selected feed or reject main quality. Keep source explicit, show stale overlay or same-source preview; no hidden source substitution.\\
+T17 & Session lifecycle & Retry uncertain POST with same ID; altered body returns 409. Expire lease, send wrong Stream ID/token, restart source, change camera epoch. No cross-session video.\\
+T18 & NET-01, VID-01 & With eight previews and three mains, introduce 1\% random packet loss and 50 ms variable delay, then a 2 s link outage. Record media degradation, telemetry latency and recovery; no growing playback backlog.\\
+T19 & NET-01--02 & Run capacity fixture and two-hour endurance test. Log queue high-water marks, CPU/GPU load, RSS and bandwidth; investigate all loss/reset events.\\
+T20 & UI-07, DISC-01 & Block mDNS while permitting unicast, deny local-network permission, enable AP isolation. Distinguish causes; manual endpoint works only when unicast is reachable.\\
+T21 & DATA-01, UI-04 & Absent orientation/motor/chute/pose feedback stays unknown. No phase-based attitude, RF lock or measured-pointer fabrication.\\
+T22 & Archive contract & Disk-full and recorder failure do not stall ingestion; session manifests capture frame gaps, epochs and source IDs.\\
+T23 & Hardware boundary & Send \code{/commands} requests including switches/uplink/pointer actions. Receive 501; observe no serial writes or claimed board acknowledgement.\\
+T24 & HTTP/WS limits & Test invalid UTF-8, JSON, oversized payloads, non-finite numbers, unknown resources and counter conflicts; expected errors and bounded resource use.\\
+\bottomrule
+\end{longtable}
+
+\section{Implementation order and open decisions}
+Implement identity/discovery and status first; then loss-aware telemetry transport
+and archival provenance; then one H.264/SRT channel across Mac/Windows; then the
+full video wall, previews, session limits and fault injection. Finally qualify
+the actual radios and cameras with all ten machines. Each stage preserves the
+existing local device-control boundaries. The proposed protocol is independent
+of whether Python bindings, a bundled native helper or another library implements
+the transport.
+
+\begin{longtable}{L{29mm}L{78mm}L{54mm}}
+\toprule Open item & Needed decision/evidence & Behavior until resolved\\\midrule
+\endfirsthead
+\toprule Open item & Needed decision/evidence & Behavior until resolved\\\midrule
+\endhead
+Telemetry switch & Firmware command, acknowledgement, vehicle attribution and buffer transition semantics & Desired/confirmed separated; unknown target where unverified.\\
+Uplink enable & Launch board API, enable confirmation and power-up/reconnect state & Network capability false; unsupported; no invented serial bytes.\\
+Remote pointer control & Ownership, authorization, command/feedback schema, limits and recovery semantics & Monitoring only; local owner retains control. A selected route is descriptive.\\
+LTU metrics & Model/firmware management API and deployment access & Metrics unknown; IP/heartbeat health still available.\\
+Timing/fusion & Clock service, acceptable uncertainty, rocket boot/sequence identity and estimator model & Preserve raw observations; no claimed fused navigation estimate.\\
+Capture hardware & Actual resolution, FPS, compressed USB formats and encoder availability & Negotiate qualified baseline; report actual format and errors.\\
+Field network & AP/bridge topology, multicast behavior, measured throughput and interference & Manual endpoints; conservative bitrate caps; no claimed performance.\\
+Security extension & Peer provisioning, TLS trust, command permissions and audit requirements & Controlled-LAN monitoring profile only; all hardware commands unsupported.\\
+\bottomrule
+\end{longtable}
+
+Future hardware commands require a separate revision defining stable request IDs,
+expiry, authority, requested/dispatched/confirmed/failed/unknown outcomes and
+device acknowledgement. A TCP write or HTTP success is not a hardware outcome.
+Non-idempotent actuation SHALL not be retried merely because acknowledgement was
+lost. These constraints reserve the boundary; they do not invent the unresolved
+board protocol or enable remote actuation in this draft.
+
+\section{Traceability and document maintenance}
+SYS/UI/DATA/NET/PKG/ID/DISC/TEL/VID identifiers are stable requirements. T01--T24
+are future acceptance cases. Changes to mandatory wire fields, event meaning,
+channel mapping or transport behavior require a revision entry and example
+updates. Keep design version, wire protocol version and application version
+separate. Application support is established by implementation and test evidence,
+not by this document's existence.
+
+The accompanying JSON files are protocol examples, not real flight measurements
+or cryptographic credentials. A documentation validator checks their syntax,
+cross-file identities, observation hash and referenced paths; it does not certify
+a server implementation. Rebuild the PDF with \code{make}. Use \code{make clean}
+to remove intermediate TeX artifacts while preserving the final PDF.
