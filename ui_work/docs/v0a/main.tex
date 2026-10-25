@@ -1,0 +1,18 @@
+\documentclass[english,10pt,a4paper,titlepage]{scrartcl}
+\usepackage{report-style}
+\input{parts/frontmatter}
+\begin{document}
+\maketitle
+\input{parts/reading-guide}
+\clearpage
+{\footnotesize\RedeclareSectionCommand[tocbeforeskip=.15em]{section}\tableofcontents}
+\clearpage
+\part{Application functionality and operation}
+\input{parts/functionality}
+\clearpage
+\part{Codebase and developer documentation}
+\input{parts/developer}
+\clearpage
+\appendix
+\input{parts/reference}
+\end{document}

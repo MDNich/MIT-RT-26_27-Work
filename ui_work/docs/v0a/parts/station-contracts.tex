@@ -1,0 +1,119 @@
+\section{Station profiles, routing and future transport}\label{sec:station-contracts}
+\subsection{Startup persistence and role boundaries}
+\code{StationProfile} validates station, Away number, role, vehicle and launch
+site, and exposes local/system channels and telemetry targets. The historical
+internal station key \code{base} remains for compatibility but displays as
+Launch station. Public \code{launch} normalizes to that key. Normal Launch
+construction passes the single-board \code{launch} controller layout;
+\code{base}/\code{legacy} layouts remain compatibility APIs.
+
+Opt-in choices live in \code{startup-choices.json}; legacy
+\code{station-profile.json} and \code{station-layout.json} do not seed startup
+defaults. Writes are validated/atomic. \code{__main__.py} applies remembered
+choices then explicit CLI overrides, waits for wizard acceptance, and only then
+creates a workspace. The wizard has no controller or transport side effects.
+Cancelled setup must not alter remembering preferences or construct workers.
+
+\code{station_workspace.py} assembles role cards over one inherited instrument
+owner. Explicit profiles cannot switch identity mid-session. Existing legacy
+construction still supports its programmatic layout switch. Video role rejects
+serial connection callbacks even if invoked through hidden actions; recording
+and file/replay remain usable. Both Launch windows update from one controller.
+Closing the companion view must not accidentally destroy shared instruments.
+
+\subsection{One Launch board, Away routes and placeholder state}
+Launch has one telemetry worker for downlink and future uplink. Away has
+downlink and pointer workers. Controller authorization combines board layout,
+source mode and actual supported protocol. Launch LIVE uplink-enable remains
+unimplemented; no command may be enabled by a route dropdown or remote data.
+Iris has one shared target on the Launch board, with no independent uplink
+target or second serial role. DEMO records simulated target/enable events and
+clears them when leaving that mode.
+
+Remote pointer selection is a desired route, not a transport or measured pose.
+Keep desired, dispatched and confirmed states distinct when firmware/network
+adapters are added. A port opening is not evidence of rocket communication or
+board switch position. Preserve generation checks and uncertain-write behavior.
+
+\subsection{Video-wall integration contract}
+The controller owns an immutable tuple of local channel IDs. It rejects unknown
+or inactive streams; each has a separate lifecycle, reservation and recorder.
+Launch Video uses local \code{digital}; Balius Away uses \code{digital,analog};
+Iris Away 1--3 use those same IDs with Sustainer labels; Away 4 uses
+\code{digital,analog2}. System channels for Iris include all three.
+
+\code{StationProfile.away_channels} validates each remote station/channel
+pair. On the GUI thread, a future transport may call:
+\begin{lstlisting}[language=Python]
+wall.update_remote_frame(
+    "away4", "analog2", pixmap,
+    quality="transport-provided quality", received=local_monotonic_time)
+wall.select_remote("away4", "analog2")
+wall.select_local_digital()
+\end{lstlisting}
+Use \code{mark_remote_unavailable} on link loss. Receive time must be local
+monotonic time; it is not an unsynchronized sender timestamp. Five seconds
+without fresh frames becomes stale. Quality text comes from the transport and
+is not guessed from image appearance. \code{set_local_source} separates live
+camera from paused/file/demo context; \code{set_local_frame} does not overwrite
+a promoted remote view. Source promotion replaces only a matching channel.
+
+No network worker, relay, remote recorder or remote-replay path is implemented
+by the wall. Define those lifecycles, timing and provenance before connecting
+an actual station transport. Existing archive support preserves arbitrary
+local channel directories without changing schema; filtering inactive channels
+for a role never deletes archive assets.
+
+\subsection{Existing networking and the fusion boundary}
+\code{station_io.py} decodes bounded KISS frames and supported uncompressed
+AX.25 APRS positions. Its explicit \code{StationLink} is a separate one-peer
+read-only snapshot service. Validate lengths, schema and finite values before
+presenting data; peer values remain outside accepted local samples and hardware
+command readiness. \code{station_panel.py} persists endpoints; Wi-Fi helpers
+read current/saved SSIDs and open OS settings without storing credentials.
+
+\textbf{There is no sensor-fusion estimator in v0a.} Multiple GS demo logs are
+independent recordings; remote summaries and APRS do not merge into an attitude
+or navigation state. A future fusion module needs vehicle/source IDs, duplicate
+packet handling, time alignment and clock uncertainty, coordinate/altitude
+datums, measurement covariance, freshness/reboot rules and estimator validity.
+It should produce a separately identified estimate with provenance and
+uncertainty while preserving raw inputs. An estimator output must not acquire
+command authority merely by appearing in a display. This is an extension
+boundary, not an implemented algorithm or claimed navigation accuracy.
+
+\section{Rocket orientation and flight-effect contracts}\label{sec:pose}
+\code{rocket_pose.py} separates raw telemetry integrals, validated orientation
+and reference frames. The rocket nose is body $+Z$; the world frame is ENU.
+The current Zephyrus adapter supplies no orientation or verified flight-effect
+object. A future decoded sample can provide:
+\begin{lstlisting}[language=Python]
+sample.details["orientation"] = {
+    "frame": "body_to_ENU",
+    "body_axis": "+Z",
+    "quaternion_wxyz": [w, x, y, z],
+}
+sample.details["flight_status"] = {
+    "motor_ignited": True,
+    "motor_burning": False,
+    "parachute_deployed": False,
+}
+\end{lstlisting}
+These are internal adapter contracts, not new serial fields or firmware
+commands. Quaternion components must be finite, scalar-first and within
+0.001 of unit norm; accepted rounding error is normalized. Wrong frame/axis,
+invalid values or absent orientation leave the neutral unavailable pose.
+The renderer never derives orientation from phase, climb or a nominal path.
+
+Flight-status values must be exact Booleans. Missing/malformed values remain
+unknown; historical ignition alone does not establish burning. Phase and pyro
+bits cannot establish recovery. Simulation frames use their own validated
+quaternion/event path and never backfill telemetry. Missing or partial event
+history retains unknown effects or an explicitly illustrative pose.
+
+\code{rocket_pose_view.py} caches geometry, uses an upright azimuth-only
+camera and fits the body plus any displayed effects at a stable scale.
+\code{rocket_pose_panel.py} owns the source selector and numeric/status labels.
+Keep camera rotation separate from body orientation and control dispatch.
+Full trajectory and antenna views retain orbit interaction; applying their
+mouse controls to this compact pane would change the intended interaction.

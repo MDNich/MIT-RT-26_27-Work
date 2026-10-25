@@ -1,0 +1,13 @@
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[box,text width=71mm,minimum height=35mm,anchor=north] (flight) at (0,0) {\textbf{Launch / Telemetry: Flight}\\[4pt]Main telemetry and link state\\Compact rocket + trajectory / 3D\\GNC plots and actuator matrix\\Away communication-route selector};
+\node[box,text width=71mm,minimum height=35mm,anchor=north] (systems) at (8.2,0) {\textbf{Launch / Telemetry: Systems}\\[4pt]Full telemetry, GPS, servos, cells\\Commands, power/BMS, recovery\\Mission, wind and OpenRocket\\Recording, diagnostics and network};
+\node[accentbox,text width=129mm] (owner) at (4.1,-4.6) {One controller, mission and recording session shared by both Launch displays};
+\draw[flow] (owner.north west)--(flight.south);
+\draw[flow] (owner.north east)--(systems.south);
+\node[box,text width=71mm,minimum height=23mm,anchor=north] at (0,-6) {\textbf{Away / Telemetry: one window}\\Main rocket telemetry and pose\\Local antenna graphic and controls};
+\node[box,text width=71mm,minimum height=23mm,anchor=north] at (8.2,-6) {\textbf{Video: separate operator role}\\Away: two assigned local inputs\\Launch: large channels + thumbnails};
+\end{tikzpicture}
+\caption{Information placement in v0a. These are functional layouts, not pixel-exact screenshots. Configuration and file dialogs remain deliberate actions.}
+\label{fig:workspaces}
+\end{figure}

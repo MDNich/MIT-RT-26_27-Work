@@ -1,0 +1,15 @@
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[box,text width=38mm,minimum height=20mm] (launch) at (0,0) {\textbf{Launch USB}\\Sustainer Digital};
+\node[box,text width=38mm,minimum height=20mm] (away) at (5.3,0) {\textbf{Away 1, 2, 3}\\Sustainer Digital\\Sustainer Analog};
+\node[box,text width=38mm,minimum height=20mm] (four) at (10.6,0) {\textbf{Away 4}\\Sustainer Digital\\Booster Analog};
+\node[accentbox,text width=144mm,minimum height=20mm] (large) at (5.3,-3) {\textbf{Launch primary views: Iris}\\Sustainer Digital\qquad Sustainer Analog\qquad Booster Analog};
+\draw[flow] (launch)--(large.north west);
+\draw[optional] (away)--node[right,font=\footnotesize]{future transport}(large.north);
+\draw[optional] (four)--(large.north east);
+\node[box,text width=144mm] (thumbs) at (5.3,-5) {Eight Away thumbnails: four station pairs remain visible\\Double-click replaces only the matching primary channel};
+\draw[flow] (thumbs)--(large);
+\end{tikzpicture}
+\caption{Iris has three system channels and two local inputs per Away station. For Balius every Away pair is Digital/Analog and Launch has two primary views. Dashed paths are not implemented network feeds.}
+\label{fig:video}
+\end{figure}

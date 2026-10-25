@@ -1,0 +1,15 @@
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[box,text width=39mm] (raw) at (0,0) {Current Zephyrus\\body-gyro integrals};
+\node[box,text width=39mm] (valid) at (5.3,0) {Future adapter\\validated body-to-ENU pose};
+\node[box,text width=39mm] (ref) at (10.6,0) {Selected OpenRocket\\quaternions + events};
+\node[box,text width=39mm] (neutral) at (0,-2.1) {Raw numeric readouts\\neutral model\\orientation unavailable};
+\node[accentbox,text width=39mm] (pose) at (5.3,-2.1) {Telemetry pose/effects\\only with explicit valid data};
+\node[accentbox,text width=39mm] (sim) at (10.6,-2.1) {Reference pose/effects\\labelled simulation time};
+\draw[flow] (raw)--(neutral);
+\draw[flow] (valid)--(pose);
+\draw[flow] (ref)--(sim);
+\node[captionnode,text width=140mm] at (5.3,-3.65) {No cross-filling: simulation does not repair missing telemetry.\quad Camera azimuth changes viewing direction only.};
+\end{tikzpicture}
+\caption{Orientation provenance. Phase, increasing altitude and pyro bits do not supply missing orientation, motor-burning or parachute-deployment evidence.}
+\end{figure}

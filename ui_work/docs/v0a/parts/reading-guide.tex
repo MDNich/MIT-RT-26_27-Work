@@ -1,0 +1,36 @@
+\section*{Document control and reading guide}
+\addcontentsline{toc}{section}{Document control and reading guide}
+This report documents the released \textbf{Rocket GNC Monitor v0a, version
+0.1.1}. Part I describes operation at the Launch station and four Away
+stations. Part II describes the implementation, wire contracts, storage,
+graphics, extension points and native build process. The appendices contain
+complete mission, normalized sample and legacy CSV field references.
+
+\begin{longtable}{@{}L{.24\linewidth}L{.69\linewidth}@{}}
+\toprule Item & Reviewed baseline \\\midrule\endhead
+Application repository & \href{https://github.com/MIT-Rocket-Team/RT_Telemetry_UI}{MIT-Rocket-Team/RT\_Telemetry\_UI}; standalone application root after migration. \\
+Release & \href{https://github.com/MIT-Rocket-Team/RT_Telemetry_UI/releases/tag/v0.1.1}{v0.1.1 / Rocket GNC Monitor v0a}, published 25 October 2026. \\
+Source revision & \nolinkurl{1923244f1a962049d6f66958816e009edd459e21}. Source links in this report are pinned to the release tag; exact reviewed file hashes are in \code{evidence/source-manifest.json}. \\
+Report location & Parent project repository, \code{ui_work/docs/v0a}. The preceding \code{docs/v0} manual remains a historical record. The application itself is maintained in its standalone repository. \\
+Distributions & macOS universal DMG, macOS 14+; Windows x64 ZIP. Both embed OpenRocket-MIT v6.2, Python, Qt, FFmpeg and Java. Mac uses ad-hoc signatures without notarization; Windows is unsigned. \\
+Validation & Mac ARM: 578 tests passed. Intel: 577 applicable cases covered under Rosetta. Windows: 567 passed, 11 platform skips. Twenty packaged checks per target. See Section~\ref{sec:tests} for provenance and limits. \\
+Style & KOMA-Script, Latin Modern, A4, blue headings, shaded tables and editable TikZ drawings, following the supplied GenMAPS report style. No raster diagrams. \\
+\bottomrule
+\end{longtable}
+
+\statusnote{Release scope}{This is an implementation reference, not a promise
+that every planned hardware interface exists. Launch uplink enable, Iris target
+switching, remote station transport, LTU metrics and sensor fusion remain
+explicitly incomplete. Local reception, recording, replay, nominal simulation
+and Away pointing are documented according to their implemented behavior.}
+
+\input{figures/system-overview}
+
+\subsection*{What changed since v0}
+Station workspaces replace the tab-centered layout: Launch Telemetry spans
+Flight and Systems, Away Telemetry uses one window, and Video has its own role.
+The wizard adds numbered stations, optional remembered setup and URRG presets.
+Iris receiver assignments distribute three system video channels across Away
+stations. The new rocket graphic distinguishes raw gyro integrals from genuine
+orientation. The migrated application now has verified Mac universal and
+Windows x64 packages; physical equipment acceptance remains separate.

@@ -1,0 +1,17 @@
+\begin{figure}[H]\centering
+\begin{tikzpicture}
+\node[accentbox,text width=42mm] (rocket) at (4.4,1.8) {Rocket flight computer\\and video transmitters};
+\node[box,text width=58mm,minimum height=21mm] (launch) at (0,-.5) {\textbf{Launch station}\\One telemetry board; Digital USB\\Telemetry: Flight + Systems\\Video: separate workspace};
+\node[box,text width=58mm,minimum height=21mm] (away) at (8.8,-.5) {\textbf{Away stations 1--4}\\Downlink board + pointer board\\Two assigned USB video inputs\\Telemetry or Video workspace};
+\draw[flow] (rocket.south west)-- node[above left,font=\footnotesize]{local reception} (launch.north);
+\draw[flow] (rocket.south east)-- node[above right,font=\footnotesize]{local reception} (away.north);
+\draw[optional,Latex-Latex] (launch.east)--node[above,font=\footnotesize]{LTU paths}(away.west);
+\node[captionnode,text width=25mm] at (4.4,-1.05) {application transport\\pending};
+\node[box,text width=58mm] (offline) at (0,-3) {Recording, replay, portable flights\\Nominal OpenRocket + wind};
+\node[box,text width=58mm] (pointer) at (8.8,-3) {Local physical pointer commands\\or labelled virtual rehearsal};
+\draw[flow] (launch)--(offline);
+\draw[flow] (away)--(pointer);
+\end{tikzpicture}
+\caption{Current station boundary. USB reception is implemented locally. Dashed LTU transfer denotes planned application integration; the existing one-peer snapshot service is separate. Launch uplink enable is a firmware placeholder.}
+\label{fig:system}
+\end{figure}

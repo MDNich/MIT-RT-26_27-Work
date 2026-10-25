@@ -1,0 +1,253 @@
+\section{Developer setup and native packaging}\label{sec:build}
+\subsection{Prepare a standalone checkout}
+Use native 64-bit Python 3.12--3.13, JDK 17+ (\code{javac} and \code{jar}),
+and optionally GNU Make. Mac packaging also needs Xcode command-line tools.
+Windows requires x64 Python, including on an ARM host; verify
+\code{sysconfig.get_platform()} reports \code{win-amd64}. No import or build
+requires the former monorepo, old PyQt5 UI or an OpenRocket source checkout.
+
+\begin{lstlisting}[language=bash]
+# Run from RT_Telemetry_UI, not the report folder.
+make setup PYTHON=python3.13
+make run
+make demo STATION=launch
+make test
+make lint
+\end{lstlisting}
+Setup creates \code{.venv}, installs the pinned build requirements and the
+editable application. \code{uv sync --locked} is an alternative. Initial
+downloads require internet; offline builds need staged matching wheels and
+native vendor files. Metadata dependency ranges are not a tested interpreter
+matrix. The tested package/runtime provenance is recorded below.
+
+\subsection{Engine and private Java runtime}
+\begin{lstlisting}[language=bash]
+make runtime
+make bridge OPENROCKET_DOWNLOAD=v6.2
+# Alternative: a complete local team engine
+make bridge OPENROCKET_JAR="/path/to/OpenRocket-MIT-v6.2.jar"
+# Optional resolution at build time, not an app updater
+make bridge OPENROCKET_DOWNLOAD=latest
+\end{lstlisting}
+Choose a local JAR or a download option, not both. The downloader queries
+\code{MDNich/ActiveControl_MIT_RktTeam}, selects the exact
+\code{OpenRocket-MIT-vX.Y.jar}, checks size and published SHA-256 when available,
+and records provenance in \code{vendor/engine.json}. If no published digest
+exists that fact is reported; a local hash is still recorded. Preparation
+stages a candidate and compiles before replacing an existing engine/bridge.
+Use a tested pinned release for production. A general upstream JAR may lack
+the required fork fields and motor resources.
+
+Runtime preparation verifies OS/architecture and downloads a checksum-verified
+Temurin Java 17 runtime when needed. The bridge compiles for Java 17, records
+engine/bridge hashes and retains source/provenance. Rebuild it after editing
+\code{simulation_bridge/src/RocketBridge.java}. Never share \code{.venv} or
+\code{vendor/java} across OS/architecture targets. The runtime and engine are
+prepared at build time, not automatically downloaded by Settings or startup.
+
+\subsection{Build with or without tests}
+\begin{lstlisting}[language=bash]
+# On macOS, after setup: tests + package + packaged verification
+make -f Makefile.macos all OPENROCKET_DOWNLOAD=v6.2
+# On Windows with GNU Make, after setup:
+make -f Makefile.windows all OPENROCKET_DOWNLOAD=v6.2
+
+# Package only; no test/verification targets:
+make package-macos OPENROCKET_DOWNLOAD=v6.2
+make package-windows OPENROCKET_DOWNLOAD=v6.2
+\end{lstlisting}
+Each command runs on its target OS; PyInstaller is not a cross-compiler.
+An engine option stages the engine, bridge and matching runtime. Without an
+option, packaging reuses existing vendor files: prepare runtime/bridge first.
+The native \code{all} targets run test, package and verifier; run lint separately.
+Each checkout's default PyInstaller cache is \code{build/pyinstaller-cache}.
+An explicit \code{PYINSTALLER_CONFIG_DIR} overrides it; concurrent checkouts
+must not share that writable cache.
+
+Windows PowerShell can use the scripts without Make:
+\begin{lstlisting}
+py -3.13 scripts/build.py setup
+.venv\Scripts\python.exe scripts/build.py runtime
+.venv\Scripts\python.exe scripts/build.py bridge --download v6.2
+.venv\Scripts\python.exe scripts/build.py package --platform Windows
+# Optional validation, separate from the package-only command:
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\python.exe -m ruff check src tests --select F
+.venv\Scripts\python.exe scripts/verify_package.py --model tests\fixtures\zephy_testlaunch.ork
+\end{lstlisting}
+
+\begin{longtable}{@{}L{.24\linewidth}L{.69\linewidth}@{}}
+\toprule Target & Outputs under ignored \code{dist/} \\\midrule\endhead
+Mac ARM64 & \code{RocketGNCMonitor-v0a.app}; \nolinkurl{RocketGNCMonitor-v0a-Darwin-arm64.dmg}. \\
+Mac Intel & Same native app name in its separate checkout; \nolinkurl{RocketGNCMonitor-v0a-Darwin-x86_64.dmg}. \\
+Windows x64 & \code{RocketGNCMonitor-v0a/} and \nolinkurl{RocketGNCMonitor-v0a-Windows-x64.zip}. \\
+Universal Mac & \code{RocketGNCMonitor-v0a-universal.app}; \nolinkurl{RocketGNCMonitor-v0a-macOS-universal.dmg}; ZIP wrapping the DMG. \\
+\bottomrule
+\end{longtable}
+Archives have SHA-256 sidecars. The bundle identity is
+\code{edu.mit.rocketteam.gncmonitor.v0a}, version 0.1.1. The migration preserves
+saved formats, application identity and separate v0a preferences. The PyInstaller
+spec bundles Python/Qt, native MGRS, fonts, FFmpeg, Java, engine/bridge, resources
+and notices, without unneeded WebEngine/QML or full scientific distributions.
+
+\subsection{Universal Mac composition}
+Build and verify ARM64 and x86\_64 apps in distinct native environments; Intel
+can build/run through Rosetta on Apple Silicon. Then:
+\begin{lstlisting}[language=bash]
+make package-macos-universal \
+  MAC_ARM64_APP="/path/to/arm64/RocketGNCMonitor-v0a.app" \
+  MAC_X86_64_APP="/path/to/intel/RocketGNCMonitor-v0a.app"
+\end{lstlisting}
+\code{scripts/package_macos_universal.py} verifies architectures, signatures,
+matching app versions/engines and Java provenance, preserves native inputs,
+copies symlinks, compiles a small universal launcher and signs nested payloads
+before the outer bundle. The launcher selects one complete native app and
+uses \code{execv}, preserving arguments and exit status. This is not a claim
+that every library is universal; concatenating finished PyInstaller archives
+with \code{lipo} is not the build method. \code{UNIVERSAL_OUTPUT} changes the
+destination. macOS 14+ reflects the included native runtime requirement.
+
+\subsection{Verification, signing and cleanup}
+Verify the extracted/relocated deliverable, including a path with spaces:
+\begin{lstlisting}[language=bash]
+.venv/bin/python scripts/verify_package.py \
+  --package "/path with spaces/RocketGNCMonitor-v0a.app" \
+  --model tests/fixtures/zephy_testlaunch.ork \
+  --output build/package-verification
+codesign --verify --deep --strict "/path/to/RocketGNCMonitor-v0a.app"
+\end{lstlisting}
+Use the Windows interpreter and extracted directory on Windows. The verifier
+removes developer runtime overrides and uses minimal system PATH. Use native
+desktop Qt for Windows; offscreen Mac regression tests do not replace native
+visual checks. Universal verification must exercise both launcher slices.
+
+Default Mac signing is ad-hoc. \code{MAC_SIGN_IDENTITY} selects an available
+Developer ID identity; notarization is separate. Windows is unsigned unless a
+separate signing workflow is applied. Preserve dependency licenses, Java legal
+files, engine/bridge provenance and the user-designated proprietary font notice.
+No signing credential belongs in source control.
+
+Keep source, tests, small fixtures, authored documentation and provenance in
+Git. Keep environments, vendor downloads, recordings, captures and distribution
+binaries out. \code{make clean} in the \emph{application} removes both build
+and dist, including finished packages. Remove only build when retaining final
+deliverables. The \emph{report}'s separate Makefile clean removes its build
+intermediates while keeping the final PDF.
+
+\subsection{Manual Windows CI}
+\src{.github/workflows/build-windows.yml} provides a manually dispatched Windows
+Server 2025 build using x64 Python 3.13, JDK 17 and pinned requirements. It
+prepares v6.2, runs tests/lint, packages and verifies extracted output with native
+Qt/minimal PATH. Download the package/checksum artifact and verification artifact
+promptly: retention is one day. The workflow does not publish a release or run
+automatically. Recorded run metadata identifies the actual interpreter/JDK and
+source revision; hosted runners do not validate physical USB or radio equipment.
+
+\section{Testing and release evidence}\label{sec:tests}
+\subsection{Regression responsibilities}
+\begin{longtable}{@{}L{.31\linewidth}L{.62\linewidth}@{}}
+\toprule Area & Required coverage \\\midrule\endhead
+Protocol / transport & Golden command vectors, fragmentation/corruption, wrap/reboot, timeouts, uncertain writes, independent ports and polling. \\
+Parity / controls & All original CSV columns and shortcuts, genuine Qt key dispatch, confirmations, no duplicate signal connections, role/uplink gating. \\
+Station setup & Wizard cancellation, remember/forget/CLI precedence, immutable identity, Launch/Away boards, URRG presets, two-view shared ownership. \\
+Video & Reservations through open/close, independent failure, station/channel assignments, promotion, stale source status, role isolation, local recording/replay. \\
+Pose / graphics & Rejection of gyro integrals as attitude, quaternion/frame validation, unknown effects, reference provenance, upright camera, antenna chirality and interaction isolation. \\
+Recording / flight & Queue/durability, active snapshots, finalized video, archive bounds/path/hash rejection, atomic failure, replay without original assets. \\
+Coordinates / simulation & Datum and relative-location signs, MGRS/Plus Codes, wind, motor resolution, real example and Zephyrus engine runs, motion/events and virtual pointing. \\
+Network / packaging & Bounded receive-only data, no remote command authority, runtime architecture, download integrity, failure preservation and relocated packaged execution. \\
+\bottomrule
+\end{longtable}
+The captured legacy fixture records 118 rocket command cases across all
+18 opcodes plus aliases, eight pointer cases, three tracking cases, 43 CSV
+fields and ten shortcut strings, with original source hashes. It was captured
+from the old class methods with physical connections replaced by memory streams.
+Do not regenerate the fixture simply to accept a protocol regression.
+
+Original conventions retained include five-decimal receiver coordinates,
+zero receiver height for pointing, the receiver-height display division,
+servo scales/rounding and good-CSV padding. Explicit fixes include rejected
+packet counting, old bad-packet field inconsistencies, eight BMS columns and
+duplicate shortcut connections. These fixtures require no old source checkout.
+
+\subsection{0.1.1 validation baseline}
+The following are completed migration/release checks from 25 October 2026,
+recorded in \src{docs/MIGRATION_VALIDATION.md}. Building this report does not
+rerun application/hardware qualification.
+\begin{longtable}{@{}L{.30\linewidth}L{.63\linewidth}@{}}
+\toprule Check & Recorded result \\\midrule\endhead
+Mac Apple Silicon & 578 tests passed, no skips; regression suite used offscreen Qt. \\
+Mac Intel / Rosetta & Full run: 573 passed, 5 skipped. Prepared-runtime simulation follow-up: all 5 simulation tests passed, covering four prior runtime skips. 577 Intel-applicable cases covered; the remaining ARM-host-only case passed on ARM. \\
+Universal package & 20/20 packaged checks for ARM64 and 20/20 for Intel under Rosetta. Fresh path with spaces and minimal PATH. DMG payload audit: 1,743 files/symlinks matched; deep/strict signatures passed. \\
+Windows clean runner & 567 tests passed, 11 platform skips; lint passed; 20/20 packaged checks. Windows Server 2025, Python 3.13.16 x64, Temurin 17.0.20.1+1. \\
+Windows binary audit & ZIP checksum/CRC and embedded manifests matched; all 243 EXE/DLL/PYD binaries were AMD64. \\
+Windows 11 ARM VM & Independent x64 source run: 567 passed, 11 skipped with Python 3.13.14 and v6.2. Adjusted virtual-pointer UI module: 7 passed. \\
+\bottomrule
+\end{longtable}
+Packaged checks cover wizard/roles, camera inventories, locked LIVE startup,
+all three demos, portable flights, URRG, virtual pointing, 3D ignition/recovery
+and bundled-example/Zephyrus simulation. The successful Windows run is
+\href{https://github.com/MIT-Rocket-Team/RT_Telemetry_UI/actions/runs/40213280209}{Actions run 40213280209}.
+Its preceding failure exposed a UI-test visibility/timing issue; the test now
+waits for visible/exposed controls before real mouse clicks, with behavior
+assertions unchanged. Production application modules were unchanged.
+
+The delivered Mac was built from \code{8edfdb0}; Windows from \code{b61a153}.
+The release tag is \code{1923244}. Later commits contain workflow, test and
+documentation changes, with identical production application code. Both
+delivered archives use OpenRocket-MIT v6.2. A supplemental VM package using
+v6.4 ultimately passed 20 checks after an unexplained transient video-start
+failure and a separate guest-transport interruption; it is not the delivered ZIP.
+
+\begin{longtable}{@{}L{.24\linewidth}L{.69\linewidth}@{}}
+\toprule Release artifact & Integrity \\\midrule\endhead
+Universal Mac DMG & 410,713,509 bytes. SHA-256:\newline\nolinkurl{acef899cf3b5eb2b43c402ce79c328df341f01db1d6c589c2eae45ad1eb862bc} \\
+Windows x64 ZIP & 218,134,349 bytes. SHA-256:\newline\nolinkurl{5977838d86aaa9e32f57d717728c593f0e04713905d2b6dfc5b5ed912dba79f7} \\
+\bottomrule
+\end{longtable}
+Intel was tested through Rosetta, not physical Intel hardware. Real cameras,
+boards, pointer mechanics, APRS radio and LTU network were not connected.
+Automated checks do not establish layout at every display scale, field
+performance, notarization or qualified controlled-flight dynamics.
+
+\section{Extension and maintenance guidance}\label{sec:extend}
+\subsection{Hardware and new telemetry}
+Specify framing, CRC, vehicle/source IDs, units, axes, timestamps/reset behavior
+and channel mapping before adding an adapter. Populate explicit measured/demand
+fields only when supplied. Preserve the Zephyrus adapter for old hardware/logs.
+Add captured packets, malformed/reboot tests, source isolation, recording/archive
+round trips and UI availability checks. Canard/tab names must not be assigned
+speculatively to legacy channels. Individual-servo commands require a contract;
+current encoders expose grouped roll/airbrake controls.
+
+Define Launch enable and Iris selector commands, acknowledgements and timeout
+semantics before replacing placeholders. Separate desired from confirmed state;
+uncertain partial writes remain nonretrying. Measured pointer feedback needs a
+structured parser distinct from last-sent target. Homing, cable limits and stop
+must have firmware support rather than merely a renamed UI button.
+
+\subsection{Data, simulation and presets}
+Add presets to \code{site_presets.py} and the corresponding location UI, keeping
+canonical coordinates, exact codes and explicit elevations. Test wizard defaults,
+format changes, manual edits and persistence. Optional schema fields need defaults
+and validation across mission/session/flight. Breaking semantics need a version
+bump and migration/rejection, not silent unknown-field filtering.
+
+Preserve archive limits, atomic replacement, active snapshot prefixes and
+source provenance. Changes to the Java bridge require rebuilding against the
+matching engine and recording options/input hashes. Controlled dynamics require
+model qualification; do not clear \code{controlled_model_validated:false} merely
+to suppress a label. Preserve raw inputs alongside any future fused estimate.
+
+\subsection{Known follow-up work}
+The release retains APRS, legacy terminology where it identifies the protocol,
+and two Launch displays. Requested future changes include Launch-only YouTube
+streaming, compact Windows layout improvements, a one-window/individual-servo
+workflow, removal of APRS/legacy-facing labels, and a larger Away vertical plot.
+These requests are not implemented by this documentation revision. Protocol
+work for station transport, switches and sensor fusion remains separate.
+
+For each change, check role/source boundaries and ownership, run meaningful
+focused tests then release checks, inspect native windows at intended sizes
+and representative smaller/high-DPI settings, rebuild the target package and
+update operator/developer references. Never use physical recovery actuation
+as a software smoke test.
