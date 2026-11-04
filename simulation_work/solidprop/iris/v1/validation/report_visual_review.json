@@ -1,11 +1,11 @@
 {
-  "reviewed_utc": "2026-11-04T08:58:09.172161+00:00",
-  "pdf_sha256": "ab6738e61a042d8a8de6709be074780323d3d235481eb840f4ddf8d41c762d91",
-  "pages": 21,
-  "render": "pdftoppm -scale-to 1250 -png",
-  "review": "All eight changed pages (1, 2, 5, 6, 7, 8, 9, 15) visually inspected. The final wording rebuild changed only pages 1, 2 and 5, all re-inspected. The other thirteen pages are pixel-identical to the previously reviewed publication. Tables, curves, field panels, legends and text are legible without clipping or overlap. TeX log has no overfull/underfull boxes or warnings.",
-  "previous_reviewed_commit": "58532b6fcc79866b1143503efaf69e6bbf5efd2a",
-  "snapshot_captured": "2026-11-04T03:55:40.077880-05:00",
+  "reviewed_utc": "2026-11-04T11:32:49.342845+00:00",
+  "pdf_sha256": "66b7fb985fcdda672a9bb744dc161dd250215e7e01124d6108181ff09fbf43fa",
+  "pages": 71,
+  "render": "pdftoppm -scale-to 1250 -png; all 71 pages rendered; contact sheets plus full-page checks",
+  "review": "All 71 pages inspected in contact sheets; temperature plots, nonlinear equations, material table, full Fortran midpoint page and wrapped compiler commands also inspected at full-page resolution. Final formatting revision changed pages 1, 7, 14-19 and 49; these were reviewed again, and the other 62 pages are pixel-identical to the reviewed draft. Line-numbered source is readable and complete; no clipping or overlap. TeX log has no overfull/underfull boxes, undefined references or warnings.",
+  "previous_reviewed_commit": "07107560a1b2c14fce4322a62e3f533d4e4f852a",
+  "snapshot_captured": "2026-11-04T06:30:10.397873-05:00",
   "audited_completed_native_cases": [
     {
       "case": "booster_al",
@@ -37,5 +37,8 @@
     }
   ],
   "audited_native_steps": 5220,
-  "qualification": "All four primary native cases audited: three prescribed horizons completed and sustainer CF stopped at its material-scope flag. Native spatial/time convergence and selected sensitivity controls remain unfinished. Numerical acceptance is not a real-motor lifetime prediction or validation of the uncalibrated removal law."
+  "qualification": "All four primary native cases audited: three prescribed horizons completed and sustainer CF stopped at its material-scope flag. Native spatial/time convergence and selected sensitivity controls remain unfinished. Numerical acceptance is not a real-motor lifetime prediction or validation of the uncalibrated removal law.",
+  "additional_audited_native_time_comparison": "sustainer_al_pulse7_midpoint_time_quarter: 4208 steps, 127 s; casing peaks shift 0.721 K, but hot-face temperature at 7 s changes 43.656 K. Not surface-temperature convergence.",
+  "printed_source_archive_files": 46,
+  "source_manifest_sha256": "5eaeb40e08adaf7c252e89aa686c79e5b5c8dd88fc32302549247c1dd4ea2a31"
 }

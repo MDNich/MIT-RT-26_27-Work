@@ -53,7 +53,7 @@ def corrected_fields(root,out,captured,runs):
     fig.savefig(out/'native_corrected_temperature_maps.png',dpi=180);plt.close(fig)
     return r'''\subsection{Corrected native temperature fields}
 Each map uses accepted corrected-midpoint ANSYS checkpoints only. The left panel resolves the imposed seven-second heating interval; the right panel shows the full accepted history, including heat soak and cooling. The dashed line marks the casing interface, while cyan marks the depth already removed during the solve. Inactive nodes are masked. Temperatures are radial-station averages of the small uniform sector; these are computed fields, not measurements.
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_corrected_temperature_maps.pdf}\caption{Corrected native temperature fields with a common scale. No time beyond an accepted checkpoint is shown.}\end{figure}'''
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.76\textheight,keepaspectratio]{../analysis/native_corrected_temperature_maps.pdf}\caption{Corrected native temperature fields with a common scale. No time beyond an accepted checkpoint is shown.}\end{figure}'''
 
 
 def create(root,out,captured):

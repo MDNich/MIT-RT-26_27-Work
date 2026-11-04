@@ -1,0 +1,34 @@
+! Resume only from a verified accepted checkpoint.
+*DO,V0_LOOP,1,100000
+  /DELETE,step_control,inp
+  /SYS,C:\IrisStudy\runs\booster_al_pulse7_n80_midpoint_tight\couple.cmd prepare
+  V0_OK=0
+  /INPUT,step_control,inp
+  *IF,V0_OK,NE,1,THEN
+    /COM,V0_PREPARE_FAILED_OR_MISSING
+    /EXIT,NOSAVE
+  *ENDIF
+  *IF,V0_DONE,EQ,1,THEN
+    *EXIT
+  *ENDIF
+  /SOLU
+  *IF,V0_INDEX,GT,1,THEN
+    ANTYPE,,REST,V0_PREVIOUS,,CONTINUE
+  *ENDIF
+  /INPUT,step_control,inp
+  /INPUT,apply_loads,inp
+  TIME,V0_TARGET
+  DELTIM,V0_DT,0.0005,V0_DT,OFF
+  SOLVE
+  /INPUT,export_fields,mac
+  /DELETE,accepted,inp
+  /SYS,C:\IrisStudy\runs\booster_al_pulse7_n80_midpoint_tight\couple.cmd accept
+  V0_OK=0
+  /INPUT,accepted,inp
+  *IF,V0_OK,NE,1,THEN
+    /COM,V0_POSTPROCESS_OR_BALANCE_FAILED
+    /EXIT,NOSAVE
+  *ENDIF
+*ENDDO
+/COM,V0_CONTROLLER_STOPPED_CHECK_STATE_JSON
+/EXIT,NOSAVE

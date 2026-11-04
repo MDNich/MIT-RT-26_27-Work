@@ -1,14 +1,21 @@
 \pdfminorversion=7
 \documentclass[oneside,openany]{amsdtx}
 \usepackage[margin=.75in]{geometry}
-\usepackage{graphicx,float,amsmath,amssymb,booktabs,array,enumitem}
+\usepackage{graphicx,float,amsmath,amssymb,booktabs,array,enumitem,listings,upquote}
 \usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage[english]{babel}
 \usepackage{lmodern,siunitx,xcolor}\usepackage[colorlinks=true,allcolors=blue,hyperindex=false]{hyperref}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
-\title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Setup and Accepted Results}
+\lstdefinestyle{iriscode}{basicstyle=\ttfamily\fontsize{8}{9.4}\selectfont,
+numbers=left,numberstyle=\tiny\color{blue!65!black},numbersep=7pt,
+breaklines=true,breakatwhitespace=false,breakindent=14pt,
+columns=fullflexible,keepspaces=true,showstringspaces=false,upquote=true,
+frame=single,framerule=.2pt,rulecolor=\color{black!25},
+xleftmargin=22pt,framexleftmargin=3pt,aboveskip=9pt,belowskip=9pt}
+\title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Detailed Physics, Implementation and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 04, 2026 at 03:55 UTC-05:00}
+\date{November 04, 2026 at 06:30 UTC-05:00}
 \begin{document}\maketitle
+\markboth{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
 \textbf{Exploratory study.} Four configurations are considered: sustainer and booster, each with an aluminium or carbon-fibre composite casing. Heat flux, firing duration, grain port and measured recession are unavailable. The user authorized explicit surrogate inputs and sensitivity studies. This report separates native numerical checks from physical calibration. A pilot is not a demonstrated motor lifetime.
@@ -25,6 +32,59 @@ The primary event is exhaustion of the continuous phenolic barrier, leaving the 
 
 The calculation represents an initially intact, locally uniform wall. Cracks, joints, debonding, char spallation and particle erosion are not resolved. Material-temperature flags indicate the scope of surrogate properties, not certified pressure-casing failure. If the event is absent, the result is ``not reached through the simulated exposure,'' with residual thickness, rather than an extrapolated lifetime.
 
+\section{Interpreting the temperatures: gas, liner surface and casing}
+\label{sec:temperature-locations}
+\textbf{The exposed phenolic is already at thousands of degrees in absolute temperature.} The accepted primary runs reach approximately 1480--1488 degrees Celsius (1753--1761 K) at their exposed phenolic surface. The much lower 85--150-degree values discussed in the casing results belong to the metal/composite behind the liner, generally during subsequent heat soak. They are not chamber-gas temperatures or peak exposed-liner temperatures. A cool final point on a 127 or 300 s history is not the maximum during the seven-second heating interval.
+
+Moving radially outward, the temperature locations are
+\begin{center}
+\fbox{Gas $T_g$ (prescribed)} $\ \longrightarrow\ $
+\fbox{Exposed phenolic $T_s$ (solved)}\\[5pt]
+$\underbrace{\hspace{4cm}}_{\text{4.7625 or 6.35 mm initial liner}}$
+$\ \longrightarrow\ $\fbox{Inner casing $T_{ci}$}
+$\ \longrightarrow\ $\fbox{Outer casing $T_{co}$}.
+\end{center}
+The gas is a thermal reservoir at 2504 K (2230.85 degrees Celsius), coupled through a finite heat-transfer coefficient. It is not a temperature constraint applied to the solid. $T_s$ is the area-weighted mean on the currently exposed row, whereas $T_{ci}$ in the tables is the maximum nodal temperature at the fixed liner/casing interface. They differ in location and averaging definition. The sector uniformity checks quantify the small axial/angular spreads.
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrr}\toprule
+ & Peak $T_s$ & Time of peak & $T_s$ at 7 s & $T_{ci}$ at 7 s\\
+Case & $^\circ$C & s & $^\circ$C & $^\circ$C\\\midrule
+Sustainer Al & 1479.60 & 4.1625 & 1466.03 & 23.37 \\
+Sustainer CF & 1479.60 & 4.1625 & 1466.03 & 29.60 \\
+Booster Al & 1487.71 & 4.6000 & 1452.14 & 22.04 \\
+Booster CF & 1487.71 & 4.6000 & 1452.14 & 22.34 \\
+\bottomrule\end{tabular}\caption{Accepted primary native 80/20-row values. Hot-surface peaks are sampled area-weighted means during heating, not the prescribed gas temperature. Spatial convergence remains in progress.}\end{table}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/temperature_locations_heating.pdf}\caption{The same heating interval plotted at the exposed phenolic and the liner/casing interface. The lower panels deliberately use a much smaller temperature scale. Al/CF hot-face curves nearly coincide during the short exposure.}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/temperature_profiles_7s.pdf}\caption{Native radial-station averages at the last heated state. Inactive original-bore nodes are excluded. The steep temperature gradient lies inside the phenolic; the casing remains much cooler during firing and warms later. These are finite-mesh fields, not measured temperatures.}\end{figure}
+
+\subsection{Why a 2504 K gas does not impose a 2504 K liner}
+At 7 s, the sustainer hot surface is about 1466 degrees Celsius and its applied film coefficient is about 923 W/(m$^2$ K). Their product $h_{\rm eff}(2230.85-T_s)$ gives approximately 0.706 MW/m$^2$ of convection into the surface. Booster values give about 0.717 MW/m$^2$. This was checked against the actual native face heat rates. The small absolute powers in the short-sector records are a consequence of the small area, not a weak heat flux.
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrrr}\toprule
+ & Convection & Pyrolysis & Gas sensible & Char cost & Capacity\\
+ & inward & sink & sink & sink & rate\\
+Case & \multicolumn{5}{c}{MW/m$^2$ of exposed hot area, at 7 s}\\\midrule
+Sustainer Al & 0.7061 & 0.0550 & 0.1209 & 0.2777 & 0.2524\\
+Booster Al & 0.7174 & 0.0564 & 0.1253 & 0.2826 & 0.2531\\
+\bottomrule\end{tabular}\caption{Whole-domain power terms divided by current hot area. Volumetric sinks and capacity are integrated through the domain; this table is not a local partition at one integration point. Exterior losses and the small discrete residual complete the balance.}\end{table}
+Heat is consumed by decomposition and the specified gas/char sinks while the remaining energy heats the solid and conducts outward. A rough initial virgin diffusivity is $k/(\rho c_p)=0.25/(1250\times900)=2.22\times10^{-7}\ \mathrm{m^2/s}$; its seven-second diffusion length $\sqrt{at}$ is about 1.25 mm, compared with 4.76 or 6.35 mm of initial liner. This is only an order-of-magnitude explanation of the delayed casing response: properties and the thermal front evolve, so it is not a substitute for the nonlinear calculation.
+
+\subsection{Comparison with the attached earlier documentation}
+The September 18 report~\cite{phenolicseptember}, Table 6 on page 11, reports a hot-surface maximum of 1755.39 degrees Celsius at 6.3856 s while the aluminium maximum remains 22.0012 degrees Celsius. Its Simulation 2 reports a 1644.11-degree maximum at 6.45 s. Thus the earlier documentation also separates a very hot exposed liner from a much cooler casing. Those cases used a different four-layer construction, and Simulations 1 and 2 used the documented oversized radial geometry. Simulation 1 also lacked the later outgassing/consumption terms. They are not same-geometry temperature benchmarks for Iris.
+
+The corrected thin-sector Simulation 3 in that report reached a peak of 1400.50 degrees Celsius and ended at 435.36 degrees after row transfers; those historical quantities use their own deletion rule and do not calibrate the present model. The later September 26 two-layer v0 study is the principal implementation ancestor of Iris. The current source uses its density/char formulation with explicit numerical corrections, not a verbatim reuse of every earlier model.
+
+The present hot face is therefore not accidentally set to approximately 100 degrees Celsius. However, this does not demonstrate that its predicted temperature is physically correct. Actual heating, hot radiation, propellant shielding, tailoff, material properties and char removal remain uncalibrated. The retained hot-surface peaks and row-transfer jumps are also mesh/time dependent. The current 80-row primary fields should not be called final converged surface temperatures. The refinement and input-sensitivity sections quantify what has been checked without forcing a temperature to match an expectation.
+\subsection{Completed native time check: the hot face still needs refinement}
+The first completed quarter-step comparison keeps the same 80/20-row geometry and physical inputs. It passes the native audits and its same-mesh independent check. Its casing-peak comparison passes the stated target, but that does not imply a time-converged hot-face history.
+\begin{table}[H]\centering\small
+\begin{tabular}{lrrrr}\toprule
+ & \multicolumn{2}{c}{$T_s$ at 7 s [$^\circ$C]} & Change & Maximum matched\\
+Case & Primary & Quarter step & K & heating difference [K]\\\midrule
+Sustainer Al & 1466.03 & 1422.38 & -43.66 & 48.69 \\
+\bottomrule\end{tabular}\caption{Native-to-native time-resolution evidence. Matching means the same sampled physical times; a different row-transfer time can change the represented exposed surface. This table does not compare ANSYS with experimental measurements.}\end{table}
+For Sustainer Al, the sampled hot-face peak changes from 1479.60 to 1479.34 degrees Celsius, although its temperature at the end of heating changes more. The largest matched heating-history difference occurs at 0.01250 s. The remaining refinement must assess surface temperatures and transfer events as well as casing temperatures. The thousands-of-degrees scale is present in both native solutions; the exact hot-face history remains provisional.
+
 \section{Geometry and discretization}
 The supplied propellant radii are provisionally used as liner inner radii. No unreported gap or adhesive layer is inserted. Shared interface nodes impose perfect thermal contact. Actual bond/contact resistance and manufacturing thickness tolerances are unavailable and are not quantified by the material-property perturbations. The user requested short axial and sector slices with about twenty radial cells per material. Each exchanged STEP contains exactly two solids and is reimported independently to verify volumes and dimensions.
 \begin{table}[H]\centering\small
@@ -35,7 +95,7 @@ Sustainer & 39.6875 & 4.7625 & 3.1750 & 47.6250\\
 Booster & 65.0875 & 6.3500 & 4.7625 & 76.2000\\\bottomrule
 \end{tabular}\end{table}
 Al and CF versions share the dimensions within each motor. The initial domain is \SI{0.5}{mm} long and \(0.5^\circ\) wide, with 2 axial and 2 angular divisions. Twenty radial cells in each material give 160 SOLID278 elements and 369 nodes. The axis is global Y. Lateral and axial faces are adiabatic under the uniform-wall assumption. Integrated mass/power scales by 720 to a full ring of the same short length; temperatures and recession do not scale.
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/geometry_mesh.pdf}\caption{Radial/axial mesh projections. The angular direction has two divisions; axial scale is expanded. These are setup diagrams, not solved contours.}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/geometry_mesh.pdf}\caption{Current primary 80/20-row radial/axial mesh projections. The angular direction has two divisions; axial scale is expanded. These are setup diagrams, not solved contours.}\end{figure}
 STEP is the exchange geometry. The native structured mesh is generated deterministically from the same dimensions; it is not an automatic mesh imported from STEP. The initial 20-cell phenolic pitches are 0.238125 mm and 0.3175 mm. Independent comparisons at 40, 80 and 160 cells show sensitivity to thermal gradients and cell-removal quantization. Refined native inputs use 80 phenolic and 20 casing rows, giving 400 elements and 909 nodes. Further independent refinement assesses retained partial-cell storage and time accuracy.
 
 \section{Materials and thermal environment}
@@ -64,17 +124,222 @@ Booster & 13.309 & 27.37 & 20.53--34.22\\\bottomrule
 \end{tabular}\end{table}
 These are full-cylinder envelope values with no port, binder or voids. Actual mass scales with occupied volume fraction and actual bulk density. The stoichiometric product list is not an equilibrium combustion calculation, and this inventory cannot establish burn duration, wall heat flux or char kinetics. The inherited gas temperature remains an imposed scenario. No full-length fuel cylinder is meshed.
 
-\section{Thermochemical physics and solver}
-The phenolic thermal law solves conduction with temperature/conversion-dependent properties, endothermic pyrolysis and gas sensible cooling. The reaction state follows
-\[\dot\alpha=A\exp[-E_a/(RT)](1-\alpha),\qquad 0\leq\alpha\leq1.\]
-The intended reaction calculation integrates conversion analytically at the temporal midpoint, $(T_{n+1}+T_n)/2$, and requests a smaller solver increment when conversion changes too much. The inherited native routine actually used $T_{n+1}+(T_{n+1}-T_n)/2$: ANSYS supplies the current endpoint temperature, not the starting value. The corrected expression subtracts half the increment. The same correction applies to gas sensible cooling, which uses that temperature. The native diagnostic evidence and correction status are reported below. The gas source follows the virgin-to-char density loss. A surface blowing correction reduces convection as gas leaves the solid. Pore pressure and Darcy transport are not resolved.
+\section{Thermochemical equations and their implementation}
+\label{sec:physics-detail}
+\subsection{Three distinct processes, and what this model solves}
+Propellant combustion supplies the chamber environment; phenolic pyrolysis converts the liner into gas and char; surface consumption removes some of that char. These are three different processes. The supplied AP/aluminium reaction is inventory bookkeeping, not the phenolic reaction and not a calculation of the chamber temperature. No Fluent combustion, species-equilibrium, pressure-flow or propellant-regression calculation is being executed. The gas temperature, heat-transfer coefficient and exposure duration are prescribed. Nominal pressure enters the effective char-consumption law only; it is not a structural pressure load.
 
-A separate effective char-consumption law combines kinetic and mass-transfer limits and available surface energy. The inherited effective removal cost is \SI{35}{MJ.kg^{-1}}. This is an exploratory closure, not a calibrated oxidation mechanism. A row is scheduled for removal only after residual solid mass falls below 0.1 percent of its initial virgin mass. Hot-face loads move to the next live row. Consumed char remains in the live finite-element thermal representation until row removal; its numerical influence must be bounded through refinement or a revised partial-cell treatment.
+The native calculation is a nonlinear transient thermal solution in Mechanical APDL 2026 R1.02. The phenolic uses the compiled Fortran \texttt{UserMatTh} routine, exported as \texttt{USERMATTH}. This is the thermal material interface, not structural \texttt{USERMAT}. The casing uses built-in thermal properties. A separate Python controller updates the surface environment and row-removal state between native solves. The equations below describe the executed corrected-midpoint implementation, not every mechanism proposed in the older report.
 
-MAPDL 2026 R1.02 runs natively in Windows through the Parallels VM, using a versioned x64 material DLL and the installed Python coupling controller. The initial tiny models use one process and a row-summed (diagonal) specific-heat matrix, matching the SOLID278 default without advection. At every coupling step, the controller checks exported time and live element identity, gas/char/solid mass, thermal energy and the actual applied hot-face power before accepting an atomic checkpoint. Native face heat rates are used, with independent reconstruction of user-material energy sinks where the native aggregate channels omit them.
+\subsection{Local energy equation, units and mass basis}
+Let $T_C$ denote temperature in degrees Celsius and $T_K=T_C+273.15$ its absolute value. Temperature differences and gradients have the same numerical value in kelvins and Celsius. Arrhenius rates and fourth-power radiation always use kelvins. With inward boundary heat flux positive, the implemented solid equation on the current live mesh is
+\begin{equation}\label{eq:implemented-energy}
+ \rho_s(T,\alpha)c_p(T,\alpha)\frac{\partial T}{\partial t}
+ =\nabla\!\cdot\!\bigl(\boldsymbol{k}(T,\alpha)\nabla T\bigr)
+ -\rho_s\Delta H_p\overline{\dot\alpha}-Q_g,
+\end{equation}
+where $\rho_s$ is in $\mathrm{kg\,m^{-3}}$, $c_p$ in $\mathrm{J\,kg^{-1}K^{-1}}$, conductivity in $\mathrm{W\,m^{-1}K^{-1}}$, and each volumetric source in $\mathrm{W\,m^{-3}}$. Fourier heat flux is $\boldsymbol q=-\boldsymbol k\nabla T$. Phenolic conductivity is isotropic; the CF casing has a locally oriented conductivity tensor.
 
-The initial gates are mass residual at most \(10^{-6}\) of initial liner mass, step energy residual at most 5 percent, and hot-load error at most 2 percent. These numerical gates do not validate the material law. Comparison of mesh and coupling steps targets less than 5 percent change in event time, with event brackets and temperatures reported explicitly.
+The implemented endothermic coefficient is $\Delta H_p=418000\ \mathrm{J\,kg^{-1}}$. For these purely thermal elements, \texttt{hgen} is a source per unit mass; the routine subtracts $\Delta H_p\overline{\dot\alpha}$ and the gas sensible sink from its incoming value~\cite{ansysusermat}. Multiplication by the updated apparent density gives the volumetric pyrolysis sink in Equation~\eqref{eq:implemented-energy}. Thus the numerical mass basis is the current mixture density, not a fixed initial virgin density and not the released-gas mass. Changing that basis would change the model and require new sealed cases.
 
+\textbf{Conservation limitation.} For a reacting, mass-losing control volume, $\partial(\rho u)/\partial t$ does not reduce automatically to $\rho c_p\partial T/\partial t$: density-change terms and the enthalpy carried by escaping mass must be consistently accounted for. Equation~\eqref{eq:implemented-energy} is the inherited apparent-capacity closure, with separately prescribed reaction and gas sinks. It is not a derivation of a fully conservative porous-ablation enthalpy equation. Passing the discrete energy audit establishes consistency with this closure. It does not establish that the chosen reaction enthalpy, gas sensible term and removed-cell energy form a calibrated physical enthalpy model. In particular, calorimetric data would need to distinguish the reaction enthalpy from gas sensible enthalpy to avoid double counting.
+
+\subsection{Pyrolysis kinetics: derivation and numerical increment}
+The local irreversible conversion $\alpha$ is zero for virgin phenolic and one for the char residue. The law and constants are
+\begin{equation}
+ \dot\alpha=k_r(T_K)(1-\alpha)^n,\qquad
+ k_r(T_K)=A\exp\!\left(-\frac{E_a}{RT_K}\right),
+\end{equation}
+with $A=333\ \mathrm{s^{-1}}$, $E_a=64081\ \mathrm{J\,mol^{-1}}$, $R=8.31446261815324\ \mathrm{J\,mol^{-1}K^{-1}}$ and executed order $n=1$. These are inherited single-reaction parameters, not a fit to the actual Iris phenolic. The model has no explicit decomposition-product species or multiple resin reactions.
+
+Over one attempted native time increment, the rate constant is frozen at the temporal midpoint. Put $\beta=1-\alpha$. For $n=1$,
+\begin{equation}
+ \int_{\beta_n}^{\beta_{n+1}}\frac{d\beta}{\beta}
+ =-k_r(T_{n+1/2})\int_{t_n}^{t_{n+1}}dt,
+ \qquad
+ \boxed{\alpha_{n+1}=1-(1-\alpha_n)e^{-k_r(T_{n+1/2})\Delta t}}.
+\end{equation}
+The source uses the increment-average rate
+\begin{equation}
+ \overline{\dot\alpha}=\frac{\alpha_{n+1}-\alpha_n}{\Delta t}.
+\end{equation}
+This is exact for a constant rate coefficient during that increment, not exact integration of an arbitrarily changing temperature history. The implemented general-order branch, unused by the nominal configurations, is
+\begin{equation}
+ \beta_{n+1}=\left[\beta_n^{1-n}-(1-n)k_r\Delta t\right]^{1/(1-n)},
+ \qquad \alpha_{n+1}=1-\beta_{n+1},\quad n\ne1,
+\end{equation}
+with bounds to avoid a nonphysical bracket and to keep $\alpha_n\leq\alpha_{n+1}\leq1$.
+
+In \texttt{UserMatTh}, \texttt{Temp} is the current endpoint and \texttt{dTemp} is its increment. Consequently the corrected code evaluates
+\begin{equation}
+ T_{K,n+1/2}=\texttt{Temp}-\tfrac12\texttt{dTemp}+273.15.
+\end{equation}
+The printed routine in the September report instead adds half the increment. That computes an extrapolated temperature during heating, not the intended midpoint. Six native increasing/decreasing/constant-temperature checks verified the correction; constant-temperature tests alone could not reveal it. Historical curves retain their historical routine and are not silently relabelled.
+
+If $\Delta\alpha>0.05$, the routine requests a cutback with factor
+\begin{equation}
+ f_{\rm cut}=\max\!\left(0.1,\min\!\left(0.95,\frac{0.05}{\max(\Delta\alpha,10^{-30})}\right)\right).
+\end{equation}
+This guards conversion during a native increment. The production controller additionally requires exactly one native substep per accepted coupling interval. If MAPDL internally subdivides an interval, the present endpoint audit cannot accept it; it stops rather than treating the last internal rate as the rate over the full interval. Smaller prescribed intervals must be prepared in a new, separately verified package.
+
+\subsection{Virgin/char mixture and complete property table}
+At the updated conversion, the material returns
+\begin{equation}
+ X(T,\alpha)=(1-\alpha)X_v(T)+\alpha X_c(T),\qquad X\in\{k,c_p,\rho_s\}.
+\end{equation}
+ANSYS interpolates the temperature-dependent input properties before passing them to the routine. In Iris, the reference densities are constant at $\rho_v=1250$ and $\rho_c=600\ \mathrm{kg\,m^{-3}}$; only their mixture changes with conversion. These constants follow the later two-layer v0 model. They differ from the temperature-dependent 1250--1150 and 700--600 density tables printed for Simulation 1 in the September 18 report. That distinction matters for gas yield and heat capacity.
+\begin{table}[H]\centering\small
+\begin{tabular}{rrrrrrr}\toprule
+$T_C$ & $T_K$ & $k_v$ & $k_c$ & $c_{p,v}$ & $c_{p,c}$ & $\rho_v/\rho_c$\\
+$^\circ$C & K & \multicolumn{2}{c}{W/(m K)} & \multicolumn{2}{c}{J/(kg K)} & kg/m$^3$\\\midrule
+22.00 & 295.15 & .25 & .30 & 900 & 800 & 1250/600\\
+26.85 & 300 & .25 & .30 & 900 & 800 & 1250/600\\
+326.85 & 600 & .32 & .35 & 1100 & 900 & 1250/600\\
+626.85 & 900 & .36 & .40 & 1300 & 1000 & 1250/600\\
+776.85 & 1050 & .36 & .44 & 1300 & 1250 & 1250/600\\
+926.85 & 1200 & .36 & .49 & 1300 & 1550 & 1250/600\\
+1226.85 & 1500 & .36 & .68 & 1300 & 1950 & 1250/600\\
+1426.85 & 1700 & .36 & .81 & 1300 & 2060 & 1250/600\\
+1926.85 & 2200 & .36 & 1.24 & 1300 & 2085 & 1250/600\\
+2476.85 & 2750 & .36 & 1.73 & 1300 & 2090 & 1250/600\\\bottomrule
+\end{tabular}\caption{Actual nominal Iris \texttt{TB,USER} table. The added 22-degree point covers the initial state. The printed code appendix contains all 15 properties at every point.}\end{table}
+The interpolation is an engineering mixture rule. It does not model pore geometry, shrinkage, cracking, pressure dependence of conductivity, or a separate fibre/resin microstructure.
+
+\subsection{Gas generation, escape and sensible enthalpy}
+With fixed reference densities and gas-yield multiplier $Y=1$, conversion produces
+\begin{equation}
+ \dot\omega_g'''=Y(\rho_v-\rho_c)\overline{\dot\alpha},\qquad
+ \rho_{g,\mathrm{released}}=Y(\rho_v-\rho_c)\alpha.
+\end{equation}
+The multiplier $Y=1$ is not a 100-percent mass yield: the fully converted gas fraction relative to initial virgin mass is $(1250-600)/1250=0.52$, leaving 0.48 as char before surface consumption. The gas rate is integrated over all live phenolic elements. For an ideal axisymmetric slice the corresponding surface flux is
+\begin{equation}
+ \dot m_g''(r_s)=\frac{1}{r_s}\int_{r_s}^{r_p}\dot\omega_g'''(r)\,r\,dr
+ =\frac{\sum_e\dot\omega_{g,e}'''V_e}{A_s}.
+\end{equation}
+The native controller implements the latter volume/area sum, using the accepted conversion increment. It assumes immediate escape to the exposed surface. It does not solve gas storage, permeability, Darcy velocity, pore pressure or separate gas temperature. The Darcy equations discussed in the earlier report are context for a more complete model, not equations executed here.
+
+The local positive sensible-energy sink is
+\begin{equation}
+ Q_g=f_g\dot\omega_g'''c_{p,g}\max(T_{K,n+1/2}-T_{g,\mathrm{ref}},0),
+ \qquad \dot q_{g,m}=Q_g/\rho_s,
+\end{equation}
+where $f_g=1$, $c_{p,g}=1600\ \mathrm{J\,kg^{-1}K^{-1}}$ and $T_{g,\mathrm{ref}}=300\ \mathrm K$. The routine returns $\texttt{hgen}=\texttt{hgen}_{\rm input}-\Delta H_p\overline{\dot\alpha}-\dot q_{g,m}$. The mass ledger and thermal sink therefore share the same conversion increment. The local sink approximates enthalpy evacuation; it does not solve the gas enthalpy-advection equation.
+
+\subsection{Gas-film blowing and boundary conditions}
+The gas-film correction uses the previous accepted pyrolysis-gas and surface-consumption rates:
+\begin{equation}
+ B_h^n=\frac{(\dot M_g^n+\dot M_c^n)c_{p,g}}{A_s^n h_0},\qquad
+ F(B)=\frac{B}{e^B-1},\qquad h_{\rm eff}^{n+1}=h_0F(B_h^n).
+\end{equation}
+The routine uses $F(B)=1-B/2+B^2/12$ for very small $B$, recovering $h_0$ at zero blowing. This closure represents resistance to heat transfer by outward gas flow. Treating consumed-char mass as additional blowing flow is an effective assumption, not a species-resolved surface-product mass balance.
+
+The hot-boundary heat terms, positive into the solid, are
+\begin{align}
+ q_{\rm conv}''&=h_{\rm eff}(T_g-T_s),\\
+ q_{\rm rad,h}''&=\epsilon_h\sigma(T_{g,\rm rad,K}^4-T_{s,K}^4),\\
+ q_{\rm applied}''&=q_{\rm conv}''+q_{\rm rad,h}''-H_{\rm eff}\dot m_{c,\rm applied}''.
+\end{align}
+Here $\sigma=5.670374419\times10^{-8}\ \mathrm{W\,m^{-2}K^{-4}}$. The baseline uses $T_g=2504\ \mathrm K=2230.85\,^{\circ}\mathrm C$, $h_0=1000\ \mathrm{W\,m^{-2}K^{-1}}$ and $\epsilon_h=0$. Thus it imposes a hot gas reservoir, not a prescribed wall temperature. The initial unblown convective flux is $1000(2230.85-22)=2.20885\ \mathrm{MW\,m^{-2}}$ and falls as the wall heats and blowing develops.
+
+Convection is imposed through \texttt{SFE} and depends on the solved wall temperature within the increment. Radiation and char power are computed explicitly from the preceding accepted state and distributed as equal nodal \texttt{F,HEAT} contributions on each four-node face. Pyrolysis and gas sensible cooling act inside \texttt{UserMatTh}; they are not subtracted a second time in the boundary load.
+
+The outside boundary uses $h_o=8\ \mathrm{W\,m^{-2}K^{-1}}$, $\epsilon_o=0.25$ and $T_\infty=22\,^{\circ}\mathrm C$. Its inward radiation term is $\epsilon_o\sigma(T_{\infty,K}^4-T_{o,K}^4)$. End and angular faces are adiabatic. Shared liner/case nodes impose continuity of temperature and normal conductive heat flow; there is no adhesive volume or contact resistance.
+
+For the primary scenarios, hot exposure ends at exactly 7 s. Thereafter the inner boundary is set to ambient 22 degrees Celsius with $h=8$, hot radiation is zero and surface char consumption is disabled. Pyrolysis and its gas sensible sink can continue in hot material. This is a specified ambient-cooling experiment; real hot-gas tailoff is unknown. A 127 or 300 s plot is therefore not a 127 or 300 s firing.
+
+\subsection{Pressure-dependent char law and available-energy cap}
+Only char formed at the exposed row can be consumed. The effective kinetic and transport channels are
+\begin{align}
+ j_{\rm kin}&=j_{\rm ref}\exp\!\left[-\frac{E_c}{R}\left(\frac1{T_{s,K}}-\frac1{T_{\rm ref}}\right)\right]
+ \left(a_r\frac{p_c}{p_{\rm ref}}\right)^m,\\
+ j_{\rm tr}&=j_{\rm cap}a_r\frac{p_c}{p_{\rm ref}},\qquad
+ j_c=\left(j_{\rm kin}^{-1}+j_{\rm tr}^{-1}\right)^{-1}.
+\end{align}
+The nominal constants are $j_{\rm ref}=0.01$ and $j_{\rm cap}=0.05\ \mathrm{kg\,m^{-2}s^{-1}}$, $E_c=100000\ \mathrm{J\,mol^{-1}}$, $T_{\rm ref}=1500\ \mathrm K$, $m=0.5$, $a_r=1$ and $p_{\rm ref}=100000\ \mathrm{Pa}$. The imposed $p_c=800$ psi is $5.5158058$ MPa, interpreted as absolute; hence $p_c/p_{\rm ref}\simeq55.158$. The transport cap is scaled by this ratio: 0.05 is the reference cap, not the actual cap at 800 psi. No measured oxidant mole fractions are supplied. The configurable species branch is unused by the nominal cases.
+
+For one exposed face $f$ of area $A_f$ and cell volume $V_f$, the actual applied rate is the minimum of four restrictions evaluated from the preceding accepted state:
+\begin{equation}\label{eq:char-cap}
+ j_{c,f}^{n+1}=\min\left\{\alpha_f^n j_c(T_f^n,p_c),\quad
+ \frac{\max(q_{\rm conv,f}^{n}+q_{\rm rad,h,f}^{n}-q_{\rm cond,f}^{n},0)}{H_{\rm eff}},\quad
+ \frac{\max(\alpha_f^n\rho_cV_f-M_{c,f}^n,0)}{A_f\Delta t},\quad
+ \frac{0.2\rho_cV_f}{A_f\Delta t}\right\}.
+\end{equation}
+Here $M_{c,f}^n$ is previously consumed char, $q_{\rm cond,f}^{n}$ is the last accepted exposed-cell radial-flux estimate, and $H_{\rm eff}=35\ \mathrm{MJ\,kg^{-1}}$ is a positive effective removal cost. The first term includes the surface conversion multiplier actually used in the code. The other terms prevent consumption without available surface energy, without produced char, or faster than 20 percent of the reference char inventory per interval. The energy cap is a lagged estimate, not an independently solved surface balance. The controller checks the actual converged global balance afterward. Stronger-heating cases require smaller coupling intervals, as the resolution studies document.
+
+\subsection{Solid mass, removal rule and the moving boundary}
+For a live phenolic cell, the controller's physical-mass ledger is
+\begin{equation}
+ M_{s,e}=\bigl[\rho_v-(\rho_v-\rho_c)\alpha_e\bigr]V_e-M_{c,e}.
+\end{equation}
+It retains cumulative gas, consumed char and the residual solid ejected at each removal event. On a fixed slice, the ledger satisfies
+\begin{equation}
+ M_0=M_{s,\rm remaining}+M_{g,\rm cumulative}+M_{c,\rm cumulative}+M_{\rm residual,ejected}.
+\end{equation}
+An entire exposed radial row is scheduled for deactivation once its remaining solid mass is at most $f_{\rm res}=0.001$ times that row's initial virgin mass. The leftover mass is explicitly entered in the ejected-residual ledger. At the next solve the previous exposed faces are unloaded, the removed prefix is deactivated with \texttt{EKILL}, and convection/radiation/char power move to the next live row. The reported scheduling time and first transferred-load time therefore differ by one coupling interval.
+
+For uniform radial pitch $\Delta r$, the reported whole-row recession is $s=N_{\rm scheduled}\Delta r$ and retained mesh thickness is $L_p-s$. This is distinct from pyrolysis depth, continuous physical recession and the older report's integrated energy-based virtual recession. The code is not using $\alpha=0.99$ alone as its deletion condition.
+
+Two limitations remain even if the mass ledger closes. First, consumed surface-char mass is subtracted in the ledger but is not removed from the live element's conductivity or heat capacity until the whole row is killed. Second, an exactly zero residual cutoff is not a finite-time physical target for the first-order reaction: available-char capping leaves $M_{s,e}\geq\rho_v(1-\alpha_e)V_e$, and $1-\alpha$ stays positive for finite integrated reaction exposure. The finite cutoff represents unresolved residual ejection or loss of continuity. Its sensitivity must remain visible; it cannot be calibrated by numerical convergence alone. The energy associated with a killed row is logged as a quadrature diagnostic, not as a conservative enthalpy remap or an additional ablation sink.
+
+\subsection{Weak form and time-discrete thermal equations}
+Multiply Equation~\eqref{eq:implemented-energy} by a test function $N_i$ and integrate conduction by parts. With $q_{\rm in}''=-\boldsymbol q\cdot\boldsymbol n$,
+\begin{equation}
+ \int_{V_l}N_i\rho_sc_p\dot T\,dV+
+ \int_{V_l}\nabla N_i\cdot\boldsymbol k\nabla T\,dV
+ =\int_{\partial V_l}N_iq_{\rm in}''\,dS
+ -\int_{V_l}N_i\bigl(\rho_s\Delta H_p\overline{\dot\alpha}+Q_g\bigr)\,dV.
+\end{equation}
+Here $V_l$ is the live solid domain. Using $T_h=\sum_jN_jT_j$ gives the capacity and conduction matrices
+\begin{equation}
+ C_{ij}=\int_{V_l}N_i\rho_sc_pN_j\,dV,\qquad
+ K_{ij}=\int_{V_l}\nabla N_i\cdot\boldsymbol k\nabla N_j\,dV.
+\end{equation}
+The nominal inputs explicitly set \texttt{KEYOPT(15)=1} on SOLID278, selecting diagonal capacity~\cite{ansyssolid}. The independent radial reference uses the corresponding row-summed matrix, $C^L_{ii}=\sum_jC_{ij}$. With backward Euler time integration and convection assembled into $H$, the equation solved over an accepted interval has the form
+\begin{equation}
+ C^L(T_{n+1},\alpha_{n+1})\frac{\boldsymbol T_{n+1}-\boldsymbol T_n}{\Delta t}
+ +(K+H)\boldsymbol T_{n+1}
+ =\boldsymbol f_{hT_g}+\boldsymbol f_{\rm explicit}-\boldsymbol f_p-\boldsymbol f_g.
+\end{equation}
+Temperature-dependent properties, conversion, source terms and boundary temperatures make this nonlinear. The full transient/full nonlinear settings are \texttt{TRNOPT,FULL}, \texttt{THOPT,FULL}, \texttt{NROPT,FULL}; \texttt{TINTP,,,,1} selects the time-weighting used here. Native logs show the sparse direct solver. Maximum equilibrium iterations are 60, and corrected cases set the heat-flow convergence tolerance to $10^{-5}$ with a $10^{-6}$ minimum reference.
+
+The custom routine supplies $\partial\boldsymbol q/\partial\nabla T=-kI$ and $\texttt{dudt}=c_p$, but sets \texttt{dfdt} and \texttt{dudg} to zero. It therefore does not return every temperature/history derivative of this nonlinear constitutive law as a fully consistent tangent. This is an implementation limitation; the native tolerance and time-step checks are important even when the analytic conversion update is used.
+
+\subsection{Returned states and the coupling sequence}
+\begin{table}[H]\centering\small
+\begin{tabular}{cll}\toprule
+State & Stored quantity & Units\\\midrule
+SVAR1 & Updated conversion $\alpha$ & dimensionless\\
+SVAR2 & Increment-average $\overline{\dot\alpha}$ & s$^{-1}$\\
+SVAR3 & Gas source $\dot\omega_g'''$ & kg/(m$^3$ s)\\
+SVAR4 & Cumulative released-gas density & kg/m$^3$\\
+SVAR5 & Positive gas sensible sink $Q_g/\rho_s$ & W/kg\\\bottomrule
+\end{tabular}\caption{The five state variables in the current compiled routine. They belong only to phenolic elements; casing state-variable entries are not interpreted as phenolic data.}\end{table}
+Every accepted interval follows this sequence:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item Read the last accepted temperatures, conversion, mass ledgers, removed-row count and pinned input hashes. Confirm the storage heartbeat, scope and stopping conditions.
+\item Choose the interval without straddling the 7 s switch; compute blowing, radiation and char consumption from the last accepted state. Remove stale loads and replay \emph{every} already removed row after multiframe restart.
+\item Check the live-element count, apply convection and nodal heat loads, set the new time and solve in MAPDL. Fortran updates each integration-point reaction state during the nonlinear thermal solution.
+\item Export nodal temperatures, phenolic state fields, conductive flux, element capacity rates, face convection rates, and actual load-step/substep identity.
+\item Check finite/complete fields, increasing time, nondecreasing bounded conversion, available char, mass closure, actual hot-face power and thermal balance. Reject missing data, unexpected live elements or multiple native substeps.
+\item Schedule a depleted row, save mass/energy diagnostics, and stop at the prescribed horizon, a property-scope flag or exhaustion. Atomically save the accepted controller state and two alternating hash-verified native restart copies before the next interval.
+\end{enumerate}
+The primary intervals are 0.0125 s during heating, 0.0625 s during the first cooling second and 0.25 s afterward. This gives 560 heating solves, followed by 16 early-cooling solves and the later cooling solves. The quarter-step and finer spatial campaigns are listed separately; an analytic local reaction formula does not remove the need for these global time-resolution checks.
+
+\subsection{What the numerical audits actually test}
+The native energy audit sums the exported capacity rate $P_{\rm cap}$, outward convection $P_{\rm conv,out}$, native radiation $P_{\rm rad,out}$ and heat-flux channel $P_{\rm hfx}$. It independently reconstructs the negative body source $P_{\rm gen}=-(P_p+P_g)$ and sums the applied nodal power $P_N$. The residual is
+\begin{equation}
+ R_E=P_{\rm cap}+P_{\rm conv,out}+P_{\rm rad,out}-P_{\rm hfx}-P_{\rm gen}-P_N.
+\end{equation}
+The normalization is the maximum of $|P_{\rm cap}|$, $|P_{\rm conv,out}|+|P_{\rm rad,out}|$, $|P_{\rm hfx}|+|P_{\rm gen}|+|P_N|$, and $10^{-6}$ W. The acceptance gate is $|R_E|/P_{\rm scale}\leq0.05$. Mass closure must be within $\max(10^{-13}\ \mathrm{kg},10^{-6}M_0)$. Actual native hot-face convection must match $\sum_fA_fh_f(T_{g,f}-T_{s,f}^{n+1})$ within 2 percent.
+
+For this user-material path, the native aggregate generation and convection channels did not reproduce the applied terms. They are retained as diagnostics rather than used unquestioningly. The audit instead reconstructs the material sinks from accepted conversion/SVAR5 and uses native individual-face convection rates (hot face 5, outer face 3). The code appendix prints the exact extraction and balance expressions. Numerical agreement with the independent radial model tests implementation; it does not supply independent experimental evidence for the assumed physics.
+
+\subsection{Build, loading and reproducibility}
+The corrected source was compiled in an isolated directory using Intel Fortran Classic 2021.9.0 from the installed oneAPI 2023.1 environment, Visual Studio 2022 tools and the ANSYS v261 customization libraries. Compilation and linking returned zero, and export inspection found \texttt{USERMATTH}. The source, DLL and configuration hashes are pinned in each sealed runtime. The installed Windows x64 solver and DLL execute in the Windows ARM64 guest; this is a native MAPDL calculation, distinct from the separate host radial Python model.
+
+The launcher sets \texttt{ANS\_USER\_PATH} and \texttt{ANS\_USER\_PATH\_261} to the runtime directory. It uses the prebuilt DLL; it does not rebuild a user material at every solve. The invocation is batch SMP with one process: \texttt{ANSYS261.exe -b -smp -np 1 -p ansys -j file}. The input/output paths select the sealed run. The printed source appendix contains the build commands, material definition, complete Fortran routine, MAPDL driver/resume/export commands and a complete representative mesh deck. These are archival listings, not an instruction to start another solver beside the active serial queue.
+
+\subsection{Recorded native warnings}
 The corrected pilot exporter retrieves only defined live-material ranges. The earlier three undefined-SVAR warnings per step were removed without changing physical equations. The native user-material solve retains the standard warning that the Ansys-supplied USERCK routine is used; its banner separately confirms a user-defined thermal material. This known warning is recorded, not silently counted as zero warnings. Longer runs also report elapsed-time/CPU-time performance warnings; these are retained in the validation records.
 
 Both corrected CF primary runs also record a material-table warning at 21.9999998 degrees Celsius, approximately $2\times10^{-7}$ K below the initial 22-degree table endpoint. The casing conductivity is constant in that interval. This negligible numerical undershoot is retained in the audit; it is distinct from the controller's explicit 150-degree material-scope stop. ANSYS ceased its own repeated temperature-range checking after the warning, while the independent controller scope checks continued at every accepted interval.
@@ -82,15 +347,17 @@ Both corrected CF primary runs also record a material-table warning at 21.999999
 \section{Execution and storage controls}
 The running VM has 14 virtual CPUs and approximately 112 GiB RAM. The repository is accessible through a dedicated I: mapping. A native no-solve probe completed with a successful license checkout and zero warnings/errors. Each case receives a separate sealed runtime; unchanged source hashes and expected inventories are checked before launching.
 
+Current production jobs execute in guest-local \path{C:\IrisStudy\runs}, with compact accepted checkpoints mirrored to the Mac and complete native files copied back at phase exit. The primary meshes have 400 elements, versus 152000 in the September 26 v0 study: 380 times fewer elements. Axial divisions fall from 250 to 2, while radial divisions fall from 240/64 to 80/20. The sustainer phenolic pitch is therefore three times coarser than the old 19.84375-micrometre pitch; booster pitch is four times coarser. The refinement program is necessary before claiming comparable surface/recession accuracy. One SMP process and guest-local files also avoid much distributed/shared-folder overhead. These changes explain the runtime scale, but are not an isolated performance benchmark or proof of equal accuracy. The shorter slice relies on the locally uniform heating assumption and does not resolve motor ends, joints or axial hot spots.
+
 The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free on Windows C:. A host watcher checks the Mac every five seconds and the guest disk about every thirty seconds. The controller also requires a fresh storage heartbeat. On a threshold crossing, new work stops, a stop latch is written and the active solver is asked to terminate cleanly. Interrupted states are not published as accepted data.
 
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 04, 2026 at 03:55 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at November 04, 2026 at 06:30 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
-Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
+Run & Time [s] & Endpoint $T_s$ [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
 Booster Al (n=80, midpoint) & 300.0000 & 72.59 & 6.27062 & 0.0002 \\
 Booster CF (n=80, midpoint) & 300.0000 & 91.49 & 6.27062 & 0.0004 \\
 Sustainer Al (n=80, midpoint) & 127.0000 & 110.61 & 4.70297 & 0.0002 \\
@@ -156,7 +423,7 @@ The scale is $\max(|\dot U_{\rm FE}|,|Q_{\rm conv}|,|Q_{\rm body}|+|Q_{\rm nodal
 
 \subsection{Corrected native temperature fields}
 Each map uses accepted corrected-midpoint ANSYS checkpoints only. The left panel resolves the imposed seven-second heating interval; the right panel shows the full accepted history, including heat soak and cooling. The dashed line marks the casing interface, while cyan marks the depth already removed during the solve. Inactive nodes are masked. Temperatures are radial-station averages of the small uniform sector; these are computed fields, not measurements.
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_corrected_temperature_maps.pdf}\caption{Corrected native temperature fields with a common scale. No time beyond an accepted checkpoint is shown.}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth,height=.76\textheight,keepaspectratio]{../analysis/native_corrected_temperature_maps.pdf}\caption{Corrected native temperature fields with a common scale. No time beyond an accepted checkpoint is shown.}\end{figure}
 
 \subsection{Native temperature fields over the baseline exposure}
 These historical maps use every accepted checkpoint of the four original twenty-row native baselines, which used the inherited reaction-temperature expression. They are not predictions of the corrected midpoint model. Temperatures are averaged over each radial station of the uniform sector and interpolated for display. The dashed line marks the liner--casing interface. The cyan line is the upper-cell edge of the contiguous 98-percent conversion front; it is neither recession nor burnthrough. All four coarse baselines retain every liner row through seven seconds, despite nonzero gas and char losses.
@@ -363,7 +630,13 @@ The 80-row time check and 160-row spatial check use 0.003125 s heating, 0.015625
 
 Native comparisons require casing peak changes below 5 K for completed histories, scope-time changes below five percent for censored histories, and retained-thickness changes no larger than the greater of 0.02 mm or one percent of the initial liner. A scope-limited calculation cannot supply a later casing peak. Preparation is not an accepted result.
 
-At this edition no completed native refinement pair is available. The independent refinement results below remain distinct.
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrll}\toprule Case & Peak change [K] & Scope change [\%] & Thickness [mm] & Comparison & Pass\\\midrule
+
+Sustainer Al & 0.721 & -- & 0.0000 & time quarter & Yes \\
+
+\bottomrule\end{tabular}\end{table}
+
+Only completed, audited native cases with passing same-mesh independent checks enter this table. Earlier refinement failures remain visible; convergence is judged on the final relevant comparisons.
 
 \subsection{Sensitivity to the row-removal cutoff}
 
@@ -508,7 +781,76 @@ A native one-second heating pulse followed by five cooling steps passed the boun
 
 A defensible final answer may be a conditional ``not reached through the accepted exposure'' result with remaining thickness, rather than a finite lifetime. Neither missing wall-exposure data nor uncalibrated char kinetics can be recovered from solver convergence. The study cannot establish real motor lifetime without supported wall heating and recession evidence.
 
-\begin{thebibliography}{9}
+\clearpage\appendix\renewcommand{\thesection}{\Alph{section}}
+\section{Executed source listings and reproducible input decks}
+These listings are actual source and generated MAPDL inputs, not pseudocode. The source archive alongside the report contains complete model decks and configuration files for all four corrected primary runs. Each archived file was checked against its sealed runtime manifest. The main listing uses sustainer Al as the representative 80/20-row case; its complete 909-node/400-element deck is printed at the end. The CF property/orientation block is printed separately with its original line numbers. Booster radii and all case-specific paths are preserved in the accompanying complete input copies.
+
+The listings retain historical names such as \texttt{v0} in commands and titles because they are exact copies of the executed inputs. They do not refer to a request to rerun the previous study. The report source archive's \texttt{source\_manifest.json} records full hashes for all four cases. The material DLL is a compiled artifact already versioned in \texttt{model/}; its source and build commands are printed below. Only the existing serial queue controls execution.
+
+\clearpage\subsection{Complete phenolic material definition}
+All ten temperature points, fifteen user properties and five state variables. This block is also embedded in the complete mesh deck.
+
+{\footnotesize\noindent Source: \path{sustainer_al/material_v0.apdl}.\par\noindent SHA-256: \texttt{fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/material_v0.apdl}
+
+\clearpage\subsection{Complete Fortran UserMatTh routine}
+The corrected temporal midpoint is explicit in the listing. The routine contains the constitutive response and gas sensible sink; surface consumption and topology changes are in the controller.
+
+{\footnotesize\noindent Source: \path{sustainer_al/usermatth.F}.\par\noindent SHA-256: \texttt{218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/usermatth.F}
+
+\clearpage\subsection{Complete MAPDL transient driver}
+This driver calls the controller before and after each native solve. The accepted-step gate, rather than a zero solver exit alone, determines whether the next interval may start.
+
+{\footnotesize\noindent Source: \path{sustainer_al/run_v0.inp}.\par\noindent SHA-256: \texttt{c729bc3c022295a634e7c2aeeec61a2ca2d59b1d5687806fa4aab54454644397}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/run_v0.inp}
+
+\clearpage\subsection{Complete MAPDL resume driver}
+Only a matching accepted native/controller checkpoint is a valid restart. A restart does not authorize pairing an earlier controller record with a later native state.
+
+{\footnotesize\noindent Source: \path{sustainer_al/resume_v0.inp}.\par\noindent SHA-256: \texttt{2c0e81d2a6393a15dfa749c9cdbb32a9789f3c84dff55362a20cddc80144eb25}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/resume_v0.inp}
+
+\clearpage\subsection{Complete MAPDL field and energy exporter}
+The exporter records actual native time and substep identity, retrieves defined live phenolic state variables, and keeps raw energy channels for diagnosis.
+
+{\footnotesize\noindent Source: \path{sustainer_al/export_fields.mac}.\par\noindent SHA-256: \texttt{f3265b15f2989307d8b1869889c84a2a71117955465659daa20b5baead815072}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/export_fields.mac}
+
+\clearpage\subsection{CF material and local-coordinate block}
+This is the complete CF property/orientation definition extracted from its larger mesh deck. Line numbers refer to the original deck. The first following element command and later connectivity are in the archived full file.
+
+{\footnotesize\noindent Source: \path{sustainer_cf/model_base.inp}.\par\noindent SHA-256: \texttt{d20f8f3455f68bd5c1a0b8ac036ce6bfe0def16cbd8739918b7523724a6a5cf2}.\par}
+\lstinputlisting[style=iriscode,firstline=1294,lastline=1352,firstnumber=1294]{../analysis/source_listings/sustainer_cf/model_base.inp}
+
+\clearpage\subsection{Complete surface and acceptance controller}
+Included because the Fortran routine alone does not perform ablation. This controller supplies the explicit surface law, blowing, removal scheduling, balance checks and accepted-state persistence.
+
+{\footnotesize\noindent Source: \path{sustainer_al/coupler.py}.\par\noindent SHA-256: \texttt{1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/coupler.py}
+
+\clearpage\subsection{Complete compiler and linker command file}
+The isolated build also contains an export definition with the two lines \texttt{EXPORTS} and \texttt{USERMATTH}. Compilation is not performed during report generation.
+
+{\footnotesize\noindent Source: \path{build_material.cmd}.\par\noindent SHA-256: \texttt{2decff15d893d671b8fd49f79c24f53ba79d353b268ca1cd9435ad310ce928ea}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/build_material.cmd}
+
+\clearpage\subsection{MAPDL-to-Python bridge}
+
+
+{\footnotesize\noindent Source: \path{sustainer_al/couple.cmd}.\par\noindent SHA-256: \texttt{b0aaa464ad046263e6059dfdf1604f299cd5d1e708503e6aa865577660ecb390}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/couple.cmd}
+
+\clearpage\subsection{Complete representative MAPDL mesh and setup}
+Every material, node and element command is printed, without omitted connectivity. Dimensions are in metres and the initial temperature is in degrees Celsius. The conformal interface shares nodes; no hidden contact mesh is added.
+
+{\footnotesize\noindent Source: \path{sustainer_al/model_base.inp}.\par\noindent SHA-256: \texttt{0b84b8ffe474819f1ec79e4b54bee820b6a4f39d6a22a701d7ae39fe55500aaf}.\par}
+\lstinputlisting[style=iriscode]{../analysis/source_listings/sustainer_al/model_base.inp}
+
+\clearpage\begin{thebibliography}{99}
+\bibitem{phenolicseptember} MIT Rocket Team, \emph{Thermochemical Modeling of a Phenolic Liner in a Solid Rocket Motor Using ANSYS Mechanical}, September 18, 2026, user-supplied 48-page report; especially pp. 4--11, 21--25 and 35--37. Historical instructions are not current operating instructions.
+\bibitem{ansysusermat} ANSYS, \emph{UserMatTh: Creating Your Own Thermal Material Model}, Programmer's Reference, 2026 R1, section 2.5.2. Accessed November 4, 2026. \url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_prog/Z7K4r1e5lcd.html}.
+\bibitem{ansyssolid} ANSYS, \emph{SOLID278: 3D 8-Node Thermal Solid}, Element Reference, 2026 R1. Accessed November 4, 2026. \url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_SOLID278.html}.
 \bibitem{prior} MIT Rocket Team, \emph{Thermochemical Simulation v0: Interim Results for the New Phenolic Liner}, September 26, 2026; accompanying versioned configuration, UserMatTh source and controller in this repository.
 \bibitem{acp} M. Nichitiu and C. Casebolt, \emph{ANSYS Composite Analysis for Characterization of the Project Aurora Fin Can}, user-supplied tutorial, especially pp. 3--5.
 \bibitem{woven} R. Joven et al., \emph{Thermal properties of carbon fiber-epoxy composites with different fabric weaves}, 2011. \url{https://www.researchgate.net/publication/288102626}.

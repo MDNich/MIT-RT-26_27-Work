@@ -46,9 +46,11 @@ Booster CF is also complete through 300 s: the native audit and independent
 comparison pass (maximum profile difference 0.2205 K), with 6.270625 mm retained.
 Its sampled inner peak is 114.2432 C at 102.75 s; the outer peak is 105.1308 C
 at 144.25 s. All four corrected primary cases have now reached audited terminal
-states: three completed horizons and the sustainer CF scope stop. Thirteen
-native time/mesh checks continue in the existing serial queue; the sustainer Al
-quarter-step case is active. These primary cases retain the documented
+states: three completed horizons and the sustainer CF scope stop. The thirteen-case
+native time/mesh campaign continues in the existing serial queue. The sustainer Al
+quarter-step case is complete through 127 s and passed both audits: its inner
+casing peak shifts by -0.721 K and retained mesh thickness is unchanged. This
+first completed time comparison does not establish spatial convergence. These primary cases retain the documented
 0.1-percent removal rule; completed histories do not establish native mesh
 convergence. Each terminal run must pass both
 native audits and independent field, row-schedule and control checks before
@@ -106,6 +108,36 @@ are explicitly distinguished from native ANSYS states. Native output and
 checkpoints are under ignored `ansystmp/runs/`, with some jobs executing in
 `C:\IrisStudy\runs` and mirroring accepted state to the Mac. The original
 studies remain unchanged.
+
+## Detailed physics, code and temperature interpretation
+
+The expanded report now derives the pyrolysis update, mixture law, gas release
+and sensible-energy sink, blowing correction, pressure-dependent char law,
+available-energy/char caps, finite-element weak form and time discretization.
+It documents the actual density/enthalpy basis, incomplete constitutive tangent,
+lagged surface coupling, row-removal cutoff and retained partial-cell capacity.
+These limitations are not hidden by a passing mass/energy audit.
+
+The gas is prescribed at **2504 K (2230.85 C)** during the hypothetical seven-second
+pulse. The accepted 80/20-row hot phenolic surface reaches **1480-1488 C**;
+at 7 s it is **1452-1466 C**, while the casing interface is only **22-30 C**.
+Later 85-150 C casing values and cooler final hot-face values describe different
+locations or times. These are exploratory native results, not converged/calibrated
+surface-temperature predictions. The new heating-only figures and radial profiles
+make the distinctions explicit. The attached September report is a historical
+comparison with different geometries and model variants, not a same-case benchmark.
+
+The PDF prints the complete corrected Fortran routine, material block, MAPDL
+transient/resume/export scripts, surface controller, build commands and a complete
+representative mesh deck. Exact small input copies for **all four primary cases**
+are in `docs/analysis/source_listings/`; `source_manifest.json` records their hashes
+against the sealed, audited runtimes. The CF material/orientation excerpt has
+original deck line numbers. Copies and listings do not launch or modify a solver.
+
+The maintained explanatory source is `docs/en/thermochemical_details.tex`.
+`docs/analysis/technical_details.py` generates the temperature comparison and
+source appendix as part of the normal report build. The report must be rebuilt,
+rendered and visually reviewed after edits; do not edit only the generated PDF.
 
 The host Python environment is in ignored `ansystmp/venv`. Windows ANSYS v261
 and its Python 3.10 interpreter execute the native analysis. Large output stays

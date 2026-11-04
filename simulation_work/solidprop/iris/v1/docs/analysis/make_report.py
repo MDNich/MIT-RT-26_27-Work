@@ -16,6 +16,7 @@ from matplotlib.ticker import NullFormatter
 from matplotlib.patches import Rectangle
 from latex_style import configure_latex, plot_samples, CASE_COLORS
 from report_supplement import create as create_supplement
+from technical_details import create as create_technical
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'model'))
@@ -81,11 +82,11 @@ def figures(runs):
     for ax,motor,tp,tc,ri in zip(axes,['Sustainer','Booster'],[4.7625,6.35],[3.175,4.7625],[39.6875,65.0875]):
         for start,width,color,label in [(0,tp,'#A65A2E','Phenolic'),(tp,tc,'#A8B0B8','Al / CF case')]:
             ax.add_patch(Rectangle((start,0),width,.5,facecolor=color,alpha=.45,edgecolor='k'))
-            for x in np.linspace(start,start+width,21): ax.plot([x,x],[0,.5],color='#444444',lw=.4)
-            ax.text(start+width/2,.37,label,ha='center',fontsize=8)
+            for x in np.linspace(start,start+width,81 if label=='Phenolic' else 21): ax.plot([x,x],[0,.5],color='#444444',lw=.3)
+            ax.text(start+width/2,.37,label,ha='center',fontsize=8,bbox=dict(facecolor='white',edgecolor='none',alpha=.9,pad=2))
         ax.axhline(.25,color='#444444',lw=.4)
         ax.set(xlim=(-.15,tp+tc+.15),ylim=(-.04,.55),xlabel='Depth from original liner bore [mm]',ylabel='Axial position [mm]',title=f'{motor}: bore radius {ri:g} mm')
-        ax.text((tp+tc)/2,.12,r'20 radial cells per material; 2 axial cells',ha='center',fontsize=7.5)
+        ax.text((tp+tc)/2,.12,r'80 phenolic / 20 casing cells; 2 axial cells',ha='center',fontsize=7.5,bbox=dict(facecolor='white',edgecolor='none',alpha=.9,pad=2))
     fig.suptitle(r'Exact dimensions; axial scale expanded for readability')
     fig.savefig(out/'geometry_mesh.pdf');fig.savefig(out/'geometry_mesh.png',dpi=180);plt.close(fig)
     T=np.array([22,26.85,326.85,626.85,776.85,926.85,1226.85,1426.85,1926.85,2476.85])
@@ -165,14 +166,21 @@ def write_report(runs, snapshot):
     report=r'''\pdfminorversion=7
 \documentclass[oneside,openany]{amsdtx}
 \usepackage[margin=.75in]{geometry}
-\usepackage{graphicx,float,amsmath,amssymb,booktabs,array,enumitem}
+\usepackage{graphicx,float,amsmath,amssymb,booktabs,array,enumitem,listings,upquote}
 \usepackage[T1]{fontenc}\usepackage[utf8]{inputenc}\usepackage[english]{babel}
 \usepackage{lmodern,siunitx,xcolor}\usepackage[colorlinks=true,allcolors=blue,hyperindex=false]{hyperref}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
-\title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Setup and Accepted Results}
+\lstdefinestyle{iriscode}{basicstyle=\ttfamily\fontsize{8}{9.4}\selectfont,
+numbers=left,numberstyle=\tiny\color{blue!65!black},numbersep=7pt,
+breaklines=true,breakatwhitespace=false,breakindent=14pt,
+columns=fullflexible,keepspaces=true,showstringspaces=false,upquote=true,
+frame=single,framerule=.2pt,rulecolor=\color{black!25},
+xleftmargin=22pt,framexleftmargin=3pt,aboveskip=9pt,belowskip=9pt}
+\title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Detailed Physics, Implementation and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
 \date{STAMP}
 \begin{document}\maketitle
+\markboth{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
 \textbf{Exploratory study.} Four configurations are considered: sustainer and booster, each with an aluminium or carbon-fibre composite casing. Heat flux, firing duration, grain port and measured recession are unavailable. The user authorized explicit surrogate inputs and sensitivity studies. This report separates native numerical checks from physical calibration. A pilot is not a demonstrated motor lifetime.
@@ -199,7 +207,7 @@ Sustainer & 39.6875 & 4.7625 & 3.1750 & 47.6250\\
 Booster & 65.0875 & 6.3500 & 4.7625 & 76.2000\\\bottomrule
 \end{tabular}\end{table}
 Al and CF versions share the dimensions within each motor. The initial domain is \SI{0.5}{mm} long and \(0.5^\circ\) wide, with 2 axial and 2 angular divisions. Twenty radial cells in each material give 160 SOLID278 elements and 369 nodes. The axis is global Y. Lateral and axial faces are adiabatic under the uniform-wall assumption. Integrated mass/power scales by 720 to a full ring of the same short length; temperatures and recession do not scale.
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/geometry_mesh.pdf}\caption{Radial/axial mesh projections. The angular direction has two divisions; axial scale is expanded. These are setup diagrams, not solved contours.}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/geometry_mesh.pdf}\caption{Current primary 80/20-row radial/axial mesh projections. The angular direction has two divisions; axial scale is expanded. These are setup diagrams, not solved contours.}\end{figure}
 STEP is the exchange geometry. The native structured mesh is generated deterministically from the same dimensions; it is not an automatic mesh imported from STEP. The initial 20-cell phenolic pitches are 0.238125 mm and 0.3175 mm. Independent comparisons at 40, 80 and 160 cells show sensitivity to thermal gradients and cell-removal quantization. Refined native inputs use 80 phenolic and 20 casing rows, giving 400 elements and 909 nodes. Further independent refinement assesses retained partial-cell storage and time accuracy.
 
 \section{Materials and thermal environment}
@@ -246,15 +254,17 @@ Both corrected CF primary runs also record a material-table warning at 21.999999
 \section{Execution and storage controls}
 The running VM has 14 virtual CPUs and approximately 112 GiB RAM. The repository is accessible through a dedicated I: mapping. A native no-solve probe completed with a successful license checkout and zero warnings/errors. Each case receives a separate sealed runtime; unchanged source hashes and expected inventories are checked before launching.
 
+Current production jobs execute in guest-local \path{C:\IrisStudy\runs}, with compact accepted checkpoints mirrored to the Mac and complete native files copied back at phase exit. The primary meshes have 400 elements, versus 152000 in the September 26 v0 study: 380 times fewer elements. Axial divisions fall from 250 to 2, while radial divisions fall from 240/64 to 80/20. The sustainer phenolic pitch is therefore three times coarser than the old 19.84375-micrometre pitch; booster pitch is four times coarser. The refinement program is necessary before claiming comparable surface/recession accuracy. One SMP process and guest-local files also avoid much distributed/shared-folder overhead. These changes explain the runtime scale, but are not an isolated performance benchmark or proof of equal accuracy. The shorter slice relies on the locally uniform heating assumption and does not resolve motor ends, joints or axial hot spots.
+
 The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free on Windows C:. A host watcher checks the Mac every five seconds and the guest disk about every thirty seconds. The controller also requires a fresh storage heartbeat. On a threshold crossing, new work stops, a stop latch is written and the active solver is asked to terminate cleanly. Interrupted states are not published as accepted data.
 
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at STAMP. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at STAMP. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
-Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
+Run & Time [s] & Endpoint $T_s$ [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
 RESULTTABLE
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[H]\centering RESULTFIG \caption{Accepted native histories. No extrapolated future states are included.}\end{figure}
@@ -286,7 +296,17 @@ A defensible final answer may be a conditional ``not reached through the accepte
 \end{document}
 '''
     report=report.replace('STAMP',stamp).replace('NATIVESTATUS',native_status).replace('RESULTTABLE',result_table).replace('RESULTFIG',result_fig)
+    temperature_text,physics_text,code_appendix=create_technical(ROOT,runs)
+    report=report.replace(r'\section{Geometry and discretization}',temperature_text+'\n'+r'\section{Geometry and discretization}')
+    start=report.index(r'\section{Thermochemical physics and solver}')
+    warning_start=report.index('The corrected pilot exporter',start)
+    report=report[:start]+physics_text+'\n'+r'\subsection{Recorded native warnings}'+'\n'+report[warning_start:]
     report=report.replace(r'\section{Next results}',create_supplement(ROOT,runs)+'\n\n'+r'\section{Next results}')
+    report=report.replace(r'\begin{thebibliography}{9}',code_appendix+'\n'+r'\clearpage\begin{thebibliography}{99}')
+    report=report.replace(r'\bibitem{prior}',r'''\bibitem{phenolicseptember} MIT Rocket Team, \emph{Thermochemical Modeling of a Phenolic Liner in a Solid Rocket Motor Using ANSYS Mechanical}, September 18, 2026, user-supplied 48-page report; especially pp. 4--11, 21--25 and 35--37. Historical instructions are not current operating instructions.
+\bibitem{ansysusermat} ANSYS, \emph{UserMatTh: Creating Your Own Thermal Material Model}, Programmer's Reference, 2026 R1, section 2.5.2. Accessed November 4, 2026. \url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_prog/Z7K4r1e5lcd.html}.
+\bibitem{ansyssolid} ANSYS, \emph{SOLID278: 3D 8-Node Thermal Solid}, Element Reference, 2026 R1. Accessed November 4, 2026. \url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_SOLID278.html}.
+\bibitem{prior}''')
     if (ROOT/'validation/restart_comparison.json').exists():
         check=json.loads((ROOT/'validation/restart_comparison.json').read_text())
         report=report.replace('A controlled checkpoint pause/resume has advanced successfully; an uninterrupted comparison remains to be completed.',
@@ -306,7 +326,7 @@ def main():
     write_report(runs,snapshot)
     build=ROOT/'ansystmp/report_build';build.mkdir(exist_ok=True)
     source=ROOT/'docs/en'
-    for _ in range(2):
+    for _ in range(3):
         proc=subprocess.run(['pdflatex','-interaction=nonstopmode','-halt-on-error','-output-directory',str(build),'iris_phenolic_report.tex'],cwd=source,capture_output=True,text=True)
         (build/'compile_stdout.txt').write_text(proc.stdout)
         if proc.returncode:raise RuntimeError(proc.stdout[-6000:])

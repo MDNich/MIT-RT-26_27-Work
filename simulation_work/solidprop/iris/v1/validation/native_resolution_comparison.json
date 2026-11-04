@@ -27,6 +27,32 @@
       "accepted_record_sha256": "4c6c0eda7d4bd3ada1c2e82da2baed8d3745c1c32f6de0832d384d7969f5b0b2",
       "independent_comparison_sha256": "f6a4bf0d061a025d3e1443a0cdd427c1deeacf1454e1c610dd073294f15ce496"
     },
+    "sustainer_al_pulse7_midpoint_time_quarter": {
+      "runtime": "sustainer_al_pulse7_midpoint_time_quarter",
+      "case": "sustainer_al",
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "through_s": 127.0,
+      "status": "COMPLETED_HORIZON",
+      "complete": true,
+      "scope_limited": false,
+      "scope_bracket_s": null,
+      "sampled_maxima": {
+        "case_inner_max_C": {
+          "temperature_C": 119.7765302376181,
+          "time_s": 79.1874999999995
+        },
+        "case_outer_max_C": {
+          "temperature_C": 119.7565815333515,
+          "time_s": 79.24999999999949
+        }
+      },
+      "remaining_mm": 4.702968749999999,
+      "initial_phenolic_mm": 4.762499999999999,
+      "config_sha256": "ac440e8c4153dff3d2774966d5daf72a1df072641d989a9aab39c8113b878a1b",
+      "accepted_record_sha256": "a4c22cf2091d976eaf49a94a7ac02c32e332797c7df3017663ad42ae19cb404e",
+      "independent_comparison_sha256": "b8091ff991e9d604f704dd0517452debf14be68a6f752ed643bd8df8f47aff32"
+    },
     "sustainer_cf_pulse7_n80_midpoint_tight": {
       "runtime": "sustainer_cf_pulse7_n80_midpoint_tight",
       "case": "sustainer_cf",
@@ -109,9 +135,24 @@
       "independent_comparison_sha256": "414bce67bf5237077d383279e0a3bf3d38b183807de93dc79799e88d552ca0d6"
     }
   },
-  "comparisons": [],
+  "comparisons": [
+    {
+      "case": "sustainer_al",
+      "coarse": "sustainer_al_pulse7_n80_midpoint_tight",
+      "fine": "sustainer_al_pulse7_midpoint_time_quarter",
+      "passed": true,
+      "complete_histories": true,
+      "both_scope_limited": false,
+      "peak_differences_K": {
+        "case_inner_max_C": -0.7207647670402935,
+        "case_outer_max_C": -0.7205496863141008
+      },
+      "scope_time_relative_change": null,
+      "remaining_difference_mm": 0.0,
+      "remaining_target_mm": 0.047624999999999994
+    }
+  ],
   "pending": [
-    "sustainer_al_pulse7_midpoint_time_quarter",
     "sustainer_al_pulse7_midpoint_space160",
     "sustainer_al_pulse7_midpoint_joint320",
     "sustainer_cf_pulse7_midpoint_time_quarter",

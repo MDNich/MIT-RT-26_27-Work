@@ -159,12 +159,14 @@ below the table endpoint. Native repeated range checking ceases, but the
 controller continues the explicit property-scope guard at every accepted step.
 
 All four corrected primary cases have reached audited stopping points. The
-existing queue advanced to sustainer_al_pulse7_midpoint_time_quarter. No queue
-or solver was duplicated. Thirteen native resolution cases remain, followed
-later by the five prepared sensitivity/cutoff controls below.
-The first quarter-step run also passed an early same-mesh comparison through
-1.15625 s (maximum profile difference 0.00354 K). It has not yet reached layer
-removal or cooling at that checkpoint; this is not a completed convergence pair.
+existing queue completed sustainer_al_pulse7_midpoint_time_quarter at 11:02 UTC
+and advanced to sustainer CF quarter-step. No queue or solver was duplicated.
+Twelve native resolution cases remain, followed later by the five prepared
+sensitivity/cutoff controls below. The first quarter-step run passed all 4,208
+accepted intervals through 127 s, removal/cooling controls and the independent
+comparison (maximum profile difference 0.09913 K). Its first native time-only
+comparison changes casing peaks by 0.721 K with unchanged retained mesh;
+this does not establish native spatial convergence.
 
 The ONLY active serial queue is PID 26648 at dispatch (always verify its actual
 command using baseline_queue.pid). It began at 06:57:11 UTC with the following ordered dispatch:
@@ -204,7 +206,10 @@ comparison files so they cannot replace primary case records.
 Run model/compare_native_resolution.py as completed cases arrive; it reports
 only terminal audited records, compares censored histories by scope time rather
 than an uncomputed peak, and retains failed intermediate refinements visibly.
-It currently has four completed primary records and no completed refinement pair.
+It now has five completed records: the four primaries plus sustainer Al quarter-step.
+The first time-only comparison passes: inner/outer casing peak changes are
+-0.72076/-0.72055 K, with unchanged retained mesh. Twelve refinement cases remain;
+sustainer CF quarter-step is active. No spatial convergence is inferred yet.
 
 Evidence/scripts: `native_solver_tolerance_comparison.json`,
 `native_temperature_convention.json`, `reaction_ramp_inherited.json`,
@@ -373,7 +378,7 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Complete the thirteen queued native time/mesh checks. Preserve the strict
+1. Complete the twelve remaining queued native time/mesh checks. Preserve the strict
    native acceptance gates, exact row scheduling, restart topology and independent
    comparison at every terminal record. Keep all four primary results intact.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -416,6 +421,31 @@ edition completes the primary four-case comparison with booster CF through
 checks and the recorded negligible table-endpoint warning in both CF cases. It freezes accepted
 states and explicitly separates independent results and historical states.
 Its reviewed PDF hash and page count are in validation/report_visual_review.json.
+
+The user requested substantially fuller physics documentation and printed code,
+and questioned the inner temperature. The new technical section derives the
+implemented reaction/transport and FE equations and prints exact source listings.
+Do not erase these details in later automated builds. `technical_details.py`
+verifies sealed input hashes, archives all four primary small input decks under
+`docs/analysis/source_listings`, and adds heating-only temperature and 7 s radial
+profiles. The complete sustainer Al mesh/driver/export, full Fortran and controller
+are printed; CF differences use original source line numbers. This is documentation,
+not a new simulation or a change to the existing queue.
+
+Temperature checks: the imposed gas is 2504 K; primary exposed phenolic peaks are
+about 1480-1488 C and at 7 s about 1452-1466 C. The 85-150 C values refer to casing
+heat soak, and the final snapshot hot-face values occur after cooling. Always
+name location, time, units and mean-versus-maximum. `temperature_interpretation.json`
+pins the native checkpoint/accepted-record hashes and verifies endpoint convection
+against actual native face rates. No claim of physical calibration follows.
+
+The first native time-only pair also needs a surface-specific caveat: sustainer Al
+T_s at 7 s changes from 1466.032 to 1422.376 C (43.656 K), despite a casing-peak
+change of only 0.721 K. Its sampled hot peak changes 1479.604 to 1479.335 C;
+the maximum matched heating-history discrepancy is 48.688 K at 0.0125 s.
+`native_hot_surface_time_comparison.json` reports this separately. Continue to
+assess hot-face histories and row-transfer times during refinement; a passing
+casing-target comparison does not establish hot-surface time convergence.
 
 A 30-minute heartbeat, `iris-ansys-study-and-english-reports`, continues the
 study. Notify only meaningful progress, failures, completion or necessary user
