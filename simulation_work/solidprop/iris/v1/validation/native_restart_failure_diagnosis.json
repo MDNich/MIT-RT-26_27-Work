@@ -1,0 +1,30 @@
+{
+  "utc": "2026-11-04T05:29:35.862837+00:00",
+  "runtime": "sustainer_al_pulse7_n80_dt0125",
+  "last_accepted_index": 333,
+  "last_accepted_time_s": 4.1625,
+  "rejected_index": 334,
+  "rejected_time_s": 4.175,
+  "rejected_energy_relative_error": 0.10420005878036123,
+  "energy_relative_tolerance": 0.05,
+  "native_substeps_in_rejected_macro": 1,
+  "dead_row_capacity_W": -0.0129289217293264,
+  "explanation": "The old controller replayed only pending EKILL commands after each multiframe restart. ANSYS restores the initial database, so a previously removed row became live again. Excluding that returned row from the ledger exposed the energy failure. No rejected step is an accepted result.",
+  "documentation": "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_bas/Hlp_G_BAS3_12.html",
+  "recovery": "Preserve the failed runtime. After native regression passes, use fresh sibling packages with full removed-prefix EKILL replay and native live-count guards. The recent accepted restart was not retained in the native ring (only latest r001 and early r002-r006); do not mix a failed native state with accepted controller state.",
+  "hashes": {
+    "config.json": "8acaa54b2b6bd80c97deb4651557e6e270f9c0818858114c3c9a079167f4babc",
+    "state.json": "98157ce4226e0f5f31a26f2db0c30ea6ea3fbebca754a25c67fb85136143ccd2",
+    "pending.json": "1dd87cf6d38630f41b066126cbafdf38a1facecdfedad0c68aa90f58bd29bc07",
+    "coupler_error.txt": "65a58256af081751c55c721724715491e71f27f4b97df751cd0b549d89816f13",
+    "energy_fields.txt": "976c505bfa573a5a6280376c0d29082236bbaf5b463c9ccfa948d064e4bb654d",
+    "file.ldhi": "06f6e51447820f52bed047a535c9598cfb23795d70726250a70378d1c360712b",
+    "file.rdb": "7ceb214052e942a665d73ebedfa37124a88e122c645a8b43589abea887adf149",
+    "file.r005": "560f4d1e51d2a80b3f65a9a21bbd7e4808e88e64943a843a4aa64fdda659e679",
+    "file.r002": "de9f6d64c26867606b7bd651306996a05a72dc01a78912881c317d13f3d7dbd4",
+    "file.r003": "c3b7c6569b7facb414655afc60e36dd99b6c3c24c2e646850da406f01c98842a",
+    "file.r004": "bf87ddd187e49db076d2f44b4cd0127e13238e778795bd8f1f7b1d7d7d1d9b5d",
+    "file.r001": "00fb6c4a8ca62f045e92ee2ad46793250a32f02464cb5394e1576f5000f6f942",
+    "file.r006": "233afa321fadf3465c613d4d7179a5ac30b067132df0bbeee99d6d7f2278fca1"
+  }
+}

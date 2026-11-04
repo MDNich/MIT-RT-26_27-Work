@@ -7,7 +7,7 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Setup and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 03, 2026 at 23:50 EST}
+\date{November 04, 2026 at 00:34 EST}
 \begin{document}\maketitle
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
@@ -16,7 +16,7 @@
 \tableofcontents
 \clearpage
 \section{Executive summary}
-No defensible real-motor burnthrough time has been established. Audited seven-second coarse baselines are complete for booster Al, sustainer Al, sustainer CF. Their mass, energy and applied-load checks passed. 0 of the four refined native pulse/cooling cases have reached an audited stopping point; the serial campaign continues. No native exhaustion event has been accepted in these scenarios.
+No defensible real-motor burnthrough time has been established. Audited seven-second coarse baselines are complete for booster Al, booster CF, sustainer Al, sustainer CF. Their mass, energy and applied-load checks passed. 0 of the four refined native pulse/cooling cases have reached an audited stopping point; the serial campaign continues. An energy-audit stop exposed a restart layer-deactivation defect; its correction passed a four-case native regression, and fresh refined runs are in progress. No native exhaustion event has been accepted in these scenarios.
 
 The initial twenty-row phenolic mesh is insufficient for recession. Independent refinement and 54 input-sensitivity cases show that missing thermal inputs and the partial-cell removal approximation matter. Under sustained nominal heating, provisional casing-property flags are reached with substantial liner remaining. Those stopping points limit this model's scope; they are not motor lifetimes or structural failure predictions. The immediate objective is to complete the native refined histories and compare their temperatures, mass loss and cooling against independent calculations.
 
@@ -85,13 +85,14 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 03, 2026 at 23:50 EST. The table includes only accepted native states. All four 0.1 s pilots passed. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at November 04, 2026 at 00:34 EST. The table includes only accepted native states. All four 0.1 s pilots passed. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
 Booster Al (n=20) & 7.0000 & 1053.58 & 6.35000 & 0.0350 \\
-Booster CF (n=20) & 0.3250 & 1084.12 & 6.35000 & 0.1692 \\
+Booster CF (n=20) & 7.0000 & 1053.58 & 6.35000 & 0.0350 \\
 Sustainer Al (n=20) & 7.0000 & 1051.62 & 4.76250 & 0.0320 \\
+Sustainer Al (n=80) & 2.0875 & 1046.82 & 4.76250 & 0.0933 \\
 Sustainer CF (n=20) & 7.0000 & 1051.62 & 4.76250 & 0.0321 \\
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[H]\centering \includegraphics[width=\textwidth]{../analysis/accepted_histories.pdf} \caption{Accepted native histories. No extrapolated future states are included.}\end{figure}
@@ -114,8 +115,9 @@ The maxima below apply only through each accepted time shown. A running case is 
 \begin{table}[H]\centering\small\begin{tabular}{lrrr}\toprule Case & Through [s] & Inner maximum [$^\circ$C] & Outer maximum [$^\circ$C]\\\midrule
 
 Booster Al (n=20) & 7.000 & 22.049 & 22.041 \\
-Booster CF (n=20) & 0.325 & 22.000 & 22.000 \\
+Booster CF (n=20) & 7.000 & 22.422 & 22.000 \\
 Sustainer Al (n=20) & 7.000 & 23.420 & 23.351 \\
+Sustainer Al (n=80) & 2.088 & 22.000 & 22.000 \\
 Sustainer CF (n=20) & 7.000 & 29.632 & 22.229 \\
 
 \bottomrule\end{tabular}\end{table}
@@ -129,13 +131,34 @@ The next table uses fractions of the initial liner mass at each run's final acce
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Solid left [\%] & Gas loss [\%] & Char loss [\%] & Retained in FE [\%]\\\midrule
 
 Booster Al (n=20) & 93.086 & 5.288 & 1.626 & 1.626 \\
-Booster CF (n=20) & 99.910 & 0.089 & 0.001 & 0.001 \\
+Booster CF (n=20) & 93.086 & 5.288 & 1.626 & 1.626 \\
 Sustainer Al (n=20) & 90.968 & 6.859 & 2.173 & 2.173 \\
+Sustainer Al (n=80) & 97.504 & 2.071 & 0.424 & 0.424 \\
 Sustainer CF (n=20) & 90.968 & 6.859 & 2.173 & 2.173 \\
 
 \bottomrule\end{tabular}\end{table}
 
 A zero whole-cell recession does not mean zero mass loss. Conversely, pyrolysis conversion alone is not a hole through the liner. Refinement is needed to bound the effect of the retained partial-cell storage on temperature and recession.
+
+\subsection{Accumulated numerical balance checks}
+
+The signed residual below checks accumulated bias; the absolute residual sum avoids cancellation of positive and negative step errors. Both are normalized by the time integral of the step balance scale. The independent mass check recomputes remaining solid plus gas, consumed char and expelled residual against the initial geometric inventory.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrr}\toprule Case & Signed energy [\%] & Absolute energy [\%] & Mass relative error\\\midrule
+
+Booster Al (n=20) & 0.1850 & 0.1869 & 1.4e-15 \\
+Booster CF (n=20) & 0.1850 & 0.1869 & 1.4e-15 \\
+Sustainer Al (n=20) & 0.1299 & 0.1311 & 1.4e-15 \\
+Sustainer Al (n=80) & 0.1141 & 0.1245 & 2.5e-15 \\
+Sustainer CF (n=20) & 0.1299 & 0.1311 & 1.4e-15 \\
+
+\bottomrule\end{tabular}\end{table}
+
+The scale is $\max(|\dot U_{\rm FE}|,|Q_{\rm conv}|,|Q_{\rm body}|+|Q_{\rm nodal}|,10^{-6}\,\mathrm W)$ integrated over time. These residuals check the solved equations. They are not an independent physical enthalpy balance for departing material. Energy assigned to removed cells remains a separate diagnostic because the inherited capacity law is not a conservative enthalpy remap.
+
+\subsection{Native temperature fields over the baseline exposure}
+The following maps use every accepted checkpoint of the four completed twenty-row native baselines. Temperatures are averaged over each radial station of the uniform sector and interpolated for display. The dashed line marks the liner--casing interface. The cyan line is the upper-cell edge of the contiguous 98-percent conversion front; it is neither recession nor burnthrough. All four coarse baselines retain every liner row through seven seconds, despite nonzero gas and char losses.
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_baseline_temperature_maps.pdf}\caption{Native ANSYS baseline temperature fields, with a common temperature scale. These coarse-mesh fields are accepted numerical states; the recession discretization still requires the refined comparisons.}\end{figure}
 
 \section{Independent numerical checks and scope limits}
 
@@ -146,6 +169,7 @@ The following checks compare a separate cylindrical finite-element assembly with
 Sustainer Al & 1.0159 & 0.00263 \\
 Sustainer CF & 1.0159 & 0.00263 \\
 Booster Al & 1.0346 & 0.00246 \\
+Booster CF & 1.0346 & 0.00246 \\
 
 \bottomrule\end{tabular}\end{table}
 
@@ -194,11 +218,48 @@ Booster CF & Lower conductivity & 0.48 & 0.0000 & 0.0635 \\
 
 \bottomrule\end{tabular}\end{table}
 
-This table compares 160 with 320 cells, with a further halving of the time step. Some remaining-thickness targets are still unmet; those quantities remain unresolved.
+This table compares 160 with 320 cells, with a further halving of the time step. The remaining-thickness failures in this comparison prompted the smaller-step investigation below.
+
+\subsection{Resolution of the stronger-heating coupling error}
+
+The two unresolved doubled-heating cases were recomputed at 320 cells with time steps of 0.0001953125 and 0.00009765625 s, and at 640 cells with 0.000048828125 s. The joint comparison scales the time step with radial pitch squared. All reported time-only and joint comparisons now meet the five-percent timing target and the retained-thickness target of the larger of 0.02 mm and one percent of initial liner thickness.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & 640-cell scope stop [s] & Retained [mm] & Joint timing change [\%] & Thickness change [mm]\\\midrule
+
+Sustainer Al & 39.8790 & 1.9422 & 0.100 & 0.0223 \\
+Booster CF & 29.7066 & 4.4648 & 0.102 & 0.0198 \\
+
+\bottomrule\end{tabular}\end{table}
+
+These finer independent values supersede the coarse stronger-heating recession estimates. They resolve the tested numerical comparisons, not the unknown char kinetics or actual heat load. A closed mass ledger alone did not reveal the earlier time-coupling error. The retained FE thickness remains a whole-row geometric quantity, not a measured intact liner thickness.
 
 \subsection{Native prescribed-temperature reaction check}
 
 The native user material was held at uniform prescribed phenolic temperatures of 300, 600 and 1000 degrees Celsius. Conversion at 0.1, 1 and 5 s matched the analytical first-order Arrhenius solution within 1.7e-08 absolute conversion. This verifies the implementation under controlled temperature; it does not validate reaction constants against the actual liner. No surface-consumption controller was used in this fixture.
+
+\subsection{Rejected refined step and restart correction}
+
+The first 80-row sustainer Al run stopped at an attempted 4.175 s: its energy residual was 10.420 percent, above the unchanged five-percent limit. Its last accepted state was 4.1625 s. There was no internal substep cutback. Investigation found that an earlier removed layer returned after a multiframe restart because the controller reissued only newly pending deactivations. The rejected state is excluded from all accepted results.
+
+ANSYS documents that multiframe restart files do not save element birth/death commands; these must be reissued after restart. The corrected controller replays the entire removed prefix, checks the native live-element count before every solve, and stores two hash-verified accepted native restart generations. See the \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_bas/Hlp_G_BAS3_12.html}{ANSYS 2026 R1 Basic Analysis Guide, multiframe restart limitations}.
+
+The failed runtime and original queued packages are preserved. Fresh sibling packages use identical physical inputs and audit tolerances. The old native restart ring lacked the recent accepted state, so a failed native state was not combined with an earlier controller checkpoint.
+
+A manufactured transient regression reproduced the old resurrection defect for all four cases. Full deactivation replay retained the correct live-element counts and exactly matched uninterrupted nodal temperatures at all sixteen checkpoints. The uninterrupted reference remains in the solution processor until its load steps finish; two earlier fixture drafts incorrectly re-entered a new solution and are preserved as rejected diagnostics. This regression verifies restart topology, not ablation physics.
+
+\subsection{Refined native pulse cross-checks}
+
+These comparisons use the independent assembly at the same 80/20 radial mesh and coupling schedule as the native pulse cases. Only accepted native checkpoint times are compared; a running case has no predicted ANSYS future values. Layer-removal scheduling and the next hot-face transfer are checked separately.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Through [s] & Max profile [K] & Max conversion & Transfers passed\\\midrule
+
+Sustainer Al & 0.462 & 3.131 & 0.00669 & 0 \\
+
+\bottomrule\end{tabular}\end{table}
+
+All displayed comparisons meet the same-mesh profile, conversion, mass and row-count checks.
+
+These checks do not establish fine-mesh convergence of the native stopping time. In particular, the independent sustainer CF pulse needed further refinement of its provisional property-flag time.
 
 \section{Independent pulse and cooling investigation}
 
@@ -221,8 +282,29 @@ For the complete 127-second histories, the last 160-to-320-cell joint refinement
 
 Both booster cases still had a rising casing temperature at 127 s. Independent extension to 300 s captured their later peaks, so fresh native booster packages were prepared with that longer cooling horizon. The original unstarted packages are preserved. Native confirmation of the refined pulse/cooling histories remains pending.
 
+\subsection{Exploratory twenty- and sixty-second pulses}
+
+These durations are assumed scenarios, not firing-time estimates. Each calculation stops at its provisional casing-property flag or continues for 300 s after heating. A stop during heating means the prescribed pulse was not completed within the material model; a stop during cooling identifies delayed heat soak. None reached phenolic exhaustion within the accepted model scope.
+
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/longer_pulse_histories.pdf}\caption{Independent 320-cell longer-pulse scenarios; gray shading marks prescribed heating. Curves end at a scope flag or at the scenario horizon.}\end{figure}
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrlrr}\toprule Case & Pulse [s] & Through [s] & Stop reason & Inner max [$^\circ$C] & Retained [mm]\\\midrule
+
+Sustainer Al & 20 & 320.000 & Horizon & 196.96 & 4.3458 \\
+Sustainer Al & 60 & 49.486 & During heating & 300.00 & 3.0361 \\
+Sustainer CF & 20 & 18.344 & During heating & 150.00 & 4.4053 \\
+Sustainer CF & 60 & 18.344 & During heating & 150.00 & 4.4053 \\
+Booster Al & 20 & 320.000 & Horizon & 128.25 & 5.9531 \\
+Booster Al & 60 & 360.000 & Horizon & 228.96 & 4.1870 \\
+Booster CF & 20 & 35.500 & During cooling & 150.03 & 5.9531 \\
+Booster CF & 60 & 32.709 & During heating & 150.00 & 5.4570 \\
+
+\bottomrule\end{tabular}\end{table}
+
+All eight 160-to-320-cell comparisons passed their numerical targets. Censored flag times changed by at most 1.05 percent; complete-history casing maxima changed by less than 0.97 K, and retained thickness changed by at most 0.020 mm. Sustainer CF reaches the same scope stop before either longer pulse ends, so those two rows describe the same partial heating history. These independent scenarios still require native confirmation of influential conditions and measured heating/material data for a physical lifetime claim.
+
 \section{Next results}
-Complete the remaining native baselines and refined pulse/cooling cases. Compare native first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
+Complete the corrected native refined pulse/cooling cases and the remaining native resolution and influential-input checks. Compare persistent first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
 
 A native one-second heating pulse followed by five cooling steps passed the boundary-transfer and balance checks. This verifies the prescribed switch to ambient gas and zero char consumption; it does not measure real tailoff.
 

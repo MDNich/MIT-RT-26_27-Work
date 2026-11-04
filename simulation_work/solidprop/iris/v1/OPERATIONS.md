@@ -1,219 +1,200 @@
 # Unattended continuation
 
-Read the parent AGENTS.md first. The user authorized the complete exploratory
-study, English reports and milestone pushes, and is away from the computer.
-Do not ask for repeated approval. Earlier studies must remain unchanged.
+Read the parent AGENTS.md and phenolic_burnthrough_plan.md. The user authorized
+this exploratory four-case study, English reports and milestone pushes, and is
+away. Do not seek repeated approval. Do not alter earlier studies. No sub-agent
+delegation is authorized.
 
 ## First actions on every continuation
 
-1. Run `model/ops.py check`. Stop all work on a real storage threshold or
-   latched storage stop. Mac floor 400 GB decimal; Windows C: floor 10 GB.
-2. Inspect `ansystmp/host_storage_status.json`, `storage_guard.pid`,
-   `baseline_queue.pid`, `baseline_queue.log`, and `active_runs.json`.
-   Check the PID's actual command before signalling it. `caffeinate -i` follows
-   the storage watcher PID to prevent idle system sleep; the display may sleep.
-   Reattach it if the watcher is restarted, and release it when the study ends. Never start a second
-   queue or solver while one is active. Do not kill license services.
-3. The intended serial queue is `configs/campaign_queue.json`. Native runs
-   are in `ansystmp/runs`. Some execute in `C:\IrisStudy\runs` and mirror
-   accepted audit/state files to the Mac. Complete native outputs are copied
-   back at process exit. Never delete guest files without verified copies.
-4. Native phase exit files must be successful, and `model/validate_run.py`
-   must pass all accepted steps and input hashes. The queue applies this
-   validation before advancing. Native elapsed/CPU performance warnings and
-   the known USERCK warning are recorded, not hidden.
+1. Run `model/ops.py check`. Stop all work on a real or latched storage stop.
+   Mac floor: 400,000,000,000 bytes; Windows C: floor: 10,000,000,000 bytes.
+   A storage stop prohibits automatic resume. Stop this heartbeat too.
+2. Read ignored `ansystmp/host_storage_status.json`, `storage_guard.pid`,
+   `baseline_queue.pid`, `baseline_queue.log`, and `active_runs.json`. Verify a
+   PID's command before signalling. Never duplicate a queue or native solver.
+   Exclude `ansyslmd.exe`: it is the license service, not a calculation.
+3. The storage watcher runs continuously; `caffeinate -i -w <watcher PID>`
+   prevents idle system sleep. Restore it if the watcher restarts, release at
+   completion. Windows jobs use local `C:\IrisStudy\runs` and mirror accepted
+   checkpoints to this Mac. Complete native files copy back at phase exit.
+4. Never clean unrelated files. Only verified copies of this study's outputs
+   can justify guest cleanup. Keep native databases/results ignored. No Git
+   file or newly reachable blob may reach 100,000,000 bytes.
 
-## State at the sustainer and sensitivity milestone
+## Current native queue and recovery
 
-All four 0.1 s pilots passed. Four native analytical steady-conduction
-benchmarks passed within 0.013 K. Storage-fault and pulse-boundary logic tests
-passed. A guest-local pilot exactly reproduced the shared-drive pilot.
+All four coarse 20-row seven-second baselines are complete: 560 accepted steps
+per case, no row removal, passed energy/mass/hot-power audits. All four native
+profile comparisons against the same-mesh independent assembly pass; largest
+profile difference is about 1.035 K. These are not mesh-converged recession
+predictions. All four 0.1 s pilots also passed.
 
-The sustainer Al and CF and booster Al 20-row baselines completed 7 s, 560
-accepted steps each, no row removal, and no failed mass or hot-power checks.
-The sustainer maximum step energy error was 0.6837%; inspect the separate
-booster acceptance record for its own maximum. The sustainer Al controlled
-pause at 1 s and resume matched an uninterrupted
-native reference at 1.1 s exactly in nodal temperature and conversion;
-`validation/restart_comparison.json` records the comparison. The native pulse
-control also passed all five cooling steps; the remaining queue contains the
-booster CF coarse baseline and four refined
-seven-second pulse/cooling cases. Refined native meshes use 80 phenolic and
-20 casing rows; the short sector still has only 2 axial and 2 angular cells.
+The first refined sustainer Al run, `sustainer_al_pulse7_n80_dt0125`, stopped
+at attempted index 334 / 4.175 s: energy residual 10.420%, above the unchanged
+5% gate. Its last accepted checkpoint is 333 / 4.1625 s. It had scheduled the
+first removal at 4.15 s and passed the next hot-face audit at 4.1625 s.
+The failed step is NEVER an accepted thermal result. See
+`validation/native_restart_failure_diagnosis.json` for evidence and hashes.
 
-`model/compare_controls.py` can be rerun after the native pulse control exits.
-It verifies the five prescribed cooling steps and writes a compact record.
-If the queue observer needs recovery, first inspect active processes and exit
-files. `run_queue.py --wait-resume-first` observes the already explicitly
-resumed first runtime; existing launch records prevent duplicate phase
-launches. An unexplained failure is not blindly retried.
+Root cause: ANSYS multiframe restart restores the initial .rdb; .rnnn does not
+save EKILL/EALIVE commands. The old controller replayed newly pending kills
+only, so an already removed row returned on the following restart. The returned
+row's capacity term explains the rejected energy residual. This is supported by
+the v261 Basic Analysis Guide and reproduced by a native regression.
 
-The queue now runs `topology_benchmark.py` before the booster Al baseline unless
-its accepted verification record already exists. All 16 constant-property
-states passed: first-row removal, only the last phenolic row remaining, and
-all phenolic removed, for all four cases. Maximum analytical temperature error
-was 0.000471 K. The first static fixture omitted NROPT,FULL; preserve its ignored
-failed runtime. Production transient inputs already had that option. Eight
-known static load-factor/dead-element table warnings remain documented.
-`check_final_event.py` also passed the manufactured final controller event;
-neither test is a physical burnthrough result.
+`restart_topology_benchmark.py` passed all four cases and sixteen checkpoints.
+Corrected full-prefix replay exactly matches uninterrupted temperatures and
+retains the right live count. The deliberately defective branch returns the
+removed layer. Two earlier fixture drafts wrongly re-entered a new solution
+for the continuous reference; they are preserved as rejected diagnostics.
+The valid fixture is `ansystmp/runs/restart_topology_benchmark_v3`.
 
-The booster Al run launch initially encountered a Parallels InvalidArgument
-communication failure. Read-only process and guest-artifact checks established
-that it had not launched; one explicit reissue then started successfully.
-`validation/booster_al_launch_recovery.json` records this. Do not infer that a
-future communication failure authorizes blind launch retries.
+Fresh packages append `_restartfix` to all four refined names in
+`configs/campaign_queue.json`. They retain the physical inputs and audit limits,
+replay the entire removed prefix, verify native live counts before each solve,
+and save two hash-verified accepted native restart generations in
+`accepted_restart_0` and `accepted_restart_1`. The old failed and unstarted
+packages remain unchanged. The original native ring contained only latest r001
+and early r002--r006, so no recent accepted native restart was available; a fresh
+run was justified by the reproduced defect, not by blindly retrying a failure.
 
-`compare_radial_native.py` now compares complete native radial profiles at
-0.1, 1, 2, 5 and 7 s. Both sustainer checks passed, maximum difference 1.016 K
-and conversion difference 0.00264. Rerun after the booster baselines complete.
+The corrected serial observer started November 4 at 05:30 UTC, PID recorded in
+`baseline_queue.pid` (5304 at launch). It runs only the four new packages:
+sustainer Al, sustainer CF, booster Al, booster CF. Sustainer cooling horizon is
+127 s; booster horizon 300 s to capture late casing peaks. All heat for 7 s;
+stop earlier at the provisional casing-property flag. Initial mesh: 80 phenolic
+and 20 casing rows, two axial and two angular divisions. Check the actual log
+and live processes rather than relying on this recorded PID/time.
 
-The booster Al profile comparison has now passed too (maximum 1.035 K).
-`reaction_benchmark.py` ran before booster CF and passed nine native isothermal
-conversion checks at 300/600/1000 C and 0.1/1/5 s, maximum error 1.72e-8.
-Its 18 warnings are nine standard USERCK and nine near-zero heat-flow reference
-warnings caused by the deliberately prescribed uniform temperature. These are
-software checks, not physical motor exposures.
+The queue applies `validate_run.py` before advancing. Every accepted step,
+manifest, native log and new live-count/restart-copy check must pass. A native
+exit code of zero alone is insufficient: the controller can deliberately exit
+on a failed audit. Do not weaken limits or edit sealed packages. If another
+failure occurs, preserve the failed directory and diagnose it. Recover in a
+separate sibling with matching accepted controller/native state, verified
+manifest and documented provenance; never pair rejected native state with an
+earlier accepted controller state. The two backup manifests identify complete
+copies; do not trust an interrupted slot whose file hashes fail.
 
-Booster CF preflight also encountered a Parallels InvalidArgument before any
-process/artifact appeared; one explicit reissue started it. Production launches
-now write a unique guest receipt. A lost reply is recoverable only if that
-exact request's receipt proves WMI launch success; stale/missing receipts stop
-for inspection, with no blind retry. `check_launch_receipts.py` passed all three
-manufactured lost-reply scenarios without launching any guest process.
+Production launch uses a unique guest receipt. A lost Parallels reply is
+recoverable only if the receipt matches that request and proves WMI success.
+Without that proof, inspect processes and guest artifacts before any explicit
+reissue. Do not blindly retry launches. Read-only storage queries may retry.
+Prior observed InvalidArgument dispatch failures and explicit recoveries remain
+recorded locally and in verification records.
 
-The active queue configuration now uses fresh booster packages named
-`booster_{al,cf}_pulse7_cool300_n80_dt0125`. Their heating remains 7 s and their
-cooling horizon is 300 s, because independent results show late casing peaks
-around 140--144 s. The original 127 s booster packages are preserved, unstarted.
-Sustainer native horizons remain 127 s or the first property-scope flag. Do not
-change sealed runtimes. The current observer was restarted with the revised
-ordered names after verifying the failed preflight had not launched.
+## Completed verification
 
-## Numerical findings that must remain explicit
+- Four native steady cylindrical conduction checks, maximum error <0.013 K.
+- Sixteen native constant-property topology states including first-row removal,
+  last remaining row and exposed casing; max analytical error <0.000471 K.
+  This static fixture did not exercise restart persistence; the new transient
+  regression above fills that gap. Neither is a motor burnthrough result.
+- Nine native isothermal UserMatTh checks at 300/600/1000 C and 0.1/1/5 s,
+  maximum conversion error 1.72e-8. Eighteen documented warnings are nine USERCK
+  and nine near-zero heat-flow reference warnings in the uniform-temperature
+  fixture, not undisclosed solver failures.
+- Controlled native pause at 1 s / resume to 1.1 s matches the uninterrupted
+  reference exactly in temperature, conversion and energy integrals.
+- Native one-second pulse plus five cooling steps passed boundary transfer,
+  negative cooling heat flow and zero post-pulse char consumption/radiation.
+- Guest-local pilot exactly matches the shared-drive pilot.
+- Manufactured final-row controller event and storage-fault/latched-stop tests
+  pass. The final event is software verification, not a physical prediction.
+- Lost-launch-reply receipt tests cover matching, stale and missing receipts.
 
-Independent data in `validation/radial/` are not ANSYS results. The radial
-assembly uses diagonal heat capacity to match SOLID278 without advection.
-The prior radial script used a consistent matrix and must not be copied as an
-exact transient reference. Short-time sustainer hot-face differences are about
-0.70 K at 0.1 s and 0.97 K at 1 s.
+## Independent results and limits
+
+`validation/radial/` contains independent radial finite elements, NOT ANSYS.
+The assembly uses diagonal heat capacity, matching SOLID278 without advection.
+Sources are archived in `validation/source_archive`. Never relabel independent
+results as native output or a measurement. Keep compact source hashes in reports.
 
 Twenty phenolic rows do not resolve recession. Seven-second 20/40/80/160-row
-checks and finer time steps are recorded. The geometric retained thickness is
-not a measurement of physical liner thickness. Consumed char remains in a
-live FE cell until whole-row removal; this approximation and lagged coupling
-need independent numerical assessment.
+checks and time refinements quantify this. Consumed char retains live FE heat
+capacity until whole-row removal: mass closure does not prove physical enthalpy
+conservation. The retained thickness is a mesh geometry, not intact material.
 
-Files named `*_endurance_*` contain REJECTED numerical stress tests: casing
-properties had left scope and apparent exhaustion times were mesh/time-step
-dependent. Never present these as motor burnthrough predictions. Physically
-interpreted long cases stop at the provisional property-range flag: 150 C CF,
-300 C Al. These thresholds are not certified structural failure temperatures.
+`*_endurance_*` are REJECTED long-exposure numerical stress tests. Apparent
+exhaustion times fail numerical/material-scope checks. Never report them as
+motor lifetimes. Physically interpreted branches stop at provisional 150 C CF
+or 300 C Al property-scope flags; neither threshold is a certified failure
+criterion. No credible actual motor burnthrough time has been established.
 
-`refine_radial_limits.py` has completed; the compact comparison is
-`validation/property_limit_convergence.json`. Inspect
-`ansystmp/radial_refined_limits.pid` and its log before launching anything.
-It compares 80/.003125, 160/.0015625 and 320/.00078125 (rows/seconds). The
-initial smaller-step results substantially reduce the long-time sensitivity:
-sustainer Al reaches its model-range flag near 49.6 s with about 3.04 mm
-retained, rather than the misleading coarse-time values. These are still
-independent exploratory results, not native or measured lifetimes.
+Completed independent studies:
 
-Pulse/cooling and heat-load/radiation/removal-cost screenings are already in
-`validation/radial/`; their logs are `radial_pulse.log` and
-`radial_sensitivity.log`. Coarse-time sensitivity outputs must be treated as
-screening until time accuracy is assessed. Heat soak matters: the independent
-sustainer CF seven-second pulse crosses the provisional 150 C flag after the
-heating ends. Validate refined native cooling histories before a final claim.
+- `property_limit_convergence.json`: nominal continuous heating refined through
+  320 cells and 0.00078125 s. Timing and remaining-thickness targets pass.
+- 54 fine input scenarios at 80 cells / 0.003125 s: heating, radiation, removal
+  cost, phenolic k/cp, pressure and supported CF surrogates. All stop at scope
+  flags without exhaustion. Equation balances close; inputs remain exploratory.
+- `input_sensitivity_refinement.json`: ten influential cases at 160 cells.
+  Timing agreement alone initially concealed three thickness failures.
+  `sensitivity_thickness_refinement.json` resolves low-k booster CF at 320 cells.
+- Both `char_coupling_resolution_<case>.json` are NOW COMPLETE and pass. Doubled
+  heating sustainer Al and booster CF need much smaller coupling steps: 320 cells
+  at 0.0001953125 / 0.00009765625 s, then 640 at 0.000048828125 s. The joint
+  comparison scales dt with pitch squared. At 640, scope stops are about
+  39.879 s / 1.9422 mm (S Al) and 29.7066 s / 4.4648 mm (B CF). These supersede
+  coarse stronger-heating recession estimates; calibration remains absent.
+- `pulse_resolution.json`: 7 s pulse and cooling, native-like schedule through
+  320 cells, with sustainer CF additionally at 640. Complete-case last joint
+  changes <=1.61 K and <=0.0149 mm. S CF flag time changed 2.02% at its final
+  refinement; an 80-cell native crossing is NOT already converged.
+- Booster cooling extensions through 300 s capture later casing peaks around
+  140--144 s; this motivated fresh native 300 s packages.
+- `longer_pulse_refinement.json`: all eight hypothetical 20/60 s scenarios now
+  complete at 160 and 320 cells. All numerical targets pass: flag times change
+  <=1.05%, complete-history casing peaks <0.97 K, thickness <=0.020 mm. Cases
+  stopping during heating did not complete the prescribed pulse within scope.
+  Booster CF's 20 s case stops during cooling. These are not firing estimates.
 
-## Remaining work
+The char-coupling and longer-pulse background jobs have finished. Their ignored
+PID files remain historical; check actual commands before doing anything.
+No independent solver needs duplicating. Engineering perturbations are not
+confidence intervals. Pressure screening changes only the assumed char closure,
+with h/T fixed; its small effect is not real pressure insensitivity.
 
-The 54 `*_fine_*.json` independent sensitivity cases are complete (80 radial
-cells per material, 0.003125 s ceiling), all stopped at their provisional
-property flag with no exhaustion event. They vary heating, hot radiation,
-removal cost, phenolic conductivity/capacity, pressure, and supported CF
-surrogates. Maximum assembled energy/mass residuals are below 5.4e-11/1e-15.
-These are numerical balances, not physical calibration. Small percent-level
-changes may still be comparable to discretization error. Parameter-support
-changes reproduce the previous default solution exactly; running native
-packages remain sealed with their original source hashes.
+## Remaining substantive work
 
-`refine_input_sensitivities.py` completed ten strongest/alternative-input
-scenarios at 160 rows and a 0.0015625 s ceiling. Inspect its ignored PID/log
-`input_sensitivity_refinement` before restarting anything. The compact
-`validation/input_sensitivity_refinement.json` includes `complete` and per-case
-five-percent timing checks. Report only completed comparisons; it does not
-individually refine every small pressure or CF-conductivity perturbation.
-
-The ten stopping-time changes are below 1.4%, but three remaining-thickness
-comparisons initially failed their separate tolerance. A further 320-cell
-check (`sensitivity_thickness_refinement.json`) resolved booster CF low-k,
-but doubled heating remains sensitive for sustainer Al and booster CF.
-Do not label their recession converged. `resolve_char_coupling.py` is running
-for those two cases, with ignored `char_coupling_<case>.pid/log`. It separately
-checks time steps 0.0001953125 and 0.00009765625 at 320 cells, then 640 cells
-with 0.000048828125 s. This examines lagged surface-coupling time sensitivity;
-the mesh-comparison step scales with radial pitch squared. Inspect compact
-`char_coupling_resolution_<case>.json` only when complete. A serialization
-failure in the first thickness-summary writer was fixed by converting a NumPy
-boolean to a Python boolean; the completed numerical files were preserved.
-
-`refine_pulse_cooling.py` and `extend_booster_cooling.py` are complete. The
-independent pulse check compares native 80/20 scheduling, two time refinements,
-160/40 and 320/80 meshes; sustainer CF additionally needed 640/160. The last
-joint refinement changes complete-case casing maxima by <=1.61 K and retained
-mesh by <=0.0149 mm. Sustainer CF's property-flag time changed 5.7% at 320 cells,
-then 2.02% at 640; the 80-cell native crossing must not be described as already
-converged. Independent fine heating-pulse results remain distinct from native.
-The independent 300 s booster extensions capture the later peaks; all native
-refined pulse/cooling confirmations are still pending. Post-pulse step support
-was added to the independent model without changing its default fixed-step law.
-
-- Finish and inspect the native queue; fix any failed audits rather than
-  accepting interrupted states. Compare native refined data with the radial
-  model, including first-row removal and applied hot-face load transfer.
-- Keep manufactured last-row/final-event verification distinct from physical
-  recession; do not force a lifetime by extrapolating invalid properties.
-- Complete spatial/time comparisons and quantify retained partial-cell
-  storage. Inspect refined radial limit results before choosing further cases.
-- Check numerical resolution of the strongest input sensitivities, keeping
-  engineering perturbations distinct from measured ranges.
-- Report temperatures during cooling, remaining mass and geometric thickness,
-  pyrolysis depth, uncertainty, and clear valid-exposure bounds for each case.
-  A finite burnthrough prediction is not required if it cannot be defended.
-- Finish the English report with an executive summary, setup, physics, solver,
-  validation, four-case results, graphs and limitations. Remove stale future
-  tense when a check completes. A scientific inability to infer actual motor
-  lifetime must be explained; never substitute a rejected diagnostic time.
+1. Finish the corrected four-case native pulse/cooling queue. Verify first-row
+   removal persists through subsequent restarts, all energy/hot-load checks,
+   live counts and restart copies. Check each terminal accepted record.
+2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
+   It compares accepted native fields only with the same-mesh independent
+   model. Exact row scheduling is a separate strict check: a one-step event
+   difference must remain visible even when field and mass targets pass.
+3. Complete appropriate native time/mesh comparisons, especially sustainer CF
+   cooling/scope timing, and native confirmation of influential supported
+   sensitivity conditions. Use the completed independent refinement to choose
+   useful cases rather than restarting the entire screening matrix.
+4. Quantify partial-cell storage and valid model-scope bounds. Do not manufacture
+   a finite lifetime by extrapolating material properties or tuning char laws.
+5. Finish the English four-case comparison: heating duration/end time, retained
+   thickness and mass, pyrolysis, casing peaks and times, numerical resolution,
+   assumed-input sensitivity, calibration limits and answer to burnthrough.
+   An inability to infer actual lifetime is a valid scientific outcome.
 
 ## Reporting and publication
 
-Use the ignored environment `ansystmp/venv/bin/python` to run
-`docs/analysis/make_report.py`. It freezes accepted native histories only.
-The output is `output/pdf/iris_phenolic_report.pdf`; current report has eleven
-pages. Render with pdftoppm and visually inspect changed pages before every
-published edition, following the PDF skill. The PDF creation marker already
-ran successfully once for this conversation; do not repeat it unnecessarily.
+`ansystmp/venv/bin/python docs/analysis/make_report.py` freezes accepted native
+histories and compiles `output/pdf/iris_phenolic_report.pdf` using LaTeX. Run with
+`PATH=/Library/TeX/texbin:$PATH`. The PDF skill was applied; its first-authoring
+marker already ran. Render with pdftoppm and visually inspect every changed
+page before publication. Check the TeX log. Do not publish an unreviewed PDF.
 
-The report generator and `report_supplement.py` now include native casing
-curves, mass bookkeeping, profile comparisons, property-scope limits and fine
-sensitivity figures. Extend these for completed booster and refined cooling
-histories; update the executive summary and next-results prose as the campaign
-advances. It reads restart/pulse/topology records to avoid stale verification
-claims. Keep rejected diagnostics separate from accepted native plots and
-actual motor claims. The latest eleven rendered pages were visually checked;
-the native snapshot contains the three completed coarse baselines and booster
-CF through 0.325 s. `resolution_report.py` adds the independent cooling and
-sensitivity-resolution evidence. Update its pending-native prose when the
-refined cases finish, and separate native heating/cooling plots if a 300 s
-axis obscures the early seven-second heating history.
+The report includes native temperature maps, casing curves, mass/energy audits,
+independent/native profiles, sensitivity resolution and independent cooling/
+longer-pulse scenarios. Failed native steps are excluded. Superseded refined
+runs are described in the failure section, not overlaid as current runs.
+Keep the native heating portion legible as longer cooling records arrive.
 
-Run `model/publish.py '<milestone message>' --push` only after checks and PDF
-visual review. It stages Iris-only changes and rejects any file/new Git blob
-at or above 100,000,000 bytes. Native results, environments and scratch are
-ignored. Push each meaningful setup/report/results milestone.
+Publish major milestones using `model/publish.py '<milestone>' --push` after
+checks. It stages Iris-only paths, checks storage and rejects files/new Git
+blobs >=100,000,000 bytes. Never push native binary results or scratch.
 
-A 30-minute in-chat heartbeat named "Iris ANSYS study and English reports"
-continues this task. Keep it active while substantive work remains. Stop it
-on final completion or a real storage stop. Do not send unchanged status
-updates. No sub-agent delegation is authorized.
+A 30-minute heartbeat, `iris-ansys-study-and-english-reports`, continues the
+study. Notify only meaningful progress, failures, completion or necessary user
+action. Keep it active while substantive work remains; stop on completion or
+latched storage stop. Leave this file accurate for the next continuation.

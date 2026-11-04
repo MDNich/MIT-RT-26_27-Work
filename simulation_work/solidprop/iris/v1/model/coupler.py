@@ -135,10 +135,17 @@ def prepare_step(mesh,c,s):
     if h['exposure_on']:dt=min(dt,h.get('pulse_duration_s',float('inf'))-s['time_s'])
     commands=['ALLSEL,ALL','FDELE,ALL,HEAT','ESEL,S,TYPE,,1,4',
               'SFEDELE,ALL,ALL,CONV','ALLSEL,ALL']
-    # Re-apply only newly pending row removals after restoring a converged DB.
-    # Existing dead rows already belong to that restart DB.
-    for eid in s['pending_kills']: commands.append(f'EKILL,{eid}')
+    # Multiframe restart restores the initial .rdb; .rnnn does not retain
+    # EKILL/EALIVE. Reissue the entire removed prefix after EVERY restart.
+    # See the v261 Basic Analysis Guide, Multiframe Restart Limitations.
+    for removed_row in mesh['rows'][:layer]:
+        for f in removed_row: commands.append(f'EKILL,{f["element"]}')
     commands+=['ESEL,S,TYPE,,1,4','ESEL,R,LIVE']
+    expected_live=len(mesh['elements'])-sum(len(r) for r in mesh['rows'][:layer])
+    commands += ['*GET,V0_LIVE,ELEM,0,COUNT',
+                 '*CFOPEN,live_topology_before_solve,txt','*VWRITE,V0_LIVE',
+                 '(F12.0)','*CFCLOSE',f'*IF,V0_LIVE,NE,{expected_live},THEN',
+                 '/COM,IRIS_LIVE_TOPOLOGY_MISMATCH','/EXIT,NOSAVE','*ENDIF']
     forces={}; faces=[]
     totals=dict(hot_radiation_W=0.,outer_radiation_W=0.,ablation_sink_W=0.,char_rate_kg_s=0.)
     for f in row:
@@ -197,6 +204,37 @@ def read_rows(path):
         if key in values: raise ValueError('Duplicate solver output ID '+key)
         values[key]=nums[1:]
     return values
+
+
+def preserve_accepted_restart(root,state):
+    """Keep two verified accepted native generations outside MAPDL's ring.
+
+    Repeated multiframe restores can overwrite the same native .rnnn slot.
+    Snapshot essential native files before the next solve can replace them.
+    A manifest written last makes an interrupted copy detectably incomplete;
+    the alternate slot still retains the preceding accepted generation.
+    """
+    import re, shutil
+    root=Path(root)
+    files=sorted(p for p in root.iterdir() if p.is_file() and
+                 (p.name in ('file.rdb','file.ldhi') or re.fullmatch(r'file\.r\d{3}',p.name)))
+    names={p.name for p in files}
+    if not {'file.rdb','file.ldhi'}.issubset(names) or not any(re.fullmatch(r'file\.r\d{3}',n) for n in names):
+        raise ValueError('Native restart files missing at accepted time')
+    slot=root/f'accepted_restart_{state["index"]%2}'
+    slot.mkdir(exist_ok=True)
+    hashes={}
+    for src in files:
+        target=slot/src.name;temporary=target.with_suffix(target.suffix+'.new')
+        shutil.copy2(src,temporary)
+        digest=hashlib.sha256(src.read_bytes()).hexdigest()
+        if hashlib.sha256(temporary.read_bytes()).hexdigest()!=digest:
+            raise ValueError('Accepted restart copy hash mismatch')
+        os.replace(temporary,target);hashes[src.name]=digest
+    save(slot/'state.json',state)
+    hashes['state.json']=hashlib.sha256((slot/'state.json').read_bytes()).hexdigest()
+    save(slot/'manifest.json',dict(accepted_index=state['index'],accepted_time_s=state['time_s'],
+         config_sha256=state['config_sha256'],files=hashes))
 
 
 def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
@@ -413,9 +451,14 @@ def main():
         atomic(root/'step_control.inp',f'V0_OK=1\nV0_DONE=0\nV0_INDEX={p["index"]}\nV0_PREVIOUS={s["index"]}\nV0_TARGET={p["target"]:.16e}\nV0_DT={p["dt"]:.16e}\n')
     else:
         p=load(root/'pending.json')
+        live=int(float((root/'live_topology_before_solve.txt').read_text().strip()))
+        expected_live=len(mesh['elements'])-sum(len(r) for r in mesh['rows'][:p['layer']])
+        if live!=expected_live: raise ValueError('Native pre-solve live topology mismatch')
         time=float((root/'observed_time.txt').read_text().strip())
         temp={k:v[0] for k,v in read_rows(root/'node_temperatures.txt').items()}
         new,record=accept_step(mesh,c,s,p,temp,read_rows(root/'element_fields.txt'),read_rows(root/'energy_fields.txt'),time)
+        record['native_live_elements_before_solve']=live
+        preserve_accepted_restart(root,new)
         # One immutable audit record per accepted state. CSV is derived from these.
         checkpoints=root/'checkpoints'; checkpoints.mkdir(exist_ok=True)
         # Compress state snapshots; audit records remain directly readable.

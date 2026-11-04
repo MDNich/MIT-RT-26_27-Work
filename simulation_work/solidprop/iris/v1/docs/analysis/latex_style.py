@@ -7,6 +7,8 @@ import matplotlib as mpl
 from cycler import cycler
 import math
 
+CASE_COLORS = dict(sustainer_al='#08357E',sustainer_cf='#A04A00',booster_al='#38761D',booster_cf='#A64D79')
+
 
 def plot_samples(ax, x, y, *, highlight_latest=True, **kwargs):
     """Use the earlier simulation3 recession plot's circular sample styling.
@@ -20,7 +22,7 @@ def plot_samples(ax, x, y, *, highlight_latest=True, **kwargs):
     line, = ax.plot(x, y, marker="o", markersize=2.8, linewidth=1.55,
                     markevery=marked, **kwargs)
     if highlight_latest:
-        ax.scatter([x[-1]], [y[-1]], marker="o", color="#A04A00",
+        ax.scatter([x[-1]], [y[-1]], marker="o", color=line.get_color(),
                    s=31, zorder=3, label="_nolegend_")
     return line
 

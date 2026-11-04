@@ -6,13 +6,19 @@
     "sustainer_cf_baseline7_n20_dt0125",
     "booster_al_baseline7_n20_dt0125",
     "booster_cf_baseline7_n20_dt0125",
+    "sustainer_al_pulse7_n80_dt0125_restartfix",
+    "sustainer_cf_pulse7_n80_dt0125_restartfix",
+    "booster_al_pulse7_cool300_n80_dt0125_restartfix",
+    "booster_cf_pulse7_cool300_n80_dt0125_restartfix"
+  ],
+  "first_resume_explicitly_launched": true,
+  "notes": "Serial queue. All four coarse baselines complete. Corrected refined packages replay the entire dead prefix after every multiframe restart, verify live counts, and preserve two accepted native restart generations. Original failed/unstarted packages remain unchanged. Sustainer cooling horizon 127 s, booster 300 s; stop at material-scope flags.",
+  "topology_verification_before": "booster_al_baseline7_n20_dt0125",
+  "reaction_verification_before": "booster_cf_baseline7_n20_dt0125",
+  "superseded_refined_runtimes": [
     "sustainer_al_pulse7_n80_dt0125",
     "sustainer_cf_pulse7_n80_dt0125",
     "booster_al_pulse7_cool300_n80_dt0125",
     "booster_cf_pulse7_cool300_n80_dt0125"
-  ],
-  "first_resume_explicitly_launched": true,
-  "notes": "Serial queue. Refined 7 s pulses stop at property-scope flags; sustainer cooling horizon 127 s, booster horizon 300 s to capture later casing peaks. Original unstarted 127 s booster packages preserved.",
-  "topology_verification_before": "booster_al_baseline7_n20_dt0125",
-  "reaction_verification_before": "booster_cf_baseline7_n20_dt0125"
+  ]
 }

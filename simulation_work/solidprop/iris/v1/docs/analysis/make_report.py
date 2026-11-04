@@ -14,7 +14,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 from matplotlib.patches import Rectangle
-from latex_style import configure_latex, plot_samples
+from latex_style import configure_latex, plot_samples, CASE_COLORS
 from report_supplement import create as create_supplement
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,7 +29,10 @@ def tex(s):
 
 def capture():
     runs=[]
+    queue=json.loads((ROOT/'configs/campaign_queue.json').read_text())['ordered_runtimes']
     for runtime in sorted((ROOT/'ansystmp/runs').iterdir()):
+        if 'pulse7_' in runtime.name and runtime.name not in queue:
+            continue  # Preserve superseded runs locally; explain failures separately.
         if runtime.name in ['sustainer_al_pilot','sustainer_al_local_pilot']:
             continue  # Superseded exporter pilot; preserved locally.
         if not (runtime/'state.json').exists():
@@ -49,7 +52,7 @@ def capture():
         assert abs(history[-1]['time_s']-state['time_s'])<1e-8
         runs.append(dict(name=runtime.name,case=cfg['case_id'],configuration=cfg,
                          accepted_index=state['index'],accepted_time_s=state['time_s'],
-                         status=state['status'],config_sha256=sha(runtime/'config.json'),
+                         status='STOPPED_FAILED_AUDIT' if (runtime/'coupler_error.txt').exists() else state['status'],config_sha256=sha(runtime/'config.json'),
                          latest_audit_sha256=sha(runtime/'checkpoints'/f'audit_{state["index"]:06d}.json'),
                          history=history))
     baselines=[r for r in runs if 'baseline' in r['name'] or 'pulse7_' in r['name']]
@@ -89,9 +92,10 @@ def figures(runs):
         fig,axes=plt.subplots(1,3,figsize=(9,3.1),constrained_layout=True)
         for run in runs:
             h=run['history'];t=[x['time_s'] for x in h];legend=tex(run_label(run))
-            plot_samples(axes[0],t,[x['Ts_mean_C'] for x in h],label=legend)
-            plot_samples(axes[1],t,[1000*x['phenolic_remaining_thickness_m'] for x in h],label=legend)
-            plot_samples(axes[2],t,[100*x['energy_relative_error'] for x in h],label=legend)
+            style=dict(color=CASE_COLORS[run['case']],markerfacecolor='white' if run['configuration']['geometry']['phenolic_radial_rows']==20 else CASE_COLORS[run['case']])
+            plot_samples(axes[0],t,[x['Ts_mean_C'] for x in h],label=legend,**style)
+            plot_samples(axes[1],t,[1000*x['phenolic_remaining_thickness_m'] for x in h],label=legend,**style)
+            plot_samples(axes[2],t,[100*x['energy_relative_error'] for x in h],label=legend,**style)
         axes[0].set(ylabel=r'Hot-face mean temperature [$^\circ$C]')
         axes[1].set(ylabel='Retained mesh thickness [mm]')
         axes[2].set(ylabel='Step energy residual [percent]')
@@ -117,6 +121,8 @@ def write_report(runs, snapshot):
     baselines=[r['case'].replace('_',' ').replace('cf','CF').replace('al','Al') for r in finished if 'baseline7_n20' in r['name']]
     native_status='Audited seven-second coarse baselines are complete for '+', '.join(baselines)+'.' if baselines else 'Native baseline cases are still in progress.'
     native_status+=' Their mass, energy and applied-load checks passed. '+str(sum('pulse7_' in r['name'] for r in finished))+' of the four refined native pulse/cooling cases have reached an audited stopping point; the serial campaign continues.'
+    if (ROOT/'validation/restart_topology_benchmark.json').exists():
+        native_status+=' An energy-audit stop exposed a restart layer-deactivation defect; its correction passed a four-case native regression, and fresh refined runs are in progress.'
     rows=[]
     for r in runs:
         a=r['history'][-1]
@@ -230,7 +236,7 @@ The twenty-cell mesh does not resolve recession sufficiently. The independent su
 Numerical long-exposure stress tests were also performed to expose weaknesses in the inherited removal scheme. They showed substantial mesh/time-step dependence, while the casing had already left its provisional property range. Those apparent exhaustion times are explicitly rejected as motor-lifetime results. The retained partial-cell thermal mass and lagged surface coupling require further assessment. Physically interpreted continuous-exposure runs now stop at the first casing property-range crossing. That crossing indicates a limit of this model, not an experimentally established structural failure.
 
 \section{Next results}
-Complete the remaining native baselines and refined pulse/cooling cases. Compare native first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
+Complete the corrected native refined pulse/cooling cases and the remaining native resolution and influential-input checks. Compare persistent first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
 
 A defensible final answer may be a conditional ``not reached through the accepted exposure'' result with remaining thickness, rather than a finite lifetime. Neither missing wall-exposure data nor uncalibrated char kinetics can be recovered from solver convergence. The study cannot establish real motor lifetime without supported wall heating and recession evidence.
 

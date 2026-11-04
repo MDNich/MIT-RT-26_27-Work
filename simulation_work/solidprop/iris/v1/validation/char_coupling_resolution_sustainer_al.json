@@ -1,0 +1,58 @@
+{
+  "complete": true,
+  "independent_only": true,
+  "not_burnthrough": true,
+  "qualification": "Diagnostic for explicit surface-coupling sensitivity under doubled heating; no material law is calibrated by this exercise",
+  "results": {
+    "n320_quarter": {
+      "cells": 320,
+      "dt_s": 0.0001953125,
+      "scope_bracket_s": [
+        39.91874999996694,
+        39.91894531246694
+      ],
+      "remaining_mm": 1.9645312499999985,
+      "hot_C": 1163.4472576408582
+    },
+    "n320_eighth": {
+      "cells": 320,
+      "dt_s": 9.765625e-05,
+      "scope_bracket_s": [
+        39.89169921844342,
+        39.89179687469342
+      ],
+      "remaining_mm": 1.9496484374999998,
+      "hot_C": 1163.3366464833498
+    },
+    "n640": {
+      "cells": 640,
+      "dt_s": 4.8828125e-05,
+      "scope_bracket_s": [
+        39.87895507825491,
+        39.879003906379914
+      ],
+      "remaining_mm": 1.942207031250004,
+      "hot_C": 1162.2703968342455
+    }
+  },
+  "comparisons": [
+    {
+      "coarse": "n320_quarter",
+      "fine": "n320_eighth",
+      "comparison": "time only",
+      "relative_time_change": 0.0006800890544831351,
+      "remaining_difference_mm": 0.014882812499998677,
+      "thickness_tolerance_mm": 0.047624999999999994,
+      "passed": true
+    },
+    {
+      "coarse": "n320_quarter",
+      "fine": "n640",
+      "comparison": "joint, dt scaled with radial pitch squared",
+      "relative_time_change": 0.0010005626595187556,
+      "remaining_difference_mm": 0.022324218749994573,
+      "thickness_tolerance_mm": 0.047624999999999994,
+      "passed": true
+    }
+  ]
+}

@@ -1,10 +1,13 @@
 """Evidence-driven report additions; native and independent plots stay separate."""
 import hashlib
 import json
+import math
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from resolution_report import create as create_resolution
+from native_field_report import create as create_native_fields
+from latex_style import CASE_COLORS
 
 CASES=['sustainer_al','sustainer_cf','booster_al','booster_cf']
 def title(case):return case.replace('_',' ').title().replace('Cf','CF')
@@ -14,14 +17,22 @@ def create(root,runs):
     out=root/'docs/analysis';parts=[];captured=[]
     if runs:
         fig,axes=plt.subplots(1,2,figsize=(8.4,3.0),constrained_layout=True)
-        rows=[];massrows=[]
+        rows=[];massrows=[];balancerows=[];balance_records=[]
         for run in runs:
             h=run['history'];c=run['configuration'];name=title(run['case'])+' (n='+str(c['geometry']['phenolic_radial_rows'])+')'
             for ax,key in zip(axes,['case_inner_max_C','case_outer_max_C']):
-                ax.plot([a['time_s'] for a in h],[a[key] for a in h],label=name,lw=1.4)
+                ax.plot([a['time_s'] for a in h],[a[key] for a in h],label=name,color=CASE_COLORS[run['case']],lw=.9 if c['geometry']['phenolic_radial_rows']==20 else 1.8)
             rows.append(row([name,f"{h[-1]['time_s']:.3f}",f"{max(a['case_inner_max_C'] for a in h):.3f}",f"{max(a['case_outer_max_C'] for a in h):.3f}"]))
             a=h[-1];m0=sum(a[k] for k in ['solid_remaining_kg','gas_cumulative_kg','char_cumulative_kg','residual_ejected_kg'])
             massrows.append(row([name]+[f"{100*a[k]/m0:.3f}" for k in ['solid_remaining_kg','gas_cumulative_kg','char_cumulative_kg','subcell_mass_still_in_FE_kg']]))
+            g=c['geometry'];initial=c['material']['virgin_reference_density_kg_m3']*(g['phenolic_outer_radius_m']**2-g['inner_radius_m']**2)/2*math.radians(g['angle_deg'])*g['length_m']
+            signed=math.fsum(x['energy_residual_W']*x['dt_s'] for x in h)
+            absolute=math.fsum(abs(x['energy_residual_W'])*x['dt_s'] for x in h)
+            scale=math.fsum(max(abs(x['storage_W']),abs(x['convection_out_W']),abs(x['body_generation_W'])+abs(x['nodal_net_W']),1e-6)*x['dt_s'] for x in h)
+            mass=max(abs(initial-sum(x[k] for k in ['solid_remaining_kg','gas_cumulative_kg','char_cumulative_kg','residual_ejected_kg']))/initial for x in h)
+            assert mass<1e-6,(run['name'],mass)
+            balancerows.append(row([name,f"{100*signed/scale:.4f}",f"{100*absolute/scale:.4f}",f"{mass:.2g}"]))
+            balance_records.append(dict(runtime=run['name'],through_s=a['time_s'],signed_residual_J=signed,absolute_residual_sum_J=absolute,integrated_scale_J=scale,max_mass_ledger_relative_error=mass,topology_sensible_energy_diagnostic_J=a['topology_sensible_energy_scheduled_est_J']))
         axes[0].set(ylabel=r'Casing inner-face temperature [$^\circ$C]');axes[1].set(ylabel=r'Casing outer-face temperature [$^\circ$C]')
         for ax in axes:ax.set(xlabel='Time since imposed heating begins [s]');ax.legend(fontsize=7)
         fig.suptitle('Accepted native ANSYS casing temperatures')
@@ -36,6 +47,13 @@ def create(root,runs):
             r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Solid left [\%] & Gas loss [\%] & Char loss [\%] & Retained in FE [\%]\\\midrule',
             '\n'.join(massrows),r'\bottomrule\end{tabular}\end{table}',
             'A zero whole-cell recession does not mean zero mass loss. Conversely, pyrolysis conversion alone is not a hole through the liner. Refinement is needed to bound the effect of the retained partial-cell storage on temperature and recession.']
+        parts += [r'\subsection{Accumulated numerical balance checks}',
+            'The signed residual below checks accumulated bias; the absolute residual sum avoids cancellation of positive and negative step errors. Both are normalized by the time integral of the step balance scale. The independent mass check recomputes remaining solid plus gas, consumed char and expelled residual against the initial geometric inventory.',
+            r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrr}\toprule Case & Signed energy [\%] & Absolute energy [\%] & Mass relative error\\\midrule',
+            '\n'.join(balancerows),r'\bottomrule\end{tabular}\end{table}',
+            r'The scale is $\max(|\dot U_{\rm FE}|,|Q_{\rm conv}|,|Q_{\rm body}|+|Q_{\rm nodal}|,10^{-6}\,\mathrm W)$ integrated over time. These residuals check the solved equations. They are not an independent physical enthalpy balance for departing material. Energy assigned to removed cells remains a separate diagnostic because the inherited capacity law is not a conservative enthalpy remap.']
+        (out/'accumulated_native_balances.json').write_text(json.dumps(balance_records,indent=2)+'\n')
+    parts.append(create_native_fields(root,out,captured))
     comparisons=[]
     for case in CASES:
         path=root/'validation'/f'native_radial_comparison_{case}.json'
