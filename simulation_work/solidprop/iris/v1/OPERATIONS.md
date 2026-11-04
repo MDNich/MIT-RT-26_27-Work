@@ -73,7 +73,7 @@ substep per controller interval. The first second after the 7 s pulse uses
 0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
 unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
 
-## Current material correction and dispatch (November 4, 06:29 UTC)
+## Current material correction and dispatch (November 4, 06:57 UTC)
 
 The paired default/tight 20 s controls are COMPLETE and audited (624 single
 substeps each). Layer removal and cooling transfer pass. Their native profiles
@@ -105,22 +105,58 @@ the new library match midpoint conversion (max error below 2e-10). A corrected
 independent temperatures within 0.00124 K. The inherited source is archived;
 previous studies and every sealed runtime are unchanged.
 
-The ONLY current primary dispatch is:
-`sustainer_al_pulse7_n80_midpoint_tight` (127 s horizon).
-Queue PID is in `baseline_queue.pid` (19823 when dispatched). This one-case queue
-exits after acceptance so its corrected heating/cooling fields can be reviewed
-before continuing the other three prepared `_pulse7_n80_midpoint_tight` cases.
-They use 80 phenolic/20 case rows, 1e-5 heat-flow tolerance, the single-substep
-guard and initial 0.0625 s cooling intervals. Booster horizons are 300 s.
-`current_dispatch` and `deferred_midpoint_runtimes` in the queue record roles.
-Never launch the superseded uncorrected packages. No second solver or queue.
+The corrected sustainer Al primary is COMPLETE through 127 s: all 1,052
+intervals passed the native audit, live-count/substep checks, sealed inputs and
+accepted restart hashes. Maximum energy residual is 0.03468 percent; maximum
+hot-load relative error is 8.52e-7. The full intended-midpoint independent
+comparison passes: maximum live-profile difference 0.333432 K and conversion
+difference below 0.00028. Both remove the first row at 4.1625 s and transfer
+the load at 4.175 s. All cooling transition checks pass.
 
-Check the new case against the intended independent midpoint model at meaningful
-accepted checkpoints and at completion. The new configuration pins material
-source and DLL hashes; generation refuses a mismatch. Do not increase comparison
-gates. Exact row scheduling remains a separate strict check. Then dispatch the
-remaining corrected cases serially, followed by justified native time/mesh and
-influential-input checks. A single pilot is not convergence of recession.
+For that imposed seven-second pulse, retained mesh is 4.70296875 mm. Sampled
+inner/outer casing peaks are 120.4973 C at 79 s and 120.4771 C at 79.25 s.
+These are 80-row exploratory numerical results, not actual motor lifetime or
+completed native mesh convergence. The old queue PID 19823 exited normally.
+
+The ONLY active serial queue is PID 26648 at dispatch (always verify its actual
+command using baseline_queue.pid). It began at 06:57:11 UTC and contains:
+
+1. The remaining three corrected primary cases: sustainer CF, booster Al,
+   booster CF, with runtime suffix _pulse7_n80_midpoint_tight.
+2. Four 80/20-row time_quarter cases.
+3. Four 160/40-row space160 cases.
+4. Four 320/80-row joint320 cases.
+5. Sustainer CF 640/160-row joint640.
+
+The latter thirteen packages were structurally checked, sealed and verified
+to preserve physical inputs and audit gates. Their definitions are in
+validation/native_resolution_plan.json; generation is reproducible with
+model/prepare_native_resolution.py. Heating steps are 0.003125 s for the
+time-only/160-row cases, 0.0015625 s at 320 and 0.00078125 s at 640. The first
+cooling second uses five times those intervals, then respectively 0.0625,
+0.03125 and 0.015625 s. Sustainer horizons are 127 s, boosters 300 s, subject
+to property-scope stops. Never edit or regenerate a sealed/running package.
+
+The current_dispatch field records the exact sixteen-job continuation. Primary
+inputs use 80/20 rows, 1e-5 heat-flow tolerance, the single-substep guard and
+initial 0.0625 s cooling intervals. No second solver or queue. Never launch
+superseded uncorrected packages.
+
+Check cases against the intended independent midpoint model at meaningful
+accepted checkpoints and at completion. Configurations pin material source
+and DLL hashes. Exact row scheduling remains a separate strict check; never
+increase comparison gates. Influential-input native checks still require
+selection and execution after review of these results.
+
+The queue now requires both validate_run.py and compare_native_pulses.py
+with --require-pass before advancing each corrected case. The independent
+gate includes native topology/cooling controls in addition to profile,
+conversion, mass and exact row scheduling. Refinement outputs use runtime-specific
+comparison files so they cannot replace primary case records.
+Run model/compare_native_resolution.py as completed cases arrive; it reports
+only terminal audited records, compares censored histories by scope time rather
+than an uncomputed peak, and retains failed intermediate refinements visibly.
+It currently has one completed primary record and no completed pair.
 
 Evidence/scripts: `native_solver_tolerance_comparison.json`,
 `native_temperature_convention.json`, `reaction_ramp_inherited.json`,
@@ -227,7 +263,7 @@ numbers as calibrated uncertainty or change the native material law to match.
 
 ## Remaining substantive work
 
-1. Finish the corrected-midpoint, tight-tolerance four-case native pulse/cooling runs. Verify first-row
+1. Finish the remaining three corrected-midpoint, tight-tolerance native pulse/cooling runs. Verify first-row
    removal persists through subsequent restarts, all energy/hot-load checks,
    live counts and restart copies. Check each terminal accepted record.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -264,11 +300,14 @@ Publish major milestones using `model/publish.py '<milestone>' --push` after
 checks. It stages Iris-only paths, checks storage and rejects files/new Git
 blobs >=100,000,000 bytes. Never push native binary results or scratch.
 
-The prior 15-page edition (`271f044`) withdrew unsupported cooling. The current
-report additionally distinguishes the inherited reaction-temperature convention
-from the corrected midpoint model and reports the native ramp and tolerance
-checks. Its reviewed PDF hash and page count are in
-`validation/report_visual_review.json`.
+The prior 15-page edition (271f044) withdrew unsupported cooling; a97f240b
+published the material correction. The current 18-page report freezes the
+completed corrected sustainer Al case through 127 s, including temperature
+maps, separated heating/full-history plots and cooling peaks. Primary results
+use corrected cases only; historical fields and diagnostics stay explicitly
+labelled in the verification sections. The other three primary cases had not
+started at the frozen 06:56 UTC report snapshot. Its reviewed PDF hash and
+page count are in validation/report_visual_review.json.
 
 A 30-minute heartbeat, `iris-ansys-study-and-english-reports`, continues the
 study. Notify only meaningful progress, failures, completion or necessary user

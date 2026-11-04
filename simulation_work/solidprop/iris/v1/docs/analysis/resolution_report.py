@@ -89,13 +89,34 @@ def create(root,out,captured):
             r'\bottomrule\end{tabular}\end{table}',
             ('All displayed comparisons meet the same-mesh profile, conversion, mass and row-count checks.' if all(d['comparison_passed'] for d in native) else ('The profile, conversion and mass targets pass, but the strict test of identical row schedules does not. Native and independent removal times are therefore reported separately.' if all(d.get('profile_conversion_mass_passed',False) for d in native) else 'Some same-mesh field comparisons do not meet their targets; those differences require investigation and are not presented as validated equivalence.')),
             'These checks do not establish fine-mesh convergence of the native stopping time. In particular, the independent sustainer CF pulse needed further refinement of its provisional property-flag time.']
-        if substep:
+        if substep and any('midpoint' not in d['runtime'] for d in native):
             parts += ['The historical refined sustainer comparison is restricted to the verified seven-second heating prefix; no withdrawn cooling values enter this table. Its hot-profile target remained unmet. The paired tolerance and reaction-temperature diagnostics above separate the causes; fresh corrected midpoint comparisons must establish the replacement result. Persistent native live counts verify the restart correction independently of this thermal-profile discrepancy.']
+        elif substep:
+            parts += ['This table uses fresh corrected-midpoint native runs. The earlier seven-second historical comparison and withdrawn cooling chain are excluded. Agreement now checks the intended midpoint reaction model, persistent layer deactivation and the strict single-substep cooling transition together.']
         events=[(d['case'],a) for d in native for a in d['removal_events'] if a.get('scheduled_time_difference_s') is not None]
         if events:
             parts += [r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Row & Native scheduled [s] & Independent [s] & Difference [s]\\\midrule',
                 '\n'.join(row([name(c),a['rows_scheduled'],f"{a['scheduled_time_s']:.4f}",f"{a['independent_scheduled_time_s']:.4f}",f"{a['scheduled_time_difference_s']:.5f}"]) for c,a in events),r'\bottomrule\end{tabular}\end{table}',
                 'These are individual row-removal events, not liner-exhaustion times. The native event is bracketed by its previous accepted intact state and the scheduled state; geometric deactivation occurs in the next solve.']
+
+    native_plan=read('validation/native_resolution_plan.json')
+    native_resolution=read('validation/native_resolution_comparison.json')
+    if native_plan:
+        parts += [r'\subsection{Native spatial and time-resolution program}',
+            'Thirteen additional corrected-material native packages have been prepared. For each motor/casing pair, the first comparison keeps 80 phenolic and 20 casing rows while reducing the heating and cooling coupling steps by four. The next uses 160/40 rows at the same refined steps, separating spatial from time error. A 320/80-row case then halves those steps. Sustainer CF additionally uses 640/160 rows because the independent 160-to-320-cell scope-time comparison failed its target.',
+            'The 80-row time check and 160-row spatial check use 0.003125 s heating, 0.015625 s during the first cooling second, and 0.0625 s thereafter. The 320-row case halves these intervals; the 640-row case halves them again. All use the same physical inputs, corrected library, tighter nonlinear tolerance and unchanged audit gates. Each package preserves the primary cooling horizon and stops at the provisional material flag.',
+            'Native comparisons require casing peak changes below 5 K for completed histories, scope-time changes below five percent for censored histories, and retained-thickness changes no larger than the greater of 0.02 mm or one percent of the initial liner. A scope-limited calculation cannot supply a later casing peak. Preparation is not an accepted result.']
+        if native_resolution and native_resolution['comparisons']:
+            parts += [r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrll}\toprule Case & Peak change [K] & Scope change [\%] & Thickness [mm] & Comparison & Pass\\\midrule',
+                '\n'.join(row([name(a['case']),
+                    f"{max(abs(v) for v in a['peak_differences_K'].values()):.3f}" if a['peak_differences_K'] else '--',
+                    f"{100*a['scope_time_relative_change']:.3f}" if a['scope_time_relative_change'] is not None else '--',
+                    f"{a['remaining_difference_mm']:.4f}",
+                    a['fine'].split('_midpoint_')[-1].replace('_',' '),'Yes' if a['passed'] else 'No']) for a in native_resolution['comparisons']),
+                r'\bottomrule\end{tabular}\end{table}',
+                'Only completed, audited native cases with passing same-mesh independent checks enter this table. Earlier refinement failures remain visible; convergence is judged on the final relevant comparisons.']
+        else:
+            parts += ['At this edition no completed native refinement pair is available. The independent refinement results below remain distinct.']
 
     convergence=read('validation/pulse_resolution.json')
     if not convergence or not convergence['complete']:return '\n\n'.join(parts)

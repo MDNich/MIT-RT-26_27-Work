@@ -1,5 +1,6 @@
 """Compare immutable accepted native pulse states with an independent assembly."""
 import gzip
+import argparse
 import hashlib
 import json
 import math
@@ -87,9 +88,12 @@ def compare(name,verification=False):
                     and abs(audits[i]['h_W_m2_K']-cfg['heating'].get('post_pulse_h_W_m2_K',8.))<1e-10
                     and audits[i]['hot_power_actual_W']<0 for i in cooling[:5]]
     result=dict(runtime=name,case=cfg['case_id'],accepted_native_index=terminal['index'],accepted_native_time_s=terminal['time_s'],
+        native_reaction_temperature=cfg.get('native_reaction_temperature','inherited_endpoint_plus_half_increment'),
+        native_material_dll_sha256=cfg.get('native_material_dll_sha256'),
         native_status=terminal['status'],comparison_passed=passed,profile_conversion_mass_passed=profile_passed,exact_row_schedule_identical=schedule_identical,
         persistent_native_topology_passed=all(topology_checks) if len(topology_checks)==len(audits) else None,
         cooling_transition_passed=all(cooling_checks) if len(cooling_checks)==5 else None,
+        native_control_checks_passed=(all(topology_checks) and len(topology_checks)==len(audits) and all(cooling_checks)),
         qualification='Same-mesh numerical comparison, not independent physical calibration or a finer-mesh convergence claim. The reference is compared only through accepted native time.',
         model_sha256=hashlib.sha256((ROOT/'model/radial_model.py').read_bytes()).hexdigest(),
         config_sha256=hashlib.sha256((run/'config.json').read_bytes()).hexdigest(),comparisons=comparisons,removal_events=events,
@@ -97,12 +101,21 @@ def compare(name,verification=False):
     suffix=name if verification else cfg['case_id']
     atomic(ROOT/'validation'/f'native_pulse_comparison_{suffix}.json',result)
     print(name,terminal['time_s'],passed,max(c['max_live_profile_difference_K'] for c in comparisons),events,flush=True)
+    return result
 
 
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('runtimes',nargs='*')
+    parser.add_argument('--verification',action='store_true',help='Keep runtime-specific evidence without replacing primary case comparisons')
+    parser.add_argument('--require-pass',action='store_true')
+    args=parser.parse_args()
     disks();queue=json.loads((ROOT/'configs/campaign_queue.json').read_text())
-    for name in queue['ordered_runtimes']:
-        if 'pulse7_' in name:compare(name,name in queue.get('verification_runtimes',[]))
+    for name in args.runtimes or queue['ordered_runtimes']:
+        if args.runtimes or 'pulse7_' in name:
+            result=compare(name,args.verification or name in queue.get('verification_runtimes',[]))
+            if args.require_pass and (not result or not result['comparison_passed'] or not result['native_control_checks_passed']):
+                raise RuntimeError('Native/independent comparison did not pass: '+name)
 
 
 if __name__=='__main__':main()

@@ -14,7 +14,7 @@
     "booster_cf_pulse7_n80_midpoint_tight"
   ],
   "first_resume_explicitly_launched": true,
-  "notes": "Paired 20 s controls completed. Single-substep cooling and full row replay passed. Native temperature-history replay and six prescribed-temperature checks exposed inherited endpoint-plus-half-increment reaction evaluation. Rebuilt midpoint DLL and corrected motor pilot passed. Dispatch corrected sustainer Al first, compare through heating/cooling, then continue the other three fresh midpoint cases. No second solver.",
+  "notes": "Corrected sustainer Al completed and passed full native audits plus same-mesh independent comparison through 127 s. Continue the other three corrected primary cases, then 13 prepared native time/mesh checks, strictly serially. Every terminal corrected result must pass native validation and independent field, row-schedule and control checks before advance. Stop on failure; never duplicate this queue.",
   "topology_verification_before": "booster_al_baseline7_n20_dt0125",
   "reaction_verification_before": "booster_cf_baseline7_n20_dt0125",
   "superseded_refined_runtimes": [
@@ -42,15 +42,43 @@
     "sustainer_al_pulse7_n80_tight_coolcheck"
   ],
   "current_dispatch": [
-    "sustainer_al_pulse7_n80_midpoint_tight"
+    "sustainer_cf_pulse7_n80_midpoint_tight",
+    "booster_al_pulse7_n80_midpoint_tight",
+    "booster_cf_pulse7_n80_midpoint_tight",
+    "sustainer_al_pulse7_midpoint_time_quarter",
+    "sustainer_cf_pulse7_midpoint_time_quarter",
+    "booster_al_pulse7_midpoint_time_quarter",
+    "booster_cf_pulse7_midpoint_time_quarter",
+    "sustainer_al_pulse7_midpoint_space160",
+    "sustainer_cf_pulse7_midpoint_space160",
+    "booster_al_pulse7_midpoint_space160",
+    "booster_cf_pulse7_midpoint_space160",
+    "sustainer_al_pulse7_midpoint_joint320",
+    "sustainer_cf_pulse7_midpoint_joint320",
+    "booster_al_pulse7_midpoint_joint320",
+    "booster_cf_pulse7_midpoint_joint320",
+    "sustainer_cf_pulse7_midpoint_joint640"
   ],
   "verified_historical_prefixes": {
     "sustainer_al_pulse7_n80_dt0125_restartfix": 560
   },
-  "deferred_midpoint_runtimes": [
-    "sustainer_cf_pulse7_n80_midpoint_tight",
-    "booster_al_pulse7_n80_midpoint_tight",
-    "booster_cf_pulse7_n80_midpoint_tight"
+  "deferred_midpoint_runtimes": [],
+  "material_correction": "Endpoint temperature minus half the increment; native increasing/decreasing/constant temperature checks passed.",
+  "prepared_resolution_runtimes": [
+    "sustainer_al_pulse7_midpoint_time_quarter",
+    "sustainer_al_pulse7_midpoint_space160",
+    "sustainer_al_pulse7_midpoint_joint320",
+    "sustainer_cf_pulse7_midpoint_time_quarter",
+    "sustainer_cf_pulse7_midpoint_space160",
+    "sustainer_cf_pulse7_midpoint_joint320",
+    "sustainer_cf_pulse7_midpoint_joint640",
+    "booster_al_pulse7_midpoint_time_quarter",
+    "booster_al_pulse7_midpoint_space160",
+    "booster_al_pulse7_midpoint_joint320",
+    "booster_cf_pulse7_midpoint_time_quarter",
+    "booster_cf_pulse7_midpoint_space160",
+    "booster_cf_pulse7_midpoint_joint320"
   ],
-  "material_correction": "Endpoint temperature minus half the increment; native increasing/decreasing/constant temperature checks passed."
+  "post_terminal_comparison_gate": "Corrected runs require full native validation and same-mesh independent profile/conversion/mass/exact-row comparison before queue advance.",
+  "dispatch_utc": "2026-11-04T06:57:11.088620+00:00"
 }

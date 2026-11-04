@@ -28,7 +28,17 @@ reaction-temperature errors: the old routine used endpoint temperature plus half
 the increment, rather than the intended midpoint. A rebuilt library subtracts
 half the increment, passed six native temperature-change checks and a corrected
 motor pilot (0.00124 K independent profile difference). Fresh corrected midpoint
-80/20-row cases use tighter heat-flow convergence; sustainer Al is running first.
+80/20-row cases use tighter heat-flow convergence. Corrected sustainer Al is
+complete through 127 s with 1,052 accepted single-substep intervals. Its full
+native audit and same-mesh independent comparison pass (maximum profile
+difference 0.3334 K), including identical first-row removal and cooling transfer.
+The prescribed seven-second heating pulse leaves 4.7030 mm of retained mesh;
+the sampled inner-casing maximum is 120.50 C at 79 s. These are exploratory
+80-row results, not a demonstrated motor lifetime or completed mesh convergence.
+The other three corrected cases and thirteen native time/mesh checks are now
+in one serial queue; sustainer CF is first. Each terminal run must pass both
+native audits and independent field, row-schedule and control checks before
+the queue advances. No second queue or solver may be started.
 Historical native curves retain their original routine and are explicitly labelled. See the ordered list
 in `configs/campaign_queue.json` and ignored `ansystmp/baseline_queue.log`.
 
@@ -52,7 +62,11 @@ comparisons through 640 cells; agreement in event timing alone had concealed
 thickness error. Eight hypothetical 20/60-second pulse refinements also passed.
 Twelve independent capacity-only diagnostics also quantify retained-cell storage
 sensitivity; they are not a conservative removal model or physical error bound.
-These independent results remain exploratory.
+These independent results remain exploratory. Native resolution packages
+separate time-step changes at 80 rows from 160/320-row spatial refinement,
+with an additional 640-row sustainer CF case. Their plan and completed-pair
+summary are validation/native_resolution_plan.json and
+validation/native_resolution_comparison.json; prepared cases are not results.
 
 Four exact two-body STEP sectors are in `geometry/`. The English report is
 `output/pdf/iris_phenolic_report.pdf`; accepted data and figures are in

@@ -46,6 +46,7 @@ def capture():
             state['time_s']=json.loads((runtime/'checkpoints'/f'audit_{state["index"]:06d}.json').read_text())['time_s']
             state['status']='VERIFIED_HEATING_PREFIX_COOLING_WITHDRAWN'
         cfg=json.loads((runtime/'config.json').read_text())
+        if cfg.get('campaign_role','primary')!='primary':continue
         history=[]
         for path in sorted((runtime/'checkpoints').glob('audit_*.json')):
             if int(path.stem.split('_')[1])>state['index']:
@@ -63,6 +64,9 @@ def capture():
                          latest_audit_sha256=sha(runtime/'checkpoints'/f'audit_{state["index"]:06d}.json'),
                          history=history))
     baselines=[r for r in runs if 'baseline' in r['name'] or 'pulse7_' in r['name']]
+    corrected=[r for r in baselines if r['configuration'].get('native_reaction_temperature')=='midpoint']
+    if corrected:
+        return corrected  # Historical evidence remains in its labelled verification sections.
     return baselines or runs
 
 def run_label(run):
@@ -97,19 +101,22 @@ def figures(runs):
     fig.suptitle('Inherited phenolic material tables; exploratory inputs')
     fig.savefig(out/'phenolic_properties.pdf');fig.savefig(out/'phenolic_properties.png',dpi=180);plt.close(fig)
     if runs:
-        fig,axes=plt.subplots(1,3,figsize=(9,3.1),constrained_layout=True)
+        fig,axes=plt.subplots(2,3,figsize=(9,5.3),constrained_layout=True)
         for run in runs:
             h=run['history'];t=[x['time_s'] for x in h];legend=tex(run_label(run))
             style=dict(color=CASE_COLORS[run['case']],markerfacecolor='white' if run['configuration']['geometry']['phenolic_radial_rows']==20 else CASE_COLORS[run['case']])
-            plot_samples(axes[0],t,[x['Ts_mean_C'] for x in h],label=legend,**style)
-            plot_samples(axes[1],t,[1000*x['phenolic_remaining_thickness_m'] for x in h],label=legend,**style)
-            plot_samples(axes[2],t,[100*x['energy_relative_error'] for x in h],label=legend,**style)
-        axes[0].set(ylabel=r'Hot-face mean temperature [$^\circ$C]')
-        axes[1].set(ylabel='Retained mesh thickness [mm]')
-        axes[2].set(ylabel='Step energy residual [percent]')
-        for ax in axes:ax.set(xlabel='Time since imposed heating begins [s]')
-        axes[0].legend(fontsize=7)
-        fig.suptitle('Accepted native ANSYS states; scenario exposure')
+            for panel in axes:
+                plot_samples(panel[0],t,[x['Ts_mean_C'] for x in h],label=legend,**style)
+                plot_samples(panel[1],t,[1000*x['phenolic_remaining_thickness_m'] for x in h],label=legend,**style)
+                plot_samples(panel[2],t,[100*x['energy_relative_error'] for x in h],label=legend,**style)
+        for panel in axes:
+            panel[0].set(ylabel=r'Hot-face mean temperature [$^\circ$C]')
+            panel[1].set(ylabel='Retained mesh thickness [mm]')
+            panel[2].set(ylabel='Step energy residual [percent]')
+        for ax in axes[0]:ax.set(xlim=(0,7),xlabel='Heating interval [s]')
+        for ax in axes[1]:ax.set(xlabel='Full accepted history [s]');ax.axvline(7,color='gray',ls=':',lw=.8)
+        axes[0,0].legend(fontsize=7)
+        fig.suptitle('Corrected native ANSYS histories; seven-second imposed heating')
         fig.savefig(out/'accepted_histories.pdf');fig.savefig(out/'accepted_histories.png',dpi=180);plt.close(fig)
     fig,axes=plt.subplots(1,3,figsize=(9,3.1),constrained_layout=True)
     for case in ['sustainer_al','sustainer_cf','booster_al','booster_cf']:
@@ -136,7 +143,16 @@ def write_report(runs, snapshot):
         native_status=native_status.replace('and fresh refined runs are in progress.','and its seven-second heating segment is retained. Subsequent cooling was withdrawn after an internal-substep accounting gap was found. Paired solver controls now test stricter step accounting and nonlinear convergence before continuation.')
     if (ROOT/'validation/native_temperature_convention.json').exists():
         corrected_finished=sum(r['configuration'].get('native_reaction_temperature')=='midpoint' for r in finished)
-        native_status='The four coarse seven-second baselines and the refined sustainer heating prefix passed numerical audits using the inherited material routine. Its subsequent cooling chain was withdrawn after an internal-substep audit gap. Two fresh 20 s controls passed stricter step-accounting checks, but exposed separate solver-tolerance and reaction-temperature issues. The inherited routine used endpoint temperature plus half the increment, whereas the independent model uses the intended midpoint. Those historical native states remain archived; they do not verify the corrected midpoint model. A separately rebuilt library passed six native prescribed-temperature checks. The four corrected midpoint cases have '+str(corrected_finished)+' audited terminal results at this snapshot.'
+        native_status='The corrected midpoint model has '+str(corrected_finished)+' audited terminal results among the four primary cases at this snapshot. Accepted partial histories are reported only through their recorded time; all later values remain pending. Six native prescribed-temperature checks verify the rebuilt material library. Historical runs exposed separate restart, internal-substep accounting, nonlinear-tolerance and reaction-temperature issues, documented in the verification sections. Their curves are not used as corrected-model predictions.'
+        for r in finished:
+            if r['configuration'].get('native_reaction_temperature')!='midpoint':continue
+            h=r['history'];label=r['case'].replace('_',' ').title().replace('Cf','CF')
+            retained=1000*h[-1]['phenolic_remaining_thickness_m']
+            if r['status']=='COMPLETED_HORIZON':
+                peak=max(h,key=lambda a:a['case_inner_max_C'])
+                native_status+=f" {label} completed the prescribed seven-second heating pulse and cooling through {r['accepted_time_s']:.0f} s. Its retained mesh thickness is {retained:.4f} mm, with a sampled inner-casing maximum of {peak['case_inner_max_C']:.2f} degrees Celsius at {peak['time_s']:.2f} s."
+            elif r['status']=='CASE_PROPERTY_LIMIT_REACHED':
+                native_status+=f" {label} stopped at its provisional casing-property flag near {r['accepted_time_s']:.3f} s with {retained:.4f} mm of retained mesh; its later thermal history is outside this calculation's scope."
     rows=[]
     for r in runs:
         a=r['history'][-1]
@@ -230,7 +246,7 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at STAMP. The table includes only states that passed the native numerical audits. Histories predating the midpoint correction use the inherited reaction-time convention described above; passing balances does not make them results of the corrected model. Corrected histories, when available, are explicitly labelled midpoint. All four original 0.1 s pilots passed their numerical checks. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at STAMP. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule

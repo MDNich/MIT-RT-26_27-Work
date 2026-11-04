@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from resolution_report import create as create_resolution
 from native_field_report import create as create_native_fields
+from native_field_report import corrected_fields
 from latex_style import CASE_COLORS
 
 CASES=['sustainer_al','sustainer_cf','booster_al','booster_cf']
@@ -19,7 +20,7 @@ def create(root,runs):
         fig,axes=plt.subplots(1,2,figsize=(8.4,3.0),constrained_layout=True)
         rows=[];massrows=[];balancerows=[];balance_records=[]
         for run in runs:
-            h=run['history'];c=run['configuration'];name=title(run['case'])+' (n='+str(c['geometry']['phenolic_radial_rows'])+')'
+            h=run['history'];c=run['configuration'];name=title(run['case'])+' (n='+str(c['geometry']['phenolic_radial_rows'])+', midpoint)'
             for ax,key in zip(axes,['case_inner_max_C','case_outer_max_C']):
                 ax.plot([a['time_s'] for a in h],[a[key] for a in h],label=name,color=CASE_COLORS[run['case']],lw=.9 if c['geometry']['phenolic_radial_rows']==20 else 1.8)
             rows.append(row([name,f"{h[-1]['time_s']:.3f}",f"{max(a['case_inner_max_C'] for a in h):.3f}",f"{max(a['case_outer_max_C'] for a in h):.3f}"]))
@@ -53,6 +54,7 @@ def create(root,runs):
             '\n'.join(balancerows),r'\bottomrule\end{tabular}\end{table}',
             r'The scale is $\max(|\dot U_{\rm FE}|,|Q_{\rm conv}|,|Q_{\rm body}|+|Q_{\rm nodal}|,10^{-6}\,\mathrm W)$ integrated over time. These residuals check the solved equations. They are not an independent physical enthalpy balance for departing material. Energy assigned to removed cells remains a separate diagnostic because the inherited capacity law is not a conservative enthalpy remap.']
         (out/'accumulated_native_balances.json').write_text(json.dumps(balance_records,indent=2)+'\n')
+    parts.append(corrected_fields(root,out,captured,runs))
     parts.append(create_native_fields(root,out,captured))
     comparisons=[]
     for case in CASES:
@@ -62,7 +64,7 @@ def create(root,runs):
             captured.append(dict(file=str(path.relative_to(root)),sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
     if comparisons:
         parts += [r'\section{Independent numerical checks and scope limits}',
-            'The following checks compare a separate cylindrical finite-element assembly with accepted ANSYS radial profiles at 0.1, 1, 2, 5 and 7 seconds. The independent assembly uses the same exploratory material laws. Numerical agreement cannot establish their physical accuracy.',
+            'The following historical checks compare a separate cylindrical finite-element assembly with the original coarse ANSYS profiles at 0.1, 1, 2, 5 and 7 seconds. These native baselines used the inherited reaction-temperature expression. Passing the coarse-mesh comparison did not expose that defect; these records remain historical verification evidence, not corrected-model predictions. Numerical agreement cannot establish physical accuracy.',
             r'\begin{table}[H]\centering\small\begin{tabular}{lrr}\toprule Case & Maximum profile difference [K] & Maximum conversion difference\\\midrule',
             '\n'.join(row([title(d['case']),f"{d['max_temperature_difference_K']:.4f}",f"{d['max_conversion_difference']:.5f}"]) for d in comparisons),r'\bottomrule\end{tabular}\end{table}']
         fig,axes=plt.subplots(1,2,figsize=(8.4,3.1),constrained_layout=True)
@@ -75,7 +77,7 @@ def create(root,runs):
             axes[1].plot(xc,a['native_mean_conversion'],'o',ms=2.5,mfc='none',color=color)
         axes[0].set(ylabel=r'Temperature [$^\circ$C]');axes[1].set(ylabel='Mean pyrolysis conversion',ylim=(-.03,1.03))
         for ax in axes:ax.set(xlabel='Depth from original liner bore [mm]')
-        axes[0].legend(fontsize=7);fig.suptitle('Seven-second profiles: ANSYS circles, independent model lines')
+        axes[0].legend(fontsize=7);fig.suptitle('Historical coarse profiles: inherited ANSYS circles, midpoint reference lines')
         fig.savefig(out/'native_radial_profiles.pdf');fig.savefig(out/'native_radial_profiles.png',dpi=180);plt.close(fig)
         parts.append(r'\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_radial_profiles.pdf}\caption{Accepted coarse-mesh native profiles and independent calculations. Temperatures are averaged over each uniform radial station. Agreement on the same mesh is not a mesh-convergence test.}\end{figure}')
     path=root/'validation/property_limit_convergence.json'

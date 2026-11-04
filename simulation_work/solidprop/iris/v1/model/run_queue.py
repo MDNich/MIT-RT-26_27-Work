@@ -53,6 +53,12 @@ def main():
         assert audit['hot_power_relative_error']<=cfg['numerics']['hot_power_relative_tolerance']
         verified=validate(runtime)
         atomic(ROOT/'validation'/('accepted_'+name+'.json'),verified)
+        if cfg.get('native_reaction_temperature')=='midpoint':
+            command=[str(TMP/'venv/bin/python'),str(ROOT/'model/compare_native_pulses.py'),name,'--require-pass']
+            campaign=json.loads((ROOT/'configs/campaign_queue.json').read_text())
+            if name in campaign.get('verification_runtimes',[]) or cfg.get('campaign_role','primary')!='primary':
+                command.append('--verification')
+            subprocess.run(command,check=True)
         record=dict(runtime=name,accepted_index=state['index'],time_s=state['time_s'],status=state['status'],last_audit=audit)
         records.append(record)
         atomic(ROOT/'validation'/('queue_'+args.runtimes[0]+'.json'),records)

@@ -7,7 +7,7 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Setup and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 04, 2026 at 01:28 UTC-05:00}
+\date{November 04, 2026 at 01:56 UTC-05:00}
 \begin{document}\maketitle
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
@@ -16,7 +16,7 @@
 \tableofcontents
 \clearpage
 \section{Executive summary}
-No defensible real-motor burnthrough time has been established. The four coarse seven-second baselines and the refined sustainer heating prefix passed numerical audits using the inherited material routine. Its subsequent cooling chain was withdrawn after an internal-substep audit gap. Two fresh 20 s controls passed stricter step-accounting checks, but exposed separate solver-tolerance and reaction-temperature issues. The inherited routine used endpoint temperature plus half the increment, whereas the independent model uses the intended midpoint. Those historical native states remain archived; they do not verify the corrected midpoint model. A separately rebuilt library passed six native prescribed-temperature checks. The four corrected midpoint cases have 0 audited terminal results at this snapshot. No native exhaustion event has been accepted in these scenarios.
+No defensible real-motor burnthrough time has been established. The corrected midpoint model has 1 audited terminal results among the four primary cases at this snapshot. Accepted partial histories are reported only through their recorded time; all later values remain pending. Six native prescribed-temperature checks verify the rebuilt material library. Historical runs exposed separate restart, internal-substep accounting, nonlinear-tolerance and reaction-temperature issues, documented in the verification sections. Their curves are not used as corrected-model predictions. Sustainer Al completed the prescribed seven-second heating pulse and cooling through 127 s. Its retained mesh thickness is 4.7030 mm, with a sampled inner-casing maximum of 120.50 degrees Celsius at 79.00 s. No native exhaustion event has been accepted in these scenarios.
 
 The initial twenty-row phenolic mesh is insufficient for recession. Independent refinement and 54 input-sensitivity cases show that missing thermal inputs and the partial-cell removal approximation matter. Under sustained nominal heating, provisional casing-property flags are reached with substantial liner remaining. Those stopping points limit this model's scope; they are not motor lifetimes or structural failure predictions. The immediate objective is to complete the native refined histories and compare their temperatures, mass loss and cooling against independent calculations.
 
@@ -85,15 +85,11 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 04, 2026 at 01:28 UTC-05:00. The table includes only states that passed the native numerical audits. Histories predating the midpoint correction use the inherited reaction-time convention described above; passing balances does not make them results of the corrected model. Corrected histories, when available, are explicitly labelled midpoint. All four original 0.1 s pilots passed their numerical checks. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at November 04, 2026 at 01:56 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
-Booster Al (n=20) & 7.0000 & 1053.58 & 6.35000 & 0.0350 \\
-Booster CF (n=20) & 7.0000 & 1053.58 & 6.35000 & 0.0350 \\
-Sustainer Al (n=20) & 7.0000 & 1051.62 & 4.76250 & 0.0320 \\
-Sustainer Al (n=80) & 7.0000 & 1472.29 & 4.70297 & 0.2323 \\
-Sustainer CF (n=20) & 7.0000 & 1051.62 & 4.76250 & 0.0321 \\
+Sustainer Al (n=80, midpoint) & 127.0000 & 110.61 & 4.70297 & 0.0002 \\
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[H]\centering \includegraphics[width=\textwidth]{../analysis/accepted_histories.pdf} \caption{Accepted native histories. No extrapolated future states are included.}\end{figure}
 
@@ -114,11 +110,7 @@ The maxima below apply only through each accepted time shown. A running case is 
 
 \begin{table}[H]\centering\small\begin{tabular}{lrrr}\toprule Case & Through [s] & Inner maximum [$^\circ$C] & Outer maximum [$^\circ$C]\\\midrule
 
-Booster Al (n=20) & 7.000 & 22.049 & 22.041 \\
-Booster CF (n=20) & 7.000 & 22.422 & 22.000 \\
-Sustainer Al (n=20) & 7.000 & 23.420 & 23.351 \\
-Sustainer Al (n=80) & 7.000 & 23.369 & 23.298 \\
-Sustainer CF (n=20) & 7.000 & 29.632 & 22.229 \\
+Sustainer Al (n=80, midpoint) & 127.000 & 120.497 & 120.477 \\
 
 \bottomrule\end{tabular}\end{table}
 
@@ -130,11 +122,7 @@ The next table uses fractions of the initial liner mass at each run's final acce
 
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Solid left [\%] & Gas loss [\%] & Char loss [\%] & Retained in FE [\%]\\\midrule
 
-Booster Al (n=20) & 93.086 & 5.288 & 1.626 & 1.626 \\
-Booster CF (n=20) & 93.086 & 5.288 & 1.626 & 1.626 \\
-Sustainer Al (n=20) & 90.968 & 6.859 & 2.173 & 2.173 \\
-Sustainer Al (n=80) & 88.526 & 10.666 & 0.807 & 0.241 \\
-Sustainer CF (n=20) & 90.968 & 6.859 & 2.173 & 2.173 \\
+Sustainer Al (n=80, midpoint) & 85.767 & 13.417 & 0.815 & 0.249 \\
 
 \bottomrule\end{tabular}\end{table}
 
@@ -146,23 +134,23 @@ The signed residual below checks accumulated bias; the absolute residual sum avo
 
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrr}\toprule Case & Signed energy [\%] & Absolute energy [\%] & Mass relative error\\\midrule
 
-Booster Al (n=20) & 0.1850 & 0.1869 & 1.4e-15 \\
-Booster CF (n=20) & 0.1850 & 0.1869 & 1.4e-15 \\
-Sustainer Al (n=20) & 0.1299 & 0.1311 & 1.4e-15 \\
-Sustainer Al (n=80) & 0.2578 & 0.2649 & 2.5e-15 \\
-Sustainer CF (n=20) & 0.1299 & 0.1311 & 1.4e-15 \\
+Sustainer Al (n=80, midpoint) & 0.0084 & 0.0088 & 3.3e-15 \\
 
 \bottomrule\end{tabular}\end{table}
 
 The scale is $\max(|\dot U_{\rm FE}|,|Q_{\rm conv}|,|Q_{\rm body}|+|Q_{\rm nodal}|,10^{-6}\,\mathrm W)$ integrated over time. These residuals check the solved equations. They are not an independent physical enthalpy balance for departing material. Energy assigned to removed cells remains a separate diagnostic because the inherited capacity law is not a conservative enthalpy remap.
 
+\subsection{Corrected native temperature fields}
+Each map uses accepted corrected-midpoint ANSYS checkpoints only. The left panel resolves the imposed seven-second heating interval; the right panel shows the full accepted history, including heat soak and cooling. The dashed line marks the casing interface, while cyan marks the depth already removed during the solve. Inactive nodes are masked. Temperatures are radial-station averages of the small uniform sector; these are computed fields, not measurements.
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_corrected_temperature_maps.pdf}\caption{Corrected native temperature fields with a common scale. No time beyond an accepted checkpoint is shown.}\end{figure}
+
 \subsection{Native temperature fields over the baseline exposure}
-The following maps use every accepted checkpoint of the four completed twenty-row native baselines. Temperatures are averaged over each radial station of the uniform sector and interpolated for display. The dashed line marks the liner--casing interface. The cyan line is the upper-cell edge of the contiguous 98-percent conversion front; it is neither recession nor burnthrough. All four coarse baselines retain every liner row through seven seconds, despite nonzero gas and char losses.
+These historical maps use every accepted checkpoint of the four original twenty-row native baselines, which used the inherited reaction-temperature expression. They are not predictions of the corrected midpoint model. Temperatures are averaged over each radial station of the uniform sector and interpolated for display. The dashed line marks the liner--casing interface. The cyan line is the upper-cell edge of the contiguous 98-percent conversion front; it is neither recession nor burnthrough. All four coarse baselines retain every liner row through seven seconds, despite nonzero gas and char losses.
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_baseline_temperature_maps.pdf}\caption{Native ANSYS baseline temperature fields, with a common temperature scale. These coarse-mesh fields are accepted numerical states; the recession discretization still requires the refined comparisons.}\end{figure}
 
 \section{Independent numerical checks and scope limits}
 
-The following checks compare a separate cylindrical finite-element assembly with accepted ANSYS radial profiles at 0.1, 1, 2, 5 and 7 seconds. The independent assembly uses the same exploratory material laws. Numerical agreement cannot establish their physical accuracy.
+The following historical checks compare a separate cylindrical finite-element assembly with the original coarse ANSYS profiles at 0.1, 1, 2, 5 and 7 seconds. These native baselines used the inherited reaction-temperature expression. Passing the coarse-mesh comparison did not expose that defect; these records remain historical verification evidence, not corrected-model predictions. Numerical agreement cannot establish physical accuracy.
 
 \begin{table}[H]\centering\small\begin{tabular}{lrr}\toprule Case & Maximum profile difference [K] & Maximum conversion difference\\\midrule
 
@@ -316,23 +304,33 @@ These comparisons use the independent assembly at the same 80/20 radial mesh and
 
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Through [s] & Max profile [K] & Max conversion & Transfers passed\\\midrule
 
-Sustainer Al & 7.000 & 5.927 & 0.01057 & 1 \\
+Sustainer Al & 127.000 & 0.333 & 0.00027 & 1 \\
 
 \bottomrule\end{tabular}\end{table}
 
-Some same-mesh field comparisons do not meet their targets; those differences require investigation and are not presented as validated equivalence.
+All displayed comparisons meet the same-mesh profile, conversion, mass and row-count checks.
 
 These checks do not establish fine-mesh convergence of the native stopping time. In particular, the independent sustainer CF pulse needed further refinement of its provisional property-flag time.
 
-The historical refined sustainer comparison is restricted to the verified seven-second heating prefix; no withdrawn cooling values enter this table. Its hot-profile target remained unmet. The paired tolerance and reaction-temperature diagnostics above separate the causes; fresh corrected midpoint comparisons must establish the replacement result. Persistent native live counts verify the restart correction independently of this thermal-profile discrepancy.
+This table uses fresh corrected-midpoint native runs. The earlier seven-second historical comparison and withdrawn cooling chain are excluded. Agreement now checks the intended midpoint reaction model, persistent layer deactivation and the strict single-substep cooling transition together.
 
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Row & Native scheduled [s] & Independent [s] & Difference [s]\\\midrule
 
-Sustainer Al & 1 & 4.1500 & 4.1625 & 0.01250 \\
+Sustainer Al & 1 & 4.1625 & 4.1625 & 0.00000 \\
 
 \bottomrule\end{tabular}\end{table}
 
 These are individual row-removal events, not liner-exhaustion times. The native event is bracketed by its previous accepted intact state and the scheduled state; geometric deactivation occurs in the next solve.
+
+\subsection{Native spatial and time-resolution program}
+
+Thirteen additional corrected-material native packages have been prepared. For each motor/casing pair, the first comparison keeps 80 phenolic and 20 casing rows while reducing the heating and cooling coupling steps by four. The next uses 160/40 rows at the same refined steps, separating spatial from time error. A 320/80-row case then halves those steps. Sustainer CF additionally uses 640/160 rows because the independent 160-to-320-cell scope-time comparison failed its target.
+
+The 80-row time check and 160-row spatial check use 0.003125 s heating, 0.015625 s during the first cooling second, and 0.0625 s thereafter. The 320-row case halves these intervals; the 640-row case halves them again. All use the same physical inputs, corrected library, tighter nonlinear tolerance and unchanged audit gates. Each package preserves the primary cooling horizon and stops at the provisional material flag.
+
+Native comparisons require casing peak changes below 5 K for completed histories, scope-time changes below five percent for censored histories, and retained-thickness changes no larger than the greater of 0.02 mm or one percent of the initial liner. A scope-limited calculation cannot supply a later casing peak. Preparation is not an accepted result.
+
+At this edition no completed native refinement pair is available. The independent refinement results below remain distinct.
 
 \section{Independent pulse and cooling investigation}
 
