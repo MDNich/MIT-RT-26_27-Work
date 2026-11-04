@@ -187,7 +187,7 @@ FINISH
 /COM,V0_CONTROLLER_STOPPED_CHECK_STATE_JSON
 /EXIT,NOSAVE
 """
-    if cfg["ranks"] == 1:
+    if cfg.get("parallel_mode", "smp" if cfg["ranks"] == 1 else "dis") == "smp":
         prefix=prefix.replace("DMPOPTION,RNNN,NO", "! SMP pilot: no distributed restart option")
     return prefix + loop
 

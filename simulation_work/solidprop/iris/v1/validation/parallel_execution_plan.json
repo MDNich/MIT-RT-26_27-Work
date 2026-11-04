@@ -1,0 +1,31 @@
+{
+  "request": "Use ten ANSYS cores",
+  "parallel_mode": "smp",
+  "cores": 10,
+  "parent_runtime": "booster_cf_pulse7_midpoint_time_quarter",
+  "restart_index": 1117,
+  "restart_time_s": 3.490624999999917,
+  "successors": {
+    "booster_cf_pulse7_midpoint_time_quarter": "booster_cf_pulse7_midpoint_time_quarter_smp10",
+    "sustainer_al_pulse7_midpoint_space160": "sustainer_al_pulse7_midpoint_space160_smp10",
+    "sustainer_cf_pulse7_midpoint_space160": "sustainer_cf_pulse7_midpoint_space160_smp10",
+    "booster_al_pulse7_midpoint_space160": "booster_al_pulse7_midpoint_space160_smp10",
+    "booster_cf_pulse7_midpoint_space160": "booster_cf_pulse7_midpoint_space160_smp10",
+    "sustainer_al_pulse7_midpoint_joint320": "sustainer_al_pulse7_midpoint_joint320_smp10",
+    "sustainer_cf_pulse7_midpoint_joint320": "sustainer_cf_pulse7_midpoint_joint320_smp10",
+    "booster_al_pulse7_midpoint_joint320": "booster_al_pulse7_midpoint_joint320_smp10",
+    "booster_cf_pulse7_midpoint_joint320": "booster_cf_pulse7_midpoint_joint320_smp10",
+    "sustainer_cf_pulse7_midpoint_joint640": "sustainer_cf_pulse7_midpoint_joint640_smp10",
+    "sustainer_al_sensitivity_higher_heating_midpoint_control20": "sustainer_al_sensitivity_higher_heating_midpoint_control20_smp10",
+    "booster_cf_sensitivity_alternative_cf_midpoint_control20": "booster_cf_sensitivity_alternative_cf_midpoint_control20_smp10",
+    "sustainer_cf_sensitivity_heating_transport_midpoint_control20": "sustainer_cf_sensitivity_heating_transport_midpoint_control20_smp10",
+    "booster_cf_sensitivity_heating_consumption_midpoint_control20": "booster_cf_sensitivity_heating_consumption_midpoint_control20_smp10",
+    "sustainer_cf_cutoff1e6_midpoint_control60": "sustainer_cf_cutoff1e6_midpoint_control60_smp10"
+  },
+  "status": "VERIFIED_TEN_CORE_RUNNING_SERIAL_QUEUE_ATTACHED",
+  "physics_and_audit_gates_unchanged": true,
+  "verified_utc": "2026-11-04T17:30:51.770447+00:00",
+  "queue_pid": 54373,
+  "verification_sha256": "7bb7ba295708f610b7065c5c85122a93f4e0bb0686326265c11d8295a35e9998",
+  "independent_check": "validation/native_pulse_comparison_booster_cf_pulse7_midpoint_time_quarter_smp10.json"
+}

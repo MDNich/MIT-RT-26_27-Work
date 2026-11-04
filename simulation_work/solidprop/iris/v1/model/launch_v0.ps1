@@ -80,7 +80,8 @@ try {
     $stamp = Get-Date -Format 'yyyyMMdd_HHmmss'
     $log = Join-Path $root "solve_$stamp.out"
     Write-Output "Explicit launch: $input; ranks=$($cfg.ranks); local license; log=$log"
-    $parallel = if ($cfg.ranks -eq 1) { '-smp' } else { '-dis' }
+    $parallel = if ($cfg.parallel_mode) { '-'+$cfg.parallel_mode } elseif ($cfg.ranks -eq 1) { '-smp' } else { '-dis' }
+    if ($parallel -notin @('-smp','-dis')) { throw 'Unsupported parallel mode.' }
     $proc = Start-Process -FilePath $ansys -WorkingDirectory $root -ArgumentList @('-b',$parallel,'-np',[string]$cfg.ranks,'-p','ansys','-j','file','-i',(Join-Path $root $input),'-o',$log) -PassThru -Wait
     if ($proc.ExitCode -ne 0) { throw "MAPDL exited with $($proc.ExitCode); results were preserved; inspect $log." }
     Get-Content -Raw 'state.json' | ConvertFrom-Json | Select-Object index,time_s,status,layer

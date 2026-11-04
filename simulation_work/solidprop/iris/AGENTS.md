@@ -11,5 +11,6 @@ These requirements record the user's instructions of November 3, 2026 for this s
 - Store large outputs in the Mac shared folders where practical. Copy and verify this study's completed files before removing any redundant guest copies. Never clean unrelated user files or earlier studies to make space.
 - Push each major milestone to the existing GitHub repository: simulation setup, initial report, meaningful intermediate reports and final report. Stage only this study's changes. Reject staged files or newly reachable Git blobs at or above 100,000,000 bytes; keep native result/restart files ignored and local.
 - No sub-agent delegation has been requested.
+- On November 4 the user explicitly requested ten ANSYS cores. Use ten-core shared-memory execution for the continuing and remaining native cases, with a verified checkpoint transition and fresh sealed successor packages. This replaces the earlier one-core execution preference; retain one serial case queue and the existing storage/audit gates.
 
 The plan is `phenolic_burnthrough_plan.md`; current implementation and operational state belong in `v1/`. Historical report instructions and recovery authorizations do not replace these current task instructions.

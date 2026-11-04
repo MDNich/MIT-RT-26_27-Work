@@ -1,0 +1,35 @@
+{
+  "runtime": "booster_cf_core_restart_reference1",
+  "passed": true,
+  "accepted_steps": 1149,
+  "time_s": 3.590624999999914,
+  "status": "COMPLETED_HORIZON",
+  "max_energy_relative_error": 0.0006147902317642603,
+  "max_hot_power_relative_error": 8.453304313747272e-07,
+  "max_abs_mass_residual_kg": 1.0854936082168528e-20,
+  "removal_steps": 0,
+  "warning_blocks": [
+    "                         ELAPSED TIME =       6.404   TIME= 11:49:44\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =     407.443   TIME= 11:56:25\n Material property KXX of material 2 of element 323 is evaluated at a    \n temperature of 21.9999998, which is below the supplied temperature      \n range.  Temperature range checking terminates.                          \n     HT FLOW CONVERGENCE VALUE=  0.1581E-04  CRITERION=  0.1665E-05\n    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1924E-02\n     HT FLOW CONVERGENCE VALUE=  0.4060E-07  CRITERION=  0.1665E-05 <<< CONVERGED\n    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   2\n *** LOAD STEP   299   SUBSTEP     1  COMPLETED.    CUM ITER =    950\n ***",
+    "                         ELAPSED TIME =    1664.948   TIME= 12:17:22\n During this session the elapsed time exceeds the CPU time by 647%.      \n This often indicates either a lack of physical memory (RAM) required    \n to efficiently handle this simulation or a particularly slow hard       \n drive configuration.  This simulation can be expected to run faster on  \n identical hardware if additional RAM or a faster hard drive             \n configuration is made available.  For more details, please see the      \n Mechanical APDL Performance Guide which is part of the Ansys Help       \n system.                                                       ",
+    "                         ELAPSED TIME =       5.746   TIME= 12:21:38\n File step_control.inp does not exist for delete.                        ",
+    "                         ELAPSED TIME =       6.643   TIME= 12:21:39\n File accepted.inp does not exist for delete.                            "
+  ],
+  "native_logs": [
+    {
+      "name": "solve_20261104_114937.out",
+      "sha256": "e7459ea36ad8240efbfe29de3cb12b85584732f4e7a87f064a55f7e3313e62e6"
+    },
+    {
+      "name": "solve_20261104_122132.out",
+      "sha256": "cbd31dc8de8849693475f4fb596bce3933e47db582ae59f64a2123333b2d0dce"
+    }
+  ],
+  "config_sha256": "6e4e9b53bfafabd3664e44ff78d315c13d0a148c296d13bed266fb44744b453a",
+  "restart_lineage": {
+    "parent_runtime": "booster_cf_pulse7_midpoint_time_quarter",
+    "inherited_steps": 1117,
+    "lineage_sha256": "378d442712e4c186a15e7f7b849d3bf3e936699c6969838f71a3942f3c198640",
+    "qualification": "Inherited checkpoint bytes retain the original one-core configuration identity; later steps use the sealed successor configuration."
+  }
+}

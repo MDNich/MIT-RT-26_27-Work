@@ -9,12 +9,24 @@ from coupler import fingerprint
 from ops import ROOT,TMP,atomic,disks
 
 
-def validate(runtime):
+def validate(runtime, allow_paused=False):
     cfg=json.loads((runtime/'config.json').read_text());s=json.loads((runtime/'state.json').read_text())
     assert s['config_sha256']==fingerprint(cfg)
     manifest=json.loads((runtime/'input_manifest.json').read_text())
     for name,want in manifest.items():assert hashlib.sha256((runtime/name).read_bytes()).hexdigest()==want,name
-    assert s['status'] in ['COMPLETED_HORIZON','PHENOLIC_CONSUMED','CASE_PROPERTY_LIMIT_REACHED']
+    allowed=['COMPLETED_HORIZON','PHENOLIC_CONSUMED','CASE_PROPERTY_LIMIT_REACHED']
+    if allow_paused:allowed.append('PAUSED_AT_CHECKPOINT')
+    assert s['status'] in allowed
+    lineage_path=runtime/'restart_lineage.json'
+    lineage=json.loads(lineage_path.read_text()) if lineage_path.exists() else None
+    if lineage:
+        parent=TMP/'runs'/lineage['parent_runtime']
+        assert parent.parent==TMP/'runs'
+        for name,want in lineage['copied_prefix_sha256'].items():
+            assert hashlib.sha256((runtime/name).read_bytes()).hexdigest()==want,name
+            assert hashlib.sha256((parent/name).read_bytes()).hexdigest()==want,name
+        assert hashlib.sha256((parent/'config.json').read_bytes()).hexdigest()==lineage['parent_config_sha256']
+        assert lineage['accepted_parent_validation']['passed']
     audits=[];previous=0.;g=cfg['geometry'];pitch=g['phenolic_thickness_m']/g['phenolic_radial_rows']
     for i in range(1,s['index']+1):
         a=json.loads((runtime/'checkpoints'/f'audit_{i:06d}.json').read_text())
@@ -51,6 +63,10 @@ def validate(runtime):
                 max_abs_mass_residual_kg=max(abs(a['mass_residual_kg']) for a in audits),
                 removal_steps=sum(a['elements_scheduled_for_removal']>0 for a in audits),
                 warning_blocks=warnings,native_logs=logs,config_sha256=hashlib.sha256((runtime/'config.json').read_bytes()).hexdigest())
+    if lineage:
+        result['restart_lineage']=dict(parent_runtime=lineage['parent_runtime'],
+            inherited_steps=lineage['accepted_index'],lineage_sha256=hashlib.sha256(lineage_path.read_bytes()).hexdigest(),
+            qualification='Inherited checkpoint bytes retain the original one-core configuration identity; later steps use the sealed successor configuration.')
     return result
 
 if __name__=='__main__':

@@ -129,8 +129,10 @@ The present hot face is therefore not accidentally set to approximately 100 degr
     text=text.replace('TEMPERATURE_ROWS','\n'.join(rows)).replace('BUDGET_ROWS','\n'.join(budget))
     # A passing casing time check must not conceal a hot-face discrepancy.
     resolution=[]
+    successors=json.loads((root/'configs/campaign_queue.json').read_text()).get('execution_successors',{})
     for run in runs:
         name=run['case']+'_pulse7_midpoint_time_quarter'
+        name=successors.get(name,name)
         ap=root/'validation'/f'accepted_{name}.json'
         cp=root/'validation'/f'native_pulse_comparison_{name}.json'
         if not ap.exists() or not cp.exists():continue
@@ -186,7 +188,7 @@ def source_appendix(root, runs):
             copied.append(dict(case=run['case'],runtime=run['name'],file=f'{run["case"]}/{name}',sha256=manifest[name],bytes=p.stat().st_size,lines=len(p.read_text().splitlines())))
     for name in ['build_material.cmd','prepare_model.py']:
         shutil.copy2(root/'model'/name,target/name)
-        copied.append(dict(file=name,sha256=sha(target/name),bytes=(target/name).stat().st_size,provenance='Current source used to build or generate the sealed inputs; printed input decks govern the executed cases.'))
+        copied.append(dict(file=name,sha256=sha(target/name),bytes=(target/name).stat().st_size,provenance='Current build/generation tool snapshot, including later execution support; sealed printed input decks govern the executed primary cases.'))
     # Print the CF material and coordinate construction with original line numbers.
     cf=(target/'sustainer_cf/model_base.inp').read_text().splitlines()
     start=cf.index('MPDELE,ALL,2')+1

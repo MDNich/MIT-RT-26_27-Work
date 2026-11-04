@@ -1,6 +1,6 @@
 # Iris Phenolic Burnthrough Simulation Plan
 
-Updated November 3, 2026. Scope: sustainer and booster, each with an aluminium or carbon-fibre composite casing. The Windows VM is running and the user has authorized autonomous implementation, exploratory simulations, English reports and milestone pushes to GitHub.
+Updated November 4, 2026. Scope: sustainer and booster, each with an aluminium or carbon-fibre composite casing. The Windows VM is running and the user has authorized autonomous implementation, exploratory simulations, English reports and milestone pushes to GitHub.
 
 The calculation will answer **when the phenolic liner loses its remaining physical thickness under a specified motor firing history**. It will also report pyrolysis depth and casing temperatures, because the casing or its bond can exceed a thermal limit while char still remains. The starting point is the previous ANSYS MAPDL thermochemical model in `newmotor_phenolic_study/v0`, extended to the four Iris configurations.
 
@@ -14,7 +14,7 @@ The following inventory was checked directly on November 3, 2026. Available disk
 | --- | --- |
 | Host | MacBook Pro, arm64. Repository is `/Users/mdn/Developer/MIT-RT-26_27-Work`. |
 | VM | Parallels `Windows 11 (1)`, UUID `{e7540578-be7d-4ee0-9a40-8aa94dcb9efd}`, running Windows 11 Pro ARM64, build 26200. |
-| Resources | 14 virtual CPUs and about 112 GiB RAM; about 104 GiB guest memory was free. Start with a small model and benchmark process counts rather than assuming ten ranks is efficient. |
+| Resources | 14 virtual CPUs and about 112 GiB RAM; about 104 GiB guest memory was free. The user now requests ten shared-memory cores per native solve; retain one serial case queue. Original primary results used one core. Measure throughput separately from core count. |
 | Solver | `C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe` and the underlying `ANSYS.exe` are present. Verify exact release and successful user-material loading in a native pilot. File presence alone is not a solve test. |
 | Supporting tools | Workbench executable exists; bundled Python reports file version 3.10.19. Intel Classic Fortran 2023.1 is present at the historical path. Verify compiler/linker operation only if a DLL rebuild is needed. |
 | License | Local TCP port 1055 responds and license processes exist. Port 2325 did not respond. Actual feature checkout, rather than either port alone, determines whether MAPDL can run. |
@@ -239,7 +239,7 @@ The first implementation milestone is a parameterized four-case geometry/materia
 4. Run the historical-physics regression and an independent radial-conduction benchmark. For any disagreement, preserve evidence and fix the implementation before expanding the campaign.
 5. Exercise first-row and last-row removal with controlled benchmark inputs. Check that hot-face power remains present after removal, residual mass is logged once, and the final event does not index a nonexistent row.
 6. Compare a clean uninterrupted pilot with a checkpoint pause/resume. Check time, temperature, conversion, removed rows and mass/energy integrals. A solver restart without matching controller state is not accepted.
-7. Start with one solver process for these tiny models. Compare additional ranks only if measured total throughput improves. Keep process count fixed within a restart chain.
+7. Use ten shared-memory cores (`-smp -np 10`) for continuing and remaining cases, following the explicit November 4 request. Keep one serial queue. The change from one core uses a separate sealed successor, matching accepted native/controller backups and immutable inherited checkpoints. Thirty-two paired resumed heating steps verified temperature agreement within 1.14e-12 K and identical conversion/mass/energy integrals. Keep the core count fixed within each successor execution; any further change requires its own preserved lineage and verification. Do not infer tenfold speedup from ten requested cores.
 
 ### Step 4 Complete the baseline and convergence matrix
 
@@ -254,7 +254,7 @@ The first implementation milestone is a parameterized four-case geometry/materia
 
 At each coupling step, compare observed solver time with the requested time, require every live element exactly once, ignore only already-dead surplus result rows, validate conversion bounds and close mass/energy audits. Commit the checkpoint atomically only after those checks. Figures and reports read accepted audits, never a still-exporting solver state.
 
-For an unexpected exit, preserve logs and the complete failed directory, identify the last accepted controller state and matching native restart files, and work in a separate recovery directory. Diagnose the actual signature before selecting a recovery. Revalidate package identity and the first resumed step. Do not relaunch automatically from zero, mix ranks/steps or weaken a balance tolerance to keep the campaign running. Routine faults are handled autonomously within this study; a storage-stop latch takes precedence over all recovery work.
+For an unexpected exit, preserve logs and the complete failed directory, identify the last accepted controller state and matching native restart files, and work in a separate recovery directory. Diagnose the actual signature before selecting a recovery. Revalidate package identity and the first resumed step. Do not relaunch automatically from zero, mix unmatched native/controller states or weaken a balance tolerance to keep the campaign running. The explicitly verified one-to-ten-core successor transition is documented in v1/validation/parallel_restart_comparison.json. Routine faults are handled autonomously within this study; a storage-stop latch takes precedence over all recovery work.
 
 ### Step 6 Produce English reports and publish milestones
 

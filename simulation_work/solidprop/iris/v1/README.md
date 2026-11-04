@@ -3,6 +3,23 @@
 English-only autonomous study, authorized November 3, 2026. Read the parent
 `AGENTS.md` and `phenolic_burnthrough_plan.md` for user requirements and physics.
 
+Current execution: **one native case at a time, with ten shared-memory cores**
+(`-smp -np 10`), as requested on November 4. The active booster CF quarter-step
+case was cleanly paused at index 1117 / 3.490625 s and resumed in a fresh sealed
+`_smp10` package. Thirty-two resumed steps agree with a one-core native reference:
+maximum nodal temperature difference 1.14e-12 K; conversion, mass and integrated
+energy are identical. The native log confirms ten threads/cores. This short
+verification covers heating before row deletion; all subsequent topology,
+cooling, balance and independent-reference gates remain required.
+
+All ten remaining resolution cases and five deferred controls now have ten-core
+successor inputs. `configs/campaign_queue.json` records their names and the single
+current observer. Prior one-core results, inputs and checkpoint lineage are
+preserved. The printed primary source appendix describes those original primary
+runs; the execution change is documented separately in the report and
+`validation/parallel_restart_comparison.json`. Ten requested cores do not establish
+a measured speedup; serial coupling and file transfers still contribute runtime.
+
 Current status: four 0.1 s native pilots and all four analytical conduction
 benchmarks passed. The native conduction error was below 0.013 K. The sustainer Al
 and CF, and booster Al/CF seven-second baselines are complete with 560 accepted

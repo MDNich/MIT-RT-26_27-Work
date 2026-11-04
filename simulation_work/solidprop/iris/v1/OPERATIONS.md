@@ -22,6 +22,41 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Ten-core execution override (November 4, 17:31 UTC)
+
+The user explicitly requested ten ANSYS cores. The current production command is
+`-smp -np 10`: one shared-memory solve with ten threads, one serial case queue.
+Do not create concurrent motor solves or resume the superseded one-core queue.
+The old observer PID 26648 was deliberately stopped at an accepted pause. The
+replacement observer PID 54373 uses `--wait-resume-first`; always check the current
+ignored PID file and process command rather than relying on these historical IDs.
+The storage watcher remains PID 82419 with its existing keep-awake process.
+
+Active runtime: `booster_cf_pulse7_midpoint_time_quarter_smp10`. It inherits the
+immutable prefix through index 1117 / 3.490625 s from its one-core parent, whose
+paused native/controller state remains intact. `restart_lineage.json` records
+prefix and native restart hashes. Its live controller identity is the successor
+configuration; copied historical checkpoints retain their original identity.
+Full terminal validation verifies that lineage as well as all existing gates.
+
+`verify_parallel_restart.py` compares 32 resumed steps against the separately
+completed `booster_cf_core_restart_reference1`: maximum nodal difference
+1.13687e-12 K, identical conversion, mass and energy integrals. All paired audits
+pass. The native log and live process command confirm ten SMP threads/cores.
+The same-mesh independent check through 3.996875 s also passes (0.00394 K maximum
+profile difference). This is checkpoint/core repeatability, not completed
+convergence, a speed benchmark, or verification of a row event during that short
+comparison. Continue the full existing acceptance gates.
+
+`current_dispatch` now contains ten `_smp10` resolution successors; four
+sensitivity and one cutoff successor remain deferred. The original dispatch is
+preserved under `superseded_dispatch_one_core`, and `execution_successors` maps
+each name. Do not regenerate any sealed package. Physics, material DLL, geometry,
+time steps and acceptance tolerances are byte-identical to each parent; only
+execution configuration and launcher support changed. A failed first Parallels
+launch request was verified not to have launched before one explicit reissue;
+`parallel_resume_launch_retry.json` preserves this evidence.
+
 ## Current native queue and recovery
 
 All four coarse 20-row seven-second baselines are complete: 560 accepted steps
@@ -73,7 +108,7 @@ substep per controller interval. The first second after the 7 s pulse uses
 0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
 unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
 
-## Current material correction and dispatch (November 4, 17:08 UTC)
+## Material correction and accepted results before the core transition
 
 The paired default/tight 20 s controls are COMPLETE and audited (624 single
 substeps each). Layer removal and cooling transfer pass. Their native profiles
@@ -189,7 +224,7 @@ cooling second uses five times those intervals, then respectively 0.0625,
 0.03125 and 0.015625 s. Sustainer horizons are 127 s, boosters 300 s, subject
 to property-scope stops. Never edit or regenerate a sealed/running package.
 
-The current_dispatch field records the exact sixteen-job continuation. Primary
+The current_dispatch field records the ten remaining ten-core successors; the original sixteen-job continuation is retained as historical provenance. Primary
 inputs use 80/20 rows, 1e-5 heat-flow tolerance, the single-substep guard and
 initial 0.0625 s cooling intervals. No second solver or queue. Never launch
 superseded uncorrected packages.
