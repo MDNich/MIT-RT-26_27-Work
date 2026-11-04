@@ -1,11 +1,11 @@
 {
-  "reviewed_utc": "2026-11-04T17:34:08.169330+00:00",
-  "pdf_sha256": "b83565a76d7f48f535c16289b2d04f7bf2e16fcdf5144698a902d679d70076ff",
+  "reviewed_utc": "2026-11-04T21:43:44.675275+00:00",
+  "pdf_sha256": "1a2b00ff01cd8f9559c83cd4a2fe888e3e03338cdac04f851cff31c1b6558a0d",
   "pages": 71,
-  "render": "pdftoppm -scale-to 1250 -png; all 71 pages rendered in ansystmp/pdf_review/ten_core",
-  "review": "Pages 1 and 14 changed against the preceding reviewed edition and were inspected at full-page resolution. The other 69 pages are pixel-identical. No clipping or overlap. TeX log has no warnings, overfull/underfull boxes or undefined references. Full source listings remain intact.",
-  "previous_reviewed_commit": "039f062a038ac1f4f22d059caddcb68f7170eeab",
-  "snapshot_captured": "2026-11-04T12:32:17.631151-05:00",
+  "render": "pdftoppm -scale-to 1250 -png; all 71 final pages rendered in ansystmp/pdf_review/all_four_time",
+  "review": "Twenty-four pages differ from the prior reviewed edition; all were inspected in contact sheets, with pages 3, 6, 14, 15, 16 and 25 also reviewed at full-page resolution. A final clarification of the archived one-core command prompted another full render: its four changed pages were rechecked. The other 47 pages are pixel-identical to the prior published edition. No clipping or overlap. TeX log has no warnings, overfull/underfull boxes or undefined references. Full source listings remain intact.",
+  "previous_reviewed_commit": "0aa58c6ee8628ec7e3034c554130ab1ed85998d5",
+  "snapshot_captured": "2026-11-04T16:41:29.958274-05:00",
   "audited_completed_native_cases": [
     {
       "case": "booster_al",
@@ -64,9 +64,18 @@
       "status": "COMPLETED_HORIZON",
       "accepted_record_sha256": "09ec2ba32fd2e23c47ba2df06850cdc9048706510d45aec2b3103acc39edeabf",
       "independent_comparison_sha256": "11cd4f0dfa18d5f6993bfb898bab1710439049680b6782322fab3ebc5c076372"
+    },
+    {
+      "runtime": "booster_cf_pulse7_midpoint_time_quarter_smp10",
+      "accepted_steps": 6976,
+      "time_s": 299.9999999999953,
+      "status": "COMPLETED_HORIZON",
+      "accepted_record_sha256": "a79ba0e8d3d635252b610c8003fd1f0dd648967c917c302a676a6958825fbd3f",
+      "independent_comparison_sha256": "722bf0b6df35468cc2f39b0ffe72504d994f922b939b05a30b30a396049d7cf1"
     }
   ],
-  "additional_time_comparison_qualification": "Sustainer Al casing peaks change 0.721 K; sustainer CF scope time changes 2.941 percent (34 to 35 s); booster Al casing peaks change 0.224 K. Retained mesh is unchanged in all three. Hot-face temperatures at 7 s change 43.656 K for the sustainers and 32.520 K for booster Al. These are not surface-temperature convergence claims.",
+  "additional_time_comparison_qualification": "All four native time-only comparisons pass the casing/scope and retained-thickness targets. Maximum complete-history casing peak shift is 0.721 K; sustainer CF scope timing shifts 2.941 percent. Both booster hot faces change 32.520 K at 7 s, and both sustainers change 43.656 K. These are not surface-temperature or spatial convergence claims.",
   "parallel_execution_verification_sha256": "7bb7ba295708f610b7065c5c85122a93f4e0bb0686326265c11d8295a35e9998",
-  "execution_update": "Ten-core SMP successor resumed from accepted index 1117. Thirty-two paired steps passed strict native repeatability; one serial observer continues ten remaining resolution cases. Fifteen continuing/prepared successors use ten cores. The primary result table is unchanged."
+  "execution_update": "Booster CF quarter-step ten-core successor completed 300 s and passed full lineage/native/independent validation. Sustainer Al 160/40 is active in the same ten-core serial queue. Primary results are unchanged.",
+  "new_native_time_difference_figure_sha256": "077cb38e0122deee79c912ce5e5c2ef3b48b8082f5437ab6f6e1bdd897983c48"
 }

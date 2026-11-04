@@ -22,7 +22,7 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Ten-core execution override (November 4, 17:31 UTC)
+## Ten-core execution and current dispatch (November 4, 21:36 UTC)
 
 The user explicitly requested ten ANSYS cores. The current production command is
 `-smp -np 10`: one shared-memory solve with ten threads, one serial case queue.
@@ -32,7 +32,9 @@ replacement observer PID 54373 uses `--wait-resume-first`; always check the curr
 ignored PID file and process command rather than relying on these historical IDs.
 The storage watcher remains PID 82419 with its existing keep-awake process.
 
-Active runtime: `booster_cf_pulse7_midpoint_time_quarter_smp10`. It inherits the
+Current active runtime: `sustainer_al_pulse7_midpoint_space160_smp10`.
+The preceding `booster_cf_pulse7_midpoint_time_quarter_smp10` completed at
+21:32:04 UTC and passed full native and independent gates. It inherits the
 immutable prefix through index 1117 / 3.490625 s from its one-core parent, whose
 paused native/controller state remains intact. `restart_lineage.json` records
 prefix and native restart hashes. Its live controller identity is the successor
@@ -48,7 +50,8 @@ profile difference). This is checkpoint/core repeatability, not completed
 convergence, a speed benchmark, or verification of a row event during that short
 comparison. Continue the full existing acceptance gates.
 
-`current_dispatch` now contains ten `_smp10` resolution successors; four
+`current_dispatch` contains the ten `_smp10` successors attached to the observer;
+its first case has completed, leaving nine spatial/joint cases. Four
 sensitivity and one cutoff successor remain deferred. The original dispatch is
 preserved under `superseded_dispatch_one_core`, and `execution_successors` maps
 each name. Do not regenerate any sealed package. Physics, material DLL, geometry,
@@ -196,8 +199,9 @@ controller continues the explicit property-scope guard at every accepted step.
 All four corrected primary cases have reached audited stopping points. The
 existing queue completed sustainer_al_pulse7_midpoint_time_quarter at 11:02 UTC
 and then completed sustainer CF quarter-step at 12:21:48 UTC and booster Al
-quarter-step at 16:49:11 UTC. Booster CF quarter-step is now active. No queue
-or solver was duplicated. Ten native resolution cases remain, followed later
+quarter-step at 16:49:11 UTC. Booster CF quarter-step completed and passed both
+gates at 21:32:04 UTC. Sustainer Al 160/40 is now active. No queue or solver was
+duplicated. Nine native resolution cases remain, followed later
 by the five prepared
 sensitivity/cutoff controls below. The first quarter-step run passed all 4,208
 accepted intervals through 127 s, removal/cooling controls and the independent
@@ -205,8 +209,9 @@ comparison (maximum profile difference 0.09913 K). Its first native time-only
 comparison changes casing peaks by 0.721 K with unchanged retained mesh;
 this does not establish native spatial convergence.
 
-The ONLY active serial queue is PID 26648 at dispatch (always verify its actual
-command using baseline_queue.pid). It began at 06:57:11 UTC with the following ordered dispatch:
+Historical observer PID 26648 began at 06:57:11 UTC with the dispatch below;
+it was superseded during the verified core change. The ONLY current serial
+observer is PID 54373 (verify baseline_queue.pid and the actual command):
 
 1. The three primary cases then remaining: sustainer CF, booster Al and
    booster CF, with suffix _pulse7_n80_midpoint_tight. All are now complete.
@@ -224,7 +229,8 @@ cooling second uses five times those intervals, then respectively 0.0625,
 0.03125 and 0.015625 s. Sustainer horizons are 127 s, boosters 300 s, subject
 to property-scope stops. Never edit or regenerate a sealed/running package.
 
-The current_dispatch field records the ten remaining ten-core successors; the original sixteen-job continuation is retained as historical provenance. Primary
+The current_dispatch field records the ten-case ten-core dispatch, with the first
+case now complete. The original sixteen-job continuation is historical provenance. Primary
 inputs use 80/20 rows, 1e-5 heat-flow tolerance, the single-substep guard and
 initial 0.0625 s cooling intervals. No second solver or queue. Never launch
 superseded uncorrected packages.
@@ -243,8 +249,8 @@ comparison files so they cannot replace primary case records.
 Run model/compare_native_resolution.py as completed cases arrive; it reports
 only terminal audited records, compares censored histories by scope time rather
 than an uncomputed peak, and retains failed intermediate refinements visibly.
-It now has seven completed records: the four primaries, both sustainer
-quarter-step cases and booster Al quarter-step. Sustainer Al inner/outer casing peak changes are
+It now has eight completed records and four passing time comparisons: the four
+primaries and all four quarter-step cases. Sustainer Al inner/outer casing peak changes are
 -0.72076/-0.72055 K, with unchanged retained mesh. Sustainer CF has 2,736 accepted
 single-substep intervals through its property-scope stop at 35 s, bracketed by
 34.9375--35 s. Inner/outer endpoint casing temperatures are 150.01301/114.83103 C,
@@ -263,8 +269,28 @@ residual is 0.061479 percent, and hot-load relative error is 8.517e-7.
 Inner/outer casing peaks are 84.56018 C at 142.6875 s and 84.54176 C at 142.875 s.
 Their changes from the primary are -0.22368/-0.22359 K, with 6.270625 mm retained
 in both cases. The first row schedules at 4.584375 s and load transfers at
-4.5875 s. Ten refinement cases remain, with booster CF quarter-step active.
+4.5875 s. Nine spatial/joint refinement cases remain; sustainer Al 160/40 is active.
 These are conditional numerical results, not material failure or lifetime predictions.
+
+Booster CF quarter-step passed all 6,976 intervals through 300 s, including
+1,117 immutable inherited one-core steps and the accepted ten-core continuation.
+The parent-prefix hashes, sealed successor, native logs and latest native restart
+backup all passed validation. Independent maximum profile discrepancy is
+0.0675564 K; exact row scheduling, persistent removal and cooling checks pass.
+Maximum step energy residual is 0.061479 percent and hot-load relative error
+8.5273e-7. Inner/outer casing peaks are 113.925272 C at 102.875 s and
+104.866103 C at 144.1875 s. Their changes from the primary are
+-0.317896/-0.264732 K, with unchanged 6.270625 mm retained. The first row
+schedules at 4.584375 s; load transfer follows at 4.5875 s. The hot face at
+7 s is 1419.617559 C and its sampled peak is 1487.194041 C. These remain
+conditional numerical values, not a real firing or lifetime prediction.
+
+Its logs retain USERCK, the negligible initial CF-table undershoot and elapsed/CPU
+performance warnings. The resume also reports two absent temporary control files
+during initial deletion; both are regenerated by the normal controller before
+use. A generic advisory recommends DMP after the ten-core SMP session. Neither
+log has native errors. This advisory is not a measured speed comparison; continue
+the verified user-requested ten-core SMP queue without changing sealed inputs.
 
 Evidence/scripts: `native_solver_tolerance_comparison.json`,
 `native_temperature_convention.json`, `reaction_ramp_inherited.json`,
@@ -433,7 +459,7 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Complete the ten remaining queued native time/mesh checks. Preserve the strict
+1. Complete the nine remaining queued native spatial/joint checks. Preserve the strict
    native acceptance gates, exact row scheduling, restart topology and independent
    comparison at every terminal record. Keep all four primary results intact.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -501,7 +527,7 @@ the maximum matched heating-history discrepancy is 48.688 K at 0.0125 s.
 The completed CF quarter-step comparison gives the same surface differences
 to the shown precision: 1466.032 to 1422.376 C at 7 s, with a 48.688 K maximum
 matched heating-history difference.
-Booster Al quarter-step similarly changes the 7 s hot face from 1452.137 C
+Both booster quarter-step cases similarly change the 7 s hot face from 1452.137 C
 to 1419.618 C, while its sampled peak is 1487.194 C. The largest matched
 heating-history difference is 63.089 K at 4.6 s, near the row-transfer event.
 `native_hot_surface_time_comparison.json` reports all accepted time pairs

@@ -188,6 +188,32 @@
       "config_sha256": "a308dd9f7596ec56b6c6981cefa99cfcc5cc886dbfaedd5453759f6afa467a6e",
       "accepted_record_sha256": "121fc326c0d2784df914d25efe4aadd17dc20d49ca8b19915baf4f22dab95287",
       "independent_comparison_sha256": "414bce67bf5237077d383279e0a3bf3d38b183807de93dc79799e88d552ca0d6"
+    },
+    "booster_cf_pulse7_midpoint_time_quarter_smp10": {
+      "runtime": "booster_cf_pulse7_midpoint_time_quarter_smp10",
+      "case": "booster_cf",
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "through_s": 299.9999999999953,
+      "status": "COMPLETED_HORIZON",
+      "complete": true,
+      "scope_limited": false,
+      "scope_bracket_s": null,
+      "sampled_maxima": {
+        "case_inner_max_C": {
+          "temperature_C": 113.9252718849801,
+          "time_s": 102.875
+        },
+        "case_outer_max_C": {
+          "temperature_C": 104.8661027627896,
+          "time_s": 144.1875
+        }
+      },
+      "remaining_mm": 6.270625,
+      "initial_phenolic_mm": 6.35,
+      "config_sha256": "212f7b45de76f204ae7e88327ca3bbb7dd102bc596e373fb529d572c8f5239b8",
+      "accepted_record_sha256": "a79ba0e8d3d635252b610c8003fd1f0dd648967c917c302a676a6958825fbd3f",
+      "independent_comparison_sha256": "722bf0b6df35468cc2f39b0ffe72504d994f922b939b05a30b30a396049d7cf1"
     }
   },
   "comparisons": [
@@ -232,6 +258,21 @@
       "scope_time_relative_change": null,
       "remaining_difference_mm": 0.0,
       "remaining_target_mm": 0.0635
+    },
+    {
+      "case": "booster_cf",
+      "coarse": "booster_cf_pulse7_n80_midpoint_tight",
+      "fine": "booster_cf_pulse7_midpoint_time_quarter_smp10",
+      "passed": true,
+      "complete_histories": true,
+      "both_scope_limited": false,
+      "peak_differences_K": {
+        "case_inner_max_C": -0.31789586261758984,
+        "case_outer_max_C": -0.2647320521815999
+      },
+      "scope_time_relative_change": null,
+      "remaining_difference_mm": 0.0,
+      "remaining_target_mm": 0.0635
     }
   ],
   "pending": [
@@ -242,7 +283,6 @@
     "sustainer_cf_pulse7_midpoint_joint640_smp10",
     "booster_al_pulse7_midpoint_space160_smp10",
     "booster_al_pulse7_midpoint_joint320_smp10",
-    "booster_cf_pulse7_midpoint_time_quarter_smp10",
     "booster_cf_pulse7_midpoint_space160_smp10",
     "booster_cf_pulse7_midpoint_joint320_smp10"
   ],

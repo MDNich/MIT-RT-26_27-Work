@@ -4,7 +4,7 @@ English-only autonomous study, authorized November 3, 2026. Read the parent
 `AGENTS.md` and `phenolic_burnthrough_plan.md` for user requirements and physics.
 
 Current execution: **one native case at a time, with ten shared-memory cores**
-(`-smp -np 10`), as requested on November 4. The active booster CF quarter-step
+(`-smp -np 10`), as requested on November 4. The booster CF quarter-step
 case was cleanly paused at index 1117 / 3.490625 s and resumed in a fresh sealed
 `_smp10` package. Thirty-two resumed steps agree with a one-core native reference:
 maximum nodal temperature difference 1.14e-12 K; conversion, mass and integrated
@@ -12,8 +12,10 @@ energy are identical. The native log confirms ten threads/cores. This short
 verification covers heating before row deletion; all subsequent topology,
 cooling, balance and independent-reference gates remain required.
 
-All ten remaining resolution cases and five deferred controls now have ten-core
-successor inputs. `configs/campaign_queue.json` records their names and the single
+Ten continuing resolution cases and five deferred controls received ten-core
+successor inputs. Booster CF quarter-step has now completed its full 300 s
+horizon; nine resolution cases remain, with sustainer Al 160/40-row refinement
+active in the same serial queue. `configs/campaign_queue.json` records their names and the single
 current observer. Prior one-core results, inputs and checkpoint lineage are
 preserved. The printed primary source appendix describes those original primary
 runs; the execution change is documented separately in the report and
@@ -74,8 +76,17 @@ change from the primary 34 s stop. Retained mesh is unchanged; the largest
 same-mesh profile difference is 0.09913 K. Booster Al quarter-step has also
 passed all 6,976 intervals through 300 s and its independent check (maximum
 profile difference 0.06756 K). Its inner/outer casing peaks are 84.5602/84.5418 C,
-changing by only 0.224 K, with unchanged retained mesh. Ten native refinement
-cases remain, with booster CF quarter-step active. These primary cases retain the documented
+changing by only 0.224 K, with unchanged retained mesh. Booster CF quarter-step
+has also passed all 6,976 intervals through 300 s, including its preserved
+one-to-ten-core restart lineage and the independent check (0.06756 K maximum
+profile difference). Its inner/outer casing peaks are 113.9253/104.8661 C at
+102.875/144.1875 s, changes of -0.31790/-0.26473 K; 6.270625 mm remains.
+All four time-only comparisons now meet the casing/scope and retained-thickness
+targets. Nine spatial/joint refinement cases remain; sustainer Al 160/40 is active.
+The hot-face differences remain significant: both boosters change by 32.520 K
+at 7 s and up to 63.089 K at matched times near row transfer. The report adds
+all four matched hot-face difference curves, keeping this separate from casing
+convergence. These primary cases retain the documented
 0.1-percent removal rule; completed histories do not establish native mesh
 convergence. Each terminal run must pass both
 native audits and independent field, row-schedule and control checks before

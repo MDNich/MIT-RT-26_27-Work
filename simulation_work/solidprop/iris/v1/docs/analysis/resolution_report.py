@@ -124,9 +124,20 @@ def create(root,out,captured):
                     f"{max(abs(v) for v in a['peak_differences_K'].values()):.3f}" if a['peak_differences_K'] else '--',
                     f"{100*a['scope_time_relative_change']:.3f}" if a['scope_time_relative_change'] is not None else '--',
                     f"{a['remaining_difference_mm']:.4f}",
-                    a['fine'].split('_midpoint_')[-1].replace('_',' '),'Yes' if a['passed'] else 'No']) for a in native_resolution['comparisons']),
+                    a['fine'].split('_midpoint_')[-1].replace('_smp10','').replace('_',' '),'Yes' if a['passed'] else 'No']) for a in native_resolution['comparisons']),
                 r'\bottomrule\end{tabular}\end{table}',
                 'Only completed, audited native cases with passing same-mesh independent checks enter this table. Earlier refinement failures remain visible; convergence is judged on the final relevant comparisons.']
+            complete_time=[native_resolution['records'][a['fine']] for a in native_resolution['comparisons']
+                           if a['complete_histories'] and 'time_quarter' in a['fine']]
+            if complete_time:
+                parts += [r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrrr}\toprule Case & Inner peak [$^\circ$C] & Time [s] & Outer peak [$^\circ$C] & Time [s] & Retained [mm]\\\midrule',
+                    '\n'.join(row([name(d['case']),
+                        f"{d['sampled_maxima']['case_inner_max_C']['temperature_C']:.3f}",
+                        f"{d['sampled_maxima']['case_inner_max_C']['time_s']:.4f}",
+                        f"{d['sampled_maxima']['case_outer_max_C']['temperature_C']:.3f}",
+                        f"{d['sampled_maxima']['case_outer_max_C']['time_s']:.4f}",
+                        f"{d['remaining_mm']:.6f}"]) for d in complete_time),
+                    r'\bottomrule\end{tabular}\caption{Accepted native quarter-step casing peaks for histories completing their prescribed cooling horizon, at unchanged 80/20-row spatial resolution. The scope-limited sustainer CF result is described separately below. These values do not establish spatial convergence or a motor lifetime.}\end{table}']
             for comparison in native_resolution['comparisons']:
                 if not comparison['both_scope_limited']:
                     continue

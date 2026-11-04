@@ -146,12 +146,14 @@ The present hot face is therefore not accidentally set to approximately 100 degr
         assert abs(fine[-1]['time_s']-7)<1e-8
         lookup={round(a['time_s'],8):a for a in fine}
         diffs=[(abs(a['Ts_mean_C']-lookup[round(a['time_s'],8)]['Ts_mean_C']),a['time_s']) for a in coarse]
+        signed=[lookup[round(a['time_s'],8)]['Ts_mean_C']-a['Ts_mean_C'] for a in coarse]
         maxdiff,when=max(diffs)
         resolution.append(dict(case=run['case'],fine_runtime=name,accepted_sha256=sha(ap),comparison_sha256=sha(cp),
             primary_Ts_at_7s_C=coarse[-1]['Ts_mean_C'],quarter_Ts_at_7s_C=fine[-1]['Ts_mean_C'],
             difference_at_7s_K=fine[-1]['Ts_mean_C']-coarse[-1]['Ts_mean_C'],
             primary_hot_peak_C=max(a['Ts_mean_C'] for a in coarse),quarter_hot_peak_C=max(a['Ts_mean_C'] for a in fine),
-            max_matched_heating_difference_K=maxdiff,max_difference_time_s=when))
+            max_matched_heating_difference_K=maxdiff,max_difference_time_s=when,
+            matched_heating_times_s=[a['time_s'] for a in coarse],fine_minus_primary_hot_surface_K=signed))
     if resolution:
         text+=r'''\subsection{Completed native time check: the hot face still needs refinement}
 The completed quarter-step comparisons keep the same 80/20-row geometry and physical inputs. Each passes the native audits and its same-mesh independent check. The separate casing-peak or material-scope timing criteria do not establish a time-converged hot-face history.
@@ -167,6 +169,23 @@ Case & Primary & Quarter step & K & heating difference [K]\\\midrule
         for d in resolution:
             text+=f"For {title(d['case'])}, the sampled hot-face peak changes from {d['primary_hot_peak_C']:.2f} to {d['quarter_hot_peak_C']:.2f} degrees Celsius, although its temperature at the end of heating changes more. The largest matched heating-history difference occurs at {d['max_difference_time_s']:.5f} s. "
         text+='The remaining refinement must assess surface temperatures and transfer events as well as casing temperatures. The thousands-of-degrees scale is present in both native solutions; the exact hot-face history remains provisional.\n'
+        if len(resolution)==4:
+            fig,axes=plt.subplots(1,2,figsize=(8.4,2.8),sharey=True,constrained_layout=True)
+            for ax,motor in zip(axes,('sustainer','booster')):
+                ax.axhline(0,color='#555555',lw=.7)
+                for d in resolution:
+                    if not d['case'].startswith(motor):continue
+                    ax.plot(d['matched_heating_times_s'],d['fine_minus_primary_hot_surface_K'],
+                            color=CASE_COLORS[d['case']],ls='--' if d['case'].endswith('cf') else '-',
+                            label='CF' if d['case'].endswith('cf') else 'Al',lw=1.15)
+                ax.set(title=motor.title(),xlabel='Time since heating starts [s]',xlim=(0,7))
+                ax.legend(fontsize=8)
+            axes[0].set_ylabel(r'Quarter step minus primary $T_s$ [K]')
+            fig.savefig(out/'native_hot_surface_time_difference.pdf')
+            fig.savefig(out/'native_hot_surface_time_difference.png',dpi=170)
+            plt.close(fig)
+            text+=r'''\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_hot_surface_time_difference.pdf}\caption{Accepted native hot-face differences at identical sampled times, using the same 80/20-row mesh. Al and CF curves nearly overlap within each motor. Sharp differences accompany start-up and row transfer; a shifted transfer changes which surface is exposed. These curves demonstrate sensitivity to the coupling interval, not experimental error or completed surface-temperature convergence.}\end{figure}
+'''
     (out/'native_hot_surface_time_comparison.json').write_text(json.dumps(dict(records=resolution,qualification='Audited native time-only comparisons; passing casing criteria does not establish surface-temperature convergence.'),indent=2)+'\n')
     return text
 
