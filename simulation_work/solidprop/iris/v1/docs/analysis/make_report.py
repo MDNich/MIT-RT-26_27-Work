@@ -239,6 +239,8 @@ A defensible final answer may be a conditional ``not reached through the accepte
         check=json.loads((ROOT/'validation/restart_comparison.json').read_text())
         report=report.replace('A controlled checkpoint pause/resume has advanced successfully; an uninterrupted comparison remains to be completed.',
             'The controlled checkpoint restart matched an uninterrupted native run at 1.1 s, including conversion state and energy integrals. The maximum nodal temperature difference was '+r'\SI{'+f"{check['max_nodal_temperature_difference_K']:.4g}"+r'}{K}.')
+        report=report.replace('verify native first/last-row load transfer and uninterrupted versus restarted states, then',
+                              'verify native first/last-row load transfer, then')
     if (ROOT/'validation/native_pulse_control.json').exists():
         report=report.replace('A defensible final answer may be', 'A native one-second heating pulse followed by five cooling steps passed the boundary-transfer and balance checks. This verifies the prescribed switch to ambient gas and zero char consumption; it does not measure real tailoff.\n\nA defensible final answer may be')
     (ROOT/'docs/en/iris_phenolic_report.tex').write_text(report)

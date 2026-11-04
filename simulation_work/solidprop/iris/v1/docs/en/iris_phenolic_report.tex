@@ -7,7 +7,7 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Setup and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 03, 2026 at 23:02 EST}
+\date{November 03, 2026 at 23:07 EST}
 \begin{document}\maketitle
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
@@ -80,11 +80,12 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 03, 2026 at 23:02 EST. The table includes only accepted native states. All four 0.1 s pilots passed. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at November 03, 2026 at 23:07 EST. The table includes only accepted native states. All four 0.1 s pilots passed. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
 Sustainer Al (n=20) & 7.0000 & 1051.62 & 4.76250 & 0.0320 \\
+Sustainer CF (n=20) & 1.3125 & 1093.67 & 4.76250 & 0.4201 \\
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[H]\centering \includegraphics[width=\textwidth]{../analysis/accepted_histories.pdf} \caption{Accepted native histories. No extrapolated future states are included.}\end{figure}
 
@@ -100,7 +101,9 @@ The twenty-cell mesh does not resolve recession sufficiently. The independent su
 Numerical long-exposure stress tests were also performed to expose weaknesses in the inherited removal scheme. They showed substantial mesh/time-step dependence, while the casing had already left its provisional property range. Those apparent exhaustion times are explicitly rejected as motor-lifetime results. The retained partial-cell thermal mass and lagged surface coupling require further assessment. Physically interpreted continuous-exposure runs now stop at the first casing property-range crossing. That crossing indicates a limit of this model, not an experimentally established structural failure.
 
 \section{Next results}
-Complete the four native seven-second baselines and refined comparisons, verify native first/last-row load transfer and uninterrupted versus restarted states, then compare pulse/cooling and input-sensitivity cases within their stated material scope. Report physical recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
+Complete the four native seven-second baselines and refined comparisons, verify native first/last-row load transfer, then compare pulse/cooling and input-sensitivity cases within their stated material scope. Report physical recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
+
+A native one-second heating pulse followed by five cooling steps passed the boundary-transfer and balance checks. This verifies the prescribed switch to ambient gas and zero char consumption; it does not measure real tailoff.
 
 A defensible final answer may be a conditional ``not reached through the accepted exposure'' result with remaining thickness, rather than a finite lifetime. Neither missing wall-exposure data nor uncalibrated char kinetics can be recovered from solver convergence. The study cannot establish real motor lifetime without supported wall heating and recession evidence.
 
