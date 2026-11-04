@@ -42,9 +42,15 @@ That is a model-scope stop, not casing failure or liner burnthrough. Corrected
 booster Al is complete through 300 s with 1,744 accepted single-substep intervals.
 Its independent comparison passes within 0.2205 K; 6.270625 mm of mesh remains.
 Its sampled inner/outer casing peaks are 84.7839/84.7654 C at 142.75 s.
-Booster CF is running, followed by thirteen native time/mesh checks in one
-serial queue. These primary cases retain the documented 0.1-percent removal
-rule; completed histories do not establish native mesh convergence. Each terminal run must pass both
+Booster CF is also complete through 300 s: the native audit and independent
+comparison pass (maximum profile difference 0.2205 K), with 6.270625 mm retained.
+Its sampled inner peak is 114.2432 C at 102.75 s; the outer peak is 105.1308 C
+at 144.25 s. All four corrected primary cases have now reached audited terminal
+states: three completed horizons and the sustainer CF scope stop. Thirteen
+native time/mesh checks continue in the existing serial queue; the sustainer Al
+quarter-step case is active. These primary cases retain the documented
+0.1-percent removal rule; completed histories do not establish native mesh
+convergence. Each terminal run must pass both
 native audits and independent field, row-schedule and control checks before
 the queue advances. No second queue or solver may be started.
 Historical native curves retain their original routine and are explicitly labelled. See the ordered list

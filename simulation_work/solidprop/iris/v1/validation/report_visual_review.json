@@ -1,30 +1,41 @@
 {
-  "reviewed_utc": "2026-11-04T08:26:03.914145+00:00",
-  "pdf_sha256": "ab089f30d6367178e3c463e986e5f8eccf72d76b37dbbc058618da2220b689ae",
+  "reviewed_utc": "2026-11-04T08:58:09.172161+00:00",
+  "pdf_sha256": "ab6738e61a042d8a8de6709be074780323d3d235481eb840f4ddf8d41c762d91",
   "pages": 21,
   "render": "pdftoppm -scale-to 1250 -png",
-  "review": "All nine changed pages (1, 2, 5, 6, 7, 8, 9, 10, 15) visually inspected. The other twelve rendered pages are pixel-identical to the previously inspected edition. Tables, curves, eight corrected field panels, legends and text are legible without clipping or overlap. TeX log has no overfull/underfull boxes or warnings.",
-  "previous_reviewed_commit": "b270e0dc0d900c7bcc4fe8b073af5247f0ff12cc",
-  "snapshot_captured": "2026-11-04T03:23:37.544006-05:00",
+  "review": "All eight changed pages (1, 2, 5, 6, 7, 8, 9, 15) visually inspected. The final wording rebuild changed only pages 1, 2 and 5, all re-inspected. The other thirteen pages are pixel-identical to the previously reviewed publication. Tables, curves, field panels, legends and text are legible without clipping or overlap. TeX log has no overfull/underfull boxes or warnings.",
+  "previous_reviewed_commit": "58532b6fcc79866b1143503efaf69e6bbf5efd2a",
+  "snapshot_captured": "2026-11-04T03:55:40.077880-05:00",
   "audited_completed_native_cases": [
     {
       "case": "booster_al",
       "through_s": 299.9999999999997,
+      "status": "COMPLETED_HORIZON",
       "accepted_record_sha256": "9e1372d9b33e10a76a99bc47eb957584bcafd872ae366ae1ecd92af2252b376a",
       "independent_comparison_sha256": "e9a29b4f7d7f8b3bdc3d733176bbd251591f3bf1c4402a0101974714c0cdab0c"
     },
     {
+      "case": "booster_cf",
+      "through_s": 299.9999999999997,
+      "status": "COMPLETED_HORIZON",
+      "accepted_record_sha256": "121fc326c0d2784df914d25efe4aadd17dc20d49ca8b19915baf4f22dab95287",
+      "independent_comparison_sha256": "414bce67bf5237077d383279e0a3bf3d38b183807de93dc79799e88d552ca0d6"
+    },
+    {
       "case": "sustainer_al",
       "through_s": 127.0,
+      "status": "COMPLETED_HORIZON",
       "accepted_record_sha256": "4c6c0eda7d4bd3ada1c2e82da2baed8d3745c1c32f6de0832d384d7969f5b0b2",
       "independent_comparison_sha256": "f6a4bf0d061a025d3e1443a0cdd427c1deeacf1454e1c610dd073294f15ce496"
     },
     {
       "case": "sustainer_cf",
       "through_s": 33.99999999999999,
+      "status": "CASE_PROPERTY_LIMIT_REACHED",
       "accepted_record_sha256": "cbdcb60fb3a9f9c921c301b760dd2dcca32d64a5d85519605198ab78dff7b8b7",
       "independent_comparison_sha256": "2d78ccb2cf8c6301a87fa515309f37032a193cba1e5e86dd817675a3fc892dae"
     }
   ],
-  "qualification": "Intermediate three-terminal-case edition: completed sustainer Al and booster Al prescribed heating/cooling, sustainer CF material-scope stop, and partial booster CF history only. Native convergence and selected sensitivity controls remain pending. Removal rule and firing conditions remain uncalibrated; no actual motor burnthrough time established."
+  "audited_native_steps": 5220,
+  "qualification": "All four primary native cases audited: three prescribed horizons completed and sustainer CF stopped at its material-scope flag. Native spatial/time convergence and selected sensitivity controls remain unfinished. Numerical acceptance is not a real-motor lifetime prediction or validation of the uncalibrated removal law."
 }

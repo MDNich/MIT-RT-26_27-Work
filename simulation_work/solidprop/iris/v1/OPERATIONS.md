@@ -73,7 +73,7 @@ substep per controller interval. The first second after the 7 s pulse uses
 0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
 unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
 
-## Current material correction and dispatch (November 4, 08:24 UTC)
+## Current material correction and dispatch (November 4, 08:53 UTC)
 
 The paired default/tight 20 s controls are COMPLETE and audited (624 single
 substeps each). Layer removal and cooling transfer pass. Their native profiles
@@ -143,16 +143,34 @@ seven-second heating pulse and cooling through 300 s. This is a conditional
 80-row result, not completed native mesh convergence or a real firing lifetime.
 Its log warnings are USERCK and elapsed/CPU performance; no solver error.
 
-Booster CF is now the active primary. Its accepted-history independent check
-through 79.75 s passes (maximum profile difference 0.22042 K), including the
-same first-row schedule, persistent topology and cooling controls. Later native
-values remain pending. No queue or solver was duplicated.
+Corrected booster CF is COMPLETE through 300 s, accepted at 08:47:40 UTC.
+All 1,744 accepted intervals, sealed inputs, restart copies and native logs
+passed the full audit. The independent comparison passes through the endpoint
+(maximum profile difference 0.22042 K), with identical first-row scheduling at
+4.600 s, transfer at 4.6125 s, persistent topology and cooling checks. Maximum
+step energy residual is 0.06314 percent; maximum hot-load error is 8.50e-7.
+It retains 6.270625 mm of mesh. Sampled inner/outer casing peaks are
+114.24317 C at 102.75 s and 105.13083 C at 144.25 s. These are conditional
+80-row histories; no actual firing or lifetime is inferred.
+
+Its warnings are USERCK, elapsed/CPU performance and the same negligible
+21.9999998 C KXX-table undershoot seen in sustainer CF. This is about 2e-7 K
+below the table endpoint. Native repeated range checking ceases, but the
+controller continues the explicit property-scope guard at every accepted step.
+
+All four corrected primary cases have reached audited stopping points. The
+existing queue advanced to sustainer_al_pulse7_midpoint_time_quarter. No queue
+or solver was duplicated. Thirteen native resolution cases remain, followed
+later by the five prepared sensitivity/cutoff controls below.
+The first quarter-step run also passed an early same-mesh comparison through
+1.15625 s (maximum profile difference 0.00354 K). It has not yet reached layer
+removal or cooling at that checkpoint; this is not a completed convergence pair.
 
 The ONLY active serial queue is PID 26648 at dispatch (always verify its actual
-command using baseline_queue.pid). It began at 06:57:11 UTC and contains:
+command using baseline_queue.pid). It began at 06:57:11 UTC with the following ordered dispatch:
 
-1. The remaining three corrected primary cases: sustainer CF, booster Al,
-   booster CF, with runtime suffix _pulse7_n80_midpoint_tight.
+1. The three primary cases then remaining: sustainer CF, booster Al and
+   booster CF, with suffix _pulse7_n80_midpoint_tight. All are now complete.
 2. Four 80/20-row time_quarter cases.
 3. Four 160/40-row space160 cases.
 4. Four 320/80-row joint320 cases.
@@ -186,7 +204,7 @@ comparison files so they cannot replace primary case records.
 Run model/compare_native_resolution.py as completed cases arrive; it reports
 only terminal audited records, compares censored histories by scope time rather
 than an uncomputed peak, and retains failed intermediate refinements visibly.
-It currently has three completed primary records and no completed pair.
+It currently has four completed primary records and no completed refinement pair.
 
 Evidence/scripts: `native_solver_tolerance_comparison.json`,
 `native_temperature_convention.json`, `reaction_ramp_inherited.json`,
@@ -331,7 +349,8 @@ at the documented fixed default rule. Their results must remain conditional.
 
 native_uniformity.json checks every accepted primary checkpoint for same-radius
 axial/angular variation. Both completed Al cases are essentially uniform; maximum sustainer CF
-phenolic/casing spreads are about 0.00654/0.0130 K. This checks the radial
+phenolic/casing spreads are about 0.00654/0.0130 K. Booster CF spreads are
+0.00575/0.01039 K. This checks the radial
 averaging of the uniform-sector calculations, not uniformity of a real motor.
 
 Five later native controls are prepared and NOT in the active queue:
@@ -354,9 +373,9 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Finish the remaining booster CF corrected-midpoint, tight-tolerance native pulse/cooling run. Verify first-row
-   removal persists through subsequent restarts, all energy/hot-load checks,
-   live counts and restart copies. Check each terminal accepted record.
+1. Complete the thirteen queued native time/mesh checks. Preserve the strict
+   native acceptance gates, exact row scheduling, restart topology and independent
+   comparison at every terminal record. Keep all four primary results intact.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
    It compares accepted native fields only with the same-mesh independent
    model. Exact row scheduling is a separate strict check: a one-step event
@@ -391,11 +410,10 @@ Publish major milestones using `model/publish.py '<milestone>' --push` after
 checks. It stages Iris-only paths, checks storage and rejects files/new Git
 blobs >=100,000,000 bytes. Never push native binary results or scratch.
 
-The b270e0dc milestone published the corrected sustainer CF scope stop,
-combined-input studies and cutoff limitation. The current edition adds the
-completed booster Al heating/cooling history and its delayed casing peaks,
-with accepted partial booster CF fields and the third completed native
-uniformity check. It freezes accepted
+The 58532b6f milestone published the completed booster Al history. The current
+edition completes the primary four-case comparison with booster CF through
+300 s, explicit times of inner/outer casing maxima, four completed uniformity
+checks and the recorded negligible table-endpoint warning in both CF cases. It freezes accepted
 states and explicitly separates independent results and historical states.
 Its reviewed PDF hash and page count are in validation/report_visual_review.json.
 
