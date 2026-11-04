@@ -50,7 +50,12 @@ states: three completed horizons and the sustainer CF scope stop. The thirteen-c
 native time/mesh campaign continues in the existing serial queue. The sustainer Al
 quarter-step case is complete through 127 s and passed both audits: its inner
 casing peak shifts by -0.721 K and retained mesh thickness is unchanged. This
-first completed time comparison does not establish spatial convergence. These primary cases retain the documented
+time comparison does not establish spatial convergence. Sustainer CF quarter-step
+has now passed 2,736 native intervals and its independent check through the
+150 C property-scope stop at 35 s (bracket 34.9375--35 s), a 2.941 percent
+change from the primary 34 s stop. Retained mesh is unchanged; the largest
+same-mesh profile difference is 0.09913 K. Eleven native refinement cases remain,
+with booster Al quarter-step active. These primary cases retain the documented
 0.1-percent removal rule; completed histories do not establish native mesh
 convergence. Each terminal run must pass both
 native audits and independent field, row-schedule and control checks before

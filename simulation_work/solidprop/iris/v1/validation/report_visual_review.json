@@ -1,11 +1,11 @@
 {
-  "reviewed_utc": "2026-11-04T11:32:49.342845+00:00",
-  "pdf_sha256": "66b7fb985fcdda672a9bb744dc161dd250215e7e01124d6108181ff09fbf43fa",
+  "reviewed_utc": "2026-11-04T12:39:49.325271+00:00",
+  "pdf_sha256": "11270279b51db18c3ade33c01a4dd3f21cdc98b0d81e4b5e023c9b833ad9c6eb",
   "pages": 71,
-  "render": "pdftoppm -scale-to 1250 -png; all 71 pages rendered; contact sheets plus full-page checks",
-  "review": "All 71 pages inspected in contact sheets; temperature plots, nonlinear equations, material table, full Fortran midpoint page and wrapped compiler commands also inspected at full-page resolution. Final formatting revision changed pages 1, 7, 14-19 and 49; these were reviewed again, and the other 62 pages are pixel-identical to the reviewed draft. Line-numbered source is readable and complete; no clipping or overlap. TeX log has no overfull/underfull boxes, undefined references or warnings.",
-  "previous_reviewed_commit": "07107560a1b2c14fce4322a62e3f533d4e4f852a",
-  "snapshot_captured": "2026-11-04T06:30:10.397873-05:00",
+  "render": "pdftoppm -scale-to 1250 -png; all 71 pages rendered in ansystmp/pdf_review/cf_time_final",
+  "review": "Five pages changed against the prior reviewed edition: 1, 6, 14, 25 and 26. All five inspected in contact sheets, with temperature and convergence tables at full-page resolution; the remaining 66 pages are pixel-identical. A final wording/time revision changed pages 1, 14 and 26, reviewed again. No clipping or overlap. TeX log has no warnings, overfull/underfull boxes or undefined references. Full source listings remain intact.",
+  "previous_reviewed_commit": "5d86fc2697c94289b123ca4e1bf281c8e3f57c63",
+  "snapshot_captured": "2026-11-04T07:38:32.230852-05:00",
   "audited_completed_native_cases": [
     {
       "case": "booster_al",
@@ -38,7 +38,25 @@
   ],
   "audited_native_steps": 5220,
   "qualification": "All four primary native cases audited: three prescribed horizons completed and sustainer CF stopped at its material-scope flag. Native spatial/time convergence and selected sensitivity controls remain unfinished. Numerical acceptance is not a real-motor lifetime prediction or validation of the uncalibrated removal law.",
-  "additional_audited_native_time_comparison": "sustainer_al_pulse7_midpoint_time_quarter: 4208 steps, 127 s; casing peaks shift 0.721 K, but hot-face temperature at 7 s changes 43.656 K. Not surface-temperature convergence.",
   "printed_source_archive_files": 46,
-  "source_manifest_sha256": "5eaeb40e08adaf7c252e89aa686c79e5b5c8dd88fc32302549247c1dd4ea2a31"
+  "source_manifest_sha256": "5eaeb40e08adaf7c252e89aa686c79e5b5c8dd88fc32302549247c1dd4ea2a31",
+  "additional_audited_native_time_comparisons": [
+    {
+      "runtime": "sustainer_al_pulse7_midpoint_time_quarter",
+      "accepted_steps": 4208,
+      "time_s": 127.0,
+      "status": "COMPLETED_HORIZON",
+      "accepted_record_sha256": "a4c22cf2091d976eaf49a94a7ac02c32e332797c7df3017663ad42ae19cb404e",
+      "independent_comparison_sha256": "b8091ff991e9d604f704dd0517452debf14be68a6f752ed643bd8df8f47aff32"
+    },
+    {
+      "runtime": "sustainer_cf_pulse7_midpoint_time_quarter",
+      "accepted_steps": 2736,
+      "time_s": 34.9999999999995,
+      "status": "CASE_PROPERTY_LIMIT_REACHED",
+      "accepted_record_sha256": "d30e1f139dd672d9058a292484f5fb00f5e001868ecc580d6662f21865edb4e4",
+      "independent_comparison_sha256": "ea85d343791f5bd0e818762be089d59fe8c9d59241c322b3211cfbc8649cbd25"
+    }
+  ],
+  "additional_time_comparison_qualification": "Sustainer Al casing peaks change 0.721 K; sustainer CF scope time changes 2.941 percent (34 to 35 s). Both retain the same mesh thickness. Both hot-face temperatures at 7 s change 43.656 K, so these are not surface-temperature convergence claims."
 }

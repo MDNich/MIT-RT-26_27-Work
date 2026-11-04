@@ -152,7 +152,7 @@ The present hot face is therefore not accidentally set to approximately 100 degr
             max_matched_heating_difference_K=maxdiff,max_difference_time_s=when))
     if resolution:
         text+=r'''\subsection{Completed native time check: the hot face still needs refinement}
-The first completed quarter-step comparison keeps the same 80/20-row geometry and physical inputs. It passes the native audits and its same-mesh independent check. Its casing-peak comparison passes the stated target, but that does not imply a time-converged hot-face history.
+The completed quarter-step comparisons keep the same 80/20-row geometry and physical inputs. Each passes the native audits and its same-mesh independent check. The separate casing-peak or material-scope timing criteria do not establish a time-converged hot-face history.
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrr}\toprule
  & \multicolumn{2}{c}{$T_s$ at 7 s [$^\circ$C]} & Change & Maximum matched\\

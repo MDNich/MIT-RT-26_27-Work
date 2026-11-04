@@ -13,7 +13,7 @@ frame=single,framerule=.2pt,rulecolor=\color{black!25},
 xleftmargin=22pt,framexleftmargin=3pt,aboveskip=9pt,belowskip=9pt}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Detailed Physics, Implementation and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 04, 2026 at 06:30 UTC-05:00}
+\date{November 04, 2026 at 07:38 UTC-05:00}
 \begin{document}\maketitle
 \markboth{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
@@ -76,14 +76,15 @@ The corrected thin-sector Simulation 3 in that report reached a peak of 1400.50 
 
 The present hot face is therefore not accidentally set to approximately 100 degrees Celsius. However, this does not demonstrate that its predicted temperature is physically correct. Actual heating, hot radiation, propellant shielding, tailoff, material properties and char removal remain uncalibrated. The retained hot-surface peaks and row-transfer jumps are also mesh/time dependent. The current 80-row primary fields should not be called final converged surface temperatures. The refinement and input-sensitivity sections quantify what has been checked without forcing a temperature to match an expectation.
 \subsection{Completed native time check: the hot face still needs refinement}
-The first completed quarter-step comparison keeps the same 80/20-row geometry and physical inputs. It passes the native audits and its same-mesh independent check. Its casing-peak comparison passes the stated target, but that does not imply a time-converged hot-face history.
+The completed quarter-step comparisons keep the same 80/20-row geometry and physical inputs. Each passes the native audits and its same-mesh independent check. The separate casing-peak or material-scope timing criteria do not establish a time-converged hot-face history.
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrr}\toprule
  & \multicolumn{2}{c}{$T_s$ at 7 s [$^\circ$C]} & Change & Maximum matched\\
 Case & Primary & Quarter step & K & heating difference [K]\\\midrule
 Sustainer Al & 1466.03 & 1422.38 & -43.66 & 48.69 \\
+Sustainer CF & 1466.03 & 1422.38 & -43.66 & 48.69 \\
 \bottomrule\end{tabular}\caption{Native-to-native time-resolution evidence. Matching means the same sampled physical times; a different row-transfer time can change the represented exposed surface. This table does not compare ANSYS with experimental measurements.}\end{table}
-For Sustainer Al, the sampled hot-face peak changes from 1479.60 to 1479.34 degrees Celsius, although its temperature at the end of heating changes more. The largest matched heating-history difference occurs at 0.01250 s. The remaining refinement must assess surface temperatures and transfer events as well as casing temperatures. The thousands-of-degrees scale is present in both native solutions; the exact hot-face history remains provisional.
+For Sustainer Al, the sampled hot-face peak changes from 1479.60 to 1479.34 degrees Celsius, although its temperature at the end of heating changes more. The largest matched heating-history difference occurs at 0.01250 s. For Sustainer CF, the sampled hot-face peak changes from 1479.60 to 1479.34 degrees Celsius, although its temperature at the end of heating changes more. The largest matched heating-history difference occurs at 0.01250 s. The remaining refinement must assess surface temperatures and transfer events as well as casing temperatures. The thousands-of-degrees scale is present in both native solutions; the exact hot-face history remains provisional.
 
 \section{Geometry and discretization}
 The supplied propellant radii are provisionally used as liner inner radii. No unreported gap or adhesive layer is inserted. Shared interface nodes impose perfect thermal contact. Actual bond/contact resistance and manufacturing thickness tolerances are unavailable and are not quantified by the material-property perturbations. The user requested short axial and sector slices with about twenty radial cells per material. Each exchanged STEP contains exactly two solids and is reimported independently to verify volumes and dimensions.
@@ -354,7 +355,7 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 04, 2026 at 06:30 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
+This snapshot was frozen at November 04, 2026 at 07:38 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Endpoint $T_s$ [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
@@ -633,10 +634,15 @@ Native comparisons require casing peak changes below 5 K for completed histories
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrll}\toprule Case & Peak change [K] & Scope change [\%] & Thickness [mm] & Comparison & Pass\\\midrule
 
 Sustainer Al & 0.721 & -- & 0.0000 & time quarter & Yes \\
+Sustainer CF & -- & 2.941 & 0.0000 & time quarter & Yes \\
 
 \bottomrule\end{tabular}\end{table}
 
 Only completed, audited native cases with passing same-mesh independent checks enter this table. Earlier refinement failures remain visible; convergence is judged on the final relevant comparisons.
+
+For Sustainer CF, the accepted material-scope bracket changes from [33.7500, 34.0000] s to [34.9375, 35.0000] s. The refined endpoint has an inner casing temperature of 150.013 degrees Celsius and retains 4.702969 mm of mesh. These are cooling-phase property-range stops, not burnthrough or structural failure. Their outer casing endpoint temperatures are not completed cooling peaks.
+
+11 prepared native resolution cases remain without terminal accepted comparisons at this edition. The primary histories remain separate from these refinements; the hot-face time comparison is reported earlier.
 
 \subsection{Sensitivity to the row-removal cutoff}
 
@@ -694,7 +700,7 @@ Booster CF & Mesh/time & 0.745 & -- & 0.0000 & Yes \\
 
 Passing a successive-refinement target does not prove a zero-cutoff limit or remove the difference from the original 0.1-percent choice. Native confirmation and interpretation of the tighter rule remain separate work; no queued sealed configuration is silently replaced.
 
-A separate native 80/20-row sustainer CF control with fractional cutoff 1e-6 has been prepared but has not completed both verification gates. Its time schedule matches the queued 80-row quarter-step default-cutoff case, allowing a controlled later native comparison. Neither sealed input is changed in place.
+A separate native 80/20-row sustainer CF control with fractional cutoff 1e-6 has been prepared but has not completed both verification gates. Its time schedule matches the 80-row quarter-step default-cutoff reference, allowing a controlled later native comparison. Neither sealed input is changed in place.
 
 \subsection{Combined-input pulse scenarios}
 

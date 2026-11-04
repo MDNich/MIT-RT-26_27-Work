@@ -127,6 +127,20 @@ def create(root,out,captured):
                     a['fine'].split('_midpoint_')[-1].replace('_',' '),'Yes' if a['passed'] else 'No']) for a in native_resolution['comparisons']),
                 r'\bottomrule\end{tabular}\end{table}',
                 'Only completed, audited native cases with passing same-mesh independent checks enter this table. Earlier refinement failures remain visible; convergence is judged on the final relevant comparisons.']
+            for comparison in native_resolution['comparisons']:
+                if not comparison['both_scope_limited']:
+                    continue
+                coarse=native_resolution['records'][comparison['coarse']]
+                fine=native_resolution['records'][comparison['fine']]
+                a,b=coarse['scope_bracket_s'],fine['scope_bracket_s']
+                parts += [f"For {name(comparison['case'])}, the accepted material-scope bracket changes from "
+                    f"[{a[0]:.4f}, {a[1]:.4f}] s to [{b[0]:.4f}, {b[1]:.4f}] s. "
+                    f"The refined endpoint has an inner casing temperature of {fine['sampled_maxima']['case_inner_max_C']['temperature_C']:.3f} "
+                    f"degrees Celsius and retains {fine['remaining_mm']:.6f} mm of mesh. "
+                    'These are cooling-phase property-range stops, not burnthrough or structural failure. '
+                    'Their outer casing endpoint temperatures are not completed cooling peaks.']
+            parts += [f"{len(native_resolution['pending'])} prepared native resolution cases remain without terminal accepted comparisons at this edition. "
+                'The primary histories remain separate from these refinements; the hot-face time comparison is reported earlier.']
         else:
             parts += ['At this edition no completed native refinement pair is available. The independent refinement results below remain distinct.']
 

@@ -55,5 +55,5 @@ def create(root,read):
         if verified:
             parts += [f"The separate native 80/20-row sustainer CF control with fractional cutoff 1e-6 has passed its native audit and same-mesh independent comparison through {a['time_s']:.3f} s. Its largest compared live-profile discrepancy is {max(x['max_live_profile_difference_K'] for x in c['comparisons']):.3f} K. This verifies the conditional implementation, not the physical choice of cutoff."]
         else:
-            parts += ['A separate native 80/20-row sustainer CF control with fractional cutoff 1e-6 has been prepared but has not completed both verification gates. Its time schedule matches the queued 80-row quarter-step default-cutoff case, allowing a controlled later native comparison. Neither sealed input is changed in place.']
+            parts += ['A separate native 80/20-row sustainer CF control with fractional cutoff 1e-6 has been prepared but has not completed both verification gates. Its time schedule matches the 80-row quarter-step default-cutoff reference, allowing a controlled later native comparison. Neither sealed input is changed in place.']
     return parts
