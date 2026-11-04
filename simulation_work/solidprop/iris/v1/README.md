@@ -5,8 +5,11 @@ English-only autonomous study, authorized November 3, 2026. Read the parent
 
 Current status: four 0.1 s native pilots and all four analytical conduction
 benchmarks passed. The native conduction error was below 0.013 K. The sustainer Al
-seven-second baseline is complete with 560 accepted steps; its checkpoint
-pause/resume has advanced.
+and CF seven-second baselines are complete with 560 accepted steps each.
+The controlled restart exactly matches the uninterrupted reference; the native
+pulse/cooling control also passed. Sixteen manufactured native layer-removal
+states verify live elements and moving hot-face loads, including the final
+exposed-casing state, within 0.00048 K of the analytical cylinder.
 A serial queue will complete the four 20-row baselines, restart/pulse controls,
 and four refined seven-second pulse/cooling cases with 80 phenolic rows and
 20 casing rows. See the ordered list
@@ -19,6 +22,12 @@ are explicitly rejected as lifetime predictions. New physically interpreted
 long-exposure calculations stop at the property-range flag (150 C CF, 300 C
 Al); these are model-scope limits, not certified structural failure criteria.
 No credible motor burnthrough time has yet been established.
+
+The ten-page intermediate English report includes accepted sustainer casing
+temperatures, solid/gas/char mass bookkeeping, independent/native profiles,
+refined property-scope stopping points and 54 independent input sensitivities.
+These sensitivities are engineering scenarios, not measured confidence bounds.
+Source archives and compact verification records are under `validation/`.
 
 Four exact two-body STEP sectors are in `geometry/`. The English report is
 `output/pdf/iris_phenolic_report.pdf`; accepted data and figures are in

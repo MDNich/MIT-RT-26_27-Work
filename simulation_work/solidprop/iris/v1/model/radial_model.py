@@ -84,12 +84,13 @@ class RadialModel:
             kv,kc,cv,cc=[np.interp(Tg[:nph],TABLE[:,0],TABLE[:,i]) for i in range(1,5)]
             if c['case_material']=='cf':
                 k=np.full(Tg.shape,c['cf_radial_k'])
-                cap=m['aluminium_density_kg_m3']*(2.8773*np.clip(Tg,20,200)+687.31)
+                cp=np.full(Tg.shape,c['cf_cp_constant_J_kg_K']) if 'cf_cp_constant_J_kg_K' in c else 2.8773*np.clip(Tg,20,200)+687.31
+                cap=m['aluminium_density_kg_m3']*cp*c.get('cf_cp_scale',1.)
             else:
                 k=np.full(Tg.shape,m['aluminium_conductivity_W_m_K'])
                 cap=np.full(Tg.shape,m['aluminium_density_kg_m3']*m['aluminium_heat_capacity_J_kg_K'])
-            k[:nph]=(1-anew)*kv+anew*kc
-            cap[:nph]=rho*((1-anew)*cv+anew*cc)
+            k[:nph]=((1-anew)*kv+anew*kc)*m.get('phenolic_k_scale',1.)
+            cap[:nph]=rho*((1-anew)*cv+anew*cc)*m.get('phenolic_cp_scale',1.)
             if self.partial_capacity:
                 cap[0]*=np.maximum(rho[0]-s.consumed[j]/vol[0],1e-6)/rho[0]
             sink=np.zeros(Tg.shape)

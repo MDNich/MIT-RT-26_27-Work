@@ -30,6 +30,10 @@ def main():
     for index,name in enumerate(args.runtimes):
         runtime=TMP/'runs'/name
         print(f'{utc()} checking {name}',flush=True)
+        if name=='booster_al_baseline7_n20_dt0125' and not (ROOT/'validation/topology_benchmark.json').exists():
+            # Controlled native verification between jobs, never alongside a
+            # live simulation. This fixture has analytical reference values.
+            subprocess.run([sys.executable,str(ROOT/'model/topology_benchmark.py')],check=True)
         phase(runtime,'preflight')
         if index==0 and args.wait_resume_first:
             phase(runtime,'resume',wait_existing=True)

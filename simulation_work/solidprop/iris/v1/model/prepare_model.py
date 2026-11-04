@@ -33,6 +33,8 @@ def material_input(cfg: dict) -> str:
     out = ["! Phenolic UserMatTh: reference densities; fixed mesh; no thermal expansion.",
            "TB,USER,1,10,15,THERM"]
     for temp, kv, kc, cpv, cpc in table:
+        kv*=m.get('phenolic_k_scale',1.);kc*=m.get('phenolic_k_scale',1.)
+        cpv*=m.get('phenolic_cp_scale',1.);cpc*=m.get('phenolic_cp_scale',1.)
         out += [f"TBTEMP,{temp}",
                 f"TBDATA,1,{kv},{kc},{cpv},{cpc},{m['virgin_reference_density_kg_m3']},{m['char_reference_density_kg_m3']}",
                 f"TBDATA,7,333,64081,1,{m['pyrolysis_enthalpy_J_kg']},273.15,1600",
@@ -196,7 +198,7 @@ def write_model(cfg: dict, nodes: list, elements: list, output: Path) -> None:
     if cfg.get("case_material") == "cf":
         lines += ["MPDELE,ALL,2", f"MP,DENS,2,{m['aluminium_density_kg_m3']}"]
         for i,t in enumerate([22,100,150,200,300,600,1000,1500,2230.85],1):
-            cp = 2.8773*min(200,max(20,t))+687.31
+            cp = cfg.get('cf_cp_constant_J_kg_K',2.8773*min(200,max(20,t))+687.31)*cfg.get('cf_cp_scale',1.)
             lines += [f"MPTEMP,{i},{t}", f"MPDATA,KXX,2,{i},{cfg['cf_inplane_k']}",
                       f"MPDATA,KYY,2,{i},{cfg['cf_inplane_k']}",
                       f"MPDATA,KZZ,2,{i},{cfg['cf_radial_k']}", f"MPDATA,C,2,{i},{cp}"]

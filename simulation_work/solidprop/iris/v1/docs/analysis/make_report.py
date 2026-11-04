@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import NullFormatter
 from matplotlib.patches import Rectangle
 from latex_style import configure_latex, plot_samples
+from report_supplement import create as create_supplement
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'model'))
@@ -135,8 +136,13 @@ def write_report(runs, snapshot):
 \end{minipage}}\end{center}
 \tableofcontents
 \clearpage
+\section{Executive summary}
+No defensible real-motor burnthrough time has been established. Both sustainer native coarse-mesh baselines have completed seven seconds of the imposed heating scenario without an accepted exhaustion event. Their mass, energy and applied-load audits passed. The booster baselines and refined native pulse/cooling cases remain in the serial campaign.
+
+The initial twenty-row phenolic mesh is insufficient for recession. Independent refinement and 54 input-sensitivity cases show that missing thermal inputs and the partial-cell removal approximation matter. Under sustained nominal heating, provisional casing-property flags are reached with substantial liner remaining. Those stopping points limit this model's scope; they are not motor lifetimes or structural failure predictions. The immediate objective is to complete the native refined histories and compare their temperatures, mass loss and cooling against independent calculations.
+
 \section{Purpose and definition of burnthrough}
-The primary event is exhaustion of the continuous phenolic barrier, leaving the casing exposed in this two-layer geometry. Pyrolysis conversion alone is not this event: char remains solid and can continue insulating. We report remaining physical thickness, actual geometric recession, conversion depth and casing temperatures separately. Burnthrough is bracketed by the last accepted intact state and first exhausted state.
+The primary event is exhaustion of the continuous phenolic barrier, leaving the casing exposed in this two-layer geometry. Pyrolysis conversion alone is not this event: char remains solid and can continue insulating. We report modelled solid mass, retained mesh thickness, whole-cell recession, conversion depth and casing temperatures separately. Retained mesh thickness is not a measurement of physical liner thickness. A numerically accepted exhaustion event would be bracketed by the last intact state and first exhausted state.
 
 The calculation represents an initially intact, locally uniform wall. Cracks, joints, debonding, char spallation and particle erosion are not resolved. Material-temperature flags indicate the scope of surrogate properties, not certified pressure-casing failure. If the event is absent, the result is ``not reached through the simulated exposure,'' with residual thickness, rather than an extrapolated lifetime.
 
@@ -151,7 +157,7 @@ Booster & 65.0875 & 6.3500 & 4.7625 & 76.2000\\\bottomrule
 \end{tabular}\end{table}
 Al and CF versions share the dimensions within each motor. The initial domain is \SI{0.5}{mm} long and \(0.5^\circ\) wide, with 2 axial and 2 angular divisions. Twenty radial cells in each material give 160 SOLID278 elements and 369 nodes. The axis is global Y. Lateral and axial faces are adiabatic under the uniform-wall assumption. Integrated mass/power scales by 720 to a full ring of the same short length; temperatures and recession do not scale.
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/geometry_mesh.pdf}\caption{Radial/axial mesh projections. The angular direction has two divisions; axial scale is expanded. These are setup diagrams, not solved contours.}\end{figure}
-STEP is the exchange geometry. The native structured mesh is generated deterministically from the same dimensions; it is not an automatic mesh imported from STEP. The initial 20-cell phenolic pitches are 0.238125 mm and 0.3175 mm. Comparisons at 40 and 80 radial cells will assess thermal gradients, cell-removal quantization and retained partial-cell thermal storage. Additional refinement must be justified by the results.
+STEP is the exchange geometry. The native structured mesh is generated deterministically from the same dimensions; it is not an automatic mesh imported from STEP. The initial 20-cell phenolic pitches are 0.238125 mm and 0.3175 mm. Independent comparisons at 40, 80 and 160 cells show sensitivity to thermal gradients and cell-removal quantization. Refined native inputs use 80 phenolic and 20 casing rows, giving 400 elements and 909 nodes. Further independent refinement assesses retained partial-cell storage and time accuracy.
 
 \section{Materials and thermal environment}
 \subsection{Phenolic and aluminium inherited from the earlier study}
@@ -165,7 +171,7 @@ For heat capacity, use the separately identified T700/M21 surrogate \(c_p=2.8773
 \subsection{Imposed exposure}
 The initial gas-side assumption is \(T_g=\SI{2504}{K}\), unblown \(h_0=\SI{1000}{W.m^{-2}.K^{-1}}\), and nominal pressure 800 psi, following the earlier study and the user's pressure estimate. Pressure is interpreted as absolute in the char-law closure. Initial and external ambient temperature is \SI{22}{\degreeCelsius}; external convection is \SI{8}{W.m^{-2}.K^{-1}} and emissivity is 0.25. The initial hot-radiation emissivity is zero, with separate radiation sensitivity scenarios.
 
-The liner is assumed exposed from the start of imposed heating. The actual grain shielding and local exposure history are unknown. Begin with native pilots, a 7 s comparison baseline, hypothetical 7/20/60 s pulses plus cooling, and a separate continuous-exposure branch. None of these pulse lengths is an inferred motor burn duration. Vary heat-transfer coefficient, radiation, material properties, pressure and char-consumption parameters before reporting an uncertainty envelope.
+The liner is assumed exposed from the start of imposed heating. The actual grain shielding and local exposure history are unknown. The campaign includes native pilots and 7 s baselines, refined native 7 s pulses with cooling, independent 7/20/60 s pulse screens, and a separate independent continuous-exposure branch. None of these pulse lengths is an inferred motor burn duration. Sensitivities vary heat-transfer coefficient, radiation, material properties, pressure and char-consumption parameters; they are not a statistical uncertainty envelope.
 
 \subsection{Supplied reaction and inventory envelope}
 The user's reaction is atom-balanced:
@@ -220,7 +226,7 @@ The twenty-cell mesh does not resolve recession sufficiently. The independent su
 Numerical long-exposure stress tests were also performed to expose weaknesses in the inherited removal scheme. They showed substantial mesh/time-step dependence, while the casing had already left its provisional property range. Those apparent exhaustion times are explicitly rejected as motor-lifetime results. The retained partial-cell thermal mass and lagged surface coupling require further assessment. Physically interpreted continuous-exposure runs now stop at the first casing property-range crossing. That crossing indicates a limit of this model, not an experimentally established structural failure.
 
 \section{Next results}
-Complete the four native seven-second baselines and refined comparisons, verify native first/last-row load transfer and uninterrupted versus restarted states, then compare pulse/cooling and input-sensitivity cases within their stated material scope. Report physical recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
+Complete the booster native seven-second baselines and all four refined pulse/cooling cases. Compare native first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
 
 A defensible final answer may be a conditional ``not reached through the accepted exposure'' result with remaining thickness, rather than a finite lifetime. Neither missing wall-exposure data nor uncalibrated char kinetics can be recovered from solver convergence. The study cannot establish real motor lifetime without supported wall heating and recession evidence.
 
@@ -235,6 +241,7 @@ A defensible final answer may be a conditional ``not reached through the accepte
 \end{document}
 '''
     report=report.replace('STAMP',stamp).replace('RESULTTABLE',result_table).replace('RESULTFIG',result_fig)
+    report=report.replace(r'\section{Next results}',create_supplement(ROOT,runs)+'\n\n'+r'\section{Next results}')
     if (ROOT/'validation/restart_comparison.json').exists():
         check=json.loads((ROOT/'validation/restart_comparison.json').read_text())
         report=report.replace('A controlled checkpoint pause/resume has advanced successfully; an uninterrupted comparison remains to be completed.',

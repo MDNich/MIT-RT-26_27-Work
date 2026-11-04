@@ -48,6 +48,7 @@ def validate_config(c):
                         g['aluminium_thickness_m'],rel_tol=0,abs_tol=1e-12)
     m=c['material']; law=c['char_law']; h=c['heating']; n=c['numerics']
     assert 0<m['char_reference_density_kg_m3']<m['virgin_reference_density_kg_m3']
+    assert m.get('phenolic_k_scale',1.)>0 and m.get('phenolic_cp_scale',1.)>0
     assert law['effective_endothermic_cost_J_kg']>0
     assert law['mode'] in ('effective_exploratory','species')
     assert law['pressure_Pa'] is None or law['pressure_Pa']>=0
@@ -293,6 +294,7 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
             a=s['alpha'][str(f['element'])]
             T=sum(temperatures[str(nid)] for nid in mesh['elements'][str(f['element'])]['nodes'])/8
             hv,hc=sensible_enthalpy(T,c['initial_temperature_C'])
+            hv*=m.get('phenolic_cp_scale',1.);hc*=m.get('phenolic_cp_scale',1.)
             s['removed_mesh_energy_J']+=(rv-(rv-rc)*a)*f['volume']*((1-a)*hv+a*hc)
     s['index']=p['index']; s['time_s']=time
     nrows=c['geometry']['phenolic_radial_rows']

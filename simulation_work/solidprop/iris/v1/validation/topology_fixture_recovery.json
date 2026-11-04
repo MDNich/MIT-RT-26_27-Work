@@ -1,0 +1,6 @@
+{
+  "failed_fixture": "topology_benchmark_failed_missing_nropt",
+  "log_sha256": "76309767d07f65fc5d63d39187f4ecfdfc03baee83c48a32609280a7d7a558db",
+  "reason": "Manufactured static fixture omitted NROPT,FULL before first SOLVE/EKILL; MAPDL rejected EKILL. Production transient drivers already include NROPT,FULL.",
+  "correction": "Add NROPT,FULL before first solve, preserve failed fixture and rerun fresh; no production result was accepted from the failed fixture."
+}

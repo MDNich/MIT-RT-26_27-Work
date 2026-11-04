@@ -5,16 +5,25 @@ import json
 from pathlib import Path
 from radial_model import RadialModel
 from ops import ROOT,host_check,atomic
+MODEL_BYTES=(ROOT/'model/radial_model.py').read_bytes()
+MODEL_SHA256=hashlib.sha256(MODEL_BYTES).hexdigest()
 
 def run(case,n,dt,end,tag,partial=False,pulse=None,overrides=None,stop_at_property_limit=True):
     host_check()
     cfg=json.loads((ROOT/'configs'/f'{case}.json').read_text())
-    for section,values in (overrides or {}).items():cfg[section].update(values)
+    for section,values in (overrides or {}).items():
+        if section=='_root':cfg.update(values)
+        else:cfg[section].update(values)
+    cfg['geometry']['phenolic_radial_rows']=n
+    cfg['geometry']['aluminium_radial_rows']=n
     if pulse is not None:cfg['heating']['pulse_duration_s']=pulse
     path=ROOT/'validation/radial'/f'{case}_{tag}.json';path.parent.mkdir(exist_ok=True)
     if path.exists():
         print('Already recorded',path.name,flush=True);return json.loads(path.read_text())
     m=RadialModel(cfg,rows=n,case_rows=n,partial_capacity=partial)
+    archive=ROOT/'validation/source_archive';archive.mkdir(exist_ok=True)
+    archived=archive/f'radial_model_{MODEL_SHA256}.py'
+    if not archived.exists():archived.write_bytes(MODEL_BYTES)
     s,h,ss=m.run(end,dt=dt,record_dt=max(.1,end/500),check=host_check,stop_at_property_limit=stop_at_property_limit)
     result=dict(method='Independent radial finite-element calculation; NOT native ANSYS output',
                 configuration=cfg,phenolic_rows=n,case_rows=n,dt_ceiling_s=dt,partial_capacity_diagnostic=partial,
@@ -23,7 +32,7 @@ def run(case,n,dt,end,tag,partial=False,pulse=None,overrides=None,stop_at_proper
                 qualification='Exploratory surrogate, not physically calibrated; property threshold is not structural failure',final=h[-1],history=h,
                 max_energy_relative_error=m.max_energy_error,max_mass_relative_error=m.max_mass_error,
                 max_retained_char_fraction_of_initial_mass=m.max_retained_fraction,steps=m.steps,
-                model_sha256=hashlib.sha256((ROOT/'model/radial_model.py').read_bytes()).hexdigest())
+                model_sha256=MODEL_SHA256)
     atomic(path,result)
     print(json.dumps(dict(run=path.stem,final=h[-1],event=m.event_bracket,steps=m.steps)),flush=True)
     return result
