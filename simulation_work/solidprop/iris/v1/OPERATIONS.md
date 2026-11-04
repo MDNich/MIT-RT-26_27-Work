@@ -57,13 +57,14 @@ The corrected 7 s heating prefix was independently verified from its native log.
 
 `configs/campaign_queue.json` has `verified_historical_prefixes` limiting the
 old corrected run to index 560. The report capture and comparison helper honor
-this cutoff; do not remove it or publish later raw checkpoints. Its accepted
-heating comparison still misses the separate 5 K hot-profile target (5.927 K at
+this cutoff; do not remove it or publish later raw checkpoints. Its historical accepted
+heating comparison misses the separate 5 K hot-profile target (5.927 K at
 7 s); conversion/mass targets are distinct. A one-macro-step removal timing
 difference also remains visible. The withdrawn cooling comparison reached about
 10.3 K and motivated inspection; it is not an accepted cooling result.
 
-Fresh `_substepguard` primary packages are prepared for all four cases. They
+The initial `_substepguard` packages were prepared for all four cases; they
+are now superseded by the midpoint-corrected packages described below. They
 retain full deactivation replay, native live-count guards and two hash-verified
 accepted native restart copies (`accepted_restart_0/1`). Revision
 `full_removed_prefix_replay_v2_single_substep` additionally exports native load
@@ -72,39 +73,62 @@ substep per controller interval. The first second after the 7 s pulse uses
 0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
 unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
 
-The ONLY current dispatch is the paired 20 s verification controls:
-`sustainer_al_pulse7_n80_substepguard_default_control20`, then
-`sustainer_al_pulse7_n80_substepguard_tight_control20`.
-They differ only in native nonlinear heat-flow convergence tolerance (default
-versus 1e-5). The queue exits after these two so the next heartbeat can assess
-both before dispatching the four primary cases. This is autonomous scientific
-review, not a request for user approval. `current_dispatch`,
-`deferred_after_tolerance_review`, and `verification_runtimes` in the queue file
-record roles. Verification comparisons use runtime-specific filenames so they
-cannot overwrite the four primary comparisons or appear as completed cases.
+## Current material correction and dispatch (November 4, 06:29 UTC)
 
-The latest queue observer PID is in `baseline_queue.pid` (10688 at explicit
-recovery on November 4). Its first run dispatch had Parallels InvalidArgument;
-read-only checks proved no solver, state, solve log or matching receipt existed,
-then one explicit reissue restarted observation. See
-`validation/default_control20_dispatch_recovery.json`. Check live status rather
-than trusting this recorded PID. Do not start another observer or solver.
+The paired default/tight 20 s controls are COMPLETE and audited (624 single
+substeps each). Layer removal and cooling transfer pass. Their native profiles
+differ by up to 6.986 K. Tighter nonlinear tolerance alone leaves a 5.173 K
+comparison against the intended independent model; do not call that a pass.
 
-After both controls finish, compare their native fields to one another and to
-independent calculations using the SAME piecewise cooling schedule. Inspect
-all internal-substep identities, balances and source hashes. Determine whether
-tighter nonlinear tolerance resolves the heating discrepancy; otherwise test
-macro-step refinement or investigate the actual solver/source difference.
-`ansystmp/venv/bin/python model/compare_solver_tolerance.py` performs this
-paired comparison only after both phase-exit records and full native audits
-pass. It checks that paths and convergence tolerance are the only configuration
-differences, compares every accepted native checkpoint, and generates separate
-independent comparisons for both controls. Its incomplete-run refusal has been
-checked; no paired result exists yet.
-Do not assume the answer in advance or increase the comparison threshold.
-Choose new sealed primary inputs if the numerical settings must change. The
-three other corrected-but-unguarded runtimes and the earlier heating-only/tight
-control drafts were never launched; preserve them as superseded packages.
+A separate inherited material-source defect was identified: ANSYS `Temp` is the
+current endpoint, so `Temp + 0.5*dTemp` is not the temporal midpoint. It is
+endpoint plus half the increment. Replaying every accepted native temperature
+through that formula reproduces conversion within 2.90e-8; intended midpoint
+replay differs by up to 0.0182. Six native prescribed-temperature checks
+(increasing, decreasing and constant) confirm this. The old isothermal tests
+could not reveal the issue because dTemp was zero.
+
+The native/independent temperature discrepancy has TWO causes. Repeating the
+independent calculation with the actual inherited formula leaves 6.757 K
+against default tolerance but only 0.2294 K against tighter tolerance. This is
+a diagnostic reproduction, not a replacement for the intended midpoint model.
+All earlier native thermal histories used the inherited formula. Keep them as
+labelled historical numerical states, not corrected-model predictions. Earlier
+independent midpoint refinement/sensitivity results remain separate and useful.
+
+`model/usermatth.F` now uses `Temp - 0.5*dTemp`, and its paired DLL was rebuilt
+with installed Intel Fortran Classic 2021.9 (oneAPI 2023.1), using ANSYS v261
+build options. The isolated build is `ansystmp/builds/midpoint_v1`; source/build
+hashes are in `validation/material_midpoint_build.json`. Six native checks with
+the new library match midpoint conversion (max error below 2e-10). A corrected
+80/20-cell sustainer Al 0.1 s motor pilot passed all eight audits and matches
+independent temperatures within 0.00124 K. The inherited source is archived;
+previous studies and every sealed runtime are unchanged.
+
+The ONLY current primary dispatch is:
+`sustainer_al_pulse7_n80_midpoint_tight` (127 s horizon).
+Queue PID is in `baseline_queue.pid` (19823 when dispatched). This one-case queue
+exits after acceptance so its corrected heating/cooling fields can be reviewed
+before continuing the other three prepared `_pulse7_n80_midpoint_tight` cases.
+They use 80 phenolic/20 case rows, 1e-5 heat-flow tolerance, the single-substep
+guard and initial 0.0625 s cooling intervals. Booster horizons are 300 s.
+`current_dispatch` and `deferred_midpoint_runtimes` in the queue record roles.
+Never launch the superseded uncorrected packages. No second solver or queue.
+
+Check the new case against the intended independent midpoint model at meaningful
+accepted checkpoints and at completion. The new configuration pins material
+source and DLL hashes; generation refuses a mismatch. Do not increase comparison
+gates. Exact row scheduling remains a separate strict check. Then dispatch the
+remaining corrected cases serially, followed by justified native time/mesh and
+influential-input checks. A single pilot is not convergence of recession.
+
+Evidence/scripts: `native_solver_tolerance_comparison.json`,
+`native_temperature_convention.json`, `reaction_ramp_inherited.json`,
+`reaction_ramp_midpoint_candidate.json`, and the two runtime-specific
+`temperature_convention_resolution_*.json` records. The reusable helpers are
+`compare_solver_tolerance.py`, `check_native_temperature_convention.py`,
+`reaction_ramp_benchmark.py` and `build_material.cmd`. Do not run the inherited
+replay diagnostic on corrected native states without changing its expectation.
 
 The queue applies `validate_run.py` before advancing. Every accepted step,
 manifest, native log, live count, restart-copy hash and v2 substep check must
@@ -203,7 +227,7 @@ numbers as calibrated uncertainty or change the native material law to match.
 
 ## Remaining substantive work
 
-1. Resolve the paired solver-tolerance controls, then finish the guarded four-case native pulse/cooling queue. Verify first-row
+1. Finish the corrected-midpoint, tight-tolerance four-case native pulse/cooling runs. Verify first-row
    removal persists through subsequent restarts, all energy/hot-load checks,
    live counts and restart copies. Check each terminal accepted record.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -240,10 +264,11 @@ Publish major milestones using `model/publish.py '<milestone>' --push` after
 checks. It stages Iris-only paths, checks storage and rejects files/new Git
 blobs >=100,000,000 bytes. Never push native binary results or scratch.
 
-The 15-page correction edition was visually reviewed in full and pushed as
-`271f044` on November 4. It retains only the corrected seven-second heating
-prefix and explicitly withdraws the unsupported cooling chain. Its PDF hash
-and review are recorded in `validation/report_visual_review.json`.
+The prior 15-page edition (`271f044`) withdrew unsupported cooling. The current
+report additionally distinguishes the inherited reaction-temperature convention
+from the corrected midpoint model and reports the native ramp and tolerance
+checks. Its reviewed PDF hash and page count are in
+`validation/report_visual_review.json`.
 
 A 30-minute heartbeat, `iris-ansys-study-and-english-reports`, continues the
 study. Notify only meaningful progress, failures, completion or necessary user

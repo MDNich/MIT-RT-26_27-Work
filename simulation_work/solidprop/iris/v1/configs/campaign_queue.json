@@ -8,13 +8,13 @@
     "booster_cf_baseline7_n20_dt0125",
     "sustainer_al_pulse7_n80_substepguard_default_control20",
     "sustainer_al_pulse7_n80_substepguard_tight_control20",
-    "sustainer_al_pulse7_n80_substepguard",
-    "sustainer_cf_pulse7_n80_substepguard",
-    "booster_al_pulse7_cool300_n80_substepguard",
-    "booster_cf_pulse7_cool300_n80_substepguard"
+    "sustainer_al_pulse7_n80_midpoint_tight",
+    "sustainer_cf_pulse7_n80_midpoint_tight",
+    "booster_al_pulse7_n80_midpoint_tight",
+    "booster_cf_pulse7_n80_midpoint_tight"
   ],
   "first_resume_explicitly_launched": true,
-  "notes": "All four coarse baselines complete. Corrected row-replay run was paused after discovering unsupported internal substeps in the first cooling macro. Its cooling is withdrawn. Fresh v2 guards require one native substep per accepted macro. Paired 20 s nonlinear-tolerance controls precede autonomous review and four-case continuation; no second solver.",
+  "notes": "Paired 20 s controls completed. Single-substep cooling and full row replay passed. Native temperature-history replay and six prescribed-temperature checks exposed inherited endpoint-plus-half-increment reaction evaluation. Rebuilt midpoint DLL and corrected motor pilot passed. Dispatch corrected sustainer Al first, compare through heating/cooling, then continue the other three fresh midpoint cases. No second solver.",
   "topology_verification_before": "booster_al_baseline7_n20_dt0125",
   "reaction_verification_before": "booster_cf_baseline7_n20_dt0125",
   "superseded_refined_runtimes": [
@@ -25,28 +25,32 @@
     "sustainer_al_pulse7_n80_dt0125_restartfix",
     "sustainer_cf_pulse7_n80_dt0125_restartfix",
     "booster_al_pulse7_cool300_n80_dt0125_restartfix",
-    "booster_cf_pulse7_cool300_n80_dt0125_restartfix"
-  ],
-  "verification_runtimes": [
-    "sustainer_al_pulse7_n80_substepguard_default_control20",
-    "sustainer_al_pulse7_n80_substepguard_tight_control20"
-  ],
-  "tolerance_check_reason": "After removal, the independent/native profile difference grows above 5 K, reaching about 10.3 K in early cooling although casing differences remain <0.35 K and native audits pass. Complete active case and isolated tighter-tolerance 20 s control, then review autonomously before launching the remaining prepared cases.",
-  "superseded_verification_runtimes": [
-    "sustainer_al_pulse7_n80_tight_heatcheck",
-    "sustainer_al_pulse7_n80_tight_coolcheck"
-  ],
-  "current_dispatch": [
-    "sustainer_al_pulse7_n80_substepguard_default_control20",
-    "sustainer_al_pulse7_n80_substepguard_tight_control20"
-  ],
-  "deferred_after_tolerance_review": [
+    "booster_cf_pulse7_cool300_n80_dt0125_restartfix",
     "sustainer_al_pulse7_n80_substepguard",
     "sustainer_cf_pulse7_n80_substepguard",
     "booster_al_pulse7_cool300_n80_substepguard",
     "booster_cf_pulse7_cool300_n80_substepguard"
   ],
+  "verification_runtimes": [
+    "sustainer_al_pulse7_n80_substepguard_default_control20",
+    "sustainer_al_pulse7_n80_substepguard_tight_control20",
+    "sustainer_al_midpoint_pilot"
+  ],
+  "tolerance_check_reason": "Resolved separate effects: default/tight native profiles differ by 6.986 K. Matching the actual inherited reaction expression reduces tight-native independent discrepancy to 0.2294 K. Corrected midpoint DLL and 0.1 s motor pilot verified; use 1e-5 heat tolerance in new cases.",
+  "superseded_verification_runtimes": [
+    "sustainer_al_pulse7_n80_tight_heatcheck",
+    "sustainer_al_pulse7_n80_tight_coolcheck"
+  ],
+  "current_dispatch": [
+    "sustainer_al_pulse7_n80_midpoint_tight"
+  ],
   "verified_historical_prefixes": {
     "sustainer_al_pulse7_n80_dt0125_restartfix": 560
-  }
+  },
+  "deferred_midpoint_runtimes": [
+    "sustainer_cf_pulse7_n80_midpoint_tight",
+    "booster_al_pulse7_n80_midpoint_tight",
+    "booster_cf_pulse7_n80_midpoint_tight"
+  ],
+  "material_correction": "Endpoint temperature minus half the increment; native increasing/decreasing/constant temperature checks passed."
 }

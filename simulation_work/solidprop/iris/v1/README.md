@@ -23,7 +23,13 @@ copies. The corrected run completed its seven-second heating segment, but coolin
 withdrawn after ANSYS internally subdivided the first cooling interval in a way
 the endpoint energy audit did not support. New packages require one native
 substep per accepted controller interval. Paired default/tight solver controls
-are running before autonomous continuation of the four 80/20-row cases. See the ordered list
+have completed. They identified separate nonlinear-tolerance and inherited
+reaction-temperature errors: the old routine used endpoint temperature plus half
+the increment, rather than the intended midpoint. A rebuilt library subtracts
+half the increment, passed six native temperature-change checks and a corrected
+motor pilot (0.00124 K independent profile difference). Fresh corrected midpoint
+80/20-row cases use tighter heat-flow convergence; sustainer Al is running first.
+Historical native curves retain their original routine and are explicitly labelled. See the ordered list
 in `configs/campaign_queue.json` and ignored `ansystmp/baseline_queue.log`.
 
 The independent radial checks show that 20 phenolic rows do not resolve

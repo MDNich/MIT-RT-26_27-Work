@@ -7,7 +7,7 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Setup and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 04, 2026 at 00:56 EST}
+\date{November 04, 2026 at 01:28 UTC-05:00}
 \begin{document}\maketitle
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
@@ -16,7 +16,7 @@
 \tableofcontents
 \clearpage
 \section{Executive summary}
-No defensible real-motor burnthrough time has been established. Audited seven-second coarse baselines are complete for booster Al, booster CF, sustainer Al, sustainer CF. Their mass, energy and applied-load checks passed. 0 of the four refined native pulse/cooling cases have reached an audited stopping point; the serial campaign continues. An energy-audit stop exposed a restart layer-deactivation defect; its correction passed a four-case native regression, and its seven-second heating segment is retained. Subsequent cooling was withdrawn after an internal-substep accounting gap was found. Paired solver controls now test stricter step accounting and nonlinear convergence before continuation. No native exhaustion event has been accepted in these scenarios.
+No defensible real-motor burnthrough time has been established. The four coarse seven-second baselines and the refined sustainer heating prefix passed numerical audits using the inherited material routine. Its subsequent cooling chain was withdrawn after an internal-substep audit gap. Two fresh 20 s controls passed stricter step-accounting checks, but exposed separate solver-tolerance and reaction-temperature issues. The inherited routine used endpoint temperature plus half the increment, whereas the independent model uses the intended midpoint. Those historical native states remain archived; they do not verify the corrected midpoint model. A separately rebuilt library passed six native prescribed-temperature checks. The four corrected midpoint cases have 0 audited terminal results at this snapshot. No native exhaustion event has been accepted in these scenarios.
 
 The initial twenty-row phenolic mesh is insufficient for recession. Independent refinement and 54 input-sensitivity cases show that missing thermal inputs and the partial-cell removal approximation matter. Under sustained nominal heating, provisional casing-property flags are reached with substantial liner remaining. Those stopping points limit this model's scope; they are not motor lifetimes or structural failure predictions. The immediate objective is to complete the native refined histories and compare their temperatures, mass loss and cooling against independent calculations.
 
@@ -67,11 +67,11 @@ These are full-cylinder envelope values with no port, binder or voids. Actual ma
 \section{Thermochemical physics and solver}
 The phenolic thermal law solves conduction with temperature/conversion-dependent properties, endothermic pyrolysis and gas sensible cooling. The reaction state follows
 \[\dot\alpha=A\exp[-E_a/(RT)](1-\alpha),\qquad 0\leq\alpha\leq1.\]
-The compiled UserMatTh routine integrates conversion analytically at increment midpoint temperature and requests a smaller solver increment when conversion changes too much. The gas source follows the virgin-to-char density loss. A surface blowing correction reduces convection as gas leaves the solid. Pore pressure and Darcy transport are not resolved.
+The intended reaction calculation integrates conversion analytically at the temporal midpoint, $(T_{n+1}+T_n)/2$, and requests a smaller solver increment when conversion changes too much. The inherited native routine actually used $T_{n+1}+(T_{n+1}-T_n)/2$: ANSYS supplies the current endpoint temperature, not the starting value. The corrected expression subtracts half the increment. The same correction applies to gas sensible cooling, which uses that temperature. The native diagnostic evidence and correction status are reported below. The gas source follows the virgin-to-char density loss. A surface blowing correction reduces convection as gas leaves the solid. Pore pressure and Darcy transport are not resolved.
 
 A separate effective char-consumption law combines kinetic and mass-transfer limits and available surface energy. The inherited effective removal cost is \SI{35}{MJ.kg^{-1}}. This is an exploratory closure, not a calibrated oxidation mechanism. A row is scheduled for removal only after residual solid mass falls below 0.1 percent of its initial virgin mass. Hot-face loads move to the next live row. Consumed char remains in the live finite-element thermal representation until row removal; its numerical influence must be bounded through refinement or a revised partial-cell treatment.
 
-MAPDL 2026 R1.02 runs natively in Windows through the Parallels VM, using the previous x64 material DLL and the installed Python coupling controller. The initial tiny models use one process and a row-summed (diagonal) specific-heat matrix, matching the SOLID278 default without advection. At every coupling step, the controller checks exported time and live element identity, gas/char/solid mass, thermal energy and the actual applied hot-face power before accepting an atomic checkpoint. Native face heat rates are used, with independent reconstruction of user-material energy sinks where the native aggregate channels omit them.
+MAPDL 2026 R1.02 runs natively in Windows through the Parallels VM, using a versioned x64 material DLL and the installed Python coupling controller. The initial tiny models use one process and a row-summed (diagonal) specific-heat matrix, matching the SOLID278 default without advection. At every coupling step, the controller checks exported time and live element identity, gas/char/solid mass, thermal energy and the actual applied hot-face power before accepting an atomic checkpoint. Native face heat rates are used, with independent reconstruction of user-material energy sinks where the native aggregate channels omit them.
 
 The initial gates are mass residual at most \(10^{-6}\) of initial liner mass, step energy residual at most 5 percent, and hot-load error at most 2 percent. These numerical gates do not validate the material law. Comparison of mesh and coupling steps targets less than 5 percent change in event time, with event brackets and temperatures reported explicitly.
 
@@ -85,7 +85,7 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 04, 2026 at 00:56 EST. The table includes only accepted native states. All four 0.1 s pilots passed. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at November 04, 2026 at 01:28 UTC-05:00. The table includes only states that passed the native numerical audits. Histories predating the midpoint correction use the inherited reaction-time convention described above; passing balances does not make them results of the corrected model. Corrected histories, when available, are explicitly labelled midpoint. All four original 0.1 s pilots passed their numerical checks. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
@@ -102,7 +102,7 @@ The native steady-conduction benchmark used the same sector mesh, convection fac
 
 Manufactured storage faults verified both free-space floors, the latched stop and the correct native abort filenames. A communication fault is retried as a read-only query; it is not reported as a disk threshold crossing. A guest-local pilot reproduced every shared-drive pilot nodal temperature exactly. It offers an alternate execution location while mirroring accepted results to the Mac. The controlled checkpoint restart matched an uninterrupted native run at 1.1 s, including conversion state and energy integrals. The maximum nodal temperature difference was \SI{0}{K}.
 
-The independent cylindrical finite-element model uses a separate radial assembly, two Gauss points per cell, backward Euler time integration and row-summed heat capacity. It retains the same material assumptions and surface law. At 0.1 s the sustainer hot-face difference from ANSYS was approximately 0.70 K; at 1.0 s it was approximately 0.97 K. Agreement is numerical cross-checking, not physical calibration.
+The independent cylindrical finite-element model uses a separate radial assembly, two Gauss points per cell, backward Euler time integration and row-summed heat capacity. It uses the intended midpoint reaction temperature. Early comparisons with the inherited native routine differed by approximately 0.70 K at 0.1 s and 0.97 K at 1.0 s, but did not expose its temperature-increment convention error. The later diagnostic checks below address that distinction. Numerical agreement is not physical calibration.
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/radial_mesh_check.pdf}\caption{Independent seven-second radial mesh checks at a 0.0125 s coupling step. Coincident Al/CF hot-face and recession curves overlap. A cell-removal jump is not a smooth estimate of recession.}\end{figure}
 The twenty-cell mesh does not resolve recession sufficiently. The independent sustainer hot face at 7 s changes from about 1052 to 1410, 1466 and 1520 degrees Celsius at 20, 40, 80 and 160 radial cells. Its corresponding whole-cell removed thickness is 0, 0.1191, 0.0595 and 0.0298 mm. Case temperatures are much less sensitive over this short exposure. These comparisons justify refinement; they do not demonstrate a converged burnthrough time. Halving the 80-cell time step also changes hot-face temperature, so mesh and time accuracy remain separate checks.
 
@@ -268,9 +268,47 @@ The corrected restart run completed seven seconds of heating with one native sub
 
 The entire subsequent cooling chain is therefore withdrawn from accepted results, and the original run was paused and preserved. The heating prefix through 7 s is retained after inspection of every native load-step entry. Only the final result of each controller interval was saved, so the missing intermediate cooling energy terms cannot be reconstructed faithfully after the run.
 
-Fresh packages export native load-step and substep identity. Acceptance now requires exactly one native substep for each controller interval. The first second of cooling uses 0.0625 s intervals before returning to 0.25 s; any further internal cutback stops acceptance and preserves the preceding accepted restart. Separate default and tighter heat-flow convergence controls use identical schedules through 20 s. Their outcome will determine the next four-case continuation; a tighter tolerance is not assumed to resolve the comparison in advance.
+Fresh packages export native load-step and substep identity. Acceptance now requires exactly one native substep for each controller interval. The first second of cooling uses 0.0625 s intervals before returning to 0.25 s; any further internal cutback stops acceptance and preserves the preceding accepted restart. Separate default and tighter heat-flow convergence controls use identical schedules through 20 s. Their completed comparison is reported below; the acceptance gates were not relaxed.
 
 A native read-only result probe returned substep 1 at 7 s and substep 3 at 7.25 s; the new acceptance function admits the former and rejects the latter. Retrospective log inspection found only single-substep intervals in all four published coarse baselines and the earlier restart/pulse controls. Their published acceptance is unaffected.
+
+\subsection{Reaction-temperature convention and nonlinear tolerance}
+
+The intended temporal midpoint is $(T_{n+1}+T_n)/2$. The inherited routine instead added half the temperature increment to the ANSYS temperature argument. The \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_prog/Z7K4r1e5lcd.html}{ANSYS UserMatTh interface} supplies the current temperature and its increment. Accepted native-temperature replay identifies the actual evaluation as $T_{n+1}+\Delta T/2$, rather than the intended $T_{n+1}-\Delta T/2$. This affects both conversion and the gas sensible-energy sink.
+
+Across the completed 20 s control, independent integration driven by every saved native temperature reproduces conversion with maximum absolute error 2.89e-08 for the inherited expression. The intended midpoint expression differs by up to 0.01819. This isolates the interface convention from differences in the temperature solver.
+
+The earlier isothermal reaction checks could not detect this error: the temperature increment was zero. Their successful constant-temperature results remain valid. The historical native curves elsewhere in this report retain their actual inherited routine and source hashes; they must not be interpreted as verification of the intended midpoint implementation. Earlier independent refinement and sensitivity calculations already use the intended midpoint.
+
+Six additional native prescribed-temperature checks include increasing, decreasing and constant temperatures, each over one 0.01 s step. The inherited library matches the shifted expression; the separately rebuilt candidate matches the intended midpoint. Neither check calibrates reaction constants against a real liner.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{rrrrr}\toprule Start [$^\circ$C] & End [$^\circ$C] & Intended conversion & Inherited native & Corrected native\\\midrule
+
+300 & 600 & 7.83092e-05 & 0.00178077 & 7.83092e-05 \\
+600 & 1000 & 0.00252853 & 0.0176384 & 0.00252853 \\
+1000 & 600 & 0.00252853 & 3.54829e-05 & 0.00252853 \\
+600 & 300 & 7.83092e-05 & 4.09532e-08 & 7.83092e-05 \\
+600 & 600 & 0.000488519 & 0.000488519 & 0.000488519 \\
+1000 & 1000 & 0.00779275 & 0.00779275 & 0.00779275 \\
+
+\bottomrule\end{tabular}\end{table}
+
+The correction changes only the sign of half the increment in the material routine. A new Intel Fortran x64 library was built in an isolated study folder; archived failed and historical runtimes are unchanged. Fresh packages must pass native audits and independent comparison before their thermal results supersede the inherited histories.
+
+The corrected 80/20-cell sustainer Al motor pilot completed eight audited intervals through 0.1 s. Its largest native/independent temperature-profile difference was 0.00124 K. This permits longer corrected verification runs; it does not establish convergence of recession or a complete pulse/cooling history.
+
+Both separate default/tighter nonlinear-tolerance controls completed 20 s with 624 accepted single-substep intervals each. Persistent layer removal, cooling boundary transfer and native balance checks passed. Their maximum live-temperature difference was 6.986 K. Tightening the heat-flow tolerance is a separate numerical correction; it cannot repair the reaction-temperature expression.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrr}\toprule Native tolerance & Versus intended midpoint [K] & Versus inherited expression [K]\\\midrule
+
+Default & 8.638 & 6.757 \\
+Tighter & 5.173 & 0.229 \\
+
+\bottomrule\end{tabular}\end{table}
+
+The last column repeats the independent assembly with the inherited shifted temperature solely to diagnose the old native implementation. It does not replace the intended midpoint model, and agreement is not physical validation. Exact row-event scheduling remains a separate check.
+
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/temperature_convention_checks.pdf}\caption{Separate software checks of the reaction-time convention and nonlinear solver tolerance. The dashed diagonal is exact midpoint agreement; the vertical line marks the imposed seven-second heating pulse. These are numerical verification results, not measured motor behaviour.}\end{figure}
 
 \subsection{Refined native pulse cross-checks}
 
@@ -286,7 +324,7 @@ Some same-mesh field comparisons do not meet their targets; those differences re
 
 These checks do not establish fine-mesh convergence of the native stopping time. In particular, the independent sustainer CF pulse needed further refinement of its provisional property-flag time.
 
-The displayed refined sustainer comparison is restricted to the verified seven-second heating prefix; no withdrawn cooling values enter this table. The hot-profile target remains unmet and is the subject of the paired nonlinear-convergence controls. Persistent native live counts verify the restart correction independently of this thermal-profile discrepancy.
+The historical refined sustainer comparison is restricted to the verified seven-second heating prefix; no withdrawn cooling values enter this table. Its hot-profile target remained unmet. The paired tolerance and reaction-temperature diagnostics above separate the causes; fresh corrected midpoint comparisons must establish the replacement result. Persistent native live counts verify the restart correction independently of this thermal-profile discrepancy.
 
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Row & Native scheduled [s] & Independent [s] & Difference [s]\\\midrule
 

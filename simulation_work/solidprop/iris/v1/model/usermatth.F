@@ -122,7 +122,9 @@ c     Reject nonphysical values without allowing NaNs into the solve.
       endif
 
       alphaOld = dmax1(0.0d0, dmin1(1.0d0, ustatev(1)))
-      temperatureMid = Temp + 0.5d0*dTemp + tempOffset
+c     Temp is the current endpoint; dTemp is endpoint minus start.
+c     Subtract half the increment to evaluate the temporal midpoint.
+      temperatureMid = Temp - 0.5d0*dTemp + tempOffset
       temperatureMid = dmax1(temperatureMid, minTemp)
 
       exponent = -ea/(gasr*temperatureMid)

@@ -1,0 +1,115 @@
+{
+  "passed": true,
+  "verified_convention": "end_plus_half_increment",
+  "qualification": "Prescribed-temperature software diagnostic; not a motor exposure or material calibration.",
+  "results": [
+    {
+      "start_C": 300,
+      "end_C": 600,
+      "dt_s": 0.01,
+      "native_alpha": 0.001780773513019085,
+      "predictions": {
+        "midpoint": 7.830918057660785e-05,
+        "end_plus_half_increment": 0.001780773481966591
+      },
+      "max_errors": {
+        "midpoint": 0.001702464332442477,
+        "end_plus_half_increment": 3.105249390955578e-11
+      }
+    },
+    {
+      "start_C": 600,
+      "end_C": 1000,
+      "dt_s": 0.01,
+      "native_alpha": 0.01763841323554516,
+      "predictions": {
+        "midpoint": 0.002528533555526069,
+        "end_plus_half_increment": 0.017638413450944745
+      },
+      "max_errors": {
+        "midpoint": 0.01510987968001909,
+        "end_plus_half_increment": 2.1539958705574236e-10
+      }
+    },
+    {
+      "start_C": 1000,
+      "end_C": 600,
+      "dt_s": 0.01,
+      "native_alpha": 3.548292079358362e-05,
+      "predictions": {
+        "midpoint": 0.002528533555526069,
+        "end_plus_half_increment": 3.548292136901221e-05
+      },
+      "max_errors": {
+        "midpoint": 0.0024930506347324854,
+        "end_plus_half_increment": 5.754285936632186e-13
+      }
+    },
+    {
+      "start_C": 600,
+      "end_C": 300,
+      "dt_s": 0.01,
+      "native_alpha": 4.095321415320541e-08,
+      "predictions": {
+        "midpoint": 7.830918057660785e-05,
+        "end_plus_half_increment": 4.09532138201385e-08
+      },
+      "max_errors": {
+        "midpoint": 7.826822736245465e-05,
+        "end_plus_half_increment": 3.3306690738754696e-16
+      }
+    },
+    {
+      "start_C": 600,
+      "end_C": 600,
+      "dt_s": 0.01,
+      "native_alpha": 0.0004885190865024924,
+      "predictions": {
+        "midpoint": 0.0004885191058040528,
+        "end_plus_half_increment": 0.0004885191058040528
+      },
+      "max_errors": {
+        "midpoint": 1.9301560350015734e-11,
+        "end_plus_half_increment": 1.9301560350015734e-11
+      }
+    },
+    {
+      "start_C": 1000,
+      "end_C": 1000,
+      "dt_s": 0.01,
+      "native_alpha": 0.007792746648192406,
+      "predictions": {
+        "midpoint": 0.00779274683801523,
+        "end_plus_half_increment": 0.00779274683801523
+      },
+      "max_errors": {
+        "midpoint": 1.8982282412594031e-10,
+        "end_plus_half_increment": 1.8982282412594031e-10
+      }
+    }
+  ],
+  "input_hashes": {
+    "t300_to_600.inp": "ce86354297228366da341f9f9f6288372fcd289525ed28f02fe4b0a1eaf79aab",
+    "t1000_to_1000.inp": "92b7585c901cf47a2b03628f7ffaae221a5ed042fc7356ef9c72a85838eafc9d",
+    "t600_to_300.inp": "55039634e6e684966b4d26b4babfa16aebf35136613a97fd23482846e427f342",
+    "t1000_to_600.inp": "126b4c99d4f6fac99e6e63c81519738589b7afd6d4919949241fe5424dcedf07",
+    "t600_to_1000.inp": "650a0825ce2c8ef86900b1fb2226b45c3568e6bea3db15c198b7a47243c6d249",
+    "ramp.inp": "4c70b199c03c89b9df32d09cab1ef635f0df2596eea2ea20d4f2f024df02081c",
+    "t600_to_600.inp": "7d3dba8c201afbe9a5231ecc9b77719075a8f240f71161d3f0b3257cd509672b",
+    "usermatthLib.dll": "045ee4ef69d0cb27bf9d1d8875bdee0243d73d0a2ddde5be43073bea306b3a65",
+    "expectations.json": "7960e4522a9077510bec104b77f53435e1c19d0f9c39e3223c4175b560eeec12"
+  },
+  "log_sha256": "02edefaf975ac22c23abc1af2af91011294a3465a3ab0de8b20c0d17d7e13672",
+  "warning_count": 8,
+  "warning_explanation": "Standard USERCK notices and near-zero reference heat flow in the two constant-temperature controls.",
+  "warning_blocks": [
+    "                         ELAPSED TIME =       6.062   TIME= 01:25:10\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =       6.612   TIME= 01:25:11\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =       7.087   TIME= 01:25:12\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =       7.569   TIME= 01:25:12\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =       8.070   TIME= 01:25:12\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =       8.350   TIME= 01:25:13\n A reference heat flow value times the tolerance is used by the          \n Newton-Raphson method for checking convergence.  The calculated         \n reference HT FLOW CONVERGENCE VALUE= 3.284735936E-15 is less than a     \n threshold.  This threshold defaults to 1.0e-6 or is specified as        \n MINREF on the CNVTOL command.  Check results carefully.                 \n    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1",
+    "                         ELAPSED TIME =       8.568   TIME= 01:25:13\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =       8.834   TIME= 01:25:13\n A reference heat flow value times the tolerance is used by the          \n Newton-Raphson method for checking convergence.  The calculated         \n reference HT FLOW CONVERGENCE VALUE= 3.194040812E-15 is less than a     \n threshold.  This threshold defaults to 1.0e-6 or is specified as        \n MINREF on the CNVTOL command.  Check results carefully.                 \n    >>> SOLUTION CONVERGED AFTER EQUILIBRIUM ITERATION   1"
+  ]
+}

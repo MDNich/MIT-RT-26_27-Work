@@ -239,6 +239,9 @@ def main() -> None:
         raise RuntimeError("Existing run state preserved; use a new sibling runtime directory.")
     output.mkdir(parents=True, exist_ok=True)
     cfg = json.loads(args.config.read_text(encoding="utf-8"))
+    for name,key in [('usermatth.F','native_material_source_sha256'),('usermatthLib.dll','native_material_dll_sha256')]:
+        if key in cfg and hashlib.sha256((ROOT/name).read_bytes()).hexdigest()!=cfg[key]:
+            raise RuntimeError('Configured native material identity does not match '+name)
     mesh, nodes, elements = create_mesh(cfg)
     nr=cfg['geometry']['phenolic_radial_rows']; nt=cfg['geometry']['angular_divisions']; ny=cfg['geometry']['axial_divisions']
     mesh['temperature_nodes'] = {

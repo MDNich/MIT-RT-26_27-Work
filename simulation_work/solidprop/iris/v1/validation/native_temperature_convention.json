@@ -1,0 +1,101 @@
+{
+  "runtime": "sustainer_al_pulse7_n80_substepguard_default_control20",
+  "native": {
+    "runtime": "sustainer_al_pulse7_n80_substepguard_default_control20",
+    "passed": true,
+    "accepted_steps": 624,
+    "time_s": 20.0,
+    "status": "COMPLETED_HORIZON",
+    "max_energy_relative_error": 0.007679927626233501,
+    "max_hot_power_relative_error": 8.417461890453013e-07,
+    "max_abs_mass_residual_kg": 2.943625607346518e-21,
+    "removal_steps": 1,
+    "warning_blocks": [
+      "                         ELAPSED TIME =       6.336   TIME= 00:54:23\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+      "                         ELAPSED TIME =     886.234   TIME= 01:09:03\n During this session the elapsed time exceeds the CPU time by 721%.      \n This often indicates either a lack of physical memory (RAM) required    \n to efficiently handle this simulation or a particularly slow hard       \n drive configuration.  This simulation can be expected to run faster on  \n identical hardware if additional RAM or a faster hard drive             \n configuration is made available.  For more details, please see the      \n Mechanical APDL Performance Guide which is part of the Ansys Help       \n system.                                                       "
+    ],
+    "native_logs": [
+      {
+        "name": "solve_20261104_005416.out",
+        "sha256": "a8aa582f216e02b51cc2f58698bed5837c870c82e9c700f88a48c930a8299cad"
+      }
+    ],
+    "config_sha256": "89295189f49ee7d9522b44cc7ea0fdd73dfeeb966de07e9a0db21835b29f10bf"
+  },
+  "max_conversion_errors": {
+    "midpoint": 0.01819432667545684,
+    "endpoint": 0.008947814794601938,
+    "end_plus_half_increment": 2.8905896787279062e-08
+  },
+  "samples": [
+    {
+      "index": 1,
+      "time_s": 0.0125,
+      "conversion_errors": {
+        "midpoint": 2.846138104978246e-05,
+        "endpoint": 2.643773194654919e-05,
+        "end_plus_half_increment": 8.720801519617426e-14
+      }
+    },
+    {
+      "index": 8,
+      "time_s": 0.1,
+      "conversion_errors": {
+        "midpoint": 0.0020146535841814583,
+        "endpoint": 0.0011305990924216913,
+        "end_plus_half_increment": 1.56342438994983e-10
+      }
+    },
+    {
+      "index": 80,
+      "time_s": 1.0,
+      "conversion_errors": {
+        "midpoint": 0.005853773237842086,
+        "endpoint": 0.0030143601947068,
+        "end_plus_half_increment": 1.0314912923803377e-08
+      }
+    },
+    {
+      "index": 160,
+      "time_s": 2.0,
+      "conversion_errors": {
+        "midpoint": 0.0032930247971494353,
+        "endpoint": 0.001665557849950039,
+        "end_plus_half_increment": 1.923269887793566e-08
+      }
+    },
+    {
+      "index": 400,
+      "time_s": 5.000000000000034,
+      "conversion_errors": {
+        "midpoint": 0.003962035305615341,
+        "endpoint": 0.0019816955765299404,
+        "end_plus_half_increment": 2.2954868894586866e-08
+      }
+    },
+    {
+      "index": 560,
+      "time_s": 7.0,
+      "conversion_errors": {
+        "midpoint": 0.002793017417020538,
+        "endpoint": 0.0013963947004592692,
+        "end_plus_half_increment": 2.1842005426542244e-08
+      }
+    },
+    {
+      "index": 624,
+      "time_s": 20.0,
+      "conversion_errors": {
+        "midpoint": 0.01819432667545684,
+        "endpoint": 0.008947814794601938,
+        "end_plus_half_increment": 2.432122869766573e-08
+      }
+    }
+  ],
+  "accepted_state_archive_sha256": "e2276c64ada9f4c848ea1f6babfbb55af043f6288bdb828cbf285e02f772866e",
+  "native_material_source_sha256": "f4c4c2c6520d0b57a991fd65454ec7c5ee660fd6f5ec24bc8c93eedbd441b296",
+  "native_material_dll_sha256": "045ee4ef69d0cb27bf9d1d8875bdee0243d73d0a2ddde5be43073bea306b3a65",
+  "qualification": "Accepted native-temperature replay diagnoses the inherited temperature-increment convention. It does not validate kinetics or physical motor lifetime.",
+  "conclusion": "The existing DLL agrees with endpoint temperature plus half the increment, not the documented midpoint.",
+  "source": "https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_prog/Z7K4r1e5lcd.html"
+}

@@ -3,6 +3,7 @@ import hashlib
 import json
 import matplotlib.pyplot as plt
 from latex_style import CASE_COLORS,plot_samples
+from temperature_convention_report import create as temperature_convention_report
 
 
 def create(root,out,captured):
@@ -70,9 +71,11 @@ def create(root,out,captured):
         parts += [r'\subsection{Cooling withdrawn after an internal-substep audit gap}',
             'The corrected restart run completed seven seconds of heating with one native substep per controller interval. At the first cooling interval, ANSYS cut back the requested 0.25 s step and solved at 7.125, approximately 7.19483, and 7.25 s. The old controller combined the final internal-substep capacity and gas-rate exports with the conversion increment over the whole controller interval. Passing its numerical threshold did not establish a consistent interval energy balance.',
             'The entire subsequent cooling chain is therefore withdrawn from accepted results, and the original run was paused and preserved. The heating prefix through 7 s is retained after inspection of every native load-step entry. Only the final result of each controller interval was saved, so the missing intermediate cooling energy terms cannot be reconstructed faithfully after the run.',
-            'Fresh packages export native load-step and substep identity. Acceptance now requires exactly one native substep for each controller interval. The first second of cooling uses 0.0625 s intervals before returning to 0.25 s; any further internal cutback stops acceptance and preserves the preceding accepted restart. Separate default and tighter heat-flow convergence controls use identical schedules through 20 s. Their outcome will determine the next four-case continuation; a tighter tolerance is not assumed to resolve the comparison in advance.']
+            'Fresh packages export native load-step and substep identity. Acceptance now requires exactly one native substep for each controller interval. The first second of cooling uses 0.0625 s intervals before returning to 0.25 s; any further internal cutback stops acceptance and preserves the preceding accepted restart. Separate default and tighter heat-flow convergence controls use identical schedules through 20 s. Their completed comparison is reported below; the acceptance gates were not relaxed.']
         if metadata and metadata['passed']:
             parts += ['A native read-only result probe returned substep 1 at 7 s and substep 3 at 7.25 s; the new acceptance function admits the former and rejects the latter. Retrospective log inspection found only single-substep intervals in all four published coarse baselines and the earlier restart/pulse controls. Their published acceptance is unaffected.']
+
+    parts += temperature_convention_report(read,out)
 
     native=[]
     for case in ['sustainer_al','sustainer_cf','booster_al','booster_cf']:
@@ -87,7 +90,7 @@ def create(root,out,captured):
             ('All displayed comparisons meet the same-mesh profile, conversion, mass and row-count checks.' if all(d['comparison_passed'] for d in native) else ('The profile, conversion and mass targets pass, but the strict test of identical row schedules does not. Native and independent removal times are therefore reported separately.' if all(d.get('profile_conversion_mass_passed',False) for d in native) else 'Some same-mesh field comparisons do not meet their targets; those differences require investigation and are not presented as validated equivalence.')),
             'These checks do not establish fine-mesh convergence of the native stopping time. In particular, the independent sustainer CF pulse needed further refinement of its provisional property-flag time.']
         if substep:
-            parts += ['The displayed refined sustainer comparison is restricted to the verified seven-second heating prefix; no withdrawn cooling values enter this table. The hot-profile target remains unmet and is the subject of the paired nonlinear-convergence controls. Persistent native live counts verify the restart correction independently of this thermal-profile discrepancy.']
+            parts += ['The historical refined sustainer comparison is restricted to the verified seven-second heating prefix; no withdrawn cooling values enter this table. Its hot-profile target remained unmet. The paired tolerance and reaction-temperature diagnostics above separate the causes; fresh corrected midpoint comparisons must establish the replacement result. Persistent native live counts verify the restart correction independently of this thermal-profile discrepancy.']
         events=[(d['case'],a) for d in native for a in d['removal_events'] if a.get('scheduled_time_difference_s') is not None]
         if events:
             parts += [r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Row & Native scheduled [s] & Independent [s] & Difference [s]\\\midrule',

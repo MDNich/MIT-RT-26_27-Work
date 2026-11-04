@@ -33,7 +33,7 @@ class State:
     eject_total:float=0.
 
 class RadialModel:
-    def __init__(self,cfg,rows=None,case_rows=None,capacity='lumped',partial_capacity=False):
+    def __init__(self,cfg,rows=None,case_rows=None,capacity='lumped',partial_capacity=False,reaction_temperature='midpoint'):
         self.c=cfg;g=cfg['geometry'];self.np=rows or g['phenolic_radial_rows']
         self.nc=case_rows or g['aluminium_radial_rows']
         self.r=np.r_[np.linspace(g['inner_radius_m'],g['phenolic_outer_radius_m'],self.np+1),
@@ -44,6 +44,8 @@ class RadialModel:
         self.rg=self.r[:-1,None]*self.N[None,:,0]+self.r[1:,None]*self.N[None,:,1]
         self.w=self.dr[:,None]/2*self.rg
         self.capacity=capacity;self.partial_capacity=partial_capacity
+        assert reaction_temperature in ['midpoint','endpoint_plus_half_increment']
+        self.reaction_temperature=reaction_temperature
         self.max_energy_error=0.;self.max_mass_error=0.;self.max_alpha_increment=0.
         self.steps=0;self.max_retained_fraction=0.;self.event_bracket=None;self.property_bracket=None
 
@@ -79,6 +81,10 @@ class RadialModel:
         for iteration in range(90):
             Tg=guess[:-1,None]*NN[None,:,0]+guess[1:,None]*NN[None,:,1]
             mid=(Tg[:nph]+Toldg[:nph])/2
+            if self.reaction_temperature=='endpoint_plus_half_increment':
+                # Diagnostic reproduction of the inherited native DLL error.
+                # The default remains the intended temporal midpoint.
+                mid=1.5*Tg[:nph]-.5*Toldg[:nph]
             rate=333*np.exp(-64081/(R*np.maximum(mid+273.15,1.)))
             anew=1-(1-aa)*np.exp(-rate*dt);da=anew-aa;rho=rv-(rv-rc)*anew
             kv,kc,cv,cc=[np.interp(Tg[:nph],TABLE[:,0],TABLE[:,i]) for i in range(1,5)]
