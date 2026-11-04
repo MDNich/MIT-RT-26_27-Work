@@ -9,6 +9,19 @@ from radial_model import RadialModel
 from ops import ROOT,TMP,atomic,disks,host_check
 
 
+def identical_row_schedule(comparisons, events, reference_events):
+    """Require identical events in both directions, including a late native event.
+
+    Sampling only at native events can miss an earlier independent removal:
+    both layer counts already agree by the native event's endpoint.
+    """
+    return (all(c['native_rows_scheduled']==c['independent_rows_scheduled'] for c in comparisons)
+            and set(reference_events)=={e['rows_scheduled'] for e in events}
+            and all(e['independent_scheduled_time_s'] is not None
+                    and abs(e['scheduled_time_s']-e['independent_scheduled_time_s'])<1e-8
+                    for e in events))
+
+
 def compare(name,verification=False):
     run=TMP/'runs'/name
     if not (run/'state.json').exists():return
@@ -78,7 +91,7 @@ def compare(name,verification=False):
             first_transferred_time_s=after['time_s'] if after else None,load_transfer_passed=transfer))
     profile_passed=all(c['max_live_profile_difference_K']<5 and c['max_live_conversion_difference']<.02
                and abs(c['solid_mass_difference_fraction_initial'])<.01 for c in comparisons)
-    schedule_identical=all(c['native_rows_scheduled']==c['independent_rows_scheduled'] for c in comparisons)
+    schedule_identical=identical_row_schedule(comparisons,events,reference_events)
     passed=profile_passed and schedule_identical
     topology_checks=[a.get('native_live_elements_before_solve')==cfg['expected_elements']-a['rows_removed']*nf
                      for a in audits.values() if 'native_live_elements_before_solve' in a]
@@ -91,6 +104,7 @@ def compare(name,verification=False):
         native_reaction_temperature=cfg.get('native_reaction_temperature','inherited_endpoint_plus_half_increment'),
         native_material_dll_sha256=cfg.get('native_material_dll_sha256'),
         native_status=terminal['status'],comparison_passed=passed,profile_conversion_mass_passed=profile_passed,exact_row_schedule_identical=schedule_identical,
+        row_schedule_gate_revision='event_times_and_event_sets_v2',
         persistent_native_topology_passed=all(topology_checks) if len(topology_checks)==len(audits) else None,
         cooling_transition_passed=all(cooling_checks) if len(cooling_checks)==5 else None,
         native_control_checks_passed=(all(topology_checks) and len(topology_checks)==len(audits) and all(cooling_checks)),

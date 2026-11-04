@@ -1,0 +1,54 @@
+{
+  "checked_utc": "2026-11-04T23:18:16.187712+00:00",
+  "passed": true,
+  "revision": "event_times_and_event_sets_v2",
+  "regression": "Reject both one-interval timing signs despite matching sampled layer counts; reject missing/additional events.",
+  "prior_passing_comparisons": [
+    {
+      "file": "native_pulse_comparison_booster_al.json",
+      "sha256": "e9a29b4f7d7f8b3bdc3d733176bbd251591f3bf1c4402a0101974714c0cdab0c",
+      "maximum_absolute_event_time_difference_s": 0.0
+    },
+    {
+      "file": "native_pulse_comparison_booster_al_pulse7_midpoint_time_quarter.json",
+      "sha256": "11cd4f0dfa18d5f6993bfb898bab1710439049680b6782322fab3ebc5c076372",
+      "maximum_absolute_event_time_difference_s": 3.4638958368304884e-14
+    },
+    {
+      "file": "native_pulse_comparison_booster_cf.json",
+      "sha256": "414bce67bf5237077d383279e0a3bf3d38b183807de93dc79799e88d552ca0d6",
+      "maximum_absolute_event_time_difference_s": 0.0
+    },
+    {
+      "file": "native_pulse_comparison_booster_cf_pulse7_midpoint_time_quarter_smp10.json",
+      "sha256": "722bf0b6df35468cc2f39b0ffe72504d994f922b939b05a30b30a396049d7cf1",
+      "maximum_absolute_event_time_difference_s": 3.4638958368304884e-14
+    },
+    {
+      "file": "native_pulse_comparison_sustainer_al.json",
+      "sha256": "f6a4bf0d061a025d3e1443a0cdd427c1deeacf1454e1c610dd073294f15ce496",
+      "maximum_absolute_event_time_difference_s": 0.0
+    },
+    {
+      "file": "native_pulse_comparison_sustainer_al_midpoint_pilot.json",
+      "sha256": "1180778ff86cc8f1f813f695a51ef32115bad9ba32a6a5fec9345713c5823e06",
+      "maximum_absolute_event_time_difference_s": 0
+    },
+    {
+      "file": "native_pulse_comparison_sustainer_al_pulse7_midpoint_time_quarter.json",
+      "sha256": "b8091ff991e9d604f704dd0517452debf14be68a6f752ed643bd8df8f47aff32",
+      "maximum_absolute_event_time_difference_s": 0.0
+    },
+    {
+      "file": "native_pulse_comparison_sustainer_cf.json",
+      "sha256": "2d78ccb2cf8c6301a87fa515309f37032a193cba1e5e86dd817675a3fc892dae",
+      "maximum_absolute_event_time_difference_s": 0.0
+    },
+    {
+      "file": "native_pulse_comparison_sustainer_cf_pulse7_midpoint_time_quarter.json",
+      "sha256": "ea85d343791f5bd0e818762be089d59fe8c9d59241c322b3211cfbc8649cbd25",
+      "maximum_absolute_event_time_difference_s": 0.0
+    }
+  ],
+  "qualification": "Retrospective check covers all event times present in each saved comparison and its sampled layer counts. It does not reconstruct unsaved independent events; future comparisons also require exact equality of full event sets. No existing accepted result required withdrawal."
+}

@@ -1,0 +1,34 @@
+{
+  "created_utc": "2026-11-04T23:13:53.457557+00:00",
+  "runtime": "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10",
+  "parent_runtime": "sustainer_al_pulse7_midpoint_space160_smp10",
+  "status": "RUNNING_VERIFIED_TEN_CORE",
+  "parent_tolerance": 1e-05,
+  "diagnostic_tolerance": 1e-07,
+  "unchanged_input_sha256": {
+    "model_base.inp": "115fe473f9277e930d32b065205906511a3132b96fc1899d627190515c1c2853",
+    "mesh_map.json": "4a5ebd32ef7d1117f067c6c3ac063029b218369bee44eaabab355734dad4c66f",
+    "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+    "export_fields.mac": "557e0ec4a4d136ab1f9d57a4bd8f7bcfa219dabc7226c4bba07ed2d8b9a0addf",
+    "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+    "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+    "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+  },
+  "changed_inputs": "Runtime paths in driver/resume/wrappers; run_v0.inp CNVTOL heat-flow convergence only. No inherited solution.",
+  "config_sha256": "aeb5504cce381b1cb224d3f04d9c8876106451f63716a908687e1037f691f114",
+  "end_time_s": 127,
+  "ranks": 10,
+  "parallel_mode": "smp",
+  "purpose": "Test whether nonlinear solver precision explains the strict second-row scheduling mismatch. This is a hypothesis, not a diagnosed cause.",
+  "acceptance": "Every native audit, exact one-substep gate, persistent topology, exact row scheduling and independent field gate remains mandatory.",
+  "dispatch": "Only this diagnostic is eligible to run. The original campaign stays held until reviewed.",
+  "observer_pid": 22032,
+  "launched_utc": "2026-11-04T23:14:10.854715+00:00",
+  "initial_prefix_check": {
+    "time_s": 0.2531249999999998,
+    "index": 81,
+    "comparison_passed": true,
+    "max_profile_difference_K": 0.0010257738791210613,
+    "qualification": "Early heating only; no removal or cooling event yet. Full event and terminal gates remain required."
+  }
+}

@@ -1,5 +1,7 @@
 # Iris exploratory ANSYS study
 
+**Current numerical hold (November 4, 23:11 UTC):** the first 160-row native case paused cleanly after its second removal occurred one time step before the independent model. Native balance and field checks pass; exact event timing does not. The spatial convergence result is not accepted. The main campaign is held while one fresh ten-core case tests a 100-times stricter solver tolerance; previously published primary/time-only results remain unchanged. See `OPERATIONS.md`.
+
 English-only autonomous study, authorized November 3, 2026. Read the parent
 `AGENTS.md` and `phenolic_burnthrough_plan.md` for user requirements and physics.
 
@@ -14,8 +16,9 @@ cooling, balance and independent-reference gates remain required.
 
 Ten continuing resolution cases and five deferred controls received ten-core
 successor inputs. Booster CF quarter-step has now completed its full 300 s
-horizon; nine resolution cases remain, with sustainer Al 160/40-row refinement
-active in the same serial queue. `configs/campaign_queue.json` records their names and the single
+horizon; nine resolution cases remain. The sustainer Al 160/40-row refinement
+is paused for the strict event mismatch described above; a separate single-case
+precision diagnostic is running. `configs/campaign_queue.json` records their names and the single
 current observer. Prior one-core results, inputs and checkpoint lineage are
 preserved. The printed primary source appendix describes those original primary
 runs; the execution change is documented separately in the report and
@@ -66,7 +69,8 @@ comparison pass (maximum profile difference 0.2205 K), with 6.270625 mm retained
 Its sampled inner peak is 114.2432 C at 102.75 s; the outer peak is 105.1308 C
 at 144.25 s. All four corrected primary cases have now reached audited terminal
 states: three completed horizons and the sustainer CF scope stop. The thirteen-case
-native time/mesh campaign continues in the existing serial queue. The sustainer Al
+native time/mesh campaign remains unfinished and is currently held for the
+event-timing investigation described above. The sustainer Al
 quarter-step case is complete through 127 s and passed both audits: its inner
 casing peak shifts by -0.721 K and retained mesh thickness is unchanged. This
 time comparison does not establish spatial convergence. Sustainer CF quarter-step

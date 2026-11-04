@@ -22,7 +22,74 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Ten-core execution and current dispatch (November 4, 21:36 UTC)
+## Diagnostic hold (November 4, 23:11 UTC)
+
+The serial observer PID 54373 was deliberately stopped after a strict second-row
+scheduling disagreement in `sustainer_al_pulse7_midpoint_space160_smp10`.
+The native run paused cleanly at index 2814 / 39.875 s; all native balance,
+substep, input-hash and restart audits passed. No guest solver remained at that
+pause confirmation; the later diagnostic below is a fresh calculation.
+The same-mesh independent field checks pass (maximum profile difference
+0.244620 K), but native row two schedules at 6.540625 s versus 6.543750 s
+independently. This one-step difference FAILS the exact scheduling gate.
+It is not an accepted full convergence pair. Published primary and time-only
+results remain unchanged. See `validation/native_row_schedule_issue_space160.json`
+and ignored `ansystmp/heartbeat_checks/row_schedule_diagnosis.json`.
+
+`configs/campaign_queue.json` records `dispatch_hold`. Do not resume the stopped
+observer or the paused case, regenerate sealed inputs, or relax the event gate.
+The fresh precision diagnostic described below is the only authorized current
+dispatch; main-campaign recovery requires reviewing its event and terminal gates.
+Keep ten cores per solve and one serial queue. The storage watcher remains active. The dispatch
+section below describes the preserved pre-hold lineage, not a running observer.
+
+## Active precision diagnostic (November 4, 23:16 UTC)
+
+Observer PID 22032 runs only
+`sustainer_al_pulse7_midpoint_space160_tol1e7_smp10`, freshly started from 22 C.
+Its preflight passed and the native command/log confirm `-smp -np 10` and one
+process with ten threads. The paired ANSYS261 launcher and ANSYS executable
+are one calculation, not two cases. The heat-flow convergence setting is
+1e-7 versus 1e-5 in the paused parent. Mesh (160/40), exposure, material DLL,
+controller, time increments and acceptance gates are unchanged; driver/wrapper
+paths point to the new folder. Horizon remains 127 s. Source and input identity
+checks are in `validation/native_tolerance_diagnostic_plan.json`.
+
+The main campaign's `dispatch_hold` remains in force. The single diagnostic's
+observer is recorded in `ansystmp/baseline_queue.pid` and
+`ansystmp/tolerance_diagnostic_queue.pid`; its log is
+`ansystmp/tolerance_diagnostic_queue.log`. Do not start another queue or solver.
+No original convergence mapping has been replaced by an unverified diagnostic.
+Inspect both removal events (around 3.48 and 6.54 s), the cooling transition,
+full native audits and exact independent scheduling before accepting it.
+If a repeated mismatch appears, pause cleanly again and investigate its cause;
+do not adjust the removal threshold to make event times agree.
+
+Offline replay through index 2100 reproduces native mean conversion to within
+2.97e-8. At index 2093, the second-row residual is 0.000522960 of initial row
+mass natively and 0.001095126 independently, straddling the unchanged 0.001
+cutoff. Consumed fractions differ by 0.000572169; the difference in conversion
+is only about 6.5e-9 there. Thus accumulated char consumption, rather than the
+mean-versus-weighted conversion at that endpoint, dominates this event mismatch.
+The source of that consumption difference remains under investigation; tighter
+solver precision is a testable hypothesis, not an established explanation.
+`model/check_row_schedule_diagnosis.py` preserves the native prefix hash,
+reaction replay, residual/consumption fractions and live-row flux reconstruction.
+Its data are diagnostic, not accepted spatial convergence results.
+
+The comparison gate now checks both event time equality and the complete set of
+row events, in addition to sampled layer counts. Previously, a late native event
+could evade the count-only check because both models had removed the row by the
+native endpoint. Regression tests reject either sign of a one-interval mismatch.
+All nine saved passing comparisons retain matching event times; no accepted
+result required withdrawal. See `validation/comparison_event_gate_regression.json`.
+The comparison utility is outside the sealed native solver package; the live
+physical calculation and its native acceptance rules remain unchanged.
+
+The latest reviewed PDF and its primary/time-only results are unchanged. This
+failure/recovery milestone updates operational evidence, not motor predictions.
+
+## Preserved ten-core dispatch before the diagnostic hold (November 4, 21:36 UTC)
 
 The user explicitly requested ten ANSYS cores. The current production command is
 `-smp -np 10`: one shared-memory solve with ten threads, one serial case queue.
@@ -32,7 +99,7 @@ replacement observer PID 54373 uses `--wait-resume-first`; always check the curr
 ignored PID file and process command rather than relying on these historical IDs.
 The storage watcher remains PID 82419 with its existing keep-awake process.
 
-Current active runtime: `sustainer_al_pulse7_midpoint_space160_smp10`.
+Runtime active before the hold: `sustainer_al_pulse7_midpoint_space160_smp10`.
 The preceding `booster_cf_pulse7_midpoint_time_quarter_smp10` completed at
 21:32:04 UTC and passed full native and independent gates. It inherits the
 immutable prefix through index 1117 / 3.490625 s from its one-core parent, whose
