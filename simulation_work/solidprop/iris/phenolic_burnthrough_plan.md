@@ -1,10 +1,36 @@
 # Iris Phenolic Burnthrough Simulation Plan
 
-Prepared November 3, 2026. Scope: sustainer and booster, each with an aluminium or carbon-fibre composite casing.
+Updated November 3, 2026. Scope: sustainer and booster, each with an aluminium or carbon-fibre composite casing. The Windows VM is running and the user has authorized autonomous implementation, exploratory simulations, English reports and milestone pushes to GitHub.
 
 The calculation will answer **when the phenolic liner loses its remaining physical thickness under a specified motor firing history**. It will also report pyrolysis depth and casing temperatures, because the casing or its bond can exceed a thermal limit while char still remains. The starting point is the previous ANSYS MAPDL thermochemical model in `newmotor_phenolic_study/v0`, extended to the four Iris configurations.
 
-The dimensions are sufficient to prepare the geometry. A predictive time still requires the firing heat load and duration, material data for the actual liner and casings, and a supported surface-consumption law. Until these are supplied, results using inherited properties will be labelled exploratory.
+The dimensions are sufficient to prepare the geometry. The user has confirmed that firing heat flux and duration are unavailable and has requested evidence-based assumptions and sensitivity ranges. Use 800 psi nominal pressure and the previous reports' gas temperature and phenolic/aluminium properties as the initial exploratory basis. CF thermal properties still need supported surrogate data. Results remain conditional on the imposed exposure and consumption law.
+
+## Confirmed operating environment and user decisions
+
+The following inventory was checked directly on November 3, 2026. Available disk and memory figures are snapshots, not reservations.
+
+| Item | Observed state and execution decision |
+| --- | --- |
+| Host | MacBook Pro, arm64. Repository is `/Users/mdn/Developer/MIT-RT-26_27-Work`. |
+| VM | Parallels `Windows 11 (1)`, UUID `{e7540578-be7d-4ee0-9a40-8aa94dcb9efd}`, running Windows 11 Pro ARM64, build 26200. |
+| Resources | 14 virtual CPUs and about 112 GiB RAM; about 104 GiB guest memory was free. Start with a small model and benchmark process counts rather than assuming ten ranks is efficient. |
+| Solver | `C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe` and the underlying `ANSYS.exe` are present. Verify exact release and successful user-material loading in a native pilot. File presence alone is not a solve test. |
+| Supporting tools | Workbench executable exists; bundled Python reports file version 3.10.19. Intel Classic Fortran 2023.1 is present at the historical path. Verify compiler/linker operation only if a DLL rebuild is needed. |
+| License | Local TCP port 1055 responds and license processes exist. Port 2325 did not respond. Actual feature checkout, rather than either port alone, determines whether MAPDL can run. |
+| Shared storage | `\\Mac\Home\Developer\MIT-RT-26_27-Work` is readable from Windows. The historical V: mapping is absent in the inspected automation session; create a dedicated mapping in the same execution identity as the solver. |
+| Disk | Mac had about 1,513 GB free; Windows C: about 59.5 GiB. Use the Mac share for large files and measure shared-folder performance. |
+| Existing calculation | No MAPDL/MPI solver processes appeared in the inspected process inventory. Recheck immediately before launching each job. |
+
+The user requested small axial and sector slices, **at least five radial elements per material layer and ideally twenty**, rather than the previous very large mesh. The approximately 1.0 +/- 0.25 m fuel length is an inventory estimate only. Use twenty radial cells in each of the two material regions initially, then compare finer meshes where required for recession or thermal-gradient accuracy. A homogenized CF casing is the starting representation; individual fabric plies are not asserted without a supplied motor layup.
+
+### Disk limits and publication
+
+Before generation, launches, report builds, transfers and Git pushes, check free space on the Mac volume. Monitor that volume during active jobs. **Below 400,000,000,000 bytes free, stop all new work**, latch a storage-stop status, request a clean controller pause and issue a solver-controlled stop for an in-progress nonlinear solve. Do not continue report generation or automatically resume after the stop. Keep the last fully accepted state distinct from any interrupted solver state.
+
+Independently keep Windows C: above **10,000,000,000 bytes free**. Account for scratch files and the next expected write burst before starting. Copy this study's inactive results to the Mac share, verify sizes and hashes, then remove only redundant guest copies if necessary. Do not delete earlier studies or unrelated files. A Mac-share write still consumes the Mac disk; moving files out of the VM does not waive the host limit.
+
+Push each major completed milestone: setup, initial report, significant intermediate results, and final report. Before committing, check staged file sizes and reject anything at or above 100,000,000 bytes. Before pushing, check newly reachable Git blobs as well. Native solver/restart files, environment packages, scratch output and incomplete exports remain ignored. Reports, STEP inputs, generators, configurations, compact accepted data and provenance belong in Git.
 
 ## What counts as burnthrough
 
@@ -62,7 +88,7 @@ The attached [ACP tutorial][acp], page 4, defines a fabric composite with the fo
 
 Page 3 gives **1.27 W/(m·K)** and **802 J/(kg·K)** for **G10**, not CF; those values must not populate the CF material. Pages 1 and 5 describe a fin layup of seven 0.009-inch plies per side with angles `0/0/45/0/45/0/0`. That is a fin construction, not the motor layup. Do not infer casing ply count by rounding the specified case thickness to this ply thickness.
 
-Obtain the actual casing layup, cured ply thickness, resin system, fibre/resin fraction, conductivity along both fabric directions and through thickness, heat capacity, and their temperature dependence. Also obtain the resin/bond thermal limits and degradation data. Use the supplied density provisionally only with its material identity recorded. Elasticity and thermal-expansion data cannot supply the missing thermal properties.
+The user directed reuse of the fin report and authorized surrogate assumptions for missing inputs. Use its density of 1451 kg/m³. Start the homogenized woven CF surrogate at 0.55 W/(m·K) radially and 2.5 W/(m·K) in both surface directions; published woven-composite measurements provide the corresponding 0.5–0.6 and 2–3 ranges. Use the virgin T700/M21 heat-capacity fit `cp = 2.8773 T + 687.31` J/(kg·K), with T in Celsius, as a separately identified material surrogate. Clamp this fit above 200 °C rather than silently extending it, and flag the resulting high-temperature approximation. A 150 °C casing-temperature flag marks the edge of the conservative property-evidence range; it is not an asserted resin failure temperature. Compare wider conductivity and heat-capacity ranges, including the NASA carbon-epoxy reference. These substitutions do not identify the user's actual resin/layup. [Woven-composite measurements][woven-cf]; [T700/M21 measurements][cf-fire]; [NASA thermal model][nasa-cf].
 
 ### Phenolic and aluminium
 
@@ -72,7 +98,7 @@ The old aluminium constants are 2700 kg/m³, 167 W/(m·K), and 896 J/(kg·K). Us
 
 ## Heating history and exposure
 
-The specification currently leaves heat flux pending. Obtain the following for **each motor**:
+Heat flux remains pending, and the user confirmed that no firing history is available. Track the following missing inputs for future updates; their absence does not block the authorized exploratory study:
 
 | Input | Required definition |
 | --- | --- |
@@ -88,7 +114,9 @@ Apply one consistent hot-boundary formulation:
 - **Measured or supplied net flux:** apply that flux to the exposed surface. Do not add convection, radiation, blowing or removal-energy deductions already included in its definition. Retain each internal reaction/transport term only if the supplied flux definition leaves it to the solid model.
 - **Gas environment:** calculate convection from `h_eff(t) * (T_g(t) - T_surface)` and add radiation separately. Apply the previous blowing correction only to an uncorrected convective coefficient, with an explicit treatment of pyrolysis gas and any surface-reaction products.
 
-The prior constant gas temperature of 2230.85 °C, coefficient of 1000 W/(m²·K), pressure of 800 ± 200 psi, and exterior conditions are **regression inputs**, not new motor specifications. The reaction written in `motorspec.md` does not determine wall heat flux, equilibrium gas fractions, particle heating or char-consumption kinetics.
+Use the previous constant gas temperature of 2230.85 °C, coefficient of 1000 W/(m²·K), and exterior conditions as the initial **exploratory exposure**, with 800 psi nominal pressure now also supplied by the user. Retain 600–1000 psi as an inherited sensitivity range. Treat 800 psi as absolute for the reaction-rate calculation and record that convention. Test h = 500/1000/2000 W/(m²·K) and hot effective emissivity = 0/0.1/0.3 as deliberately broad engineering scenarios, not measured confidence bounds. The reaction in `motorspec.md` does not determine the wall flux or firing duration.
+
+Check atom and mass balance of the supplied reaction and calculate its implied reactant/product mass bookkeeping. Combine the approximate 0.75–1.25 m fuel length with the specified outer radius to report a solid-cylinder envelope volume. Any mass estimate must state its assumed density, unknown port fraction, omitted binder and packing/void assumptions. Do not convert that inventory into a burn duration without a grain port and supported burn-rate law. Stoichiometric products alone are not an equilibrium combustion calculation; retain the inherited gas temperature rather than asserting an adiabatic temperature from the reaction line.
 
 If grain shielding is unknown, a liner exposed from ignition can be a clearly labelled screening scenario. It is not an established exposure history or a guaranteed worst case for every failure mechanism. Model supplied axial variations with separate representative stations initially, then include axial conduction where needed.
 
@@ -104,9 +132,9 @@ Continue with native MAPDL transient thermal analysis and the existing UserMatTh
 
 Begin with cylindrical radial conduction to check geometry, thermal resistance and transient storage. The production reference will use the previous **SOLID278 thin sector**, with explicitly meshed phenolic rows so consumption can move the hot surface. SOLID278 supports transient conduction and oriented orthotropic conductivity; the casing material axes require an explicit check. [ANSYS SOLID278 reference][solid278]
 
-Start from a 0.1° sector and a representative 50 mm axial coupon only where loading and construction are locally uniform. Use adiabatic cut faces only when compatible with the material tensor and assumed symmetry. Benchmark any shortened coupon against the 50 mm reference and preserve acceptable element shapes. Scale integrated mass/power by sector angle; do not scale temperature, heat flux or recession. Actual motor length is needed before reporting whole-motor totals.
+Use a **0.5° sector and 0.5 mm axial slice** for locally uniform loading. Two angular divisions, two axial divisions and twenty radial cells in each of the two materials give **160 elements and 369 nodes per initial model**. Map CF axes to the local tangent, motor axis and radial direction. Use adiabatic cut faces under these uniform-wall assumptions; verify slice independence with a wider/taller comparison. Scale integrated mass/power by sector angle; do not scale temperature, heat flux or recession. Whole-motor mass estimates remain separate from the slice analysis.
 
-Represent CF with separate solid ply regions and local thermal axes when layup data are available. A homogenized casing is acceptable for screening only after matching through-thickness thermal resistance and areal heat capacity to the layered model. Use ACP, if helpful, to define and inspect the actual layup; the fin tutorial's static-structural workflow is not itself a burnthrough solver.
+Represent the initial CF casing as an orthotropic homogeneous laminate surrogate with twenty radial cells. If actual layup data become available, compare its through-thickness resistance and areal heat capacity with a layered model before replacing the surrogate. Use ACP if helpful to inspect that layup; the fin tutorial's static-structural workflow is not itself a burnthrough solver.
 
 Extend the domain for joints, closures, axial gradients or circumferential hot spots. A uniform sector predicts uniform-wall response and cannot establish a global minimum lifetime at an unmodelled local feature.
 
@@ -128,7 +156,7 @@ Add an explicit final-row event before requesting another phenolic row. Record b
 
 ### 5 Run firing and cooling histories
 
-Run Sustainer Al, Sustainer CF, Booster Al and Booster CF with identical numerical settings within each pair. Save complete histories through ignition, burning, tailoff and sufficient cooling to capture the casing temperature peak. If burnthrough occurs first, retain the event checkpoint; further heating of exposed casing requires an appropriate casing/bond degradation model.
+Run Sustainer Al, Sustainer CF, Booster Al and Booster CF with identical numerical settings within each pair. Begin with a 0.1 s native pilot, then a 7 s baseline for continuity with earlier work. Run explicitly hypothetical 7, 20 and 60 s heating pulses with cooling extensions, and a separately labelled continuous-exposure endurance branch. Extend the latter in reviewed intervals to a burnthrough event or a documented numerical/material-validity limit. These durations are scenarios, not estimated burn times. If burnthrough occurs first, retain its checkpoint; further heating of exposed casing requires an appropriate casing/bond degradation model.
 
 Replace the old fixed 7 s horizon and step-count cap with each case's specified exposure. Do not hold firing conditions indefinitely just to obtain a finite crossing. If continued exposure is requested as an endurance scenario, clearly identify its imposed boundary conditions and stop when the material model leaves its supported range.
 
@@ -146,7 +174,7 @@ These are proposed study targets, to be verified rather than treated as existing
 | --- | --- |
 | Simple thermal benchmarks | Recover cylindrical steady conduction and energy storage; with reactions disabled, match the radial reference. Check conductivity-axis orientation on a CF coupon. |
 | Reaction and removal benchmarks | Check a uniform-temperature conversion history, zero-consumption case, imposed-recession case, first/last row removal, and restart across a removal. Verify load area and energy signs. |
-| Radial resolution | Compare 120/240/480 phenolic rows for the sustainer and 160/320/640 for the booster: matching pitches of 39.6875/19.84375/9.921875 micrometres. Refine casing, axial and angular meshes independently where they affect the answer. |
+| Radial resolution | Start with 20 radial cells in each material; compare 40 and 80. Phenolic pitches at 20 cells are 0.238125 mm for the sustainer and 0.3175 mm for the booster. At least 5 cells must remain the initial discretization minimum in each material layer; a disappearing liner naturally has fewer live rows near its end. Refine further only when convergence or partial-cell error requires it. |
 | Time resolution | Start from the inherited 0.0125 s coupling step; compare with 0.00625 s and refine further near rapid conversion, load changes and burnthrough. Keep material-law parameters fixed. |
 | Result convergence | Target less than 5% change in burnthrough time between the two finest runs, with a reported event bracket. If no crossing occurs, target agreement in remaining thickness within the larger of 0.02 mm or 1% of initial thickness; target casing peak agreement within 5 K. Tighten if a design decision lies within these tolerances. |
 | Mass and energy | Retain the starting v0 gates: mass residual at most 1e-6 of initial liner mass, step energy residual at most 5%, and hot-load mismatch at most 2%. Also audit cumulative energy including gas, reaction terms and material removal. Investigate systematic drift and use absolute tolerances near zero power. |
@@ -156,7 +184,61 @@ Measure pilot runtime and storage before committing to the full matrix. The prev
 
 ## Deliverables and next implementation milestone
 
-The first implementation milestone is a parameterized four-case geometry/material package, an input register distinguishing supplied data from inherited assumptions, a reproduced v0 regression case, and successful native preflights. Geometry and regression work can proceed while the heat loads, actual CF thermal data and consumption calibration are collected. Predictive production results depend on those inputs.
+The first implementation milestone is a parameterized four-case geometry/material package, an input register distinguishing supplied data from inherited assumptions, a reproduced v0 regression case, and successful native preflights. Missing physical inputs are handled with the authorized exploratory scenarios and remain explicit in every report. Native preflight, solver convergence and experimental validation must retain separate statuses.
+
+## Detailed unattended execution and reporting
+
+### Step 1 Establish storage and execution identity
+
+1. Check Mac free bytes and Windows C: free bytes, record both floors, and start the host disk watcher before launching a solver.
+2. Register every active Iris runtime and its MAPDL job name so the watcher can request a clean stop for precisely this study's processes. A stale guard heartbeat also stops the next coupling step.
+3. Use Parallels guest execution in a consistent identity and a dedicated I: mapping to the shared `iris/v1` folder. Do not rely on interactive-user V: mappings being visible to the automation account.
+4. Check actual solver process names without accidentally treating `ansyslmd.exe` as a running calculation. Do not stop license services or unrelated applications.
+5. Run a native one-element, no-solve probe. Record the release banner, license checkout, mesh inventory and warnings/errors. The November 3 probe passed with MAPDL 2026 R1.02; material-library loading still requires a solve.
+
+### Step 2 Generate and verify geometry and input packages
+
+1. Generate four named STEP files, each with exactly two solids, from the specified radii and the 0.5 mm/0.5° slice. The Al and CF geometries within each motor are dimensionally identical.
+2. Reimport each exported STEP into an empty OpenCASCADE model and compare body count, cylindrical-sector volumes and axial bounds to independent formulas. Store dimensions, units, axis and validation results alongside the STEP files.
+3. Generate conformal structured SOLID278 meshes from the same dimension record. STEP is the exchange geometry; the deterministic native mesh generator is the solver input route. Check that both describe the same solids.
+4. Assign phenolic state variables and the appropriate casing properties. For CF, construct a local Cartesian material frame for every angular column and inspect the radial conductivity direction.
+5. Keep source modules, material DLL, boundary definitions, geometry, mesh inventory and expected node/element counts in a sealed input package. Replace the old hard-coded 229,665/152,000 inventory checks with case-derived values.
+6. Generate a distinct runtime for every pilot, mesh level and physical scenario. Never edit an already sealed or running configuration in place.
+
+### Step 3 Verify the native solver and coupling
+
+1. Preflight all four packages without time integration, rejecting missing material definitions, invalid element shapes and unexpected inventory.
+2. Solve a short aluminium pilot to verify UserMatTh loading, nonzero conversion at heated points, thermal output extraction, body-source accounting and native heat-rate signs.
+3. Solve the CF pilot and a conductivity-axis check. Verify that switching the casing changes only intended material properties, not exposed faces or heat-load area.
+4. Run the historical-physics regression and an independent radial-conduction benchmark. For any disagreement, preserve evidence and fix the implementation before expanding the campaign.
+5. Exercise first-row and last-row removal with controlled benchmark inputs. Check that hot-face power remains present after removal, residual mass is logged once, and the final event does not index a nonexistent row.
+6. Compare a clean uninterrupted pilot with a checkpoint pause/resume. Check time, temperature, conversion, removed rows and mass/energy integrals. A solver restart without matching controller state is not accepted.
+7. Start with one solver process for these tiny models. Compare additional ranks only if measured total throughput improves. Keep process count fixed within a restart chain.
+
+### Step 4 Complete the baseline and convergence matrix
+
+1. Run the four 7 s baseline exposures with common step settings, preserving actual converged values at every accepted coupling time.
+2. Compare 20, 40 and 80 radial cells per material and halved coupling steps. The small slice keeps these studies affordable; expand axial/angular resolution only for a demonstrated dependence.
+3. Quantify the partial-consumption thermal-storage approximation and removal-thickness quantization. If it controls the answer, fix the material/removal representation or refine enough to bound its effect; do not equate a mass ledger check with physical accuracy.
+4. Freeze the selected mesh/step settings only after the acceptance targets above are met, or report precisely why a target is unmet.
+5. Run pulse/cooling cases and the separate continuous-exposure branch. Record model-range exceedance times independently of actual burnthrough and do not call arbitrary temperature flags structural failure.
+6. Screen heat transfer, radiation, CF properties, pressure, phenolic properties and char-law multipliers, then confirm influential combinations natively. Preserve the distinction between parameter sensitivity and validated uncertainty.
+
+### Step 5 Accept data and recover from interruptions
+
+At each coupling step, compare observed solver time with the requested time, require every live element exactly once, ignore only already-dead surplus result rows, validate conversion bounds and close mass/energy audits. Commit the checkpoint atomically only after those checks. Figures and reports read accepted audits, never a still-exporting solver state.
+
+For an unexpected exit, preserve logs and the complete failed directory, identify the last accepted controller state and matching native restart files, and work in a separate recovery directory. Diagnose the actual signature before selecting a recovery. Revalidate package identity and the first resumed step. Do not relaunch automatically from zero, mix ranks/steps or weaken a balance tolerance to keep the campaign running. Routine faults are handled autonomously within this study; a storage-stop latch takes precedence over all recovery work.
+
+### Step 6 Produce English reports and publish milestones
+
+The report will have stable sections for purpose and assumptions, dimensions and STEP geometry, materials, heating and reaction physics, solver/coupler implementation, numerical verification, accepted results, sensitivities and conclusions. Use the previous LaTeX serif style, English labels, units on every axis, and solid sampled curves for computed results. Model extrapolations and hypothetical exposure branches must be visually distinct.
+
+Create geometry/mesh figures first. Add temperature profiles and histories, remaining thickness, removed thickness, pyrolysis depth, gas/char mass histories, step/cumulative balance plots, convergence plots and four-case comparisons as the corresponding accepted data arrive. Include the source configuration hash, snapshot time/index and calculation status in each report edition. Never fill an uncomputed result with a fitted number.
+
+Refresh at the end of each validation or baseline case, each meaningful endurance interval or sensitivity group, and approximately every 30 minutes when new accepted results materially change the report. Compile twice, inspect logs, render the PDF and visually check affected pages before publication. Keep the latest PDF stable in name and retain compact provenance for earlier snapshots. Avoid unnecessary copies of large images/results.
+
+Commit and push the validated setup milestone, initial English report, meaningful intermediate reports and final report. The publishing helper checks the storage floors and the 100 MB file/blob limit. At completion, publish a comparison table, reproducibility instructions and all remaining limitations, then stop periodic monitoring. No claim of full pressure-casing qualification follows from this thermal study.
 
 The final comparison will contain one row per motor configuration with:
 
@@ -189,3 +271,6 @@ Archive native ANSYS inputs and material source, configuration hashes, accepted 
 [acp]: /Users/mdn/Developer/MIT-RT-Simulation-Requests/tutorials/ansys/acp_fea/tutorial.ansys.ACP.fea.pdf
 [solid278]: https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_SOLID278.html
 [ekill]: https://ansyshelp.ansys.com/public/Views/Secured/corp/v242/en/ans_cmd/Hlp_C_EKILL.html
+[woven-cf]: https://www.researchgate.net/publication/288102626_Thermal_properties_of_carbon_fiber-epoxy_composites_with_different_fabric_weaves
+[cf-fire]: https://pmc.ncbi.nlm.nih.gov/articles/PMC5459023/
+[nasa-cf]: https://tfaws.nasa.gov/TFAWS12/Proceedings/TFAWS2012-AE-002.pdf

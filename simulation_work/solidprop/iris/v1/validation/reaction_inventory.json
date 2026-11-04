@@ -1,0 +1,63 @@
+{
+  "reaction": "3 NH4ClO4 + 3 Al -> Al2O3 + AlCl3 + 3 NO + 6 H2O",
+  "atoms_each_side": {
+    "N": 3,
+    "H": 12,
+    "Cl": 3,
+    "O": 12,
+    "Al": 3
+  },
+  "molar_masses_g_mol": {
+    "NH4ClO4": 117.485,
+    "Al": 26.9815385,
+    "Al2O3": 101.960077,
+    "AlCl3": 133.33153850000002,
+    "NO": 30.006,
+    "H2O": 18.015
+  },
+  "reactant_mass_fractions": {
+    "NH4ClO4": 0.8132333010803052,
+    "Al": 0.18676669891969483
+  },
+  "product_mass_fractions": {
+    "Al2O3": 0.23525650082169952,
+    "AlCl3": 0.3076411093401167,
+    "NO": 0.20770207628391402,
+    "H2O": 0.2494003135542699
+  },
+  "ideal_binary_density_kg_m3": 2056.700899343193,
+  "motors": {
+    "sustainer": {
+      "outer_radius_m": 0.0396875,
+      "solid_cylinder_volume_at_1m_m3": 0.004948315225561501,
+      "ideal_binary_full_cylinder_mass_at_1m_kg": 10.177204374645955,
+      "ideal_binary_full_cylinder_mass_length_range_kg": [
+        7.632903280984467,
+        12.721505468307443
+      ],
+      "mass_formula": "mass = occupied_volume_fraction * density * pi * outer_radius^2 * length"
+    },
+    "booster": {
+      "outer_radius_m": 0.06508749999999999,
+      "solid_cylinder_volume_at_1m_m3": 0.013308988630670211,
+      "ideal_binary_full_cylinder_mass_at_1m_kg": 27.372608886047757,
+      "ideal_binary_full_cylinder_mass_length_range_kg": [
+        20.529456664535818,
+        34.2157611075597
+      ],
+      "mass_formula": "mass = occupied_volume_fraction * density * pi * outer_radius^2 * length"
+    }
+  },
+  "assumptions": [
+    "The stated reaction is used for bookkeeping only; it is not an equilibrium product calculation.",
+    "Full-cylinder values assume no port, binder, voids or inhibited gaps. Multiply by actual occupied-volume fraction.",
+    "Density is an ideal additive-volume AP/Al assumption, not a measured propellant density.",
+    "Mass and length do not determine burn duration or liner heat flux without grain geometry and burn/flow data."
+  ],
+  "sources": {
+    "AP_density_kg_m3": 1950,
+    "AP_density_source": "https://www.sigmaaldrich.com/US/en/product/aldrich/455822",
+    "Al_density_kg_m3": 2700,
+    "Al_density_source": "Previous v0 material configuration"
+  }
+}
