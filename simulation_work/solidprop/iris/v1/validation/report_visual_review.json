@@ -1,9 +1,30 @@
 {
-  "reviewed_utc": "2026-11-04T07:49:51.373468+00:00",
-  "pdf_sha256": "1a25611f717f2755d11b9740525d8f19180621a9b8463c682a363e7d3a1ea968",
+  "reviewed_utc": "2026-11-04T08:26:03.914145+00:00",
+  "pdf_sha256": "ab089f30d6367178e3c463e986e5f8eccf72d76b37dbbc058618da2220b689ae",
   "pages": 21,
   "render": "pdftoppm -scale-to 1250 -png",
-  "review": "All 21 pages of the final 02:42 UTC-05:00 edition visually inspected. Text, tables, field maps, axes, legends and references are legible, with no clipping or overlap. Scope-limited curves are marked and native/independent/historical results distinguished. TeX log has no overfull/underfull boxes or warnings.",
-  "snapshot_captured": "2026-11-04T02:42:42.761345-05:00",
-  "qualification": "Intermediate corrected-result edition: two terminal native primary cases, partial booster Al cooling, independent combined-input and cutoff studies. Native mesh/time and selected sensitivity verification remain pending. Removal cutoff is an explicit uncalibrated model rule; no actual motor burnthrough time established."
+  "review": "All nine changed pages (1, 2, 5, 6, 7, 8, 9, 10, 15) visually inspected. The other twelve rendered pages are pixel-identical to the previously inspected edition. Tables, curves, eight corrected field panels, legends and text are legible without clipping or overlap. TeX log has no overfull/underfull boxes or warnings.",
+  "previous_reviewed_commit": "b270e0dc0d900c7bcc4fe8b073af5247f0ff12cc",
+  "snapshot_captured": "2026-11-04T03:23:37.544006-05:00",
+  "audited_completed_native_cases": [
+    {
+      "case": "booster_al",
+      "through_s": 299.9999999999997,
+      "accepted_record_sha256": "9e1372d9b33e10a76a99bc47eb957584bcafd872ae366ae1ecd92af2252b376a",
+      "independent_comparison_sha256": "e9a29b4f7d7f8b3bdc3d733176bbd251591f3bf1c4402a0101974714c0cdab0c"
+    },
+    {
+      "case": "sustainer_al",
+      "through_s": 127.0,
+      "accepted_record_sha256": "4c6c0eda7d4bd3ada1c2e82da2baed8d3745c1c32f6de0832d384d7969f5b0b2",
+      "independent_comparison_sha256": "f6a4bf0d061a025d3e1443a0cdd427c1deeacf1454e1c610dd073294f15ce496"
+    },
+    {
+      "case": "sustainer_cf",
+      "through_s": 33.99999999999999,
+      "accepted_record_sha256": "cbdcb60fb3a9f9c921c301b760dd2dcca32d64a5d85519605198ab78dff7b8b7",
+      "independent_comparison_sha256": "2d78ccb2cf8c6301a87fa515309f37032a193cba1e5e86dd817675a3fc892dae"
+    }
+  ],
+  "qualification": "Intermediate three-terminal-case edition: completed sustainer Al and booster Al prescribed heating/cooling, sustainer CF material-scope stop, and partial booster CF history only. Native convergence and selected sensitivity controls remain pending. Removal rule and firing conditions remain uncalibrated; no actual motor burnthrough time established."
 }

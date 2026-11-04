@@ -73,7 +73,7 @@ substep per controller interval. The first second after the 7 s pulse uses
 0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
 unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
 
-## Current material correction and dispatch (November 4, 07:42 UTC)
+## Current material correction and dispatch (November 4, 08:24 UTC)
 
 The paired default/tight 20 s controls are COMPLETE and audited (624 single
 substeps each). Layer removal and cooling transfer pass. Their native profiles
@@ -132,6 +132,22 @@ performance warnings. This negligible undershoot is recorded. ANSYS ceased
 repeated table-range checking; the controller still checked the explicit
 150 C model-scope limit at every accepted interval.
 
+The corrected booster Al primary is COMPLETE through 300 s, accepted by the
+queue at 08:01 UTC: 1,744 audited intervals, maximum step energy residual
+0.06314 percent and hot-load relative error 8.50e-7. Full independent profile
+comparison is 0.22042 K, with identical first-row scheduling at 4.600 s and
+first transferred boundary at 4.6125 s. Native topology and cooling checks pass.
+Retained mesh is 6.270625 mm; sampled inner/outer casing peaks are
+84.78386/84.76535 C, both at 142.75 s. No exhaustion occurred in the prescribed
+seven-second heating pulse and cooling through 300 s. This is a conditional
+80-row result, not completed native mesh convergence or a real firing lifetime.
+Its log warnings are USERCK and elapsed/CPU performance; no solver error.
+
+Booster CF is now the active primary. Its accepted-history independent check
+through 79.75 s passes (maximum profile difference 0.22042 K), including the
+same first-row schedule, persistent topology and cooling controls. Later native
+values remain pending. No queue or solver was duplicated.
+
 The ONLY active serial queue is PID 26648 at dispatch (always verify its actual
 command using baseline_queue.pid). It began at 06:57:11 UTC and contains:
 
@@ -159,8 +175,8 @@ superseded uncorrected packages.
 Check cases against the intended independent midpoint model at meaningful
 accepted checkpoints and at completion. Configurations pin material source
 and DLL hashes. Exact row scheduling remains a separate strict check; never
-increase comparison gates. Influential-input native checks still require
-selection and execution after review of these results.
+increase comparison gates. Five influential-input/cutoff native controls are prepared below; their
+execution remains deferred until the current serial queue exits.
 
 The queue now requires both validate_run.py and compare_native_pulses.py
 with --require-pass before advancing each corrected case. The independent
@@ -170,7 +186,7 @@ comparison files so they cannot replace primary case records.
 Run model/compare_native_resolution.py as completed cases arrive; it reports
 only terminal audited records, compares censored histories by scope time rather
 than an uncomputed peak, and retains failed intermediate refinements visibly.
-It currently has two completed primary records and no completed pair.
+It currently has three completed primary records and no completed pair.
 
 Evidence/scripts: `native_solver_tolerance_comparison.json`,
 `native_temperature_convention.json`, `reaction_ramp_inherited.json`,
@@ -314,7 +330,7 @@ The existing thirteen native resolution jobs still quantify mesh/time changes
 at the documented fixed default rule. Their results must remain conditional.
 
 native_uniformity.json checks every accepted primary checkpoint for same-radius
-axial/angular variation. Sustainer Al is essentially uniform; maximum CF
+axial/angular variation. Both completed Al cases are essentially uniform; maximum sustainer CF
 phenolic/casing spreads are about 0.00654/0.0130 K. This checks the radial
 averaging of the uniform-sector calculations, not uniformity of a real motor.
 
@@ -338,7 +354,7 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Finish the remaining two booster corrected-midpoint, tight-tolerance native pulse/cooling runs. Verify first-row
+1. Finish the remaining booster CF corrected-midpoint, tight-tolerance native pulse/cooling run. Verify first-row
    removal persists through subsequent restarts, all energy/hot-load checks,
    live counts and restart copies. Check each terminal accepted record.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -375,10 +391,11 @@ Publish major milestones using `model/publish.py '<milestone>' --push` after
 checks. It stages Iris-only paths, checks storage and rejects files/new Git
 blobs >=100,000,000 bytes. Never push native binary results or scratch.
 
-The earlier c28e7960 milestone published the first completed corrected native
-case. The current report adds the completed CF scope stop, corrected field
-maps and marked scope-limited casing curves, combined-input studies, and the
-cutoff sensitivity with its mathematical limitation. It freezes accepted
+The b270e0dc milestone published the corrected sustainer CF scope stop,
+combined-input studies and cutoff limitation. The current edition adds the
+completed booster Al heating/cooling history and its delayed casing peaks,
+with accepted partial booster CF fields and the third completed native
+uniformity check. It freezes accepted
 states and explicitly separates independent results and historical states.
 Its reviewed PDF hash and page count are in validation/report_visual_review.json.
 

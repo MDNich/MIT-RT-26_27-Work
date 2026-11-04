@@ -36,7 +36,7 @@ def corrected_fields(root,out,captured,runs):
     path=out/'native_corrected_fields.json'
     path.write_text(json.dumps(dict(qualification='Accepted corrected-midpoint ANSYS fields; null denotes inactive nodes; no future states',cases=data),separators=(',',':'),allow_nan=False)+'\n')
     captured.append(dict(file=str(path.relative_to(root)),sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
-    fig,axes=plt.subplots(len(data),2,figsize=(8.4,2.6*len(data)+.6),squeeze=False,constrained_layout=True)
+    fig,axes=plt.subplots(len(data),2,figsize=(8.4,min(9.6,2.6*len(data)+.6)),squeeze=False,constrained_layout=True)
     for panels,d in zip(axes,data):
         T=np.array(d['temperature_C'],dtype=float)
         for ax,heating_only in zip(panels,[True,False]):

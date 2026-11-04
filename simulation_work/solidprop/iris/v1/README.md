@@ -38,9 +38,13 @@ the sampled inner-casing maximum is 120.50 C at 79 s. These are exploratory
 Corrected sustainer CF has also reached an audited terminal point: the
 provisional 150 C material-property flag at 34 s during cooling. It retains
 4.7030 mm of mesh, and the independent comparison passes within 0.3335 K.
-That is a model-scope stop, not casing failure or liner burnthrough. Booster
-Al is running, followed by booster CF and thirteen native time/mesh checks in
-one serial queue. Each terminal run must pass both
+That is a model-scope stop, not casing failure or liner burnthrough. Corrected
+booster Al is complete through 300 s with 1,744 accepted single-substep intervals.
+Its independent comparison passes within 0.2205 K; 6.270625 mm of mesh remains.
+Its sampled inner/outer casing peaks are 84.7839/84.7654 C at 142.75 s.
+Booster CF is running, followed by thirteen native time/mesh checks in one
+serial queue. These primary cases retain the documented 0.1-percent removal
+rule; completed histories do not establish native mesh convergence. Each terminal run must pass both
 native audits and independent field, row-schedule and control checks before
 the queue advances. No second queue or solver may be started.
 Historical native curves retain their original routine and are explicitly labelled. See the ordered list
