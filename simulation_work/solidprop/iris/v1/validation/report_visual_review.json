@@ -1,11 +1,11 @@
 {
-  "reviewed_utc": "2026-11-04T12:39:49.325271+00:00",
-  "pdf_sha256": "11270279b51db18c3ade33c01a4dd3f21cdc98b0d81e4b5e023c9b833ad9c6eb",
+  "reviewed_utc": "2026-11-04T17:09:53.489310+00:00",
+  "pdf_sha256": "e9e09ddf943cf1943f0c393fa36ad05c243ae76ceee733036aa084c7f5a2e7e7",
   "pages": 71,
-  "render": "pdftoppm -scale-to 1250 -png; all 71 pages rendered in ansystmp/pdf_review/cf_time_final",
-  "review": "Five pages changed against the prior reviewed edition: 1, 6, 14, 25 and 26. All five inspected in contact sheets, with temperature and convergence tables at full-page resolution; the remaining 66 pages are pixel-identical. A final wording/time revision changed pages 1, 14 and 26, reviewed again. No clipping or overlap. TeX log has no warnings, overfull/underfull boxes or undefined references. Full source listings remain intact.",
-  "previous_reviewed_commit": "5d86fc2697c94289b123ca4e1bf281c8e3f57c63",
-  "snapshot_captured": "2026-11-04T07:38:32.230852-05:00",
+  "render": "pdftoppm -scale-to 1250 -png; all 71 pages rendered in ansystmp/pdf_review/booster_al_time",
+  "review": "Five pages changed against the prior reviewed edition: 1, 6, 14, 25 and 26. All five inspected in contact sheets; pages 6, 25 and 26 also inspected at full-page resolution. The other 66 pages are pixel-identical. No clipping or overlap. TeX log has no warnings, overfull/underfull boxes or undefined references. Full source listings remain intact.",
+  "previous_reviewed_commit": "f3a6f13eb437056bddc79463babc3b2b6b69a0ae",
+  "snapshot_captured": "2026-11-04T12:08:16.680993-05:00",
   "audited_completed_native_cases": [
     {
       "case": "booster_al",
@@ -56,7 +56,15 @@
       "status": "CASE_PROPERTY_LIMIT_REACHED",
       "accepted_record_sha256": "d30e1f139dd672d9058a292484f5fb00f5e001868ecc580d6662f21865edb4e4",
       "independent_comparison_sha256": "ea85d343791f5bd0e818762be089d59fe8c9d59241c322b3211cfbc8649cbd25"
+    },
+    {
+      "runtime": "booster_al_pulse7_midpoint_time_quarter",
+      "accepted_steps": 6976,
+      "time_s": 299.9999999999953,
+      "status": "COMPLETED_HORIZON",
+      "accepted_record_sha256": "09ec2ba32fd2e23c47ba2df06850cdc9048706510d45aec2b3103acc39edeabf",
+      "independent_comparison_sha256": "11cd4f0dfa18d5f6993bfb898bab1710439049680b6782322fab3ebc5c076372"
     }
   ],
-  "additional_time_comparison_qualification": "Sustainer Al casing peaks change 0.721 K; sustainer CF scope time changes 2.941 percent (34 to 35 s). Both retain the same mesh thickness. Both hot-face temperatures at 7 s change 43.656 K, so these are not surface-temperature convergence claims."
+  "additional_time_comparison_qualification": "Sustainer Al casing peaks change 0.721 K; sustainer CF scope time changes 2.941 percent (34 to 35 s); booster Al casing peaks change 0.224 K. Retained mesh is unchanged in all three. Hot-face temperatures at 7 s change 43.656 K for the sustainers and 32.520 K for booster Al. These are not surface-temperature convergence claims."
 }

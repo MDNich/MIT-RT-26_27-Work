@@ -137,6 +137,32 @@
       "accepted_record_sha256": "9e1372d9b33e10a76a99bc47eb957584bcafd872ae366ae1ecd92af2252b376a",
       "independent_comparison_sha256": "e9a29b4f7d7f8b3bdc3d733176bbd251591f3bf1c4402a0101974714c0cdab0c"
     },
+    "booster_al_pulse7_midpoint_time_quarter": {
+      "runtime": "booster_al_pulse7_midpoint_time_quarter",
+      "case": "booster_al",
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "through_s": 299.9999999999953,
+      "status": "COMPLETED_HORIZON",
+      "complete": true,
+      "scope_limited": false,
+      "scope_bracket_s": null,
+      "sampled_maxima": {
+        "case_inner_max_C": {
+          "temperature_C": 84.56018243379123,
+          "time_s": 142.6875
+        },
+        "case_outer_max_C": {
+          "temperature_C": 84.54175876684633,
+          "time_s": 142.875
+        }
+      },
+      "remaining_mm": 6.270625,
+      "initial_phenolic_mm": 6.35,
+      "config_sha256": "42e2687c01f4987d9093a3c23b2e39e45785532faf1b12d6cbd7725bd8a97ab4",
+      "accepted_record_sha256": "09ec2ba32fd2e23c47ba2df06850cdc9048706510d45aec2b3103acc39edeabf",
+      "independent_comparison_sha256": "11cd4f0dfa18d5f6993bfb898bab1710439049680b6782322fab3ebc5c076372"
+    },
     "booster_cf_pulse7_n80_midpoint_tight": {
       "runtime": "booster_cf_pulse7_n80_midpoint_tight",
       "case": "booster_cf",
@@ -191,6 +217,21 @@
       "scope_time_relative_change": 0.029411764705868038,
       "remaining_difference_mm": 0.0,
       "remaining_target_mm": 0.047624999999999994
+    },
+    {
+      "case": "booster_al",
+      "coarse": "booster_al_pulse7_n80_midpoint_tight",
+      "fine": "booster_al_pulse7_midpoint_time_quarter",
+      "passed": true,
+      "complete_histories": true,
+      "both_scope_limited": false,
+      "peak_differences_K": {
+        "case_inner_max_C": -0.22367992918709945,
+        "case_outer_max_C": -0.22359167611020325
+      },
+      "scope_time_relative_change": null,
+      "remaining_difference_mm": 0.0,
+      "remaining_target_mm": 0.0635
     }
   ],
   "pending": [
@@ -199,7 +240,6 @@
     "sustainer_cf_pulse7_midpoint_space160",
     "sustainer_cf_pulse7_midpoint_joint320",
     "sustainer_cf_pulse7_midpoint_joint640",
-    "booster_al_pulse7_midpoint_time_quarter",
     "booster_al_pulse7_midpoint_space160",
     "booster_al_pulse7_midpoint_joint320",
     "booster_cf_pulse7_midpoint_time_quarter",

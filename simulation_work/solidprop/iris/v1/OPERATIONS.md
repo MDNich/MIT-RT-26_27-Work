@@ -73,7 +73,7 @@ substep per controller interval. The first second after the 7 s pulse uses
 0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
 unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
 
-## Current material correction and dispatch (November 4, 12:35 UTC)
+## Current material correction and dispatch (November 4, 17:08 UTC)
 
 The paired default/tight 20 s controls are COMPLETE and audited (624 single
 substeps each). Layer removal and cooling transfer pass. Their native profiles
@@ -160,9 +160,10 @@ controller continues the explicit property-scope guard at every accepted step.
 
 All four corrected primary cases have reached audited stopping points. The
 existing queue completed sustainer_al_pulse7_midpoint_time_quarter at 11:02 UTC
-and then completed sustainer CF quarter-step at 12:21:48 UTC. Booster Al
-quarter-step is now active. No queue or solver was duplicated. Eleven native
-resolution cases remain, followed later by the five prepared
+and then completed sustainer CF quarter-step at 12:21:48 UTC and booster Al
+quarter-step at 16:49:11 UTC. Booster CF quarter-step is now active. No queue
+or solver was duplicated. Ten native resolution cases remain, followed later
+by the five prepared
 sensitivity/cutoff controls below. The first quarter-step run passed all 4,208
 accepted intervals through 127 s, removal/cooling controls and the independent
 comparison (maximum profile difference 0.09913 K). Its first native time-only
@@ -207,8 +208,8 @@ comparison files so they cannot replace primary case records.
 Run model/compare_native_resolution.py as completed cases arrive; it reports
 only terminal audited records, compares censored histories by scope time rather
 than an uncomputed peak, and retains failed intermediate refinements visibly.
-It now has six completed records: the four primaries plus both sustainer
-quarter-step cases. Sustainer Al inner/outer casing peak changes are
+It now has seven completed records: the four primaries, both sustainer
+quarter-step cases and booster Al quarter-step. Sustainer Al inner/outer casing peak changes are
 -0.72076/-0.72055 K, with unchanged retained mesh. Sustainer CF has 2,736 accepted
 single-substep intervals through its property-scope stop at 35 s, bracketed by
 34.9375--35 s. Inner/outer endpoint casing temperatures are 150.01301/114.83103 C,
@@ -218,9 +219,17 @@ spatial convergence. The maximum same-mesh independent profile discrepancy is
 0.099122 K; exact row scheduling, persistent removal and cooling controls pass.
 Maximum native step energy residual is 0.033686 percent. Warnings repeat USERCK,
 elapsed/CPU performance and the negligible 21.9999998 C KXX-table undershoot;
-the controller property-scope guard remained active. Eleven refinement cases
-remain, with booster Al quarter-step active. These are conditional numerical
-results, not material failure or lifetime predictions.
+the controller property-scope guard remained active.
+
+Booster Al quarter-step passed all 6,976 native intervals through 300 s. Its
+independent maximum profile discrepancy is 0.067557 K; exact row scheduling,
+persistent topology and cooling controls pass. Maximum native step energy
+residual is 0.061479 percent, and hot-load relative error is 8.517e-7.
+Inner/outer casing peaks are 84.56018 C at 142.6875 s and 84.54176 C at 142.875 s.
+Their changes from the primary are -0.22368/-0.22359 K, with 6.270625 mm retained
+in both cases. The first row schedules at 4.584375 s and load transfers at
+4.5875 s. Ten refinement cases remain, with booster CF quarter-step active.
+These are conditional numerical results, not material failure or lifetime predictions.
 
 Evidence/scripts: `native_solver_tolerance_comparison.json`,
 `native_temperature_convention.json`, `reaction_ramp_inherited.json`,
@@ -389,7 +398,7 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Complete the eleven remaining queued native time/mesh checks. Preserve the strict
+1. Complete the ten remaining queued native time/mesh checks. Preserve the strict
    native acceptance gates, exact row scheduling, restart topology and independent
    comparison at every terminal record. Keep all four primary results intact.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -457,7 +466,11 @@ the maximum matched heating-history discrepancy is 48.688 K at 0.0125 s.
 The completed CF quarter-step comparison gives the same surface differences
 to the shown precision: 1466.032 to 1422.376 C at 7 s, with a 48.688 K maximum
 matched heating-history difference.
-`native_hot_surface_time_comparison.json` reports both separately. Continue to
+Booster Al quarter-step similarly changes the 7 s hot face from 1452.137 C
+to 1419.618 C, while its sampled peak is 1487.194 C. The largest matched
+heating-history difference is 63.089 K at 4.6 s, near the row-transfer event.
+`native_hot_surface_time_comparison.json` reports all accepted time pairs
+separately. Continue to
 assess hot-face histories and row-transfer times during refinement; a passing
 casing-target comparison does not establish hot-surface time convergence.
 

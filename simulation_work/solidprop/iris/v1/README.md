@@ -54,8 +54,11 @@ time comparison does not establish spatial convergence. Sustainer CF quarter-ste
 has now passed 2,736 native intervals and its independent check through the
 150 C property-scope stop at 35 s (bracket 34.9375--35 s), a 2.941 percent
 change from the primary 34 s stop. Retained mesh is unchanged; the largest
-same-mesh profile difference is 0.09913 K. Eleven native refinement cases remain,
-with booster Al quarter-step active. These primary cases retain the documented
+same-mesh profile difference is 0.09913 K. Booster Al quarter-step has also
+passed all 6,976 intervals through 300 s and its independent check (maximum
+profile difference 0.06756 K). Its inner/outer casing peaks are 84.5602/84.5418 C,
+changing by only 0.224 K, with unchanged retained mesh. Ten native refinement
+cases remain, with booster CF quarter-step active. These primary cases retain the documented
 0.1-percent removal rule; completed histories do not establish native mesh
 convergence. Each terminal run must pass both
 native audits and independent field, row-schedule and control checks before
