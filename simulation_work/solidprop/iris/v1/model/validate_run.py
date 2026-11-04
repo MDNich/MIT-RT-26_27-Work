@@ -25,12 +25,14 @@ def validate(runtime):
         assert a['hot_faces']==g['faces_per_row']
         assert math.isclose(a['phenolic_remaining_thickness_m'],(g['phenolic_radial_rows']-a['rows_scheduled'])*pitch,abs_tol=1e-12)
         assert a['rows_scheduled'] in [a['rows_removed'],a['rows_removed']+1]
-        if cfg.get('native_coupling_revision')=='full_removed_prefix_replay_v1':
+        if cfg.get('native_coupling_revision','').startswith('full_removed_prefix_replay_v'):
             assert a['native_live_elements_before_solve']==cfg['expected_elements']-a['rows_removed']*g['faces_per_row']
+        if cfg.get('native_coupling_revision')=='full_removed_prefix_replay_v2_single_substep':
+            assert a['native_load_step']==i and a['native_substep']==1
         previous=a['time_s'];audits.append(a)
     assert abs(previous-s['time_s'])<1e-8
     if s['status']=='COMPLETED_HORIZON':assert abs(s['time_s']-cfg['end_time_s'])<1e-8
-    if cfg.get('native_coupling_revision')=='full_removed_prefix_replay_v1':
+    if cfg.get('native_coupling_revision','').startswith('full_removed_prefix_replay_v'):
         slot=runtime/f'accepted_restart_{s["index"]%2}'
         backup=json.loads((slot/'manifest.json').read_text())
         assert backup['accepted_index']==s['index'] and backup['config_sha256']==s['config_sha256']

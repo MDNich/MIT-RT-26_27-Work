@@ -97,6 +97,9 @@ def create_mesh(cfg: dict) -> tuple[dict, list[tuple[int, float, float, float]],
 def export_macro(max_node: int, max_element: int) -> str:
     out = ["FINISH", "/POST1", "SET,LAST", "ALLSEL,ALL", "*GET,V0_TIME,ACTIVE,0,SET,TIME",
            "*CFOPEN,observed_time,txt", "*VWRITE,V0_TIME", "(E24.16)", "*CFCLOSE"]
+    out += ["*GET,V0_LSTEP,ACTIVE,0,SET,LSTP", "*GET,V0_SUBSTEP,ACTIVE,0,SET,SBST",
+            "*CFOPEN,solver_step_identity,txt", "*VWRITE,V0_LSTEP,V0_SUBSTEP,V0_TIME",
+            "(2(F12.0,1X),E24.16)", "*CFCLOSE"]
     for name, length in (("V0_N", max_node), ("V0_T", max_node), ("V0_M", max_node), ("V0_E", max_element)):
         out += [f"*DEL,{name}", f"*DIM,{name},ARRAY,{length}"]
     out += ["*VFILL,V0_N(1),RAMP,1,1", "*VGET,V0_T(1),NODE,1,TEMP", "*VGET,V0_M(1),NODE,1,NSEL",
@@ -146,6 +149,10 @@ OUTRES,ALL,LAST
 OUTRES,SVAR,LAST
 FINISH
 """ % cfg["output"]["save_restart_generations"]
+    if not resume and 'native_heat_flow_tolerance' in cfg['numerics']:
+        tolerance=cfg['numerics']['native_heat_flow_tolerance']
+        assert 0<tolerance<=.005
+        prefix=prefix.replace('NEQIT,60',f'NEQIT,60\nCNVTOL,HEAT,,{tolerance:.12g},2,1e-6')
     loop = f"""*DO,V0_LOOP,1,{cfg['numerics']['max_steps']}
   /DELETE,step_control,inp
   /SYS,{root}\\couple.cmd prepare

@@ -25,64 +25,93 @@ delegation is authorized.
 ## Current native queue and recovery
 
 All four coarse 20-row seven-second baselines are complete: 560 accepted steps
-per case, no row removal, passed energy/mass/hot-power audits. All four native
-profile comparisons against the same-mesh independent assembly pass; largest
-profile difference is about 1.035 K. These are not mesh-converged recession
-predictions. All four 0.1 s pilots also passed.
+per case, no row removal, passed native energy/mass/hot-power audits. All four
+same-mesh native/independent profile comparisons pass, largest difference about
+1.035 K. These do not establish mesh-converged recession. All pilots also passed.
 
-The first refined sustainer Al run, `sustainer_al_pulse7_n80_dt0125`, stopped
-at attempted index 334 / 4.175 s: energy residual 10.420%, above the unchanged
-5% gate. Its last accepted checkpoint is 333 / 4.1625 s. It had scheduled the
-first removal at 4.15 s and passed the next hot-face audit at 4.1625 s.
-The failed step is NEVER an accepted thermal result. See
-`validation/native_restart_failure_diagnosis.json` for evidence and hashes.
+Two distinct refined-run issues must remain separate:
 
-Root cause: ANSYS multiframe restart restores the initial .rdb; .rnnn does not
-save EKILL/EALIVE commands. The old controller replayed newly pending kills
-only, so an already removed row returned on the following restart. The returned
-row's capacity term explains the rejected energy residual. This is supported by
-the v261 Basic Analysis Guide and reproduced by a native regression.
+1. `sustainer_al_pulse7_n80_dt0125` failed at attempted 4.175 s / index 334 with
+   10.420% energy residual. Last accepted: 4.1625 s / 333. Multiframe restart
+   restores the initial database and does not retain EKILL/EALIVE. The old
+   controller replayed pending kills only, allowing a removed row to return.
+   Full-prefix replay fixed this: four-case native transient regression exactly
+   matches uninterrupted temperatures and live counts. The valid manufactured
+   fixture is `restart_topology_benchmark_v3`; earlier drafts are preserved.
+2. `sustainer_al_pulse7_n80_dt0125_restartfix` then passed removal persistence
+   (0.652% energy residual at 4.175 s, 396 live elements) and all 560 heating
+   intervals through 7 s. BUT its first cooling interval internally split into
+   substeps ending at 7.125, 7.19483 and 7.25 s. The endpoint audit mixed the last
+   substep capacity/gas rate with the full macro conversion increment. All
+   cooling from this chain is WITHDRAWN, despite its formerly passing threshold.
+   The run was controllably paused around 57 s; raw state/checkpoints remain.
+   Do not resume that chain. Its recent native backups are already in withdrawn
+   cooling, so they cannot recover the valid 7 s state.
 
-`restart_topology_benchmark.py` passed all four cases and sixteen checkpoints.
-Corrected full-prefix replay exactly matches uninterrupted temperatures and
-retains the right live count. The deliberately defective branch returns the
-removed layer. Two earlier fixture drafts wrongly re-entered a new solution
-for the continuous reference; they are preserved as rejected diagnostics.
-The valid fixture is `ansystmp/runs/restart_topology_benchmark_v3`.
+`validation/native_substep_audit_issue.json` records the second issue. A native
+read-only result probe (`check_substep_gate.py`) verifies the exported substep
+metadata and new gate: step 560/substep 1 is accepted, step 561/substep 3 rejected.
+Retrospective log inspection confirms every previously published coarse baseline
+and earlier pulse/restart control used one substep per macro; they are unaffected.
+The corrected 7 s heating prefix was independently verified from its native log.
 
-Fresh packages append `_restartfix` to all four refined names in
-`configs/campaign_queue.json`. They retain the physical inputs and audit limits,
-replay the entire removed prefix, verify native live counts before each solve,
-and save two hash-verified accepted native restart generations in
-`accepted_restart_0` and `accepted_restart_1`. The old failed and unstarted
-packages remain unchanged. The original native ring contained only latest r001
-and early r002--r006, so no recent accepted native restart was available; a fresh
-run was justified by the reproduced defect, not by blindly retrying a failure.
+`configs/campaign_queue.json` has `verified_historical_prefixes` limiting the
+old corrected run to index 560. The report capture and comparison helper honor
+this cutoff; do not remove it or publish later raw checkpoints. Its accepted
+heating comparison still misses the separate 5 K hot-profile target (5.927 K at
+7 s); conversion/mass targets are distinct. A one-macro-step removal timing
+difference also remains visible. The withdrawn cooling comparison reached about
+10.3 K and motivated inspection; it is not an accepted cooling result.
 
-The corrected serial observer started November 4 at 05:30 UTC, PID recorded in
-`baseline_queue.pid` (5304 at launch). It runs only the four new packages:
-sustainer Al, sustainer CF, booster Al, booster CF. Sustainer cooling horizon is
-127 s; booster horizon 300 s to capture late casing peaks. All heat for 7 s;
-stop earlier at the provisional casing-property flag. Initial mesh: 80 phenolic
-and 20 casing rows, two axial and two angular divisions. Check the actual log
-and live processes rather than relying on this recorded PID/time.
+Fresh `_substepguard` primary packages are prepared for all four cases. They
+retain full deactivation replay, native live-count guards and two hash-verified
+accepted native restart copies (`accepted_restart_0/1`). Revision
+`full_removed_prefix_replay_v2_single_substep` additionally exports native load
+step/substep identity and refuses acceptance unless there is exactly one native
+substep per controller interval. The first second after the 7 s pulse uses
+0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
+unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
+
+The ONLY current dispatch is the paired 20 s verification controls:
+`sustainer_al_pulse7_n80_substepguard_default_control20`, then
+`sustainer_al_pulse7_n80_substepguard_tight_control20`.
+They differ only in native nonlinear heat-flow convergence tolerance (default
+versus 1e-5). The queue exits after these two so the next heartbeat can assess
+both before dispatching the four primary cases. This is autonomous scientific
+review, not a request for user approval. `current_dispatch`,
+`deferred_after_tolerance_review`, and `verification_runtimes` in the queue file
+record roles. Verification comparisons use runtime-specific filenames so they
+cannot overwrite the four primary comparisons or appear as completed cases.
+
+The latest queue observer PID is in `baseline_queue.pid` (10688 at explicit
+recovery on November 4). Its first run dispatch had Parallels InvalidArgument;
+read-only checks proved no solver, state, solve log or matching receipt existed,
+then one explicit reissue restarted observation. See
+`validation/default_control20_dispatch_recovery.json`. Check live status rather
+than trusting this recorded PID. Do not start another observer or solver.
+
+After both controls finish, compare their native fields to one another and to
+independent calculations using the SAME piecewise cooling schedule. Inspect
+all internal-substep identities, balances and source hashes. Determine whether
+tighter nonlinear tolerance resolves the heating discrepancy; otherwise test
+macro-step refinement or investigate the actual solver/source difference.
+Do not assume the answer in advance or increase the comparison threshold.
+Choose new sealed primary inputs if the numerical settings must change. The
+three other corrected-but-unguarded runtimes and the earlier heating-only/tight
+control drafts were never launched; preserve them as superseded packages.
 
 The queue applies `validate_run.py` before advancing. Every accepted step,
-manifest, native log and new live-count/restart-copy check must pass. A native
-exit code of zero alone is insufficient: the controller can deliberately exit
-on a failed audit. Do not weaken limits or edit sealed packages. If another
-failure occurs, preserve the failed directory and diagnose it. Recover in a
-separate sibling with matching accepted controller/native state, verified
-manifest and documented provenance; never pair rejected native state with an
-earlier accepted controller state. The two backup manifests identify complete
-copies; do not trust an interrupted slot whose file hashes fail.
+manifest, native log, live count, restart-copy hash and v2 substep check must
+pass. Zero native process exit code alone does not demonstrate acceptance.
+Never edit sealed/running inputs. On another failure, preserve the directory,
+use a matching accepted native/controller backup in a separate recovery sibling
+with explicit source/configuration lineage, and verify the first resumed step.
+Never pair rejected native state with an earlier controller checkpoint.
 
-Production launch uses a unique guest receipt. A lost Parallels reply is
-recoverable only if the receipt matches that request and proves WMI success.
-Without that proof, inspect processes and guest artifacts before any explicit
-reissue. Do not blindly retry launches. Read-only storage queries may retry.
-Prior observed InvalidArgument dispatch failures and explicit recoveries remain
-recorded locally and in verification records.
+Production launch has nonce-matched guest receipts. A lost reply is recoverable
+only if that exact receipt proves WMI launch success. Otherwise inspect native
+processes and artifacts before any explicit reissue. Read-only storage queries
+may retry; launch mutations must not retry blindly. Do not stop license services.
 
 ## Completed verification
 
@@ -152,13 +181,23 @@ Completed independent studies:
 
 The char-coupling and longer-pulse background jobs have finished. Their ignored
 PID files remain historical; check actual commands before doing anything.
-No independent solver needs duplicating. Engineering perturbations are not
+No independent solver needs duplicating. The capacity diagnostic below has also finished. Engineering perturbations are not
 confidence intervals. Pressure screening changes only the assumed char closure,
 with h/T fixed; its small effect is not real pressure insensitivity.
 
+`partial_capacity_resolution.json` now contains twelve completed paired
+independent 7 s pulse/cooling diagnostics at 80/160/320 phenolic cells. The
+optional variant subtracts consumed surface-char density from heat capacity
+ONLY; unchanged geometry/conductivity/source laws mean this is not a physically
+conservative ablation model or a rigorous bound. At 320 cells complete-case
+inner peaks shift <0.46 K and S CF scope time shifts 0.53%; retained mesh is
+unchanged in every pair. At 80 cells S CF scope shift was 3.74%. The script is
+`check_partial_capacity.py`; its PID/log are historical. Do not treat these
+numbers as calibrated uncertainty or change the native material law to match.
+
 ## Remaining substantive work
 
-1. Finish the corrected four-case native pulse/cooling queue. Verify first-row
+1. Resolve the paired solver-tolerance controls, then finish the guarded four-case native pulse/cooling queue. Verify first-row
    removal persists through subsequent restarts, all energy/hot-load checks,
    live counts and restart copies. Check each terminal accepted record.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -186,8 +225,9 @@ page before publication. Check the TeX log. Do not publish an unreviewed PDF.
 
 The report includes native temperature maps, casing curves, mass/energy audits,
 independent/native profiles, sensitivity resolution and independent cooling/
-longer-pulse scenarios. Failed native steps are excluded. Superseded refined
-runs are described in the failure section, not overlaid as current runs.
+longer-pulse scenarios. Failed steps and withdrawn cooling are excluded. The explicitly verified
+7 s historical heating prefix remains shown until superseded by a fully verified
+primary run; the queue cutoff must be honored by every capture/comparison.
 Keep the native heating portion legible as longer cooling records arrive.
 
 Publish major milestones using `model/publish.py '<milestone>' --push` after

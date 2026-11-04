@@ -1,0 +1,20 @@
+{
+  "utc": "2026-11-04T05:48:34.963986+00:00",
+  "runtime": "sustainer_al_pulse7_n80_dt0125_restartfix",
+  "verified_single_substep_prefix_index": 560,
+  "verified_single_substep_prefix_time_s": 7.0,
+  "first_affected_index": 561,
+  "first_affected_time_s": 7.25,
+  "observed_internal_substep_times_s": [
+    7.125,
+    7.1948328,
+    7.25
+  ],
+  "state_index_when_pause_requested": 761,
+  "cooling_withdrawn": true,
+  "reason": "The audit mixes last internal-substep capacity and gas fields with a macro-interval conversion increment. OUTRES,LAST omitted the intermediate result sets, so the 7.25 s macro balance cannot be consistently reconstructed.",
+  "action": "Pause original runtime, preserve logs and raw checkpoints, add strict internal-substep metadata and acceptance gate, then use fresh smaller-step packages. No cooling survival or peak is accepted from the affected chain.",
+  "preserved_native_log_sha256": "32fb0f0c6752f288beb5d82cd818b0f6fc31b538475c1cad50cab6a854c06b44",
+  "heating_prefix_single_substep_log_verified": true,
+  "paused_raw_time_s": 57.49999999999982
+}

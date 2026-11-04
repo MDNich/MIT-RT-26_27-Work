@@ -153,6 +153,10 @@ class RadialModel:
             pulse=self.c['heating'].get('pulse_duration_s',math.inf)
             step=min(post_dt if post_dt is not None and s.time>=pulse-1e-10 else dt,end-s.time)
             if s.time<pulse-1e-10:step=min(step,pulse-s.time)
+            elif self.c.get('post_pulse_initial_duration_s',0)>0:
+                initial_end=pulse+self.c['post_pulse_initial_duration_s']
+                if s.time<initial_end-1e-10:
+                    step=min(step,self.c['post_pulse_initial_dt_s'],initial_end-s.time)
             if targets:step=min(step,targets[0]-s.time)
             while True:
                 new=self.step(s,step)

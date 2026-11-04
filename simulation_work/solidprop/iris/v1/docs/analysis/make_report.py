@@ -29,15 +29,22 @@ def tex(s):
 
 def capture():
     runs=[]
-    queue=json.loads((ROOT/'configs/campaign_queue.json').read_text())['ordered_runtimes']
+    campaign=json.loads((ROOT/'configs/campaign_queue.json').read_text())
+    queue=campaign['ordered_runtimes']
+    prefixes=campaign.get('verified_historical_prefixes',{})
     for runtime in sorted((ROOT/'ansystmp/runs').iterdir()):
-        if 'pulse7_' in runtime.name and runtime.name not in queue:
+        if runtime.name in campaign.get('verification_runtimes',[]):continue
+        if 'pulse7_' in runtime.name and runtime.name not in queue and runtime.name not in prefixes:
             continue  # Preserve superseded runs locally; explain failures separately.
         if runtime.name in ['sustainer_al_pilot','sustainer_al_local_pilot']:
             continue  # Superseded exporter pilot; preserved locally.
         if not (runtime/'state.json').exists():
             continue
         state=json.loads((runtime/'state.json').read_text())
+        if runtime.name in prefixes:
+            state['index']=min(state['index'],prefixes[runtime.name])
+            state['time_s']=json.loads((runtime/'checkpoints'/f'audit_{state["index"]:06d}.json').read_text())['time_s']
+            state['status']='VERIFIED_HEATING_PREFIX_COOLING_WITHDRAWN'
         cfg=json.loads((runtime/'config.json').read_text())
         history=[]
         for path in sorted((runtime/'checkpoints').glob('audit_*.json')):
@@ -123,6 +130,8 @@ def write_report(runs, snapshot):
     native_status+=' Their mass, energy and applied-load checks passed. '+str(sum('pulse7_' in r['name'] for r in finished))+' of the four refined native pulse/cooling cases have reached an audited stopping point; the serial campaign continues.'
     if (ROOT/'validation/restart_topology_benchmark.json').exists():
         native_status+=' An energy-audit stop exposed a restart layer-deactivation defect; its correction passed a four-case native regression, and fresh refined runs are in progress.'
+    if (ROOT/'validation/native_substep_audit_issue.json').exists():
+        native_status=native_status.replace('and fresh refined runs are in progress.','and its seven-second heating segment is retained. Subsequent cooling was withdrawn after an internal-substep accounting gap was found. Paired solver controls now test stricter step accounting and nonlinear convergence before continuation.')
     rows=[]
     for r in runs:
         a=r['history'][-1]

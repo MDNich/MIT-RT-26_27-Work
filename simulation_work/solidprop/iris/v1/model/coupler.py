@@ -133,6 +133,10 @@ def prepare_step(mesh,c,s):
     hfilm=blowing(h['h0_W_m2_K'],(s['gas_rate_kg_s']+s.get('char_rate_kg_s',0.))/area,h['gas_cp_J_kg_K']) if h['exposure_on'] else h['h0_W_m2_K']
     dt=min(c['macro_dt_s'] if h['exposure_on'] else c.get('post_pulse_macro_dt_s',c['macro_dt_s']),c['end_time_s']-s['time_s'])
     if h['exposure_on']:dt=min(dt,h.get('pulse_duration_s',float('inf'))-s['time_s'])
+    elif c.get('post_pulse_initial_duration_s',0)>0:
+        initial_end=h['pulse_duration_s']+c['post_pulse_initial_duration_s']
+        if s['time_s']<initial_end-1e-10:
+            dt=min(dt,c['post_pulse_initial_dt_s'],initial_end-s['time_s'])
     commands=['ALLSEL,ALL','FDELE,ALL,HEAT','ESEL,S,TYPE,,1,4',
               'SFEDELE,ALL,ALL,CONV','ALLSEL,ALL']
     # Multiframe restart restores the initial .rdb; .rnnn does not retain
@@ -235,6 +239,19 @@ def preserve_accepted_restart(root,state):
     hashes['state.json']=hashlib.sha256((slot/'state.json').read_bytes()).hexdigest()
     save(slot/'manifest.json',dict(accepted_index=state['index'],accepted_time_s=state['time_s'],
          config_sha256=state['config_sha256'],files=hashes))
+
+
+def validate_native_step_identity(values,pending):
+    """Endpoint-only heat-rate exports support exactly one native substep.
+
+    Do not combine a final internal-substep capacity/gas rate with a full
+    macro-interval conversion increment. A cutback must stop acceptance.
+    """
+    loadstep,substep,time=values
+    if loadstep!=pending['index'] or abs(time-pending['target'])>1e-8:
+        raise ValueError('Native load-step identity or time mismatch')
+    if substep!=1:
+        raise ValueError('Internal substepping is unsupported by the endpoint macro energy audit; preserve the preceding accepted restart and refine the controller interval')
 
 
 def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
@@ -451,6 +468,8 @@ def main():
         atomic(root/'step_control.inp',f'V0_OK=1\nV0_DONE=0\nV0_INDEX={p["index"]}\nV0_PREVIOUS={s["index"]}\nV0_TARGET={p["target"]:.16e}\nV0_DT={p["dt"]:.16e}\n')
     else:
         p=load(root/'pending.json')
+        identity=[float(x) for x in (root/'solver_step_identity.txt').read_text().split()]
+        validate_native_step_identity(identity,p)
         live=int(float((root/'live_topology_before_solve.txt').read_text().strip()))
         expected_live=len(mesh['elements'])-sum(len(r) for r in mesh['rows'][:p['layer']])
         if live!=expected_live: raise ValueError('Native pre-solve live topology mismatch')
@@ -458,6 +477,7 @@ def main():
         temp={k:v[0] for k,v in read_rows(root/'node_temperatures.txt').items()}
         new,record=accept_step(mesh,c,s,p,temp,read_rows(root/'element_fields.txt'),read_rows(root/'energy_fields.txt'),time)
         record['native_live_elements_before_solve']=live
+        record['native_load_step']=int(identity[0]);record['native_substep']=int(identity[1])
         preserve_accepted_restart(root,new)
         # One immutable audit record per accepted state. CSV is derived from these.
         checkpoints=root/'checkpoints'; checkpoints.mkdir(exist_ok=True)

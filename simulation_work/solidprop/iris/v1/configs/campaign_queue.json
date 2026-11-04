@@ -6,19 +6,47 @@
     "sustainer_cf_baseline7_n20_dt0125",
     "booster_al_baseline7_n20_dt0125",
     "booster_cf_baseline7_n20_dt0125",
-    "sustainer_al_pulse7_n80_dt0125_restartfix",
-    "sustainer_cf_pulse7_n80_dt0125_restartfix",
-    "booster_al_pulse7_cool300_n80_dt0125_restartfix",
-    "booster_cf_pulse7_cool300_n80_dt0125_restartfix"
+    "sustainer_al_pulse7_n80_substepguard_default_control20",
+    "sustainer_al_pulse7_n80_substepguard_tight_control20",
+    "sustainer_al_pulse7_n80_substepguard",
+    "sustainer_cf_pulse7_n80_substepguard",
+    "booster_al_pulse7_cool300_n80_substepguard",
+    "booster_cf_pulse7_cool300_n80_substepguard"
   ],
   "first_resume_explicitly_launched": true,
-  "notes": "Serial queue. All four coarse baselines complete. Corrected refined packages replay the entire dead prefix after every multiframe restart, verify live counts, and preserve two accepted native restart generations. Original failed/unstarted packages remain unchanged. Sustainer cooling horizon 127 s, booster 300 s; stop at material-scope flags.",
+  "notes": "All four coarse baselines complete. Corrected row-replay run was paused after discovering unsupported internal substeps in the first cooling macro. Its cooling is withdrawn. Fresh v2 guards require one native substep per accepted macro. Paired 20 s nonlinear-tolerance controls precede autonomous review and four-case continuation; no second solver.",
   "topology_verification_before": "booster_al_baseline7_n20_dt0125",
   "reaction_verification_before": "booster_cf_baseline7_n20_dt0125",
   "superseded_refined_runtimes": [
     "sustainer_al_pulse7_n80_dt0125",
     "sustainer_cf_pulse7_n80_dt0125",
     "booster_al_pulse7_cool300_n80_dt0125",
-    "booster_cf_pulse7_cool300_n80_dt0125"
-  ]
+    "booster_cf_pulse7_cool300_n80_dt0125",
+    "sustainer_al_pulse7_n80_dt0125_restartfix",
+    "sustainer_cf_pulse7_n80_dt0125_restartfix",
+    "booster_al_pulse7_cool300_n80_dt0125_restartfix",
+    "booster_cf_pulse7_cool300_n80_dt0125_restartfix"
+  ],
+  "verification_runtimes": [
+    "sustainer_al_pulse7_n80_substepguard_default_control20",
+    "sustainer_al_pulse7_n80_substepguard_tight_control20"
+  ],
+  "tolerance_check_reason": "After removal, the independent/native profile difference grows above 5 K, reaching about 10.3 K in early cooling although casing differences remain <0.35 K and native audits pass. Complete active case and isolated tighter-tolerance 20 s control, then review autonomously before launching the remaining prepared cases.",
+  "superseded_verification_runtimes": [
+    "sustainer_al_pulse7_n80_tight_heatcheck",
+    "sustainer_al_pulse7_n80_tight_coolcheck"
+  ],
+  "current_dispatch": [
+    "sustainer_al_pulse7_n80_substepguard_default_control20",
+    "sustainer_al_pulse7_n80_substepguard_tight_control20"
+  ],
+  "deferred_after_tolerance_review": [
+    "sustainer_al_pulse7_n80_substepguard",
+    "sustainer_cf_pulse7_n80_substepguard",
+    "booster_al_pulse7_cool300_n80_substepguard",
+    "booster_cf_pulse7_cool300_n80_substepguard"
+  ],
+  "verified_historical_prefixes": {
+    "sustainer_al_pulse7_n80_dt0125_restartfix": 560
+  }
 }

@@ -19,8 +19,11 @@ restart. The 10.42% energy error stopped the calculation at attempted 4.175 s;
 that step is rejected. A native four-case regression verified the correction
 against uninterrupted solves exactly. Fresh `_restartfix` packages replay all
 removed layers, check native live counts, and preserve accepted native restart
-copies. The serial queue is completing four refined seven-second pulse/cooling
-cases with 80 phenolic rows and 20 casing rows. See the ordered list
+copies. The corrected run completed its seven-second heating segment, but cooling was
+withdrawn after ANSYS internally subdivided the first cooling interval in a way
+the endpoint energy audit did not support. New packages require one native
+substep per accepted controller interval. Paired default/tight solver controls
+are running before autonomous continuation of the four 80/20-row cases. See the ordered list
 in `configs/campaign_queue.json` and ignored `ansystmp/baseline_queue.log`.
 
 The independent radial checks show that 20 phenolic rows do not resolve
@@ -41,6 +44,8 @@ booster native cooling horizons have been extended to 300 s in fresh sealed
 packages. Finer surface-coupling time checks resolved the two strongest-heating numerical
 comparisons through 640 cells; agreement in event timing alone had concealed
 thickness error. Eight hypothetical 20/60-second pulse refinements also passed.
+Twelve independent capacity-only diagnostics also quantify retained-cell storage
+sensitivity; they are not a conservative removal model or physical error bound.
 These independent results remain exploratory.
 
 Four exact two-body STEP sectors are in `geometry/`. The English report is
