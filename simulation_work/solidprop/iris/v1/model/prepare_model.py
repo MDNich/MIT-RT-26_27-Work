@@ -186,7 +186,7 @@ FINISH
 def write_model(cfg: dict, nodes: list, elements: list, output: Path) -> None:
     m = cfg["material"]
     lines = ["/BATCH", "/CONFIG,NOELDB,1", "/TITLE,New motor phenolic consumption v0", "/UNITS,MKS", "/PREP7",
-             "SHPP,ON", "ET,1,278", "ET,2,278", material_input(cfg).rstrip(),
+             "SHPP,ON", "ET,1,278", "ET,2,278", "KEYOPT,1,15,1", "KEYOPT,2,15,1", material_input(cfg).rstrip(),
              f"MP,KXX,2,{m['aluminium_conductivity_W_m_K']}", f"MP,C,2,{m['aluminium_heat_capacity_J_kg_K']}",
              f"MP,DENS,2,{m['aluminium_density_kg_m3']}", "! Nodes"]
     lines += [f"N,{nid},{x:.12e},{y:.12e},{z:.12e}" for nid, x, y, z in nodes]
@@ -223,6 +223,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=ROOT.parent / "ansystmp" / "windows")
     parser.add_argument("--config", type=Path, default=ROOT / "config.json")
     args = parser.parse_args()
+    from ops import disks
+    disks()
     output = args.output.resolve()
     if (output / "state.json").exists():
         raise RuntimeError("Existing run state preserved; use a new sibling runtime directory.")

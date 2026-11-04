@@ -3,16 +3,30 @@
 English-only autonomous study, authorized November 3, 2026. Read the parent
 `AGENTS.md` and `phenolic_burnthrough_plan.md` for user requirements and physics.
 
-Current status: all four 0.1 s native ANSYS pilots completed on November 3,
-2026. Each has eight accepted coupling steps, closed mass balance, and passed
-the energy and applied hot-face power gates. These are execution checks;
-burnthrough time and mesh/time-step convergence are not yet established.
+Current status: four 0.1 s native pilots and all four analytical conduction
+benchmarks passed. The native conduction error was below 0.013 K. The sustainer Al
+seven-second baseline is complete with 560 accepted steps; its checkpoint
+pause/resume has advanced.
+A serial queue will complete the four 20-row baselines, restart/pulse controls,
+and four refined seven-second pulse/cooling cases with 80 phenolic rows and
+20 casing rows. See the ordered list
+in `configs/campaign_queue.json` and ignored `ansystmp/baseline_queue.log`.
 
-Four exact two-body STEP sectors are in `geometry/`. The English setup and
-results report is `output/pdf/iris_phenolic_report.pdf`; its compact accepted
-data snapshot and figures are in `docs/analysis/`. Numerical validation records
-are in `validation/`. The corrected pilot runtimes have suffix `_pilot2`;
-the first Al pilot is retained locally as troubleshooting provenance.
+The independent radial checks show that 20 phenolic rows do not resolve
+recession. Long-duration exhaustion diagnostics also fail mesh/time-step
+convergence and exceed the provisional casing property range. Those results
+are explicitly rejected as lifetime predictions. New physically interpreted
+long-exposure calculations stop at the property-range flag (150 C CF, 300 C
+Al); these are model-scope limits, not certified structural failure criteria.
+No credible motor burnthrough time has yet been established.
+
+Four exact two-body STEP sectors are in `geometry/`. The English report is
+`output/pdf/iris_phenolic_report.pdf`; accepted data and figures are in
+`docs/analysis/`. Independent radial data live in `validation/radial/` and
+are explicitly distinguished from native ANSYS states. Native output and
+checkpoints are under ignored `ansystmp/runs/`, with some jobs executing in
+`C:\IrisStudy\runs` and mirroring accepted state to the Mac. The original
+studies remain unchanged.
 
 The host Python environment is in ignored `ansystmp/venv`. Windows ANSYS v261
 and its Python 3.10 interpreter execute the native analysis. Large output stays

@@ -65,6 +65,9 @@ try {
         if ($state.status -ne 'PAUSED_AT_CHECKPOINT' -or $state.index -lt 1) { throw 'Resume is allowed only from an accepted paused checkpoint.' }
         if (Test-Path 'coupler_error.txt') { throw 'A coupling failure is present; automatic resume is blocked.' }
         if (Test-Path 'PAUSE_REQUESTED') { Remove-Item -LiteralPath 'PAUSE_REQUESTED' }
+        if ($cfg.host_runtime -and (Test-Path (Join-Path $cfg.host_runtime 'PAUSE_REQUESTED'))) {
+            Remove-Item -LiteralPath (Join-Path $cfg.host_runtime 'PAUSE_REQUESTED')
+        }
         $input = 'resume_v0.inp'
     } else {
         if ((Test-Path 'state.json') -or @(Get-ChildItem -File -Filter 'file.*').Count) {

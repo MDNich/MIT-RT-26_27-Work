@@ -94,7 +94,24 @@ def stop_runs(reason):
         (runtime / "PAUSE_REQUESTED").write_text(reason + "\n")
         # MAPDL checks this at a nonlinear equilibrium iteration. Any interrupted
         # result must be reconciled with the last accepted controller checkpoint.
-        (runtime / (entry.get("job", "file") + ".abt")).write_text("nonlinear\n")
+        job=entry.get('job','file')
+        jobs=[job]
+        if job=='preflight':
+            jobs += [p.stem for p in runtime.glob('preflight_*.out')]
+        for name in jobs:
+            (runtime / (name + '.abt')).write_text('nonlinear\n')
+        native=entry.get('windows_root','')
+        if native.startswith('C:\\IrisStudy\\runs\\'):
+            try:
+                script="$r='"+native+"';Set-Content -LiteralPath ($r+'\\PAUSE_REQUESTED') -Value 'Storage stop';"
+                script+="Set-Content -LiteralPath ($r+'\\"+job+".abt') -Value 'nonlinear';"
+                if job=='preflight':
+                    script+="Get-ChildItem -LiteralPath $r -Filter 'preflight_*.out'|ForEach-Object{Set-Content -LiteralPath ([IO.Path]::ChangeExtension($_.FullName,'abt')) -Value 'nonlinear'}"
+                guest(script)
+            except Exception:
+                # The shared pause marker and stale-heartbeat gate still stop
+                # the next coupling step if guest communication has failed.
+                pass
 
 def watch():
     last_guest = 0.0

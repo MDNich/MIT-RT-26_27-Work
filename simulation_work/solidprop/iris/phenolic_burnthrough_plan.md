@@ -32,6 +32,32 @@ Independently keep Windows C: above **10,000,000,000 bytes free**. Account for s
 
 Push each major completed milestone: setup, initial report, significant intermediate results, and final report. Before committing, check staged file sizes and reject anything at or above 100,000,000 bytes. Before pushing, check newly reachable Git blobs as well. Native solver/restart files, environment packages, scratch output and incomplete exports remain ignored. Reports, STEP inputs, generators, configurations, compact accepted data and provenance belong in Git.
 
+## Implementation findings (November 3, 2026)
+
+The four native 0.1 s pilots have passed, using MAPDL 2026 R1.02 and the
+inherited user material. Four native constant-property conduction checks
+agree with the analytical cylindrical solution within 0.013 K and verify the
+CF axes. The setup and initial English report have been pushed to GitHub.
+
+Independent 20/40/80/160-row calculations show that the initial 20-row
+phenolic discretization is insufficient for recession. Keep the small slice
+and refine phenolic radial resolution; the prepared native comparison uses
+80 phenolic and 20 casing rows. This is a refinement justified by evidence,
+not an assertion that 80 rows already establish lifetime convergence.
+
+The independent assembly now explicitly uses the diagonal specific-heat
+matrix employed by SOLID278 without advection. The old radial script used a
+consistent matrix; it cannot be copied unchanged as an exact native transient
+reference. Short-time comparisons with the corrected independent model are
+within about 1 K at the hot face for the sustainer.
+
+Long-exposure numerical stress tests leave the casing property range before
+exhaustion and show substantial time/mesh dependence. Preserve them as rejected
+diagnostics. Do not publish their apparent exhaustion times as burnthrough
+predictions. Physically interpreted endurance/pulse studies stop at the first
+provisional casing property-range crossing. Investigate partial-cell storage
+and lagged surface coupling separately from missing material calibration.
+
 ## What counts as burnthrough
 
 Pyrolysis converts virgin phenolic into gas and char. Fully pyrolysed material can still occupy the liner and insulate the case. Consequently, neither reaching a chosen temperature nor reaching conversion `alpha = 1` defines physical burnthrough.

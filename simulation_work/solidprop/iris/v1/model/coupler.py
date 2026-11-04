@@ -115,12 +115,23 @@ def initial_state(mesh,c):
                 radial_flux={},status='PREPARED_NOT_STARTED',pending_kills=[],warnings=[])
 
 
+def exposure(c,time):
+    h=dict(c['heating'])
+    on=time<h.get('pulse_duration_s',float('inf'))-1e-10
+    if not on:
+        h.update(h0_W_m2_K=h.get('post_pulse_h_W_m2_K',8.),
+                 gas_temperature_C=h['ambient_temperature_C'],hot_effective_emissivity=0.)
+    h['exposure_on']=on
+    return h
+
+
 def prepare_step(mesh,c,s):
-    h=c['heating']; m=c['material']; n=c['numerics']
+    h=exposure(c,s['time_s']); m=c['material']; n=c['numerics']
     layer=s['layer']; row=mesh['rows'][layer]
     area=sum(f['area'] for f in row)
-    hfilm=blowing(h['h0_W_m2_K'],(s['gas_rate_kg_s']+s.get('char_rate_kg_s',0.))/area,h['gas_cp_J_kg_K'])
-    dt=min(c['macro_dt_s'],c['end_time_s']-s['time_s'])
+    hfilm=blowing(h['h0_W_m2_K'],(s['gas_rate_kg_s']+s.get('char_rate_kg_s',0.))/area,h['gas_cp_J_kg_K']) if h['exposure_on'] else h['h0_W_m2_K']
+    dt=min(c['macro_dt_s'] if h['exposure_on'] else c.get('post_pulse_macro_dt_s',c['macro_dt_s']),c['end_time_s']-s['time_s'])
+    if h['exposure_on']:dt=min(dt,h.get('pulse_duration_s',float('inf'))-s['time_s'])
     commands=['ALLSEL,ALL','FDELE,ALL,HEAT','ESEL,S,TYPE,,1,4',
               'SFEDELE,ALL,ALL,CONV','ALLSEL,ALL']
     # Re-apply only newly pending row removals after restoring a converged DB.
@@ -142,13 +153,13 @@ def prepare_step(mesh,c,s):
         qcond=s['radial_flux'].get(eid,0.)
         energy_cap=max(qconv+qrad-qcond,0.)/c['char_law']['effective_endothermic_cost_J_kg']
         flux=min(alpha*char_rate(T,c['char_law']),energy_cap,
-                 char_available/(dt*f['area']),n['max_char_fraction_per_step']*char_total/(dt*f['area']))
+                 char_available/(dt*f['area']),n['max_char_fraction_per_step']*char_total/(dt*f['area'])) if h['exposure_on'] else 0.
         char_power=flux*f['area']*c['char_law']['effective_endothermic_cost_J_kg']
         extra=qrad*f['area']-char_power
         for nid in f['nodes']: forces[nid]=forces.get(nid,0.)+extra/4
         commands += [f'SFE,{f["element"]},{f["face"]},CONV,0,{hfilm:.16e}',
                      f'SFE,{f["element"]},{f["face"]},CONV,2,{h["gas_temperature_C"]:.16e}']
-        faces.append(dict(element=f['element'],area=f['area'],T_C=T,h=hfilm,
+        faces.append(dict(element=f['element'],area=f['area'],T_C=T,h=hfilm,Tgas_C=h['gas_temperature_C'],
                           char_rate=flux*f['area'],char_available=char_available,
                           qconv=qconv,qrad=qrad,qcond_est=qcond))
         totals['hot_radiation_W']+=qrad*f['area']
@@ -165,7 +176,7 @@ def prepare_step(mesh,c,s):
     commands+=['ALLSEL,ALL']
     p=dict(index=s['index']+1,layer=layer,start=s['time_s'],target=s['time_s']+dt,dt=dt,
            area=area,faces=faces,forces=forces,totals=totals,
-           loaded_hot_faces=len(row),loaded_outer_faces=len(mesh['outer']),
+           exposure_on=h['exposure_on'],loaded_hot_faces=len(row),loaded_outer_faces=len(mesh['outer']),
            loaded_hot_nodes=len(set(n for f in row for n in f['nodes'])))
     expected_nodes=(c['geometry']['axial_divisions']+1)*(c['geometry']['angular_divisions']+1)
     assert p['loaded_hot_faces']==c['geometry']['faces_per_row']
@@ -253,7 +264,7 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
     erel=abs(energy_residual)/scale
     row=mesh['rows'][p['layer']]
     hot_actual=-sum(energy[str(f['element'])][5] for f in row)
-    hot_expected=sum(f['area']*p['faces'][i]['h']*(c['heating']['gas_temperature_C']-
+    hot_expected=sum(f['area']*p['faces'][i]['h']*(p['faces'][i].get('Tgas_C',c['heating']['gas_temperature_C'])-
                      face_temperature(f,temperatures,c['initial_temperature_C'])) for i,f in enumerate(row))
     hrel=abs(hot_actual-hot_expected)/max(abs(hot_expected),1e-6)
     if hrel>n['hot_power_relative_tolerance']: raise ValueError('Actual hot-side convection absent or mismatched: '+str(hrel))
@@ -310,7 +321,8 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
                 Ts_mean_C=sum(f['area']*face_temperature(f,temperatures,c['initial_temperature_C']) for f in row)/p['area'],
                 alpha_mean=sum(s['alpha'][str(f['element'])]*f['volume'] for f in row)/sum(f['volume'] for f in row),
                 alpha_min=min(alpha_values),
-                h_W_m2_K=p['faces'][0]['h'],hot_power_expected_W=hot_expected,hot_power_actual_W=hot_actual,
+                h_W_m2_K=p['faces'][0]['h'],gas_temperature_C=p['faces'][0].get('Tgas_C',c['heating']['gas_temperature_C']),
+                exposure_on=p.get('exposure_on',True),hot_power_expected_W=hot_expected,hot_power_actual_W=hot_actual,
                 hot_power_relative_error=hrel,
                 hot_power_actual_convrate_W=-sum(energy[str(f['element'])][2] for f in row),
                 storage_W=cap,body_generation_W=gen,
@@ -332,6 +344,8 @@ def accept_step(mesh,c,s,p,temperatures,fields,energy,time):
         record[label+'_max_C'] = max(temperatures[str(i)] for i in ids)
         record[label+'_mean_C'] = sum(temperatures[str(i)] for i in ids)/len(ids)
     record['case_property_range_exceeded'] = record.get('case_inner_max_C',0) > c.get('case_property_limit_C',1e9)
+    if record['case_property_range_exceeded'] and c.get('stop_at_case_property_limit',False):
+        s['status']='CASE_PROPERTY_LIMIT_REACHED';record['status']=s['status']
     return s,record
 
 
@@ -372,7 +386,9 @@ def main():
         raise ValueError('Configuration changed after initialization; create a new run, do not mix states.')
     if args.action=='prepare':
         import time as walltime, shutil
-        guard_path = root.parents[1] / 'host_storage_status.json'
+        control_root=Path(c.get('host_control_root',str(root.parents[1])))
+        shared_runtime=Path(c.get('host_runtime',str(root)))
+        guard_path = control_root / 'host_storage_status.json'
         guard = load(guard_path) if guard_path.exists() else {}
         storage_ok = (guard.get('allowed', False) and walltime.time()-guard.get('checked_epoch',0) < 90
                       and walltime.time()-guard.get('guest_checked_epoch',0) < 90
@@ -381,10 +397,12 @@ def main():
         if not storage_ok:
             s['status']='PAUSED_STORAGE_GUARD'; save(root/'state.json',s)
             atomic(root/'step_control.inp','V0_OK=1\nV0_DONE=1\n'); return
-        stop=(root/'PAUSE_REQUESTED').exists() or s['time_s']>=c['end_time_s']-1e-10 or s['layer']>=c['geometry']['phenolic_radial_rows']
+        pause=(root/'PAUSE_REQUESTED').exists() or (shared_runtime/'PAUSE_REQUESTED').exists()
+        stop=pause or s['status']=='CASE_PROPERTY_LIMIT_REACHED' or s['time_s']>=c['end_time_s']-1e-10 or s['layer']>=c['geometry']['phenolic_radial_rows']
         if stop:
-            if (root/'PAUSE_REQUESTED').exists():
+            if pause:
                 s['status']='PAUSED_AT_CHECKPOINT'; save(root/'state.json',s)
+                if shared_runtime != root:save(shared_runtime/'state.json',s)
             atomic(root/'step_control.inp','V0_OK=1\nV0_DONE=1\n'); return
         s['status']='RUNNING'
         p,commands=prepare_step(mesh,c,s)
@@ -406,6 +424,16 @@ def main():
         os.replace(temporary,dest)
         save(checkpoints/f'audit_{new["index"]:06d}.json',record)
         save(root/'state.json',new)
+        # Guest-local native files avoid shared-drive latency. Mirror only
+        # accepted compact state; full native outputs are copied at job exit.
+        shared_runtime=Path(c.get('host_runtime',str(root)))
+        if shared_runtime != root:
+            import shutil
+            shared_checkpoints=shared_runtime/'checkpoints'
+            shared_checkpoints.mkdir(exist_ok=True)
+            save(shared_checkpoints/f'audit_{new["index"]:06d}.json',record)
+            shutil.copy2(dest,shared_checkpoints/dest.name)
+            save(shared_runtime/'state.json',new)
         rows=[load(p) for p in sorted(checkpoints.glob('audit_*.json'))]
         import io
         buf=io.StringIO(); writer=csv.DictWriter(buf,fieldnames=list(record)); writer.writeheader(); writer.writerows(rows)

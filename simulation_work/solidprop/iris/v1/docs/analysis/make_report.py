@@ -12,6 +12,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from matplotlib.ticker import NullFormatter
 from matplotlib.patches import Rectangle
 from latex_style import configure_latex, plot_samples
 
@@ -28,7 +29,7 @@ def tex(s):
 def capture():
     runs=[]
     for runtime in sorted((ROOT/'ansystmp/runs').iterdir()):
-        if runtime.name == 'sustainer_al_pilot':
+        if runtime.name in ['sustainer_al_pilot','sustainer_al_local_pilot']:
             continue  # Superseded exporter pilot; preserved locally.
         if not (runtime/'state.json').exists():
             continue
@@ -50,7 +51,12 @@ def capture():
                          status=state['status'],config_sha256=sha(runtime/'config.json'),
                          latest_audit_sha256=sha(runtime/'checkpoints'/f'audit_{state["index"]:06d}.json'),
                          history=history))
-    return runs
+    baselines=[r for r in runs if 'baseline' in r['name'] or 'pulse7_n' in r['name']]
+    return baselines or runs
+
+def run_label(run):
+    g=run['configuration']['geometry']
+    return run['case'].replace('_',' ').title().replace('Cf','CF').replace('Al','Al')+' (n='+str(g['phenolic_radial_rows'])+')'
 
 def figures(runs):
     configure_latex()
@@ -81,24 +87,35 @@ def figures(runs):
     if runs:
         fig,axes=plt.subplots(1,3,figsize=(9,3.1),constrained_layout=True)
         for run in runs:
-            h=run['history'];t=[x['time_s'] for x in h];label=tex(run['name'])
-            plot_samples(axes[0],t,[x['Ts_mean_C'] for x in h],label=label)
-            plot_samples(axes[1],t,[1000*x['phenolic_remaining_thickness_m'] for x in h],label=label)
-            plot_samples(axes[2],t,[100*x['energy_relative_error'] for x in h],label=label)
+            h=run['history'];t=[x['time_s'] for x in h];legend=tex(run_label(run))
+            plot_samples(axes[0],t,[x['Ts_mean_C'] for x in h],label=legend)
+            plot_samples(axes[1],t,[1000*x['phenolic_remaining_thickness_m'] for x in h],label=legend)
+            plot_samples(axes[2],t,[100*x['energy_relative_error'] for x in h],label=legend)
         axes[0].set(ylabel=r'Hot-face mean temperature [$^\circ$C]')
-        axes[1].set(ylabel='Remaining liner thickness [mm]')
+        axes[1].set(ylabel='Retained mesh thickness [mm]')
         axes[2].set(ylabel='Step energy residual [percent]')
         for ax in axes:ax.set(xlabel='Time since imposed heating begins [s]')
-        axes[0].legend(fontsize=5.5)
+        axes[0].legend(fontsize=7)
         fig.suptitle('Accepted native ANSYS states; scenario exposure')
         fig.savefig(out/'accepted_histories.pdf');fig.savefig(out/'accepted_histories.png',dpi=180);plt.close(fig)
+    fig,axes=plt.subplots(1,3,figsize=(9,3.1),constrained_layout=True)
+    for case in ['sustainer_al','sustainer_cf','booster_al','booster_cf']:
+        data=[json.loads((ROOT/'validation/radial'/f'{case}_mesh7_n{n}.json').read_text()) for n in [20,40,80,160]]
+        for ax,key in zip(axes,['hot_C','interface_C','removed_mm']):
+            ax.plot([20,40,80,160],[d['final'][key] for d in data],'o-',label=case.replace('_',' ').title().replace('Cf','CF'))
+            ax.set(xscale='log',xlabel='Radial cells per material',xticks=[20,40,80,160],xticklabels=['20','40','80','160'])
+            ax.xaxis.set_minor_formatter(NullFormatter())
+    axes[0].set(ylabel=r'Hot face at 7 s [$^\circ$C]');axes[1].set(ylabel=r'Case inner face at 7 s [$^\circ$C]');axes[2].set(ylabel='Removed thickness at 7 s [mm]')
+    axes[0].legend(fontsize=6.5)
+    fig.suptitle('Independent radial model; mesh sensitivity, not ANSYS output')
+    fig.savefig(out/'radial_mesh_check.pdf');fig.savefig(out/'radial_mesh_check.png',dpi=180);plt.close(fig)
 
 def write_report(runs, snapshot):
     stamp=datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y at %H:%M %Z')
     rows=[]
     for r in runs:
         a=r['history'][-1]
-        rows.append(' & '.join([tex(r['name']), f"{r['accepted_time_s']:.4f}", f"{a['Ts_mean_C']:.2f}", f"{1000*a['phenolic_remaining_thickness_m']:.5f}", f"{100*a['energy_relative_error']:.4f}"]) + ' ' + chr(92)*2)
+        rows.append(' & '.join([tex(run_label(r)), f"{r['accepted_time_s']:.4f}", f"{a['Ts_mean_C']:.2f}", f"{1000*a['phenolic_remaining_thickness_m']:.5f}", f"{100*a['energy_relative_error']:.4f}"]) + ' ' + chr(92)*2)
     result_table='\n'.join(rows) if rows else r'No accepted native states & --- & --- & --- & --- \\'
     result_fig=r'\includegraphics[width=\textwidth]{../analysis/accepted_histories.pdf}' if runs else 'Native thermal results are pending.'
     report=r'''\pdfminorversion=7
@@ -169,11 +186,11 @@ The compiled UserMatTh routine integrates conversion analytically at increment m
 
 A separate effective char-consumption law combines kinetic and mass-transfer limits and available surface energy. The inherited effective removal cost is \SI{35}{MJ.kg^{-1}}. This is an exploratory closure, not a calibrated oxidation mechanism. A row is scheduled for removal only after residual solid mass falls below 0.1 percent of its initial virgin mass. Hot-face loads move to the next live row. Consumed char remains in the live finite-element thermal representation until row removal; its numerical influence must be bounded through refinement or a revised partial-cell treatment.
 
-MAPDL 2026 R1.02 runs natively in Windows through the Parallels VM, using the previous x64 material DLL and the installed Python coupling controller. The initial tiny models use one process. At every coupling step, the controller checks exported time and live element identity, gas/char/solid mass, thermal energy and the actual applied hot-face power before accepting an atomic checkpoint. Native face heat rates are used, with independent reconstruction of user-material energy sinks where the native aggregate channels omit them.
+MAPDL 2026 R1.02 runs natively in Windows through the Parallels VM, using the previous x64 material DLL and the installed Python coupling controller. The initial tiny models use one process and a row-summed (diagonal) specific-heat matrix, matching the SOLID278 default without advection. At every coupling step, the controller checks exported time and live element identity, gas/char/solid mass, thermal energy and the actual applied hot-face power before accepting an atomic checkpoint. Native face heat rates are used, with independent reconstruction of user-material energy sinks where the native aggregate channels omit them.
 
 The initial gates are mass residual at most \(10^{-6}\) of initial liner mass, step energy residual at most 5 percent, and hot-load error at most 2 percent. These numerical gates do not validate the material law. Comparison of mesh and coupling steps targets less than 5 percent change in event time, with event brackets and temperatures reported explicitly.
 
-The corrected pilot exporter retrieves only defined live-material ranges. The earlier three undefined-SVAR warnings per step were removed without changing physical equations. The native user-material solve retains the standard warning that the Ansys-supplied USERCK routine is used; its banner separately confirms a user-defined thermal material. This known warning is recorded, not silently counted as zero warnings.
+The corrected pilot exporter retrieves only defined live-material ranges. The earlier three undefined-SVAR warnings per step were removed without changing physical equations. The native user-material solve retains the standard warning that the Ansys-supplied USERCK routine is used; its banner separately confirms a user-defined thermal material. This known warning is recorded, not silently counted as zero warnings. Longer runs also report elapsed-time/CPU-time performance warnings; these are retained in the validation records.
 
 \section{Execution and storage controls}
 The running VM has 14 virtual CPUs and approximately 112 GiB RAM. The repository is accessible through a dedicated I: mapping. A native no-solve probe completed with a successful license checkout and zero warnings/errors. Each case receives a separate sealed runtime; unchanged source hashes and expected inventories are checked before launching.
@@ -183,7 +200,7 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at STAMP. The table includes only accepted native states. A completed short pilot establishes execution of the coupled code, not convergence of lifetime. Larger temperatures or longer exposure curves will appear only when corresponding native states are accepted.
+This snapshot was frozen at STAMP. The table includes only accepted native states. All four 0.1 s pilots passed. Longer runs are displayed below as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
@@ -191,10 +208,21 @@ RESULTTABLE
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[H]\centering RESULTFIG \caption{Accepted native histories. No extrapolated future states are included.}\end{figure}
 
-\section{Outstanding verification and next results}
-The four pilots are complete. Compare the independent radial model, exercise row removal and checkpoint restart, then run baseline and convergence cases. Report physical recession separately from the 98 percent pyrolysis front. Check first/last row load transfer and quantify the partial-cell approximation. Refine only when needed; the user requested small, economical meshes.
+\section{Verification findings and current limitations}
+The native steady-conduction benchmark used the same sector mesh, convection face numbers and CF material frames with constant properties and reactions disabled. All four configurations matched the analytical two-layer cylinder within \SI{0.013}{K}; the acceptance target was \SI{0.1}{K}. This checks geometry, thermal resistance and orthotropic axes, not the reaction law. The deliberately artificial steady temperatures in that benchmark are not motor predictions.
 
-The eventual comparison will give a burnthrough bracket or an exposure-duration lower bound for each configuration, minimum remaining thickness, peak casing temperatures and their times, and sensitivity to uncertain inputs. Any entry leaving the material evidence range will remain explicitly qualified. The study cannot establish real motor lifetime without a supported wall-exposure history and recession calibration.
+Manufactured storage faults verified both free-space floors, the latched stop and the correct native abort filenames. A communication fault is retried as a read-only query; it is not reported as a disk threshold crossing. A guest-local pilot reproduced every shared-drive pilot nodal temperature exactly. It offers an alternate execution location while mirroring accepted results to the Mac. A controlled checkpoint pause/resume has advanced successfully; an uninterrupted comparison remains to be completed.
+
+The independent cylindrical finite-element model uses a separate radial assembly, two Gauss points per cell, backward Euler time integration and row-summed heat capacity. It retains the same material assumptions and surface law. At 0.1 s the sustainer hot-face difference from ANSYS was approximately 0.70 K; at 1.0 s it was approximately 0.97 K. Agreement is numerical cross-checking, not physical calibration.
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/radial_mesh_check.pdf}\caption{Independent seven-second radial mesh checks at a 0.0125 s coupling step. Coincident Al/CF hot-face and recession curves overlap. A cell-removal jump is not a smooth estimate of recession.}\end{figure}
+The twenty-cell mesh does not resolve recession sufficiently. The independent sustainer hot face at 7 s changes from about 1052 to 1410, 1466 and 1520 degrees Celsius at 20, 40, 80 and 160 radial cells. Its corresponding whole-cell removed thickness is 0, 0.1191, 0.0595 and 0.0298 mm. Case temperatures are much less sensitive over this short exposure. These comparisons justify refinement; they do not demonstrate a converged burnthrough time. Halving the 80-cell time step also changes hot-face temperature, so mesh and time accuracy remain separate checks.
+
+Numerical long-exposure stress tests were also performed to expose weaknesses in the inherited removal scheme. They showed substantial mesh/time-step dependence, while the casing had already left its provisional property range. Those apparent exhaustion times are explicitly rejected as motor-lifetime results. The retained partial-cell thermal mass and lagged surface coupling require further assessment. Physically interpreted continuous-exposure runs now stop at the first casing property-range crossing. That crossing indicates a limit of this model, not an experimentally established structural failure.
+
+\section{Next results}
+Complete the four native seven-second baselines and refined comparisons, verify native first/last-row load transfer and uninterrupted versus restarted states, then compare pulse/cooling and input-sensitivity cases within their stated material scope. Report physical recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
+
+A defensible final answer may be a conditional ``not reached through the accepted exposure'' result with remaining thickness, rather than a finite lifetime. Neither missing wall-exposure data nor uncalibrated char kinetics can be recovered from solver convergence. The study cannot establish real motor lifetime without supported wall heating and recession evidence.
 
 \begin{thebibliography}{9}
 \bibitem{prior} MIT Rocket Team, \emph{Thermochemical Simulation v0: Interim Results for the New Phenolic Liner}, September 26, 2026; accompanying versioned configuration, UserMatTh source and controller in this repository.
@@ -207,6 +235,12 @@ The eventual comparison will give a burnthrough bracket or an exposure-duration 
 \end{document}
 '''
     report=report.replace('STAMP',stamp).replace('RESULTTABLE',result_table).replace('RESULTFIG',result_fig)
+    if (ROOT/'validation/restart_comparison.json').exists():
+        check=json.loads((ROOT/'validation/restart_comparison.json').read_text())
+        report=report.replace('A controlled checkpoint pause/resume has advanced successfully; an uninterrupted comparison remains to be completed.',
+            'The controlled checkpoint restart matched an uninterrupted native run at 1.1 s, including conversion state and energy integrals. The maximum nodal temperature difference was '+r'\SI{'+f"{check['max_nodal_temperature_difference_K']:.4g}"+r'}{K}.')
+    if (ROOT/'validation/native_pulse_control.json').exists():
+        report=report.replace('A defensible final answer may be', 'A native one-second heating pulse followed by five cooling steps passed the boundary-transfer and balance checks. This verifies the prescribed switch to ambient gas and zero char consumption; it does not measure real tailoff.\n\nA defensible final answer may be')
     (ROOT/'docs/en/iris_phenolic_report.tex').write_text(report)
 
 def main():

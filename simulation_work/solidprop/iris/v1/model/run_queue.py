@@ -5,10 +5,12 @@ import subprocess
 import sys
 import time
 from ops import ROOT, TMP, atomic, disks, utc
+from validate_run import validate
 
-def phase(runtime, action):
+def phase(runtime, action, wait_existing=False):
     done=runtime/('phase_'+action+'_exit.json')
-    if not done.exists():
+    launched=(runtime/('host_launch_'+action+'.json')).exists()
+    if not done.exists() and not wait_existing and not launched:
         disks()
         subprocess.run([sys.executable,str(ROOT/'model/launch_case.py'),runtime.name,action],check=True)
     while not done.exists():
@@ -21,16 +23,21 @@ def phase(runtime, action):
         raise RuntimeError(f'{runtime.name}/{action}: {status}')
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('runtimes',nargs='+');args=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('runtimes',nargs='+')
+    p.add_argument('--wait-resume-first',action='store_true',help='Observe an explicitly launched first resume without launching another')
+    args=p.parse_args()
     records=[]
-    for name in args.runtimes:
+    for index,name in enumerate(args.runtimes):
         runtime=TMP/'runs'/name
         print(f'{utc()} checking {name}',flush=True)
         phase(runtime,'preflight')
-        phase(runtime,'run')
+        if index==0 and args.wait_resume_first:
+            phase(runtime,'resume',wait_existing=True)
+        else:
+            phase(runtime,'run')
         cfg=json.loads((runtime/'config.json').read_text())
         state=json.loads((runtime/'state.json').read_text())
-        if state['status'] not in ['COMPLETED_HORIZON','PHENOLIC_CONSUMED']:
+        if state['status'] not in ['COMPLETED_HORIZON','PHENOLIC_CONSUMED','CASE_PROPERTY_LIMIT_REACHED']:
             raise RuntimeError(f'{name}: unexpected terminal state {state["status"]}')
         if state['status']=='COMPLETED_HORIZON':
             assert abs(state['time_s']-cfg['end_time_s'])<1e-8
@@ -38,6 +45,8 @@ def main():
         audit=json.loads(audit_path.read_text())
         assert audit['energy_relative_error']<=cfg['numerics']['energy_relative_tolerance']
         assert audit['hot_power_relative_error']<=cfg['numerics']['hot_power_relative_tolerance']
+        verified=validate(runtime)
+        atomic(ROOT/'validation'/('accepted_'+name+'.json'),verified)
         record=dict(runtime=name,accepted_index=state['index'],time_s=state['time_s'],status=state['status'],last_audit=audit)
         records.append(record)
         atomic(ROOT/'validation'/('queue_'+args.runtimes[0]+'.json'),records)
