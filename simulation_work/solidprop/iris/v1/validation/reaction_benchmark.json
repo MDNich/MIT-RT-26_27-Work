@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "qualification": "Native prescribed-temperature software verification, not material calibration or a motor exposure",
+  "alpha_absolute_tolerance": 2e-05,
+  "results": [
+    {
+      "temperature_C": 300,
+      "time_s": 0.1,
+      "expected_alpha": 4.813457498609175e-05,
+      "native_min_alpha": 4.813457417185418e-05,
+      "native_max_alpha": 4.813457417185418e-05,
+      "max_absolute_error": 8.142375662600898e-13
+    },
+    {
+      "temperature_C": 300,
+      "time_s": 1,
+      "expected_alpha": 0.0004812415010639892,
+      "native_min_alpha": 0.0004812414990738034,
+      "native_max_alpha": 0.0004812414990738034,
+      "max_absolute_error": 1.9901857939430556e-12
+    },
+    {
+      "temperature_C": 300,
+      "time_s": 5,
+      "expected_alpha": 0.0024038926857518073,
+      "native_min_alpha": 0.002403892576694489,
+      "native_max_alpha": 0.002403892576694489,
+      "max_absolute_error": 1.0905731829755072e-10
+    },
+    {
+      "temperature_C": 600,
+      "time_s": 0.1,
+      "expected_alpha": 0.004874465745097867,
+      "native_min_alpha": 0.004874465521425009,
+      "native_max_alpha": 0.004874465521425009,
+      "max_absolute_error": 2.2367285801294656e-10
+    },
+    {
+      "temperature_C": 600,
+      "time_s": 1,
+      "expected_alpha": 0.047689219171337616,
+      "native_min_alpha": 0.04768921807408333,
+      "native_max_alpha": 0.04768921807408333,
+      "max_absolute_error": 1.0972542874299052e-09
+    },
+    {
+      "temperature_C": 600,
+      "time_s": 5,
+      "expected_alpha": 0.21676244254755261,
+      "native_min_alpha": 0.216762438416481,
+      "native_max_alpha": 0.216762438416481,
+      "max_absolute_error": 4.131071623669769e-09
+    },
+    {
+      "temperature_C": 1000,
+      "time_s": 0.1,
+      "expected_alpha": 0.07525077802468316,
+      "native_min_alpha": 0.0752507746219635,
+      "native_max_alpha": 0.0752507746219635,
+      "max_absolute_error": 3.4027196615937783e-09
+    },
+    {
+      "temperature_C": 1000,
+      "time_s": 1,
+      "expected_alpha": 0.5426594117870347,
+      "native_min_alpha": 0.5426594018936157,
+      "native_max_alpha": 0.5426594018936157,
+      "max_absolute_error": 9.893418972950485e-09
+    },
+    {
+      "temperature_C": 1000,
+      "time_s": 5,
+      "expected_alpha": 0.9799922279868045,
+      "native_min_alpha": 0.9799922108650208,
+      "native_max_alpha": 0.9799922108650208,
+      "max_absolute_error": 1.7121783768558885e-08
+    }
+  ],
+  "warning_count": 18,
+  "warning_explanation": "Nine standard USERCK warnings and nine near-zero heat-flow reference warnings in the deliberately isothermal prescribed-temperature fixture. Conversion is checked against the exact ODE at every sampled time.",
+  "log_sha256": "57f2f99a7b5fb6eb9b2bd8451e9fd848b8fd4f5c8fc4ab8c4bd958705b6e34b5",
+  "native_input_hashes": {
+    "t600.inp": "43cb8574e40a12da9526c68bbb5392d17cb579c2a06a68d3dd0c83a89ea471f3",
+    "t1000.inp": "c954d8cafce7afc60f91ee53c4e71f055902bdc8e13a1350205e375095610e80",
+    "reaction.inp": "02cd524eb92236ba27bf717196c1eabb38318c44f2fe12cfbb59abade3be89d5",
+    "t300.inp": "5e9b5578923bd4349ccc4d62c8b5aec5e034563ba386d255059beab2833c762c",
+    "usermatthLib.dll": "045ee4ef69d0cb27bf9d1d8875bdee0243d73d0a2ddde5be43073bea306b3a65"
+  }
+}

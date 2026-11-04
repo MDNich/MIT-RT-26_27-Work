@@ -34,6 +34,8 @@ def main():
             # Controlled native verification between jobs, never alongside a
             # live simulation. This fixture has analytical reference values.
             subprocess.run([sys.executable,str(ROOT/'model/topology_benchmark.py')],check=True)
+        if name=='booster_cf_baseline7_n20_dt0125' and not (ROOT/'validation/reaction_benchmark.json').exists():
+            subprocess.run([sys.executable,str(ROOT/'model/reaction_benchmark.py')],check=True)
         phase(runtime,'preflight')
         if index==0 and args.wait_resume_first:
             phase(runtime,'resume',wait_existing=True)

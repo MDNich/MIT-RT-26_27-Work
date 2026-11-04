@@ -146,12 +146,12 @@ class RadialModel:
                     case_property_range_exceeded=bool(s.T[self.np]>self.c['case_property_limit_C']),
                     solid_remaining_kg_per_rad_m=float(np.sum((self.c['material']['virgin_reference_density_kg_m3']-(self.c['material']['virgin_reference_density_kg_m3']-self.c['material']['char_reference_density_kg_m3'])*s.alpha[s.layer:])*self.w[s.layer:self.np])-np.sum(s.consumed[s.layer:])))
 
-    def run(self,end,dt=.0125,record_dt=.1,targets=(),check=None,stop_at_property_limit=False):
+    def run(self,end,dt=.0125,record_dt=.1,targets=(),check=None,stop_at_property_limit=False,post_dt=None):
         s=self.initial();history=[self.summary(s)];snapshots={};targets=sorted(t for t in targets if t>0);next_record=record_dt
         while s.time<end-1e-10 and s.layer<self.np:
             if check and self.steps%200==0:check()
-            step=min(dt,end-s.time)
             pulse=self.c['heating'].get('pulse_duration_s',math.inf)
+            step=min(post_dt if post_dt is not None and s.time>=pulse-1e-10 else dt,end-s.time)
             if s.time<pulse-1e-10:step=min(step,pulse-s.time)
             if targets:step=min(step,targets[0]-s.time)
             while True:

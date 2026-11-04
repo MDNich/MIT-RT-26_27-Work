@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
+from resolution_report import create as create_resolution
 
 CASES=['sustainer_al','sustainer_cf','booster_al','booster_cf']
 def title(case):return case.replace('_',' ').title().replace('Cf','CF')
@@ -105,5 +106,6 @@ def create(root,runs):
             'Each bar changes one input at 80 radial cells per material and a 0.003125 s step ceiling. The reference is the same-resolution nominal independent calculation. This is a sensitivity screen, not a probability distribution or a combined worst case. The twenty-percent phenolic perturbations and factor-two removal-cost range are engineering choices, not measured confidence bounds.',
             r'Pressure changes affect only the assumed char-reaction closure here; imposed gas temperature and heat-transfer coefficient remain fixed. A small pressure effect in this model does not imply that real motor pressure is unimportant. The NASA alternative uses its slide-14 carbon-epoxy thermal-model tuple: density 1596, conductivity 0.3832 and specific heat 886 in SI units, with a resistance model based on 39 percent resin and 61 percent fibre by volume~\cite{nasa}. It is a different composite, not an identification of the Iris casing.',
             r'\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/input_sensitivities.pdf}\caption{Changes in the duration of prescribed constant heating before the provisional property-range flag. Red bars reach the flag sooner, blue bars later. These bars are not safe firing durations or burnthrough margins.}\end{figure}']
+    parts.append(create_resolution(root,out,captured))
     (out/'auxiliary_snapshot.json').write_text(json.dumps(dict(sensitivity_matrix_complete=complete,sources=captured),indent=2)+'\n')
     return '\n\n'.join(parts)

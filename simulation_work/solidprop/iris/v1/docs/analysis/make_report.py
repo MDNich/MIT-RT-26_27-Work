@@ -52,7 +52,7 @@ def capture():
                          status=state['status'],config_sha256=sha(runtime/'config.json'),
                          latest_audit_sha256=sha(runtime/'checkpoints'/f'audit_{state["index"]:06d}.json'),
                          history=history))
-    baselines=[r for r in runs if 'baseline' in r['name'] or 'pulse7_n' in r['name']]
+    baselines=[r for r in runs if 'baseline' in r['name'] or 'pulse7_' in r['name']]
     return baselines or runs
 
 def run_label(run):
@@ -113,6 +113,10 @@ def figures(runs):
 
 def write_report(runs, snapshot):
     stamp=datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y at %H:%M %Z')
+    finished=[r for r in runs if (ROOT/'validation'/('accepted_'+r['name']+'.json')).exists()]
+    baselines=[r['case'].replace('_',' ').replace('cf','CF').replace('al','Al') for r in finished if 'baseline7_n20' in r['name']]
+    native_status='Audited seven-second coarse baselines are complete for '+', '.join(baselines)+'.' if baselines else 'Native baseline cases are still in progress.'
+    native_status+=' Their mass, energy and applied-load checks passed. '+str(sum('pulse7_' in r['name'] for r in finished))+' of the four refined native pulse/cooling cases have reached an audited stopping point; the serial campaign continues.'
     rows=[]
     for r in runs:
         a=r['history'][-1]
@@ -137,7 +141,7 @@ def write_report(runs, snapshot):
 \tableofcontents
 \clearpage
 \section{Executive summary}
-No defensible real-motor burnthrough time has been established. Both sustainer native coarse-mesh baselines have completed seven seconds of the imposed heating scenario without an accepted exhaustion event. Their mass, energy and applied-load audits passed. The booster baselines and refined native pulse/cooling cases remain in the serial campaign.
+No defensible real-motor burnthrough time has been established. NATIVESTATUS No native exhaustion event has been accepted in these scenarios.
 
 The initial twenty-row phenolic mesh is insufficient for recession. Independent refinement and 54 input-sensitivity cases show that missing thermal inputs and the partial-cell removal approximation matter. Under sustained nominal heating, provisional casing-property flags are reached with substantial liner remaining. Those stopping points limit this model's scope; they are not motor lifetimes or structural failure predictions. The immediate objective is to complete the native refined histories and compare their temperatures, mass loss and cooling against independent calculations.
 
@@ -226,7 +230,7 @@ The twenty-cell mesh does not resolve recession sufficiently. The independent su
 Numerical long-exposure stress tests were also performed to expose weaknesses in the inherited removal scheme. They showed substantial mesh/time-step dependence, while the casing had already left its provisional property range. Those apparent exhaustion times are explicitly rejected as motor-lifetime results. The retained partial-cell thermal mass and lagged surface coupling require further assessment. Physically interpreted continuous-exposure runs now stop at the first casing property-range crossing. That crossing indicates a limit of this model, not an experimentally established structural failure.
 
 \section{Next results}
-Complete the booster native seven-second baselines and all four refined pulse/cooling cases. Compare native first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
+Complete the remaining native baselines and refined pulse/cooling cases. Compare native first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
 
 A defensible final answer may be a conditional ``not reached through the accepted exposure'' result with remaining thickness, rather than a finite lifetime. Neither missing wall-exposure data nor uncalibrated char kinetics can be recovered from solver convergence. The study cannot establish real motor lifetime without supported wall heating and recession evidence.
 
@@ -240,7 +244,7 @@ A defensible final answer may be a conditional ``not reached through the accepte
 \end{thebibliography}
 \end{document}
 '''
-    report=report.replace('STAMP',stamp).replace('RESULTTABLE',result_table).replace('RESULTFIG',result_fig)
+    report=report.replace('STAMP',stamp).replace('NATIVESTATUS',native_status).replace('RESULTTABLE',result_table).replace('RESULTFIG',result_fig)
     report=report.replace(r'\section{Next results}',create_supplement(ROOT,runs)+'\n\n'+r'\section{Next results}')
     if (ROOT/'validation/restart_comparison.json').exists():
         check=json.loads((ROOT/'validation/restart_comparison.json').read_text())
