@@ -35,8 +35,12 @@ difference 0.3334 K), including identical first-row removal and cooling transfer
 The prescribed seven-second heating pulse leaves 4.7030 mm of retained mesh;
 the sampled inner-casing maximum is 120.50 C at 79 s. These are exploratory
 80-row results, not a demonstrated motor lifetime or completed mesh convergence.
-The other three corrected cases and thirteen native time/mesh checks are now
-in one serial queue; sustainer CF is first. Each terminal run must pass both
+Corrected sustainer CF has also reached an audited terminal point: the
+provisional 150 C material-property flag at 34 s during cooling. It retains
+4.7030 mm of mesh, and the independent comparison passes within 0.3335 K.
+That is a model-scope stop, not casing failure or liner burnthrough. Booster
+Al is running, followed by booster CF and thirteen native time/mesh checks in
+one serial queue. Each terminal run must pass both
 native audits and independent field, row-schedule and control checks before
 the queue advances. No second queue or solver may be started.
 Historical native curves retain their original routine and are explicitly labelled. See the ordered list
@@ -67,6 +71,23 @@ separate time-step changes at 80 rows from 160/320-row spatial refinement,
 with an additional 640-row sustainer CF case. Their plan and completed-pair
 summary are validation/native_resolution_plan.json and
 validation/native_resolution_comparison.json; prepared cases are not results.
+
+Eight combined-input pulse scenarios have completed independent 80/160/320-cell
+refinement; all final comparisons pass (casing maxima <0.86 K, retained thickness
+<0.020 mm). These combine the existing engineering perturbations and are not
+confidence bounds or proven worst cases. Four bounded native sensitivity
+controls are prepared but deferred until the active queue finishes.
+
+The row-removal cutoff is now an explicit limitation. Twenty-four paired
+independent calculations found -7.21 to +16.12 percent changes in sustainer CF
+scope time when the nominal 0.1-percent residual-solid rule is varied. Another
+24 calculations at tighter cutoffs and 320/640 cells pass their final successive
+numerical comparisons; two additional CF cutoff decades still shift timing by
+about 1.4-1.5 percent each. A zero-cutoff limit is not physical validation:
+first-order conversion leaves a positive unreacted fraction at finite reaction
+exposure, so finite residual ejection needs a modelling rule or calibration.
+Existing native cases retain their sealed rule and their times remain conditional
+on it. A separate native CF cutoff control is prepared for later confirmation.
 
 Four exact two-body STEP sectors are in `geometry/`. The English report is
 `output/pdf/iris_phenolic_report.pdf`; accepted data and figures are in

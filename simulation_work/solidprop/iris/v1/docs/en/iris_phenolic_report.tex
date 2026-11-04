@@ -7,16 +7,16 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Setup and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 04, 2026 at 01:56 UTC-05:00}
+\date{November 04, 2026 at 02:42 UTC-05:00}
 \begin{document}\maketitle
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
 \textbf{Exploratory study.} Four configurations are considered: sustainer and booster, each with an aluminium or carbon-fibre composite casing. Heat flux, firing duration, grain port and measured recession are unavailable. The user authorized explicit surrogate inputs and sensitivity studies. This report separates native numerical checks from physical calibration. A pilot is not a demonstrated motor lifetime.
 \end{minipage}}\end{center}
-\tableofcontents
+{\small\tableofcontents}
 \clearpage
 \section{Executive summary}
-No defensible real-motor burnthrough time has been established. The corrected midpoint model has 1 audited terminal results among the four primary cases at this snapshot. Accepted partial histories are reported only through their recorded time; all later values remain pending. Six native prescribed-temperature checks verify the rebuilt material library. Historical runs exposed separate restart, internal-substep accounting, nonlinear-tolerance and reaction-temperature issues, documented in the verification sections. Their curves are not used as corrected-model predictions. Sustainer Al completed the prescribed seven-second heating pulse and cooling through 127 s. Its retained mesh thickness is 4.7030 mm, with a sampled inner-casing maximum of 120.50 degrees Celsius at 79.00 s. No native exhaustion event has been accepted in these scenarios.
+No defensible real-motor burnthrough time has been established. The corrected midpoint model has 2 audited terminal results among the four primary cases at this snapshot. Accepted partial histories are reported only through their recorded time; all later values remain pending. Six native prescribed-temperature checks verify the rebuilt material library. Historical runs exposed separate restart, internal-substep accounting, nonlinear-tolerance and reaction-temperature issues, documented in the verification sections. Their curves are not used as corrected-model predictions. Sustainer Al completed the prescribed seven-second heating pulse and cooling through 127 s. Its retained mesh thickness is 4.7030 mm, with a sampled inner-casing maximum of 120.50 degrees Celsius at 79.00 s. Sustainer CF stopped at its provisional casing-property flag near 34.000 s with 4.7030 mm of retained mesh; its later thermal history is outside this calculation's scope. Independent tests also show that the residual-solid cutoff materially affects sustainer CF scope timing. Current native values remain conditional on the sealed 0.1-percent removal rule; tighter-cutoff convergence is investigated separately. No native exhaustion event has been accepted in these scenarios.
 
 The initial twenty-row phenolic mesh is insufficient for recession. Independent refinement and 54 input-sensitivity cases show that missing thermal inputs and the partial-cell removal approximation matter. Under sustained nominal heating, provisional casing-property flags are reached with substantial liner remaining. Those stopping points limit this model's scope; they are not motor lifetimes or structural failure predictions. The immediate objective is to complete the native refined histories and compare their temperatures, mass loss and cooling against independent calculations.
 
@@ -26,7 +26,7 @@ The primary event is exhaustion of the continuous phenolic barrier, leaving the 
 The calculation represents an initially intact, locally uniform wall. Cracks, joints, debonding, char spallation and particle erosion are not resolved. Material-temperature flags indicate the scope of surrogate properties, not certified pressure-casing failure. If the event is absent, the result is ``not reached through the simulated exposure,'' with residual thickness, rather than an extrapolated lifetime.
 
 \section{Geometry and discretization}
-The supplied propellant radii are provisionally used as liner inner radii. No unreported gap or adhesive layer is inserted. The user requested short axial and sector slices with about twenty radial cells per material. Each exchanged STEP contains exactly two solids and is reimported independently to verify volumes and dimensions.
+The supplied propellant radii are provisionally used as liner inner radii. No unreported gap or adhesive layer is inserted. Shared interface nodes impose perfect thermal contact. Actual bond/contact resistance and manufacturing thickness tolerances are unavailable and are not quantified by the material-property perturbations. The user requested short axial and sector slices with about twenty radial cells per material. Each exchanged STEP contains exactly two solids and is reimported independently to verify volumes and dimensions.
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrr}\toprule
 Motor & Bore radius & Phenolic & Case & Outside radius\\
@@ -77,6 +77,8 @@ The initial gates are mass residual at most \(10^{-6}\) of initial liner mass, s
 
 The corrected pilot exporter retrieves only defined live-material ranges. The earlier three undefined-SVAR warnings per step were removed without changing physical equations. The native user-material solve retains the standard warning that the Ansys-supplied USERCK routine is used; its banner separately confirms a user-defined thermal material. This known warning is recorded, not silently counted as zero warnings. Longer runs also report elapsed-time/CPU-time performance warnings; these are retained in the validation records.
 
+The corrected sustainer CF run also records a material-table warning at 21.9999998 degrees Celsius, approximately $2\times10^{-7}$ K below the initial 22-degree table endpoint. The casing conductivity is constant in that interval. This negligible numerical undershoot is retained in the audit; it is distinct from the controller's explicit 150-degree material-scope stop. ANSYS ceased its own repeated temperature-range checking after the warning, while the independent controller scope checks continued at every accepted interval.
+
 \section{Execution and storage controls}
 The running VM has 14 virtual CPUs and approximately 112 GiB RAM. The repository is accessible through a dedicated I: mapping. A native no-solve probe completed with a successful license checkout and zero warnings/errors. Each case receives a separate sealed runtime; unchanged source hashes and expected inventories are checked before launching.
 
@@ -85,11 +87,13 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 04, 2026 at 01:56 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
+This snapshot was frozen at November 04, 2026 at 02:42 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Hot face [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
+Booster Al (n=80, midpoint) & 142.7500 & 89.20 & 6.27062 & 0.0001 \\
 Sustainer Al (n=80, midpoint) & 127.0000 & 110.61 & 4.70297 & 0.0002 \\
+Sustainer CF (n=80, midpoint) & 34.0000 & 249.54 & 4.70297 & 0.0012 \\
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[H]\centering \includegraphics[width=\textwidth]{../analysis/accepted_histories.pdf} \caption{Accepted native histories. No extrapolated future states are included.}\end{figure}
 
@@ -110,11 +114,13 @@ The maxima below apply only through each accepted time shown. A running case is 
 
 \begin{table}[H]\centering\small\begin{tabular}{lrrr}\toprule Case & Through [s] & Inner maximum [$^\circ$C] & Outer maximum [$^\circ$C]\\\midrule
 
+Booster Al (n=80, midpoint) & 142.750 & 84.784 & 84.765 \\
 Sustainer Al (n=80, midpoint) & 127.000 & 120.497 & 120.477 \\
+Sustainer CF (n=80, midpoint) & 34.000 & 150.063 & 112.879 \\
 
 \bottomrule\end{tabular}\end{table}
 
-\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_casing_temperatures.pdf}\caption{Native accepted casing-temperature histories. These are thermal calculations, not pressure-casing strength or qualification results.}\end{figure}
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_casing_temperatures.pdf}\caption{Native accepted casing-temperature histories. An x marks a provisional material-scope stop, not predicted failure. These are thermal calculations, not pressure-casing strength or qualification results.}\end{figure}
 
 \subsection{Mass bookkeeping and retained partial cells}
 
@@ -122,7 +128,9 @@ The next table uses fractions of the initial liner mass at each run's final acce
 
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Solid left [\%] & Gas loss [\%] & Char loss [\%] & Retained in FE [\%]\\\midrule
 
+Booster Al (n=80, midpoint) & 89.405 & 9.853 & 0.741 & 0.169 \\
 Sustainer Al (n=80, midpoint) & 85.767 & 13.417 & 0.815 & 0.249 \\
+Sustainer CF (n=80, midpoint) & 85.727 & 13.457 & 0.815 & 0.249 \\
 
 \bottomrule\end{tabular}\end{table}
 
@@ -134,7 +142,9 @@ The signed residual below checks accumulated bias; the absolute residual sum avo
 
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrr}\toprule Case & Signed energy [\%] & Absolute energy [\%] & Mass relative error\\\midrule
 
+Booster Al (n=80, midpoint) & 0.0137 & 0.0146 & 3.2e-15 \\
 Sustainer Al (n=80, midpoint) & 0.0084 & 0.0088 & 3.3e-15 \\
+Sustainer CF (n=80, midpoint) & 0.0086 & 0.0091 & 3.3e-15 \\
 
 \bottomrule\end{tabular}\end{table}
 
@@ -305,6 +315,8 @@ These comparisons use the independent assembly at the same 80/20 radial mesh and
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Through [s] & Max profile [K] & Max conversion & Transfers passed\\\midrule
 
 Sustainer Al & 127.000 & 0.333 & 0.00027 & 1 \\
+Sustainer CF & 34.000 & 0.333 & 0.00027 & 1 \\
+Booster Al & 142.250 & 0.220 & 0.00016 & 1 \\
 
 \bottomrule\end{tabular}\end{table}
 
@@ -317,10 +329,23 @@ This table uses fresh corrected-midpoint native runs. The earlier seven-second h
 \begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Row & Native scheduled [s] & Independent [s] & Difference [s]\\\midrule
 
 Sustainer Al & 1 & 4.1625 & 4.1625 & 0.00000 \\
+Sustainer CF & 1 & 4.1625 & 4.1625 & 0.00000 \\
+Booster Al & 1 & 4.6000 & 4.6000 & 0.00000 \\
 
 \bottomrule\end{tabular}\end{table}
 
 These are individual row-removal events, not liner-exhaustion times. The native event is bracketed by its previous accepted intact state and the scheduled state; geometric deactivation occurs in the next solve.
+
+\subsection{Variation within the uniform sector}
+
+Every accepted checkpoint in the completed corrected primary cases was checked for differences among the nine nodes at each radial station. The table reports the largest axial/angular spread at a common radius, using only nodes belonging to elements active during that solve. This quantifies information suppressed by radial averaging; it does not establish uniformity in a real motor or bound unmodelled end effects.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrr}\toprule Case & Through [s] & Phenolic range [K] & Casing range [K]\\\midrule
+
+Sustainer Al & 127.00 & 1.19e-08 & 1.13e-12 \\
+Sustainer CF & 34.00 & 0.00653 & 0.013 \\
+
+\bottomrule\end{tabular}\end{table}
 
 \subsection{Native spatial and time-resolution program}
 
@@ -331,6 +356,100 @@ The 80-row time check and 160-row spatial check use 0.003125 s heating, 0.015625
 Native comparisons require casing peak changes below 5 K for completed histories, scope-time changes below five percent for censored histories, and retained-thickness changes no larger than the greater of 0.02 mm or one percent of the initial liner. A scope-limited calculation cannot supply a later casing peak. Preparation is not an accepted result.
 
 At this edition no completed native refinement pair is available. The independent refinement results below remain distinct.
+
+\subsection{Sensitivity to the row-removal cutoff}
+
+The removal threshold is a numerical choice: a row is deactivated when residual solid mass is less than 0.1 percent of its initial virgin mass. Twenty-four paired independent runs tested 0.01, 0.1 and 1 percent cutoffs for all four cases at 160/40 and 320/80 phenolic/casing cells. Physical laws and time settings were fixed within each pair. These are numerical-tolerance perturbations, not material uncertainty.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case (320 cells) & Cutoff [\%] & Inner peak change [K] & Scope-time change [\%] & Retained change [mm]\\\midrule
+
+Sustainer Al & 0.01 & 2.399 & -- & 0.0149 \\
+
+Sustainer Al & 1 & -3.812 & -- & -0.0298 \\
+
+Sustainer CF & 0.01 & Censored & -7.211 & 0.0149 \\
+
+Sustainer CF & 1 & Censored & 16.119 & -0.0298 \\
+
+Booster Al & 0.01 & 0.973 & -- & 0.0000 \\
+
+Booster Al & 1 & -2.636 & -- & -0.0397 \\
+
+Booster CF & 0.01 & 1.406 & -- & 0.0000 \\
+
+Booster CF & 1 & -3.716 & -- & -0.0397 \\
+
+\bottomrule\end{tabular}\end{table}
+
+Changes are relative to the 0.1-percent calculation on the same mesh. At 320 cells, complete-history casing peaks shift by as much as 3.812 K. Sustainer CF scope timing changes by about -7.21 to +16.12 percent, exceeding the five-percent timing target. This sensitivity is separate from radial/time convergence at a fixed cutoff. The queued native cases retain their sealed 0.1-percent rule; their reported times remain conditional on that choice.
+
+The small expelled residual mass does not make this timing effect negligible. A nearly consumed row can remain thermally active while the residual virgin fraction continues reacting, delaying transfer of the hot boundary to the next row. This explains why a mass-ledger check alone does not settle removal discretization. No real-motor lifetime follows from these cutoff-dependent states.
+
+The chosen equations also explain why a zero cutoff is not a physically validated target. Char consumption cannot exceed the available char, so $m_{\rm solid}/V \geq \rho_v(1-\alpha)$. The first-order conversion law leaves $1-\alpha=(1-\alpha_0)\exp(-\int k\,dt)>0$ at finite integrated reaction exposure. Thus exact zero residual is not reached in finite time in the continuous equations. The finite cutoff approximates ejection or loss of continuity of the residual solid, for which this study has no calibration. Tighter cutoffs test numerical/model dependence; they do not automatically improve physical accuracy.
+
+Additional fixed-640-cell sustainer CF checks at fractional cutoffs 1e-7 and 1e-8 change the scope time by 1.369 and 1.514 percent relative to the preceding decade. The 1e-8 case stops at 24.3906 s with 4.7551 mm retained. These smaller successive changes do not erase the difference from the original cutoff or identify a physically correct residual-ejection rule.
+
+Additional independent calculations now compare successive fractional cutoffs of 1e-4, 1e-5 and 1e-6 at 320 and 640 cells. These tests concern the numerical equations, not physical validation of the removal law.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{llrrrl}\toprule Case & Final comparison & Peak change [K] & Scope change [\%] & Retained change [mm] & Pass\\\midrule
+
+Sustainer CF & Cutoff & -- & -2.606 & 0.0074 & Yes \\
+
+Sustainer CF & Mesh/time & -- & -2.488 & 0.0000 & Yes \\
+
+Sustainer Al & Cutoff & 1.078 & -- & 0.0074 & Yes \\
+
+Sustainer Al & Mesh/time & 0.868 & -- & 0.0000 & Yes \\
+
+Booster Al & Cutoff & 0.490 & -- & 0.0000 & Yes \\
+
+Booster Al & Mesh/time & 0.522 & -- & 0.0000 & Yes \\
+
+Booster CF & Cutoff & 0.705 & -- & 0.0000 & Yes \\
+
+Booster CF & Mesh/time & 0.745 & -- & 0.0000 & Yes \\
+
+\bottomrule\end{tabular}\end{table}
+
+Passing a successive-refinement target does not prove a zero-cutoff limit or remove the difference from the original 0.1-percent choice. Native confirmation and interpretation of the tighter rule remain separate work; no queued sealed configuration is silently replaced.
+
+A separate native 80/20-row sustainer CF control with fractional cutoff 1e-6 has been prepared but has not completed both verification gates. Its time schedule matches the queued 80-row quarter-step default-cutoff case, allowing a controlled later native comparison. Neither sealed input is changed in place.
+
+\subsection{Combined-input pulse scenarios}
+
+Two joint engineering perturbations were calculated for all four configurations, separately from ANSYS. The first doubles the heat-transfer coefficient to 2000 in SI units, raises phenolic conductivity by 20 percent and lowers its heat capacity by 20 percent. The second doubles the same coefficient, lowers phenolic conductivity by 20 percent and halves the effective char-removal cost to 17.5 MJ/kg. Every change comes from the earlier one-at-a-time engineering screen; their combination is neither a measured uncertainty interval nor a demonstrated worst case.
+
+All cases use a hypothetical seven-second heating pulse with the primary ambient-cooling assumptions and property-scope stops. Eight scenarios were each repeated with 80/20, 160/40 and 320/80 phenolic/casing cells. Heating steps scale with radial pitch squared: 0.003125, 0.00078125 and 0.0001953125 s. Later cooling steps are respectively 0.0625, 0.015625 and 0.00390625 s. Intermediate time and mesh effects remain coupled in this additional input screen; the separate native resolution program tests those effects independently.
+
+All eight final comparisons meet the stated targets. Complete-history casing maxima change by at most 0.855 K; scope-time changes are at most 0.259 percent. Retained-thickness checks pass separately. These numerical results do not calibrate the joint physical assumptions.
+
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/combined_pulse_sensitivities.pdf}\caption{Independent 320-row combined scenarios. The shaded interval is imposed heating. Scope-limited curves do not predict a later casing peak or structural failure.}\end{figure}
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{llrrr}\toprule Case & Joint scenario & Through [s] & Inner max [$^\circ$C] & Retained [mm]\\\midrule
+
+Sustainer Al & Transport & 127.000 & 141.31 & 4.5988 \\
+
+Sustainer Al & Consumption & 127.000 & 107.48 & 4.3607 \\
+
+Sustainer CF & Transport & 12.047 & 150.01 & 4.5988 \\
+
+Sustainer CF & Consumption & 127.000 & 142.83 & 4.3607 \\
+
+Booster Al & Transport & 300.000 & 98.36 & 6.1912 \\
+
+Booster Al & Consumption & 300.000 & 77.50 & 5.9730 \\
+
+Booster CF & Transport & 300.000 & 139.93 & 6.1912 \\
+
+Booster CF & Consumption & 300.000 & 104.59 & 5.9730 \\
+
+\bottomrule\end{tabular}\end{table}
+
+Changing several assumptions can change both heat admitted to the wall and energy removed by gas generation and char consumption. A larger imposed heat-transfer coefficient therefore need not produce a hotter casing when the other closure parameters also change. This is sensitivity of the chosen equations, not evidence that changing a real liner would improve safety. No scenario here establishes a real-motor burnthrough time.
+
+Four separate bounded native controls have been prepared for higher heating, the published alternative CF tuple and two combined cases. They stop at 20 s or an earlier material flag and test implementation against the same-mesh independent model. Their short horizons cannot establish later cooling maxima.
+
+At this snapshot, 0 of those four controls have completed both native audit and independent comparison. Prepared or running controls supply no completed native confirmation.
 
 \section{Independent pulse and cooling investigation}
 

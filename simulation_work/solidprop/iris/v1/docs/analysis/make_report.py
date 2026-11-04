@@ -107,11 +107,11 @@ def figures(runs):
             style=dict(color=CASE_COLORS[run['case']],markerfacecolor='white' if run['configuration']['geometry']['phenolic_radial_rows']==20 else CASE_COLORS[run['case']])
             for panel in axes:
                 plot_samples(panel[0],t,[x['Ts_mean_C'] for x in h],label=legend,**style)
-                plot_samples(panel[1],t,[1000*x['phenolic_remaining_thickness_m'] for x in h],label=legend,**style)
+                plot_samples(panel[1],t,[1000*x['phenolic_removed_thickness_m'] for x in h],label=legend,**style)
                 plot_samples(panel[2],t,[100*x['energy_relative_error'] for x in h],label=legend,**style)
         for panel in axes:
             panel[0].set(ylabel=r'Hot-face mean temperature [$^\circ$C]')
-            panel[1].set(ylabel='Retained mesh thickness [mm]')
+            panel[1].set(ylabel='Whole-cell removed thickness [mm]')
             panel[2].set(ylabel='Step energy residual [percent]')
         for ax in axes[0]:ax.set(xlim=(0,7),xlabel='Heating interval [s]')
         for ax in axes[1]:ax.set(xlabel='Full accepted history [s]');ax.axvline(7,color='gray',ls=':',lw=.8)
@@ -153,6 +153,9 @@ def write_report(runs, snapshot):
                 native_status+=f" {label} completed the prescribed seven-second heating pulse and cooling through {r['accepted_time_s']:.0f} s. Its retained mesh thickness is {retained:.4f} mm, with a sampled inner-casing maximum of {peak['case_inner_max_C']:.2f} degrees Celsius at {peak['time_s']:.2f} s."
             elif r['status']=='CASE_PROPERTY_LIMIT_REACHED':
                 native_status+=f" {label} stopped at its provisional casing-property flag near {r['accepted_time_s']:.3f} s with {retained:.4f} mm of retained mesh; its later thermal history is outside this calculation's scope."
+    cutoff_path=ROOT/'validation/removal_cutoff_sensitivity.json'
+    if cutoff_path.exists() and json.loads(cutoff_path.read_text()).get('complete'):
+        native_status+=' Independent tests also show that the residual-solid cutoff materially affects sustainer CF scope timing. Current native values remain conditional on the sealed 0.1-percent removal rule; tighter-cutoff convergence is investigated separately.'
     rows=[]
     for r in runs:
         a=r['history'][-1]
@@ -174,7 +177,7 @@ def write_report(runs, snapshot):
 \begin{center}\fbox{\begin{minipage}{.93\textwidth}\small
 \textbf{Exploratory study.} Four configurations are considered: sustainer and booster, each with an aluminium or carbon-fibre composite casing. Heat flux, firing duration, grain port and measured recession are unavailable. The user authorized explicit surrogate inputs and sensitivity studies. This report separates native numerical checks from physical calibration. A pilot is not a demonstrated motor lifetime.
 \end{minipage}}\end{center}
-\tableofcontents
+{\small\tableofcontents}
 \clearpage
 \section{Executive summary}
 No defensible real-motor burnthrough time has been established. NATIVESTATUS No native exhaustion event has been accepted in these scenarios.
@@ -187,7 +190,7 @@ The primary event is exhaustion of the continuous phenolic barrier, leaving the 
 The calculation represents an initially intact, locally uniform wall. Cracks, joints, debonding, char spallation and particle erosion are not resolved. Material-temperature flags indicate the scope of surrogate properties, not certified pressure-casing failure. If the event is absent, the result is ``not reached through the simulated exposure,'' with residual thickness, rather than an extrapolated lifetime.
 
 \section{Geometry and discretization}
-The supplied propellant radii are provisionally used as liner inner radii. No unreported gap or adhesive layer is inserted. The user requested short axial and sector slices with about twenty radial cells per material. Each exchanged STEP contains exactly two solids and is reimported independently to verify volumes and dimensions.
+The supplied propellant radii are provisionally used as liner inner radii. No unreported gap or adhesive layer is inserted. Shared interface nodes impose perfect thermal contact. Actual bond/contact resistance and manufacturing thickness tolerances are unavailable and are not quantified by the material-property perturbations. The user requested short axial and sector slices with about twenty radial cells per material. Each exchanged STEP contains exactly two solids and is reimported independently to verify volumes and dimensions.
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrr}\toprule
 Motor & Bore radius & Phenolic & Case & Outside radius\\
@@ -237,6 +240,8 @@ MAPDL 2026 R1.02 runs natively in Windows through the Parallels VM, using a vers
 The initial gates are mass residual at most \(10^{-6}\) of initial liner mass, step energy residual at most 5 percent, and hot-load error at most 2 percent. These numerical gates do not validate the material law. Comparison of mesh and coupling steps targets less than 5 percent change in event time, with event brackets and temperatures reported explicitly.
 
 The corrected pilot exporter retrieves only defined live-material ranges. The earlier three undefined-SVAR warnings per step were removed without changing physical equations. The native user-material solve retains the standard warning that the Ansys-supplied USERCK routine is used; its banner separately confirms a user-defined thermal material. This known warning is recorded, not silently counted as zero warnings. Longer runs also report elapsed-time/CPU-time performance warnings; these are retained in the validation records.
+
+The corrected sustainer CF run also records a material-table warning at 21.9999998 degrees Celsius, approximately $2\times10^{-7}$ K below the initial 22-degree table endpoint. The casing conductivity is constant in that interval. This negligible numerical undershoot is retained in the audit; it is distinct from the controller's explicit 150-degree material-scope stop. ANSYS ceased its own repeated temperature-range checking after the warning, while the independent controller scope checks continued at every accepted interval.
 
 \section{Execution and storage controls}
 The running VM has 14 virtual CPUs and approximately 112 GiB RAM. The repository is accessible through a dedicated I: mapping. A native no-solve probe completed with a successful license checkout and zero warnings/errors. Each case receives a separate sealed runtime; unchanged source hashes and expected inventories are checked before launching.

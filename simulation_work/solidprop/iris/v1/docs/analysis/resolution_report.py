@@ -4,6 +4,8 @@ import json
 import matplotlib.pyplot as plt
 from latex_style import CASE_COLORS,plot_samples
 from temperature_convention_report import create as temperature_convention_report
+from combined_sensitivity_report import create as combined_sensitivity_report
+from removal_cutoff_report import create as removal_cutoff_report
 
 
 def create(root,out,captured):
@@ -99,6 +101,16 @@ def create(root,out,captured):
                 '\n'.join(row([name(c),a['rows_scheduled'],f"{a['scheduled_time_s']:.4f}",f"{a['independent_scheduled_time_s']:.4f}",f"{a['scheduled_time_difference_s']:.5f}"]) for c,a in events),r'\bottomrule\end{tabular}\end{table}',
                 'These are individual row-removal events, not liner-exhaustion times. The native event is bracketed by its previous accepted intact state and the scheduled state; geometric deactivation occurs in the next solve.']
 
+    uniformity=read('validation/native_uniformity.json')
+    if uniformity and uniformity['records']:
+        parts += [r'\subsection{Variation within the uniform sector}',
+            'Every accepted checkpoint in the completed corrected primary cases was checked for differences among the nine nodes at each radial station. The table reports the largest axial/angular spread at a common radius, using only nodes belonging to elements active during that solve. This quantifies information suppressed by radial averaging; it does not establish uniformity in a real motor or bound unmodelled end effects.',
+            r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrr}\toprule Case & Through [s] & Phenolic range [K] & Casing range [K]\\\midrule',
+            '\n'.join(row([name(d['case']),f"{d['through_s']:.2f}",
+                f"{d['maximum_same_radius_ranges']['live_phenolic']['range_K']:.3g}",
+                f"{d['maximum_same_radius_ranges']['casing']['range_K']:.3g}"]) for d in uniformity['records']),
+            r'\bottomrule\end{tabular}\end{table}']
+
     native_plan=read('validation/native_resolution_plan.json')
     native_resolution=read('validation/native_resolution_comparison.json')
     if native_plan:
@@ -118,6 +130,8 @@ def create(root,out,captured):
         else:
             parts += ['At this edition no completed native refinement pair is available. The independent refinement results below remain distinct.']
 
+    parts += removal_cutoff_report(root,read)
+    parts += combined_sensitivity_report(root,out,read)
     convergence=read('validation/pulse_resolution.json')
     if not convergence or not convergence['complete']:return '\n\n'.join(parts)
     files={

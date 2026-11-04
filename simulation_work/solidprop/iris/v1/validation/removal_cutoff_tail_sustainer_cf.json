@@ -1,0 +1,55 @@
+{
+  "complete": true,
+  "independent_only": true,
+  "results": [
+    {
+      "file": "validation/radial/sustainer_cf_cutoff_n640_f1e-07.json",
+      "sha256": "6f275ae60090c1558d007a84d5ddd2ad6459db1f05e33ee9df4d2f97fc831215",
+      "scope_bracket_s": [
+        24.75,
+        24.765625
+      ],
+      "remaining_mm": 4.747617187500004
+    },
+    {
+      "file": "validation/radial/sustainer_cf_cutoff_n640_f1e-08.json",
+      "sha256": "ce82762ab2efd9e1f9fab714f18146e7a35a91f031673d4fd6f6d6c28cc448fd",
+      "scope_bracket_s": [
+        24.375,
+        24.390625
+      ],
+      "remaining_mm": 4.75505859375
+    }
+  ],
+  "comparisons": [
+    {
+      "case": "sustainer_cf",
+      "comparison": "cutoff only beyond 1e-6",
+      "coarse_cells": 640,
+      "fine_cells": 640,
+      "coarse_cutoff": 1e-06,
+      "fine_cutoff": 1e-07,
+      "scope_time_relative_change": -0.013690105787181106,
+      "peak_differences_K": null,
+      "remaining_difference_mm": 0.0,
+      "remaining_target_mm": 0.047624999999999994,
+      "passed": true,
+      "exhaustion_excluded": false
+    },
+    {
+      "case": "sustainer_cf",
+      "comparison": "cutoff only beyond 1e-6",
+      "coarse_cells": 640,
+      "fine_cells": 640,
+      "coarse_cutoff": 1e-07,
+      "fine_cutoff": 1e-08,
+      "scope_time_relative_change": -0.015141955835962118,
+      "peak_differences_K": null,
+      "remaining_difference_mm": 0.007441406249996341,
+      "remaining_target_mm": 0.047624999999999994,
+      "passed": true,
+      "exhaustion_excluded": false
+    }
+  ],
+  "qualification": "Additional tighter-cutoff tests of the most sensitive scope time, with fixed 640/160 mesh and time schedule. Not physical calibration or native output."
+}

@@ -1,0 +1,82 @@
+{
+  "status": "PREPARED_NOT_DISPATCHED",
+  "cases": [
+    {
+      "runtime": "sustainer_al_sensitivity_higher_heating_midpoint_control20",
+      "case": "sustainer_al",
+      "scenario": "higher_heating",
+      "changes": {
+        "heating": {
+          "h0_W_m2_K": 2000.0
+        }
+      },
+      "horizon_s": 20.0,
+      "pulse_s": 7.0,
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "config_sha256": "ad746310913412178196c466da10d84e9f409ecad4914aa951f1c7173a230955"
+    },
+    {
+      "runtime": "booster_cf_sensitivity_alternative_cf_midpoint_control20",
+      "case": "booster_cf",
+      "scenario": "alternative_cf",
+      "changes": {
+        "material": {
+          "aluminium_density_kg_m3": 1596.0
+        },
+        "_root": {
+          "cf_radial_k": 0.3832,
+          "cf_cp_constant_J_kg_K": 886.0
+        }
+      },
+      "horizon_s": 20.0,
+      "pulse_s": 7.0,
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "config_sha256": "7d68fe05a5537d56dda916da990f9550393945064a9de37a004fa7cdeb595504"
+    },
+    {
+      "runtime": "sustainer_cf_sensitivity_heating_transport_midpoint_control20",
+      "case": "sustainer_cf",
+      "scenario": "heating_transport",
+      "changes": {
+        "heating": {
+          "h0_W_m2_K": 2000.0
+        },
+        "material": {
+          "phenolic_k_scale": 1.2,
+          "phenolic_cp_scale": 0.8
+        }
+      },
+      "horizon_s": 20.0,
+      "pulse_s": 7.0,
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "config_sha256": "d1bbb720a0657163f1ca97f1d1b7f7eaf1ad29f7e2f8376cb730868e2665d4a7"
+    },
+    {
+      "runtime": "booster_cf_sensitivity_heating_consumption_midpoint_control20",
+      "case": "booster_cf",
+      "scenario": "heating_consumption",
+      "changes": {
+        "heating": {
+          "h0_W_m2_K": 2000.0
+        },
+        "material": {
+          "phenolic_k_scale": 0.8
+        },
+        "char_law": {
+          "effective_endothermic_cost_J_kg": 17500000.0
+        }
+      },
+      "horizon_s": 20.0,
+      "pulse_s": 7.0,
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "config_sha256": "738038e8d8c1f6927730eb94a13d6ce57ffd259636c313b0d2063494e7ba1db3"
+    }
+  ],
+  "qualification": "These bounded controls test native application of influential and combined inputs, reaction/source response, removal/load transfer and cooling against the same-mesh independent model. They do not establish full-history sensitivity or convergence of a later peak or scope time.",
+  "acceptance": "Unchanged native audit gates and same-mesh profile/conversion/mass/exact-row plus topology/cooling checks. Any failed comparison stops continuation.",
+  "physical_scope": "All parameters are inherited assumptions, published alternative CF data or the existing labelled engineering perturbations. No actual motor lifetime claim."
+}

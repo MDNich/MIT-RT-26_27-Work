@@ -23,6 +23,8 @@ def create(root,runs):
             h=run['history'];c=run['configuration'];name=title(run['case'])+' (n='+str(c['geometry']['phenolic_radial_rows'])+', midpoint)'
             for ax,key in zip(axes,['case_inner_max_C','case_outer_max_C']):
                 ax.plot([a['time_s'] for a in h],[a[key] for a in h],label=name,color=CASE_COLORS[run['case']],lw=.9 if c['geometry']['phenolic_radial_rows']==20 else 1.8)
+                if run['status']=='CASE_PROPERTY_LIMIT_REACHED':
+                    ax.plot(h[-1]['time_s'],h[-1][key],'x',color=CASE_COLORS[run['case']],ms=7)
             rows.append(row([name,f"{h[-1]['time_s']:.3f}",f"{max(a['case_inner_max_C'] for a in h):.3f}",f"{max(a['case_outer_max_C'] for a in h):.3f}"]))
             a=h[-1];m0=sum(a[k] for k in ['solid_remaining_kg','gas_cumulative_kg','char_cumulative_kg','residual_ejected_kg'])
             massrows.append(row([name]+[f"{100*a[k]/m0:.3f}" for k in ['solid_remaining_kg','gas_cumulative_kg','char_cumulative_kg','subcell_mass_still_in_FE_kg']]))
@@ -42,7 +44,7 @@ def create(root,runs):
             'The maxima below apply only through each accepted time shown. A running case is not assigned a future peak. Inner and outer casing temperatures are kept separate because thermal resistance can delay outside heating while the liner-facing side becomes hotter.',
             r'\begin{table}[H]\centering\small\begin{tabular}{lrrr}\toprule Case & Through [s] & Inner maximum [$^\circ$C] & Outer maximum [$^\circ$C]\\\midrule',
             '\n'.join(rows),r'\bottomrule\end{tabular}\end{table}',
-            r'\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_casing_temperatures.pdf}\caption{Native accepted casing-temperature histories. These are thermal calculations, not pressure-casing strength or qualification results.}\end{figure}']
+            r'\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_casing_temperatures.pdf}\caption{Native accepted casing-temperature histories. An x marks a provisional material-scope stop, not predicted failure. These are thermal calculations, not pressure-casing strength or qualification results.}\end{figure}']
         parts += [r'\subsection{Mass bookkeeping and retained partial cells}',
             'The next table uses fractions of the initial liner mass at each run\'s final accepted time above. Gas and consumed char are separate cumulative losses. The last column measures consumed char that remains represented thermally until its cell is removed; it is a numerical storage discrepancy, not extra physical material.',
             r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrr}\toprule Case & Solid left [\%] & Gas loss [\%] & Char loss [\%] & Retained in FE [\%]\\\midrule',

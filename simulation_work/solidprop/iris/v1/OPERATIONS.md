@@ -73,7 +73,7 @@ substep per controller interval. The first second after the 7 s pulse uses
 0.0625 s intervals; later cooling uses 0.25 s. Physics and balance gates remain
 unchanged. Any further internal cutback stops acceptance; do not weaken the gate.
 
-## Current material correction and dispatch (November 4, 06:57 UTC)
+## Current material correction and dispatch (November 4, 07:42 UTC)
 
 The paired default/tight 20 s controls are COMPLETE and audited (624 single
 substeps each). Layer removal and cooling transfer pass. Their native profiles
@@ -118,6 +118,20 @@ inner/outer casing peaks are 120.4973 C at 79 s and 120.4771 C at 79.25 s.
 These are 80-row exploratory numerical results, not actual motor lifetime or
 completed native mesh convergence. The old queue PID 19823 exited normally.
 
+The corrected sustainer CF primary is now COMPLETE at its material-scope flag:
+680 accepted intervals through 34 s, with the last bracket [33.75, 34] s.
+The inner casing reaches 150.06349 C; the outer surface is 112.87941 C.
+Retained mesh is 4.70296875 mm. Full native validation and the independent
+comparison pass (maximum live-profile discrepancy 0.333445 K), with identical
+first-row scheduling and cooling controls. Do not call this burnthrough or
+structural failure; absolute timing remains mesh- and cutoff-dependent.
+
+Its native log includes a material-table warning at 21.9999998 C, about
+2e-7 K below the initial table endpoint, in addition to USERCK and elapsed/CPU
+performance warnings. This negligible undershoot is recorded. ANSYS ceased
+repeated table-range checking; the controller still checked the explicit
+150 C model-scope limit at every accepted interval.
+
 The ONLY active serial queue is PID 26648 at dispatch (always verify its actual
 command using baseline_queue.pid). It began at 06:57:11 UTC and contains:
 
@@ -156,7 +170,7 @@ comparison files so they cannot replace primary case records.
 Run model/compare_native_resolution.py as completed cases arrive; it reports
 only terminal audited records, compares censored histories by scope time rather
 than an uncomputed peak, and retains failed intermediate refinements visibly.
-It currently has one completed primary record and no completed pair.
+It currently has two completed primary records and no completed pair.
 
 Evidence/scripts: `native_solver_tolerance_comparison.json`,
 `native_temperature_convention.json`, `reaction_ramp_inherited.json`,
@@ -261,9 +275,70 @@ unchanged in every pair. At 80 cells S CF scope shift was 3.74%. The script is
 `check_partial_capacity.py`; its PID/log are historical. Do not treat these
 numbers as calibrated uncertainty or change the native material law to match.
 
+## New combined-input and removal-cutoff checks
+
+All independent workers from this continuation have FINISHED. Their ignored
+PID files are historical: combined_sensitivity.pid (29899), removal_cutoff.pid
+(33020), tight_cutoff.pid (33883). Never duplicate them from a stale PID file.
+
+- combined_pulse_sensitivity.json: eight joint-input seven-second pulses,
+  each at 80/20, 160/40 and 320/80 phenolic/casing cells (24 calculations).
+  The transport combination uses h=2000, phenolic k x1.2 and cp x0.8. The
+  consumption combination uses h=2000, k x0.8 and removal cost x0.5. All eight
+  final 160-to-320 comparisons pass: peak shifts <=0.856 K, scope time change
+  about 0.259 percent, retained thickness <=0.01985 mm. Only sustainer CF's
+  transport combination reaches the property flag; none exhausts the liner.
+  These are independent engineering scenarios, not a confidence envelope.
+- removal_cutoff_sensitivity.json: 24 paired independent runs at 160/320 cells
+  with residual-solid fractions 0.0001, 0.001 and 0.01. At 320 cells, CF scope
+  time shifts -7.21 to +16.12 percent relative to the default 0.001; complete
+  casing peaks shift by up to 3.812 K. A mass-ledger check concealed this
+  numerical/model sensitivity. The 1-percent setting is an independent
+  diagnostic only, not an input approved by the native package guard.
+- removal_cutoff_resolution.json: another 24 records at 320/640 cells and
+  fractions 1e-4, 1e-5 and 1e-6, reusing identical cached records where possible.
+  Every final cutoff and mesh/time comparison passes the stated targets.
+- removal_cutoff_tail_sustainer_cf.json: two additional fixed-640-cell runs
+  at 1e-7 and 1e-8. Scope times are 24.765625 and 24.390625 s; changes from
+  the preceding decade are about -1.369 and -1.514 percent. These are NOT
+  replacement native results or physically validated cutoff choices.
+
+The finite cutoff is a modelling rule for residual ejection/loss of continuity,
+not simply a tolerance whose zero limit is automatically physically correct.
+Available-char capping implies solid density >= rho_v*(1-alpha), and the
+first-order reaction leaves 1-alpha positive at finite integrated exposure.
+Exact zero residual is therefore not reached in finite time in the continuous
+equations. Preserve this limitation; do not promote a tighter cutoff to a
+calibrated erosion law or silently replace the sealed native inputs.
+The existing thirteen native resolution jobs still quantify mesh/time changes
+at the documented fixed default rule. Their results must remain conditional.
+
+native_uniformity.json checks every accepted primary checkpoint for same-radius
+axial/angular variation. Sustainer Al is essentially uniform; maximum CF
+phenolic/casing spreads are about 0.00654/0.0130 K. This checks the radial
+averaging of the uniform-sector calculations, not uniformity of a real motor.
+
+Five later native controls are prepared and NOT in the active queue:
+- Four bounded sensitivity controls in native_sensitivity_plan.json, generated
+  by prepare_native_sensitivities.py; they end at 20 s or the earlier property
+  flag. They test higher heating, the alternative CF radial tuple and two
+  combined cases. The alternative CF changes density, radial k and constant
+  cp while retaining the baseline in-plane conductivity.
+- sustainer_cf_cutoff1e6_midpoint_control60, recorded in native_cutoff_plan.json.
+  It tests fractional cutoff 1e-6 through 60 s or the earlier scope flag.
+  Compare with the queued sustainer_cf_pulse7_midpoint_time_quarter default
+  case at identical time/mesh settings; the different horizons do not affect
+  a shared earlier material-scope stop. This tests implementation, not the
+  physical correctness of the tighter cutoff.
+
+The campaign records deferred_sensitivity_runtimes and deferred_cutoff_runtimes.
+Dispatch them only after the current serial queue exits and review permits it;
+never create a second observer or native solver. All use the existing native
+and independent acceptance gates. Keep runtime-specific comparison files.
+
 ## Remaining substantive work
 
-1. Finish the remaining three corrected-midpoint, tight-tolerance native pulse/cooling runs. Verify first-row
+1. Finish the remaining two booster corrected-midpoint, tight-tolerance native pulse/cooling runs. Verify first-row
    removal persists through subsequent restarts, all energy/hot-load checks,
    live counts and restart copies. Check each terminal accepted record.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
@@ -300,14 +375,12 @@ Publish major milestones using `model/publish.py '<milestone>' --push` after
 checks. It stages Iris-only paths, checks storage and rejects files/new Git
 blobs >=100,000,000 bytes. Never push native binary results or scratch.
 
-The prior 15-page edition (271f044) withdrew unsupported cooling; a97f240b
-published the material correction. The current 18-page report freezes the
-completed corrected sustainer Al case through 127 s, including temperature
-maps, separated heating/full-history plots and cooling peaks. Primary results
-use corrected cases only; historical fields and diagnostics stay explicitly
-labelled in the verification sections. The other three primary cases had not
-started at the frozen 06:56 UTC report snapshot. Its reviewed PDF hash and
-page count are in validation/report_visual_review.json.
+The earlier c28e7960 milestone published the first completed corrected native
+case. The current report adds the completed CF scope stop, corrected field
+maps and marked scope-limited casing curves, combined-input studies, and the
+cutoff sensitivity with its mathematical limitation. It freezes accepted
+states and explicitly separates independent results and historical states.
+Its reviewed PDF hash and page count are in validation/report_visual_review.json.
 
 A 30-minute heartbeat, `iris-ansys-study-and-english-reports`, continues the
 study. Notify only meaningful progress, failures, completion or necessary user
