@@ -95,6 +95,12 @@ independent calculations using the SAME piecewise cooling schedule. Inspect
 all internal-substep identities, balances and source hashes. Determine whether
 tighter nonlinear tolerance resolves the heating discrepancy; otherwise test
 macro-step refinement or investigate the actual solver/source difference.
+`ansystmp/venv/bin/python model/compare_solver_tolerance.py` performs this
+paired comparison only after both phase-exit records and full native audits
+pass. It checks that paths and convergence tolerance are the only configuration
+differences, compares every accepted native checkpoint, and generates separate
+independent comparisons for both controls. Its incomplete-run refusal has been
+checked; no paired result exists yet.
 Do not assume the answer in advance or increase the comparison threshold.
 Choose new sealed primary inputs if the numerical settings must change. The
 three other corrected-but-unguarded runtimes and the earlier heating-only/tight
@@ -233,6 +239,11 @@ Keep the native heating portion legible as longer cooling records arrive.
 Publish major milestones using `model/publish.py '<milestone>' --push` after
 checks. It stages Iris-only paths, checks storage and rejects files/new Git
 blobs >=100,000,000 bytes. Never push native binary results or scratch.
+
+The 15-page correction edition was visually reviewed in full and pushed as
+`271f044` on November 4. It retains only the corrected seven-second heating
+prefix and explicitly withdraws the unsupported cooling chain. Its PDF hash
+and review are recorded in `validation/report_visual_review.json`.
 
 A 30-minute heartbeat, `iris-ansys-study-and-english-reports`, continues the
 study. Notify only meaningful progress, failures, completion or necessary user
