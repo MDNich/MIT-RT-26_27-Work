@@ -24,6 +24,35 @@ delegation is authorized.
 
 ## Current geometry-consistency control (updated November 5, 02:11 UTC)
 
+The November 5 03:05 UTC continuation is finishing this control. The independent
+check through 109.0625 s still passes all gates, with the same maximum sampled
+profile difference. No terminal acceptance is inferred from this prefix.
+`model/prepare_geometry_successors.py` now supports a guarded handoff:
+
+1. After the single observer exits successfully, run `review` with the study
+   Python environment. It repeats the full native/log/restart validation,
+   checks runtime-specific independent evidence and records the completed
+   control and mixed numerical comparison in `native_geometry_control_terminal.json`.
+2. Inspect that result, then run `prepare`. It reuses the verified control and
+   creates thirteen fresh sibling input packages (eight remaining resolution
+   cases and five deferred controls), preserving every sealed parent. Exact
+   geometry integration and unchanged material/controller/driver checks apply.
+3. Run `activate` only after preparation review. It requires no native solver
+   or old queue observer, then updates the campaign and validation mappings.
+   It does not launch anything. Explicitly launch the resulting eight-case
+   `current_dispatch` once, serially, on ten SMP cores. Five controls remain deferred.
+4. Generate the remaining three matching 0.05-degree STEP files using `geometry.py
+   --config` with representative new cases; preserve the existing sustainer Al
+   control STEP. Build/review/publish the completed-control report edition.
+
+The offline guard record `validation/native_geometry_successor_guard.json`
+checks thirteen prospective configurations and verifies that attempting
+preparation while the control is running stops before any input or campaign
+write. The plan is not a launch authorization for a parallel solver. The report
+generator can now consume a verified terminal-control record; absent that record,
+it continues to show the earlier frozen prefix. No current result was changed
+by preparing these handoff/report routines.
+
 The frozen prefix in `validation/native_geometry_control_prefix.json` now passes
 both exact row-event comparisons and the cooling transition through index 2541,
 22.8125 s. `model/freeze_geometry_control_prefix.py` verified every native interval,

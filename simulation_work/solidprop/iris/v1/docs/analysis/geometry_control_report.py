@@ -1,5 +1,6 @@
 """Render the frozen geometry-control prefix without reading the active solve."""
 import json
+import hashlib
 import numpy as np
 import matplotlib.pyplot as plt
 from latex_style import configure_latex
@@ -12,6 +13,19 @@ def create(root):
     d = json.loads(path.read_text())
     assert d['status'] == 'VERIFIED_PREFIX_ONLY_TERMINAL_PENDING'
     c = d['comparison']; a = d['native_prefix_audit']
+    terminal_path=root/'validation/native_geometry_control_terminal.json'
+    terminal=None
+    if terminal_path.exists():
+        terminal=json.loads(terminal_path.read_text())
+        assert terminal['status']=='NATIVE_CONTROL_TERMINAL_VERIFIED'
+        cp=root/'validation'/f"native_pulse_comparison_{terminal['runtime']}.json"
+        assert hashlib.sha256(cp.read_bytes()).hexdigest()==terminal['independent_comparison_sha256']
+        ap=root/'validation'/f"accepted_{terminal['runtime']}.json"
+        assert hashlib.sha256(ap.read_bytes()).hexdigest()==terminal['accepted_record_sha256']
+        c=json.loads(cp.read_text());a=dict(terminal['native_audit'])
+        a['steps']=a['accepted_steps']
+        assert a['status']=='COMPLETED_HORIZON' and c['accepted_native_index']==a['steps']
+        assert c['accepted_native_time_s']==a['time_s']==127.
     assert c['comparison_passed'] and c['native_control_checks_passed'] and a['passed']
     samples = c['comparisons']
     configure_latex()
@@ -31,7 +45,8 @@ def create(root):
     axes[1].set(xlabel='Depth from original liner bore [mm]',
                 ylabel='Native minus cylindrical reference [K]', title='Live nodal profiles')
     axes[1].legend(fontsize=8)
-    fig.suptitle('Sustainer Al geometry control: verified prefix, full history unfinished')
+    fig.suptitle('Sustainer Al geometry control: full control verified; refinement unfinished' if terminal else
+                 'Sustainer Al geometry control: verified prefix, full history unfinished')
     out = root / 'docs/analysis/geometry_control_comparison'
     fig.savefig(out.with_suffix('.pdf')); fig.savefig(out.with_suffix('.png'), dpi=180)
     plt.close(fig)
@@ -134,7 +149,7 @@ does not replace the terminal acceptance file, which does not yet exist.
 
 Across COUNT selected comparison times, including both schedule/transfer pairs,
 the pulse switch and the final frozen state, the largest live-profile difference
-is MAXDIFF K, at 7 s. This is a maximum over the recorded comparisons, not
+is MAXDIFF K, at MAXTIME s. This is a maximum over the recorded comparisons, not
 a bound over every intermediate native state. Conversion and solid-mass checks
 also pass. The reference remains a separate cylindrical radial assembly;
 numerical agreement does not calibrate the unmeasured wall heating or char law.
@@ -151,9 +166,44 @@ fresh corrected packages. Published four-case primary and time-only results
 remain unchanged; no new burnthrough time or full-history casing maximum is
 claimed from this partial control.
 '''
+    if terminal:
+        first=text.index(r'\textbf{This section reports a verified prefix')
+        end=text.index(r'\subsection{Why the earlier',first)
+        fine=terminal['fine'];coarse=terminal['coarse']
+        inner=fine['sampled_maxima']['case_inner_max_C'];outer=fine['sampled_maxima']['case_outer_max_C']
+        delta=max(abs(v) for v in terminal['casing_peak_differences_K'].values())
+        text=text[:first]+(
+            r'\textbf{The complete 127-second native geometry control now passes verification.} '
+            'The ten-core sustainer Al calculation completed INDEX accepted intervals, including '
+            'both removal events and the seven-second pulse followed by 120 seconds of cooling. '
+            'Terminal logs, sealed inputs, native/controller restart backups, balances and the '
+            'independent cylindrical comparison pass. This resolves the tested control; the '
+            'remaining motor/casing refinements are unfinished.\n\n'
+            f"Its sampled inner-casing maximum is {inner['temperature_C']:.4f} degrees Celsius "
+            f"at {inner['time_s']:.4f} s; the outer maximum is {outer['temperature_C']:.4f} "
+            f"degrees Celsius at {outer['time_s']:.4f} s. Retained mesh thickness is {fine['remaining_mm']:.6f} mm. "
+            f"The largest casing-peak shift from the completed 80/20-row quarter-step case is {delta:.4f} K. "
+            'That pair changes radial mesh, sector angle, controller measures and nonlinear tolerance '
+            'together. It is a combined numerical comparison, not an isolated radial-mesh error estimate.\n\n'
+        )+text[end:]
+        text=text.replace(r'\subsection{Verified events, cooling and field comparisons}',r'\subsection{Verified full history, events and field comparisons}')
+        text=text.replace('Whole-row removal events in the verified control prefix.','Whole-row removal events in the completed verified control.')
+        text=text.replace('For this new prefix both event sets match','For this complete control both event sets match')
+        text=text.replace('the final frozen state','the final accepted state')
+        text=text.replace('\\path{validation/native_geometry_control_prefix.json}. This record intentionally\ndoes not replace the terminal acceptance file, which does not yet exist.',
+                          '\\path{validation/native_geometry_control_terminal.json}. Its hashes identify the full terminal native audit and independent comparison; the earlier frozen prefix remains preserved separately.')
+        start=text.index('The main campaign remains held while this single ten-core control completes.')
+        text=text[:start]+(
+            'The verified control permits the remaining native refinement cases to use fresh '
+            'geometry-consistent packages with the same sector measures and nonlinear tolerance. '
+            'Eight further resolution cases and five later controls remain. Only one ten-core '
+            'case runs at a time; superseded packages remain preserved. The primary and time-only '
+            'result sets are unchanged. Neither this numerical agreement nor the retained mesh '
+            'establishes a calibrated motor lifetime.\n')
     replacements = {'TIME': f"{c['accepted_native_time_s']:.4f}", 'INDEX': str(a['steps']),
                     'EVENTS': events, 'COUNT': str(len(samples)),
                     'MAXDIFF': f"{max(x['max_live_profile_difference_K'] for x in samples):.8f}",
+                    'MAXTIME': f"{max(samples,key=lambda x:x['max_live_profile_difference_K'])['time_s']:.4g}",
                     'ENERGY': r'\num{' + f"{a['max_energy_relative_error']:.4g}" + '}',
                     'POWER': r'\num{' + f"{a['max_hot_power_relative_error']:.4g}" + '}',
                     'MASS': r'\num{' + f"{a['max_abs_mass_residual_kg']:.4g}" + '}'}

@@ -161,7 +161,11 @@ def write_report(runs, snapshot):
         time_pairs=[a for a in resolution['comparisons'] if 'time_quarter' in a['fine']]
         if len(time_pairs)==4 and all(a['passed'] for a in time_pairs):
             native_status+=' All four native quarter-step comparisons now pass the casing/scope-timing and retained-thickness targets. Casing peak shifts are at most 0.721 K; sustainer CF property-scope timing changes from 34 to 35 s. Hot-face histories retain larger time-step sensitivity, shown separately; these passes do not establish spatial or surface-temperature convergence.'
-    if (ROOT/'validation/native_geometry_control_prefix.json').exists():
+    if (ROOT/'validation/native_geometry_control_terminal.json').exists():
+        terminal=json.loads((ROOT/'validation/native_geometry_control_terminal.json').read_text())
+        assert terminal['status']=='NATIVE_CONTROL_TERMINAL_VERIFIED'
+        native_status+=' The fresh 160/40-row geometry control has completed its full 127-second history and passed terminal native/restart and independent checks, including both removal events and cooling. Its comparison with the older 80-row case also changes sector geometry and solver tolerance; eight further resolution cases remain (Section~\\ref{sec:geometry-control}).'
+    elif (ROOT/'validation/native_geometry_control_prefix.json').exists():
         native_status+=' A fresh 160/40-row geometry control now matches both removal events and the cooling switch, with selected live-profile differences below 0.0036 K through 22.8125 s. Its 127-second history and spatial-convergence review remain unfinished; the other resolution cases are held pending that review (Section~\\ref{sec:geometry-control}).'
     cutoff_path=ROOT/'validation/removal_cutoff_sensitivity.json'
     if cutoff_path.exists() and json.loads(cutoff_path.read_text()).get('complete'):
