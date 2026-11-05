@@ -90,6 +90,7 @@ def temperature_section(root, runs):
 \label{sec:temperature-locations}
 \textbf{The exposed phenolic is already at thousands of degrees in absolute temperature.} The accepted primary runs reach approximately 1480--1488 degrees Celsius (1753--1761 K) at their exposed phenolic surface. The much lower 85--150-degree values discussed in the casing results belong to the metal/composite behind the liner, generally during subsequent heat soak. They are not chamber-gas temperatures or peak exposed-liner temperatures. A cool final point on a 127 or 300 s history is not the maximum during the seven-second heating interval.
 
+\noindent\begin{minipage}{\linewidth}
 Moving radially outward, the temperature locations are
 \begin{center}
 \fbox{Gas $T_g$ (prescribed)} $\ \longrightarrow\ $
@@ -98,6 +99,7 @@ $\underbrace{\hspace{4cm}}_{\text{4.7625 or 6.35 mm initial liner}}$
 $\ \longrightarrow\ $\fbox{Inner casing $T_{ci}$}
 $\ \longrightarrow\ $\fbox{Outer casing $T_{co}$}.
 \end{center}
+\end{minipage}\par
 The gas is a thermal reservoir at 2504 K (2230.85 degrees Celsius), coupled through a finite heat-transfer coefficient. It is not a temperature constraint applied to the solid. $T_s$ is the area-weighted mean on the currently exposed row, whereas $T_{ci}$ in the tables is the maximum nodal temperature at the fixed liner/casing interface. They differ in location and averaging definition. The sector uniformity checks quantify the small axial/angular spreads.
 \begin{table}[H]\centering\small
 \begin{tabular}{lrrrr}\toprule

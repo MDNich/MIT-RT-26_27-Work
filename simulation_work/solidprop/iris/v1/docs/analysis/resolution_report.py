@@ -7,6 +7,7 @@ from temperature_convention_report import create as temperature_convention_repor
 from combined_sensitivity_report import create as combined_sensitivity_report
 from removal_cutoff_report import create as removal_cutoff_report
 from native_cf_refinement_report import create as native_cf_refinement_report
+from native_booster_al_refinement_report import create as native_booster_al_refinement_report
 
 
 def create(root,out,captured):
@@ -173,6 +174,17 @@ def create(root,out,captured):
                         f"{d['sampled_maxima']['case_outer_max_C']['time_s']:.4f}",
                         f"{d['remaining_mm']:.6f}"]) for d in complete_time),
                     r'\bottomrule\end{tabular}\caption{Accepted native quarter-step casing peaks for histories completing their prescribed cooling horizon, at unchanged 80/20-row spatial resolution. The scope-limited sustainer CF result is described separately below. These values do not establish spatial convergence or a motor lifetime.}\end{table}']
+            complete_refined=[d for d in native_resolution['records'].values()
+                              if d['complete'] and d['phenolic_cells']>80]
+            if complete_refined:
+                parts += [r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrrrrr}\toprule Case & Rows & Inner peak [$^\circ$C] & Time [s] & Outer peak [$^\circ$C] & Time [s] & Retained [mm]\\\midrule',
+                    '\n'.join(row([name(d['case']),f"{d['phenolic_cells']}/{d['case_cells']}",
+                        f"{d['sampled_maxima']['case_inner_max_C']['temperature_C']:.3f}",
+                        f"{d['sampled_maxima']['case_inner_max_C']['time_s']:.4f}",
+                        f"{d['sampled_maxima']['case_outer_max_C']['temperature_C']:.3f}",
+                        f"{d['sampled_maxima']['case_outer_max_C']['time_s']:.4f}",
+                        f"{d['remaining_mm']:.6f}"]) for d in complete_refined),
+                    r'\bottomrule\end{tabular}\caption{Completed finer native histories. Rows lists phenolic/casing radial cells. Values are sampled maxima over each completed cooling horizon; scope-limited CF histories are excluded from this peak table. Retained thickness is a whole-row mesh quantity, not a measurement of intact material.}\end{table}']
             for comparison in native_resolution['comparisons']:
                 if not comparison['both_scope_limited']:
                     continue
@@ -192,6 +204,7 @@ def create(root,out,captured):
                         'This is an accepted numerical solution with an unresolved refinement difference; '
                         'the finer queued comparisons are still required.']
             parts += native_cf_refinement_report(root,out,read,native_resolution)
+            parts += native_booster_al_refinement_report(root,out,read,native_resolution)
             parts += [f"{len(native_resolution['pending'])} prepared native resolution cases remain without terminal accepted comparisons at this edition. "
                 'The primary histories remain separate from these refinements; the hot-face time comparison is reported earlier.']
         else:

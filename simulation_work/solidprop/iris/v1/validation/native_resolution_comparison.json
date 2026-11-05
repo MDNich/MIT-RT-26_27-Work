@@ -938,6 +938,122 @@
         }
       }
     },
+    "booster_al_pulse7_midpoint_space160_geom005_smp10": {
+      "runtime": "booster_al_pulse7_midpoint_space160_geom005_smp10",
+      "case": "booster_al",
+      "phenolic_cells": 160,
+      "case_cells": 40,
+      "through_s": 299.9999999999953,
+      "status": "COMPLETED_HORIZON",
+      "complete": true,
+      "scope_limited": false,
+      "scope_bracket_s": null,
+      "sampled_maxima": {
+        "case_inner_max_C": {
+          "temperature_C": 87.27139222746769,
+          "time_s": 141.25
+        },
+        "case_outer_max_C": {
+          "temperature_C": 87.2521191844079,
+          "time_s": 141.4375
+        }
+      },
+      "remaining_mm": 6.3103125,
+      "initial_phenolic_mm": 6.35,
+      "config_sha256": "887269865fb83f5ed1de9b913c5dad1552ab394871fc7e2d4903d62a427a7cb4",
+      "accepted_record_sha256": "2bdb30c36745f85e3b85fe52cd68756be96de1dbdb841c82d08cdbf3b97bd71a",
+      "independent_comparison_sha256": "c4bab802c7384f23c7204ceebb13aadfe004df38d6311e369340d7087df3a215",
+      "configuration": {
+        "physical": {
+          "case_id": "booster_al",
+          "case_material": "al",
+          "initial_temperature_C": 22.0,
+          "heating": {
+            "gas_temperature_C": 2230.85,
+            "h0_W_m2_K": 1000.0,
+            "gas_cp_J_kg_K": 1600.0,
+            "hot_effective_emissivity": 0.0,
+            "radiative_temperature_C": 2230.85,
+            "outer_h_W_m2_K": 8.0,
+            "outer_emissivity": 0.25,
+            "ambient_temperature_C": 22.0,
+            "pulse_duration_s": 7.0,
+            "post_pulse_h_W_m2_K": 8.0
+          },
+          "material": {
+            "virgin_reference_density_kg_m3": 1250.0,
+            "char_reference_density_kg_m3": 600.0,
+            "pyrolysis_enthalpy_J_kg": 418000.0,
+            "aluminium_density_kg_m3": 2700.0,
+            "aluminium_conductivity_W_m_K": 167.0,
+            "aluminium_heat_capacity_J_kg_K": 896.0
+          },
+          "char_law": {
+            "mode": "effective_exploratory",
+            "calibrated": false,
+            "pressure_nominal_psi": 800.0,
+            "pressure_uncertainty_psi": 200.0,
+            "pressure_min_Pa": 4136854.3759008,
+            "pressure_Pa": 5515805.8345344,
+            "pressure_max_Pa": 6894757.293168,
+            "pressure_reference_Pa": 100000.0,
+            "exploratory_pressure_ratio": 55.158058345344,
+            "reactive_activity": 1.0,
+            "reference_temperature_K": 1500.0,
+            "reference_rate_kg_m2_s": 0.01,
+            "activation_energy_J_mol": 100000.0,
+            "pressure_exponent": 0.5,
+            "mass_transfer_cap_kg_m2_s": 0.05,
+            "effective_endothermic_cost_J_kg": 35000000.0,
+            "species": [],
+            "notes": "Nominal chamber pressure is 800 +/- 200 psi. The pressure is now explicit, but gas composition and oxidation kinetics remain exploratory and require calibration before predictive use."
+          },
+          "case_property_limit_C": 300,
+          "stop_at_case_property_limit": true,
+          "cf_radial_k": 0.55,
+          "cf_inplane_k": 2.5,
+          "cf_cp_constant_J_kg_K": null,
+          "native_reaction_temperature": "midpoint",
+          "native_coupling_revision": "full_removed_prefix_replay_v2_single_substep",
+          "native_material_source_sha256": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+          "native_material_dll_sha256": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756",
+          "cf_cp_scale": 1.0,
+          "radial_dimensions": {
+            "inner_radius_m": 0.06508749999999999,
+            "phenolic_outer_radius_m": 0.07143749999999999,
+            "outer_radius_m": 0.07619999999999999,
+            "phenolic_thickness_m": 0.00635,
+            "aluminium_thickness_m": 0.004762499999999999
+          },
+          "removal_controls": {
+            "max_char_fraction_per_step": 0.2,
+            "row_residual_mass_fraction": 0.001
+          },
+          "material_definition_sha256": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+          "controller_sha256": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69"
+        },
+        "numerical": {
+          "macro_dt_s": 0.003125,
+          "minimum_dt_s": 0.0005,
+          "post_pulse_macro_dt_s": 0.0625,
+          "post_pulse_initial_duration_s": 1.0,
+          "post_pulse_initial_dt_s": 0.015625,
+          "end_time_s": 300.0,
+          "phenolic_radial_rows": 160,
+          "aluminium_radial_rows": 40,
+          "angular_divisions": 2,
+          "axial_divisions": 2,
+          "angle_deg": 0.05,
+          "length_m": 0.0005,
+          "mesh_measure_convention": "straight_sided_hex",
+          "native_heat_flow_tolerance": 1e-07
+        },
+        "execution": {
+          "cores": 10,
+          "mode": "smp"
+        }
+      }
+    },
     "booster_cf_pulse7_n80_midpoint_tight": {
       "runtime": "booster_cf_pulse7_n80_midpoint_tight",
       "case": "booster_cf",
@@ -1378,6 +1494,56 @@
       }
     },
     {
+      "case": "booster_al",
+      "coarse": "booster_al_pulse7_midpoint_time_quarter",
+      "fine": "booster_al_pulse7_midpoint_space160_geom005_smp10",
+      "passed": true,
+      "complete_histories": true,
+      "both_scope_limited": false,
+      "peak_differences_K": {
+        "case_inner_max_C": 2.71120979367646,
+        "case_outer_max_C": 2.7103604175615743
+      },
+      "scope_time_relative_change": null,
+      "remaining_difference_mm": 0.03968750000000032,
+      "remaining_target_mm": 0.0635,
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "aluminium_radial_rows": {
+            "coarse": 20,
+            "fine": 40
+          },
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          },
+          "phenolic_radial_rows": {
+            "coarse": 80,
+            "fine": 160
+          }
+        },
+        "execution_changes": {
+          "cores": {
+            "coarse": 1,
+            "fine": 10
+          }
+        },
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      }
+    },
+    {
       "case": "booster_cf",
       "coarse": "booster_cf_pulse7_n80_midpoint_tight",
       "fine": "booster_cf_pulse7_midpoint_time_quarter_smp10",
@@ -1424,7 +1590,6 @@
     "sustainer_al_pulse7_midpoint_joint320_geom005_smp10",
     "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
     "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10",
-    "booster_al_pulse7_midpoint_space160_geom005_smp10",
     "booster_al_pulse7_midpoint_joint320_geom005_smp10",
     "booster_cf_pulse7_midpoint_space160_geom005_smp10",
     "booster_cf_pulse7_midpoint_joint320_geom005_smp10"

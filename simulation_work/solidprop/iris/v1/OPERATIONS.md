@@ -22,7 +22,29 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Active corrected-geometry resolution queue (November 5, 05:08 UTC)
+## Active corrected-geometry resolution queue (November 5, 10:35 UTC)
+
+Booster Al 160/40 rows completed 300 s / 6976 accepted intervals. The terminal
+native/log/restart audit was repeated and matches the queue's acceptance record;
+all 22 independently compared checkpoint hashes were rechecked. Maximum sampled
+native/reference profile difference is 0.002837762 K. Its one row-removal event
+is scheduled at 3.696875 s and transferred at 3.700000 s; exact event timing,
+persistent topology and the cooling transition pass. All 6976 full temperature
+fields were inspected: maximum same-radius phenolic/casing ranges are
+1.2002e-8/6.1107e-13 K.
+
+Inner/outer sampled casing peaks are 87.271392/87.252119 C at
+141.25/141.4375 s. The completed case retains 6.3103125 mm of mesh. Relative to
+the older 80/20-row quarter-step case, peaks change by at most 2.711210 K and
+retained thickness by 0.0396875 mm, below the respective 5 K and 0.0635 mm
+targets. This pair also changes sector geometry/measures and solver tolerance;
+it does not isolate radial-mesh error or establish a calibrated lifetime.
+
+Observer **93981** advanced normally to
+`booster_cf_pulse7_midpoint_space160_geom005_smp10` at 10:23 UTC. Six resolution
+cases including that active run remain, followed by five deferred controls.
+There is still one serial queue with ten SMP cores per solve. The earlier
+launch recovery below is historical; no new recovery or input change occurred.
 
 Sustainer CF 160/40 rows reached its provisional 150 C casing-property flag at
 31.25 s (2676 intervals); full native/log/restart and independent audits pass.
@@ -60,15 +82,16 @@ Relative to the older 80-row quarter-step case, casing peaks shift by at most
 geometry-measure and solver-tolerance comparison, not isolated spatial or
 surface-temperature convergence. No burnthrough or calibrated lifetime follows.
 
-The single current observer is **93981**. It runs the seven-case
-`configs/campaign_queue.json` current dispatch serially, starting
-`booster_al_pulse7_midpoint_space160_geom005_smp10`, ten SMP cores per solve.
+The single current observer is **93981**. It runs the six remaining cases in
+`configs/campaign_queue.json` serially, currently
+`booster_cf_pulse7_midpoint_space160_geom005_smp10`, ten SMP cores per solve.
 Never restart the superseded observers 73021, 38695, 54373 or 22032.
 The storage watcher 82419 and keep-awake 86412 remain active.
 
-Thirteen fresh successor packages were prepared and checked after terminal
-review: the now-completed sustainer CF case, seven remaining resolution cases
-and five deferred sensitivity/cutoff controls. Geometry is 0.05 degrees with exact straight-sided measures; native
+Thirteen fresh successor packages were prepared and checked after the sustainer
+Al terminal review. Two of those (sustainer CF and booster Al) have since
+completed; six resolution cases and five deferred sensitivity/cutoff controls
+remain. Geometry is 0.05 degrees with exact straight-sided measures; native
 heat-flow tolerance is 1e-7. Every parent is preserved. Radial/axial divisions,
 time schedules, physical inputs, controller, material DLL and removal gates
 match the corresponding parent. Direct face/volume integration passes for all
@@ -816,7 +839,7 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Complete the nine remaining queued native spatial/joint checks. Preserve the strict
+1. Complete the six remaining queued native spatial/joint checks. Preserve the strict
    native acceptance gates, exact row scheduling, restart topology and independent
    comparison at every terminal record. Keep all four primary results intact.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.
