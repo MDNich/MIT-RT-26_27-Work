@@ -22,7 +22,55 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Active corrected-geometry resolution queue (November 5, 10:35 UTC)
+## Active corrected-geometry resolution queue (November 5, 15:40 UTC)
+
+Booster CF 160/40 rows completed 300 s / 6976 accepted intervals. The full
+native/log/restart validation was repeated and exactly reproduced the queue's
+accepted record. All 22 independently compared checkpoint hashes were rechecked;
+maximum sampled native/reference profile difference is 0.002837761 K. The
+row-removal event at 3.696875 s and transfer at 3.700000 s match exactly within
+the unchanged time tolerance. Cooling and persistent topology checks pass.
+
+Its sampled inner/outer casing peaks are 117.739676/108.226601 C at
+101.4375/143.4375 s, with 6.3103125 mm of retained mesh. Relative to the older
+80/20-row quarter-step result, peak changes are 3.814404/3.360498 K and the
+thickness change is 0.0396875 mm. These meet the 5 K and 0.0635 mm targets.
+The comparison also changes sector geometry/measures and nonlinear tolerance;
+it does not isolate radial error or establish hot-face convergence or lifetime.
+All 6976 full fields were checked: maximum same-radius ranges are
+1.0300e-5 K in phenolic and 1.13472e-4 K in the casing. The native log has
+zero errors; its 21.9999998 C table-endpoint and generic elapsed-time/SMP
+warnings do not alter the accepted result or establish an execution-mode speedup.
+
+The unchanged observer **93981** advanced normally at 15:39 UTC to
+`sustainer_al_pulse7_midpoint_joint320_geom005_smp10`. It now runs five remaining
+resolution cases from `configs/campaign_queue.json`, serially with ten SMP cores.
+The five sensitivity/cutoff controls stay deferred. All four 160/40-row cases
+now have accepted terminal records, but sustainer CF's 10.714% scope-time change
+still fails its five-percent target. Complete the queued 320/640-row checks.
+Keep watcher 82419 and keep-awake 86412; never resume superseded observers.
+
+Storage planning is recorded under ignored
+`ansystmp/heartbeat_checks/native_storage_planning_20261105.json`.
+Linear estimates from completed result sizes are 8.34 GB per full-horizon
+320-row sustainer, 13.83 GB per 320-row booster and 33.37 GB for the 640-row
+sustainer. These are planning estimates, not guaranteed bounds. Archive verified
+completed guest results at terminal milestones and recheck actual growth before
+each successor, especially the 640-row case; do not assume an earlier CF scope
+stop. The existing 400 GB Mac / 10 GB Windows limits remain authoritative.
+
+At 15:46 UTC, the completed booster CF160 guest `file.rth` duplicate was removed
+after checking the full Mac copy and both guest-visible hashes/sizes, terminal
+state and absence of any process using that runtime. This reclaimed
+3,473,735,680 bytes; Windows then had 48,018,059,264 bytes free. All checkpoints,
+restart files, logs, inputs and the Mac result remain intact. The receipt is
+`validation/guest_result_archive_20261105_1546.json`. The active 320-row solver
+was unaffected.
+
+## Previous corrected-geometry queue record (November 5, 10:35 UTC)
+
+The following paragraphs preserve the state at 10:35 UTC. The active case and
+remaining counts are superseded by the 15:40 UTC record above.
 
 Booster Al 160/40 rows completed 300 s / 6976 accepted intervals. The terminal
 native/log/restart audit was repeated and matches the queue's acceptance record;
@@ -856,7 +904,7 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Complete the six remaining queued native spatial/joint checks. Preserve the strict
+1. Complete the five remaining queued native spatial/joint checks. Preserve the strict
    native acceptance gates, exact row scheduling, restart topology and independent
    comparison at every terminal record. Keep all four primary results intact.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.

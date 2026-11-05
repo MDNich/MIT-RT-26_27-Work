@@ -1,5 +1,17 @@
 # Iris exploratory ANSYS study
 
+**Refinement update (November 5, 15:40 UTC):** booster CF with 160/40 radial rows
+completed its 300-second scenario and passed native, restart, exact-event,
+independent and full-field checks. Its inner/outer casing peaks are
+117.7397/108.2266 C at 101.4375/143.4375 s, with 6.3103125 mm of retained mesh.
+The maximum casing-peak change from the older 80-row quarter-step case is
+3.8144 K; retained thickness changes by 0.0396875 mm. Both targets pass, with
+the same mixed geometry/solver qualification as the aluminium comparison.
+All four 160/40-row refinements now have accepted terminal records. Five finer
+resolution runs and five deferred controls remain. Observer 93981 now runs
+the 320/80-row sustainer Al case on ten SMP cores. Sustainer CF scope-time
+convergence remains unresolved; no calibrated motor burnthrough time follows.
+
 **Refinement update (November 5, 10:35 UTC):** booster Al with 160/40 radial rows
 completed its 300-second scenario and passed full native/restart and independent
 verification. The inner-casing peak is 87.2714 C at 141.25 s, and 6.3103125 mm of
@@ -32,8 +44,8 @@ cooling, balance and independent-reference gates remain required.
 
 Ten continuing resolution cases and five deferred controls received ten-core
 successor inputs. Booster CF quarter-step has now completed its full 300 s
-horizon; six resolution cases remain after the verified sustainer Al/CF and
-booster Al 160/40-row cases. Fresh corrected-geometry successors replace the unstarted
+horizon; five resolution cases remain after all four verified 160/40-row cases.
+Fresh corrected-geometry successors replace the unstarted
 old-sector cases. `configs/campaign_queue.json` records their names and the single
 current observer. Prior one-core results, inputs and checkpoint lineage are
 preserved. The printed primary source appendix describes those original primary
@@ -102,7 +114,7 @@ one-to-ten-core restart lineage and the independent check (0.06756 K maximum
 profile difference). Its inner/outer casing peaks are 113.9253/104.8661 C at
 102.875/144.1875 s, changes of -0.31790/-0.26473 K; 6.270625 mm remains.
 All four time-only comparisons now meet the casing/scope and retained-thickness
-targets. Six spatial/joint refinement cases remain in the serial queue. The
+targets. Five spatial/joint refinement cases remain in the serial queue. The
 completed sustainer Al 160/40 control changes casing peaks by at most 2.469 K
 and leaves retained thickness unchanged, but its 7 s hot face shifts by 16.426 K.
 This pair also changes sector geometry and solver tolerance, so it is not an

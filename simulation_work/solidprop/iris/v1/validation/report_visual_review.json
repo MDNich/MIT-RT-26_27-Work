@@ -1,11 +1,11 @@
 {
-  "reviewed_utc": "2026-11-05T10:46:34.846024+00:00",
-  "pdf_sha256": "67380ceeff3b717f253a4f97612dc52eb67b2b91977946091d2d3c7df4066cbd",
-  "pages": 75,
-  "render": "pdftoppm -scale-to 1250 -png; all 75 final pages rendered in ansystmp/pdf_review/booster_al_refinement",
-  "review": "Seventeen changed pages inspected in contact sheets; native refinement tables (25), CF/booster Al history figures (26), and executive/temperature-location pages (3\u20134) additionally inspected at full-page resolution. A split temperature-location diagram was corrected with an unbreakable minipage; the final pages were rerendered and checked. Fifty-eight complete rendered pages match the previous reviewed edition pixel-for-pixel, including source listings and bibliography. No clipping or overlap; no TeX warnings or overfull/underfull boxes. All 46 archived source files and Git-index bytes match the sealed manifest.",
-  "previous_reviewed_commit": "dc442e0d7800e764d572ed564726f87caca9c049",
-  "snapshot_captured": "2026-11-05T05:43:28.686984-05:00",
+  "reviewed_utc": "2026-11-05T15:49:48.377105+00:00",
+  "pdf_sha256": "3e8ee5da83bec818e2ae17424c8db3bbed195808cf98686c964d5104865c3647",
+  "pages": 76,
+  "render": "pdftoppm -scale-to 1250 -png; all 76 final pages rendered in ansystmp/pdf_review/booster_cf_refinement",
+  "review": "All 76 pages inspected in five contact sheets. Executive/temperature-location pages 3-4, refined-result table 25 and new booster CF history figure 27 were additionally inspected at full-page resolution. After a caption correction, all pages were rerendered: only pages 1, 15 and 25 changed and were checked again at full-page resolution. Eighteen full rendered pages match the earlier reviewed 75-page edition pixel-for-pixel. Source listings moved to pages 35-75 and remain fully printed. No clipping, overlap, TeX warnings or overfull/underfull boxes. All 46 archived source files and Git-index bytes still match their sealed manifest.",
+  "previous_reviewed_commit": "dddb7825cb3d8b9afe2fe5fe2b3bbedb72f1f6bd",
+  "snapshot_captured": "2026-11-05T10:46:05.290903-05:00",
   "audited_completed_native_cases": [
     {
       "case": "booster_al",
@@ -76,10 +76,10 @@
   ],
   "additional_time_comparison_qualification": "All four native time-only comparisons pass the casing/scope and retained-thickness targets. Maximum complete-history casing peak shift is 0.721 K; sustainer CF scope timing shifts 2.941 percent. Both booster hot faces change 32.520 K at 7 s, and both sustainers change 43.656 K. These are not surface-temperature or spatial convergence claims.",
   "parallel_execution_verification_sha256": "7bb7ba295708f610b7065c5c85122a93f4e0bb0686326265c11d8295a35e9998",
-  "execution_update": "Booster Al 160/40 completed 300 s and passed full native/restart, exact-event, cooling, independent-profile and full-field checks. Its combined numerical casing/thickness comparison passes; unresolved CF refinement and finer mesh/time comparisons remain. Six resolution cases remain in the same serial queue; booster CF runs with ten SMP cores under observer 93981.",
-  "new_native_time_difference_figure_sha256": "eb4f94a42a88fa4cd83c1c05299f1076786a635b52a4e8ab1faa52d9c1055903",
+  "execution_update": "All four 160/40-row cases have terminal acceptance. Booster CF completed 300 s with native/log/restart, exact-event, cooling, independent-profile and full-field checks. Its mixed numerical casing/thickness targets pass; sustainer CF scope-time convergence remains unresolved. Observer 93981 now runs sustainer Al320/80 with ten SMP cores; five resolution cases and five deferred controls remain.",
+  "new_native_time_difference_figure_sha256": "c2cec64b6eba9d6781cf51fe27bb07e228570302532508e86665cdb5924c502b",
   "geometry_control_prefix_sha256": "85bfded8f23fb0ae96f27888fe75194f5147143b9b07a96c889b87f2aa43d61a",
-  "new_geometry_control_comparison_figure_sha256": "5ce5ac0488031297ddeb2743485931cf77f0073bdc0b587f38b30ad86f45712c",
+  "new_geometry_control_comparison_figure_sha256": "66107c81f7c233d15981ca91df88d83d230c603468aafa8406e4495f34a1b8e9",
   "changed_pages_reviewed": [
     1,
     2,
@@ -87,17 +87,58 @@
     4,
     14,
     15,
-    16,
-    17,
-    18,
-    19,
     25,
     26,
     27,
     28,
     29,
     30,
-    32
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76
   ],
   "geometry_control_terminal_sha256": "307db783d87aaf32761981eb460b1c8017b02732ffae4104da5791e8abca1ae6",
   "historical_geometry_control_prefix": {
@@ -139,9 +180,9 @@
     "hot_face_at_7s_difference_K": 16.426105886885352,
     "qualification": "Combined radial mesh, sector geometry/measure and nonlinear-tolerance comparison. Casing targets pass; this does not isolate spatial error or establish hot-face convergence or a calibrated motor lifetime."
   },
-  "new_native_cf_refinement_figure_sha256": "c7490624ad88a987d003ba85a222b1dbc91c03f02f1b88e73f5c84500462e9f8",
+  "new_native_cf_refinement_figure_sha256": "58480499965d3049dbca163e31dcde379b20b6a759fac0c264780c91a39bd35e",
   "native_cf_refinement_plot_data_sha256": "77e43f5f1f4c33b5b19c46c4785e671101363d580d57e62808c34f6f50368634",
-  "native_resolution_comparison_sha256": "7bd232733af492ee78e106a9084915f896043802fceaeac59a947250d23383a2",
+  "native_resolution_comparison_sha256": "29a351139f49a2024f720e679861382098ff668e79ecdcaebb9a43bfb0691d6a",
   "additional_audited_native_refinements": [
     {
       "runtime": "sustainer_cf_pulse7_midpoint_space160_geom005_smp10",
@@ -189,9 +230,41 @@
       "remaining_target_mm": 0.0635,
       "full_field_uniformity_sha256": "b63cc5e3c0aba4f653e79dc8d607835a6edb85c5587dcae374ad15c711fc4aaf",
       "qualification": "Completed accepted native numerical solution. The passing pair changes radial resolution, sector measures/angle and solver tolerance together; it is not isolated mesh convergence or a calibrated lifetime."
+    },
+    {
+      "runtime": "booster_cf_pulse7_midpoint_space160_geom005_smp10",
+      "accepted_steps": 6976,
+      "time_s": 299.9999999999953,
+      "status": "COMPLETED_HORIZON",
+      "remaining_mm": 6.3103125,
+      "sampled_case_peaks": {
+        "case_inner_max_C": {
+          "temperature_C": 117.7396757237041,
+          "time_s": 101.4375
+        },
+        "case_outer_max_C": {
+          "temperature_C": 108.2266005899413,
+          "time_s": 143.4375
+        }
+      },
+      "accepted_record_sha256": "99ff50c8694423a4ba8ff63e3bb4ff72c0af2523052634a938dbf11d636ad756",
+      "independent_comparison_sha256": "464dda849f927d9de328bc891b88cc39bf467c2816ccd12421c150207bc6c102",
+      "sampled_profile_count": 22,
+      "max_sampled_profile_difference_K": 0.0028377605115110782,
+      "refinement_target_passed": true,
+      "casing_peak_differences_K": {
+        "case_inner_max_C": 3.8144038387239902,
+        "case_outer_max_C": 3.360497827151704
+      },
+      "remaining_difference_mm": 0.03968750000000032,
+      "remaining_target_mm": 0.0635,
+      "full_field_uniformity_sha256": "e75ec9479d5929f00567ea2e971cbc9f92ab9da44efadd8f420a712435b38991",
+      "qualification": "Completed accepted native numerical solution. The pair also changes sector geometry/measures and solver tolerance; passing its casing/thickness targets is not isolated mesh convergence or a calibrated lifetime."
     }
   ],
-  "pixel_identical_previously_reviewed_full_pages": 58,
-  "new_native_booster_al_refinement_figure_sha256": "0e99cb6d1ee788e8cbc82466d10e429ddefbf39d75685ae514472de22a963239",
-  "native_booster_al_refinement_plot_data_sha256": "d63375d41020f3ab0c849cd8ade63ad8cf066c914168039b8e71eed32cd7fa0e"
+  "pixel_identical_previously_reviewed_full_pages": 18,
+  "new_native_booster_al_refinement_figure_sha256": "bb8bc9e7aefee1cd07c5187a3b27b96344193c3ab2f314dc402fb2a8f417e4c3",
+  "native_booster_al_refinement_plot_data_sha256": "d63375d41020f3ab0c849cd8ade63ad8cf066c914168039b8e71eed32cd7fa0e",
+  "new_native_booster_cf_refinement_figure_sha256": "2dacc51fb7af766eb2c555bebf54861565fa4a090e8924d3d9e9b8e7519de4ac",
+  "native_booster_cf_refinement_plot_data_sha256": "2c31c759d6f057936dc73cd72712c88863576e13dac7679e5c4903277768dc9e"
 }

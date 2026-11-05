@@ -1,14 +1,19 @@
-"""Freeze and plot completed, verified booster aluminium native refinements."""
+"""Freeze and plot completed, verified booster native refinements."""
 import hashlib
 import json
 import matplotlib.pyplot as plt
 
 
-def create(root, out, read, resolution):
+def create(root, out, read, resolution, case):
+    assert case in ('booster_al', 'booster_cf')
+    title = 'Booster aluminium' if case == 'booster_al' else 'Booster carbon fibre'
+    description = title.lower()
+    successor = '_smp10' if case == 'booster_cf' else ''
+    stem = f'native_{case}_refinement'
     names = [
-        ('booster_al_pulse7_n80_midpoint_tight', '80 rows, original step'),
-        ('booster_al_pulse7_midpoint_time_quarter', '80 rows, quarter step'),
-        ('booster_al_pulse7_midpoint_space160_geom005_smp10', '160 rows, corrected sector'),
+        (f'{case}_pulse7_n80_midpoint_tight', '80 rows, original step'),
+        (f'{case}_pulse7_midpoint_time_quarter{successor}', '80 rows, quarter step'),
+        (f'{case}_pulse7_midpoint_space160_geom005_smp10', '160 rows, corrected sector'),
     ]
     if not resolution or not all(n in resolution['records'] for n, _ in names):
         return []
@@ -35,7 +40,7 @@ def create(root, out, read, resolution):
             accepted_record_sha256=summary['accepted_record_sha256'],
             independent_comparison_sha256=summary['independent_comparison_sha256'],
             config_sha256=summary['config_sha256'], ordered_audit_hash_digest=digest.hexdigest()))
-    data = out / 'native_booster_al_refinement.json'
+    data = out / f'{stem}.json'
     data.write_text(json.dumps(dict(records=records,
         qualification='Terminal accepted native histories only. Seven seconds of imposed heating, followed by cooling through 300 seconds. The 80-to-160-row pair also changes sector geometry/measures and solver tolerance. No physical calibration or motor lifetime follows.'),
         separators=(',', ':')) + '\n')
@@ -54,8 +59,8 @@ def create(root, out, read, resolution):
     axes[1].axvline(7, color='gray', ls=':', lw=.8)
     for ax in axes:
         ax.legend(fontsize=6.5)
-    fig.suptitle('Booster aluminium native refinements: heating and delayed casing response')
-    fig.savefig(out / 'native_booster_al_refinement.pdf')
-    fig.savefig(out / 'native_booster_al_refinement.png', dpi=180)
+    fig.suptitle(f'{title} native refinements: heating and delayed casing response')
+    fig.savefig(out / f'{stem}.pdf')
+    fig.savefig(out / f'{stem}.png', dpi=180)
     plt.close(fig)
-    return [r'\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_booster_al_refinement.pdf}\caption{Completed native booster aluminium histories. Lines join accepted samples; dots mark sampled inner-casing peaks. Left: exposed phenolic during the imposed seven-second pulse. Right: casing heating and cooling through 300 s. The 160-row calculation also changes sector geometry/measures and solver tolerance. Passing casing and thickness targets does not establish hot-surface or isolated radial-mesh convergence.}\end{figure}']
+    return [r'\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/' + stem + r'.pdf}\caption{Completed native ' + description + r' histories. Lines join accepted samples; dots mark sampled inner-casing peaks. Left: exposed phenolic during the imposed seven-second pulse. Right: casing heating and cooling through 300 s. The 160-row calculation also changes sector geometry/measures and solver tolerance. Passing casing and thickness targets does not establish hot-surface or isolated radial-mesh convergence.}\end{figure}']
