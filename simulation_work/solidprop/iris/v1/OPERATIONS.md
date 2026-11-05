@@ -44,6 +44,28 @@ The English report now records the geometry equations, failed older event checks
 the joint nature of the correction, current event table and sampled profile plots.
 Its four primary/time-only result sets and complete source appendix are retained.
 
+The November 5 02:38 UTC continuation additionally checked the independent
+reference through index 3274 / 68.625 s. All event, cooling, field and topology
+gates still pass; the maximum sampled profile difference remains 0.003588553 K.
+This later routine check is ignored runtime evidence, not a new report edition.
+
+Before remapping the control into the resolution plan, retain the new
+configuration-comparison metadata in `model/compare_native_resolution.py`.
+The old 80-row quarter-step to new 160-row pair also changes sector angle,
+area/volume convention and heat-flow tolerance; it is a **combined numerical
+comparison**, not an isolated radial-mesh check. The later corrected 160/320/640
+pairs must retain common geometry measures and solver tolerances so that their
+joint mesh/time differences can be interpreted. The comparator now records these
+changes and refuses a convergence pass if physical inputs or removal controls
+differ. It accepts runtime-specific comparison evidence for a terminal diagnostic
+without rewriting that diagnostic's sealed role. A running prefix is excluded.
+The report generator labels mixed pairs explicitly when they become available.
+`validation/native_resolution_configuration_guard.json` verifies that all eight
+existing terminal summaries and four time-only outcomes remain unchanged, checks
+five deliberate physical-model mismatches and four numerical classifications,
+and confirms that the active control is still absent from terminal comparisons.
+No campaign mapping, native input or running solver changed in this continuation.
+
 The tighter heat-flow tolerance did NOT resolve the second-row discrepancy.
 `sustainer_al_pulse7_midpoint_space160_tol1e7_smp10` schedules row two at
 6.540625 s versus 6.543750 s independently, just as the 1e-5 parent did.

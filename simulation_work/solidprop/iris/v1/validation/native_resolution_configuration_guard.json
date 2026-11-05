@@ -1,0 +1,53 @@
+{
+  "checked_utc": "2026-11-05T02:38:43.111604+00:00",
+  "passed": true,
+  "existing_terminal_records_unchanged": 8,
+  "existing_comparison_outcomes_unchanged": 4,
+  "pending_records_unchanged": true,
+  "running_control_excluded": true,
+  "physical_mismatch_checks": 5,
+  "numerical_classification_checks": 4,
+  "prospective_pair": {
+    "coarse": "sustainer_al_pulse7_midpoint_time_quarter",
+    "fine": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+    "classification_only": {
+      "kind": "combined_numerical_changes",
+      "physical_model_identical": true,
+      "physical_changes": {},
+      "numerical_changes": {
+        "aluminium_radial_rows": {
+          "coarse": 20,
+          "fine": 40
+        },
+        "angle_deg": {
+          "coarse": 0.5,
+          "fine": 0.05
+        },
+        "mesh_measure_convention": {
+          "coarse": "cylindrical_arc",
+          "fine": "straight_sided_hex"
+        },
+        "native_heat_flow_tolerance": {
+          "coarse": 1e-05,
+          "fine": 1e-07
+        },
+        "phenolic_radial_rows": {
+          "coarse": 80,
+          "fine": 160
+        }
+      },
+      "execution_changes": {
+        "cores": {
+          "coarse": 1,
+          "fine": 10
+        }
+      },
+      "isolated_spatial_comparison": false,
+      "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+    },
+    "qualification": "Configuration comparison only. No terminal summary, casing peak comparison, campaign remapping or native launch."
+  },
+  "comparator_sha256": "fe1b6c41558ff13dbfcdcc330a31d4ecaffdb42a035b7640529fe17cecc0308f",
+  "regression_baseline_commit": "d03a002fea500e3510fc4e5ec62a380a1eac97c2",
+  "regression_baseline_comparison_sha256": "a1196cd8638c89a0b65fbcf4e1728eef193e9e0ede8fe6db031a6a58d8ab15f2"
+}

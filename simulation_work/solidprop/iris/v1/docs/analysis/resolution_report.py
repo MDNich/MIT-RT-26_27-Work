@@ -16,6 +16,11 @@ def create(root,out,captured):
         captured.append(dict(file=relative,sha256=hashlib.sha256(p.read_bytes()).hexdigest()))
         return json.loads(p.read_text())
     def name(case):return case.replace('_',' ').title().replace('Cf','CF')
+    def comparison_label(check):
+        kind=check.get('configuration_comparison',{}).get('kind')
+        if kind=='combined_numerical_changes':return 'Combined numerical'
+        if kind=='different_physical_model':return 'Model changed'
+        return check['fine'].split('_midpoint_')[-1].replace('_smp10','').replace('_',' ')
     def row(values):return ' & '.join(str(v) for v in values)+r' \\'
 
     d=read('validation/input_sensitivity_refinement.json')
@@ -124,9 +129,16 @@ def create(root,out,captured):
                     f"{max(abs(v) for v in a['peak_differences_K'].values()):.3f}" if a['peak_differences_K'] else '--',
                     f"{100*a['scope_time_relative_change']:.3f}" if a['scope_time_relative_change'] is not None else '--',
                     f"{a['remaining_difference_mm']:.4f}",
-                    a['fine'].split('_midpoint_')[-1].replace('_smp10','').replace('_',' '),'Yes' if a['passed'] else 'No']) for a in native_resolution['comparisons']),
+                    comparison_label(a),'Yes' if a['passed'] else 'No']) for a in native_resolution['comparisons']),
                 r'\bottomrule\end{tabular}\end{table}',
                 'Only completed, audited native cases with passing same-mesh independent checks enter this table. Earlier refinement failures remain visible; convergence is judged on the final relevant comparisons.']
+            mixed=[a for a in native_resolution['comparisons'] if a.get('configuration_comparison',{}).get('kind')=='combined_numerical_changes']
+            for a in mixed:
+                changed=', '.join(k.replace('_',' ') for k in a['configuration_comparison']['numerical_changes'])
+                parts += [f"For {name(a['case'])}, the combined numerical pair changes {changed}. "
+                          'Its outcome cannot be attributed to radial mesh refinement alone. '
+                          'The finer comparisons must retain common sector measures and solver controls '
+                          'to isolate the remaining mesh/time effects. Execution-core changes are recorded separately.']
             complete_time=[native_resolution['records'][a['fine']] for a in native_resolution['comparisons']
                            if a['complete_histories'] and 'time_quarter' in a['fine']]
             if complete_time:
