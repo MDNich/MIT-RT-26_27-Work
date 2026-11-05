@@ -17,6 +17,7 @@ from matplotlib.patches import Rectangle
 from latex_style import configure_latex, plot_samples, CASE_COLORS
 from report_supplement import create as create_supplement
 from technical_details import create as create_technical
+from geometry_control_report import create as create_geometry_control
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'model'))
@@ -160,6 +161,8 @@ def write_report(runs, snapshot):
         time_pairs=[a for a in resolution['comparisons'] if 'time_quarter' in a['fine']]
         if len(time_pairs)==4 and all(a['passed'] for a in time_pairs):
             native_status+=' All four native quarter-step comparisons now pass the casing/scope-timing and retained-thickness targets. Casing peak shifts are at most 0.721 K; sustainer CF property-scope timing changes from 34 to 35 s. Hot-face histories retain larger time-step sensitivity, shown separately; these passes do not establish spatial or surface-temperature convergence.'
+    if (ROOT/'validation/native_geometry_control_prefix.json').exists():
+        native_status+=' A fresh 160/40-row geometry control now matches both removal events and the cooling switch, with selected live-profile differences below 0.0036 K through 22.8125 s. Its 127-second history and spatial-convergence review remain unfinished; the other resolution cases are held pending that review (Section~\\ref{sec:geometry-control}).'
     cutoff_path=ROOT/'validation/removal_cutoff_sensitivity.json'
     if cutoff_path.exists() and json.loads(cutoff_path.read_text()).get('complete'):
         native_status+=' Independent tests also show that the residual-solid cutoff materially affects sustainer CF scope timing. Current native values remain conditional on the sealed 0.1-percent removal rule; tighter-cutoff convergence is investigated separately.'
@@ -257,7 +260,7 @@ The corrected pilot exporter retrieves only defined live-material ranges. The ea
 
 Both corrected CF primary runs also record a material-table warning at 21.9999998 degrees Celsius, approximately $2\times10^{-7}$ K below the initial 22-degree table endpoint. The casing conductivity is constant in that interval. This negligible numerical undershoot is retained in the audit; it is distinct from the controller's explicit 150-degree material-scope stop. ANSYS ceased its own repeated temperature-range checking after the warning, while the independent controller scope checks continued at every accepted interval.
 
-The completed booster CF quarter-step successor retains two restart housekeeping warnings: the temporary control files did not yet exist when the resume driver initially attempted to delete them. The normal controller then regenerated them before use. Its final log also recommends DMP instead of ten-core SMP as generic performance advice; no isolated mode benchmark has been performed. Both native logs completed with zero errors, and full terminal state, lineage, balance, topology and independent-reference checks passed. The verified ten-core SMP campaign continues unchanged.
+The completed booster CF quarter-step successor retains two restart housekeeping warnings: the temporary control files did not yet exist when the resume driver initially attempted to delete them. The normal controller then regenerated them before use. Its final log also recommends DMP instead of ten-core SMP as generic performance advice; no isolated mode benchmark has been performed. Both native logs completed with zero errors, and full terminal state, lineage, balance, topology and independent-reference checks passed. A separate geometry-control investigation now holds the main resolution dispatch, as described in Section~\ref{sec:geometry-control}; only that control is running.
 
 \section{Execution and storage controls}
 The running VM has 14 virtual CPUs and approximately 112 GiB RAM. The repository is accessible through a dedicated I: mapping. A native no-solve probe completed with a successful license checkout and zero warnings/errors. Each case receives a separate sealed runtime; unchanged source hashes and expected inventories are checked before launching.
@@ -311,7 +314,7 @@ A defensible final answer may be a conditional ``not reached through the accepte
     start=report.index(r'\section{Thermochemical physics and solver}')
     warning_start=report.index('The corrected pilot exporter',start)
     report=report[:start]+physics_text+'\n'+r'\subsection{Recorded native warnings}'+'\n'+report[warning_start:]
-    report=report.replace(r'\section{Next results}',create_supplement(ROOT,runs)+'\n\n'+r'\section{Next results}')
+    report=report.replace(r'\section{Next results}',create_supplement(ROOT,runs)+'\n\n'+create_geometry_control(ROOT)+'\n\n'+r'\clearpage\section{Next results}')
     report=report.replace(r'\begin{thebibliography}{9}',code_appendix+'\n'+r'\clearpage\begin{thebibliography}{99}')
     report=report.replace(r'\bibitem{prior}',r'''\bibitem{phenolicseptember} MIT Rocket Team, \emph{Thermochemical Modeling of a Phenolic Liner in a Solid Rocket Motor Using ANSYS Mechanical}, September 18, 2026, user-supplied 48-page report; especially pp. 4--11, 21--25 and 35--37. Historical instructions are not current operating instructions.
 \bibitem{ansysusermat} ANSYS, \emph{UserMatTh: Creating Your Own Thermal Material Model}, Programmer's Reference, 2026 R1, section 2.5.2. Accessed November 4, 2026. \url{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_prog/Z7K4r1e5lcd.html}.

@@ -22,7 +22,27 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Current geometry-consistency control (November 5, 00:40 UTC)
+## Current geometry-consistency control (updated November 5, 02:11 UTC)
+
+The frozen prefix in `validation/native_geometry_control_prefix.json` now passes
+both exact row-event comparisons and the cooling transition through index 2541,
+22.8125 s. `model/freeze_geometry_control_prefix.py` verified every native interval,
+all sealed inputs and all 17 sampled checkpoint hashes before freezing this record.
+The maximum sampled live-profile difference is 0.003588553 K at 7 s; it is not a
+bound over every intermediate state. Native maximum relative energy residual is
+7.9940413e-5, hot-power residual 5.7196813e-8 and absolute mass residual
+7.7368472e-22 kg. Both event sets agree: row one at index 1114 / 3.48125 s,
+row two at index 2094 / 6.54375 s; subsequent transfer times are 3.484375 and
+6.546875 s. The largest native/reference event-time difference is 1.56e-13 s,
+below the unchanged 1e-8 s check. Persistent topology and cooling controls pass.
+
+This is PREFIX verification only. No terminal acceptance record exists yet;
+the prescribed 127 s cooling run and full native/restart/spatial reviews remain.
+Observer 38695 still runs only this control. Keep the main dispatch held until
+terminal review; do not launch remaining old packages or a second solver.
+The English report now records the geometry equations, failed older event checks,
+the joint nature of the correction, current event table and sampled profile plots.
+Its four primary/time-only result sets and complete source appendix are retained.
 
 The tighter heat-flow tolerance did NOT resolve the second-row discrepancy.
 `sustainer_al_pulse7_midpoint_space160_tol1e7_smp10` schedules row two at
@@ -66,17 +86,17 @@ from 720 to 7200 to match the reduced angle. The independent cylindrical
 reference equations remain unchanged; its continuous-sector integration is
 still a distinct numerical representation.
 
-The first 39 intervals through 0.121875 s pass native audits and the independent
+The initial 39 intervals through 0.121875 s passed native audits and the independent
 comparison (maximum profile difference 0.00012031 K). Native hot-power mismatch
 is now at most 5.20e-8 in that prefix, consistent with exported-field precision.
-This is only early heating, not confirmation of either row event. A matching
+That early check did not cover row events; the newer prefix above now does. A matching
 curved two-body STEP, `geometry/sustainer_al_sector_0p05deg.step`, was exported
 and reimported; its volumes and dimensions pass the independent round-trip checks
 in `geometry/sustainer_al_0p05deg_validation.json`. Original STEP files are intact.
 The CAD arc volumes are deliberately distinguished from polygonal FE volumes.
 
-Watch both row events near 3.48/6.54 s, the pulse-to-cooling transition and the
-full terminal/native restart audit. A first heating prefix alone is not success.
+Both row events and the pulse-to-cooling transition have now passed. Complete the
+full terminal/native restart audit; a passing partial history alone is not success.
 If the strict comparison fails again, pause cleanly and investigate; do not
 retune the cutoff or relax gates. If it passes, review the final geometry/spatial
 comparison before mapping remaining cases to fresh corrected packages. None of

@@ -13,7 +13,7 @@ frame=single,framerule=.2pt,rulecolor=\color{black!25},
 xleftmargin=22pt,framexleftmargin=3pt,aboveskip=9pt,belowskip=9pt}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Detailed Physics, Implementation and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 04, 2026 at 16:41 UTC-05:00}
+\date{November 04, 2026 at 21:12 UTC-05:00}
 \begin{document}\maketitle
 \markboth{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
@@ -23,7 +23,7 @@ xleftmargin=22pt,framexleftmargin=3pt,aboveskip=9pt,belowskip=9pt}
 {\small\tableofcontents}
 \clearpage
 \section{Executive summary}
-No defensible real-motor burnthrough time has been established. The corrected midpoint model has 4 audited terminal results among the four primary cases at this snapshot. Every history ends at its accepted horizon or property-scope stop; no later values are inferred. Six native prescribed-temperature checks verify the rebuilt material library. Historical runs exposed separate restart, internal-substep accounting, nonlinear-tolerance and reaction-temperature issues, documented in the verification sections. Their curves are not used as corrected-model predictions. Booster Al completed the prescribed seven-second heating pulse and cooling through 300 s. Its retained mesh thickness is 6.2706 mm, with a sampled inner-casing maximum of 84.78 degrees Celsius at 142.75 s. Booster CF completed the prescribed seven-second heating pulse and cooling through 300 s. Its retained mesh thickness is 6.2706 mm, with a sampled inner-casing maximum of 114.24 degrees Celsius at 102.75 s. Sustainer Al completed the prescribed seven-second heating pulse and cooling through 127 s. Its retained mesh thickness is 4.7030 mm, with a sampled inner-casing maximum of 120.50 degrees Celsius at 79.00 s. Sustainer CF stopped at its provisional casing-property flag near 34.000 s with 4.7030 mm of retained mesh; its later thermal history is outside this calculation's scope. All four native quarter-step comparisons now pass the casing/scope-timing and retained-thickness targets. Casing peak shifts are at most 0.721 K; sustainer CF property-scope timing changes from 34 to 35 s. Hot-face histories retain larger time-step sensitivity, shown separately; these passes do not establish spatial or surface-temperature convergence. Independent tests also show that the residual-solid cutoff materially affects sustainer CF scope timing. Current native values remain conditional on the sealed 0.1-percent removal rule; tighter-cutoff convergence is investigated separately. No native exhaustion event has been accepted in these scenarios.
+No defensible real-motor burnthrough time has been established. The corrected midpoint model has 4 audited terminal results among the four primary cases at this snapshot. Every history ends at its accepted horizon or property-scope stop; no later values are inferred. Six native prescribed-temperature checks verify the rebuilt material library. Historical runs exposed separate restart, internal-substep accounting, nonlinear-tolerance and reaction-temperature issues, documented in the verification sections. Their curves are not used as corrected-model predictions. Booster Al completed the prescribed seven-second heating pulse and cooling through 300 s. Its retained mesh thickness is 6.2706 mm, with a sampled inner-casing maximum of 84.78 degrees Celsius at 142.75 s. Booster CF completed the prescribed seven-second heating pulse and cooling through 300 s. Its retained mesh thickness is 6.2706 mm, with a sampled inner-casing maximum of 114.24 degrees Celsius at 102.75 s. Sustainer Al completed the prescribed seven-second heating pulse and cooling through 127 s. Its retained mesh thickness is 4.7030 mm, with a sampled inner-casing maximum of 120.50 degrees Celsius at 79.00 s. Sustainer CF stopped at its provisional casing-property flag near 34.000 s with 4.7030 mm of retained mesh; its later thermal history is outside this calculation's scope. All four native quarter-step comparisons now pass the casing/scope-timing and retained-thickness targets. Casing peak shifts are at most 0.721 K; sustainer CF property-scope timing changes from 34 to 35 s. Hot-face histories retain larger time-step sensitivity, shown separately; these passes do not establish spatial or surface-temperature convergence. A fresh 160/40-row geometry control now matches both removal events and the cooling switch, with selected live-profile differences below 0.0036 K through 22.8125 s. Its 127-second history and spatial-convergence review remain unfinished; the other resolution cases are held pending that review (Section~\ref{sec:geometry-control}). Independent tests also show that the residual-solid cutoff materially affects sustainer CF scope timing. Current native values remain conditional on the sealed 0.1-percent removal rule; tighter-cutoff convergence is investigated separately. No native exhaustion event has been accepted in these scenarios.
 
 The initial twenty-row phenolic mesh is insufficient for recession. Independent refinement and 54 input-sensitivity cases show that missing thermal inputs and the partial-cell removal approximation matter. Under sustained nominal heating, provisional casing-property flags are reached with substantial liner remaining. Those stopping points limit this model's scope; they are not motor lifetimes or structural failure predictions. The immediate objective is to complete the native refined histories and compare their temperatures, mass loss and cooling against independent calculations.
 
@@ -348,7 +348,7 @@ The corrected pilot exporter retrieves only defined live-material ranges. The ea
 
 Both corrected CF primary runs also record a material-table warning at 21.9999998 degrees Celsius, approximately $2\times10^{-7}$ K below the initial 22-degree table endpoint. The casing conductivity is constant in that interval. This negligible numerical undershoot is retained in the audit; it is distinct from the controller's explicit 150-degree material-scope stop. ANSYS ceased its own repeated temperature-range checking after the warning, while the independent controller scope checks continued at every accepted interval.
 
-The completed booster CF quarter-step successor retains two restart housekeeping warnings: the temporary control files did not yet exist when the resume driver initially attempted to delete them. The normal controller then regenerated them before use. Its final log also recommends DMP instead of ten-core SMP as generic performance advice; no isolated mode benchmark has been performed. Both native logs completed with zero errors, and full terminal state, lineage, balance, topology and independent-reference checks passed. The verified ten-core SMP campaign continues unchanged.
+The completed booster CF quarter-step successor retains two restart housekeeping warnings: the temporary control files did not yet exist when the resume driver initially attempted to delete them. The normal controller then regenerated them before use. Its final log also recommends DMP instead of ten-core SMP as generic performance advice; no isolated mode benchmark has been performed. Both native logs completed with zero errors, and full terminal state, lineage, balance, topology and independent-reference checks passed. A separate geometry-control investigation now holds the main resolution dispatch, as described in Section~\ref{sec:geometry-control}; only that control is running.
 
 \section{Execution and storage controls}
 The running VM has 14 virtual CPUs and approximately 112 GiB RAM. The repository is accessible through a dedicated I: mapping. A native no-solve probe completed with a successful license checkout and zero warnings/errors. Each case receives a separate sealed runtime; unchanged source hashes and expected inventories are checked before launching.
@@ -362,7 +362,7 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 04, 2026 at 16:41 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
+This snapshot was frozen at November 04, 2026 at 21:12 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Endpoint $T_s$ [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
@@ -797,7 +797,121 @@ Booster CF & 60 & 32.709 & During heating & 150.00 & 5.4570 \\
 
 All eight 160-to-320-cell comparisons passed their numerical targets. Censored flag times changed by at most 1.05 percent; complete-history casing maxima changed by less than 0.97 K, and retained thickness changed by at most 0.020 mm. Sustainer CF reaches the same scope stop before either longer pulse ends, so those two rows describe the same partial heating history. These independent scenarios still require native confirmation of influential conditions and measured heating/material data for a physical lifetime claim.
 
-\section{Next results}
+
+\clearpage
+\section{Geometry consistency and exact removal-event verification}
+\label{sec:geometry-control}
+\textbf{This section reports a verified prefix, not a completed spatial-convergence result.}
+The fresh ten-core sustainer Al control has been independently compared through
+22.8125 s (2541 accepted native intervals). Its prescribed horizon is 127 s.
+Both row-removal events and the heating-to-cooling transition pass the unchanged
+checks. The complete cooling history, terminal native logs/restarts and comparison
+of casing peaks against the 80-row case remain unfinished at this edition.
+
+\subsection{Why the earlier 160-row comparisons were held}
+The original 160/40-row mesh uses two angular cells across a $0.5^\circ$ sector.
+Its controller assigned circular-arc areas and volumes, while the eight-node
+SOLID278 mesh has straight-sided faces. For one angular cell of width
+$\delta\theta$ radians and axial length $\ell$, the geometric measures are
+\begin{align}
+A_{\mathrm{arc}} &= r\,\delta\theta\,\ell,
+& A_{\mathrm{hex}} &= 2r\sin(\delta\theta/2)\,\ell,\\
+V_{\mathrm{arc}} &= \tfrac12(r_o^2-r_i^2)\delta\theta\,\ell,
+& V_{\mathrm{hex}} &= \tfrac12(r_o^2-r_i^2)\sin(\delta\theta)\,\ell.
+\end{align}
+Thus $A_{\mathrm{hex}}/A_{\mathrm{arc}}=\sin(\delta\theta/2)/(\delta\theta/2)$
+and $V_{\mathrm{hex}}/V_{\mathrm{arc}}=\sin(\delta\theta)/\delta\theta$.
+At $\delta\theta=0.25^\circ$, these ratios are 0.999999206726 and
+0.999996826905. Direct triangle-area and hexahedral-Jacobian integration of
+the actual mesh coordinates confirmed the mismatch. The native applied
+hot-face power also followed the polygonal area rather than the controller's
+arc area. These discrepancies are small, but the discrete removal event is
+triggered by crossing a residual-mass threshold; a small accumulated difference
+can move it by a complete coupling interval.
+
+The original native calculation scheduled row two at 6.540625 s, whereas the
+independent cylindrical calculation scheduled it at 6.543750 s: one heating
+interval, $\Delta t=0.003125$ s, later. Tightening the native heat-flow tolerance
+from $10^{-5}$ to $10^{-7}$ did not change this mismatch. Both native runs
+passed their balance and topology audits but failed the strict event comparison,
+and were cleanly paused with their records preserved. Their selected live-profile
+differences were below 0.25 K; field agreement alone therefore was insufficient.
+An isolated independent area perturbation reproduced the earlier second event,
+supporting the geometry diagnosis without establishing a unique cause for every
+remaining field difference. No material coefficient or removal cutoff was fitted.
+
+\subsection{Fresh control and unchanged acceptance rules}
+The fresh control retains 160 phenolic and 40 casing radial cells, two axial and
+two angular cells, 800 elements and 1809 nodes. Height remains 0.5 mm.
+The total angle is reduced to $0.05^\circ$ and the controller now uses the exact
+straight-sided measures above. Full-ring mass/power scaling becomes 7200.
+The radial and temporal resolution, $10^{-7}$ heat-flow tolerance, material DLL,
+reaction laws, 0.001 residual-solid cutoff and comparison gates are unchanged
+from the tighter-tolerance diagnostic. Initial temperature is 22 degrees Celsius;
+no discrepant native solution was inherited.
+
+This is a \emph{joint geometry-consistency and angular-refinement control};
+the two changes have not been tested separately. Direct integration agrees with
+its controller areas to $3.3\times10^{-13}$ relative and volumes to
+$1.1\times10^{-10}$. A separate two-solid curved STEP passes the dimension and
+volume round-trip checks; its exact CAD volumes are deliberately distinguished
+from the straight-sided finite-element volumes. Historical primary maps and
+sealed inputs were checked and remain unchanged.
+
+\clearpage
+\subsection{Verified events, cooling and field comparisons}
+The removal gate requires matching event sets and matching scheduled times
+within $10^{-8}$ s, in addition to matching removed-row counts. Either sign of
+a one-interval mismatch fails. A regression check retained all nine previously
+passing comparisons. For this new prefix both event sets match, and the largest
+event-time difference is $1.56\times10^{-13}$ s (floating-point accumulation).
+Scheduling occurs after a converged interval; the new exposed face receives
+the load during the following solve, hence the distinct transfer times below.
+\begin{table}[H]\centering\small
+\begin{tabular}{rrrrr}\toprule
+Row & Interval & Native schedule [s] & Reference schedule [s] & First transfer [s]\\\midrule
+1 & 1114 & 3.481250 & 3.481250 & 3.484375 \\
+2 & 2094 & 6.543750 & 6.543750 & 6.546875 \\
+\bottomrule\end{tabular}
+\caption{Whole-row removal events in the verified control prefix. The second
+native event lies in the bracket (6.540625, 6.543750] s.}
+\end{table}
+
+At 7 s the imposed hot-gas pulse ends. The subsequent solves use 22-degree gas
+and $h=8\ \mathrm{W\,m^{-2}\,K^{-1}}$, with char consumption disabled by the
+prescribed exposure switch. Native load transfer, persistent deactivation and
+cooling controls pass. This switch verifies the imposed scenario, not a measured
+motor tailoff.
+
+All 2541 native intervals through 22.8125 s pass the step-balance,
+live-element, single-substep and sealed-input checks. Maximum relative energy
+residual is \num{7.994e-05} and hot-power residual is \num{5.72e-08}; maximum absolute mass
+residual is \num{7.737e-22} kg. Immutable audit/checkpoint hashes and the selected
+independent profiles are frozen in
+\path{validation/native_geometry_control_prefix.json}. This record intentionally
+does not replace the terminal acceptance file, which does not yet exist.
+
+Across 17 selected comparison times, including both schedule/transfer pairs,
+the pulse switch and the final frozen state, the largest live-profile difference
+is 0.00358855 K, at 7 s. This is a maximum over the recorded comparisons, not
+a bound over every intermediate native state. Conversion and solid-mass checks
+also pass. The reference remains a separate cylindrical radial assembly;
+numerical agreement does not calibrate the unmeasured wall heating or char law.
+\begin{figure}[H]\centering
+\includegraphics[width=\textwidth]{../analysis/geometry_control_comparison.pdf}
+\caption{Frozen native/reference comparison. The left panel shows discrete
+sample comparisons, without interpolation between them. The right panel excludes
+removed rows; its vertical dotted line marks the phenolic/casing interface.}
+\end{figure}
+
+The main campaign remains held while this single ten-core control completes.
+Only after terminal and spatial review will the remaining cases be mapped to
+fresh corrected packages. Published four-case primary and time-only results
+remain unchanged; no new burnthrough time or full-history casing maximum is
+claimed from this partial control.
+
+
+\clearpage\section{Next results}
 Complete the corrected native refined pulse/cooling cases and the remaining native resolution and influential-input checks. Compare persistent first-row removal, cooling, temperature profiles and mass loss against the independent assembly, within the stated material scope. Report whole-cell recession separately from the 98 percent pyrolysis front. Preserve rejected diagnostics with their reasons rather than silently treating them as successful predictions.
 
 A native one-second heating pulse followed by five cooling steps passed the boundary-transfer and balance checks. This verifies the prescribed switch to ambient gas and zero char consumption; it does not measure real tailoff.

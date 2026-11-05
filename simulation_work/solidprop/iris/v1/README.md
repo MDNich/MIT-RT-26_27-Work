@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-**Current numerical hold (November 5, 00:40 UTC):** both 160-row trials (heat-flow tolerances 1e-5 and 1e-7) fail the exact second-row removal comparison. Both are cleanly paused and preserved. One fresh ten-core control now uses a 0.05-degree sector and mesh-consistent areas/volumes. Its removal and cooling checks are pending. The main campaign remains held; published primary/time-only results are unchanged. See `OPERATIONS.md`.
+**Geometry-control progress (November 5, 02:11 UTC):** the fresh ten-core 0.05-degree control with mesh-consistent areas/volumes passes both exact removal-event checks and the cooling transition. All 2,541 intervals through 22.8125 s pass native prefix audits; 17 independent comparison snapshots differ by at most 0.003589 K. The full 127 s control and spatial-convergence review remain unfinished, so the main campaign stays held. The two earlier 160-row trials remain paused after failing the second-event gate. Primary/time-only results are unchanged. See `OPERATIONS.md` and `validation/native_geometry_control_prefix.json`.
 
 English-only autonomous study, authorized November 3, 2026. Read the parent
 `AGENTS.md` and `phenolic_burnthrough_plan.md` for user requirements and physics.
@@ -86,7 +86,7 @@ one-to-ten-core restart lineage and the independent check (0.06756 K maximum
 profile difference). Its inner/outer casing peaks are 113.9253/104.8661 C at
 102.875/144.1875 s, changes of -0.31790/-0.26473 K; 6.270625 mm remains.
 All four time-only comparisons now meet the casing/scope and retained-thickness
-targets. Nine spatial/joint refinement cases remain; sustainer Al 160/40 is active.
+targets. Nine spatial/joint refinement cases remain; only the fresh sustainer Al 160/40 geometry control is active.
 The hot-face differences remain significant: both boosters change by 32.520 K
 at 7 s and up to 63.089 K at matched times near row transfer. The report adds
 all four matched hot-face difference curves, keeping this separate from casing
