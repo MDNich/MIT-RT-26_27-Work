@@ -1,0 +1,139 @@
+{
+  "checked_utc": "2026-11-05T00:12:04.001006+00:00",
+  "geometry": {
+    "runtime": "sustainer_al_pulse7_midpoint_space160_smp10",
+    "native_index": 2814,
+    "model_sha256": "115fe473f9277e930d32b065205906511a3132b96fc1899d627190515c1c2853",
+    "mesh_map_sha256": "4a5ebd32ef7d1117f067c6c3ac063029b218369bee44eaabab355734dad4c66f",
+    "face_count": 644,
+    "element_count": 800,
+    "angular_cell_width_rad": 0.004363323129985824,
+    "exact_polygon_to_controller_area_ratio": 0.9999992067256581,
+    "integrated_area_ratio_range": [
+      0.9999992067253561,
+      0.9999992067259448
+    ],
+    "exact_polygon_to_controller_volume_ratio": 0.9999968269048979,
+    "integrated_volume_ratio_range": [
+      0.9999968268591283,
+      0.9999968270277045
+    ],
+    "native_hot_power_ratio_minus_polygon_area_ratio": {
+      "samples": 2240,
+      "mean": -1.1163464240317366e-09,
+      "max_abs": 5.916021605933963e-08
+    },
+    "interpretation": "Controller areas/volumes use cylindrical arcs. The straight-sided SOLID278 coordinates define chord faces and polygonal volumes. The actual native convection ratio agrees with the chord-area ratio to the recorded export precision. A passing loose heat-power audit does not remove this geometric discrepancy."
+  },
+  "isolated_diagnostic": {
+    "variants": [
+      {
+        "variant": "unchanged_cylindrical_reference",
+        "removal_events": [
+          {
+            "time_s": 3.481249999999917,
+            "rows_removed": 1
+          },
+          {
+            "time_s": 6.5437499999997435,
+            "rows_removed": 2
+          }
+        ],
+        "comparisons": [
+          {
+            "index": 1114,
+            "time_s": 3.481249999999917,
+            "native_layer": 1,
+            "independent_diagnostic_layer": 1,
+            "max_live_profile_difference_K": 0.001157471744875238
+          },
+          {
+            "index": 1600,
+            "time_s": 4.999999999999831,
+            "native_layer": 1,
+            "independent_diagnostic_layer": 1,
+            "max_live_profile_difference_K": 0.12752805007880852
+          },
+          {
+            "index": 2093,
+            "time_s": 6.540624999999744,
+            "native_layer": 2,
+            "independent_diagnostic_layer": 1,
+            "max_live_profile_difference_K": 0.2158201071442818
+          },
+          {
+            "index": 2094,
+            "time_s": 6.5437499999997435,
+            "native_layer": 2,
+            "independent_diagnostic_layer": 2,
+            "max_live_profile_difference_K": 0.21760862561791328
+          },
+          {
+            "index": 2240,
+            "time_s": 6.999999999999718,
+            "native_layer": 2,
+            "independent_diagnostic_layer": 2,
+            "max_live_profile_difference_K": 0.24461964532770253
+          }
+        ],
+        "energy_error": 6.389094074982108e-13,
+        "mass_error": 4.699746164531297e-16
+      },
+      {
+        "variant": "convection_face_area_only",
+        "removal_events": [
+          {
+            "time_s": 3.481249999999917,
+            "rows_removed": 1
+          },
+          {
+            "time_s": 6.540624999999744,
+            "rows_removed": 2
+          }
+        ],
+        "comparisons": [
+          {
+            "index": 1114,
+            "time_s": 3.481249999999917,
+            "native_layer": 1,
+            "independent_diagnostic_layer": 1,
+            "max_live_profile_difference_K": 0.0012977665079461076
+          },
+          {
+            "index": 1600,
+            "time_s": 4.999999999999831,
+            "native_layer": 1,
+            "independent_diagnostic_layer": 1,
+            "max_live_profile_difference_K": 0.09327177530963127
+          },
+          {
+            "index": 2093,
+            "time_s": 6.540624999999744,
+            "native_layer": 2,
+            "independent_diagnostic_layer": 2,
+            "max_live_profile_difference_K": 0.145879301001969
+          },
+          {
+            "index": 2094,
+            "time_s": 6.5437499999997435,
+            "native_layer": 2,
+            "independent_diagnostic_layer": 2,
+            "max_live_profile_difference_K": 0.14597460269055773
+          },
+          {
+            "index": 2240,
+            "time_s": 6.999999999999718,
+            "native_layer": 2,
+            "independent_diagnostic_layer": 2,
+            "max_live_profile_difference_K": 0.15931254696647557
+          }
+        ],
+        "energy_error": 7.656303445031568e-13,
+        "mass_error": 4.777131376027361e-16
+      }
+    ],
+    "qualification": "Isolated diagnostic only. It changes only the reduced thermal convection area, not all 3-D geometry operators, and is not an accepted correction or replacement independent reference. No material or reaction parameter is fitted."
+  },
+  "source_sha256": "855927c96d31dc1b836d0321450dfc8afe8d46cfa5703172d3894d54672c201d",
+  "conclusion": "A sub-ppm face-area discrepancy can shift the discrete second-row event by one interval in this lagged energy-capped model. Geometry consistency must be tested separately from nonlinear convergence. This does not establish a complete cause or validate a motor lifetime."
+}

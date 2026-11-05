@@ -89,6 +89,47 @@ physical calculation and its native acceptance rules remain unchanged.
 The latest reviewed PDF and its primary/time-only results are unchanged. This
 failure/recovery milestone updates operational evidence, not motor predictions.
 
+## Geometry-measure diagnosis (November 5, 00:12 UTC)
+
+The tighter-tolerance run has passed the first row transfer and the independent
+comparison through 5.121875 s (maximum live-profile difference 0.094607 K).
+Its second event is still pending; do not call the precision hypothesis resolved.
+
+Independent work found a separate geometric inconsistency. The mesh generator
+stores curved-sector arc areas and volumes in the controller map, while the
+SOLID278 coordinates describe straight-sided faces. Direct triangle areas and
+2x2x2 hexahedral Jacobian integration confirm, for the 0.25-degree angular cells:
+
+- actual face / controller area = 0.9999992067256581;
+- actual element / controller volume = 0.9999968269048979.
+
+The actual native hot-power ratio follows the face-area factor: its mean
+residual from that factor is -1.12e-9, maximum absolute residual 5.92e-8 across
+all 2240 heating steps of the paused 160-row parent. This distinguishes the
+geometric discrepancy from ordinary exported-field precision. The existing
+heat-power tolerance permits it; passing that audit is not exact geometry identity.
+
+A controlled independent diagnostic reduces only assembled hot convection by
+the chord/arc face-area factor, retaining the original controller removal sink.
+That alone moves the second event from 6.543750 to 6.540625 s. The temperature
+comparison still differs by 0.1593 K at 7 s, so this is not a complete native
+reproduction or an accepted correction. No material parameter was fitted and
+no acceptance gate was changed. The exact sector geometry audit and isolated
+test are reproducible with `model/check_sector_geometry_measures.py`; compact
+evidence is `validation/sector_geometry_measure_diagnosis.json`.
+
+The native precision diagnostic must still reach the second event. If its strict
+comparison fails, pause cleanly and preserve it. A justified next control would
+use a NEW sealed package with controller areas/volumes integrated from the actual
+straight-sided mesh, plus a narrower angular slice to test the cylindrical
+approximation. Keep the radial mesh, time increments, reaction and material laws
+fixed. These are proposed numerical controls, not prepared or launched jobs.
+Do not silently replace the cylindrical reference by the isolated perturbation,
+regenerate existing sealed inputs, or treat a matched event in that perturbation
+as an accepted convergence pair. The forthcoming report revision should explain
+the geometry-measure distinction and whatever native control actually verifies.
+The published PDF remains unchanged until reviewed numerical results justify it.
+
 ## Preserved ten-core dispatch before the diagnostic hold (November 4, 21:36 UTC)
 
 The user explicitly requested ten ANSYS cores. The current production command is
