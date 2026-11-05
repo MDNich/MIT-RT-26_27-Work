@@ -22,7 +22,30 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Active corrected-geometry resolution queue (November 5, 03:24 UTC)
+## Active corrected-geometry resolution queue (November 5, 05:08 UTC)
+
+Sustainer CF 160/40 rows reached its provisional 150 C casing-property flag at
+31.25 s (2676 intervals); full native/log/restart and independent audits pass.
+Its accepted scope bracket is [31.1875, 31.25] s, with inner/outer endpoint
+temperatures 150.057710/107.919866 C and 4.70296875 mm retained mesh. The prior
+80-row quarter-step bracket is [34.9375, 35] s. This 10.714% scope-time change
+fails the five-percent refinement target despite unchanged retained thickness.
+The pair also changes geometry measures/angle and nonlinear tolerance, so it
+does not isolate radial-mesh error. The queued 320/640-row comparisons remain
+necessary. The 150 C flag is a material-model limit, not casing failure or
+liner burnthrough. All 2676 full fields were checked: maximum same-radius
+variation is 1.402e-5 K in phenolic and 1.391e-4 K in the casing.
+
+The old observer 73021 stopped after successful booster Al preflight because
+Parallels guest-exec returned `Invalid argument` while requesting its first
+transient launch. No solver/launcher, matching launch receipt, initialized
+state or native `file.*` existed on either side when checked. The failed
+intent and old log are preserved in `validation/native_queue_recovery_20261105.json`.
+An explicit recovery launched one new serial observer, **93981**, using the
+same sealed inputs. The native booster Al run is active with `-smp -np 10`.
+The current log is `ansystmp/geometry_resolution_recovery_queue.log`;
+`baseline_queue.pid` points to this observer. No failed simulation was retried
+and no superseded sealed package was regenerated.
 
 The sustainer Al geometry control COMPLETED 127 s / 4208 accepted intervals.
 The old observer 38695 exited normally. Full native/log/restart validation and
@@ -37,16 +60,15 @@ Relative to the older 80-row quarter-step case, casing peaks shift by at most
 geometry-measure and solver-tolerance comparison, not isolated spatial or
 surface-temperature convergence. No burnthrough or calibrated lifetime follows.
 
-The single current observer is **73021**, with log
-`ansystmp/geometry_resolution_queue.log` and PID also in `baseline_queue.pid`.
-It runs the eight-case `configs/campaign_queue.json` current dispatch serially,
-starting `sustainer_cf_pulse7_midpoint_space160_geom005_smp10`, ten SMP cores
-per solve. Never restart the superseded observers 38695, 54373 or 22032.
+The single current observer is **93981**. It runs the seven-case
+`configs/campaign_queue.json` current dispatch serially, starting
+`booster_al_pulse7_midpoint_space160_geom005_smp10`, ten SMP cores per solve.
+Never restart the superseded observers 73021, 38695, 54373 or 22032.
 The storage watcher 82419 and keep-awake 86412 remain active.
 
 Thirteen fresh successor packages were prepared and checked after terminal
-review: eight remaining resolution cases and five deferred sensitivity/cutoff
-controls. Geometry is 0.05 degrees with exact straight-sided measures; native
+review: the now-completed sustainer CF case, seven remaining resolution cases
+and five deferred sensitivity/cutoff controls. Geometry is 0.05 degrees with exact straight-sided measures; native
 heat-flow tolerance is 1e-7. Every parent is preserved. Radial/axial divisions,
 time schedules, physical inputs, controller, material DLL and removal gates
 match the corresponding parent. Direct face/volume integration passes for all

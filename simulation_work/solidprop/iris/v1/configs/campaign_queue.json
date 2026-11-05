@@ -43,7 +43,6 @@
     "sustainer_al_pulse7_n80_tight_coolcheck"
   ],
   "current_dispatch": [
-    "sustainer_cf_pulse7_midpoint_space160_geom005_smp10",
     "booster_al_pulse7_midpoint_space160_geom005_smp10",
     "booster_cf_pulse7_midpoint_space160_geom005_smp10",
     "sustainer_al_pulse7_midpoint_joint320_geom005_smp10",
@@ -73,7 +72,7 @@
     "booster_cf_pulse7_midpoint_joint320_geom005_smp10"
   ],
   "post_terminal_comparison_gate": "Corrected runs require full native validation and same-mesh independent profile/conversion/mass/exact-row comparison before queue advance.",
-  "dispatch_utc": "2026-11-05T03:23:40.761464+00:00",
+  "dispatch_utc": "2026-11-05T05:07:27.811692+00:00",
   "deferred_sensitivity_runtimes": [
     "sustainer_al_sensitivity_higher_heating_midpoint_control20_geom005_smp10",
     "booster_cf_sensitivity_alternative_cf_midpoint_control20_geom005_smp10",
@@ -118,11 +117,11 @@
     "booster_cf_sensitivity_heating_consumption_midpoint_control20": "booster_cf_sensitivity_heating_consumption_midpoint_control20_smp10",
     "sustainer_cf_cutoff1e6_midpoint_control60": "sustainer_cf_cutoff1e6_midpoint_control60_smp10"
   },
-  "current_observer_pid": 73021,
+  "current_observer_pid": 93981,
   "parallel_restart_verification": "validation/parallel_restart_comparison.json",
   "diagnostic_dispatch": [],
   "diagnostic_observer_pid": 38695,
-  "current_observer_role": "serial_geometry_corrected_resolution",
+  "current_observer_role": "serial_geometry_corrected_resolution_recovered_launch",
   "superseded_dispatch_geometry_legacy": [
     "booster_cf_pulse7_midpoint_time_quarter_smp10",
     "sustainer_al_pulse7_midpoint_space160_smp10",
@@ -160,5 +159,12 @@
     "booster_cf_sensitivity_heating_consumption_midpoint_control20_smp10": "booster_cf_sensitivity_heating_consumption_midpoint_control20_geom005_smp10",
     "sustainer_cf_cutoff1e6_midpoint_control60_smp10": "sustainer_cf_cutoff1e6_midpoint_control60_geom005_smp10"
   },
-  "geometry_activation_utc": "2026-11-05T03:22:58.629632+00:00"
+  "geometry_activation_utc": "2026-11-05T03:22:58.629632+00:00",
+  "dispatch_recoveries": [
+    {
+      "record": "validation/native_queue_recovery_20261105.json",
+      "previous_observer_pid": 73021,
+      "new_observer_pid": 93981
+    }
+  ]
 }

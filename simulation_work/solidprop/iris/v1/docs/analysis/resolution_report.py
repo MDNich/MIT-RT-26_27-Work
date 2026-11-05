@@ -6,6 +6,7 @@ from latex_style import CASE_COLORS,plot_samples
 from temperature_convention_report import create as temperature_convention_report
 from combined_sensitivity_report import create as combined_sensitivity_report
 from removal_cutoff_report import create as removal_cutoff_report
+from native_cf_refinement_report import create as native_cf_refinement_report
 
 
 def create(root,out,captured):
@@ -116,6 +117,19 @@ def create(root,out,captured):
                 f"{d['maximum_same_radius_ranges']['casing']['range_K']:.3g}"]) for d in uniformity['records']),
             r'\bottomrule\end{tabular}\end{table}']
 
+    refined_uniformity=[]
+    for case in ['sustainer_al','sustainer_cf','booster_al','booster_cf']:
+        record=read(f'validation/native_uniformity_{case}_pulse7_midpoint_space160_geom005_smp10.json')
+        if record:refined_uniformity.extend(record['records'])
+    if refined_uniformity:
+        parts += ['The completed 160/40-row corrected-geometry cases were also checked at every accepted checkpoint. '
+            'Their maximum same-radius ranges are listed separately below; these small ranges do not establish physical uniformity outside the modelled slice.',
+            r'\begin{table}[H]\centering\scriptsize\begin{tabular}{lrrr}\toprule Refined case & Through [s] & Phenolic range [K] & Casing range [K]\\\midrule',
+            '\n'.join(row([name(d['case']),f"{d['through_s']:.2f}",
+                f"{d['maximum_same_radius_ranges']['live_phenolic']['range_K']:.3g}",
+                f"{d['maximum_same_radius_ranges']['casing']['range_K']:.3g}"]) for d in refined_uniformity),
+            r'\bottomrule\end{tabular}\end{table}']
+
     native_plan=read('validation/native_resolution_plan.json')
     native_resolution=read('validation/native_resolution_comparison.json')
     if native_plan:
@@ -133,10 +147,19 @@ def create(root,out,captured):
                 r'\bottomrule\end{tabular}\end{table}',
                 'Only completed, audited native cases with passing same-mesh independent checks enter this table. Earlier refinement failures remain visible; convergence is judged on the final relevant comparisons.']
             mixed=[a for a in native_resolution['comparisons'] if a.get('configuration_comparison',{}).get('kind')=='combined_numerical_changes']
+            labels={'aluminium_radial_rows':'casing radial resolution',
+                    'phenolic_radial_rows':'phenolic radial resolution',
+                    'angle_deg':'sector angle',
+                    'mesh_measure_convention':'area/volume formulas',
+                    'native_heat_flow_tolerance':'nonlinear heat-flow tolerance'}
+            groups={}
             for a in mixed:
-                changed=', '.join(k.replace('_',' ') for k in a['configuration_comparison']['numerical_changes'])
-                parts += [f"For {name(a['case'])}, the combined numerical pair changes {changed}. "
-                          'Its outcome cannot be attributed to radial mesh refinement alone. '
+                keys=tuple(sorted(a['configuration_comparison']['numerical_changes']))
+                groups.setdefault(keys,[]).append(name(a['case']))
+            for keys,cases in groups.items():
+                changed=', '.join(labels.get(k,k.replace('_',' ')) for k in keys)
+                parts += [f"The combined numerical comparisons for {', '.join(cases)} change {changed}. "
+                          'Their outcomes cannot be attributed to radial mesh refinement alone. '
                           'The finer comparisons must retain common sector measures and solver controls '
                           'to isolate the remaining mesh/time effects. Execution-core changes are recorded separately.']
             complete_time=[native_resolution['records'][a['fine']] for a in native_resolution['comparisons']
@@ -156,12 +179,19 @@ def create(root,out,captured):
                 coarse=native_resolution['records'][comparison['coarse']]
                 fine=native_resolution['records'][comparison['fine']]
                 a,b=coarse['scope_bracket_s'],fine['scope_bracket_s']
-                parts += [f"For {name(comparison['case'])}, the accepted material-scope bracket changes from "
+                parts += [f"For {name(comparison['case'])}, the {coarse['phenolic_cells']}-to-{fine['phenolic_cells']}-row "
+                    f"{comparison_label(comparison).lower()} comparison changes the accepted material-scope bracket from "
                     f"[{a[0]:.4f}, {a[1]:.4f}] s to [{b[0]:.4f}, {b[1]:.4f}] s. "
                     f"The refined endpoint has an inner casing temperature of {fine['sampled_maxima']['case_inner_max_C']['temperature_C']:.3f} "
                     f"degrees Celsius and retains {fine['remaining_mm']:.6f} mm of mesh. "
                     'These are cooling-phase property-range stops, not burnthrough or structural failure. '
                     'Their outer casing endpoint temperatures are not completed cooling peaks.']
+                if not comparison['passed']:
+                    parts += [f"The scope-time change is {100*comparison['scope_time_relative_change']:.3f} percent, "
+                        'which exceeds the five-percent target despite unchanged retained mesh. '
+                        'This is an accepted numerical solution with an unresolved refinement difference; '
+                        'the finer queued comparisons are still required.']
+            parts += native_cf_refinement_report(root,out,read,native_resolution)
             parts += [f"{len(native_resolution['pending'])} prepared native resolution cases remain without terminal accepted comparisons at this edition. "
                 'The primary histories remain separate from these refinements; the hot-face time comparison is reported earlier.']
         else:

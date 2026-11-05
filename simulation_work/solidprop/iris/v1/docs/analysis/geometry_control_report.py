@@ -204,10 +204,12 @@ claimed from this partial control.
         text=text.replace('\\path{validation/native_geometry_control_prefix.json}. This record intentionally\ndoes not replace the terminal acceptance file, which does not yet exist.',
                           '\\path{validation/native_geometry_control_terminal.json}. Its hashes identify the full terminal native audit and independent comparison; the earlier frozen prefix remains preserved separately.')
         start=text.index('The main campaign remains held while this single ten-core control completes.')
+        resolution_path=root/'validation/native_resolution_comparison.json'
+        pending=len(json.loads(resolution_path.read_text())['pending']) if resolution_path.exists() else 8
         text=text[:start]+(
             'The verified control permits the remaining native refinement cases to use fresh '
             'geometry-consistent packages with the same sector measures and nonlinear tolerance. '
-            'Eight further resolution cases and five later controls remain. Only one ten-core '
+            f'{pending} further resolution cases and five later controls remain. Only one ten-core '
             'case runs at a time; superseded packages remain preserved. The primary and time-only '
             'result sets are unchanged. Neither this numerical agreement nor the retained mesh '
             'establishes a calibrated motor lifetime.\n')

@@ -164,7 +164,12 @@ def write_report(runs, snapshot):
     if (ROOT/'validation/native_geometry_control_terminal.json').exists():
         terminal=json.loads((ROOT/'validation/native_geometry_control_terminal.json').read_text())
         assert terminal['status']=='NATIVE_CONTROL_TERMINAL_VERIFIED'
-        native_status+=' The fresh 160/40-row geometry control has completed its full 127-second history and passed terminal native/restart and independent checks, including both removal events and cooling. Its comparison with the older 80-row case also changes sector geometry and solver tolerance; eight further resolution cases remain (Section~\\ref{sec:geometry-control}).'
+        native_status+=' The fresh sustainer Al 160/40-row geometry control has completed its full 127-second history and passed terminal native/restart and independent checks, including both removal events and cooling. Its comparison with the older 80-row case also changes sector geometry and solver tolerance (Section~\\ref{sec:geometry-control}).'
+        cf_name='sustainer_cf_pulse7_midpoint_space160_geom005_smp10'
+        if resolution_path.exists() and cf_name in resolution['records']:
+            cf=resolution['records'][cf_name]
+            pair=next(a for a in resolution['comparisons'] if a['fine']==cf_name)
+            native_status+=f" The verified sustainer CF 160/40-row case reaches its provisional casing-property flag at {cf['through_s']:.2f} s with {cf['remaining_mm']:.4f} mm retained. Its combined numerical comparison changes scope timing by {100*pair['scope_time_relative_change']:.2f} percent, exceeding the five-percent target. This is not a burnthrough or failure time; {len(resolution['pending'])} further resolution cases remain."
     elif (ROOT/'validation/native_geometry_control_prefix.json').exists():
         native_status+=' A fresh 160/40-row geometry control now matches both removal events and the cooling switch, with selected live-profile differences below 0.0036 K through 22.8125 s. Its 127-second history and spatial-convergence review remain unfinished; the other resolution cases are held pending that review (Section~\\ref{sec:geometry-control}).'
     cutoff_path=ROOT/'validation/removal_cutoff_sensitivity.json'

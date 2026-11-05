@@ -1,0 +1,91 @@
+{
+  "recorded_utc": "2026-11-05T05:07:27.420288+00:00",
+  "runtime": "booster_al_pulse7_midpoint_space160_geom005_smp10",
+  "reason": "Parallels guest-exec returned Invalid argument during run launch after successful no-solve preflight; observer stopped.",
+  "previous_observer_pid": 73021,
+  "failed_run_intent": {
+    "utc": "2026-11-05T04:58:20.385458+00:00",
+    "nonce": "6dfb9ce6-925f-481f-95d9-1929d9cc25be"
+  },
+  "negative_process_and_native_state_evidence": {
+    "checked_utc": "2026-11-05T05:06:52.640583+00:00",
+    "proof": {
+      "processes": [],
+      "native_files": [
+        {
+          "Name": "host_launch_intent_preflight.json",
+          "Length": 99,
+          "LastWriteTimeUtc": "/Date(1793854677522)/"
+        },
+        {
+          "Name": "launcher_preflight.err",
+          "Length": 0,
+          "LastWriteTimeUtc": "/Date(1793854678231)/"
+        },
+        {
+          "Name": "launcher_preflight.out",
+          "Length": 390,
+          "LastWriteTimeUtc": "/Date(1793854697167)/"
+        },
+        {
+          "Name": "launch_v0.ps1",
+          "Length": 5677,
+          "LastWriteTimeUtc": "/Date(1793812736322)/"
+        },
+        {
+          "Name": "preflight_20261104_235759.err",
+          "Length": 80,
+          "LastWriteTimeUtc": "/Date(1793854696302)/"
+        },
+        {
+          "Name": "preflight_20261104_235759.log",
+          "Length": 90,
+          "LastWriteTimeUtc": "/Date(1793854696302)/"
+        },
+        {
+          "Name": "preflight_20261104_235759.out",
+          "Length": 231841,
+          "LastWriteTimeUtc": "/Date(1793854696317)/"
+        },
+        {
+          "Name": "PREFLIGHT_OK.txt",
+          "Length": 219,
+          "LastWriteTimeUtc": "/Date(1793854697167)/"
+        },
+        {
+          "Name": "preflight_v0.inp",
+          "Length": 289,
+          "LastWriteTimeUtc": "/Date(1793848942371)/"
+        }
+      ]
+    }
+  },
+  "previous_queue_log_sha256": "000e488866994a048f939bcfb10d568ff429905564c51701300db323d7d47d61",
+  "action": "Explicitly continue remaining serial queue after confirming no solver, launcher, receipt, native file.* or initialized state. Retain sealed inputs and completed CF verification.",
+  "remaining_dispatch": [
+    "booster_al_pulse7_midpoint_space160_geom005_smp10",
+    "booster_cf_pulse7_midpoint_space160_geom005_smp10",
+    "sustainer_al_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
+    "booster_al_pulse7_midpoint_joint320_geom005_smp10",
+    "booster_cf_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10"
+  ],
+  "new_observer_pid": 93981,
+  "launched_utc": "2026-11-05T05:07:27.810757+00:00",
+  "log": "ansystmp/geometry_resolution_recovery_queue.log",
+  "recovery_verified_utc": "2026-11-05T05:11:40.714204+00:00",
+  "matching_guest_launch_receipt": {
+    "ProcessId": 81732,
+    "ReturnValue": 0,
+    "nonce": "4a1d6960-6909-430a-afd5-f335f57e8c17"
+  },
+  "new_run_intent": {
+    "utc": "2026-11-05T05:07:28.974349+00:00",
+    "nonce": "4a1d6960-6909-430a-afd5-f335f57e8c17"
+  },
+  "first_verified_accepted_index": 147,
+  "first_verified_time_s": 0.459374999999999,
+  "native_command_mode": "-smp -np 10",
+  "status": "RECOVERED_RUNNING"
+}
