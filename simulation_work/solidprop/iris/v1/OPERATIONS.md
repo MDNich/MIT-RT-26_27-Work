@@ -64,6 +64,26 @@ isolate cutoff effects alone. The five controls remain deferred until this
 resolution queue finishes and is reviewed. Each terminal case still requires
 all native and independent gates before the queue advances.
 
+### Full-field check after the geometry control
+
+The November 5 03:35 UTC continuation checked all 4,208 accepted three-dimensional
+temperature fields of the completed sustainer Al geometry control. The largest
+same-radius axial/angular range is 1.3584e-8 K in the live phenolic and 1.0516e-12 K
+in the casing. Radial averaging therefore conceals no appreciable numerical
+temperature variation in this uniform aluminium control. This is not a check of
+real-motor hot spots, end effects or carbon-fibre orientation in the pending cases.
+The checkpoint digest and extrema are in
+`validation/native_uniformity_sustainer_al_pulse7_midpoint_space160_geom005_smp10.json`.
+
+`model/check_native_uniformity.py --runtime <terminal runtime>` now writes a
+separate record for each completed refinement, preserving the original primary
+four-case record. It checks sealed inputs and checkpoint indices/times, and
+refuses a runtime without terminal acceptance. The original sustainer Al summary
+was reproduced exactly. Apply this check to subsequent accepted refinements,
+particularly the CF cases, before the final refined-field interpretation.
+The reviewed 74-page PDF remains the completed-control edition from commit
+`1ffb4544`; this additional diagnostic does not change its reported temperatures.
+
 The sections below preserve the diagnostic history. Their old PIDs and dispatch
 instructions are historical and do not describe the active queue above.
 
