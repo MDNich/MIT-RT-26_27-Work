@@ -1,6 +1,7 @@
-"""Render the frozen geometry-control prefix without reading the active solve."""
+"""Render frozen geometry-control evidence without reading the active solve."""
 import json
 import hashlib
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 from latex_style import configure_latex
@@ -35,6 +36,11 @@ def create(root):
     axes[0].axvline(7, color='gray', ls=':', lw=.9)
     axes[0].set(xlabel='Compared time [s]', ylabel='Maximum live profile difference [K]',
                 title='Selected comparison times only')
+    if terminal:
+        axes[0].set_xscale('symlog',linthresh=7,linscale=1)
+        axes[0].set_xticks([0,3.5,7,20,60,127])
+        axes[0].set_xticklabels(['0','3.5','7','20','60','127'])
+        axes[0].set_title('Time axis: linear to 7 s, then logarithmic')
     chosen = [min(samples, key=lambda x: abs(x['time_s'] - 7)), samples[-1]]
     for sample in chosen:
         start = sample['native_rows_removed_during_solve']
@@ -184,12 +190,17 @@ claimed from this partial control.
             f"degrees Celsius at {outer['time_s']:.4f} s. Retained mesh thickness is {fine['remaining_mm']:.6f} mm. "
             f"The largest casing-peak shift from the completed 80/20-row quarter-step case is {delta:.4f} K. "
             'That pair changes radial mesh, sector angle, controller measures and nonlinear tolerance '
-            'together. It is a combined numerical comparison, not an isolated radial-mesh error estimate.\n\n'
+            'together. It is a combined numerical comparison, not an isolated radial-mesh error estimate. '
+            f"The exposed-surface mean at 7 s changes from {terminal['hot_surface_comparison']['coarse']['at_7s_C']:.3f} "
+            f"to {terminal['hot_surface_comparison']['fine']['at_7s_C']:.3f} degrees Celsius "
+            f"({terminal['hot_surface_comparison']['at_7s_difference_K']:+.3f} K). "
+            'Passing casing targets therefore does not establish surface-temperature convergence.\n\n'
         )+text[end:]
         text=text.replace(r'\subsection{Verified events, cooling and field comparisons}',r'\subsection{Verified full history, events and field comparisons}')
         text=text.replace('Whole-row removal events in the verified control prefix.','Whole-row removal events in the completed verified control.')
         text=text.replace('For this new prefix both event sets match','For this complete control both event sets match')
         text=text.replace('the final frozen state','the final accepted state')
+        text=text.replace('sample comparisons, without interpolation between them.','sample comparisons, without interpolation between them; its time axis is linear through 7 s and logarithmic thereafter.')
         text=text.replace('\\path{validation/native_geometry_control_prefix.json}. This record intentionally\ndoes not replace the terminal acceptance file, which does not yet exist.',
                           '\\path{validation/native_geometry_control_terminal.json}. Its hashes identify the full terminal native audit and independent comparison; the earlier frozen prefix remains preserved separately.')
         start=text.index('The main campaign remains held while this single ten-core control completes.')
@@ -207,6 +218,5 @@ claimed from this partial control.
                     'ENERGY': r'\num{' + f"{a['max_energy_relative_error']:.4g}" + '}',
                     'POWER': r'\num{' + f"{a['max_hot_power_relative_error']:.4g}" + '}',
                     'MASS': r'\num{' + f"{a['max_abs_mass_residual_kg']:.4g}" + '}'}
-    for key, value in replacements.items():
-        text = text.replace(key, value)
-    return text
+    return re.sub(r'\b(' + '|'.join(map(re.escape, replacements)) + r')\b',
+                  lambda match: replacements[match.group()], text)

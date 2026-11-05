@@ -1,0 +1,44 @@
+[
+  {
+    "case": "booster_cf",
+    "step_file": "booster_cf_sector_0p05deg.step",
+    "units": "m",
+    "axis": "global Y",
+    "angle_deg": 0.05,
+    "length_m": 0.0005,
+    "inner_radius_m": 0.06508749999999999,
+    "phenolic_outer_radius_m": 0.07143749999999999,
+    "outer_radius_m": 0.07619999999999999,
+    "phenolic_thickness_m": 0.00635,
+    "case_thickness_m": 0.004762499999999999,
+    "volumes_m3": {
+      "phenolic": 1.8913560417709006e-10,
+      "cf": 1.5339777199245303e-10
+    },
+    "roundtrip_volumes_m3": [
+      1.5339777199256027e-10,
+      1.8913560417720587e-10
+    ],
+    "expected_sorted_volumes_m3": [
+      1.5339777199240665e-10,
+      1.8913560417701717e-10
+    ],
+    "bounding_box_m": [
+      -3.334852119549102e-05,
+      -1e-07,
+      0.06508739380412899,
+      3.334852121136179e-05,
+      0.0005001,
+      0.0762001
+    ],
+    "roundtrip_passed": true,
+    "axial_cells": 2,
+    "angular_cells": 2,
+    "expected_elements": 800,
+    "expected_nodes": 1809,
+    "phenolic_radial_cells": 160,
+    "casing_radial_cells": 40,
+    "config_file": "configs/booster_cf_pulse7_midpoint_space160_geom005_smp10.json",
+    "qualification": "Exact curved STEP geometry for the configured sector. The native mesh is generated separately as straight-sided SOLID278 elements; CAD arc volumes and finite-element polygon volumes are distinct."
+  }
+]

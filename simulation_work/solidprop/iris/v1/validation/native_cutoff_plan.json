@@ -1,15 +1,18 @@
 {
   "status": "PREPARED_NOT_DISPATCHED",
-  "runtime": "sustainer_cf_cutoff1e6_midpoint_control60_smp10",
+  "runtime": "sustainer_cf_cutoff1e6_midpoint_control60_geom005_smp10",
   "case": "sustainer_cf",
   "cutoff_fraction": 1e-06,
   "horizon_s": 60.0,
-  "configuration_sha256": "e9e8dab1498289a1948a89622e79206e2160ad07b538f33c3c66a73cc88e1073",
+  "configuration_sha256": "dc1b70158d7272363e75869853395175cf56fc2909502cba4f5f39cb0eb2b8ca",
   "qualification": "Checks native implementation of the independent cutoff sensitivity. The same-mesh independent reference is required; this control does not identify a physically correct residual-ejection rule.",
   "paired_default_runtime": "sustainer_cf_pulse7_midpoint_time_quarter",
   "original_one_core_runtime": "sustainer_cf_cutoff1e6_midpoint_control60",
   "parallel_mode": "smp",
   "solver_cores": 10,
   "original_one_core_config_sha256": "8db33c6861bf62d8f14e849883491cd37c4d7e83c956b88e4af2dfd4ea7737fa",
-  "execution_update": "November 4: user requested ten SMP cores; fresh successor packages retain original numerical/physical parameters and record lineage."
+  "execution_update": "November 4: user requested ten SMP cores; fresh successor packages retain original numerical/physical parameters and record lineage.",
+  "prior_geometry_runtime": "sustainer_cf_cutoff1e6_midpoint_control60_smp10",
+  "prior_geometry_config_sha256": "e9e8dab1498289a1948a89622e79206e2160ad07b538f33c3c66a73cc88e1073",
+  "geometry_update": "Fresh 0.05-degree exact-measure successor at 1e-7 heat-flow tolerance. Its own cylindrical reference verifies implementation. Comparison with the older default native case also changes geometry/tolerance and cannot isolate cutoff effects alone."
 }

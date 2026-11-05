@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-**Geometry-control progress (November 5, 02:11 UTC):** the fresh ten-core 0.05-degree control with mesh-consistent areas/volumes passes both exact removal-event checks and the cooling transition. All 2,541 intervals through 22.8125 s pass native prefix audits; 17 independent comparison snapshots differ by at most 0.003589 K. The full 127 s control and spatial-convergence review remain unfinished, so the main campaign stays held. The two earlier 160-row trials remain paused after failing the second-event gate. Primary/time-only results are unchanged. See `OPERATIONS.md` and `validation/native_geometry_control_prefix.json`.
+**Geometry control completed (November 5, 03:24 UTC):** the fresh ten-core 0.05-degree sustainer Al control completed 127 s / 4208 intervals and passed full native, restart and independent checks. Both exact removal events and cooling pass; sampled profiles differ by at most 0.003589 K. It retains 4.702969 mm of mesh, with a sampled inner-casing peak of 122.2454 C at 78.125 s. Eight fresh corrected-geometry resolution cases now run in one serial ten-core queue, starting with sustainer CF. Earlier discrepant packages remain paused and preserved. See `OPERATIONS.md` and `validation/native_geometry_control_terminal.json`.
 
 English-only autonomous study, authorized November 3, 2026. Read the parent
 `AGENTS.md` and `phenolic_burnthrough_plan.md` for user requirements and physics.
@@ -16,9 +16,9 @@ cooling, balance and independent-reference gates remain required.
 
 Ten continuing resolution cases and five deferred controls received ten-core
 successor inputs. Booster CF quarter-step has now completed its full 300 s
-horizon; nine resolution cases remain. The sustainer Al 160/40-row refinement
-is paused for the strict event mismatch described above; a separate single-case
-geometry-consistency diagnostic is running. `configs/campaign_queue.json` records their names and the single
+horizon; eight resolution cases remain after the verified sustainer Al 160/40
+geometry control. Fresh corrected-geometry successors replace the unstarted
+old-sector cases. `configs/campaign_queue.json` records their names and the single
 current observer. Prior one-core results, inputs and checkpoint lineage are
 preserved. The printed primary source appendix describes those original primary
 runs; the execution change is documented separately in the report and
@@ -69,8 +69,8 @@ comparison pass (maximum profile difference 0.2205 K), with 6.270625 mm retained
 Its sampled inner peak is 114.2432 C at 102.75 s; the outer peak is 105.1308 C
 at 144.25 s. All four corrected primary cases have now reached audited terminal
 states: three completed horizons and the sustainer CF scope stop. The thirteen-case
-native time/mesh campaign remains unfinished and is currently held for the
-event-timing investigation described above. The sustainer Al
+native time/mesh campaign remains unfinished and continues with the corrected
+geometry after the verified control described above. The sustainer Al
 quarter-step case is complete through 127 s and passed both audits: its inner
 casing peak shifts by -0.721 K and retained mesh thickness is unchanged. This
 time comparison does not establish spatial convergence. Sustainer CF quarter-step
@@ -86,7 +86,11 @@ one-to-ten-core restart lineage and the independent check (0.06756 K maximum
 profile difference). Its inner/outer casing peaks are 113.9253/104.8661 C at
 102.875/144.1875 s, changes of -0.31790/-0.26473 K; 6.270625 mm remains.
 All four time-only comparisons now meet the casing/scope and retained-thickness
-targets. Nine spatial/joint refinement cases remain; only the fresh sustainer Al 160/40 geometry control is active.
+targets. Eight spatial/joint refinement cases remain in the serial queue. The
+completed sustainer Al 160/40 control changes casing peaks by at most 2.469 K
+and leaves retained thickness unchanged, but its 7 s hot face shifts by 16.426 K.
+This pair also changes sector geometry and solver tolerance, so it is not an
+isolated radial-mesh comparison or demonstrated hot-surface convergence.
 The hot-face differences remain significant: both boosters change by 32.520 K
 at 7 s and up to 63.089 K at matched times near row transfer. The report adds
 all four matched hot-face difference curves, keeping this separate from casing
@@ -141,9 +145,9 @@ exposure, so finite residual ejection needs a modelling rule or calibration.
 Existing native cases retain their sealed rule and their times remain conditional
 on it. A separate native CF cutoff control is prepared for later confirmation.
 
-The four original exact two-body STEP sectors are in `geometry/`. The new
-0.05-degree sustainer Al control has a separate matching, round-trip-checked
-`geometry/sustainer_al_sector_0p05deg.step`; original geometries are preserved. The English report is
+The four original exact two-body STEP sectors are in `geometry/`. All four
+0.05-degree configurations now have separate matching, round-trip-checked
+`*_sector_0p05deg.step` files; original geometries are preserved. The English report is
 `output/pdf/iris_phenolic_report.pdf`; accepted data and figures are in
 `docs/analysis/`. Independent radial data live in `validation/radial/` and
 are explicitly distinguished from native ANSYS states. Native output and

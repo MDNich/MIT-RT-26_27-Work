@@ -70,10 +70,24 @@ def terminal_control():
     comparison=configuration_comparison(coarse['configuration'],fine['configuration'])
     assert comparison['physical_model_identical']
     differences={k:fine['sampled_maxima'][k]['temperature_C']-coarse['sampled_maxima'][k]['temperature_C'] for k in fine['sampled_maxima']}
+    hot={}
+    for label,record in [('coarse',coarse),('fine',fine)]:
+        run=TMP/'runs'/record['runtime']
+        heating=[]
+        for p in sorted((run/'checkpoints').glob('audit_*.json')):
+            a=read(p)
+            if a['time_s']>7+1e-8:break
+            heating.append(a)
+        endpoint=heating[-1];assert abs(endpoint['time_s']-7)<1e-8
+        peak=max(heating,key=lambda a:a['Ts_mean_C'])
+        hot[label]=dict(at_7s_C=endpoint['Ts_mean_C'],sampled_heating_peak_C=peak['Ts_mean_C'],
+                        sampled_peak_time_s=peak['time_s'])
+    hot['at_7s_difference_K']=hot['fine']['at_7s_C']-hot['coarse']['at_7s_C']
     return dict(runtime=CONTROL,accepted_record_sha256=sha(accepted_path),
                 independent_comparison_sha256=sha(comparison_path),native_audit=checked,
                 coarse=coarse,fine=fine,configuration_comparison=comparison,
                 casing_peak_differences_K=differences,
+                hot_surface_comparison=hot,
                 remaining_difference_mm=fine['remaining_mm']-coarse['remaining_mm'],
                 qualification='Full native verification permits continuation of refinement. This mixed geometry/mesh/control comparison is not an isolated radial-mesh convergence claim.')
 

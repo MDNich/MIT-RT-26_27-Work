@@ -1,0 +1,1195 @@
+{
+  "prepared_utc": "2026-11-05T03:22:30.970400+00:00",
+  "status": "DISPATCHED_SERIAL_RESOLUTION",
+  "mapping": {
+    "sustainer_al_pulse7_midpoint_space160_smp10": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+    "sustainer_al_pulse7_midpoint_joint320_smp10": "sustainer_al_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_space160_smp10": "sustainer_cf_pulse7_midpoint_space160_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_joint320_smp10": "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_joint640_smp10": "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10",
+    "booster_al_pulse7_midpoint_space160_smp10": "booster_al_pulse7_midpoint_space160_geom005_smp10",
+    "booster_al_pulse7_midpoint_joint320_smp10": "booster_al_pulse7_midpoint_joint320_geom005_smp10",
+    "booster_cf_pulse7_midpoint_space160_smp10": "booster_cf_pulse7_midpoint_space160_geom005_smp10",
+    "booster_cf_pulse7_midpoint_joint320_smp10": "booster_cf_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_al_sensitivity_higher_heating_midpoint_control20_smp10": "sustainer_al_sensitivity_higher_heating_midpoint_control20_geom005_smp10",
+    "booster_cf_sensitivity_alternative_cf_midpoint_control20_smp10": "booster_cf_sensitivity_alternative_cf_midpoint_control20_geom005_smp10",
+    "sustainer_cf_sensitivity_heating_transport_midpoint_control20_smp10": "sustainer_cf_sensitivity_heating_transport_midpoint_control20_geom005_smp10",
+    "booster_cf_sensitivity_heating_consumption_midpoint_control20_smp10": "booster_cf_sensitivity_heating_consumption_midpoint_control20_geom005_smp10",
+    "sustainer_cf_cutoff1e6_midpoint_control60_smp10": "sustainer_cf_cutoff1e6_midpoint_control60_geom005_smp10"
+  },
+  "control_review": {
+    "runtime": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+    "accepted_record_sha256": "c3d3122a094e92f53e294022f48f3851d8f8c7ca9a911033bca861fb632a8e75",
+    "independent_comparison_sha256": "44fe8fb2b84772a62f65127b79ae31abea35159e8c0a7ee53ae17b90f9dc48fe",
+    "native_audit": {
+      "runtime": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+      "passed": true,
+      "accepted_steps": 4208,
+      "time_s": 127.0,
+      "status": "COMPLETED_HORIZON",
+      "max_energy_relative_error": 7.994041286103525e-05,
+      "max_hot_power_relative_error": 5.719681304989546e-08,
+      "max_abs_mass_residual_kg": 7.7368471866255765e-22,
+      "removal_steps": 2,
+      "warning_blocks": [
+        "                         ELAPSED TIME =       6.614   TIME= 19:38:34\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+        "                         ELAPSED TIME =    9725.916   TIME= 22:20:33\n During this session the elapsed time exceeds the CPU time by 349%.      \n This often indicates either a lack of physical memory (RAM) required    \n to efficiently handle this simulation or a particularly slow hard       \n drive configuration.  This simulation can be expected to run faster on  \n identical hardware if additional RAM or a faster hard drive             \n configuration is made available.  For more details, please see the      \n Mechanical APDL Performance Guide which is part of the Ansys Help       \n system.                                                       ",
+        "                         ELAPSED TIME =    9725.918   TIME= 22:20:33\n During this session a solution was performed using 10 CPU cores in      \n shared-memory parallel (SMP) mode (-np 10).  It is strongly             \n recommended to use distributed-memory parallel (DMP) mode instead       \n (-dis -np 10).  DMP mode typically outperforms SMP mode, even when      \n running on a single system.  For more information, see the Mechanical   \n APDL Parallel Processing Guide in the Ansys Help system.                "
+      ],
+      "native_logs": [
+        {
+          "name": "solve_20261104_193827.out",
+          "sha256": "a468671453da85826eb75141bed24db9cae9ab2505a838523ad20b8229ff7cf6"
+        }
+      ],
+      "config_sha256": "e050648a78c671bc6bbefd1098180b1de94a5642d3def135c2e995aa861a7453"
+    },
+    "coarse": {
+      "runtime": "sustainer_al_pulse7_midpoint_time_quarter",
+      "case": "sustainer_al",
+      "phenolic_cells": 80,
+      "case_cells": 20,
+      "through_s": 127.0,
+      "status": "COMPLETED_HORIZON",
+      "complete": true,
+      "scope_limited": false,
+      "scope_bracket_s": null,
+      "sampled_maxima": {
+        "case_inner_max_C": {
+          "temperature_C": 119.7765302376181,
+          "time_s": 79.1874999999995
+        },
+        "case_outer_max_C": {
+          "temperature_C": 119.7565815333515,
+          "time_s": 79.24999999999949
+        }
+      },
+      "remaining_mm": 4.702968749999999,
+      "initial_phenolic_mm": 4.762499999999999,
+      "config_sha256": "ac440e8c4153dff3d2774966d5daf72a1df072641d989a9aab39c8113b878a1b",
+      "accepted_record_sha256": "a4c22cf2091d976eaf49a94a7ac02c32e332797c7df3017663ad42ae19cb404e",
+      "independent_comparison_sha256": "b8091ff991e9d604f704dd0517452debf14be68a6f752ed643bd8df8f47aff32",
+      "configuration": {
+        "physical": {
+          "case_id": "sustainer_al",
+          "case_material": "al",
+          "initial_temperature_C": 22.0,
+          "heating": {
+            "gas_temperature_C": 2230.85,
+            "h0_W_m2_K": 1000.0,
+            "gas_cp_J_kg_K": 1600.0,
+            "hot_effective_emissivity": 0.0,
+            "radiative_temperature_C": 2230.85,
+            "outer_h_W_m2_K": 8.0,
+            "outer_emissivity": 0.25,
+            "ambient_temperature_C": 22.0,
+            "pulse_duration_s": 7.0,
+            "post_pulse_h_W_m2_K": 8.0
+          },
+          "material": {
+            "virgin_reference_density_kg_m3": 1250.0,
+            "char_reference_density_kg_m3": 600.0,
+            "pyrolysis_enthalpy_J_kg": 418000.0,
+            "aluminium_density_kg_m3": 2700.0,
+            "aluminium_conductivity_W_m_K": 167.0,
+            "aluminium_heat_capacity_J_kg_K": 896.0
+          },
+          "char_law": {
+            "mode": "effective_exploratory",
+            "calibrated": false,
+            "pressure_nominal_psi": 800.0,
+            "pressure_uncertainty_psi": 200.0,
+            "pressure_min_Pa": 4136854.3759008,
+            "pressure_Pa": 5515805.8345344,
+            "pressure_max_Pa": 6894757.293168,
+            "pressure_reference_Pa": 100000.0,
+            "exploratory_pressure_ratio": 55.158058345344,
+            "reactive_activity": 1.0,
+            "reference_temperature_K": 1500.0,
+            "reference_rate_kg_m2_s": 0.01,
+            "activation_energy_J_mol": 100000.0,
+            "pressure_exponent": 0.5,
+            "mass_transfer_cap_kg_m2_s": 0.05,
+            "effective_endothermic_cost_J_kg": 35000000.0,
+            "species": [],
+            "notes": "Nominal chamber pressure is 800 +/- 200 psi. The pressure is now explicit, but gas composition and oxidation kinetics remain exploratory and require calibration before predictive use."
+          },
+          "case_property_limit_C": 300,
+          "stop_at_case_property_limit": true,
+          "cf_radial_k": 0.55,
+          "cf_inplane_k": 2.5,
+          "cf_cp_constant_J_kg_K": null,
+          "native_reaction_temperature": "midpoint",
+          "native_coupling_revision": "full_removed_prefix_replay_v2_single_substep",
+          "native_material_source_sha256": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+          "native_material_dll_sha256": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756",
+          "cf_cp_scale": 1.0,
+          "radial_dimensions": {
+            "inner_radius_m": 0.0396875,
+            "phenolic_outer_radius_m": 0.04445,
+            "outer_radius_m": 0.047625,
+            "phenolic_thickness_m": 0.004762499999999999,
+            "aluminium_thickness_m": 0.003175
+          },
+          "removal_controls": {
+            "max_char_fraction_per_step": 0.2,
+            "row_residual_mass_fraction": 0.001
+          },
+          "material_definition_sha256": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+          "controller_sha256": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69"
+        },
+        "numerical": {
+          "macro_dt_s": 0.003125,
+          "minimum_dt_s": 0.0005,
+          "post_pulse_macro_dt_s": 0.0625,
+          "post_pulse_initial_duration_s": 1.0,
+          "post_pulse_initial_dt_s": 0.015625,
+          "end_time_s": 127.0,
+          "phenolic_radial_rows": 80,
+          "aluminium_radial_rows": 20,
+          "angular_divisions": 2,
+          "axial_divisions": 2,
+          "angle_deg": 0.5,
+          "length_m": 0.0005,
+          "mesh_measure_convention": "cylindrical_arc",
+          "native_heat_flow_tolerance": 1e-05
+        },
+        "execution": {
+          "cores": 1,
+          "mode": "smp"
+        }
+      }
+    },
+    "fine": {
+      "runtime": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+      "case": "sustainer_al",
+      "phenolic_cells": 160,
+      "case_cells": 40,
+      "through_s": 127.0,
+      "status": "COMPLETED_HORIZON",
+      "complete": true,
+      "scope_limited": false,
+      "scope_bracket_s": null,
+      "sampled_maxima": {
+        "case_inner_max_C": {
+          "temperature_C": 122.2454233898812,
+          "time_s": 78.12499999999949
+        },
+        "case_outer_max_C": {
+          "temperature_C": 122.2249151854368,
+          "time_s": 78.24999999999947
+        }
+      },
+      "remaining_mm": 4.702968749999999,
+      "initial_phenolic_mm": 4.762499999999999,
+      "config_sha256": "e050648a78c671bc6bbefd1098180b1de94a5642d3def135c2e995aa861a7453",
+      "accepted_record_sha256": "c3d3122a094e92f53e294022f48f3851d8f8c7ca9a911033bca861fb632a8e75",
+      "independent_comparison_sha256": "44fe8fb2b84772a62f65127b79ae31abea35159e8c0a7ee53ae17b90f9dc48fe",
+      "configuration": {
+        "physical": {
+          "case_id": "sustainer_al",
+          "case_material": "al",
+          "initial_temperature_C": 22.0,
+          "heating": {
+            "gas_temperature_C": 2230.85,
+            "h0_W_m2_K": 1000.0,
+            "gas_cp_J_kg_K": 1600.0,
+            "hot_effective_emissivity": 0.0,
+            "radiative_temperature_C": 2230.85,
+            "outer_h_W_m2_K": 8.0,
+            "outer_emissivity": 0.25,
+            "ambient_temperature_C": 22.0,
+            "pulse_duration_s": 7.0,
+            "post_pulse_h_W_m2_K": 8.0
+          },
+          "material": {
+            "virgin_reference_density_kg_m3": 1250.0,
+            "char_reference_density_kg_m3": 600.0,
+            "pyrolysis_enthalpy_J_kg": 418000.0,
+            "aluminium_density_kg_m3": 2700.0,
+            "aluminium_conductivity_W_m_K": 167.0,
+            "aluminium_heat_capacity_J_kg_K": 896.0
+          },
+          "char_law": {
+            "mode": "effective_exploratory",
+            "calibrated": false,
+            "pressure_nominal_psi": 800.0,
+            "pressure_uncertainty_psi": 200.0,
+            "pressure_min_Pa": 4136854.3759008,
+            "pressure_Pa": 5515805.8345344,
+            "pressure_max_Pa": 6894757.293168,
+            "pressure_reference_Pa": 100000.0,
+            "exploratory_pressure_ratio": 55.158058345344,
+            "reactive_activity": 1.0,
+            "reference_temperature_K": 1500.0,
+            "reference_rate_kg_m2_s": 0.01,
+            "activation_energy_J_mol": 100000.0,
+            "pressure_exponent": 0.5,
+            "mass_transfer_cap_kg_m2_s": 0.05,
+            "effective_endothermic_cost_J_kg": 35000000.0,
+            "species": [],
+            "notes": "Nominal chamber pressure is 800 +/- 200 psi. The pressure is now explicit, but gas composition and oxidation kinetics remain exploratory and require calibration before predictive use."
+          },
+          "case_property_limit_C": 300,
+          "stop_at_case_property_limit": true,
+          "cf_radial_k": 0.55,
+          "cf_inplane_k": 2.5,
+          "cf_cp_constant_J_kg_K": null,
+          "native_reaction_temperature": "midpoint",
+          "native_coupling_revision": "full_removed_prefix_replay_v2_single_substep",
+          "native_material_source_sha256": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+          "native_material_dll_sha256": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756",
+          "cf_cp_scale": 1.0,
+          "radial_dimensions": {
+            "inner_radius_m": 0.0396875,
+            "phenolic_outer_radius_m": 0.04445,
+            "outer_radius_m": 0.047625,
+            "phenolic_thickness_m": 0.004762499999999999,
+            "aluminium_thickness_m": 0.003175
+          },
+          "removal_controls": {
+            "max_char_fraction_per_step": 0.2,
+            "row_residual_mass_fraction": 0.001
+          },
+          "material_definition_sha256": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+          "controller_sha256": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69"
+        },
+        "numerical": {
+          "macro_dt_s": 0.003125,
+          "minimum_dt_s": 0.0005,
+          "post_pulse_macro_dt_s": 0.0625,
+          "post_pulse_initial_duration_s": 1.0,
+          "post_pulse_initial_dt_s": 0.015625,
+          "end_time_s": 127.0,
+          "phenolic_radial_rows": 160,
+          "aluminium_radial_rows": 40,
+          "angular_divisions": 2,
+          "axial_divisions": 2,
+          "angle_deg": 0.05,
+          "length_m": 0.0005,
+          "mesh_measure_convention": "straight_sided_hex",
+          "native_heat_flow_tolerance": 1e-07
+        },
+        "execution": {
+          "cores": 10,
+          "mode": "smp"
+        }
+      }
+    },
+    "configuration_comparison": {
+      "kind": "combined_numerical_changes",
+      "physical_model_identical": true,
+      "physical_changes": {},
+      "numerical_changes": {
+        "aluminium_radial_rows": {
+          "coarse": 20,
+          "fine": 40
+        },
+        "angle_deg": {
+          "coarse": 0.5,
+          "fine": 0.05
+        },
+        "mesh_measure_convention": {
+          "coarse": "cylindrical_arc",
+          "fine": "straight_sided_hex"
+        },
+        "native_heat_flow_tolerance": {
+          "coarse": 1e-05,
+          "fine": 1e-07
+        },
+        "phenolic_radial_rows": {
+          "coarse": 80,
+          "fine": 160
+        }
+      },
+      "execution_changes": {
+        "cores": {
+          "coarse": 1,
+          "fine": 10
+        }
+      },
+      "isolated_spatial_comparison": false,
+      "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+    },
+    "casing_peak_differences_K": {
+      "case_inner_max_C": 2.4688931522630924,
+      "case_outer_max_C": 2.468333652085306
+    },
+    "hot_surface_comparison": {
+      "coarse": {
+        "at_7s_C": 1422.375971550304,
+        "sampled_heating_peak_C": 1479.3352272380657,
+        "sampled_peak_time_s": 4.14999999999988
+      },
+      "fine": {
+        "at_7s_C": 1438.8020774371894,
+        "sampled_heating_peak_C": 1468.4835469683449,
+        "sampled_peak_time_s": 3.481249999999917
+      },
+      "at_7s_difference_K": 16.426105886885352
+    },
+    "remaining_difference_mm": 0.0,
+    "qualification": "Full native verification permits continuation of refinement. This mixed geometry/mesh/control comparison is not an isolated radial-mesh convergence claim."
+  },
+  "records": [
+    {
+      "parent": "sustainer_al_pulse7_midpoint_space160_smp10",
+      "runtime": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+      "reused_verified_control": true,
+      "config_sha256": "e050648a78c671bc6bbefd1098180b1de94a5642d3def135c2e995aa861a7453",
+      "geometry": {
+        "runtime": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+        "native_index": 4208,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "b0d0a772f3ec1a6b23c63d3c3cea0bbea09ba892334baf17d434acf9b28dbb65",
+        "mesh_map_sha256": "9d9b4c275a012f012b765ce8413103f686f35d62817ccafc07642125cceb0a88",
+        "face_count": 644,
+        "element_count": 800,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999996905,
+          1.0000000000003222
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999998901348,
+          1.000000000058897
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 2240,
+          "mean": 6.721550113124903e-10,
+          "max_abs": 5.606443709282871e-08
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "sustainer_al_pulse7_midpoint_joint320_smp10",
+      "runtime": "sustainer_al_pulse7_midpoint_joint320_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "89bb731760e9d6aedd6e4c66393e759fbf7d258a4de3f5c12ee0bf92b68c808a",
+      "input_manifest_sha256": "ef0baed6b6a2e8d9a9ee5fd795e72055d7d4994c6253b3fc4dea9735b2de9e51",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "f90dee734b8682229a885d716d3fa8bf6f3f6c80ab07d672896658001c3a13b1",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "sustainer_al_pulse7_midpoint_joint320_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "d7bd88d9282823f2f20943ecea0d61adad739ae080a27849b47a87725a340f21",
+        "mesh_map_sha256": "2f21887ed48c1bd7fed87e30fc54695e0e414e61796338126678c061b953d0fb",
+        "face_count": 1284,
+        "element_count": 1600,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999996905,
+          1.0000000000003222
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999998898114,
+          1.0000000002270355
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "sustainer_cf_pulse7_midpoint_space160_smp10",
+      "runtime": "sustainer_cf_pulse7_midpoint_space160_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "0befb9e51154ba1f16da1c806a0e9d828810643cfcc1f5ba4dfc6c5eacf8bc65",
+      "input_manifest_sha256": "970f0504ecf2fa964cd4beb3a67f26e2b6e8205a8033ae24ef530a59b2ccef01",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "557e0ec4a4d136ab1f9d57a4bd8f7bcfa219dabc7226c4bba07ed2d8b9a0addf",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "sustainer_cf_pulse7_midpoint_space160_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "313a9642bdfc0d97ee4bded85479c66c4279d47fbd8123f4328ccada4482dd1b",
+        "mesh_map_sha256": "9d9b4c275a012f012b765ce8413103f686f35d62817ccafc07642125cceb0a88",
+        "face_count": 644,
+        "element_count": 800,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999996905,
+          1.0000000000003222
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999998901348,
+          1.000000000058897
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "sustainer_cf_pulse7_midpoint_joint320_smp10",
+      "runtime": "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "6dd5f6bff5f767038e4aa49b6ed9552c65e58de9d80510c2aca2f0ae571ea9f2",
+      "input_manifest_sha256": "3b27d5c1fa19674909a073fc001f64ddff134fc0974e8907977bf7d3d52ac9e7",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "f90dee734b8682229a885d716d3fa8bf6f3f6c80ab07d672896658001c3a13b1",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "49f1666d90eadc1bb6904e89b6c43d34bde32988cc289ae48d77f1c44edc5b43",
+        "mesh_map_sha256": "2f21887ed48c1bd7fed87e30fc54695e0e414e61796338126678c061b953d0fb",
+        "face_count": 1284,
+        "element_count": 1600,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999996905,
+          1.0000000000003222
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999998898114,
+          1.0000000002270355
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "sustainer_cf_pulse7_midpoint_joint640_smp10",
+      "runtime": "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "1cac48c8f60ddd3dfb00603c37b39831abcf251fe8452f162b57a976f0f2fe9f",
+      "input_manifest_sha256": "676f38567755eca1db41f48e1b2701e8ee858c16dfc41b5377814712aafed8c1",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "220a6664ccf95d8138935163b6ca7a7292338e4ad90583ddadd6d03378852ae4",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "5f8e7c0db66806a17be5cee479c4b5b0849570f363b286b6b5f15d38396341c8",
+        "mesh_map_sha256": "7b7c7baf7861370fe66ba49d09763d65bbe77b376f27a32529da16d9ec2b67f1",
+        "face_count": 2564,
+        "element_count": 3200,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999996807,
+          1.0000000000003262
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.999999999889337,
+          1.000000000563544
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "booster_al_pulse7_midpoint_space160_smp10",
+      "runtime": "booster_al_pulse7_midpoint_space160_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "887269865fb83f5ed1de9b913c5dad1552ab394871fc7e2d4903d62a427a7cb4",
+      "input_manifest_sha256": "ead8ee4a4a2e79e5e7e4b0af482ef010e65e8be448fdd67f776ee1626a79e89c",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "557e0ec4a4d136ab1f9d57a4bd8f7bcfa219dabc7226c4bba07ed2d8b9a0addf",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "booster_al_pulse7_midpoint_space160_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "5911d4e8dcd4df13ba2a855898083933121fd408391b9883080bac198676a689",
+        "mesh_map_sha256": "83b7d993be4ddc2fdf9c50ca28c412dfca0ed91f290760b5e7ae49666d0df6ea",
+        "face_count": 644,
+        "element_count": 800,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999998298,
+          1.000000000000186
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999739589,
+          1.0000000001008427
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "booster_al_pulse7_midpoint_joint320_smp10",
+      "runtime": "booster_al_pulse7_midpoint_joint320_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "2f647ea780df6ef4da258d8e4cbb429e3446f0361d2f1d1efb5b19d5a5af1f32",
+      "input_manifest_sha256": "7fddf4bbf667611c2db658319465fac52a696c374a95738d6720cd038765d181",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "f90dee734b8682229a885d716d3fa8bf6f3f6c80ab07d672896658001c3a13b1",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "booster_al_pulse7_midpoint_joint320_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "1166ec2be5647d4cea8dd8b78587628c0c3754f17980137826734ba0cd89d7a9",
+        "mesh_map_sha256": "188a7f2386bfeea4fcb1779917e995778f0abe9209e3d4c303f86ef04e97b695",
+        "face_count": 1284,
+        "element_count": 1600,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999997994,
+          1.0000000000001947
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999735169,
+          1.0000000002270322
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "booster_cf_pulse7_midpoint_space160_smp10",
+      "runtime": "booster_cf_pulse7_midpoint_space160_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "f5b00ebea77d6b48434f63a7af80de16477ea59c1132cfc3dc2339c77f357bee",
+      "input_manifest_sha256": "17924abc377644be1e395243fda12741957ecb21d6ba8f1b3de4aeb48f6a8c3c",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "557e0ec4a4d136ab1f9d57a4bd8f7bcfa219dabc7226c4bba07ed2d8b9a0addf",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "booster_cf_pulse7_midpoint_space160_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "26297684ebdfc68d2ca45d7e9f47ab1c4e08e13fc02dde5e1857fefdde819cef",
+        "mesh_map_sha256": "83b7d993be4ddc2fdf9c50ca28c412dfca0ed91f290760b5e7ae49666d0df6ea",
+        "face_count": 644,
+        "element_count": 800,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999998298,
+          1.000000000000186
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999739589,
+          1.0000000001008427
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "booster_cf_pulse7_midpoint_joint320_smp10",
+      "runtime": "booster_cf_pulse7_midpoint_joint320_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "ad3111e149cc62fcc8bab2fe854fffb5b027f865c9bd187c36bc4a3af481cca6",
+      "input_manifest_sha256": "7ac3a206531fc176cae38b510efc74ed2e3c03255e15ebf8f40cb786a4a925d2",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "f90dee734b8682229a885d716d3fa8bf6f3f6c80ab07d672896658001c3a13b1",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "booster_cf_pulse7_midpoint_joint320_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "f43070d870ad08eae0fb52a843eabf7cfad549a5b184c08186e2d1bdde16dfc4",
+        "mesh_map_sha256": "188a7f2386bfeea4fcb1779917e995778f0abe9209e3d4c303f86ef04e97b695",
+        "face_count": 1284,
+        "element_count": 1600,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999997994,
+          1.0000000000001947
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999735169,
+          1.0000000002270322
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "sustainer_al_sensitivity_higher_heating_midpoint_control20_smp10",
+      "runtime": "sustainer_al_sensitivity_higher_heating_midpoint_control20_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "d7ff088c86176088fec3a7a1a829abe6bc95bcaf51f274dbc9dd4dd8adcb4ee1",
+      "input_manifest_sha256": "529e56a78648dad45e06cabb5f2914738d5b83e48f3975580acc5a9adc149bba",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "f3265b15f2989307d8b1869889c84a2a71117955465659daa20b5baead815072",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "sustainer_al_sensitivity_higher_heating_midpoint_control20_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "0c062adf7323863b09e41aba21f1f55365ba8753252b582310dca030ed394981",
+        "mesh_map_sha256": "64f35f218d91a0b0a4ca6de1f7855c6009d09bb71de290540d055a6c3711fb8c",
+        "face_count": 324,
+        "element_count": 400,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999997017,
+          1.0000000000003044
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999741803,
+          1.000000000058599
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "booster_cf_sensitivity_alternative_cf_midpoint_control20_smp10",
+      "runtime": "booster_cf_sensitivity_alternative_cf_midpoint_control20_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "9b8d13711290fbbd6022b5adfc759753fa26031d279e6a6885d7fad88b724088",
+      "input_manifest_sha256": "d2743bd055051d0c9c35d1682c2fe81ac0f80c30032be4fff7411d6055e8f65f",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "f3265b15f2989307d8b1869889c84a2a71117955465659daa20b5baead815072",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "booster_cf_sensitivity_alternative_cf_midpoint_control20_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "f2d2dff08a511d266eb7c1e417fd2f580096ad254514ad894c0d2192bda488d9",
+        "mesh_map_sha256": "a9bf417070587554e677afe533f407105f800d65e6448479887b3a424b89e5ea",
+        "face_count": 324,
+        "element_count": 400,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999998298,
+          1.0000000000001625
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999741589,
+          1.0000000000376974
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "sustainer_cf_sensitivity_heating_transport_midpoint_control20_smp10",
+      "runtime": "sustainer_cf_sensitivity_heating_transport_midpoint_control20_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "b737bde6fe99633f0c731bf772ab22aac542ed5ef705a08dd08e3725a33ce9e3",
+      "input_manifest_sha256": "4bc251bbb6f95c41de80b46d6dd3b16eebd66ebc0be674361af1e0dc0452f114",
+      "unchanged_inputs": {
+        "material_v0.apdl": "8151621c5b721448f1823ba051e7bb0871a6703cb0dfbf4494a1f6c3d1a88e5c",
+        "export_fields.mac": "f3265b15f2989307d8b1869889c84a2a71117955465659daa20b5baead815072",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "sustainer_cf_sensitivity_heating_transport_midpoint_control20_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "e7f1bbf997539f5460c8643e43b1806c82517fd5ca3d87c820c4913b5df57d3d",
+        "mesh_map_sha256": "64f35f218d91a0b0a4ca6de1f7855c6009d09bb71de290540d055a6c3711fb8c",
+        "face_count": 324,
+        "element_count": 400,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999997017,
+          1.0000000000003044
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999741803,
+          1.000000000058599
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "booster_cf_sensitivity_heating_consumption_midpoint_control20_smp10",
+      "runtime": "booster_cf_sensitivity_heating_consumption_midpoint_control20_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "10934bc6ed24427af622ad85c358d364d0351b2e0cc8e2313fe92b513774deea",
+      "input_manifest_sha256": "3cc63bdf95eb4f6f36b590c46f535ed3704918f7a06cf592c57b000ad3e90744",
+      "unchanged_inputs": {
+        "material_v0.apdl": "d75cdd896c65504dcdf25cf078619af84345c9f6c575b1a97a78cae98ce1977a",
+        "export_fields.mac": "f3265b15f2989307d8b1869889c84a2a71117955465659daa20b5baead815072",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "booster_cf_sensitivity_heating_consumption_midpoint_control20_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "8718160c1a592ccf72a5436232bc227ca8754699aa044c06a4064accda5028a8",
+        "mesh_map_sha256": "a9bf417070587554e677afe533f407105f800d65e6448479887b3a424b89e5ea",
+        "face_count": 324,
+        "element_count": 400,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999998298,
+          1.0000000000001625
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999741589,
+          1.0000000000376974
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    },
+    {
+      "parent": "sustainer_cf_cutoff1e6_midpoint_control60_smp10",
+      "runtime": "sustainer_cf_cutoff1e6_midpoint_control60_geom005_smp10",
+      "reused_verified_control": false,
+      "config_sha256": "dc1b70158d7272363e75869853395175cf56fc2909502cba4f5f39cb0eb2b8ca",
+      "input_manifest_sha256": "d4f0f9ca4c500f0addd28ddedf2af2d1da9680299013608a55c5422862602564",
+      "unchanged_inputs": {
+        "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+        "export_fields.mac": "f3265b15f2989307d8b1869889c84a2a71117955465659daa20b5baead815072",
+        "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+        "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+        "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+      },
+      "configuration_comparison": {
+        "kind": "combined_numerical_changes",
+        "physical_model_identical": true,
+        "physical_changes": {},
+        "numerical_changes": {
+          "angle_deg": {
+            "coarse": 0.5,
+            "fine": 0.05
+          },
+          "mesh_measure_convention": {
+            "coarse": "cylindrical_arc",
+            "fine": "straight_sided_hex"
+          },
+          "native_heat_flow_tolerance": {
+            "coarse": 1e-05,
+            "fine": 1e-07
+          }
+        },
+        "execution_changes": {},
+        "isolated_spatial_comparison": false,
+        "qualification": "Combined geometry, measures or solver-control changes cannot be attributed to radial mesh refinement alone."
+      },
+      "geometry": {
+        "runtime": "sustainer_cf_cutoff1e6_midpoint_control60_geom005_smp10",
+        "native_index": 0,
+        "mesh_measure_convention": "straight_sided_hex",
+        "model_sha256": "943dd2180925e96398fd0e6e7bd84150547beb5dd337716553891b571c5b5250",
+        "mesh_map_sha256": "64f35f218d91a0b0a4ca6de1f7855c6009d09bb71de290540d055a6c3711fb8c",
+        "face_count": 324,
+        "element_count": 400,
+        "angular_cell_width_rad": 0.0004363323129985824,
+        "exact_polygon_to_controller_area_ratio": 1.0,
+        "integrated_area_ratio_range": [
+          0.9999999999997017,
+          1.0000000000003044
+        ],
+        "exact_polygon_to_controller_volume_ratio": 1.0,
+        "integrated_volume_ratio_range": [
+          0.9999999999741803,
+          1.000000000058599
+        ],
+        "native_hot_power_ratio_minus_polygon_area_ratio": {
+          "samples": 0,
+          "mean": null,
+          "max_abs": null
+        },
+        "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+      }
+    }
+  ],
+  "prior_mapping_sha256": {
+    "configs/campaign_queue.json": "0039461eb54fdbab92dea77ad505e2afe8f6ac5b544bb69364fd15b1994288bd",
+    "validation/native_resolution_plan.json": "2e242cf43c7ae844bd11aa96730838e0d22e6ec793822c8d3fa58084cfeb572e",
+    "validation/native_sensitivity_plan.json": "b17590f3b2f843ad8a623f93a1dcafc4b6ce712e70bb5e7f108ad0f5e1b616dd",
+    "validation/native_cutoff_plan.json": "df03c7d16f9ee72915d6ca621c05bb629d37fce3ff9b8a563b90fd9d3c2b642d"
+  },
+  "qualification": "Fresh inputs only. No solver launch, no inherited state and no old package mutation. Eight further resolution cases and five deferred controls; the accepted sustainer Al control supplies the first 160-row record.",
+  "activated_utc": "2026-11-05T03:22:58.630034+00:00",
+  "observer_pid": 73021,
+  "dispatch_utc": "2026-11-05T03:23:40.761464+00:00",
+  "active_dispatch": [
+    "sustainer_cf_pulse7_midpoint_space160_geom005_smp10",
+    "booster_al_pulse7_midpoint_space160_geom005_smp10",
+    "booster_cf_pulse7_midpoint_space160_geom005_smp10",
+    "sustainer_al_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
+    "booster_al_pulse7_midpoint_joint320_geom005_smp10",
+    "booster_cf_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10"
+  ],
+  "generator_sha256": "b974c838a7dd30037f034db80d22a2960e059b68d5cb7e73c3f705ee959018a6"
+}

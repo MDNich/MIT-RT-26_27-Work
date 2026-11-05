@@ -22,7 +22,52 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Current geometry-consistency control (updated November 5, 02:11 UTC)
+## Active corrected-geometry resolution queue (November 5, 03:24 UTC)
+
+The sustainer Al geometry control COMPLETED 127 s / 4208 accepted intervals.
+The old observer 38695 exited normally. Full native/log/restart validation and
+the terminal independent comparison pass, including both exact removal events,
+cooling, persistent topology, conversion and mass. Maximum sampled profile
+difference is 0.003588553 K. `validation/native_geometry_control_terminal.json`
+pins the accepted record and comparison hashes. Inner/outer sampled casing peaks
+are 122.245423/122.224915 C at 78.125/78.25 s; 4.70296875 mm of mesh remains.
+Relative to the older 80-row quarter-step case, casing peaks shift by at most
+2.468894 K and retained thickness is unchanged, but the 7 s hot face changes
+1422.375972 to 1438.802077 C (+16.426106 K). This is a combined radial-mesh,
+geometry-measure and solver-tolerance comparison, not isolated spatial or
+surface-temperature convergence. No burnthrough or calibrated lifetime follows.
+
+The single current observer is **73021**, with log
+`ansystmp/geometry_resolution_queue.log` and PID also in `baseline_queue.pid`.
+It runs the eight-case `configs/campaign_queue.json` current dispatch serially,
+starting `sustainer_cf_pulse7_midpoint_space160_geom005_smp10`, ten SMP cores
+per solve. Never restart the superseded observers 38695, 54373 or 22032.
+The storage watcher 82419 and keep-awake 86412 remain active.
+
+Thirteen fresh successor packages were prepared and checked after terminal
+review: eight remaining resolution cases and five deferred sensitivity/cutoff
+controls. Geometry is 0.05 degrees with exact straight-sided measures; native
+heat-flow tolerance is 1e-7. Every parent is preserved. Radial/axial divisions,
+time schedules, physical inputs, controller, material DLL and removal gates
+match the corresponding parent. Direct face/volume integration passes for all
+four configurations and all prepared resolutions. The new mappings and hashes
+are in `validation/native_geometry_successor_plan.json`; the old one-core to
+ten-core lineage stays intact under `execution_successors`, and geometry
+successors have a separate mapping. All four matching narrow-sector STEP files
+now pass two-body round-trip checks; original STEP files remain unchanged.
+
+The main diagnostic hold has been archived, not silently discarded. No extra
+native default cases were added. In particular, the later cutoff control's
+comparison with its older default native case also changes geometry/tolerance;
+its own independent reference verifies implementation, while the pair cannot
+isolate cutoff effects alone. The five controls remain deferred until this
+resolution queue finishes and is reviewed. Each terminal case still requires
+all native and independent gates before the queue advances.
+
+The sections below preserve the diagnostic history. Their old PIDs and dispatch
+instructions are historical and do not describe the active queue above.
+
+## Historical geometry-consistency control and handoff
 
 The November 5 03:05 UTC continuation is finishing this control. The independent
 check through 109.0625 s still passes all gates, with the same maximum sampled
