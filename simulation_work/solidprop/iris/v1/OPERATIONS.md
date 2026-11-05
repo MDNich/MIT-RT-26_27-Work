@@ -143,6 +143,23 @@ CF scope-time refinement failure or validate real-motor circumferential
 uniformity. The active booster Al 160/40-row run was not included in this
 terminal-only check.
 
+### Additional verified guest-result archiving (November 5, 11:11 UTC)
+
+Reclaimed a further 4,789,633,024 Windows bytes from the completed
+`sustainer_cf_pulse7_midpoint_space160_geom005_smp10` and
+`booster_al_pulse7_midpoint_space160_geom005_smp10` runs. Only their redundant
+guest `file.rth` files were removed. The full Mac copies were read and hashed;
+Windows then independently hashed both the local and shared copies, checked
+equal sizes, terminal status/index and absence of a process using each target,
+and rechecked terminal state/process absence immediately before removal.
+Inputs, checkpoints, restart backups and logs remain intact. The two receipts
+and hashes are in `validation/guest_result_archive_20261105_1111.json`.
+
+Afterward Windows had 47,737,995,264 bytes free and the Mac had
+1,494,104,092,672 bytes free. The same booster CF solver and observer 93981
+continue; no queue, sealed input, result interpretation or report changed.
+Continue checking available capacity as the 320/640-row cases run.
+
 ### Verified guest-result archiving (November 5, 04:39 UTC)
 
 Reclaimed 5,560,205,312 bytes from Windows by removing only the redundant
