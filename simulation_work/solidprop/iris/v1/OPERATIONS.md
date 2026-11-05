@@ -103,8 +103,22 @@ four-case record. It checks sealed inputs and checkpoint indices/times, and
 refuses a runtime without terminal acceptance. The original sustainer Al summary
 was reproduced exactly. Apply this check to subsequent accepted refinements,
 particularly the CF cases, before the final refined-field interpretation.
-The reviewed 74-page PDF remains the completed-control edition from commit
-`1ffb4544`; this additional diagnostic does not change its reported temperatures.
+At that milestone the reviewed 74-page PDF was the completed-control edition
+from commit `1ffb4544`. The later 75-page CF-refinement report is published in
+`dc442e0d`; the diagnostics below do not change its reported temperatures.
+
+The November 5 05:36 UTC check also inspected all 20,896 accepted fields from
+the four completed quarter-step cases. Maximum same-radius phenolic/casing
+ranges are 1.2063e-8/1.1369e-12 K (sustainer Al), 0.006516/0.012962 K
+(sustainer CF), 1.0811e-8/4.5475e-13 K (booster Al), and 0.005749/0.010385 K
+(booster CF). Each runtime has a separate `native_uniformity_<runtime>.json`
+record with sealed-input, accepted-record and ordered-checkpoint hashes. The
+booster CF check includes its preserved one-core prefix and ten-core successor.
+These small within-radius variations support the use of radial averages for
+these uniform-sector numerical comparisons. They do not resolve the 10.714%
+CF scope-time refinement failure or validate real-motor circumferential
+uniformity. The active booster Al 160/40-row run was not included in this
+terminal-only check.
 
 ### Verified guest-result archiving (November 5, 04:39 UTC)
 
