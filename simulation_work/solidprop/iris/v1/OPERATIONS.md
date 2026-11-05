@@ -84,6 +84,26 @@ particularly the CF cases, before the final refined-field interpretation.
 The reviewed 74-page PDF remains the completed-control edition from commit
 `1ffb4544`; this additional diagnostic does not change its reported temperatures.
 
+### Verified guest-result archiving (November 5, 04:39 UTC)
+
+Reclaimed 5,560,205,312 bytes from Windows by removing only the redundant
+`file.rth` files in these completed Iris runtimes:
+
+- `sustainer_al_pulse7_midpoint_space160_geom005_smp10`
+- `booster_al_pulse7_midpoint_time_quarter`
+- `booster_cf_pulse7_midpoint_time_quarter_smp10`
+
+Each full native result remains in the corresponding Mac `ansystmp/runs/`
+directory. The Mac copy was read and hashed; Windows then independently checked
+its byte count and SHA256, terminal index/status, and absence of a solver using
+that runtime immediately before removing its duplicate. The archive record is
+`validation/guest_result_archive_20261105.json`. No input, checkpoint, restart
+backup, log, rejected diagnostic, active-run file or queued package was removed.
+Windows had 48,146,452,480 free bytes after this operation; the active CF run
+continues to consume storage. Recheck capacity after each completed refinement,
+and archive further completed result duplicates only with equivalent checks.
+The existing 10 GB guest and 400 GB Mac stop limits remain unchanged.
+
 The sections below preserve the diagnostic history. Their old PIDs and dispatch
 instructions are historical and do not describe the active queue above.
 
