@@ -1,0 +1,95 @@
+{
+  "prepared_utc": "2026-11-05T00:37:43.752072+00:00",
+  "runtime": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+  "parent_runtime": "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10",
+  "status": "RUNNING_VERIFIED_TEN_CORE",
+  "config_sha256": "e050648a78c671bc6bbefd1098180b1de94a5642d3def135c2e995aa861a7453",
+  "unchanged_input_sha256": {
+    "material_v0.apdl": "fc92fb452f2fa170142917a62b5619b7aaf68071b9ba2711129efefb0965887e",
+    "export_fields.mac": "557e0ec4a4d136ab1f9d57a4bd8f7bcfa219dabc7226c4bba07ed2d8b9a0addf",
+    "coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+    "usermatth.F": "218922756fd267532fc6a915d207604b4282e9219cf412cf8af18538a42dc59a",
+    "usermatthLib.dll": "01449a7f59da8e4193bedcc3082c3b6442fcfd4a22d622287357a15351511756"
+  },
+  "preserved_legacy_maps": [
+    {
+      "runtime": "sustainer_al_pulse7_n80_midpoint_tight",
+      "mesh_map_sha256": "6dca5906b1946bbeeb40a2360a237b24e0bae6ef6a408b857f199cb18e9c8a54",
+      "unchanged": true
+    },
+    {
+      "runtime": "sustainer_cf_pulse7_n80_midpoint_tight",
+      "mesh_map_sha256": "6dca5906b1946bbeeb40a2360a237b24e0bae6ef6a408b857f199cb18e9c8a54",
+      "unchanged": true
+    },
+    {
+      "runtime": "booster_al_pulse7_n80_midpoint_tight",
+      "mesh_map_sha256": "ca272abd9aa24c58cdb5a73cb5e90bb1c298189d0e3905cad551613a029f206c",
+      "unchanged": true
+    },
+    {
+      "runtime": "booster_cf_pulse7_n80_midpoint_tight",
+      "mesh_map_sha256": "ca272abd9aa24c58cdb5a73cb5e90bb1c298189d0e3905cad551613a029f206c",
+      "unchanged": true
+    }
+  ],
+  "geometry_integration": {
+    "runtime": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+    "native_index": 0,
+    "mesh_measure_convention": "straight_sided_hex",
+    "model_sha256": "b0d0a772f3ec1a6b23c63d3c3cea0bbea09ba892334baf17d434acf9b28dbb65",
+    "mesh_map_sha256": "9d9b4c275a012f012b765ce8413103f686f35d62817ccafc07642125cceb0a88",
+    "face_count": 644,
+    "element_count": 800,
+    "angular_cell_width_rad": 0.0004363323129985824,
+    "exact_polygon_to_controller_area_ratio": 1.0,
+    "integrated_area_ratio_range": [
+      0.9999999999996905,
+      1.0000000000003222
+    ],
+    "exact_polygon_to_controller_volume_ratio": 1.0,
+    "integrated_volume_ratio_range": [
+      0.9999999998901348,
+      1.000000000058897
+    ],
+    "native_hot_power_ratio_minus_polygon_area_ratio": {
+      "samples": 0,
+      "mean": null,
+      "max_abs": null
+    },
+    "interpretation": "Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference."
+  },
+  "ranks": 10,
+  "parallel_mode": "smp",
+  "heat_flow_tolerance": 1e-07,
+  "geometry_changes": {
+    "runtime": "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10",
+    "config_sha256": "aeb5504cce381b1cb224d3f04d9c8876106451f63716a908687e1037f691f114",
+    "parent_angle_deg": 0.5,
+    "change": "Exact chord areas and polygonal element volumes; total sector angle 0.5 to 0.05 degrees. Same radial/axial grid, time increments, tighter solver tolerance and physical laws.",
+    "qualification": "Joint geometry-consistency/angular refinement control; it cannot separately attribute the effect of these two geometric changes. No inherited native solution, threshold tuning, or physical calibration."
+  },
+  "planned_gates": "Preflight, native audits, one substep per interval, persistent topology, exact two-event agreement with unchanged cylindrical equations, cooling transition, terminal and restart audits. No relaxation.",
+  "dispatch": "One diagnostic only, after the precision parent is cleanly paused and no solver remains. Main campaign remains held pending review.",
+  "observer_pid": 38695,
+  "dispatch_utc": "2026-11-05T00:38:02.476841+00:00",
+  "initial_prefix": {
+    "index": 39,
+    "time_s": 0.1218750000000001,
+    "max_profile_difference_K": 0.00012030920140659873,
+    "native_audit_maxima": {
+      "energy_relative_error": 4.114252076843429e-06,
+      "hot_power_relative_error": 5.203825371028393e-08,
+      "mass_residual_kg": 7.7368471866255765e-22
+    },
+    "qualification": "Early heating only. Removal, cooling and terminal checks still pending."
+  },
+  "matching_step_geometry": {
+    "path": "geometry/sustainer_al_sector_0p05deg.step",
+    "sha256": "7f139df56e7596a098935acc15a3d21ee3e82baa3d219642baa48b9da49dbdfb",
+    "validation": "geometry/sustainer_al_0p05deg_validation.json",
+    "roundtrip_passed": true,
+    "note": "Curved CAD reference; native geometry is its straight-sided finite-element approximation."
+  },
+  "generator_sha256": "6d2f38a47fa0705eb6f4018357ea8562bd6b0692ede33f61111f903ab11fcaed"
+}

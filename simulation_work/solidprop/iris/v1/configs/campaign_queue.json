@@ -120,19 +120,20 @@
     "booster_cf_sensitivity_heating_consumption_midpoint_control20": "booster_cf_sensitivity_heating_consumption_midpoint_control20_smp10",
     "sustainer_cf_cutoff1e6_midpoint_control60": "sustainer_cf_cutoff1e6_midpoint_control60_smp10"
   },
-  "current_observer_pid": 22032,
+  "current_observer_pid": 38695,
   "parallel_restart_verification": "validation/parallel_restart_comparison.json",
   "dispatch_hold": {
     "status": "PAUSED_FOR_ROW_SCHEDULE_DIAGNOSIS",
     "runtime": "sustainer_al_pulse7_midpoint_space160_smp10",
-    "reason": "Second removal is one macro interval earlier than the independent reference. Do not resume the old observer or case. Preserve strict gates.",
+    "reason": "Both 1e-5 and 1e-7 heat-flow tolerances fail the exact second-row event. Geometry-consistency control required; neither old observer/case may resume.",
     "record": "validation/native_row_schedule_issue_space160.json",
-    "replacement_diagnostic": "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10",
-    "stopped_observer_pid": 54373
+    "replacement_diagnostic": "sustainer_al_pulse7_midpoint_space160_geom005_smp10",
+    "stopped_observer_pid": 54373,
+    "latest_failed_diagnostic": "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10"
   },
   "diagnostic_dispatch": [
-    "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10"
+    "sustainer_al_pulse7_midpoint_space160_geom005_smp10"
   ],
-  "diagnostic_observer_pid": 22032,
-  "current_observer_role": "single_nonlinear_tolerance_diagnostic_only"
+  "diagnostic_observer_pid": 38695,
+  "current_observer_role": "single_geometry_consistency_control_only"
 }

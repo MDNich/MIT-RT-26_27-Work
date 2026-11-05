@@ -45,18 +45,20 @@ def geometry_audit(run):
             volume += abs(np.linalg.det(x.T @ derivatives))
         volume_ratios.append(float(volume/element['volume']))
     angle = math.radians(cfg['geometry']['angle_deg'])/cfg['geometry']['angular_divisions']
-    face_ratio = 2*math.sin(angle/2)/angle
-    volume_ratio = math.sin(angle)/angle
+    convention = cfg.get('mesh_measure_convention', 'cylindrical_arc')
+    assert convention in ('cylindrical_arc', 'straight_sided_hex')
+    face_ratio = 2*math.sin(angle/2)/angle if convention == 'cylindrical_arc' else 1.
+    volume_ratio = math.sin(angle)/angle if convention == 'cylindrical_arc' else 1.
     assert max(abs(r-face_ratio) for r in face_ratios) < 1e-10
     assert max(abs(r-volume_ratio) for r in volume_ratios) < 1e-9
-    terminal = json.loads((run/'state.json').read_text())
+    terminal = json.loads((run/'state.json').read_text()) if (run/'state.json').exists() else dict(index=0)
     residuals = []
     for index in range(1,terminal['index']+1):
         audit = json.loads((run/'checkpoints'/f'audit_{index:06d}.json').read_text())
         if audit.get('exposure_on') and abs(audit['hot_power_expected_W']) > 1e-8:
             residuals.append(audit['hot_power_actual_W']/audit['hot_power_expected_W']-face_ratio)
-    assert residuals
     return dict(runtime=run.name, native_index=terminal['index'],
+        mesh_measure_convention=convention,
         model_sha256=hashlib.sha256((run/'model_base.inp').read_bytes()).hexdigest(),
         mesh_map_sha256=hashlib.sha256((run/'mesh_map.json').read_bytes()).hexdigest(),
         face_count=len(face_ratios), element_count=len(volume_ratios),
@@ -66,8 +68,11 @@ def geometry_audit(run):
         exact_polygon_to_controller_volume_ratio=volume_ratio,
         integrated_volume_ratio_range=[min(volume_ratios),max(volume_ratios)],
         native_hot_power_ratio_minus_polygon_area_ratio=dict(
-            samples=len(residuals),mean=float(np.mean(residuals)),max_abs=float(np.max(np.abs(residuals)))),
-        interpretation='Controller areas/volumes use cylindrical arcs. The straight-sided SOLID278 coordinates define chord faces and polygonal volumes. The actual native convection ratio agrees with the chord-area ratio to the recorded export precision. A passing loose heat-power audit does not remove this geometric discrepancy.')
+            samples=len(residuals),mean=float(np.mean(residuals)) if residuals else None,
+            max_abs=float(np.max(np.abs(residuals))) if residuals else None),
+        interpretation=('Historical controller areas/volumes use cylindrical arcs; SOLID278 coordinates define chord faces and polygonal volumes.'
+                        if convention == 'cylindrical_arc' else
+                        'Controller measures match direct integration of the straight-sided mesh. This geometry check alone does not verify a transient solve or agreement with a cylindrical reference.'))
 
 
 def isolated_convection_test(run):

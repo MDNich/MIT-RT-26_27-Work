@@ -1,4 +1,5 @@
 """Exact two-volume STEP sectors and independent round-trip dimension checks."""
+import argparse
 import json
 import math
 from pathlib import Path
@@ -12,13 +13,13 @@ MOTORS = {
 ANGLE = .5
 LENGTH = .0005
 
-def create(motor, casing):
+def create(motor, casing, angle=ANGLE, length=LENGTH, suffix=''):
     ri, thickness, shell = MOTORS[motor]
     rp, ro = ri + thickness, ri + thickness + shell
-    half = math.radians(ANGLE) / 2
+    half = math.radians(angle) / 2
     output = ROOT / 'geometry'
     output.mkdir(parents=True, exist_ok=True)
-    name = f'{motor}_{casing}_sector'
+    name = f'{motor}_{casing}_sector{suffix}'
     gmsh.clear()
     gmsh.model.add(name)
     gmsh.option.setString('Geometry.OCCTargetUnit', 'M')
@@ -32,7 +33,7 @@ def create(motor, casing):
                  gmsh.model.occ.addLine(p[2], p[3]),
                  gmsh.model.occ.addCircleArc(p[3], origin, p[0])]
         face = gmsh.model.occ.addPlaneSurface([gmsh.model.occ.addCurveLoop(edges)])
-        return next(t for d, t in gmsh.model.occ.extrude([(2, face)], 0, LENGTH, 0) if d == 3)
+        return next(t for d, t in gmsh.model.occ.extrude([(2, face)], 0, length, 0) if d == 3)
     bodies = [sector(ri, rp), sector(rp, ro)]
     gmsh.model.occ.fragment([(3, bodies[0])], [(3, bodies[1])])
     gmsh.model.occ.synchronize()
@@ -56,15 +57,15 @@ def create(motor, casing):
     volumes = gmsh.model.getEntities(3)
     assert len(volumes) == 2, volumes
     measured = sorted(gmsh.model.occ.getMass(d, t) for d, t in volumes)
-    expected = sorted([.5 * math.radians(ANGLE) * LENGTH * (rp**2 - ri**2),
-                       .5 * math.radians(ANGLE) * LENGTH * (ro**2 - rp**2)])
+    expected = sorted([.5 * math.radians(angle) * length * (rp**2 - ri**2),
+                       .5 * math.radians(angle) * length * (ro**2 - rp**2)])
     for a, b in zip(measured, expected):
         assert math.isclose(a, b, rel_tol=1e-7, abs_tol=1e-16), (a, b)
     bbox = gmsh.model.getBoundingBox(-1, -1)
     # OCC boxes contain a small geometric tolerance.
-    assert abs((bbox[4] - bbox[1]) - LENGTH) < 1e-6, bbox
+    assert abs((bbox[4] - bbox[1]) - length) < 1e-6, bbox
     return dict(case=f'{motor}_{casing}', step_file=path.name, units='m',
-                axis='global Y', angle_deg=ANGLE, length_m=LENGTH,
+                axis='global Y', angle_deg=angle, length_m=length,
                 inner_radius_m=ri, phenolic_outer_radius_m=rp, outer_radius_m=ro,
                 phenolic_thickness_m=thickness, case_thickness_m=shell,
                 volumes_m3=dict(actual), roundtrip_volumes_m3=measured,
@@ -74,13 +75,35 @@ def create(motor, casing):
                 expected_nodes=369)
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config',type=Path,help='Generate a separate STEP for one configured sector; preserve original STEP files')
+    args = parser.parse_args()
     disks()
     gmsh.initialize()
     try:
-        cases = [create(m, c) for m in MOTORS for c in ['al', 'cf']]
+        if args.config:
+            cfg = json.loads(args.config.read_text())
+            motor, casing = cfg['case_id'].split('_')
+            g = cfg['geometry']
+            suffix = '_' + format(g['angle_deg'],'g').replace('.','p') + 'deg'
+            path = ROOT/'geometry'/f'{motor}_{casing}_sector{suffix}.step'
+            assert not path.exists(), 'Preserve previously generated geometry'
+            result = create(motor,casing,g['angle_deg'],g['length_m'],suffix)
+            for key in ['inner_radius_m','phenolic_outer_radius_m','outer_radius_m']:
+                assert math.isclose(result[key],g[key],abs_tol=1e-12)
+            result.update(phenolic_radial_cells=g['phenolic_radial_rows'],casing_radial_cells=g['aluminium_radial_rows'],
+                          expected_elements=cfg['expected_elements'],expected_nodes=cfg['expected_nodes'],
+                          config_file=str(args.config),
+                          qualification='Exact curved STEP geometry for the configured sector. The native mesh is generated separately as straight-sided SOLID278 elements; CAD arc volumes and finite-element polygon volumes are distinct.')
+            result.pop('radial_cells_per_material')
+            cases = [result]
+            validation_path = ROOT/'geometry'/f'{motor}_{casing}{suffix}_validation.json'
+        else:
+            cases = [create(m, c) for m in MOTORS for c in ['al', 'cf']]
+            validation_path = ROOT/'geometry'/'validation.json'
     finally:
         gmsh.finalize()
-    (ROOT / 'geometry' / 'validation.json').write_text(json.dumps(cases, indent=2) + '\n')
+    validation_path.write_text(json.dumps(cases, indent=2) + '\n')
     print(json.dumps(cases, indent=2))
 
 if __name__ == '__main__':

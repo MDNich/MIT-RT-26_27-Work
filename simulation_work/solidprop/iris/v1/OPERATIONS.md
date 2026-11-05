@@ -22,6 +22,67 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Current geometry-consistency control (November 5, 00:40 UTC)
+
+The tighter heat-flow tolerance did NOT resolve the second-row discrepancy.
+`sustainer_al_pulse7_midpoint_space160_tol1e7_smp10` schedules row two at
+6.540625 s versus 6.543750 s independently, just as the 1e-5 parent did.
+Its native balance, persistent topology, one-substep and cooling-transition
+checks pass. The independent live-profile difference is at most 0.199085 K
+through the inspected 16.3125 s prefix, but the strict event gate fails.
+Observer 22032 was stopped; the run paused cleanly at index 2453 / 17.3125 s,
+with full paused native/input/restart audits and zero remaining solver processes
+verified before any replacement launch. See `validation/native_tolerance_diagnostic_outcome.json`.
+Neither paused 160-row runtime is an accepted full convergence pair.
+
+The ONLY current dispatch is
+`sustainer_al_pulse7_midpoint_space160_geom005_smp10`, observer PID **38695**.
+The new preflight and launch succeeded, with `-smp -np 10`. Its log is
+`ansystmp/geometry_control_queue.log`; `baseline_queue.pid` and
+`geometry_control_queue.pid` identify this single observer. The storage watcher
+and keep-awake remain active. No other native case may launch alongside it.
+The original main dispatch and all old sealed inputs remain preserved and held.
+
+This is a fresh run from 22 C, not a restart of either discrepant history.
+It keeps 160/40 radial cells, two angular and two axial cells (800 solid elements,
+1809 nodes), 0.5 mm height, the original radial dimensions, reaction/material
+laws, time increments, 1e-7 heat-flow tolerance, removal cutoff and all gates.
+The total sector angle changes from 0.5 to 0.05 degrees. Controller measures use
+actual straight-sided faces/volumes: face width 2*r*sin(dtheta/2), and element
+volume 0.5*(r_outer^2-r_inner^2)*sin(dtheta)*height. The new configuration opts
+into `mesh_measure_convention=straight_sided_hex`; historical configurations
+retain `cylindrical_arc`. Regenerating the maps in memory for all four archived
+primary configurations yields exact dictionary equality; no archived package
+was rewritten. Direct triangle and hexahedral integration of the new deck gives
+area ratios within 3.3e-13 of unity and volume ratios within 1.1e-10.
+
+`validation/native_geometry_control_plan.json` records the verified geometry,
+input hashes and unchanged material/controller/driver logic. The script
+`model/prepare_geometry_control.py` prepares only fresh inputs and refuses an
+existing target; it does not launch a solver. Because exact measures and sector
+width change together, this is a JOINT geometry-consistency/angular refinement
+control; do not separately attribute their effects. Full-ring scaling changes
+from 720 to 7200 to match the reduced angle. The independent cylindrical
+reference equations remain unchanged; its continuous-sector integration is
+still a distinct numerical representation.
+
+The first 39 intervals through 0.121875 s pass native audits and the independent
+comparison (maximum profile difference 0.00012031 K). Native hot-power mismatch
+is now at most 5.20e-8 in that prefix, consistent with exported-field precision.
+This is only early heating, not confirmation of either row event. A matching
+curved two-body STEP, `geometry/sustainer_al_sector_0p05deg.step`, was exported
+and reimported; its volumes and dimensions pass the independent round-trip checks
+in `geometry/sustainer_al_0p05deg_validation.json`. Original STEP files are intact.
+The CAD arc volumes are deliberately distinguished from polygonal FE volumes.
+
+Watch both row events near 3.48/6.54 s, the pulse-to-cooling transition and the
+full terminal/native restart audit. A first heating prefix alone is not success.
+If the strict comparison fails again, pause cleanly and investigate; do not
+retune the cutoff or relax gates. If it passes, review the final geometry/spatial
+comparison before mapping remaining cases to fresh corrected packages. None of
+the remaining old sealed 0.5-degree packages has been regenerated or launched.
+The older sections below are historical evidence, not the active dispatch.
+
 ## Diagnostic hold (November 4, 23:11 UTC)
 
 The serial observer PID 54373 was deliberately stopped after a strict second-row
@@ -38,14 +99,14 @@ and ignored `ansystmp/heartbeat_checks/row_schedule_diagnosis.json`.
 
 `configs/campaign_queue.json` records `dispatch_hold`. Do not resume the stopped
 observer or the paused case, regenerate sealed inputs, or relax the event gate.
-The fresh precision diagnostic described below is the only authorized current
-dispatch; main-campaign recovery requires reviewing its event and terminal gates.
+The current geometry-consistency control above is the only active dispatch;
+main-campaign recovery requires reviewing its event and terminal gates.
 Keep ten cores per solve and one serial queue. The storage watcher remains active. The dispatch
 section below describes the preserved pre-hold lineage, not a running observer.
 
-## Active precision diagnostic (November 4, 23:16 UTC)
+## Preserved precision diagnostic (launched November 4, 23:16 UTC; now paused)
 
-Observer PID 22032 runs only
+Former observer PID 22032 ran only
 `sustainer_al_pulse7_midpoint_space160_tol1e7_smp10`, freshly started from 22 C.
 Its preflight passed and the native command/log confirm `-smp -np 10` and one
 process with ten threads. The paired ANSYS261 launcher and ANSYS executable
@@ -55,8 +116,8 @@ controller, time increments and acceptance gates are unchanged; driver/wrapper
 paths point to the new folder. Horizon remains 127 s. Source and input identity
 checks are in `validation/native_tolerance_diagnostic_plan.json`.
 
-The main campaign's `dispatch_hold` remains in force. The single diagnostic's
-observer is recorded in `ansystmp/baseline_queue.pid` and
+The main campaign's `dispatch_hold` remains in force. Before its pause, this
+observer was recorded in `ansystmp/baseline_queue.pid` and
 `ansystmp/tolerance_diagnostic_queue.pid`; its log is
 `ansystmp/tolerance_diagnostic_queue.log`. Do not start another queue or solver.
 No original convergence mapping has been replaced by an unverified diagnostic.
@@ -118,17 +179,13 @@ no acceptance gate was changed. The exact sector geometry audit and isolated
 test are reproducible with `model/check_sector_geometry_measures.py`; compact
 evidence is `validation/sector_geometry_measure_diagnosis.json`.
 
-The native precision diagnostic must still reach the second event. If its strict
-comparison fails, pause cleanly and preserve it. A justified next control would
-use a NEW sealed package with controller areas/volumes integrated from the actual
-straight-sided mesh, plus a narrower angular slice to test the cylindrical
-approximation. Keep the radial mesh, time increments, reaction and material laws
-fixed. These are proposed numerical controls, not prepared or launched jobs.
-Do not silently replace the cylindrical reference by the isolated perturbation,
-regenerate existing sealed inputs, or treat a matched event in that perturbation
-as an accepted convergence pair. The forthcoming report revision should explain
-the geometry-measure distinction and whatever native control actually verifies.
-The published PDF remains unchanged until reviewed numerical results justify it.
+The precision trial subsequently failed its second-event check. The proposed
+fresh control with mesh-consistent measures and a narrower sector is now the
+active run described above. It preserves the radial mesh, time increments,
+reaction/material laws and exact-event gate. The isolated perturbation here
+remains diagnostic evidence, not a replacement independent reference or an
+accepted convergence pair. The forthcoming report revision must explain the
+geometry-measure distinction and whichever native controls actually verify it.
 
 ## Preserved ten-core dispatch before the diagnostic hold (November 4, 21:36 UTC)
 

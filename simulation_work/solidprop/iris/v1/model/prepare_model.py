@@ -52,6 +52,14 @@ def create_mesh(cfg: dict) -> tuple[dict, list[tuple[int, float, float, float]],
     theta0 = -math.radians(g["angle_deg"]) / 2.0
     dtheta = math.radians(g["angle_deg"]) / nt
     dy = g["length_m"] / ny
+    # Historical packages used cylindrical arc measures. Preserve their
+    # reproducibility, but allow new packages to use the exact measures of
+    # the straight-sided SOLID278 coordinates below.
+    measures = cfg.get("mesh_measure_convention", "cylindrical_arc")
+    if measures not in ("cylindrical_arc", "straight_sided_hex"):
+        raise ValueError("Unknown mesh measure convention: " + measures)
+    face_angle = 2 * math.sin(dtheta / 2) if measures == "straight_sided_hex" else dtheta
+    volume_angle = math.sin(dtheta) if measures == "straight_sided_hex" else dtheta
     rp = [g["inner_radius_m"] + i * g["phenolic_thickness_m"] / nr_p for i in range(nr_p + 1)]
     ra = [g["phenolic_outer_radius_m"] + i * g["aluminium_thickness_m"] / nr_a for i in range(1, nr_a + 1)]
     radii = rp + ra
@@ -79,15 +87,15 @@ def create_mesh(cfg: dict) -> tuple[dict, list[tuple[int, float, float, float]],
                 eid += 1
                 n = [nid(ir, it, iy), nid(ir + 1, it, iy), nid(ir + 1, it + 1, iy), nid(ir, it + 1, iy),
                      nid(ir, it, iy + 1), nid(ir + 1, it, iy + 1), nid(ir + 1, it + 1, iy + 1), nid(ir, it + 1, iy + 1)]
-                volume = 0.5 * (r1 * r1 - r0 * r0) * dtheta * dy
+                volume = 0.5 * (r1 * r1 - r0 * r0) * volume_angle * dy
                 elements.append((eid, mat, n))
                 element_map[str(eid)] = {"mat": mat, "typ": mat, "nodes": n, "volume": volume}
                 if ir < nr_p:
                     rows[ir].append({"element": eid, "face": 5, "nodes": [n[i] for i in (3, 0, 4, 7)],
-                                     "area": r0 * dtheta * dy, "volume": volume})
+                                     "area": r0 * face_angle * dy, "volume": volume})
                 if ir == len(radii) - 2:
                     outer.append({"element": eid, "face": 3, "nodes": [n[i] for i in (1, 2, 6, 5)],
-                                  "area": r1 * dtheta * dy})
+                                  "area": r1 * face_angle * dy})
     assert all(len(row) == nt * ny for row in rows)
     assert len(outer) == nt * ny
     mesh = {"elements": element_map, "rows": rows, "outer": outer}

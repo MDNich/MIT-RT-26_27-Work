@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-**Current numerical hold (November 4, 23:11 UTC):** the first 160-row native case paused cleanly after its second removal occurred one time step before the independent model. Native balance and field checks pass; exact event timing does not. The spatial convergence result is not accepted. The main campaign is held while one fresh ten-core case tests a 100-times stricter solver tolerance; previously published primary/time-only results remain unchanged. See `OPERATIONS.md`.
+**Current numerical hold (November 5, 00:40 UTC):** both 160-row trials (heat-flow tolerances 1e-5 and 1e-7) fail the exact second-row removal comparison. Both are cleanly paused and preserved. One fresh ten-core control now uses a 0.05-degree sector and mesh-consistent areas/volumes. Its removal and cooling checks are pending. The main campaign remains held; published primary/time-only results are unchanged. See `OPERATIONS.md`.
 
 English-only autonomous study, authorized November 3, 2026. Read the parent
 `AGENTS.md` and `phenolic_burnthrough_plan.md` for user requirements and physics.
@@ -18,7 +18,7 @@ Ten continuing resolution cases and five deferred controls received ten-core
 successor inputs. Booster CF quarter-step has now completed its full 300 s
 horizon; nine resolution cases remain. The sustainer Al 160/40-row refinement
 is paused for the strict event mismatch described above; a separate single-case
-precision diagnostic is running. `configs/campaign_queue.json` records their names and the single
+geometry-consistency diagnostic is running. `configs/campaign_queue.json` records their names and the single
 current observer. Prior one-core results, inputs and checkpoint lineage are
 preserved. The printed primary source appendix describes those original primary
 runs; the execution change is documented separately in the report and
@@ -141,7 +141,9 @@ exposure, so finite residual ejection needs a modelling rule or calibration.
 Existing native cases retain their sealed rule and their times remain conditional
 on it. A separate native CF cutoff control is prepared for later confirmation.
 
-Four exact two-body STEP sectors are in `geometry/`. The English report is
+The four original exact two-body STEP sectors are in `geometry/`. The new
+0.05-degree sustainer Al control has a separate matching, round-trip-checked
+`geometry/sustainer_al_sector_0p05deg.step`; original geometries are preserved. The English report is
 `output/pdf/iris_phenolic_report.pdf`; accepted data and figures are in
 `docs/analysis/`. Independent radial data live in `validation/radial/` and
 are explicitly distinguished from native ANSYS states. Native output and

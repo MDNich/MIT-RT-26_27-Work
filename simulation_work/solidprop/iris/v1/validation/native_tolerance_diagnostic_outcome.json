@@ -1,0 +1,67 @@
+{
+  "checked_utc": "2026-11-05T00:36:29.154523+00:00",
+  "runtime": "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10",
+  "status": "PAUSED_AT_CHECKPOINT_STRICT_COMPARISON_FAILED",
+  "observer_stopped_pid": 22032,
+  "observer_command": "/Library/Frameworks/Python.framework/Versions/3.15/Resources/Python.app/Contents/MacOS/Python /Users/mdn/Developer/MIT-RT-26_27-Work/simulation_work/solidprop/iris/v1/model/run_queue.py sustainer_al_pulse7_midpoint_space160_tol1e7_smp10",
+  "comparison_sha256": "339d1ff6c03917f3013d890c5e7ea14e3fccd2034d66b25c09109354cdfff448",
+  "comparison_index": 2437,
+  "comparison_time_s": 16.31249999999997,
+  "max_profile_difference_K": 0.19908472283486844,
+  "exact_row_schedule_identical": false,
+  "native_control_checks_passed": true,
+  "cooling_transition_passed": true,
+  "removal_events": [
+    {
+      "scheduled_index": 1114,
+      "scheduled_time_s": 3.481249999999917,
+      "rows_scheduled": 1,
+      "native_event_bracket_s": [
+        3.478124999999917,
+        3.481249999999917
+      ],
+      "independent_scheduled_time_s": 3.481249999999917,
+      "scheduled_time_difference_s": 0.0,
+      "first_transferred_time_s": 3.484374999999917,
+      "load_transfer_passed": true
+    },
+    {
+      "scheduled_index": 2093,
+      "scheduled_time_s": 6.540624999999898,
+      "rows_scheduled": 2,
+      "native_event_bracket_s": [
+        6.537499999999898,
+        6.540624999999898
+      ],
+      "independent_scheduled_time_s": 6.5437499999997435,
+      "scheduled_time_difference_s": 0.0031249999998452793,
+      "first_transferred_time_s": 6.543749999999899,
+      "load_transfer_passed": true
+    }
+  ],
+  "conclusion": "A 100-fold stricter native heat-flow tolerance does not resolve the second-row event mismatch. Keep original physics, thresholds and strict gates; test verified geometry consistency in a fresh package.",
+  "native_paused_validation": {
+    "runtime": "sustainer_al_pulse7_midpoint_space160_tol1e7_smp10",
+    "passed": true,
+    "accepted_steps": 2453,
+    "time_s": 17.31249999999998,
+    "status": "PAUSED_AT_CHECKPOINT",
+    "max_energy_relative_error": 8.033805297177779e-05,
+    "max_hot_power_relative_error": 8.517913531074137e-07,
+    "max_abs_mass_residual_kg": 4.968873939606037e-21,
+    "removal_steps": 2,
+    "warning_blocks": [
+      "                         ELAPSED TIME =       6.543   TIME= 18:14:42\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+      "                         ELAPSED TIME =    4927.620   TIME= 19:36:43\n During this session the elapsed time exceeds the CPU time by 380%.      \n This often indicates either a lack of physical memory (RAM) required    \n to efficiently handle this simulation or a particularly slow hard       \n drive configuration.  This simulation can be expected to run faster on  \n identical hardware if additional RAM or a faster hard drive             \n configuration is made available.  For more details, please see the      \n Mechanical APDL Performance Guide which is part of the Ansys Help       \n system.                                                       ",
+      "                         ELAPSED TIME =    4927.621   TIME= 19:36:43\n During this session a solution was performed using 10 CPU cores in      \n shared-memory parallel (SMP) mode (-np 10).  It is strongly             \n recommended to use distributed-memory parallel (DMP) mode instead       \n (-dis -np 10).  DMP mode typically outperforms SMP mode, even when      \n running on a single system.  For more information, see the Mechanical   \n APDL Parallel Processing Guide in the Ansys Help system.                "
+    ],
+    "native_logs": [
+      {
+        "name": "solve_20261104_181436.out",
+        "sha256": "9eb4f7bf4256ae4fb75a62f5b078c51bbedc05b7565c6bbfe4b83864a5afba2b"
+      }
+    ],
+    "config_sha256": "aeb5504cce381b1cb224d3f04d9c8876106451f63716a908687e1037f691f114"
+  },
+  "pause_verified_utc": "2026-11-05T00:36:52.151158+00:00"
+}
