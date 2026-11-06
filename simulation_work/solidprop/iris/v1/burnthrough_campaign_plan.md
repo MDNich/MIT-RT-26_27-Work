@@ -148,6 +148,24 @@ Only inputs have been checked. Run this native verification on ten SMP cores
 after CF320 has exited and its observer has completed the terminal audits.
 Keep material laws and recession absent in this isolated conduction check.
 
+A first transient finite-volume implementation now couples those components in
+`model/moving_surface_transient.py`. It solves end temperatures, reaction,
+surface recession, blowing and conduction together, then conservatively transfers
+the reacted inventory over the swept cylindrical volume. All boundary product
+fluxes use the same time-integrated surface area. Close each cell energy equation
+and both cumulative ledgers. Merge a front remnant below half the design pitch;
+preserve all unaffected interfaces and integrate the final contact time. The
+manufactured zero-flux, exact pure-char recession and nonuniform mixed-coupon
+checks and the checkpoint interruption test are recorded under `validation/`.
+
+The sealed independent campaign `configs/moving_surface_campaign.json` runs
+160/40 cells at 0.08 and 0.04 s, then 320/80 and 640/160 at 0.04 s and
+640/160 at 0.02 s. Accepted steps may be smaller for reaction progress, surface
+travel, output and the final event. Compare all prescribed shared times,
+temperature profiles and left/right event brackets, including the initial
+massless-face reconstruction. Keep these candidate results separate from the
+previous finite-row study, native ANSYS, and physical motor-lifetime claims.
+
 ### 3. Give high-temperature backing a defensible meaning
 
 For Al, obtain a documented alloy surrogate with temperature-dependent heat

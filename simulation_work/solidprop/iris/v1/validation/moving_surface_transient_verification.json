@@ -1,0 +1,75 @@
+{
+  "checked_utc": "2026-11-06T01:44:55.771362+00:00",
+  "passed": true,
+  "sources": {
+    "moving_surface_transient": "7b184977bc862c3d7da968cef11d6d065735ea1a5d7441979824570273a01bbe",
+    "check_moving_surface_transient": "5a606c5bfc4ca21a9a0198a677f1803f01edaca94997483b188bf29c83823325",
+    "moving_surface_boundary": "8695bcba92d04b5c30aa4774c99a74099ea952335b9a323766bb31a2b18e0bb0",
+    "moving_surface_conduction": "ecd7cbf9213db178bb879492c619f97e4b1991d985b9c7f5dd16381043195a09",
+    "moving_surface_remap": "2d1a9b29d2bf284d943e20637421b69ac7e3d9c1d02d5eeed97cb47188cbd074",
+    "moving_surface_thermochemistry": "7219615b91105aa466bb4aecf126d2b7f3e8f055071f6770d5fc2b0366540e6b",
+    "radial_model": "fca10061d1737ad298b0b760c054e45b3813556a1c89092c5127b12be14bdbb6",
+    "coupler": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69"
+  },
+  "plan_sha256": "b2895fa81c2d3cb3d0c520e05742cb4da26200c77c1abde61f1ed0f6070c027e",
+  "stationary": {
+    "steps": 9,
+    "max_cumulative_mass_relative_error": 0.0,
+    "max_cumulative_energy_relative_error": 0.0,
+    "max_step_energy_error_J_per_rad_m": 0.0
+  },
+  "isothermal_char": [
+    {
+      "cells": 17,
+      "step_ceiling_s": 0.67,
+      "analytic_event_s": 60.35903635708799,
+      "coupled_event_s": 60.3590363570871,
+      "max_temperature_departure_K": 2.2737367544323206e-13,
+      "steps": 91,
+      "max_cumulative_mass_relative_error": 1.9625616910855027e-14,
+      "max_cumulative_energy_relative_error": 1.4149570068223564e-15,
+      "max_step_energy_error_J_per_rad_m": 2.837623469531536e-10
+    },
+    {
+      "cells": 43,
+      "step_ceiling_s": 0.171,
+      "analytic_event_s": 60.35903635708799,
+      "coupled_event_s": 60.35903635708291,
+      "max_temperature_departure_K": 5.4569682106375694e-12,
+      "steps": 353,
+      "max_cumulative_mass_relative_error": 8.843072090420559e-14,
+      "max_cumulative_energy_relative_error": 7.199907936355165e-15,
+      "max_step_energy_error_J_per_rad_m": 5.511537892743945e-10
+    }
+  ],
+  "nonuniform_mixed_coupon": [
+    {
+      "step_ceiling_s": 0.08,
+      "coupled_event_s": 4.560288087369849,
+      "terminal_inner_casing_cell_C": 976.8015683019718,
+      "steps": 73,
+      "max_cumulative_mass_relative_error": 9.822171204903049e-14,
+      "max_cumulative_energy_relative_error": 1.5330874744450487e-12,
+      "max_step_energy_error_J_per_rad_m": 6.277987552039122e-08
+    },
+    {
+      "step_ceiling_s": 0.04,
+      "coupled_event_s": 4.558362048096513,
+      "terminal_inner_casing_cell_C": 977.3479770629494,
+      "steps": 114,
+      "max_cumulative_mass_relative_error": 8.008660040676836e-14,
+      "max_cumulative_energy_relative_error": 1.2437137016803626e-12,
+      "max_step_energy_error_J_per_rad_m": 3.231863843211613e-08
+    },
+    {
+      "step_ceiling_s": 0.02,
+      "coupled_event_s": 4.557695492902154,
+      "terminal_inner_casing_cell_C": 977.7639560681293,
+      "steps": 228,
+      "max_cumulative_mass_relative_error": 2.984382130659514e-13,
+      "max_cumulative_energy_relative_error": 1.5837716299061314e-12,
+      "max_step_energy_error_J_per_rad_m": 3.0690084029671993e-08
+    }
+  ],
+  "qualification": "Manufactured independent coupled tests only. Coupon times are not Iris motor results."
+}

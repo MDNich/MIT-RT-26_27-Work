@@ -22,6 +22,24 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Coupled moving-wall campaign, November 5, 20:48 EST
+
+The prior continuous finite-row workers have exited. A new independent worker
+for the coupled model, PID 43139, uses the same exclusive worker lock. Check
+`ansystmp/moving_surface_campaign/worker.json`, `status.json`, `worker.log`,
+`error.json` and `complete.json` and verify the actual process before acting.
+Use `configs/moving_surface_campaign.json` as sealed. Source hashes and the
+manufactured verification receipt are pinned; never regenerate or edit this
+plan. The new runner resumes its own checkpoints and refuses mismatched inputs.
+The historical independent 960 s horizon remains a cap; stop each case at
+geometric exhaustion. Keep the inherited 150 C CF/300 C Al crossings separately.
+
+Candidate component and coupled synthetic tests pass. A nonuniform synthetic
+CF-backed coupon resumed byte-identically after the first property flag and
+after cell mergers. No new ANSYS solve was dispatched. Only CF320 is active on
+ten cores under observer 28607. Complete its terminal audits before launching
+the already sealed inert annular native benchmark. See the following handoff.
+
 ## Current handoff, November 5, 20:31 EST
 
 The independent refinement worker 31732 completed all eight fresh integrations
