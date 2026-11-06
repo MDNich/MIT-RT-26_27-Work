@@ -7,6 +7,8 @@ import argparse
 import base64
 import fcntl
 import json
+import os
+from pathlib import PureWindowsPath
 import subprocess
 import sys
 import time
@@ -18,8 +20,9 @@ import native_snapshot_verification as snapshots
 import audit_native_cf_tail as tail
 import audit_sector_exposures as whole
 from continuous_heating_campaign import digest
-from ops import ROOT, TMP, UNC, StorageLimitError, atomic, disks, guest, stop_runs, utc
+from ops import ROOT, TMP, UNC, StorageLimitError, atomic, disks, guest, host_check, stop_runs, utc
 
+CASES=('annular','char8','char16',*snapshots.CASES,*tail.JOBS,*whole.JOBS)
 CF='sustainer_cf_pulse7_midpoint_joint320_geom005_smp10'
 NATIVE_GUARD=r"""$solvers=@(Get-CimInstance Win32_Process|Where-Object {$_.Name -match '^(ANSYS(?:\d+)?|mpiexec|hydra_pmi_proxy)\.exe$'})
 if($solvers.Count){throw 'Another native solver or wrapper is active'}
@@ -227,15 +230,82 @@ def collect(case,run,job):
     if registry: atomic(TMP/'active_runs.json',[])
 
 
+def sealed_case(case):
+    package,run,job,deck,files=spec(case)
+    sha=expected_sha(case,package,job)
+    if digest(package/deck)!=sha:
+        raise ValueError('Sealed native deck changed: '+case)
+    return package,run,job,deck,files,sha
+
+
+def wait_for_terminal(run,job):
+    """Observe only the PowerShell wrapper originally launched in this runtime."""
+    intent=json.loads((run/'intent.json').read_text())
+    launch_proof=json.loads((run/'guest_launch.json').read_text(encoding='utf-8-sig'))
+    pid=int(launch_proof['ProcessId'])
+    if pid<=0 or launch_proof['ReturnValue']!=0 or intent['nonce']!=launch_proof['nonce']:
+        raise ValueError('Inconsistent acknowledgement from the guest')
+    expected=PureWindowsPath('C:/IrisStudy/runs',run.name,'dispatch.ps1')
+    next_probe=time.monotonic()+60
+    while True:
+        host_check()
+        if any((run/name).exists() for name in ('guest_failure.json','sector_failure.json','PAUSE_REQUESTED')):
+            raise RuntimeError(f'{job}: guest failure or pause; inspect the existing runtime')
+        if (run/'guest_terminal.json').exists():
+            return
+        if time.monotonic()>=next_probe:
+            disks()
+            cmd=(f"$p=Get-CimInstance Win32_Process -Filter 'ProcessId={pid}';"
+                 f"if($p.Name -eq 'powershell.exe' -and $p.CommandLine -like '*{expected}*'){{'ACTIVE'}}else{{'ABSENT'}}")
+            if guest("$ErrorActionPreference='Stop';"+cmd)!='ACTIVE' and not (run/'guest_terminal.json').exists():
+                raise RuntimeError(f'{job}: original wrapper exited without a terminal receipt')
+            next_probe=time.monotonic()+60
+        time.sleep(2)
+
+
+def series(first):
+    """Continue fresh continuous-study jobs in order while the dispatch lock is held."""
+    remaining=CASES[CASES.index(first):]
+    reasons=check_idle(first,spec(first)[1])
+    if reasons:
+        raise RuntimeError('; '.join(reasons))
+    status=dict(pid=os.getpid(),first=first,started_utc=utc(),accepted=[])
+    path=TMP/'native_wall_series.json'
+    try:
+        for case in remaining:
+            disks()
+            pkg,run,job,deck,files,sha=sealed_case(case)
+            status.update(case=case,phase='launch',updated_utc=utc())
+            atomic(path,status)
+            launch(case,pkg,run,job,deck,files,sha)
+            status.update(phase='observing',updated_utc=utc())
+            atomic(path,status)
+            wait_for_terminal(run,job)
+            disks()
+            status.update(phase='audit',updated_utc=utc())
+            atomic(path,status)
+            collect(case,run,job)
+            status['accepted'].append(dict(case=case,utc=utc(),terminal_sha256=digest(run/'guest_terminal.json')))
+            print(f'{utc()} accepted {case}',flush=True)
+        status.update(phase='completed',updated_utc=utc())
+        atomic(path,status)
+    except StorageLimitError:
+        raise
+    except Exception as exc:
+        # A storage latch forbids all further study writes apart from stop markers.
+        host_check()
+        status.update(phase='needs_inspection',error=str(exc),updated_utc=utc())
+        atomic(path,status)
+        raise
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('case',choices=('annular','char8','char16',*snapshots.CASES,*tail.JOBS,*whole.JOBS))
-    p.add_argument('action',choices=('readiness','check-wrapper','launch','collect'))
+    p.add_argument('case',choices=CASES)
+    p.add_argument('action',choices=('readiness','check-wrapper','launch','collect','series'))
     args=p.parse_args()
     disks()
-    package,run,job,deck,files=spec(args.case)
-    sha=expected_sha(args.case,package,job)
-    if digest(package/deck)!=sha: raise ValueError('Sealed native deck changed')
+    package,run,job,deck,files,sha=sealed_case(args.case)
     if args.action=='check-wrapper':
         check_wrapper(wrapper(run,job,deck,files,sha,'check_only'))
         print('Guest PowerShell parsed the wrapper. No native launch.')
@@ -245,7 +315,8 @@ def main():
         return
     with (TMP/'native_wall_dispatch.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-        if args.action=='launch': launch(args.case,package,run,job,deck,files,sha)
+        if args.action=='series': series(args.case)
+        elif args.action=='launch': launch(args.case,package,run,job,deck,files,sha)
         else: collect(args.case,run,job)
 
 

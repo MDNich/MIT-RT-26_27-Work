@@ -22,6 +22,32 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Serial native continuation after CF320, November 5, 23:03 EST
+
+The existing guarded launcher now also supports `annular series`. Use it once
+**after** confirming CF320 terminal/restart acceptance, the active observer's
+exit and `annular readiness`. It takes the same exclusive dispatch lock as a
+manual launch or collection. It runs the 19 continuous-study benchmarks,
+snapshots, terminal windows, pilots and full exposures in their existing order.
+Each job runs on ten SMP cores. The next job starts only after the current
+guest exits, its original launch and copy receipts match, and its numerical
+audit passes. The optional series action never dispatches the old pulse queue.
+
+The ignored progress file is `ansystmp/native_wall_series.json`. Check the
+listed PID, run directory, launch identity and terminal/failure records before
+acting. During a live series, observe the progress file. For an interrupted
+series, reconcile the existing runtime first. Collect a completed case before
+starting a series at the next fresh case. For a failed audit, preserve its
+inputs and outputs, diagnose the cause and use a separately reviewed successor
+if necessary. An ambiguous guest launch must never be retried blindly.
+
+Eleven synthetic checks exercised ordered execution, an occupied resource, an
+ambiguous start, guest failure, audit rejection, a changed nonce, a missing
+wrapper, pause markers and terminal-receipt timing. All 19 sealed entry decks
+matched their fingerprints. The real readiness check returned the missing
+CF320 terminal receipts, registered study runtime and live observer. A new
+series has not been started.
+
 ## Evolving-casing heating sensitivity, November 5, 22:58 EST
 
 Completed all 24 planned finite-volume runs and eight independent nodal
