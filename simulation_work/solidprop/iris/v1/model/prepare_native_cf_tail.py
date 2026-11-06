@@ -22,7 +22,7 @@ from ops import ROOT, atomic, disks
 from prepare_model import create_mesh
 from radial_model import TABLE
 
-PACKAGE=ROOT/'configs/native_verification/cf_tail_char_smp10'
+PACKAGE=ROOT/'configs/native_verification/cf_tail_char_smp10_r2'
 AUDIT=ROOT/'validation/cf_backing_audit.json'
 PLAN=ROOT/'configs/cf_backing_campaign.json'
 RHO=600.
@@ -48,6 +48,10 @@ def step_reference(case,n,dtlim,start_temp,wall,geom,ri,ro,fields=None):
     history=[]
     elapsed=0.
     for _ in range(4000):
+        # Each fresh uniformly heated sector has transverse edge length equal
+        # to its live radial pitch. The stored quantities are per radian and metre.
+        pitch=(ro-r[0])/n
+        geom=math.cos(pitch/(2*ro))
         old=t
         j=char_rate(old[0],law)
         film=blowing(h['h0_W_m2_K'],j,h['gas_cp_J_kg_K'])
@@ -131,6 +135,8 @@ def build(item,d,n,dt,job):
              phenolic_thickness_m=(ro-ri)/2.,aluminium_thickness_m=(ro-ri)/2.,
              phenolic_radial_rows=n//2,aluminium_radial_rows=n//2)
     nt,ny=g['angular_divisions'],g['axial_divisions']
+    pitch=(ro-ri)/n
+    g.update(angle_deg=math.degrees(nt*pitch/ro),length_m=ny*pitch)
     ring=(nt+1)*(ny+1)
     mesh,nodes,elements=create_mesh(dict(geometry=g,mesh_measure_convention='straight_sided_hex'))
     facet=math.cos(math.radians(g['angle_deg'])/(2*nt))
@@ -143,28 +149,31 @@ def build(item,d,n,dt,job):
     for i,(tt,hh,kk) in enumerate(zip(TEMP,H,COND),1):
         lines.extend([f'MPTEMP,{i},{tt:.16g}',f'MPDATA,ENTH,1,{i},{hh:.16g}',f'MPDATA,KXX,1,{i},{kk:.16g}'])
     lines += [f'N,{idx},{x:.16g},{y:.16g},{z:.16g}' for idx,x,y,z in nodes]
-    lines += ['EN,'+','.join(map(str,[eid,*ids])) for eid,_,ids in elements]
+    connectivity = ['EN,'+','.join(map(str,[eid,*ids])) for eid,_,ids in elements]
     lines+=['FINISH',f'RN={n}',f'NRING={ring}',f'RSTART={ri:.16g}',f'REND={ro:.16g}',f'FCOS={facet:.16g}',
         f'DTLIM={dt}',f'JFAC={law["reference_rate_kg_m2_s"]*partial**law["pressure_exponent"]:.16g}',
         f'JCAP={law["mass_transfer_cap_kg_m2_s"]*partial:.16g}',f'EOVER={law["activation_energy_J_mol"]/R:.16g}',
         f'TREFK={law["reference_temperature_K"]:.16g}',f'HCOST={law["effective_endothermic_cost_J_kg"]:.16g}',
         f'HBASE={h["h0_W_m2_K"]:.16g}',f'TG={h["gas_temperature_C"]:.16g}',f'GCP={h["gas_cp_J_kg_K"]:.16g}',
         f'*DIM,TN,ARRAY,{len(nodes)}',f'*DIM,HV,ARRAY,{len(nodes)}',f'*DIM,XXOLD,ARRAY,{n+2}',
-        f'*DIM,XXNEW,ARRAY,{n+2}',f'*DIM,HPREF,ARRAY,{ring*(n+2)}',f'*DIM,HNEW,ARRAY,{ring*(n+2)}',f'*DIM,DXR,ARRAY,{ring}',f'*DIM,DZR,ARRAY,{ring}',f'*DIM,YN,ARRAY,{ring}']
+        f'*DIM,XXNEW,ARRAY,{n+2}',f'*DIM,HPREF,ARRAY,{ring*(n+2)}',f'*DIM,HNEW,ARRAY,{ring*(n+2)}',f'*DIM,DXR,ARRAY,{ring}',f'*DIM,YN,ARRAY,{ring}']
     lines+=table_apdl('HTAB',TEMP,H)+table_apdl('TTAB',H,TEMP)+table_apdl('BCURVE',w[:,0],w[:,1])
-    for j,x,y,z in nodes[:ring]:
-        lines += [f'DXR({j})={x/ri:.16g}',f'DZR({j})={z/ri:.16g}',f'YN({j})={y:.16g}']
+    for j,_,_,_ in nodes[:ring]:
+        it,iy=divmod(j-1,ny+1)
+        lines += [f'DXR({j})={it-nt/2}',f'YN({j})={iy}']
     for i,t in enumerate(start):
         lines += ['*DO,JR,1,NRING',f'TN({i}*NRING+JR)={t:.16g}','*ENDDO']
     lines+=['RPOS=RSTART','ELTIME=0',f'*DO,ISTEP,1,{math.ceil(2*ref[-1]["time_s"]/dt)+5}',
+            'PITCH=(REND-RPOS)/RN','DTH=PITCH/REND','FCOS=COS(DTH/2)',
             'TSFACE=0','*DO,JR,1,NRING','TSFACE=TSFACE+TN(JR)/NRING','*ENDDO',
             'JK=JFAC*EXP(-EOVER*(1/(TSFACE+273.15)-1/TREFK))','JACT=1/(1/JK+1/JCAP)',
             'BB=JACT*GCP/HBASE','HACT=HBASE*BB/(EXP(BB)-1)','TLOAD=TG-JACT*HCOST/HACT',
             f'VFACE=JACT/({RHO}*FCOS)','DTNOW=DTLIM','RNEW=RPOS+VFACE*DTNOW','*IF,RNEW,GE,REND,THEN',
             'DTNOW=(REND-RPOS)/VFACE','RNEW=REND','*ENDIF','TEND=ELTIME+DTNOW',
-            'TSOURCE=TEND',f'*IF,TSOURCE,GT,{w[-1,0]:.16g},THEN',f'TSOURCE={w[-1,0]:.16g}','*ENDIF','TBACK=BCURVE(TSOURCE)','/PREP7',
+            'TSOURCE=TEND',f'*IF,TSOURCE,GT,{w[-1,0]:.16g},THEN',f'TSOURCE={w[-1,0]:.16g}','*ENDIF','TBACK=BCURVE(TSOURCE)','/PREP7','*IF,ISTEP,GT,1,THEN','EDELE,ALL','*ENDIF',
             '*DO,IR,0,RN','RLOC=RPOS+(REND-RPOS)*IR/RN','*DO,JR,1,NRING','ND=IR*NRING+JR',
-            'NMODIF,ND,RLOC*DXR(JR),YN(JR),RLOC*DZR(JR)','*ENDDO','*ENDDO','FINISH',
+            'THETA=DXR(JR)*DTH','NMODIF,ND,RLOC*SIN(THETA),YN(JR)*PITCH,RLOC*COS(THETA)',
+            '*ENDDO','*ENDDO',*connectivity,'FINISH',
             '/SOLU','ANTYPE,TRANS,NEW','THOPT,FULL','TRNOPT,FULL','TINTP,,,,1','KBC,1',
             'AUTOTS,OFF','NSUBST,1,1,1','TIME,DTNOW','NEQIT,60','*DO,ND,1,RN*NRING',
             'IC,ND,TEMP,TN(ND)','*ENDDO','*DO,JR,1,NRING','ND=RN*NRING+JR',
@@ -177,7 +186,7 @@ def build(item,d,n,dt,job):
             '*CFOPEN,tail_field,txt,,APPEND','*DO,ND,1,(RN+1)*NRING','*GET,TNEND,NODE,ND,TEMP',
             'HV(ND)=HTAB(TNEND)','TNBEG=TN(ND)','*VWRITE,ISTEP,ND,TNBEG,TNEND','(2(F8.0,1X),2(E22.14,1X))',
             '*ENDDO','*CFCLOSE','*CFOPEN,tail_steps,txt,,APPEND','*VWRITE,ISTEP,TEND,DTNOW,STIME,RPOS,RNEW,JACT,RFHEAT',
-            '(F8.0,7(1X,E16.9))','*CFCLOSE','FINISH','*IF,RNEW,GE,REND,THEN','*EXIT','*ENDIF',
+            '(F5.0,1X,F13.9,2(1X,E15.9),2(1X,F14.12),1X,E17.10,1X,E19.11)','*CFCLOSE','FINISH','*IF,RNEW,GE,REND,THEN','*EXIT','*ENDIF',
             '! Conserve enthalpy in each nodal annular control volume, independently on each transverse ray.',
             'XXOLD(1)=0.5*RPOS**2','XXNEW(1)=0.5*RNEW**2','XXOLD(RN+2)=0.5*REND**2','XXNEW(RN+2)=0.5*REND**2',
             '*DO,IR,1,RN','DR=(REND-RPOS)/RN','RA=RPOS+(IR-1)*DR','XXOLD(IR+1)=0.5*RA**2+DR*(3*RA+DR)/6',
@@ -185,7 +194,7 @@ def build(item,d,n,dt,job):
             '*DO,IB,1,RN+1','*DO,JR,1,NRING','II=(IB-1)*NRING+JR',
             'HPREF(II+NRING)=HPREF(II)+(XXOLD(IB+1)-XXOLD(IB))*HV(II)','*ENDDO','*ENDDO',
             'JSCAN=1','*DO,IR,1,RN+2','*DO,IB,JSCAN,RN+1','JSCAN=IB',
-            '*IF,XXNEW(IR),LE,XXOLD(IB+1),THEN','*EXIT','*ENDIF','*ENDDO',
+            'SCANDEL=(XXNEW(IR)-XXOLD(IB+1))/((REND-RPOS)*REND)','*IF,SCANDEL,LE,0,THEN','*EXIT','*ENDIF','*ENDDO',
             '*DO,JR,1,NRING','II=(JSCAN-1)*NRING+JR','JJ=(IR-1)*NRING+JR',
             'HNEW(JJ)=HPREF(II)+(XXNEW(IR)-XXOLD(JSCAN))*HV(II)','*ENDDO','*ENDDO',
             '*DO,IR,1,RN+1','*DO,JR,1,NRING','JJ=(IR-1)*NRING+JR',
@@ -193,7 +202,7 @@ def build(item,d,n,dt,job):
             'TN(JJ)=TTAB(HMEAN)','*ENDDO','*ENDDO','RPOS=RNEW','ELTIME=TEND','*ENDDO',
             '*IF,RNEW,GE,REND,THEN','/COM,IRIS_CF_TAIL_EXHAUSTED','*ENDIF','/EXIT,NOSAVE']
     return '\n'.join(lines)+'\n',dict(job=job,start_s=event,independent_full_event_s=d['events']['exhaustion'][1],
-        radius_m=[ri,ro],facet_cos=facet,n=n,dt=dt,nodes=len(nodes),ringsize=ring,geometry=g,
+        transverse_geometry='One axial and circumferential edge per live radial pitch. Per-step polygon area used for reaction and boundary heat.',radius_m=[ri,ro],facet_cos=facet,n=n,dt=dt,nodes=len(nodes),ringsize=ring,geometry=g,
         initial_nodal_C=start.tolist(),backing_trace=w.tolist(),reference=ref,
         reference_event_s=ref[-1]['time_s'],initial_donor_virgin_mass_fraction=virgin_fraction,
         largest_donor_virgin_mass_fraction=local,initial_reference_density_kg_m3=RHO,

@@ -33,7 +33,6 @@ def evaluate(e,cfg,steps,field,radial_history=None):
     if not np.isfinite(steps).all() or not np.isfinite(field).all(): raise ValueError('Nonfinite native value')
     g=e['geometry']
     nt,ny=g['angular_divisions'],g['axial_divisions']
-    scale=nt*math.sin(math.radians(g['angle_deg'])/nt)*g['length_m']
     angular=np.ones(nt+1);angular[[0,-1]]=.5
     axial=np.ones(ny+1);axial[[0,-1]]=.5
     weights=np.outer(angular,axial).ravel()/(nt*ny)
@@ -52,6 +51,9 @@ def evaluate(e,cfg,steps,field,radial_history=None):
     original=RHO*.5*(ro-last)*(ro+last)
     for i,line in enumerate(steps):
         step,time,dt,native_dt,r,rnew,rate,outer=line
+        pitch=(ro-r)/n
+        facet=math.cos(pitch/(2*ro))
+        scale=nt*math.sin(pitch/ro)*ny*pitch
         if not (step==i+1 and dt>0. and dt<=e['dt']+1e-8 and abs(time-elapsed-dt)<2e-8 and
                 abs(native_dt-dt)<1e-9 and abs(last-r)<8e-11 and r<rnew<=ro+8e-11):
             raise ValueError('Native radius/time is discontinuous')
@@ -105,12 +107,13 @@ def evaluate(e,cfg,steps,field,radial_history=None):
 def fixture(job):
     e,cfg=sources(job)
     g=e['geometry']
-    scale=g['angular_divisions']*math.sin(math.radians(g['angle_deg'])/g['angular_divisions'])*g['length_m']
     raw=[]
     history=step_reference(cfg,e['n'],e['dt'],e['initial_nodal_C'],np.array(e['backing_trace']),e['facet_cos'],*e['radius_m'],fields=raw)
     r=e['radius_m'][0]
     steps,fields=[],[]
     for i,(h,(before,after)) in enumerate(zip(history,raw),1):
+        pitch=(e['radius_m'][1]-r)/e['n']
+        scale=g['angular_divisions']*math.sin(pitch/e['radius_m'][1])*g['axial_divisions']*pitch
         steps.append([i,h['time_s'],h['dt_s'],h['dt_s'],r,h['hot_radius_m'],h['rate_kg_m2_s'],h['back_power_W_per_rad_m']*scale])
         r=h['hot_radius_m']
         fields.append(np.column_stack((np.full(e['nodes'],i),np.arange(1,e['nodes']+1),
@@ -154,5 +157,5 @@ if __name__=='__main__':
     parser.parse_args()
     disks()
     result={job:fixture(job) for job in JOBS}
-    atomic(ROOT/'validation/cf_tail_reader_fixtures.json',dict(scope='Synthetic histories only, no native output.',
+    atomic(ROOT/'validation/cf_tail_r2_reader_fixtures.json',dict(scope='Synthetic histories only, no native output.',
            preflight=result,source_sha256=digest(Path(__file__)),manifest_sha256=digest(PACKAGE/'manifest.json')))
