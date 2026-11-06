@@ -22,6 +22,29 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Revised continuous native queue, November 6, 05:11 UTC
+
+Both original R1 startup pilots passed all three free-field increments from
+ambient to 0.1 s. Their maximum temperature discrepancies were below
+2e-11 K. The R1 series ended at the planned host-only reservation before
+dispatching wallsa. Its accepted receipts and final state are preserved in
+`ansystmp/series_cf_windows_and_original_startup.json`.
+
+The revised sealed package is `configs/native_verification/whole_sector_r2`.
+Its ten input decks reproduced byte for byte in the preparation check.
+Two startup and four terminal replay fixtures passed with synthetic nodal
+fields, including accumulated balances across the donor handoff. The new
+serial observer started at 05:11 UTC with `start2al series`. The order is
+start2al/start2cf, end2sa/end2sc/end2ba/end2bc, wall2sa/wall2sc/wall2ba/wall2bc.
+The four jobs beginning with end2 evolve both liner and casing for the last
+five or six steps of the independently supplied history. The four jobs
+beginning with wall2 start from ambient temperature.
+
+Check the current PID, phase, registry, terminal receipt and guest process
+before acting. Collect a completed job with the matching job ID. Never retry
+an ambiguous launch. Only the read-only PowerShell syntax and process checks
+retry the identified Parallels transport errors.
+
 ## Both native CF end windows audited, November 6, 05:09 UTC
 
 All six R3 runs passed the native log, field, mass and energy checks. The two

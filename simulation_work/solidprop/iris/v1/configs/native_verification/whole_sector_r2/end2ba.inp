@@ -1,0 +1,19 @@
+/CLEAR,NOSTART
+! In-process controller. Native execution and acceptance are separate.
+*PYTHON
+import hashlib, json, sys
+from pathlib import Path
+pkg = Path('\\\\Mac\\Home\\Developer\\MIT-RT-26_27-Work\\simulation_work\\solidprop\\iris\\v1\\configs\\native_verification\\whole_sector_r2')
+archive = pkg / 'controller.zip'
+signature = '6ff2c7ff92e9fde4eaa3fa8a21032247a684c12bf2306a6fde5ecb00c653abf8'
+if hashlib.sha256(archive.read_bytes()).hexdigest() != signature:
+    raise RuntimeError('Controller package hash mismatch')
+raw = (pkg / 'end2ba_settings.json').read_bytes()
+if hashlib.sha256(raw).hexdigest() != '07fdd6712df6d210d655c5a724286f5fc3c3bf23e2700c421958d3df73037ac6':
+    raise RuntimeError('Configuration hash mismatch')
+sys.path.insert(0,str(archive))
+from sector_mapdl import execute
+execute(mapdl,json.loads(raw),signature,'\\\\Mac\\Home\\Developer\\MIT-RT-26_27-Work\\simulation_work\\solidprop\\iris\\v1')
+*ENDPY
+/COM,IRIS_WHOLE_SECTOR_RETURNED
+/EXIT,NOSAVE

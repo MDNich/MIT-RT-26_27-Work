@@ -19,10 +19,12 @@ import audit_native_conduction_mode as mode
 import native_snapshot_verification as snapshots
 import audit_native_cf_tail as tail
 import audit_sector_exposures as whole
+import prepare_sector_endpoint as endpoint
 from continuous_heating_campaign import digest
 from ops import ROOT, TMP, UNC, StorageLimitError, atomic, disks, guest, host_check, stop_runs, utc
 
-CASES=('annular','char8','char16',*snapshots.CASES,*tail.JOBS,*whole.JOBS)
+CASES=('annular','char8','char16',*snapshots.CASES,*tail.JOBS,*whole.JOBS,*endpoint.JOBS)
+SERIES_CASES=tuple(case for case in CASES if case not in whole.JOBS[2:])
 CF='sustainer_cf_pulse7_midpoint_joint320_geom005_smp10'
 NATIVE_GUARD=r"""$solvers=@(Get-CimInstance Win32_Process|Where-Object {$_.Name -match '^(ANSYS(?:\d+)?|mpiexec|hydra_pmi_proxy)\.exe$'})
 if($solvers.Count){throw 'Another native solver or wrapper is active'}
@@ -30,6 +32,8 @@ if($solvers.Count){throw 'Another native solver or wrapper is active'}
 
 
 def spec(case):
+    if case in endpoint.JOBS:
+        return endpoint.PACKAGE,TMP/'runs'/('sector_'+case),case,case+'.inp',[case+'.out','sector_fields.zip','sector_terminal.json']
     if case in whole.JOBS:
         return whole.PACKAGE,TMP/'runs'/('sector_'+case),case,case+'.inp',[case+'.out','sector_fields.zip','sector_terminal.json']
     if case=='annular':
@@ -51,6 +55,27 @@ def expected_sha(case,package,job):
 def prerequisites(case):
     reasons=[]
     p=ROOT/'validation'
+    if case in whole.JOBS[2:]:
+        reasons.append('Pre-dispatch hold: original terminal brick proportions exceed the physical-mesh target')
+    if case in endpoint.JOBS:
+        fixture=p/'sector_endpoint_fixtures.json'
+        manifest=endpoint.PACKAGE/'manifest.json'
+        if not fixture.exists() or not manifest.exists():
+            reasons.append('Sealed endpoint inputs and reader fixtures pending')
+        else:
+            proof=json.loads(fixture.read_text())
+            spec_data=json.loads((endpoint.PACKAGE/(case+'.json')).read_text())
+            if not (proof['synthetic_only'] and proof['archive_sha256']==digest(endpoint.PACKAGE/'controller.zip')
+                    and proof['auditor_sha256']==digest(ROOT/'model/audit_sector_endpoint.py')
+                    and proof['manifest_sha256']==digest(manifest)
+                    and spec_data['geometry_audit_sha256']==digest(endpoint.PROOF)):
+                reasons.append('Endpoint package or geometry evidence differs')
+        prior=['native_cf_terminal_window_'+j for j in tail.JOBS]
+        prior+=['native_sector_r2_'+j for j in endpoint.JOBS[:endpoint.JOBS.index(case)]]
+        for name in prior:
+            receipt=p/(name+'.json')
+            if not receipt.exists() or not json.loads(receipt.read_text())['passed']:
+                reasons.append('Pending acceptance of '+name)
     required=[p/f'queue_{CF}.json',p/f'accepted_{CF}.json',p/f'native_pulse_comparison_{CF}.json']
     if not all(x.is_file() for x in required):
         reasons.append('CF320 terminal receipts pending')
@@ -167,26 +192,28 @@ try {
 
 def check_wrapper(script):
     encoded=base64.b64encode(script.encode()).decode()
-    reply=guest("$src=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"+encoded+"'));"
+    reply=read_guest("$src=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('"+encoded+"'));"
                 "$tokens=$null;$err=$null;[void][Management.Automation.Language.Parser]::ParseInput($src,[ref]$tokens,[ref]$err);"
                 "if($err.Count){throw ($err.Message -join '; ')};'PARSE_OK'")
     if reply!='PARSE_OK': raise RuntimeError(reply)
 
 
-def assert_guest_idle():
-    """Only repeat the read-only process inventory after a Parallels transport error."""
+def read_guest(script):
+    """Retry only read-only queries on a known Parallels transport failure."""
     for attempt in range(3):
         try:
-            reply=guest("$ErrorActionPreference='Stop';"+NATIVE_GUARD+"'IDLE'")
-            if reply!='IDLE':
-                raise RuntimeError('Incomplete native process inventory')
-            return
+            return guest(script)
         except RuntimeError as exc:
             known_errors=('PrlJob_GetResult: Invalid argument','PrlJob_GetRetCode: Invalid argument')
             if not any(msg in str(exc) for msg in known_errors) or attempt == 2:
                 raise
             host_check()
             time.sleep(.5)
+
+
+def assert_guest_idle():
+    if read_guest("$ErrorActionPreference='Stop';"+NATIVE_GUARD+"'IDLE'")!='IDLE':
+        raise RuntimeError('Incomplete native process inventory')
 
 
 def check_idle(case,run):
@@ -246,6 +273,8 @@ def collect(case,run,job):
         raise RuntimeError('Registry belongs to another job')
     if case=='annular':
         subprocess.run([sys.executable,str(ROOT/'model/audit_native_conduction_mode.py'),'audit'],check=True)
+    elif case in endpoint.JOBS:
+        subprocess.run([sys.executable,str(ROOT/'model/audit_sector_endpoint.py'),'audit',job],check=True)
     elif case in whole.JOBS:
         whole.audit(job,run)
     elif case in snapshots.CASES:
@@ -284,7 +313,7 @@ def wait_for_terminal(run,job):
             disks()
             cmd=(f"$p=Get-CimInstance Win32_Process -Filter 'ProcessId={pid}';"
                  f"if($p.Name -eq 'powershell.exe' -and $p.CommandLine -like '*{expected}*'){{'ACTIVE'}}else{{'ABSENT'}}")
-            if guest("$ErrorActionPreference='Stop';"+cmd)!='ACTIVE' and not (run/'guest_terminal.json').exists():
+            if read_guest("$ErrorActionPreference='Stop';"+cmd)!='ACTIVE' and not (run/'guest_terminal.json').exists():
                 raise RuntimeError(f'{job}: original wrapper exited without a terminal receipt')
             next_probe=time.monotonic()+60
         time.sleep(2)
@@ -292,7 +321,9 @@ def wait_for_terminal(run,job):
 
 def series(first):
     """Continue fresh continuous-study jobs in order while the dispatch lock is held."""
-    remaining=CASES[CASES.index(first):]
+    if first not in SERIES_CASES:
+        raise ValueError('Original whole-exposure inputs have been superseded')
+    remaining=SERIES_CASES[SERIES_CASES.index(first):]
     reasons=check_idle(first,spec(first)[1])
     if reasons:
         raise RuntimeError('; '.join(reasons))

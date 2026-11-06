@@ -1,0 +1,175 @@
+{
+  "job": "end2sa",
+  "case": "sustainer_al",
+  "n": 80,
+  "nc": 20,
+  "dt_s": 0.04,
+  "horizon_s": 220.0,
+  "configuration": {
+    "case_id": "sustainer_al",
+    "geometry": {
+      "angle_deg": 0.03,
+      "angular_divisions": 2,
+      "axial_divisions": 2,
+      "inner_radius_m": 0.0396875,
+      "phenolic_outer_radius_m": 0.04445,
+      "outer_radius_m": 0.047625,
+      "length_m": 2.3273965575344384e-05
+    },
+    "case_material": "al",
+    "case_property_limit_C": 300,
+    "heating": {
+      "gas_temperature_C": 2230.85,
+      "h0_W_m2_K": 1000.0,
+      "gas_cp_J_kg_K": 1600.0,
+      "hot_effective_emissivity": 0.0,
+      "radiative_temperature_C": 2230.85,
+      "outer_h_W_m2_K": 8.0,
+      "outer_emissivity": 0.25,
+      "ambient_temperature_C": 22.0
+    },
+    "char_law": {
+      "mode": "effective_exploratory",
+      "calibrated": false,
+      "pressure_nominal_psi": 800.0,
+      "pressure_uncertainty_psi": 200.0,
+      "pressure_min_Pa": 4136854.3759008,
+      "pressure_Pa": 5515805.8345344,
+      "pressure_max_Pa": 6894757.293168,
+      "pressure_reference_Pa": 100000.0,
+      "exploratory_pressure_ratio": 55.158058345344,
+      "reactive_activity": 1.0,
+      "reference_temperature_K": 1500.0,
+      "reference_rate_kg_m2_s": 0.01,
+      "activation_energy_J_mol": 100000.0,
+      "pressure_exponent": 0.5,
+      "mass_transfer_cap_kg_m2_s": 0.05,
+      "effective_endothermic_cost_J_kg": 35000000.0,
+      "species": [],
+      "notes": "Nominal chamber pressure is 800 +/- 200 psi. The pressure is now explicit, but gas composition and oxidation kinetics remain exploratory and require calibration before predictive use."
+    },
+    "material": {
+      "virgin_reference_density_kg_m3": 1250.0,
+      "char_reference_density_kg_m3": 600.0,
+      "pyrolysis_enthalpy_J_kg": 418000.0,
+      "aluminium_density_kg_m3": 2700.0,
+      "aluminium_conductivity_W_m_K": 167.0,
+      "aluminium_heat_capacity_J_kg_K": 896.0
+    },
+    "initial_temperature_C": 22.0
+  },
+  "role": "terminal",
+  "donor_record": {
+    "state": {
+      "time": 110.40000000000006,
+      "nodes": [
+        0.04444303420404454,
+        0.04445
+      ],
+      "virgin": [
+        1.5031909343434153e-07,
+        1.61105309473231e-07
+      ],
+      "char": [
+        9.280703143771913e-05,
+        9.280670628580879e-05
+      ],
+      "temperature": [
+        1041.4086858541261,
+        1037.484418011847,
+        1037.173245312805,
+        1036.875753319865,
+        1036.5922134747732,
+        1036.3225787173021,
+        1036.0668021019505,
+        1035.8248367904525,
+        1035.59663604466,
+        1035.3821532197705,
+        1035.1813417578878,
+        1034.994155181895,
+        1034.8205470896232,
+        1034.6604711483037,
+        1034.5138810892877,
+        1034.3807307030233,
+        1034.260973834278,
+        1034.1545643775964,
+        1034.0614562729868,
+        1033.981603501824,
+        1033.9149600829692,
+        1033.8614800690914
+      ],
+      "paths": [
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "bulk_gas_rate": 1.548126366065816e-07
+    },
+    "stats": {
+      "steps": 2898,
+      "cutbacks": 0,
+      "sums": {
+        "film": 5225987.73555043,
+        "radiation": 0.0,
+        "outer": 43714.899376147114,
+        "face_cost": 4201556.970656985,
+        "face_products_h": 137637.96911424075,
+        "swept_h": 137347.8752537211,
+        "front_gas": 0.000818345690022232,
+        "char_products": 0.12002568990347293,
+        "back_gas": 0.0,
+        "back_gas_h": 0.0,
+        "back_release": 0.0,
+        "bulk_gas": 0.12941056658796277,
+        "bulk_cost": 104026.18621878517,
+        "bulk_gas_h": 144042.443751031
+      },
+      "events": {},
+      "samples": [],
+      "max_step_energy_error": 0.0
+    }
+  }
+}

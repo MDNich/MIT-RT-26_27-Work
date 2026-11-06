@@ -1,0 +1,175 @@
+{
+  "job": "end2bc",
+  "case": "booster_cf",
+  "n": 80,
+  "nc": 20,
+  "dt_s": 0.04,
+  "horizon_s": 220.0,
+  "configuration": {
+    "case_id": "booster_cf",
+    "geometry": {
+      "angle_deg": 0.03,
+      "angular_divisions": 2,
+      "axial_divisions": 2,
+      "inner_radius_m": 0.06508749999999999,
+      "phenolic_outer_radius_m": 0.07143749999999999,
+      "outer_radius_m": 0.07619999999999999,
+      "length_m": 3.7404587531803465e-05
+    },
+    "case_material": "cf",
+    "case_property_limit_C": 150,
+    "heating": {
+      "gas_temperature_C": 2230.85,
+      "h0_W_m2_K": 1000.0,
+      "gas_cp_J_kg_K": 1600.0,
+      "hot_effective_emissivity": 0.0,
+      "radiative_temperature_C": 2230.85,
+      "outer_h_W_m2_K": 8.0,
+      "outer_emissivity": 0.25,
+      "ambient_temperature_C": 22.0
+    },
+    "char_law": {
+      "mode": "effective_exploratory",
+      "calibrated": false,
+      "pressure_nominal_psi": 800.0,
+      "pressure_uncertainty_psi": 200.0,
+      "pressure_min_Pa": 4136854.3759008,
+      "pressure_Pa": 5515805.8345344,
+      "pressure_max_Pa": 6894757.293168,
+      "pressure_reference_Pa": 100000.0,
+      "exploratory_pressure_ratio": 55.158058345344,
+      "reactive_activity": 1.0,
+      "reference_temperature_K": 1500.0,
+      "reference_rate_kg_m2_s": 0.01,
+      "activation_energy_J_mol": 100000.0,
+      "pressure_exponent": 0.5,
+      "mass_transfer_cap_kg_m2_s": 0.05,
+      "effective_endothermic_cost_J_kg": 35000000.0,
+      "species": [],
+      "notes": "Nominal chamber pressure is 800 +/- 200 psi. The pressure is now explicit, but gas composition and oxidation kinetics remain exploratory and require calibration before predictive use."
+    },
+    "material": {
+      "virgin_reference_density_kg_m3": 1250.0,
+      "char_reference_density_kg_m3": 600.0,
+      "pyrolysis_enthalpy_J_kg": 418000.0,
+      "aluminium_density_kg_m3": 1451,
+      "aluminium_conductivity_W_m_K": 0.55,
+      "aluminium_heat_capacity_J_kg_K": 750.6106
+    },
+    "initial_temperature_C": 22.0
+  },
+  "role": "terminal",
+  "donor_record": {
+    "state": {
+      "time": 137.85999999999993,
+      "nodes": [
+        0.071428621799194,
+        0.07143749999999999
+      ],
+      "virgin": [
+        1.2695404090402063e-12,
+        1.3406203308557266e-12
+      ],
+      "char": [
+        0.00019025517592805396,
+        0.0001902630581406366
+      ],
+      "temperature": [
+        1073.0013306680646,
+        1071.5253393439305,
+        1034.6818711225471,
+        999.4342817172832,
+        964.3960977833387,
+        928.2013758746717,
+        890.9316443247026,
+        852.7398198702135,
+        813.8725995414939,
+        774.6943806797543,
+        735.7100418541363,
+        697.583524351817,
+        661.1460581013564,
+        627.3709926347893,
+        597.2574706443113,
+        571.5777678623637,
+        550.5999049611494,
+        534.0260403963055,
+        521.1986180726728,
+        511.37464800044916,
+        503.90063418778965,
+        498.2728406039635
+      ],
+      "paths": [
+        [
+          0.008797828151683415,
+          0.00903021784117229,
+          0.009290493498983005,
+          0.009549507855474686,
+          0.009785112920332144,
+          0.009988543611122246,
+          0.010161207415977366,
+          0.01030864096432904,
+          0.010435967480001834,
+          0.010545577175057554,
+          0.010636225107359861,
+          0.010702880573629373,
+          0.010737529931224097,
+          0.010731702440853134,
+          0.01068048888756104,
+          0.010585744371162314,
+          0.010456337323718479,
+          0.010305999206271486,
+          0.010150558535601603,
+          0.010005574440278331,
+          0.009884697930258007
+        ],
+        [
+          0.9911788517855178,
+          0.9909342159520064,
+          0.9906541640659666,
+          0.9903618913919547,
+          0.990068134245101,
+          0.989759353853698,
+          0.9893888831882864,
+          0.9888571528571775,
+          0.9879610442420449,
+          0.9862831571151265,
+          0.9829844082450475,
+          0.9765035863586229,
+          0.9643534650268194,
+          0.9435067781222084,
+          0.9117118569296316,
+          0.8689903776039886,
+          0.8179939048368854,
+          0.7630575567847196,
+          0.7088413532033383,
+          0.6592823164868061,
+          0.6171076560841919
+        ]
+      ],
+      "bulk_gas_rate": 1.5020051229562316e-12
+    },
+    "stats": {
+      "steps": 3584,
+      "cutbacks": 0,
+      "sums": {
+        "film": 10453392.576177286,
+        "radiation": 0.0,
+        "outer": 28351.176539173084,
+        "face_cost": 9090578.144441746,
+        "face_products_h": 301262.3430709387,
+        "swept_h": 300780.6150575569,
+        "front_gas": 0.0013583540493749785,
+        "char_products": 0.25969960676467324,
+        "back_gas": 0.12563071267910703,
+        "back_gas_h": 88252.33514085767,
+        "back_release": -18788.865021188692,
+        "bulk_gas": 0.28039511469928935,
+        "bulk_cost": 225394.53450827472,
+        "bulk_gas_h": 304165.178878145
+      },
+      "events": {},
+      "samples": [],
+      "max_step_energy_error": 0.0
+    }
+  }
+}
