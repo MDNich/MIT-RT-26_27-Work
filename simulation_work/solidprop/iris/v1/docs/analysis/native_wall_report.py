@@ -69,11 +69,14 @@ Radial cells & Steps & MAPDL [s] & Exact [s] & Error [\%]\\\midrule
         snapshot = read(ROOT/f'validation/native_snapshot_r2_{case}.json')
         assert snapshot['passed'] and snapshot['case']==case and snapshot['fields']==10
         snapshot_errors.append(snapshot['max_nodal_error_K'])
+    end = read(ROOT/'validation/native_cf_terminal_window_tails20x10.json')
+    config = ROOT/'configs/native_verification/cf_tail_char_smp10_r3/tails20x10.json'
+    window = read(config)
+    assert end['passed'] and digest(config) == end['comparison_sha256']
     pulse = read(ROOT/'validation/native_cf320_handoff.json')
     assert pulse['passed']
     text = r'''\section{What the native ANSYS benchmarks verify}\label{sec:nativebench}
-The conduction check begins with a known radial temperature profile above a
-22~$^\circ$C baseline. The inner and outer faces are held at 22~$^\circ$C.
+Both cylindrical faces are held at 22~$^\circ$C.
 For a homogeneous hollow cylinder the first radial diffusion mode has the form
 $T(r,t)-22=\phi(r)\exp[-kt\lambda^2/(\rho c_p)]$, where $\phi$ vanishes at
 both boundaries. After one decay time the temperature rise is $1/e$ of its
@@ -86,9 +89,7 @@ At right, the signed error over all nine axial and angular node lines.}
 \end{figure}
 \paragraph{Receding char.} A second benchmark uses a 0.6~mm pure-char wall
 with a prescribed logarithmic temperature profile and a corresponding heating
-law. The code computes the face temperature, char mass flux and remaining
-radius. Integration of the analytical recession speed gives an independent
-reference time. A first implementation distorted connected elements while
+law. Integrating the analytical recession speed gives the reference time. A first implementation distorted connected elements while
 moving nodes and also produced oscillating temperatures under a lagged
 surface heat sink. The revised calculation rebuilds each brick after moving
 all nodes and uses the local derivative of net incident flux to couple heating
@@ -100,17 +101,23 @@ a frozen 30~s state through ten increments spanning 0.05~s. Across all four
 cases the largest nodal difference from a separate brick assembly was SNAPERR~K.
 These comparisons test heat storage and transport with the material state and
 loads held fixed over that interval.
+\paragraph{First CF liner-loss event.} For the sustainer CF, MAPDL consumed the last
+TAILMM~mm of char in TAILSEC~s on 20 radial cells. The starting temperature and
+the casing temperature history came from the independent model at and after
+STARTSEC~s of continuous exposure. The maximum nodal difference from the matched
+calculation was TAILDIFF~K. Native verification from first exposure remains open.
+
 \paragraph{Separate pulse control.} In the final 320-row CF control, heating
 ended at 7~s. The casing continued to warm during cooling and first exceeded
 150~$^\circ$C between LOW and HIGH~s. At that point REMAIN~mm of the original
 4.7625~mm liner remained. All STEPS accepted steps passed the balance checks.
 The largest sampled native versus radial temperature difference was DIFF~K.
-The benchmarks on this page test conduction, moving geometry or pulse cooling.
-The ignition-to-exhaustion times in the opening table still come from the two
-independent radial simulations.
+
 \clearpage
 '''
-    for key,value in {'MAXERR':f"{receipt['max_nodal_error_K']:.3f}","SNAPERR":f"{1e6*max(snapshot_errors):.2f}"+r"$\times10^{-6}$",'RMSERR':f"{receipt['rms_nodal_error_K']:.3f}",'CHECKS':checks,
+    for key,value in {'TAILMM':f"{1000*(window['radius_m'][1]-window['radius_m'][0]):.3f}",
+                      'TAILSEC':f"{end['remaining_time_s']:.3f}",'STARTSEC':f"{window['start_s']:.2f}",
+                      'TAILDIFF':f"{end['max_all_node_error_K']:.4f}",'MAXERR':f"{receipt['max_nodal_error_K']:.3f}","SNAPERR":f"{1e6*max(snapshot_errors):.2f}"+r"$\times10^{-6}$",'RMSERR':f"{receipt['rms_nodal_error_K']:.3f}",'CHECKS':checks,
                       'LOW':f"{pulse['first_crossing_bracket_s'][0]:.4f}",'HIGH':f"{pulse['first_crossing_bracket_s'][1]:.4f}",
                       'STEPS':f"{pulse['steps']:,}",'REMAIN':f"{pulse['remaining_liner_mm']:.3f}",'DIFF':f"{pulse['max_profile_difference_K']:.4f}"}.items():
         text=text.replace(key,value)

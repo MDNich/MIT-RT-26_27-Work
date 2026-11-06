@@ -22,6 +22,18 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## First accepted native CF end-window event, November 6, 04:45 UTC
+
+On 20 radial cells at a 0.01 s ceiling, the sustainer CF end window consumed
+0.45338 mm of near-pure char in 9.17841 s. It started from the independent
+profile at 95.08 s and prescribed the subsequent casing-interface history.
+The native calculation passed all 918 increments with zero solver warnings
+or errors. The worst field difference was 0.00442 K, the relative mass
+imbalance was 1.11e-9 and the absolute step energy discrepancies summed to
+0.00472% of boundary exchange. This is a conditional terminal-window result.
+See page 16 for its scope. The live series continues with mesh and time
+refinement, the corresponding booster cases and full-sector verification.
+
 ## Finer time steps for final CF liner loss, November 6, 04:43 UTC
 
 R2 solved the sustainer window through the last cell with zero element errors.

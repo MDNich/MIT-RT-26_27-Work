@@ -38,8 +38,10 @@ The final pulse control passed all 5,295 steps. The CF casing reached its
 150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner
 remaining. The annular conduction test, two moving-char tests and all four
 frozen motor-field checks passed. The earlier CF terminal-window comparison
-missed its temperature tolerance. The current series tests the corrected mesh
-and smaller time steps before two pilots and four whole exposures. [Native verification status](OPERATIONS.md)
+missed its temperature tolerance. With the corrected mesh and smaller step,
+ANSYS consumed the final 0.453 mm of sustainer CF char in 9.178 s using a
+prescribed casing temperature history. The live series checks refinements
+before the pilots and four whole exposures. [Native verification status](OPERATIONS.md)
 The four continuous results above remain independent estimates.
 
 ### Initial backing comparison
