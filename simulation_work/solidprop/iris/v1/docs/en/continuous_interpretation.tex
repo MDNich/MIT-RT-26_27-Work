@@ -1,0 +1,44 @@
+\section{Using the estimate for an actual firing}\label{sec:interpretation}
+The nominal calculations give roughly 1.7--1.8 minutes of continuous
+exposure for the 4.7625 mm sustainer liner and 2.3--2.5 minutes for the
+6.350 mm booster liner. This clock starts at a particular wall station
+when gas first reaches bare phenolic. An inhibitor, a covering grain or a
+local breach would change that starting time. The available grain length and
+stoichiometric reaction alone determine neither when that station opens nor
+the heat flux it receives.
+
+\paragraph{Establish the load at the liner.}
+The tested gas-film coefficients span a factor of four. At fixed nominal
+pressure, the CF booster changes from about 259 to 75 s across that span.
+Record a time-resolved thermal measurement at a known axial station,
+the chamber-pressure trace and when the liner there becomes exposed.
+A measured heat-flux history can replace the assumed constant gas-side load.
+A rear-face thermocouple history supplies a separate check on heat conducted
+through the wall. Section~\ref{sec:env} shows the radiative load explicitly.
+
+\paragraph{Measure what the phenolic loses.}
+For the Al sustainer at the nominal film coefficient, halving the assumed
+char-removal energy gives about 72 s and doubling it gives about 185 s.
+Under a known heat load, measure the specimen mass, surviving liner thickness,
+char depth and temperatures at recorded exposure times. A series of durations
+separates conversion within the liner from loss of the exposed char.
+Use those measurements to fit the removal law and reserve a separate exposure
+for checking the fitted prediction.
+
+\paragraph{Separate liner exhaustion from loss of pressure containment.}
+The Al calculation holds melted metal in place, and the CF calculation
+continues beyond the 1000~$^\circ$C limit of the adopted transport properties.
+The temperature histories on page~\pageref{sec:temperatures} give the
+thermal input for a separate assessment using the actual alloy, laminate,
+bondline and their hot strength. A local crack or debond can expose the casing
+while a uniform sector still predicts surviving liner.
+
+\paragraph{Where to inspect the calculation.}
+The \href{https://github.com/MDNich/MIT-RT-26_27-Work/tree/main/simulation_work/solidprop/iris/v1/output/data}{two nominal history files}
+separate ANSYS samples from the independent finite-volume inventories.
+The \href{https://github.com/MDNich/MIT-RT-26_27-Work/tree/main/simulation_work/solidprop/iris/v1/validation}{validation records}
+give the last time intervals, mesh comparisons, mass and heat balances and input
+hashes. The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/solidprop/iris/v1/output/pdf/iris_phenolic_report.pdf}{companion report}
+prints the historical MAPDL and Fortran material routines. Appendix~B here
+prints the continuous-exposure MAPDL input and its thermal-step generator.
+\clearpage

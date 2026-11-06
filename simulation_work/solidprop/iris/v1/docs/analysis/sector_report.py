@@ -142,13 +142,13 @@ reaches zero. Restarting each short verification path reproduced its complete
 terminal state and ledgers. The largest cumulative energy discrepancy in the
 twelve full exposures was below $10^{-7}$ of incident film heat.
 
-The prepared native implementation uses SOLID278 for conduction and MASS71
+The native implementation uses SOLID278 for conduction and MASS71
 for the nodal thermal capacity beyond the solid element's unit volumetric
-capacity. The radial predictor sets material coefficients. MAPDL must then solve
+capacity. The radial predictor sets material coefficients. MAPDL then solves
 the temperatures of all sector nodes with the hot and backing faces free. The
 controller checks the returned field before updating chemistry or moving the
-surface. The first two short native jobs test this exchange and the saved
-fields before a whole exposure can be accepted.
+surface. The two short native jobs tested this exchange and the saved
+fields before the four whole exposures.
 
 An independent three-dimensional assembly on Windows parsed the actual generated
 elements, nodal capacities, initial conditions and surface loads. Eight Gauss

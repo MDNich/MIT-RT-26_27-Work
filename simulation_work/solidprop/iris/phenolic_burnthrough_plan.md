@@ -1,5 +1,7 @@
 # Iris Phenolic Burnthrough Simulation Plan
 
+The [final continuous-heating report](v1/output/pdf/iris_continuous_heating_progress.pdf) and [four-case results](v1/README.md) record the November 6 campaign outcome and its material limits.
+
 **Priority revision, November 5, 2026:** the user now authorizes choosing the
 exposure duration and explicitly prioritizes finding burnthrough time over
 further seven-second survival studies. The execution and model-improvement

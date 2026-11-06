@@ -5,7 +5,7 @@ this exploratory four-case study, English reports and milestone pushes, and is
 away. Do not seek repeated approval. Do not alter earlier studies. No sub-agent
 delegation is authorized.
 
-## First actions on every continuation
+## Checks during an active campaign
 
 1. Run `model/ops.py check`. Stop all work on a real or latched storage stop.
    Mac floor: 400,000,000,000 bytes; Windows C: floor: 10,000,000,000 bytes.
@@ -21,6 +21,12 @@ delegation is authorized.
 4. Never clean unrelated files. Only verified copies of this study's outputs
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
+
+## Final continuous-heating campaign closure, November 6, 2026
+
+The four whole-exposure native sectors finished at 06:45 UTC. The independent supervisor exited after the last of 24 pressure, radiation and gas-temperature scenarios passed its conservation and separate spatial and temporal refinement checks at 06:54 UTC. Native field replay and the whole-case event-time and thickness comparisons passed for all four motors. The independent matched fine methods agree within 7.4 ms while retaining disjoint final steps. Earlier rejected stress tests remain excluded.
+
+The [final report](output/pdf/iris_continuous_heating_progress.pdf), [source and figure hashes](validation/continuous_report_inputs.json) and [nominal histories](output/data) close the exploratory campaign. The original one-core records, CF320 observer, ten-core successor lineage, sealed controller and checkpoints are retained. There is no further solver dispatch. Release the study storage watcher and its sleep preventer and pause the dedicated heartbeat once the final publication is verified on GitHub. The entries below are the chronological operations log, newest first.
 
 ## Four full native cases complete, November 6, 06:51 UTC
 
@@ -1826,7 +1832,4 @@ separately. Continue to
 assess hot-face histories and row-transfer times during refinement; a passing
 casing-target comparison does not establish hot-surface time convergence.
 
-A 30-minute heartbeat, `iris-ansys-study-and-english-reports`, continues the
-study. Notify only meaningful progress, failures, completion or necessary user
-action. Keep it active while substantive work remains; stop on completion or
-latched storage stop. Leave this file accurate for the next continuation.
+The dedicated heartbeat for this campaign was scheduled every 30 minutes. The final closure above governs its retirement.

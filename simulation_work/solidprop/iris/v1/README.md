@@ -1,72 +1,36 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 6, 01:51 EST
+## Final continuous-exposure results, November 6, 2026
 
-At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
-moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
-(sustainer CF), 147.6 s (booster Al) and 137.9 s (booster CF). The Al surrogate
-is all liquid before either liner disappears. The CF surrogate crosses its
-1000 °C property ceiling at 95.1 and 129.7 s, before either CF liner disappears.
-Casing pressure integrity and actual firing heat flux are unresolved.
-The [updated report](output/pdf/iris_continuous_heating_progress.pdf) opens
-with the four estimates and distinguishes the earlier inert-backing results.
-Pages 11–12 compare a second discretization from ignition to exhaustion.
-Its finest event times agree within 0.073 s, with maximum sampled differences
-of 2.3 micrometres of liner thickness and 1.59 K at the casing interface.
-Pages 13–14 compare the same four evolving casings with half and twice the
-nominal gas-film coefficient. The independent estimates below count seconds of
-uninterrupted gas exposure from the first contact with bare phenolic.
+For bare phenolic exposed continuously to 2504 K gas at 800 psi, **ANSYS predicts about 104–111 s for the sustainers and 138–148 s for the boosters**. Time starts when gas first contacts the liner at the modelled wall position. Exhaustion occurs when the last solid char disappears and the casing is exposed. The nominal gas-film coefficient before blowing is 1000 W/(m² K), hot-side emissivity is zero, and both solids start at 22 °C.
 
-| Motor | Initial phenolic | Weaker film (500) | Nominal film (1000) | Stronger film (2000) |
-|---|---:|---:|---:|---:|
-| Sustainer Al | 4.7625 mm | 206.9 s | 110.5 s | 60.2 s |
-| Sustainer CF | 4.7625 mm | 195.4 s | 104.3 s | 56.6 s |
-| Booster Al | 6.3500 mm | 276.4 s | 147.6 s | 80.4 s |
-| Booster CF | 6.3500 mm | 258.7 s | 137.9 s | 74.8 s |
+| Motor | Initial phenolic | ANSYS exhaustion | Independent radial exhaustion | Earlier native casing event | Phenolic then remaining |
+|---|---:|---:|---:|---|---:|
+| Sustainer Al | 4.7625 mm | 110.58 s | 110.47 s | All Al liquid by 99.14 s | 0.430 mm |
+| Sustainer CF | 4.7625 mm | 104.33 s | 104.25 s | CF reaches 1000 °C by 95.16 s | 0.453 mm |
+| Booster Al | 6.3500 mm | 147.75 s | 147.61 s | All Al liquid by 139.44 s | 0.229 mm |
+| Booster CF | 6.3500 mm | 138.04 s | 137.95 s | CF reaches 1000 °C by 129.78 s | 0.404 mm |
 
-The gas-film coefficients are in W/(m² K). The physical gas temperature and
-pressure assumptions are the same in all three columns. The table isolates the
-effect of the applied film coefficient. The actual firing heat flux is unknown.
-Page 15 traces the initial mass into char, gas and chemical energy. Across
-all twelve sustained exposures the assumed removal cost of 35 MJ/kg of char
-accounts for 79.7–87.3% of film energy. The two independent methods agree
-on integrated film energy within 0.044%. Their heat input and char law still
-need physical calibration. Page 16 compares accepted native benchmarks with analytical solutions.
-Page 17 compares mesh and time refinement in both native CF end windows.
-Page 18 gives separate terminal checks with the casing and liner solved together for all four motors.
-Page 19 compares complete native and independent runs from first gas contact
-for both 4.7625 mm sustainers and both 6.350 mm boosters. With the aluminium casing, ANSYS reached zero
-phenolic at 110.576 s and the independent model at 110.474 s. About 0.430 mm
-remained when all aluminium had melted at 99.14 s. With the carbon-fibre
-casing, ANSYS reached zero at 104.332 s and the independent model at
-104.254 s. About 0.453 mm remained when the CF reached its 1000 °C property
-limit at 95.16 s. The aluminium booster exhausted its liner at 147.746 s
-in ANSYS and 147.610 s in the independent reference. About 0.229 mm of
-phenolic remained when all its aluminium had melted at 139.44 s. Each
-calculation retains the casing geometry beyond the material event.
-Page 20 varies the effective energy required to remove char. At fixed nominal
-heating, 17.5–70 MJ/kg gives 71.8–184.7 s for the aluminium sustainer in the
-independent model. These scenario limits describe the assumed material inputs.
-Page 21 compares 32 independent nodal refinements with the finite-volume
-reference. Their finest endpoints differ by 0.003–0.014 s. The final time-step
-intervals are still separated. Page 22 uses identical refinement settings in
-both independent methods. At 640/160 cells and a 2.5 ms step, the times
-differ by at most 0.0074 s. Pages 30–31 print the native input and complete
-thermal-step generator.
-The final pulse control passed all 5,295 steps. The CF casing reached its
-150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner
-remaining. The annular conduction test, two moving-char tests and all four
-frozen motor-field checks passed. The earlier CF terminal-window comparison
-missed its temperature tolerance. With the corrected mesh and smaller step,
-ANSYS consumed the last 0.453 mm of char in the sustainer and 0.404 mm in the
-booster in 9.177 s and 8.250 s, respectively. Both calculations prescribe the
-interface temperature from the independent model at 95.08 s and 129.70 s onward.
-Changing either mesh or time resolution shifted each end-window duration by
-less than 0.001 s. The native carbon-fibre booster reached zero at 138.041 s. Its casing reached
-1000 °C at 129.78 s with approximately 0.404 mm of phenolic remaining.
-All four native full exposures passed replay and conservation checks.
-[Native verification status](OPERATIONS.md)
-The four entries in the film-coefficient table come from the independent model.
+All four native runs used 80 initial radial liner cells, 20 casing cells, a 0.03° sector, two cells in each transverse direction and one ten-core SMP solve at a time. Each ran from first exposure through exhaustion. The controller accounts for virgin solid, char, released gas and energy as the inner radius moves. Native field replay and the mass and energy audits passed. The table shows additional decimal places to compare numerical methods. Independent matched refinements to 640/160 cells and 2.5 ms steps give event times within 7.4 ms of each other, although the two methods’ final step intervals are separated by 1.7–5.1 ms.
+
+The model holds molten aluminium or decomposed CF in place. The actual exposure and pressure-containment durations require the delivered wall heat flux, recession of the manufactured liner and the hot strength of the casing and bond. The nominal 2504 K is the gas temperature. The highest saved exposed-phenolic temperature in the native histories is about 1077 °C (1350 K).
+
+**Sensitivity to the gas-side heating.** Halving and doubling the nominal film coefficient gives the following *independent* times at fixed pressure, gas temperature and removal chemistry. These are one-input scenarios. The 24 additional pressure, radiation and gas-temperature scenarios and their energy audits are on page 23. Page 20 varies the energy required to remove char.
+
+| Motor | Film 500 W/(m² K) | Film 1000 W/(m² K) | Film 2000 W/(m² K) |
+|---|---:|---:|---:|
+| Sustainer Al | 206.9 s | 110.5 s | 60.2 s |
+| Sustainer CF | 195.4 s | 104.3 s | 56.6 s |
+| Booster Al | 276.4 s | 147.6 s | 80.4 s |
+| Booster CF | 258.7 s | 137.9 s | 74.8 s |
+
+- The [final 35-page report](output/pdf/iris_continuous_heating_progress.pdf) opens with the four-case comparison. Page 19 compares the full native runs, pages 21–22 compare time and mesh refinements, and pages 24–26 give the temperature histories, radial pyrolysis profiles and measurements needed to predict an actual firing. Appendix B prints the continuous-exposure MAPDL entry and step generator. The [companion report](output/pdf/iris_phenolic_report.pdf) prints the earlier MAPDL and Fortran material implementation.
+- The [native histories](output/data/nominal_native_history.csv) contain sampled live hot-face, interface and outside temperatures and remaining liner thickness, generally at half-second intervals plus the terminal sample. The [independent radial histories](output/data/nominal_radial_history.csv) add virgin and char inventories, gaseous products, and cumulative film and radiation heat per radian and metre of axial length. Temperatures are in °C. The radial face at time zero uses the initial gas boundary reconstruction. Both files leave exposed-phenolic temperature blank when the liner thickness reaches zero.
+- The [native comparison](validation/native_whole_exposure_comparison.json), [matched time-step comparison](validation/matched_event_recovery.json), [scenario audit](validation/evolving_exposure_sensitivities.json) and [publication record](validation/continuous_report_inputs.json) identify inputs and results by hash. The [sealed native controller and case inputs](configs/native_verification/whole_sector_r2) reproduce the R2 configuration. With the archived runtime available, run `ansystmp/venv/bin/python model/compare_native_whole_exposures.py` and `ansystmp/venv/bin/python docs/analysis/continuous_heating_report.py` from this directory to check the comparison and regenerate the report. Both commands postprocess existing results.
+
+## Earlier model comparisons
+
+The results below document earlier model versions and verification milestones. Use the table above for the final evolving-casing estimates.
 
 ### Initial backing comparison
 
@@ -87,7 +51,7 @@ The [continuous-heating report](output/pdf/iris_continuous_heating_progress.pdf)
 includes radial histories, mass and energy accounting, isolated mesh and time
 refinements, and sensitivity to five assumed inputs. The [ANSYS companion
 report](output/pdf/iris_phenolic_report.pdf) includes the native MAPDL and
-Fortran listings. Native verification of the revised wall equations remains open.
+Fortran listings. Native verification was pending at this stage.
 
 **High-temperature backing comparison.** With pure-Al heat storage and fusion,
 the first inner cell begins melting at 84.1 s in the sustainer and 124.4 s in
@@ -101,8 +65,7 @@ the reacting CF model with heat and gas feedback.
 The 20 nominal calculations, 42 sensitivity cases and 16 endpoint refinements
 are complete. Doubling and halving the film coefficient gives respectively
 56–58 and 195–200 s for the sustainers, and 75–78 and 258–266 s for the boosters.
-These are individual scenarios. See [operations](OPERATIONS.md) for remaining
-native and high-temperature material work.
+These were individual scenarios using the earlier backing assumptions. The [operations record](OPERATIONS.md) gives the subsequent verification sequence.
 
 ## Previous models and milestones
 

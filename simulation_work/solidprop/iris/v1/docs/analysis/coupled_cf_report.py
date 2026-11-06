@@ -63,9 +63,9 @@ def build(inputs, film_ranges, whole):
     track(plot)
     executive=r"""
 \section*{How long until the gas reaches the casing?}
-For the sustained nominal load, the independent moving-wall calculation
-exposes the casing after about 104--111 s in the sustainer and 138--148 s in
-the booster. The clock starts when hot gas first reaches bare phenolic.
+Under the sustained nominal load, ANSYS predicts liner exhaustion after
+104--111 s in the sustainer and 138--148 s in the booster. The independent
+radial model agrees within 0.14 s in all four cases. The clock starts when hot gas first reaches bare phenolic.
 Burnthrough occurs when the moving char surface reaches the casing.
 \begin{table}[H]\centering
 \small\begin{tabular}{lrrrl}\toprule
@@ -88,7 +88,8 @@ Section~\ref{sec:film} gives all twelve times and the heat flux entering the
 liner. With nominal heating, changing only the energy required to remove a
 kilogram of char gives 72--185 s for the aluminium sustainer
 (Section~\ref{sec:removal}). A measured firing heat-flux history
-and liner recession would constrain the physical estimate.
+and liner recession would constrain the physical estimate. Section~\ref{sec:env}
+separates the effects of pressure, hot-side radiation and gas temperature.
 
 \paragraph{Verification.}
 Each native calculation started with both bodies at 22~$^\circ$C and

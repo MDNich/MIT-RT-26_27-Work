@@ -1,0 +1,3682 @@
+{
+  "plan_sha256": "d9fe5665ba86e224f4f5c0e7d6d31c19068360e69e26c693386e222535d2c86f",
+  "native": false,
+  "eligible_for_motor_lifetime": false,
+  "cases": {
+    "sustainer_al_p600": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_al_p600_n640_us20000",
+      "FV_event_s": 112.58395188552821,
+      "events": {
+        "property_flag": [
+          50.20000000000003,
+          50.220000000000034
+        ],
+        "first_melt": [
+          83.85999999999605,
+          83.87999999999604
+        ],
+        "all_liquid": [
+          99.55999999999293,
+          99.57999999999292
+        ],
+        "exhaustion": [
+          112.57999999999033,
+          112.58395188552821
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_p600_n320_us40000",
+              "b": "sustainer_al_p600_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0019928471710244366,
+                "event_relative_percent": 0.0017701472527956565,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 234,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00016484204795563784,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.06038674995784277,
+                  "at_s": 100.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.304498626556324,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.7065329159355542,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.0398326075377234
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_p600_n640_us40000",
+              "b": "sustainer_al_p600_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.003082250131370756,
+                "event_relative_percent": 0.002737734890053149,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 234,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.000132487821026539,
+                  "at_s": 110.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.416885813589829,
+                  "at_s": 109.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.406056773139312,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.8980695139425734,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2569899617878946,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040145146599321495
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_al_p600_n320_us40000": {
+          "record": "104dc1985f1b1246d08fedc395a8b3f15b2118778577a1787311e6e5219d5488",
+          "checkpoint": "216f898dd42fdd41e9d972342f6e775671bd97ce9e91d81b3ed8ec5b44632e95"
+        },
+        "sustainer_al_p600_n640_us40000": {
+          "record": "589a42a7c8a35e5b6addc31d7fbd758d5f0223fbde154705200d69508fbe7822",
+          "checkpoint": "1e1c8809f2acfca54c5cded6ce3cb6a1c6a1bef4b5bfdd17ba93124a8c1d72eb"
+        },
+        "sustainer_al_p600_n640_us20000": {
+          "record": "6f48d9c2aad77226c1e8688fb9894ccfb9f96244e4ec3ad7c6bfbb3bfe608f7b",
+          "checkpoint": "7b8d38172825f1682e0a4250b1acb610ea742259b59c58b28b176cdab5aa2064"
+        }
+      },
+      "nodal_event_s": 112.63740515447634,
+      "nodal_sha256": "3986ae705b418c7bf59a31e898702d2bf418527876c0d16cdd6cff57c8c75089",
+      "nodal_balances": {
+        "liner_mass_relative": -1.322480565286354e-12,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.1042169750396745e-09
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 112.5,
+        "stations": 225,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0021202107811524535,
+            "signed_at_max": 0.0021202107811524535,
+            "time_at_max_s": 112.5
+          },
+          "hot_C": {
+            "max_abs": 5.345005257715684,
+            "signed_at_max": -5.345005257715684,
+            "time_at_max_s": 96.5
+          },
+          "interface_C": {
+            "max_abs": 0.7215388037633375,
+            "signed_at_max": -0.7215388037633375,
+            "time_at_max_s": 109.0
+          },
+          "outer_C": {
+            "max_abs": 0.711271131369017,
+            "signed_at_max": -0.711271131369017,
+            "time_at_max_s": 110.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 132.35083970695825,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "sustainer_al_p1000": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_al_p1000_n640_us20000",
+      "FV_event_s": 108.92758541475813,
+      "events": {
+        "property_flag": [
+          50.980000000000075,
+          51.0
+        ],
+        "first_melt": [
+          84.15999999999599,
+          84.17999999999599
+        ],
+        "all_liquid": [
+          98.63999999999311,
+          98.6599999999931
+        ],
+        "exhaustion": [
+          108.91999999999106,
+          108.92758541475813
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_p1000_n320_us40000",
+              "b": "sustainer_al_p1000_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.002089520230214248,
+                "event_relative_percent": 0.001918330465046228,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 226,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00016388295896696548,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.06308606497850633,
+                  "at_s": 99.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.4580370429341656,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.4607021246926024,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.039877255975093694
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_p1000_n640_us40000",
+              "b": "sustainer_al_p1000_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.0036920456407045776,
+                "event_relative_percent": 0.0033894496299046377,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 225,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00015258283814906237,
+                  "at_s": 107.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.4639771144512679,
+                  "at_s": 106.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.401814528718205,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.715545919862052,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2451893380263073,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040160029411778896
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_al_p1000_n320_us40000": {
+          "record": "728e660ec792a7279c5301127b036de2a48f8c2b57b992c302b26e93d596ea34",
+          "checkpoint": "abbf7d0b0cb993d8166357949c2334f0e08284ff4855065e120580dcfeb886dc"
+        },
+        "sustainer_al_p1000_n640_us40000": {
+          "record": "36e7eaeaf40d235edf960fab1e48e2fb0a1ab3c95bc600d002cea62288f0063b",
+          "checkpoint": "e85924cec7ffe1845ab45d4a69d1464ff23fcfc914644d2b0bce95b288193084"
+        },
+        "sustainer_al_p1000_n640_us20000": {
+          "record": "2137f122c2c63ad9773d592163523827159eb0eb2b653c41b003a95e8e9c7e0e",
+          "checkpoint": "1b3f2c8b7b7349a233a90fa1f2173abd7aa8c42a4c117cd08a848f490da86869"
+        }
+      },
+      "nodal_event_s": 108.98275780348546,
+      "nodal_sha256": "e33d062b9435fff4c90367173fa5b656b8d63a2b6c76e52ad4a8289ed0f717e3",
+      "nodal_balances": {
+        "liner_mass_relative": -1.3032287009328454e-12,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.1100398636196226e-09
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 108.5,
+        "stations": 217,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0021730206655206155,
+            "signed_at_max": 0.0021730206655206155,
+            "time_at_max_s": 108.5
+          },
+          "hot_C": {
+            "max_abs": 8.229793428502944,
+            "signed_at_max": -8.229793428502944,
+            "time_at_max_s": 2.0
+          },
+          "interface_C": {
+            "max_abs": 0.8857290154946895,
+            "signed_at_max": -0.8857290154946895,
+            "time_at_max_s": 107.0
+          },
+          "outer_C": {
+            "max_abs": 0.869265661123336,
+            "signed_at_max": -0.869265661123336,
+            "time_at_max_s": 107.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 131.54893598832288,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "sustainer_al_rad10": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_al_rad10_n640_us20000",
+      "FV_event_s": 95.59698939795683,
+      "events": {
+        "property_flag": [
+          47.44000000000007,
+          47.46000000000007
+        ],
+        "first_melt": [
+          75.13999999999778,
+          75.15999999999778
+        ],
+        "all_liquid": [
+          86.99999999999542,
+          87.01999999999542
+        ],
+        "exhaustion": [
+          95.57999999999372,
+          95.59698939795683
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_rad10_n320_us40000",
+              "b": "sustainer_al_rad10_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0018015048982817916,
+                "event_relative_percent": 0.0018845668547203128,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 199,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00016240542217360598,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.0933148283202172,
+                  "at_s": 87.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 33.21788387961456,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.6029856312220545,
+                  "at_s": 1.5
+                },
+                "max_liner_field_difference_K": 1.1224381136455577,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03971188132996815
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_rad10_n640_us40000",
+              "b": "sustainer_al_rad10_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.004472010233186552,
+                "event_relative_percent": 0.004677982289348257,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 199,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00019355737545384555,
+                  "at_s": 95.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.563424693758634,
+                  "at_s": 95.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.077334410439107,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.5290903171319314,
+                  "at_s": 95.0
+                },
+                "max_liner_field_difference_K": 2.353466525692852,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040152588005550195
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_al_rad10_n320_us40000": {
+          "record": "0514031c9a5b02350e7eda3c17f8e643adb4aeac7b2ff86a3ac3babb6587350b",
+          "checkpoint": "b7448b73457911c5c47f82041156373a40e1dc5b41e9b0fcca9ce23b13dfdd38"
+        },
+        "sustainer_al_rad10_n640_us40000": {
+          "record": "e5d76d1b1a414f9e60ceb89802f56946de023145208b3b04cdbc277ac7d0778a",
+          "checkpoint": "3f5574be372dbf3a4aa9555009208da5051b02fc5f4f98b6a8f6886bb6ff99db"
+        },
+        "sustainer_al_rad10_n640_us20000": {
+          "record": "d69e9322103e7189e0e893665d81d7ffb502fba5a294219fb7ed2ffec83c2e50",
+          "checkpoint": "95cb9bee34b4570c98327312a6774e367a0dc25e3ce0801eaef8ef211bd5a8b9"
+        }
+      },
+      "nodal_event_s": 95.6540274068022,
+      "nodal_sha256": "256dbcb7102b02a19b4e0919c2f7195383ee682ce5b17d264257d8c45eb01362",
+      "nodal_balances": {
+        "liner_mass_relative": -1.185768517885338e-12,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.4244502528776278e-09
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 95.5,
+        "stations": 191,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0024190617215644446,
+            "signed_at_max": 0.0024190617215644446,
+            "time_at_max_s": 95.5
+          },
+          "hot_C": {
+            "max_abs": 8.891195501573748,
+            "signed_at_max": -8.891195501573748,
+            "time_at_max_s": 88.0
+          },
+          "interface_C": {
+            "max_abs": 1.2210846321065674,
+            "signed_at_max": -1.2210846321065674,
+            "time_at_max_s": 94.5
+          },
+          "outer_C": {
+            "max_abs": 1.1970323386965447,
+            "signed_at_max": -1.1970323386965447,
+            "time_at_max_s": 95.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 111.30364963007317,
+      "radiation_dose_MJ_m2": 20.689412289901448
+    },
+    "sustainer_al_rad30": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_al_rad30_n640_us20000",
+      "FV_event_s": 75.35963372715936,
+      "events": {
+        "property_flag": [
+          42.18000000000003,
+          42.20000000000003
+        ],
+        "first_melt": [
+          62.100000000000016,
+          62.12000000000002
+        ],
+        "all_liquid": [
+          69.9999999999988,
+          70.0199999999988
+        ],
+        "exhaustion": [
+          75.33999999999774,
+          75.35963372715936
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_rad30_n320_us40000",
+              "b": "sustainer_al_rad30_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0015281147294103903,
+                "event_relative_percent": 0.002027933288692808,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 160,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.0001626904696587772,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.16355143736450373,
+                  "at_s": 70.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 38.99269074686536,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 4.360252505563494,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.5577867892297945,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.039728427850527194
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_rad30_n640_us40000",
+              "b": "sustainer_al_rad30_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.006330049433231011,
+                "event_relative_percent": 0.008399787950335648,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 159,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.0002826357589913453,
+                  "at_s": 75.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.7999945299211504,
+                  "at_s": 75.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 10.073936131505093,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.7249281406348018,
+                  "at_s": 74.5
+                },
+                "max_liner_field_difference_K": 2.3295163299278556,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04011538097440679
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_al_rad30_n320_us40000": {
+          "record": "873de09ff0e6a2799353f301dae4f1dbdc622aae1ab746adff56c7a5fb56d276",
+          "checkpoint": "56cb817c7a16f1925cb3e1f56f412fb28882f47482a2f108bea1626a1108b4a1"
+        },
+        "sustainer_al_rad30_n640_us40000": {
+          "record": "0e02ea674acffcd44507024a46472fead9dcaa8c2bf69d2d727d860ee94a9983",
+          "checkpoint": "bb25afc093750df1ba6b257094bd3115d4850abc243a08cf5f855313918986a7"
+        },
+        "sustainer_al_rad30_n640_us20000": {
+          "record": "af423ad51ed381e30d4b52e7ff9fe75f624218500338b9ef835c68d7ddde64dd",
+          "checkpoint": "746488358939764073781b3dd08929f3473888d7d3fc05f73bdaf2e4b22b6de7"
+        }
+      },
+      "nodal_event_s": 75.42413844167379,
+      "nodal_sha256": "c277c2e041f56318869a84e7a56b2fb6064b9833ad234e4a4351071cebb1cf3e",
+      "nodal_balances": {
+        "liner_mass_relative": -9.805731688859066e-13,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.1164022925775964e-09
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 75.0,
+        "stations": 150,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0029612264989211518,
+            "signed_at_max": 0.0029612264989211518,
+            "time_at_max_s": 75.0
+          },
+          "hot_C": {
+            "max_abs": 5.748587270249118,
+            "signed_at_max": -5.748587270249118,
+            "time_at_max_s": 63.0
+          },
+          "interface_C": {
+            "max_abs": 2.313620024323882,
+            "signed_at_max": -2.313620024323882,
+            "time_at_max_s": 75.0
+          },
+          "outer_C": {
+            "max_abs": 2.2326732640924547,
+            "signed_at_max": -2.2326732640924547,
+            "time_at_max_s": 75.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 83.80241444731072,
+      "radiation_dose_MJ_m2": 48.430234136334136
+    },
+    "sustainer_al_gasdelta90": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_al_gasdelta90_n640_us20000",
+      "FV_event_s": 131.5579702257098,
+      "events": {
+        "property_flag": [
+          54.44000000000007,
+          54.46000000000007
+        ],
+        "first_melt": [
+          95.77999999999368,
+          95.79999999999367
+        ],
+        "all_liquid": [
+          115.51999999998975,
+          115.53999999998975
+        ],
+        "exhaustion": [
+          131.53999999998908,
+          131.5579702257098
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_gasdelta90_n320_us40000",
+              "b": "sustainer_al_gasdelta90_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.002490582349764736,
+                "event_relative_percent": 0.001893174799826053,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 273,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00015731693561704674,
+                  "at_s": 2.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.05243656220011417,
+                  "at_s": 116.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 27.376459545207133,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.8822348579697064,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 2.730541840483056,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03970676094012205
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_gasdelta90_n640_us40000",
+              "b": "sustainer_al_gasdelta90_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.002112309495515774,
+                "event_relative_percent": 0.0016056111932190441,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 270,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 9.063892669053386e-05,
+                  "at_s": 126.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.3256375698252896,
+                  "at_s": 126.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 7.657548334408489,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.388332793491827,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2183347815043817,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04013770519309281
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_al_gasdelta90_n320_us40000": {
+          "record": "68d601d4ef8db1ae949cb89bf795e8d14993c703b4c4c2affd5a8704efdea73e",
+          "checkpoint": "41ebcb278b4cbfbe12558ffe356153bcfefb1e3e8f18a84df7cb514f01a0431d"
+        },
+        "sustainer_al_gasdelta90_n640_us40000": {
+          "record": "c01f83d4f7dece4a1bd894f72c29237341b8ac4f79f3cbb93ddd3c6302cfc6ab",
+          "checkpoint": "e62c7e2a40f3abe7dd7a4f3d878044ea86e95f1c5100cb8d35d7d4827fd9315e"
+        },
+        "sustainer_al_gasdelta90_n640_us20000": {
+          "record": "c7dc4032b90b1af4abde35ae28f4391257fdb89d81b4cf3d643bf2c14b711714",
+          "checkpoint": "7d6d472991711441fe701d046234caa3070bc1f29f6c00d744c6528c292273ec"
+        }
+      },
+      "nodal_event_s": 131.61317698629426,
+      "nodal_sha256": "574cfd4f409ea1b097de4912342b501a5772706c9c38a17ed59b27876982ff65",
+      "nodal_balances": {
+        "liner_mass_relative": -1.5384594692482666e-12,
+        "case_mass_relative": 0.0,
+        "energy_relative": -9.833949624501055e-10
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 131.5,
+        "stations": 263,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0019600257505501023,
+            "signed_at_max": 0.0019600257505501023,
+            "time_at_max_s": 131.5
+          },
+          "hot_C": {
+            "max_abs": 7.052666413655174,
+            "signed_at_max": -7.052666413655174,
+            "time_at_max_s": 2.5
+          },
+          "interface_C": {
+            "max_abs": 0.5526366291205704,
+            "signed_at_max": -0.5526366291205704,
+            "time_at_max_s": 126.0
+          },
+          "outer_C": {
+            "max_abs": 0.5466038089556378,
+            "signed_at_max": -0.5466038089556378,
+            "time_at_max_s": 126.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 131.8180746733741,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "sustainer_al_gasdelta110": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_al_gasdelta110_n640_us20000",
+      "FV_event_s": 95.22742351608446,
+      "events": {
+        "property_flag": [
+          47.40000000000006,
+          47.420000000000066
+        ],
+        "first_melt": [
+          74.95999999999782,
+          74.97999999999782
+        ],
+        "all_liquid": [
+          86.73999999999548,
+          86.75999999999547
+        ],
+        "exhaustion": [
+          95.21999999999379,
+          95.22742351608446
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_gasdelta110_n320_us40000",
+              "b": "sustainer_al_gasdelta110_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0015529775004949897,
+                "event_relative_percent": 0.0016308850829743725,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 199,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.0001610745381448453,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.08752061503810182,
+                  "at_s": 87.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 33.1930441347405,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.6092244177593784,
+                  "at_s": 1.5
+                },
+                "max_liner_field_difference_K": 1.1140691448558755,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03971192207679268
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_al_gasdelta110_n640_us40000",
+              "b": "sustainer_al_gasdelta110_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.004435906025292979,
+                "event_relative_percent": 0.004658223294830327,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 197,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00019760424113668407,
+                  "at_s": 94.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.5577940502519141,
+                  "at_s": 94.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.056718220282619,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.6071542895906532,
+                  "at_s": 95.0
+                },
+                "max_liner_field_difference_K": 2.3371137610473625,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040152588005550195
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_al_gasdelta110_n320_us40000": {
+          "record": "18dfec6db2a73ed8ee1ae8574e597cf43a5031cb0f4b5cd10906bd8157cd7eba",
+          "checkpoint": "ad64db02e4f43be899a5307da98795c763627b8a04b0f946419f2e92fa4f52bb"
+        },
+        "sustainer_al_gasdelta110_n640_us40000": {
+          "record": "bf0e1da93db6aa4b5ed2f2ff81a217586e61306c3389d7b9767dbbee122b5ca5",
+          "checkpoint": "fe001483cb27f29c38ab28754c29c2036d49c06941569c4a715f843b767c6f9f"
+        },
+        "sustainer_al_gasdelta110_n640_us20000": {
+          "record": "4e9529dffa737372e67dae2477152276c9fd8ab59134b09310348d54f3822b99",
+          "checkpoint": "552b49ffaafcae00c271b6382349e4922a41f4ca7543756974f44b12d14a4945"
+        }
+      },
+      "nodal_event_s": 95.28187088319378,
+      "nodal_sha256": "21d6edb38da6573cab1f1a8a1d70498038456533f9478725785c68156c7ad90b",
+      "nodal_balances": {
+        "liner_mass_relative": -1.1759036149614925e-12,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.9709217310301986e-09
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 95.0,
+        "stations": 190,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0023172232332030664,
+            "signed_at_max": 0.0023172232332030664,
+            "time_at_max_s": 95.0
+          },
+          "hot_C": {
+            "max_abs": 7.981676752685644,
+            "signed_at_max": -7.981676752685644,
+            "time_at_max_s": 85.5
+          },
+          "interface_C": {
+            "max_abs": 1.1422458969134368,
+            "signed_at_max": -1.1422458969134368,
+            "time_at_max_s": 93.5
+          },
+          "outer_C": {
+            "max_abs": 1.1077710961455978,
+            "signed_at_max": -1.1077710961455978,
+            "time_at_max_s": 93.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 131.99620946771924,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_al_p600": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_al_p600_n640_us20000",
+      "FV_event_s": 150.4346758697473,
+      "events": {
+        "property_flag": [
+          83.87999999999604,
+          83.89999999999604
+        ],
+        "first_melt": [
+          124.91999999998788,
+          124.93999999998788
+        ],
+        "all_liquid": [
+          140.87999999999386,
+          140.89999999999387
+        ],
+        "exhaustion": [
+          150.41999999999874,
+          150.4346758697473
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_p600_n320_us40000",
+              "b": "booster_al_p600_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0036258262636579275,
+                "event_relative_percent": 0.0024103435522336444,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 309,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00023060228163185315,
+                  "at_s": 2.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.08480654622417205,
+                  "at_s": 142.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 4.453837334815262,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 4.202713916662788,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06511370633848053
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_p600_n640_us40000",
+              "b": "booster_al_p600_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.006897211476541543,
+                "event_relative_percent": 0.0045848548126719395,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 309,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.0002006406170790287,
+                  "at_s": 150.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.3880835107416942,
+                  "at_s": 149.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.409917630493851,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.8855539357293765,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2720063375179507,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06554886731265293
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_al_p600_n320_us40000": {
+          "record": "f744901cf2d1efb482861c9c8e3ad1e0a88b8fe1362e581718b12c3224afafd6",
+          "checkpoint": "7b19e300d4aca197c08ff1d100cc4e3258489aac7c3504e12335ddf569c3e4fe"
+        },
+        "booster_al_p600_n640_us40000": {
+          "record": "27a86e9c0deae17f3ae69362f1fcefffabc939f7e30f87f886e4b7aa3214cef8",
+          "checkpoint": "729fdca54b2c67d430c2f44ce99f68e7494fe1024e3e553703de5b83eb2e7d3f"
+        },
+        "booster_al_p600_n640_us20000": {
+          "record": "a1587214ecfc0c3b24e7b247afd1923174e18ab6fa55a24ac9da3b65d4b66195",
+          "checkpoint": "3a51047d9181fe95350eeeb7bd297c93a0f6583d24bc67f0be2420d01737ef80"
+        }
+      },
+      "nodal_event_s": 150.504627807293,
+      "nodal_sha256": "d00d39e4c5ed0c8c61fbd0a5980d0ab15efbfa5e51b058abc4cbafc1b90e84b4",
+      "nodal_balances": {
+        "liner_mass_relative": 2.6857252350091047e-15,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.3380769724555675e-09
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 150.0,
+        "stations": 300,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0021766464092491944,
+            "signed_at_max": 0.0021766464092491944,
+            "time_at_max_s": 130.5
+          },
+          "hot_C": {
+            "max_abs": 4.436137687060864,
+            "signed_at_max": -4.436137687060864,
+            "time_at_max_s": 0.5
+          },
+          "interface_C": {
+            "max_abs": 1.4561133467607306,
+            "signed_at_max": -1.4561133467607306,
+            "time_at_max_s": 150.0
+          },
+          "outer_C": {
+            "max_abs": 1.4353984157759214,
+            "signed_at_max": -1.4353984157759214,
+            "time_at_max_s": 150.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 175.40058781099174,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_al_p1000": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_al_p1000_n640_us20000",
+      "FV_event_s": 145.53938795767516,
+      "events": {
+        "property_flag": [
+          84.65999999999589,
+          84.67999999999589
+        ],
+        "first_melt": [
+          123.97999999998807,
+          123.99999999998806
+        ],
+        "all_liquid": [
+          138.15999999999246,
+          138.17999999999248
+        ],
+        "exhaustion": [
+          145.51999999999623,
+          145.53938795767516
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_p1000_n320_us40000",
+              "b": "booster_al_p1000_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.003856365046800647,
+                "event_relative_percent": 0.0026498424263313156,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 301,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00022838785682122165,
+                  "at_s": 2.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.0962021930396304,
+                  "at_s": 145.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 4.99784113665919,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 4.818605582944883,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06511439864073394
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_p1000_n640_us40000",
+              "b": "booster_al_p1000_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.0075250634821770745,
+                "event_relative_percent": 0.005170465251898315,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 298,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00021220684588707517,
+                  "at_s": 145.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.40438900966580604,
+                  "at_s": 144.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.405821365061797,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.701151282736646,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.250652225545423,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06554886731265293
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_al_p1000_n320_us40000": {
+          "record": "41ce7f5c3ad12fd1d3e9ca5aba0fef75e56f71dc1de342d47e2a16ba6fc7c532",
+          "checkpoint": "d15b8d08d11b9579d8052a57f68ed244c13384b4921ed0ba0769a0e35f8971a3"
+        },
+        "booster_al_p1000_n640_us40000": {
+          "record": "e6b088e33d2e24d1e531120ac67b11d5697df910bb51d384b1c972dc18de5e8c",
+          "checkpoint": "d13eb28c8e3d64d47348cf3b1480039fc49f8ea45a1623cc079aec89cddd9cfd"
+        },
+        "booster_al_p1000_n640_us20000": {
+          "record": "51130c8d072b09cfb87b7454b8032c41c912cc8f848e0140d9c0e08f9c3bdb55",
+          "checkpoint": "f2159eccd735a88f7efd6d3899b0e6128e1daacd4aac6f689962bbf2d8faf6fa"
+        }
+      },
+      "nodal_event_s": 145.61357697784868,
+      "nodal_sha256": "9fb847b6517d7d1d9a55a096b5988067992bd30e11138f1d68ea3db2424a3d5c",
+      "nodal_balances": {
+        "liner_mass_relative": -3.0326564235397844e-14,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.1263886478162641e-09
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 145.5,
+        "stations": 291,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0022992092696469957,
+            "signed_at_max": 0.0022992092696469957,
+            "time_at_max_s": 127.0
+          },
+          "hot_C": {
+            "max_abs": 15.97344055629469,
+            "signed_at_max": -15.97344055629469,
+            "time_at_max_s": 137.5
+          },
+          "interface_C": {
+            "max_abs": 1.6711140498383656,
+            "signed_at_max": -1.6711140498383656,
+            "time_at_max_s": 145.5
+          },
+          "outer_C": {
+            "max_abs": 1.6536286422120838,
+            "signed_at_max": -1.6536286422120838,
+            "time_at_max_s": 145.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 174.3229817839404,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_al_rad10": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_al_rad10_n640_us20000",
+      "FV_event_s": 127.71240988657745,
+      "events": {
+        "property_flag": [
+          77.85999999999724,
+          77.87999999999724
+        ],
+        "first_melt": [
+          109.97999999999085,
+          109.99999999999085
+        ],
+        "all_liquid": [
+          121.45999999998857,
+          121.47999999998856
+        ],
+        "exhaustion": [
+          127.69999999998733,
+          127.71240988657745
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_rad10_n320_us40000",
+              "b": "booster_al_rad10_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.003980942277976851,
+                "event_relative_percent": 0.003117326149819154,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 264,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00026706997900660667,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.09689544935065442,
+                  "at_s": 127.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 43.07630754032786,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.5576180851237496,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.02039429999013,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06529089856314742
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_rad10_n640_us40000",
+              "b": "booster_al_rad10_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.008663577972612302,
+                "event_relative_percent": 0.006783661807264074,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 263,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.0002493219569132954,
+                  "at_s": 127.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.45463515286530765,
+                  "at_s": 127.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.075628927348134,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.7801807178428817,
+                  "at_s": 127.5
+                },
+                "max_liner_field_difference_K": 2.3702927232760658,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06553894543767189
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_al_rad10_n320_us40000": {
+          "record": "02e9ca0b20387f02ebcc3edcdd40798817d4659ab910c6bed29574dbee4993f8",
+          "checkpoint": "ded768656ce582587e78b2066dee07b1f127ec96cbe4542f8be590240dec1036"
+        },
+        "booster_al_rad10_n640_us40000": {
+          "record": "9aeb266bbef44ab1bd9c08708ab8333936cc694570a086f747546d302aa39ca2",
+          "checkpoint": "579efb17434ff1c4a8a45fbb0fc6f74bf9cc89879764d4e953122289745a222a"
+        },
+        "booster_al_rad10_n640_us20000": {
+          "record": "8374761e076210fae58f0cd8cb830a775eab6ac7f216a2fc2d13229f36ed88b0",
+          "checkpoint": "09d67ac9a91601120569ebb515e6ead4d8811d72b1955062e307c8cc388ca2f5"
+        }
+      },
+      "nodal_event_s": 127.7903696234845,
+      "nodal_sha256": "24f68510fbfdb0f65d25017f451c715b1116478dcb05e5e2ab10f84e6811bc00",
+      "nodal_balances": {
+        "liner_mass_relative": -1.4570789760310907e-14,
+        "case_mass_relative": 0.0,
+        "energy_relative": -9.168112384637902e-10
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 127.5,
+        "stations": 255,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.002651024696848525,
+            "signed_at_max": 0.002651024696848525,
+            "time_at_max_s": 111.5
+          },
+          "hot_C": {
+            "max_abs": 6.225098949801122,
+            "signed_at_max": 6.225098949801122,
+            "time_at_max_s": 111.5
+          },
+          "interface_C": {
+            "max_abs": 2.184354450226351,
+            "signed_at_max": -2.184354450226351,
+            "time_at_max_s": 127.5
+          },
+          "outer_C": {
+            "max_abs": 5.4713867380086185,
+            "signed_at_max": -5.4713867380086185,
+            "time_at_max_s": 121.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 147.50142435897013,
+      "radiation_dose_MJ_m2": 27.38096336837409
+    },
+    "booster_al_rad30": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_al_rad30_n640_us20000",
+      "FV_event_s": 100.65499683743658,
+      "events": {
+        "property_flag": [
+          67.47999999999931,
+          67.4999999999993
+        ],
+        "first_melt": [
+          89.25999999999497,
+          89.27999999999497
+        ],
+        "all_liquid": [
+          96.6399999999935,
+          96.6599999999935
+        ],
+        "exhaustion": [
+          100.63999999999271,
+          100.65499683743658
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_rad30_n320_us40000",
+              "b": "booster_al_rad30_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.004229821078482132,
+                "event_relative_percent": 0.0042027241115036446,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 211,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00039955927119694756,
+                  "at_s": 100.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.22754817981137876,
+                  "at_s": 100.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 50.455254746673816,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.643418196884795,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 2.6303319342193845,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06514207043843448
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_rad30_n640_us40000",
+              "b": "booster_al_rad30_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.010249139049292921,
+                "event_relative_percent": 0.010182444360756228,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 209,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00029385857334973675,
+                  "at_s": 100.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.5262119691619773,
+                  "at_s": 100.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 10.083331615098928,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.1574674336573025,
+                  "at_s": 100.5
+                },
+                "max_liner_field_difference_K": 2.447945112233583,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.0654893360627667
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_al_rad30_n320_us40000": {
+          "record": "4936685d2516b963c46f03d047b25cc97453ef49aebff537317c6c1dd937cd7a",
+          "checkpoint": "0ab96df33a2b54bdce4eade85b270889c35e1aead57825336f93e1b6c6b6dfcb"
+        },
+        "booster_al_rad30_n640_us40000": {
+          "record": "6d41218912bc6dd10b2b54149e4ccf7e70d00443a29e3e128d881f10854c30bf",
+          "checkpoint": "c0dfe4be33c94ac8c3e18c1d65eba28f359c4ac7f2bafe691880d0b3290d9565"
+        },
+        "booster_al_rad30_n640_us20000": {
+          "record": "e31ef4d38c48714a7ee15fc97e2080ac7b9c0b4722cee0d5de0343f5366830cc",
+          "checkpoint": "4405347bdb484da239cc8c46e325859d6b6c47ff2a62d4bf1b397076384664be"
+        }
+      },
+      "nodal_event_s": 100.74765078406186,
+      "nodal_sha256": "78ae76b579cab6a634a7585744cb6739fe090946ac5a61226d25e83ad78baa1d",
+      "nodal_balances": {
+        "liner_mass_relative": -2.4135909540068413e-14,
+        "case_mass_relative": 0.0,
+        "energy_relative": -2.502133633605558e-10
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 100.5,
+        "stations": 201,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.003445611296725104,
+            "signed_at_max": 0.003445611296725104,
+            "time_at_max_s": 89.5
+          },
+          "hot_C": {
+            "max_abs": 9.86937533567243,
+            "signed_at_max": -9.86937533567243,
+            "time_at_max_s": 88.5
+          },
+          "interface_C": {
+            "max_abs": 3.7682830311334783,
+            "signed_at_max": -3.7682830311334783,
+            "time_at_max_s": 100.5
+          },
+          "outer_C": {
+            "max_abs": 3.637225845560806,
+            "signed_at_max": -3.637225845560806,
+            "time_at_max_s": 100.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 111.07290588572089,
+      "radiation_dose_MJ_m2": 64.07569484116866
+    },
+    "booster_al_gasdelta90": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_al_gasdelta90_n640_us10000",
+      "FV_event_s": 175.80705569815973,
+      "events": {
+        "property_flag": [
+          92.18000000000009,
+          92.1900000000001
+        ],
+        "first_melt": [
+          143.73999999998568,
+          143.74999999998568
+        ],
+        "all_liquid": [
+          164.14999999996712,
+          164.1599999999671
+        ],
+        "exhaustion": [
+          175.79999999995653,
+          175.80705569815973
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_gasdelta90_n320_us40000",
+              "b": "booster_al_gasdelta90_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.004029822196372379,
+                "event_relative_percent": 0.0022922933936895865,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 361,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00021721919388184574,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.08133136159119658,
+                  "at_s": 165.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 35.58029848103125,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.4616954749440083,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 0.6477256144953571,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06512222668847285
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_gasdelta90_n640_us40000",
+              "b": "booster_al_gasdelta90_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.005573875982463505,
+                "event_relative_percent": 0.00317050067612738,
+                "event_under_5_percent": true,
+                "brackets_overlap": false,
+                "shared_samples": 359,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.000153194302549009,
+                  "at_s": 175.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.32182715821522834,
+                  "at_s": 173.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 7.655826532996798,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.3824641796989,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.1689920341766538,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06553894543767189
+              }
+            },
+            {
+              "a": "booster_al_gasdelta90_n640_us20000",
+              "b": "booster_al_gasdelta90_n640_us10000",
+              "comparison": {
+                "event_difference_s": 0.0027726575474389392,
+                "event_relative_percent": 0.0015771025437109132,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 359,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 7.634003397483102e-05,
+                  "at_s": 175.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.17599574941789342,
+                  "at_s": 175.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 6.277217802719861,
+                  "at_s": 0.05
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.6500981327405952,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.2094575288449505,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06553894543767189
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_al_gasdelta90_n320_us40000": {
+          "record": "9cf2595c099a23649e6790dd0ca3b3f4f0dbd2ba79ee284bed9a45a4365300f7",
+          "checkpoint": "00c4afd184069e03a6f52f1d7249537ca2e4922137d385adecd0d7efe6f7891c"
+        },
+        "booster_al_gasdelta90_n640_us40000": {
+          "record": "8b135b10f9a01f8819f17633cc2fe136ccff2733fdb5e1d6327454c195dffea7",
+          "checkpoint": "524eac0b184e0b928a1c487291499c4476a66e8f713e029c0802581ee347bf7b"
+        },
+        "booster_al_gasdelta90_n640_us20000": {
+          "record": "0fbd8d435c82ebdfec6c5c24ef34e8c8ee41e520c30bbdc5cd4e53f24cbe1753",
+          "checkpoint": "45f9828c193b35516c3037a89677496ec5c87d3326331884ee5d4dd3c4d8b15c"
+        },
+        "booster_al_gasdelta90_n640_us10000": {
+          "record": "186d5268a396df42bb370a2c7ea591a1415e7bff1b8e5295735c54dcb114b88f",
+          "checkpoint": "3d5d6bcbd68ea26cc4412e6dab4d43f70a1acd355f3ea61bac4fbcdd818bdc25"
+        }
+      },
+      "nodal_event_s": 175.8757400149799,
+      "nodal_sha256": "8496549439459e444c1f4ef92a8c02a34990470f64d3ea8620ea52d653b8027c",
+      "nodal_balances": {
+        "liner_mass_relative": -2.6598724783138897e-14,
+        "case_mass_relative": 0.0,
+        "energy_relative": -8.802026455467438e-10
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 175.5,
+        "stations": 351,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0019735054343407166,
+            "signed_at_max": 0.0019735054343407166,
+            "time_at_max_s": 150.5
+          },
+          "hot_C": {
+            "max_abs": 4.747359998143111,
+            "signed_at_max": -4.747359998143111,
+            "time_at_max_s": 0.5
+          },
+          "interface_C": {
+            "max_abs": 1.3026632954046136,
+            "signed_at_max": -1.3026632954046136,
+            "time_at_max_s": 175.5
+          },
+          "outer_C": {
+            "max_abs": 1.294145851098051,
+            "signed_at_max": -1.294145851098051,
+            "time_at_max_s": 175.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 174.7225923726075,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_al_gasdelta110": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_al_gasdelta110_n640_us20000",
+      "FV_event_s": 127.21821568197696,
+      "events": {
+        "property_flag": [
+          77.75999999999726,
+          77.77999999999726
+        ],
+        "first_melt": [
+          109.67999999999091,
+          109.69999999999091
+        ],
+        "all_liquid": [
+          121.03999999998865,
+          121.05999999998865
+        ],
+        "exhaustion": [
+          127.19999999998743,
+          127.21821568197696
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_gasdelta110_n320_us40000",
+              "b": "booster_al_gasdelta110_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.003803742011072586,
+                "event_relative_percent": 0.0029901386663716842,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 264,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.0002471499632861196,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.08830078087771653,
+                  "at_s": 127.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 43.04521940961989,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.57238558146355,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.0202690428280903,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06530082043812832
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_al_gasdelta110_n640_us40000",
+              "b": "booster_al_gasdelta110_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.008663367530260757,
+                "event_relative_percent": 0.006809848325429782,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 263,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00025154509737668196,
+                  "at_s": 127.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.4563738348382458,
+                  "at_s": 126.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.057013579895397,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.7877412063739939,
+                  "at_s": 127.0
+                },
+                "max_liner_field_difference_K": 2.3540794358837047,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06553894543767189
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_al_gasdelta110_n320_us40000": {
+          "record": "15bc5745a17de84ae42e1104e9e3147023e64a30e13e4fd2a6c3198e545020b7",
+          "checkpoint": "b6509816979498987bf07b21df2154c7d5f58cb55eb0c658123779ba71ece1c1"
+        },
+        "booster_al_gasdelta110_n640_us40000": {
+          "record": "9c5d0b3745e88fc324c2268ef8f5b83661ac4d9eb59e07b496ad96eccb04f38a",
+          "checkpoint": "69a19330fafa49fa38e7bb762651837446cac25791ad2251e8422b0e60791c97"
+        },
+        "booster_al_gasdelta110_n640_us20000": {
+          "record": "311ae2d35eb7fbe4c4d623c11c9fc7ab5393a1d474efc57c3b9827f0f7146924",
+          "checkpoint": "4bb3468f2e76719a9afbd80d67406d2de401a3cab4268e05077c836fbaa6c1f1"
+        }
+      },
+      "nodal_event_s": 127.2929976045977,
+      "nodal_sha256": "59f334aa071d997953525344bca4f38a3474ebc7aa944964723ec19f151da6fc",
+      "nodal_balances": {
+        "liner_mass_relative": 4.539439925600995e-15,
+        "case_mass_relative": 0.0,
+        "energy_relative": -8.014998522372796e-10
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 127.0,
+        "stations": 254,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0025095151853637976,
+            "signed_at_max": 0.0025095151853637976,
+            "time_at_max_s": 112.0
+          },
+          "hot_C": {
+            "max_abs": 15.38094808981839,
+            "signed_at_max": -15.38094808981839,
+            "time_at_max_s": 118.5
+          },
+          "interface_C": {
+            "max_abs": 2.047040054510262,
+            "signed_at_max": -2.047040054510262,
+            "time_at_max_s": 127.0
+          },
+          "outer_C": {
+            "max_abs": 1.9943781237909661,
+            "signed_at_max": -1.9943781237909661,
+            "time_at_max_s": 127.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 174.8834467269726,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "sustainer_cf_p600": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_cf_p600_n640_us20000",
+      "FV_event_s": 106.22388714445765,
+      "events": {
+        "property_flag": [
+          21.499999999999627,
+          21.519999999999627
+        ],
+        "inner_pool_half": [
+          60.14000000000002,
+          60.160000000000025
+        ],
+        "outer_pool_half": [
+          81.81999999999645,
+          81.83999999999645
+        ],
+        "first_1000C": [
+          94.35999999999396,
+          94.37999999999396
+        ],
+        "exhaustion": [
+          106.2199999999916,
+          106.22388714445765
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_p600_n320_us40000",
+              "b": "sustainer_cf_p600_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0018593691120685207,
+                "event_relative_percent": 0.0017504221160240204,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 221,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00016484204795563784,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.03646169681792344,
+                  "at_s": 102.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.304498626556324,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.7065329159355542,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.0398326075377234
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_p600_n640_us40000",
+              "b": "sustainer_cf_p600_n640_us20000",
+              "comparison": {
+                "event_difference_s": -0.00015419089561419241,
+                "event_relative_percent": 0.0001451565177656347,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 221,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 4.293092825680134e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.25535127252851453,
+                  "at_s": 74.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.406056773139312,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.8980695139425734,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2569899617878946,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040145146599321495
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_cf_p600_n320_us40000": {
+          "record": "365abb60328047879102f2b5daec67aec58f054c3c74c026c121e7d711124742",
+          "checkpoint": "caf892d3f4ee649c7175d470cfc696353fc9e26b13793700c012f210ec254ce0"
+        },
+        "sustainer_cf_p600_n640_us40000": {
+          "record": "227b4b2b4c68e2a293ffa14df128a6fc44d39101f274ff530f7333d53e6979b0",
+          "checkpoint": "0e41b938e339c0b2445f1a2f7cc01985b920682a6d80f4ba5b04ecdcf1f71c86"
+        },
+        "sustainer_cf_p600_n640_us20000": {
+          "record": "a87f2b8b1e44a7487dedb819528f00bd2cde8a0b5aaa0c867ab6d60d73606678",
+          "checkpoint": "e424e9e5576fd97437dd986df382e56197eabfb1161e4d084b4d340cf9d3f6b6"
+        }
+      },
+      "nodal_event_s": 106.26246174106006,
+      "nodal_sha256": "85299c7b01305502a7f94b49c7a76dfe09edbb59fedd4c8ac9ffb50eaf0b69d2",
+      "nodal_balances": {
+        "liner_mass_relative": -1.177339171116119e-12,
+        "case_mass_relative": 2.1098533393008477e-16,
+        "energy_relative": -2.2524510525287085e-14
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 106.0,
+        "stations": 212,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0018758279344112446,
+            "signed_at_max": 0.0018758279344112446,
+            "time_at_max_s": 106.0
+          },
+          "hot_C": {
+            "max_abs": 4.641082537886859,
+            "signed_at_max": 4.641082537886859,
+            "time_at_max_s": 3.0
+          },
+          "interface_C": {
+            "max_abs": 0.2329620678556239,
+            "signed_at_max": -0.2329620678556239,
+            "time_at_max_s": 74.0
+          },
+          "outer_C": {
+            "max_abs": 0.09936674287314418,
+            "signed_at_max": 0.09936674287314418,
+            "time_at_max_s": 29.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 123.22433597066065,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "sustainer_cf_p1000": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_cf_p1000_n640_us20000",
+      "FV_event_s": 102.81164683506329,
+      "events": {
+        "property_flag": [
+          21.85999999999962,
+          21.87999999999962
+        ],
+        "inner_pool_half": [
+          61.100000000000016,
+          61.12000000000002
+        ],
+        "outer_pool_half": [
+          82.71999999999628,
+          82.73999999999627
+        ],
+        "first_1000C": [
+          95.55999999999372,
+          95.57999999999372
+        ],
+        "exhaustion": [
+          102.79999999999228,
+          102.81164683506329
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_p1000_n320_us40000",
+              "b": "sustainer_cf_p1000_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0018232271325757665,
+                "event_relative_percent": 0.0017733634226558502,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 214,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00016388295896696548,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.08738480431088647,
+                  "at_s": 102.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.4580370429341656,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.4607021246926024,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.039877255975093694
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_p1000_n640_us40000",
+              "b": "sustainer_cf_p1000_n640_us20000",
+              "comparison": {
+                "event_difference_s": -0.0001687963451217911,
+                "event_relative_percent": 0.0001641801783338657,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 215,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 4.827131312712396e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.24429386047063417,
+                  "at_s": 75.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.401814528718205,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.715545919862052,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2451893380263073,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040160029411778896
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_cf_p1000_n320_us40000": {
+          "record": "3d1e09b90d9be3dfdec52147eb8c65f4c30ebd89014f50e4476a1f74934526db",
+          "checkpoint": "c7689e68fc7a585384e72626c471a57f3ca0d50fdd17b2d0c7d687449be31137"
+        },
+        "sustainer_cf_p1000_n640_us40000": {
+          "record": "a0af11f29dbd678520a5917f99872d5e32e457895e97ef7ea816454aa64a617b",
+          "checkpoint": "b3e94cb2284198aaff5e35e6f8c1e5db0ec3a3952be3983cf997923c6d399605"
+        },
+        "sustainer_cf_p1000_n640_us20000": {
+          "record": "14c341ce8ac23705ef0260ecf53c0d3ec38fb62af088396a05608e65d36f5b94",
+          "checkpoint": "1eb079c27503bae573ba275a9eb9a019f650cdb73a6480ce4803cedbff899d96"
+        }
+      },
+      "nodal_event_s": 102.85099755827021,
+      "nodal_sha256": "93a6e729d016845497cfa3196e268be7bc4c88cf37ee9dd73205d273431e18aa",
+      "nodal_balances": {
+        "liner_mass_relative": -1.1431014165790922e-12,
+        "case_mass_relative": -3.014076199001211e-17,
+        "energy_relative": -2.6133103571698682e-14
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 102.5,
+        "stations": 205,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0019785529620069825,
+            "signed_at_max": 0.0019785529620069825,
+            "time_at_max_s": 102.0
+          },
+          "hot_C": {
+            "max_abs": 8.229793427906543,
+            "signed_at_max": -8.229793427906543,
+            "time_at_max_s": 2.0
+          },
+          "interface_C": {
+            "max_abs": 0.6399135077772371,
+            "signed_at_max": 0.6399135077772371,
+            "time_at_max_s": 102.0
+          },
+          "outer_C": {
+            "max_abs": 0.10325333791965363,
+            "signed_at_max": 0.10325333791965363,
+            "time_at_max_s": 29.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 122.5798560273351,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "sustainer_cf_rad10": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_cf_rad10_n640_us20000",
+      "FV_event_s": 90.08521532390247,
+      "events": {
+        "property_flag": [
+          20.93999999999964,
+          20.95999999999964
+        ],
+        "inner_pool_half": [
+          55.480000000000075,
+          55.5
+        ],
+        "outer_pool_half": [
+          76.0799999999976,
+          76.09999999999759
+        ],
+        "first_1000C": [
+          81.47999999999652,
+          81.49999999999652
+        ],
+        "exhaustion": [
+          90.07999999999481,
+          90.08521532390247
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_rad10_n320_us40000",
+              "b": "sustainer_cf_rad10_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0014910745206861975,
+                "event_relative_percent": 0.0016551814959687298,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 188,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00016240542217360598,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.058007269801464645,
+                  "at_s": 89.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 33.21788387961456,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.6029856312231914,
+                  "at_s": 1.5
+                },
+                "max_liner_field_difference_K": 1.1224381136448756,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03971188132996815
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_rad10_n640_us40000",
+              "b": "sustainer_cf_rad10_n640_us20000",
+              "comparison": {
+                "event_difference_s": -4.265643246981199e-05,
+                "event_relative_percent": 4.7351202210529524e-05,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 188,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 6.093147886954142e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.28898503166703904,
+                  "at_s": 67.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.077334410439107,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.40819449413743314,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.353466525692852,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040152588005550195
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_cf_rad10_n320_us40000": {
+          "record": "18dba79c9920f87e2470c91b9a28dc2e92ecc0a62b13acb340784fbb8a2ed68c",
+          "checkpoint": "1d69dd61270562e1eeab6f30a7e2cd52397f32747cd25e00af5b80daec938786"
+        },
+        "sustainer_cf_rad10_n640_us40000": {
+          "record": "c5e58e3d0dc0868fb0aa99205a828fdd43be8a9a8cd4414fae1cbaf1a8347c74",
+          "checkpoint": "bb47a46a3fff5cd5d629fdc6fa1488b0a443016c35d11bd159acef2bcb63fad8"
+        },
+        "sustainer_cf_rad10_n640_us20000": {
+          "record": "bec28563060e4f2fe2bdfc48818e2d5451b802191c2cb07d98899ee74ccca2e4",
+          "checkpoint": "6c2a592b4998a64b7ee43bc08f639e87f2dcf683c4d95e704c10c7816673ddce"
+        }
+      },
+      "nodal_event_s": 90.12497814377693,
+      "nodal_sha256": "54864b3204e1f4dd56967490bb3460f053027374c93114aa5cd83415672e97a2",
+      "nodal_balances": {
+        "liner_mass_relative": -1.0318124799080017e-12,
+        "case_mass_relative": 3.014076199001211e-16,
+        "energy_relative": -4.4076279426712926e-14
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 90.0,
+        "stations": 180,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.002265895351506138,
+            "signed_at_max": 0.002265895351506138,
+            "time_at_max_s": 90.0
+          },
+          "hot_C": {
+            "max_abs": 5.091808744454738,
+            "signed_at_max": -5.091808744454738,
+            "time_at_max_s": 0.5
+          },
+          "interface_C": {
+            "max_abs": 0.31827422873789146,
+            "signed_at_max": -0.31827422873789146,
+            "time_at_max_s": 67.5
+          },
+          "outer_C": {
+            "max_abs": 0.10892612506860644,
+            "signed_at_max": 0.10892612506860644,
+            "time_at_max_s": 28.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 103.37239645708515,
+      "radiation_dose_MJ_m2": 19.394261654838985
+    },
+    "sustainer_cf_rad30": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_cf_rad30_n640_us20000",
+      "FV_event_s": 70.83155665829878,
+      "events": {
+        "property_flag": [
+          19.639999999999667,
+          19.659999999999666
+        ],
+        "inner_pool_half": [
+          47.40000000000006,
+          47.420000000000066
+        ],
+        "outer_pool_half": [
+          66.19999999999956,
+          66.21999999999956
+        ],
+        "first_1000C": [
+          63.860000000000056,
+          63.88000000000006
+        ],
+        "exhaustion": [
+          70.81999999999864,
+          70.83155665829878
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_rad30_n320_us40000",
+              "b": "sustainer_cf_rad30_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0010272009538425664,
+                "event_relative_percent": 0.0014502022738099982,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 148,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.0001626904696587772,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.14007857970022997,
+                  "at_s": 66.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 38.99269074686536,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 4.360252505564176,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.5577867892302493,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.039728427850527194
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_rad30_n640_us40000",
+              "b": "sustainer_cf_rad30_n640_us20000",
+              "comparison": {
+                "event_difference_s": -7.4892242452051505e-06,
+                "event_relative_percent": 1.0573287668001147e-05,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 150,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 7.057155856227126e-05,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.35459389805396313,
+                  "at_s": 57.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 10.073936131505093,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.35217540099210964,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 2.3295163299278556,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04011538097440679
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_cf_rad30_n320_us40000": {
+          "record": "40d510d1c30701aa1760fb279d00f7b7e9d0f45e7bd2ab26a22b66381ba30ffd",
+          "checkpoint": "acd04bb55713719ffc2ecfc840b18027aed71f283bfc098cdf3566d9309afe18"
+        },
+        "sustainer_cf_rad30_n640_us40000": {
+          "record": "34c1a45309df80ca566f8ed818d565a51dd96aeb1189bb3ecf9ebed8dc0c0e7a",
+          "checkpoint": "f64ceee435e90e4c3fc0357d0155c954650cfcbc7f940532cac98c0b8df2705b"
+        },
+        "sustainer_cf_rad30_n640_us20000": {
+          "record": "9c37ff7594a79dcb301f101e21c2245923bd4709f606bdc7e51c2f0f1b1b3ce2",
+          "checkpoint": "2556ab9350acb5e45117432a1b8254f533ff1532b004301d5f3000fa62887317"
+        }
+      },
+      "nodal_event_s": 70.87349665613083,
+      "nodal_sha256": "a22a8dc09a1fa9f7cd78558cea552ae8cfa76109409f24c564a0f921017d7455",
+      "nodal_balances": {
+        "liner_mass_relative": -8.561317498463893e-13,
+        "case_mass_relative": 6.329560017902543e-16,
+        "energy_relative": -1.39087433021638e-13
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 70.5,
+        "stations": 141,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0030081169771170313,
+            "signed_at_max": 0.0030081169771170313,
+            "time_at_max_s": 70.5
+          },
+          "hot_C": {
+            "max_abs": 4.473025383260392,
+            "signed_at_max": 4.473025383260392,
+            "time_at_max_s": 11.0
+          },
+          "interface_C": {
+            "max_abs": 0.622167875739251,
+            "signed_at_max": -0.622167875739251,
+            "time_at_max_s": 70.0
+          },
+          "outer_C": {
+            "max_abs": 0.12051774593170705,
+            "signed_at_max": 0.12051774593170705,
+            "time_at_max_s": 27.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 77.39851360261392,
+      "radiation_dose_MJ_m2": 45.24103047633434
+    },
+    "sustainer_cf_gasdelta90": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_cf_gasdelta90_n640_us20000",
+      "FV_event_s": 124.34295063209763,
+      "events": {
+        "property_flag": [
+          22.579999999999604,
+          22.599999999999604
+        ],
+        "inner_pool_half": [
+          67.11999999999938,
+          67.13999999999938
+        ],
+        "outer_pool_half": [
+          89.99999999999483,
+          90.01999999999482
+        ],
+        "first_1000C": [
+          115.39999999998977,
+          115.41999999998977
+        ],
+        "exhaustion": [
+          124.339999999988,
+          124.34295063209763
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_gasdelta90_n320_us40000",
+              "b": "sustainer_cf_gasdelta90_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0023541602068632983,
+                "event_relative_percent": 0.0018932735827372885,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 257,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00015731693561704674,
+                  "at_s": 2.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.025801185601267207,
+                  "at_s": 124.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 27.376459545207133,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.8822348579697064,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 2.730541840483056,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03970676094012205
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_gasdelta90_n640_us40000",
+              "b": "sustainer_cf_gasdelta90_n640_us20000",
+              "comparison": {
+                "event_difference_s": -0.0004209930249032823,
+                "event_relative_percent": 0.0003385740991050666,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 255,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 3.286098800714399e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.20497338413747457,
+                  "at_s": 83.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 7.657548334408489,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.388332793491827,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2183347815043817,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04013770519309281
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_cf_gasdelta90_n320_us40000": {
+          "record": "99b4a520a5024b1e368fdd18cb29b1e7ed0406af51387975bcaaf4fcd2a21aa4",
+          "checkpoint": "534a791423a56abba4e6592f3b833a8b8fc90e26e1fe52048ede8385f1c62952"
+        },
+        "sustainer_cf_gasdelta90_n640_us40000": {
+          "record": "3ad2061b0529098ba90c1d5f6f0c53b6a5fc48d3107874e0f0191a8d7962b665",
+          "checkpoint": "1007be29744e9540c348aa5527a33a08dabf89ff1655bba806d671918a8dc852"
+        },
+        "sustainer_cf_gasdelta90_n640_us20000": {
+          "record": "e2cdc87911fe798ece76f79886b410d725f10d4d6b2493d2c37f3e4b0ffd3be8",
+          "checkpoint": "34d948a51adf4bacddc097c4a7895f50ba1e1d1f7b5c83a0a702dad43d3f6f1c"
+        }
+      },
+      "nodal_event_s": 124.38354832805994,
+      "nodal_sha256": "cfcf3ab5260e9048326b2d061cf7a3f3d04eb2d58d023c4821f6908197ff44df",
+      "nodal_balances": {
+        "liner_mass_relative": -1.343889227215963e-12,
+        "case_mass_relative": -6.329560017902543e-16,
+        "energy_relative": -3.20103892554339e-14
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 124.0,
+        "stations": 248,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0016873427429076882,
+            "signed_at_max": 0.0016873427429076882,
+            "time_at_max_s": 124.0
+          },
+          "hot_C": {
+            "max_abs": 7.0526664136740465,
+            "signed_at_max": -7.0526664136740465,
+            "time_at_max_s": 2.5
+          },
+          "interface_C": {
+            "max_abs": 0.19644255509331288,
+            "signed_at_max": -0.19644255509331288,
+            "time_at_max_s": 84.5
+          },
+          "outer_C": {
+            "max_abs": 0.09075789137644108,
+            "signed_at_max": 0.09075789137644108,
+            "time_at_max_s": 30.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 122.97005820109985,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "sustainer_cf_gasdelta110": {
+      "numerical_checks_passed": true,
+      "FV_tag": "sustainer_cf_gasdelta110_n640_us20000",
+      "FV_event_s": 89.73849558032697,
+      "events": {
+        "property_flag": [
+          20.93999999999964,
+          20.95999999999964
+        ],
+        "inner_pool_half": [
+          55.420000000000066,
+          55.44000000000007
+        ],
+        "outer_pool_half": [
+          75.99999999999761,
+          76.01999999999761
+        ],
+        "first_1000C": [
+          81.13999999999659,
+          81.15999999999659
+        ],
+        "exhaustion": [
+          89.71999999999488,
+          89.73849558032697
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_gasdelta110_n320_us40000",
+              "b": "sustainer_cf_gasdelta110_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0013820706259792814,
+                "event_relative_percent": 0.0015401086062399717,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 187,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.0001610745381448453,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.14696276477525316,
+                  "at_s": 89.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 33.1930441347405,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.6092244177589237,
+                  "at_s": 1.5
+                },
+                "max_liner_field_difference_K": 1.1140691448508733,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03971192207679268
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "sustainer_cf_gasdelta110_n640_us40000",
+              "b": "sustainer_cf_gasdelta110_n640_us20000",
+              "comparison": {
+                "event_difference_s": -2.1585256249068152e-05,
+                "event_relative_percent": 2.405350803964247e-05,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 187,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 6.584232332951245e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.2903296879217123,
+                  "at_s": 68.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.056718220282619,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.3763271241914481,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.3371137610473625,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040152588005550195
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "sustainer_cf_gasdelta110_n320_us40000": {
+          "record": "f1e434593dd375278ce0061bedd4161350445a43702fa62d517071d2dbb62f73",
+          "checkpoint": "1be6b25713ad18517b4b522fb914512d2a64860a92e2cda9d81b8bc83706f4f7"
+        },
+        "sustainer_cf_gasdelta110_n640_us40000": {
+          "record": "5ff9980ca1553356514fcbe8e9e2bfa5acde2940bc5825b6be185a3df5038b6b",
+          "checkpoint": "74c9c69eb66249447a44cb00c1ce45b7a8af982ac55680bf80f1d586cb84e29b"
+        },
+        "sustainer_cf_gasdelta110_n640_us20000": {
+          "record": "3f4e265040245ae0ea6315f304e80bfcb870a5a0cf04beaeef59b4475f551840",
+          "checkpoint": "f02bee87bba52108a647a0bb949dc8c7c8ec327306f404ad53df44bd319ab35b"
+        }
+      },
+      "nodal_event_s": 89.77617722557972,
+      "nodal_sha256": "1f9986459654f222db8217e489791fb5417727aa312c1aaaad58ca9f479ac12c",
+      "nodal_balances": {
+        "liner_mass_relative": -1.0321830577332008e-12,
+        "case_mass_relative": -4.2197066786016954e-16,
+        "energy_relative": -1.709584806740594e-14
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 89.5,
+        "stations": 179,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0021628374077127845,
+            "signed_at_max": 0.0021628374077127845,
+            "time_at_max_s": 89.5
+          },
+          "hot_C": {
+            "max_abs": 5.082153132130543,
+            "signed_at_max": 5.082153132130543,
+            "time_at_max_s": 4.5
+          },
+          "interface_C": {
+            "max_abs": 0.4326078848353063,
+            "signed_at_max": 0.4326078848353063,
+            "time_at_max_s": 88.0
+          },
+          "outer_C": {
+            "max_abs": 0.11187582469565882,
+            "signed_at_max": 0.11187582469565882,
+            "time_at_max_s": 29.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.04762500000000003,
+      "film_dose_MJ_m2": 122.76127208844143,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_cf_p600": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_cf_p600_n640_us20000",
+      "FV_event_s": 140.53182573075185,
+      "events": {
+        "property_flag": [
+          36.920000000000066,
+          36.94000000000007
+        ],
+        "inner_pool_half": [
+          90.95999999999464,
+          90.97999999999463
+        ],
+        "outer_pool_half": [
+          134.99999999999085,
+          135.01999999999086
+        ],
+        "first_1000C": [
+          129.67999999998813,
+          129.69999999998814
+        ],
+        "exhaustion": [
+          140.51999999999367,
+          140.53182573075185
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_p600_n320_us40000",
+              "b": "booster_cf_p600_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.002823078504775367,
+                "event_relative_percent": 0.0020088527270875687,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 290,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00023060228163185315,
+                  "at_s": 2.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.041322772257672113,
+                  "at_s": 140.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 4.453837334815489,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 4.202713916663015,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06511370633848053
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_p600_n640_us40000",
+              "b": "booster_cf_p600_n640_us20000",
+              "comparison": {
+                "event_difference_s": -5.43174317328976e-05,
+                "event_relative_percent": 3.865133854943692e-05,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 290,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 4.142623286096381e-05,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.23719613812045282,
+                  "at_s": 107.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.409917630493851,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.8855539357293765,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.2720063375179507,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06554886731265293
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_cf_p600_n320_us40000": {
+          "record": "20ff63716ce512ef36c9c706601e83fed4aaef7e55a95a829de9f2231e5d3fa3",
+          "checkpoint": "572bd9f7000bec0a96aa3db198b1545391c976951b0fd9b5b44bbc964978b7a8"
+        },
+        "booster_cf_p600_n640_us40000": {
+          "record": "9f2a51c0d50e3863351b098dead23bab00bf1606921d949b5266f68c4bf29692",
+          "checkpoint": "166bc657e4a3e07ffd951bcf9a9471aa3dae8b878443788724de0535b3cba986"
+        },
+        "booster_cf_p600_n640_us20000": {
+          "record": "ac58b59b76b880751f57549c04061f8130404b56a05f921573f3894838409726",
+          "checkpoint": "227cf5630e37d40e521ad2100d90695b1d93a662fe943d62500ad99d95315f3c"
+        }
+      },
+      "nodal_event_s": 140.57843407638913,
+      "nodal_sha256": "927811d6a1bcb08dad45d0a2972a9b1108f2e80ee73f7dbf211c45c017c2218f",
+      "nodal_balances": {
+        "liner_mass_relative": -1.7228901369747722e-14,
+        "case_mass_relative": 2.506328595585233e-16,
+        "energy_relative": -2.757461699480771e-15
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 140.5,
+        "stations": 281,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0022422763135824036,
+            "signed_at_max": 0.0022422763135824036,
+            "time_at_max_s": 140.5
+          },
+          "hot_C": {
+            "max_abs": 4.436137687060864,
+            "signed_at_max": -4.436137687060864,
+            "time_at_max_s": 0.5
+          },
+          "interface_C": {
+            "max_abs": 0.44536188071708693,
+            "signed_at_max": -0.44536188071708693,
+            "time_at_max_s": 99.5
+          },
+          "outer_C": {
+            "max_abs": 0.10896224165151125,
+            "signed_at_max": 0.10896224165151125,
+            "time_at_max_s": 140.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 161.26075269112496,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_cf_p1000": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_cf_p1000_n640_us20000",
+      "FV_event_s": 136.05465990218087,
+      "events": {
+        "property_flag": [
+          37.52,
+          37.540000000000006
+        ],
+        "inner_pool_half": [
+          91.73999999999448,
+          91.75999999999448
+        ],
+        "outer_pool_half": [
+          135.51999999999111,
+          135.53999999999112
+        ],
+        "first_1000C": [
+          129.6399999999881,
+          129.65999999998812
+        ],
+        "exhaustion": [
+          136.03999999999138,
+          136.05465990218087
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_p1000_n320_us40000",
+              "b": "booster_cf_p1000_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.002760691381581637,
+                "event_relative_percent": 0.0020291037231252966,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 281,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00022838785682122165,
+                  "at_s": 2.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.03525582880467937,
+                  "at_s": 93.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 4.99784113665919,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 4.818605582944883,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06511439864073394
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_p1000_n640_us40000",
+              "b": "booster_cf_p1000_n640_us20000",
+              "comparison": {
+                "event_difference_s": -5.9731841759003146e-05,
+                "event_relative_percent": 4.390282685058234e-05,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 281,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 4.7443292420012995e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.24568643792042621,
+                  "at_s": 107.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.405821365061797,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.701151282736646,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.250652225545423,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06554886731265293
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_cf_p1000_n320_us40000": {
+          "record": "8f391f64112901e026a875899a75ff54d56f06ff2beb2be492683d3d9d343b16",
+          "checkpoint": "f64d47555f4c3b782c3a5dc4167d2901637e35938c4e082e541c9d3811e3567c"
+        },
+        "booster_cf_p1000_n640_us40000": {
+          "record": "67c24ee7911bf871c1b94e0f39ea940afafd834ed8c7c52be85f29f95153913d",
+          "checkpoint": "ab8720c34cd2a9a66d78d380a1394de576366df177ad3d0412d5b3ae5031d03a"
+        },
+        "booster_cf_p1000_n640_us20000": {
+          "record": "e2f232c8c4296d9c41f2ad01808e5989e348cf94fefd6feff5ef27653132b9dc",
+          "checkpoint": "fec86cebe3c0f97ce93709e2a4bca1bc1ce11f5633ac55752285d6ad153188d7"
+        }
+      },
+      "nodal_event_s": 136.10233736077586,
+      "nodal_sha256": "bb14f2c3209d7e203e9a9ff7270ceef4e735d26c61796559213235f1ca6d1fd4",
+      "nodal_balances": {
+        "liner_mass_relative": -2.3560425575243038e-14,
+        "case_mass_relative": -1.7544300169096632e-16,
+        "energy_relative": -1.0538434765589983e-15
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 136.0,
+        "stations": 272,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.002365979502398867,
+            "signed_at_max": 0.002365979502398867,
+            "time_at_max_s": 136.0
+          },
+          "hot_C": {
+            "max_abs": 5.875588225360843,
+            "signed_at_max": -5.875588225360843,
+            "time_at_max_s": 6.5
+          },
+          "interface_C": {
+            "max_abs": 0.4732516708472758,
+            "signed_at_max": -0.4732516708472758,
+            "time_at_max_s": 100.5
+          },
+          "outer_C": {
+            "max_abs": 0.09615077367732283,
+            "signed_at_max": 0.09615077367732283,
+            "time_at_max_s": 136.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 160.485228049673,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_cf_rad10": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_cf_rad10_n640_us20000",
+      "FV_event_s": 119.16721944731886,
+      "events": {
+        "property_flag": [
+          35.67999999999998,
+          35.69999999999998
+        ],
+        "inner_pool_half": [
+          82.5799999999963,
+          82.5999999999963
+        ],
+        "outer_pool_half": null,
+        "first_1000C": [
+          111.37999999999057,
+          111.39999999999057
+        ],
+        "exhaustion": [
+          119.15999999998903,
+          119.16721944731886
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_rad10_n320_us40000",
+              "b": "booster_cf_rad10_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0024798684081588362,
+                "event_relative_percent": 0.0020810012080521266,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 247,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00026706997900660667,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.054676355167657675,
+                  "at_s": 117.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 43.07630754032786,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.55761808512284,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.0203942999893343,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06529089856314742
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_rad10_n640_us40000",
+              "b": "booster_cf_rad10_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.00013782510009718862,
+                "event_relative_percent": 0.00011565689015519742,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 247,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 6.664277066281699e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.29253348826023284,
+                  "at_s": 94.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.075628927350522,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.4360681621421918,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.3702927232739057,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06553894543767189
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_cf_rad10_n320_us40000": {
+          "record": "8437878642843333a3a16db9140c1504cfa958a1884317a94d04ce09d18402f8",
+          "checkpoint": "eea73770979b721312264d7a475ec34f00a3ab3156f84c67f1e09f8c98c3c2bb"
+        },
+        "booster_cf_rad10_n640_us40000": {
+          "record": "bfb1efe896982fdac56ea6d8eb2c5ba7596e428f4032acf7fbfc98494f5ba901",
+          "checkpoint": "a7cf4946388c910e76998a8ae845f504f99df21742de2245966eb22670269339"
+        },
+        "booster_cf_rad10_n640_us20000": {
+          "record": "7ccac26d5b1ab569758ad1b9dc2efa46adefeaedf76a85848dcca71539b50967",
+          "checkpoint": "8fa57223dee13e64205078442ea1fc610036445be543443793f5e9a761376631"
+        }
+      },
+      "nodal_event_s": 119.21550078549399,
+      "nodal_sha256": "a444d71715e26fc45a87ac945bc663caeff05088dc8335b5b6e0d4a97d061392",
+      "nodal_balances": {
+        "liner_mass_relative": -1.2014328308777877e-14,
+        "case_mass_relative": -1.2531642977926164e-16,
+        "energy_relative": -2.405782168801198e-14
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 119.0,
+        "stations": 238,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.002719464734796978,
+            "signed_at_max": 0.002719464734796978,
+            "time_at_max_s": 119.0
+          },
+          "hot_C": {
+            "max_abs": 5.550149633289038,
+            "signed_at_max": 5.550149633289038,
+            "time_at_max_s": 6.5
+          },
+          "interface_C": {
+            "max_abs": 0.6065464558694202,
+            "signed_at_max": -0.6065464558694202,
+            "time_at_max_s": 89.0
+          },
+          "outer_C": {
+            "max_abs": 0.11115186166563262,
+            "signed_at_max": 0.11115186166563262,
+            "time_at_max_s": 118.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 135.2552972664381,
+      "radiation_dose_MJ_m2": 25.39774673016733
+    },
+    "booster_cf_rad30": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_cf_rad30_n640_us20000",
+      "FV_event_s": 93.65587577855607,
+      "events": {
+        "property_flag": [
+          33.01999999999956,
+          33.039999999999566
+        ],
+        "inner_pool_half": [
+          69.21999999999896,
+          69.23999999999896
+        ],
+        "outer_pool_half": null,
+        "first_1000C": [
+          87.17999999999539,
+          87.19999999999538
+        ],
+        "exhaustion": [
+          93.6399999999941,
+          93.65587577855607
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_rad30_n320_us40000",
+              "b": "booster_cf_rad30_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.002026570665194072,
+                "event_relative_percent": 0.002163854668988996,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 196,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00026106576630979816,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.11449596974773613,
+                  "at_s": 70.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 50.455254746673816,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.6434181968838857,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 2.6303319342187024,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06514207043843448
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_rad30_n640_us40000",
+              "b": "booster_cf_rad30_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.0002946419109832732,
+                "event_relative_percent": 0.00031460056139983895,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 195,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 7.761739717615512e-05,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.399138845338598,
+                  "at_s": 79.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 10.083331615100064,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.20752334797407457,
+                  "at_s": 6.5
+                },
+                "max_liner_field_difference_K": 2.4479451122359706,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.0654893360627667
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_cf_rad30_n320_us40000": {
+          "record": "d3d041857125586b87c2fe4c26e04e70984e3c3b5b53f2b9aa6dc42ca4127bb3",
+          "checkpoint": "f9597cda8e4a743d51da34ce89b06ec20ff5cfce3dcc67dc5b2b720515f38178"
+        },
+        "booster_cf_rad30_n640_us40000": {
+          "record": "a18d3501bf900788e2896da9a24117c22f37b26402edfce0c08892b2e8957815",
+          "checkpoint": "8f8fefff690aa31876b10b6155bd967792ab5d2261b2f423b8e755e74ce6b231"
+        },
+        "booster_cf_rad30_n640_us20000": {
+          "record": "8183c6f4de584494eb66066c7361fc010fc71c21c30e5dd21a59820e80eb658b",
+          "checkpoint": "cbe19ed4dfa97aabdc634435fbf864cc6bb7ccdebab8175dd21e50072814b37e"
+        }
+      },
+      "nodal_event_s": 93.70682026452903,
+      "nodal_sha256": "e07b09fc89ab08c09c88d030a38f0e85f3560522d2fc08b78e8e5bbf701b1147",
+      "nodal_balances": {
+        "liner_mass_relative": -3.5097318299850763e-14,
+        "case_mass_relative": 1.7544300169096632e-16,
+        "energy_relative": 1.2599948852445893e-14
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 93.5,
+        "stations": 187,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.00361362670432748,
+            "signed_at_max": 0.00361362670432748,
+            "time_at_max_s": 93.5
+          },
+          "hot_C": {
+            "max_abs": 6.923062584686932,
+            "signed_at_max": -6.923062584686932,
+            "time_at_max_s": 5.0
+          },
+          "interface_C": {
+            "max_abs": 0.9834401710143084,
+            "signed_at_max": -0.9834401710143084,
+            "time_at_max_s": 73.5
+          },
+          "outer_C": {
+            "max_abs": 0.12437870049558342,
+            "signed_at_max": 0.12437870049558342,
+            "time_at_max_s": 93.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 101.19361370470116,
+      "radiation_dose_MJ_m2": 59.21056383308825
+    },
+    "booster_cf_gasdelta90": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_cf_gasdelta90_n640_us20000",
+      "FV_event_s": 164.58442042747615,
+      "events": {
+        "property_flag": [
+          39.040000000000006,
+          39.06000000000001
+        ],
+        "inner_pool_half": [
+          102.59999999999232,
+          102.61999999999232
+        ],
+        "outer_pool_half": [
+          149.99999999999852,
+          150.01999999999853
+        ],
+        "first_1000C": [
+          156.64000000000007,
+          156.66000000000008
+        ],
+        "exhaustion": [
+          164.58000000000004,
+          164.58442042747615
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_gasdelta90_n320_us40000",
+              "b": "booster_cf_gasdelta90_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0034064613693374213,
+                "event_relative_percent": 0.002069730703994129,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 338,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00021721919388184574,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.02921377118411783,
+                  "at_s": 105.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 35.58029848103125,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.4616954749440083,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 0.6477256144951298,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06512222668847285
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_gasdelta90_n640_us40000",
+              "b": "booster_cf_gasdelta90_n640_us20000",
+              "comparison": {
+                "event_difference_s": -0.00034235174402397206,
+                "event_relative_percent": 0.00020800981231077628,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 337,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 2.8589916753141154e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.18697103331510334,
+                  "at_s": 121.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 7.655826532996798,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.3824641796989,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.1689920341766538,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06553894543767189
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_cf_gasdelta90_n320_us40000": {
+          "record": "44285fe4b848e616c67466eb5b56597c708b2f2ff777e7d9c53c131bc394fa62",
+          "checkpoint": "4b3b0cec138aa67e68b240e7f8e5f5c8c09eac604095c6629b6c06e7a62d5530"
+        },
+        "booster_cf_gasdelta90_n640_us40000": {
+          "record": "f6d15d35bd55b5e6423b262814da08afe966695ac710b39ef814a22193c05e97",
+          "checkpoint": "cee952a4ace0d1134c42e7734f806323131978347bf9dbd4b5caa35ff78d051d"
+        },
+        "booster_cf_gasdelta90_n640_us20000": {
+          "record": "884a9b6fa3e57ab7579020854f5189e160e85a815cefa31a6b2b5e71ba3b4a0b",
+          "checkpoint": "bc6c0a1d0d6f32000010090dd34195fd18b234863078e3fde814e111e00714a0"
+        }
+      },
+      "nodal_event_s": 164.63346041668612,
+      "nodal_sha256": "1d9b71809942ca8f2d5252c6044c0f74952194adaa38f83fb39d898ae900a280",
+      "nodal_balances": {
+        "liner_mass_relative": -6.329523218135003e-14,
+        "case_mass_relative": 5.0126571911704664e-17,
+        "energy_relative": -8.486318374046985e-15
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 164.5,
+        "stations": 329,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0020172377038218947,
+            "signed_at_max": 0.0020172377038218947,
+            "time_at_max_s": 164.5
+          },
+          "hot_C": {
+            "max_abs": 4.0972618654025155,
+            "signed_at_max": -4.0972618654025155,
+            "time_at_max_s": 0.5
+          },
+          "interface_C": {
+            "max_abs": 0.35736539915126286,
+            "signed_at_max": -0.35736539915126286,
+            "time_at_max_s": 114.0
+          },
+          "outer_C": {
+            "max_abs": 0.07848798735471973,
+            "signed_at_max": 0.07848798735471973,
+            "time_at_max_s": 158.5
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 161.02358943350407,
+      "radiation_dose_MJ_m2": 0.0
+    },
+    "booster_cf_gasdelta110": {
+      "numerical_checks_passed": true,
+      "FV_tag": "booster_cf_gasdelta110_n640_us20000",
+      "FV_event_s": 118.70808149383421,
+      "events": {
+        "property_flag": [
+          35.67999999999998,
+          35.69999999999998
+        ],
+        "inner_pool_half": [
+          82.45999999999633,
+          82.47999999999632
+        ],
+        "outer_pool_half": null,
+        "first_1000C": [
+          110.93999999999066,
+          110.95999999999066
+        ],
+        "exhaustion": [
+          118.69999999998912,
+          118.70808149383421
+        ]
+      },
+      "FV_checks": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_gasdelta110_n320_us40000",
+              "b": "booster_cf_gasdelta110_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.002308305751256512,
+                "event_relative_percent": 0.0019445252040530263,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 246,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.0002471499632861196,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.05646042358841896,
+                  "at_s": 84.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 43.04521940961989,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.57238558146355,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.0202690428280903,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06530082043812832
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "a": "booster_cf_gasdelta110_n640_us40000",
+              "b": "booster_cf_gasdelta110_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.0001446439930248289,
+                "event_relative_percent": 0.00012184848007365177,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 246,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 6.725399927276499e-05,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.298164714028303,
+                  "at_s": 96.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 9.057013579895397,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.4064148137231314,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.3540794358837047,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06553894543767189
+              }
+            }
+          ]
+        }
+      },
+      "sources": {
+        "booster_cf_gasdelta110_n320_us40000": {
+          "record": "30df3ddf48b2ba77402e3d4e905afbb86d28d686d5d1bd98912955dfa68fcec8",
+          "checkpoint": "4d3c552daf899240ce877a2ee81b3a61d1ea954c46d7ca7c5344dfc6dc637d93"
+        },
+        "booster_cf_gasdelta110_n640_us40000": {
+          "record": "6c41ca2207b3b3c98097723d4ea4586698ef65d719781661c5dc5207aa3a2da7",
+          "checkpoint": "545aa9d4b829821afc647f2b8c07e677955ebd78cdf80202c98be8a49c3af08a"
+        },
+        "booster_cf_gasdelta110_n640_us20000": {
+          "record": "98f34d00ab8e618f91eb86f6aaac349637f43b14afe025aa08a408452a0264d1",
+          "checkpoint": "f9e2d1dedcf3b73c3163de4a6c1ef26b5eaa194e41dbbcaa022dbe287a5fedf7"
+        }
+      },
+      "nodal_event_s": 118.7538554764345,
+      "nodal_sha256": "f0c2e6f8d6f995de4773f493d7afb3c5a3fa0c587e51a3412217b980758c2404",
+      "nodal_balances": {
+        "liner_mass_relative": -1.849832775112887e-14,
+        "case_mass_relative": -2.506328595585233e-16,
+        "energy_relative": 1.777669942558885e-15
+      },
+      "common_history": {
+        "first_s": 0.5,
+        "last_s": 118.5,
+        "stations": 237,
+        "differences": {
+          "remaining_mm": {
+            "max_abs": 0.0025982427545090912,
+            "signed_at_max": 0.0025982427545090912,
+            "time_at_max_s": 118.5
+          },
+          "hot_C": {
+            "max_abs": 5.664342891783917,
+            "signed_at_max": 5.664342891783917,
+            "time_at_max_s": 6.5
+          },
+          "interface_C": {
+            "max_abs": 0.5777845289284187,
+            "signed_at_max": -0.5777845289284187,
+            "time_at_max_s": 89.0
+          },
+          "outer_C": {
+            "max_abs": 0.12097950351471809,
+            "signed_at_max": 0.12097950351471809,
+            "time_at_max_s": 118.0
+          }
+        }
+      },
+      "thickness_limit_mm": 0.06349999999999995,
+      "film_dose_MJ_m2": 160.64398437322015,
+      "radiation_dose_MJ_m2": 0.0
+    }
+  }
+}

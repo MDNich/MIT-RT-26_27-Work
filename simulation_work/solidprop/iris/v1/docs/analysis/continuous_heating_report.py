@@ -15,6 +15,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'model'))
 from ops import disks, atomic
+from evolving_input_report import build as build_evolving_inputs
+from final_field_report import build as build_full_fields
 from moving_surface_report import build as build_moving_results
 from backing_report import build as build_backing_results
 from sector_report import build as build_sector_results
@@ -113,6 +115,8 @@ def main():
     build_removal_cost(CASES,inputs)
     build_event_intervals(CASES,inputs)
     build_matched_intervals(CASES,inputs)
+    build_evolving_inputs(CASES,inputs)
+    build_full_fields(CASES,inputs,whole)
     build_coupled_cf_results(inputs, film_ranges, whole)
     build_sector_results(CASES,inputs)
     build_liner_energy(CASES, inputs)
@@ -139,6 +143,9 @@ def main():
 \input{continuous_removal_cost.tex}
 \input{continuous_event_intervals.tex}
 \input{continuous_matched_intervals.tex}
+\input{continuous_evolving_inputs.tex}
+\input{continuous_full_fields.tex}
+\input{continuous_interpretation.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
@@ -282,7 +289,7 @@ The ANSYS command and element references document the
                        '-output-directory',str(build),source.name], cwd=source.parent,check=True,stdout=subprocess.DEVNULL)
     target = ROOT/'output/pdf/iris_continuous_heating_progress.pdf'
     target.write_bytes((build/target.name).read_bytes())
-    for path in [source, ROOT/'docs/en/continuous_moving_balance.tex',Path(__file__),
+    for path in [source, ROOT/'docs/en/continuous_interpretation.tex', ROOT/'docs/en/continuous_moving_balance.tex',Path(__file__),
                  ROOT/'model/moving_surface_remap.py',ROOT/'docs/analysis/continuous_heating_refinement.pdf']:
         inputs[str(path.resolve().relative_to(ROOT))] = digest(path)
     atomic(ROOT/'validation/continuous_report_inputs.json',dict(built_at=date,inputs=inputs,pdf_sha256=digest(target),

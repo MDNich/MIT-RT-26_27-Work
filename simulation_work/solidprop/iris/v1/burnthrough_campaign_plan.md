@@ -6,6 +6,10 @@ burned through, and propose improvements to the simulated model. This replaces
 the previous priority of completing every seven-second pulse refinement first.
 Earlier accepted results remain available as regression evidence.
 
+## Final disposition, November 6, 2026
+
+The four continuous-exposure native cases, independent nominal references, sensitivity scenarios and numerical checks are complete. The nominal conditional ANSYS durations are 110.58 and 104.33 s for sustainer Al/CF and 147.75 and 138.04 s for booster Al/CF. The matched independent methods differ by at most 7.4 ms at the finest tested resolution. Their final integration intervals remain separated by up to 5.1 ms. The [final report](output/pdf/iris_continuous_heating_progress.pdf) gives the calculation from first exposure, the earlier casing-material events, sensitivity to the heat load and char-removal cost, and the measurements needed to determine the actual motor response. The steps below preserve the execution and acceptance plan.
+
 ## Native verification at the last liner element
 
 Near exhaustion the final liner element must represent a thin layer of char
