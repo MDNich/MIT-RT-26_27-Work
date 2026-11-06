@@ -48,6 +48,33 @@ thermal backing physics with phase-change enthalpy for a documented Al
 surrogate and a material-specific decomposition treatment for CF. Journal
 these surrogate and property-limit events separately from liner exhaustion.
 
+### Two verification preparations, November 5, 21:08 EST
+
+The annular MAPDL benchmark reader accepted an analytical fixture and rejected
+nine faulty exports or logs (including wrong core count, duplicate/missing
+node, excessive field error and wrong end time). This is a reader check only.
+For the future guest run use job `irmode64`, output `irmode64.out`, and index
+the run for the storage watcher. Archive the guest deck, log, `mode_time.txt`
+and `mode_end.txt` in `ansystmp/runs/annular_mode64_smp10/`. The wrapper must
+record `guest_terminal.json` with job, exit_code, guest_input_sha256 and
+guest_sha256 (the three named exports). Compare in-guest and copied bytes.
+Use `model/audit_native_conduction_mode.py audit` only after the real process
+exits. The gate requires the original analytical time, 585 distinct nodes,
+the sealed 0.25 K field tolerance and a normal ten-core termination. Any solver
+warning goes to review. Never use synthetic fixtures as native output.
+
+`model/aluminium_phase_enthalpy.py` supplies a separate pure-metal caloric
+reference. The crystal and liquid enthalpies use the same NIST-JANAF Al-001
+table reference. The manufactured checks recover isothermal partial melting,
+test tabulated enthalpy differences and close the smoothed transitions for
+0.5, 1, 2 and 4 K widths. See `validation/pure_al_phase_enthalpy.json`.
+The material module has not yet been coupled to the accepted motor cases.
+Use a separate backing scenario and source manifest, verify it with a heated
+coupon, refine the transition width and time step, and record first/complete
+melt independently. Fixed geometry past melting assumes the backing stays in
+place. Continue to report the earlier 300 C flag. Conductivity and actual
+alloy/temper remain separate material inputs.
+
 ## Moving-wall numerical audit, November 5, 20:53 EST
 
 All twenty nominal moving-wall refinements completed and worker 43139 exited.
