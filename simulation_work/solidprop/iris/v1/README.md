@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 5, 23:16 EST
+## Continuous heating to liner exhaustion, November 6, 00:09 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -32,16 +32,20 @@ all twelve sustained exposures the assumed removal cost of 35 MJ/kg of char
 accounts for 79.7–87.3% of film energy. The two independent methods agree
 on integrated film energy within 0.044%. Their heat input and char law still
 need physical calibration. Page 16 compares accepted native benchmarks with analytical solutions.
-Pages 24–25 print the new native input and complete
+Page 17 compares mesh and time refinement in both native CF end windows.
+Pages 25–26 print the new native input and complete
 thermal-step generator.
 The final pulse control passed all 5,295 steps. The CF casing reached its
 150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner
 remaining. The annular conduction test, two moving-char tests and all four
 frozen motor-field checks passed. The earlier CF terminal-window comparison
 missed its temperature tolerance. With the corrected mesh and smaller step,
-ANSYS consumed the final 0.453 mm of sustainer CF char in 9.178 s using a
-prescribed casing temperature history. The live series checks refinements
-before the pilots and four whole exposures. [Native verification status](OPERATIONS.md)
+ANSYS consumed the last 0.453 mm of char in the sustainer and 0.404 mm in the
+booster in 9.177 s and 8.250 s, respectively. Both calculations prescribe the
+interface temperature from the independent model at 95.08 s and 129.70 s onward.
+Changing either mesh or time resolution shifted each end-window duration by
+less than 0.001 s. Full-exposure native verification is pending.
+[Native verification status](OPERATIONS.md)
 The four continuous results above remain independent estimates.
 
 ### Initial backing comparison

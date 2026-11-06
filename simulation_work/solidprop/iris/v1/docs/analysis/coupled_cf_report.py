@@ -88,8 +88,9 @@ and liner recession would constrain the physical estimate.
 The four nominal burnthrough times come from a conservative radial finite-volume
 solver. A second finite-element calculation from ignition gives endpoints within
 0.073 s for all four cases (Section~\ref{sec:sectorcheck}). Both use the same
-gas exposure and material inputs. Continuous-exposure verification in native
-ANSYS remains open.
+gas exposure and material inputs. Native ANSYS verifies the final char layer
+in both CF cases with a prescribed casing temperature (Section~\ref{sec:nativecfend}).
+Native verification from first exposure remains open.
 \clearpage
 """.replace('SUMMARY','\n'.join(summary))
     executive=executive.replace('SUSTAINERRANGE',film_ranges[0]).replace('BOOSTERRANGE',film_ranges[1])

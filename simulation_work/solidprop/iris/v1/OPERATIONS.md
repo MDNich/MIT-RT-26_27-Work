@@ -22,6 +22,36 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Both native CF end windows audited, November 6, 05:09 UTC
+
+All six R3 runs passed the native log, field, mass and energy checks. The two
+finest jobs gave 9.17741 s for the last 0.45338 mm (sustainer) and 8.25033 s
+for the last 0.40385 mm (booster). Mesh and time refinements were compared
+separately at every shared interpolation knot. For both motors, each change
+shifted the endpoint by less than 0.0009 s. The overlapping terminal brackets
+and prescribed backing histories are documented on page 17 of the 26-page
+continuous-heating report. Keep these native durations separate from the
+independent histories before the 95.08 s and 129.70 s handoffs.
+
+## Full-exposure mesh preflight, November 6, 05:02 UTC
+
+The first and last native time intervals need separate verification. The R1
+whole-sector startup pilots may finish in the existing ten-core series. A
+host-only reservation at `ansystmp/runs/sector_wallsa/hold_before_dispatch.json`
+prevents that existing series from starting the original whole-exposure jobs.
+There was no guest R1 wallsa directory or launch when the reservation was
+made. The original inputs and the native CF-window series are preserved.
+
+The independent full-history geometry check in
+`validation/terminal_brick_geometry.json` found near-exhaustion brick edge
+ratios of 176–4065 for R1. A narrower sector and a single shorter penultimate
+step in each case kept the largest ratio below 19. The largest change to an
+independent whole-exposure event was 0.00027 s. The native successor sequence
+checks two startup fields, four donor-initialized terminal intervals with a
+live casing, then four whole exposures from ambient. Each terminal donor
+records its initial state, accumulated physical balances and starting time.
+Do not count its earlier history as native.
+
 ## First accepted native CF end-window event, November 6, 04:45 UTC
 
 On 20 radial cells at a 0.01 s ceiling, the sustainer CF end window consumed

@@ -11,6 +11,86 @@ from continuous_heating_campaign import digest
 from ops import ROOT
 
 
+def terminal_windows(register, read):
+    group = read(ROOT/'validation/native_cf_window_refinement.json')
+    assert group['passed'] and register(ROOT/'model/audit_native_cf_refinement.py') == group['source_sha256']
+    assert register(ROOT/'configs/native_verification/cf_tail_char_smp10_r3/manifest.json') == group['manifest_sha256']
+    fig, axes = plt.subplots(1,2,figsize=(7,2.35),layout='constrained')
+    rows, differences = [], []
+    field_error, energy = [], []
+    for motor, color in [('Sustainer','#194b78'),('Booster','#a35635')]:
+        case = group['cases'][motor.lower()+'_cf']
+        for row in case['jobs']:
+            job = row['job']
+            evidence = ROOT/f'validation/native_cf_terminal_window_{job}.json'
+            assert register(evidence) == row['evidence_sha256']
+            field_error.append(row['max_field_error_K'])
+            energy.append(row['absolute_energy_error_fraction'])
+        times = [row['duration_s'] for row in case['jobs']]
+        rows.append(' & '.join([motor, f"{case['start_s']:.2f}", f"{case['initial_mm']:.3f}"]+
+                                [f"{t:.5f}" for t in times])+r' \\')
+        for label, comparison in case['pairs'].items():
+            differences.append(' & '.join([motor, 'Mesh' if label=='mesh' else 'Time step',
+                f"{1000*comparison['event_delta_s']:+.3f}",
+                f"{1000*comparison['max_thickness_delta_mm']:.3f}", f"{comparison['max_hot_face_delta_K']:.3f}"])+r' \\')
+        t, depth, hot = np.array(case['history']).T
+        for ax,y in zip(axes,[depth,hot]):
+            ax.plot(t,y,label=motor+' CF',color=color)
+            ax.plot(t[-1],y[-1],'o',color=color,ms=3)
+    for ax in axes:
+        ax.set_xlabel('Time since handoff [s]')
+        ax.set_xlim(left=0)
+    axes[0].set(ylabel='Char remaining [mm]',ylim=(0,None))
+    axes[0].legend(fontsize=8)
+    axes[1].set_ylabel('Exposed char surface [°C]')
+    graph = ROOT/'docs/analysis/native_cf_terminal_windows.png'
+    fig.savefig(graph,dpi=190)
+    plt.close(fig)
+    register(graph)
+    text = r'''\section{How long the final char layer lasts in the CF cases}\label{sec:nativecfend}
+At the first saved state where the modeled casing reaches $1000\,^\circ$C,
+the independent calculation supplies the residual liner thickness, the radial
+temperature profile and the subsequent temperature history at the casing.
+MAPDL then solves heat conduction and surface recession until the char thickness
+reaches zero. Less than six parts per million of the starting liner mass in
+either window is still virgin material. We treat this residue as pure char.
+If exhaustion takes longer than the supplied history, the interface holds its
+last supplied temperature through the final fraction of the window.
+
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+& Handoff & Char left &\multicolumn{3}{c}{Native duration from handoff [s]}\\
+CF case & [s] & [mm] & 20 / 0.010 & 40 / 0.010 & 40 / 0.005\\\midrule
+EVENTROWS
+\bottomrule\end{tabular}\end{center}
+The three column labels give radial cells and the maximum step in seconds.
+Each run shortens its last step to the time needed to consume the remaining char.
+\begin{figure}[H]\centering\includegraphics[width=.97\textwidth]{../analysis/native_cf_terminal_windows.png}
+\caption{Finest native histories under the prescribed interface temperature.
+Dots mark exhaustion at the end of each window.}\end{figure}
+\begin{center}\small\begin{tabular}{llrrr}\toprule
+CF case & Refinement & Event shift [ms] & Max.\ thickness & Max.\ hot face\\
+& & & change [$\mu$m] & change [K]\\\midrule
+DIFFROWS
+\bottomrule\end{tabular}\end{center}
+Mesh refinement doubles the cell count at a fixed 0.010~s step ceiling.
+Time refinement halves that ceiling at a fixed 40 cells. A positive event
+shift means the finer run reaches exhaustion later. For thickness and
+temperature we compare every saved step of both runs over their shared duration
+and linearly interpolate the other run at that time. The final-step time intervals
+overlap for every pair.
+
+The largest nodal discrepancy across the six runs against matched radial heat
+solutions was FIELDERR~K. Summed absolute step energy discrepancies stayed
+below ENERGYPC\% of the boundary energy exchanged in each run. The native
+windows verify final char consumption conditional on the prescribed casing
+temperature. A physical firing time also depends on the heat load and casing
+response above the temperature covered by the CF properties.
+\clearpage
+'''
+    return (text.replace('EVENTROWS','\n'.join(rows)).replace('DIFFROWS','\n'.join(differences))
+            .replace('FIELDERR',f'{max(field_error):.4f}').replace('ENERGYPC',f'{np.ceil(1e5*max(energy))/1e3:.3f}'))
+
+
 def build(inputs):
     def register(path):
         sha = digest(path)
@@ -122,6 +202,6 @@ The largest sampled native versus radial temperature difference was DIFF~K.
                       'STEPS':f"{pulse['steps']:,}",'REMAIN':f"{pulse['remaining_liner_mm']:.3f}",'DIFF':f"{pulse['max_profile_difference_K']:.4f}"}.items():
         text=text.replace(key,value)
     tex=ROOT/'docs/en/continuous_native_verification.tex'
-    tex.write_text(text)
+    tex.write_text(text+terminal_windows(register,read))
     register(tex)
     register(Path(__file__))

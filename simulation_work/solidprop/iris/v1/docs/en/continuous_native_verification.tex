@@ -41,3 +41,46 @@ ended at 7~s. The casing continued to warm during cooling and first exceeded
 The largest sampled native versus radial temperature difference was 0.0151~K.
 
 \clearpage
+\section{How long the final char layer lasts in the CF cases}\label{sec:nativecfend}
+At the first saved state where the modeled casing reaches $1000\,^\circ$C,
+the independent calculation supplies the residual liner thickness, the radial
+temperature profile and the subsequent temperature history at the casing.
+MAPDL then solves heat conduction and surface recession until the char thickness
+reaches zero. Less than six parts per million of the starting liner mass in
+either window is still virgin material. We treat this residue as pure char.
+If exhaustion takes longer than the supplied history, the interface holds its
+last supplied temperature through the final fraction of the window.
+
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+& Handoff & Char left &\multicolumn{3}{c}{Native duration from handoff [s]}\\
+CF case & [s] & [mm] & 20 / 0.010 & 40 / 0.010 & 40 / 0.005\\\midrule
+Sustainer & 95.08 & 0.453 & 9.17841 & 9.17828 & 9.17741 \\
+Booster & 129.70 & 0.404 & 8.25136 & 8.25121 & 8.25033 \\
+\bottomrule\end{tabular}\end{center}
+The three column labels give radial cells and the maximum step in seconds.
+Each run shortens its last step to the time needed to consume the remaining char.
+\begin{figure}[H]\centering\includegraphics[width=.97\textwidth]{../analysis/native_cf_terminal_windows.png}
+\caption{Finest native histories under the prescribed interface temperature.
+Dots mark exhaustion at the end of each window.}\end{figure}
+\begin{center}\small\begin{tabular}{llrrr}\toprule
+CF case & Refinement & Event shift [ms] & Max.\ thickness & Max.\ hot face\\
+& & & change [$\mu$m] & change [K]\\\midrule
+Sustainer & Mesh & -0.138 & 0.007 & 0.482 \\
+Sustainer & Time step & -0.866 & 0.045 & 0.437 \\
+Booster & Mesh & -0.144 & 0.007 & 0.488 \\
+Booster & Time step & -0.882 & 0.046 & 0.484 \\
+\bottomrule\end{tabular}\end{center}
+Mesh refinement doubles the cell count at a fixed 0.010~s step ceiling.
+Time refinement halves that ceiling at a fixed 40 cells. A positive event
+shift means the finer run reaches exhaustion later. For thickness and
+temperature we compare every saved step of both runs over their shared duration
+and linearly interpolate the other run at that time. The final-step time intervals
+overlap for every pair.
+
+The largest nodal discrepancy across the six runs against matched radial heat
+solutions was 0.0052~K. Summed absolute step energy discrepancies stayed
+below 0.006\% of the boundary energy exchanged in each run. The native
+windows verify final char consumption conditional on the prescribed casing
+temperature. A physical firing time also depends on the heat load and casing
+response above the temperature covered by the CF properties.
+\clearpage
