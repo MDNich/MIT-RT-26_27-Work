@@ -15,11 +15,20 @@ thickness, including retained char.
 The four cases cross the assumed casing-property limits earlier, between 20.5
 and 82.0 s. Modelled exposure continues with an intact surrogate casing.
 Heating in the actual motor and measured liner recession remain unknown.
-The [12-page study report](output/pdf/iris_continuous_heating_progress.pdf)
+The [14-page study report](output/pdf/iris_continuous_heating_progress.pdf)
 includes radial histories, mass and energy accounting, isolated mesh and time
 refinements, and sensitivity to five assumed inputs. The [ANSYS companion
 report](output/pdf/iris_phenolic_report.pdf) includes the native MAPDL and
 Fortran listings. Native verification of the revised wall equations remains open.
+
+**High-temperature backing comparison.** With pure-Al heat storage and fusion,
+the first inner cell begins melting at 84.1 s in the sustainer and 124.4 s in
+the booster. Every casing cell is liquid by 99.1 and 139.4 s respectively,
+while 0.43 and 0.23 mm of phenolic still cover the casing. Holding that liquid
+in place gives conditional liner times of 110.5 and 147.6 s. The alloy, liquid
+motion and mechanical failure of the actual casings remain unresolved.
+Pages 6–7 also distinguish the one-way CF resin-reaction calculation from the
+published inert-backing CF liner times.
 
 The 20 nominal calculations, 42 sensitivity cases and 16 endpoint refinements
 are complete. Doubling and halving the film coefficient gives respectively

@@ -22,6 +22,32 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Material comparisons, November 5, 21:27 EST
+
+The ten retained-Al integrations under worker 52320 completed and the worker
+exited. Check `ansystmp/aluminium_backing_campaign/complete.json`,
+`configs/aluminium_backing_campaign.json` and `validation/aluminium_backing_audit.json`.
+All eight comparisons meet event, thickness and interval-overlap gates.
+The updated report includes the ordering of melt and liner events and the
+separate CF resin response. No further dispatch of these ten cases is needed.
+The CF diagnosis uses archived temperatures, competing resin kinetics and two
+interpretations of a published catalyst coefficient. Couple the backing heat
+and gas budgets before changing the reported CF liner times. Keep heat-transfer
+uncertainty, the original material flags and actual casing strength distinct.
+
+The 02:11 UTC CF320 native prefix passed through 4.73594 s. Observer 28607
+still owns the original CF320 case and its terminal checks. After its successful
+audits and exit, proceed first to the sealed annular conduction benchmark.
+Two later manufactured continuous heating cases with a free, nonuniform
+pure-char wall are prepared under `configs/native_verification/moving_char_log_smp10_r2/`.
+Only this revision may be dispatched, in separate fresh run directories, coarse
+before fine. The preparation-only first revision is retained to identify the
+corrected facet gradient, scalar MAPDL export and supported parameter functions.
+The manufactured gas law balances conduction and reaction on a logarithmic field.
+The exact event of this thin coupon is solely a verification target.
+Preserve native result and warning gates, monitor storage and use one ten-core
+process. The new decks have undergone static readback only.
+
 ## Current handoff, November 5, 21:02 EST
 
 All three independent moving-wall workers exited. Their completion receipts are

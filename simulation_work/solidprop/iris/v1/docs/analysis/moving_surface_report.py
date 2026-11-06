@@ -132,7 +132,8 @@ the assumed energy cost of char removal. The times in the last column compare
 two specified heat-transfer scenarios. They do not quantify firing-to-firing
 variability or a safe firing interval. Firing heat flux versus time and
 recession measurements on the manufactured liner would directly constrain
-the two inputs driving this spread.
+the two inputs driving this spread. Section~\ref{sec:almelt} shows how accounting
+for aluminium melting changes the liner times and when the backing melts.
 
 \clearpage\section{Remaining thickness and casing heat-up}
 \begin{figure}[H]\centering
@@ -230,12 +231,8 @@ the cases. An alternative inherited carbon-composite property tuple shifts the
 CF event by CFSHIFT s for the sustainer and CFBOOST s for the booster. The
 resin, layup, bond and grade used on the actual cases remain unspecified.
 
-The next material check is high-temperature backing: temperature-dependent Al
-enthalpy through melting, and resin decomposition for a documented CF surrogate.
-The \href{https://janaf.nist.gov/tables/Al-002.html}{NIST-JANAF solid Al table}
-and \href{https://janaf.nist.gov/tables/Al-003.html}{liquid Al table} provide a
-pure-metal reference. An alloy identification and casing integrity model would
-still be needed to interpret a melting or decomposition milestone on a motor.
+Sections~\ref{sec:almelt} and~\ref{sec:cfdiag} examine aluminium fusion and
+CF resin decomposition with separate material surrogates.
 \clearpage
 '''
     fields={'EVENTS':'\n'.join(rows),'VARIATIONS':'\n'.join(variations),'ERRORS':'\n'.join(errors),

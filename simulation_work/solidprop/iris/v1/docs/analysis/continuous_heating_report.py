@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'model'))
 from ops import disks, atomic
 from moving_surface_report import build as build_moving_results
+from backing_report import build as build_backing_results
 
 CASES = [('sustainer_al','Sustainer Al','#194b78'), ('sustainer_cf','Sustainer CF','#af6030'),
          ('booster_al','Booster Al','#357b53'), ('booster_cf','Booster CF','#82518e')]
@@ -97,6 +98,7 @@ def main():
     plt.rcParams.update({'font.family':'serif','font.size':10,'axes.grid':True,'grid.alpha':.25})
     chart(records)
     build_moving_results(CASES,inputs)
+    build_backing_results(inputs)
     date = datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y, %H:%M %Z')
     text = r'''\documentclass[11pt]{article}
 \usepackage[margin=22mm]{geometry}
@@ -108,6 +110,7 @@ def main():
 \date{DATE}
 \begin{document}\maketitle
 \input{continuous_moving_results.tex}
+\input{continuous_backing_results.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
