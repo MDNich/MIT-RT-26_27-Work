@@ -22,6 +22,25 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Current CF terminal-window successor, November 6, 04:40 UTC
+
+The six R2 inputs rebuild disconnected nodes before recreating checked
+bricks. For these radially uniform verification cases, the axial edge is one
+live radial pitch and the circumferential angle per facet is pitch divided by
+outer radius. The independent calculation recomputes the facet cosine at each
+step. The audit converts native backing heat to a per-radian, per-axial-metre
+basis with the instantaneous polygonal sector measure. Radial remapping still
+conserves enthalpy in its annular control volumes on the same basis. The six
+reference histories passed all numerical checks and all 18 deliberately damaged
+histories were rejected before dispatch.
+
+An initial Parallels request failed before creating the guest directory for
+R2 tails204. Two process and path inspections found no guest runtime or solver.
+The original host intent was archived, then a new request received a matching
+guest launch acknowledgement at 04:40 UTC. Observe the existing series using
+its PID and case in the ignored status file. The annular test, corrected pure
+char tests and four frozen motor geometries have already passed.
+
 ## Native heat and moving-char verification, November 6, 04:37 UTC
 
 The annular conduction test passed with a maximum error of 0.0791 K against
