@@ -6,6 +6,20 @@ burned through, and propose improvements to the simulated model. This replaces
 the previous priority of completing every seven-second pulse refinement first.
 Earlier accepted results remain available as regression evidence.
 
+## Heating sensitivity with evolving backings
+
+Repeat the earlier 500 and 2000 W/(m² K) gas-film scenarios with the
+caloric aluminium and reacting CF backings used for the nominal estimates.
+The imposed gas temperature stays at 2504 K, pressure at 800 psi and initial
+wall at 22 °C. Surface temperature, outgassing, effective film, incident heat,
+recession and case response are solved anew. Compare 320/80 and 640/160
+radial cells at a 0.04 s ceiling, then halve the ceiling on the finer mesh.
+Record the property flag, all-liquid or 1000 °C crossing if reached, and
+geometrical exhaustion. Compare the finest endpoints with a separate nodal
+finite-element solution at the same loading. The 360 s ceiling is an
+explicit no-event outcome if the liner survives. These are controlled input
+changes. Actual firing heat transfer and pressure-casing integrity remain open.
+
 ## Whole-wall verification milestone, November 5 at 22:33 EST
 
 The second spatial discretization now carries nodal liner and backing mass and
