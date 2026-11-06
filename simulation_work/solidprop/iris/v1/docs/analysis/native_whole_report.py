@@ -55,20 +55,24 @@ def build(cases, inputs):
         times = [0.] + [r['time_s'] for r in history]
         thickness = [result['initial_mm']] + [r['remaining_mm'] for r in history]
         join = int(np.searchsorted(times,cutoff))
-        axes[0].plot(times[:join+1], thickness[:join+1], color=color, label=label)
-        axes[0].plot(times[join:], thickness[join:], color=color, ls='--')
+        at_cut = np.interp(cutoff, times, thickness)
+        before, after = times[:join]+[cutoff], [cutoff]+times[join:]
+        axes[0].plot(before, thickness[:join]+[at_cut], color=color, label=label)
+        axes[0].plot(after, [at_cut]+thickness[join:], color=color, ls='--')
+        axes[0].plot(cutoff, at_cut, 'o', color=color, ms=3)
         axes[0].plot(times[-1], thickness[-1], 'o', color=color, ms=3, clip_on=False)
         delta = result['common_times']['differences']['remaining_mm']['max_abs']
         ref_t = [r['time_s'] for r in independent]
         ref_y = [r['remaining_mm'] for r in independent]
         axes[0].plot(ref_t, ref_y, ':', color=color, lw=.9)
         temperatures = [22.] + [r['interface_C'] for r in history]
-        axes[1].plot(times[:join+1], temperatures[:join+1], color=color)
-        axes[1].plot(times[join:], temperatures[join:], color=color,ls='--')
-        axes[1].plot(cutoff, np.interp(cutoff,times,temperatures), 'o', color=color, ms=4)
+        interface_at_cut = np.interp(cutoff, times, temperatures)
+        axes[1].plot(before, temperatures[:join]+[interface_at_cut], color=color)
+        axes[1].plot(after, [interface_at_cut]+temperatures[join:], color=color, ls='--')
+        axes[1].plot(cutoff, interface_at_cut, 'o', color=color, ms=4)
         axes[1].plot(times[:-1], [22.] + [r['hot_C'] for r in history[:-1]], color=color, lw=1,ls='-.')
         gap = result['event_interval_gap_s']
-        rows.append(f"{label} & {cutoff:.2f} & {result['native_end_s']:.2f} & "
+        rows.append(f"{label} & {cutoff:.2f} & {at_cut:.3f} & {result['native_end_s']:.2f} & "
                     f"{result['independent_end_s']:.2f} & {result['native_minus_independent_s']:+.3f} & {gap:.3f}"+r' \\')
         checks.append(f"{label} & {result['native_blocks']:,} & {1000*delta:.2f} & "
                       f"{result['heat_dose_MJ_m2']['native']:.2f} & {result['peak_sampled_live_face_C']:.0f} & "
@@ -89,13 +93,14 @@ has left the wall. The controller updates chemistry and material removal after
 each MAPDL thermal solve. Both bodies evolve from their initial state throughout.
 The table gives the audited full-exposure results.
 
-\begin{center}\small\begin{tabular}{lrrrrr}\toprule
- & Casing & ANSYS & Radial & ANSYS minus & Interval\\
-Motor & event [s] & gone [s] & gone [s] & radial [s] & gap [s]\\\midrule
+\begin{center}\small\begin{tabular}{lrrrrrr}\toprule
+ & Casing & Liner left & ANSYS & Radial & Difference & Interval\\
+Motor & event [s] & [mm] & gone [s] & gone [s] & [s] & gap [s]\\\midrule
 EVENTS
 \bottomrule\end{tabular}\end{center}
 The earlier casing event marks all aluminium liquid or the CF casing reaching
-1000~$^\circ$C. Times use the upper end of each recorded event interval.
+1000~$^\circ$C. Liner thickness at that time is interpolated between adjacent
+half-second samples. Times use the upper end of each recorded event interval.
 The gap is the separation between the two final time-step intervals. A positive
 value leaves exact event-interval agreement unresolved.
 Molten Al and hot CF residue retain their prescribed geometry in these

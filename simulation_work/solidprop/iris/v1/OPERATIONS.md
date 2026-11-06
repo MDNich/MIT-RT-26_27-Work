@@ -22,6 +22,34 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Both sustainer whole exposures audited, November 6, 06:00 UTC
+
+The ten-core CF sustainer completed 2,713 thermal solves. Replay of every saved
+field reproduced the controller record exactly, with a maximum independent
+temperature discrepancy of 4.01e-11 K. The CF reached its 1000 °C property
+limit by 95.16 s. The 4.7625 mm liner reached zero by 104.33157 s. The
+independent FV reference gave 104.25365 s. The upper endpoints differ by
+0.07792 s and the final integration intervals are separated by 0.04198 s.
+The largest thickness difference at common stations was 0.00386 mm.
+
+The original successor series (PID 6658) advanced to the aluminium booster;
+the CF booster follows under this same queue. All 32 independent radial nodal
+refinements finished. Their receipt is
+`validation/whole_event_interval_refinement.json`. Compare against the
+previous FV references on page 21. For matched time-step comparisons PID 8849
+acquired the independent lock and is running the twelve configured FV paths.
+Check `ansystmp/matched_event_intervals/status.json` and its completion hash.
+
+The six additional exposure scenarios with evolving casings (two pressures,
+two hot emissivities, two gas temperatures, across four motors) are prepared
+under `configs/evolving_exposure_sensitivities.json`. PID 10906 waits for the
+matched worker to exit and verifies its completion hash before entering the
+independent worker lock. Read `ansystmp/evolving_exposure_sensitivities/follower.json`,
+the run log, real process command, and result receipt before starting any work.
+Withhold sensitivity results until their mass, energy, refinement and
+independent-method checks finish. These two independent workers have no
+ANSYS dispatch role.
+
 ## First complete native liner exposure and char-cost study, November 6, 05:39 UTC
 
 The aluminium sustainer started at 22 °C with 4.7625 mm of exposed liner and

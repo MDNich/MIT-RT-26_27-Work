@@ -5,13 +5,15 @@ has left the wall. The controller updates chemistry and material removal after
 each MAPDL thermal solve. Both bodies evolve from their initial state throughout.
 The table gives the audited full-exposure results.
 
-\begin{center}\small\begin{tabular}{lrrrrr}\toprule
- & Casing & ANSYS & Radial & ANSYS minus & Interval\\
-Motor & event [s] & gone [s] & gone [s] & radial [s] & gap [s]\\\midrule
-Sustainer Al & 99.14 & 110.58 & 110.47 & +0.102 & 0.066 \\
+\begin{center}\small\begin{tabular}{lrrrrrr}\toprule
+ & Casing & Liner left & ANSYS & Radial & Difference & Interval\\
+Motor & event [s] & [mm] & gone [s] & gone [s] & [s] & gap [s]\\\midrule
+Sustainer Al & 99.14 & 0.430 & 110.58 & 110.47 & +0.102 & 0.066 \\
+Sustainer CF & 95.16 & 0.453 & 104.33 & 104.25 & +0.078 & 0.042 \\
 \bottomrule\end{tabular}\end{center}
 The earlier casing event marks all aluminium liquid or the CF casing reaching
-1000~$^\circ$C. Times use the upper end of each recorded event interval.
+1000~$^\circ$C. Liner thickness at that time is interpolated between adjacent
+half-second samples. Times use the upper end of each recorded event interval.
 The gap is the separation between the two final time-step intervals. A positive
 value leaves exact event-interval agreement unresolved.
 Molten Al and hot CF residue retain their prescribed geometry in these
@@ -27,6 +29,7 @@ retained casing model after complete fusion or the CF property limit.}
 & Native field & Max.\ thickness & Film dose & Peak live & Time and\\
 Motor & solves & diff.\ [$\mu$m] & [MJ/m$^2$] & face [$^\circ$C] & thickness\\\midrule
 Sustainer Al & 2,903 & 4.03 & 131.91 & 1076 & Pass \\
+Sustainer CF & 2,713 & 3.86 & 122.86 & 1077 & Pass \\
 \bottomrule\end{tabular}\end{center}
 Thickness differences use common half-second stations before either liner
 vanishes. The peak uses the sampled exposed phenolic surface while mass remains.
