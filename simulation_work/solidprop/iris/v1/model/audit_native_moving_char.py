@@ -112,7 +112,7 @@ def fixture(e,law):
 def audit(n):
     job=f'mvchar{n}'
     e=json.loads((PACKAGE/f'{job}.json').read_text())
-    run=TMP/'runs'/('moving_char_log_r2_'+job)
+    run=TMP/'runs'/('moving_char_log_r4_'+job)
     files=[job+'.out','moving_steps.txt','moving_field.txt']
     receipt=json.loads((run/'guest_terminal.json').read_text(encoding='utf-8-sig'))
     assert receipt['job']==job and receipt['exit_code']==0 and receipt['guest_input_sha256'].lower()==e['deck_sha256']
@@ -131,7 +131,7 @@ def audit(n):
                   reader_sha256=digest(__file__),receipt_sha256=digest(run/'guest_terminal.json'),
                   exports={f:digest(run/f) for f in files},
                   scope='Native manufactured continuously receding pure char. Full reacting-liner and energy comparison pending.')
-    atomic(ROOT/'validation'/f'native_moving_char_r2_{job}.json',result)
+    atomic(ROOT/'validation'/f'native_moving_char_r4_{job}.json',result)
     return result
 
 
@@ -147,7 +147,7 @@ def main():
         return
     law=json.loads(PARENT.read_text())['cases'][0]['configuration']['char_law']
     results={n:fixture(json.loads((PACKAGE/f'mvchar{n}.json').read_text()),law) for n in (8,16)}
-    atomic(ROOT/'validation/moving_char_reader_fixtures.json',dict(checked_utc=utc(),reader_sha256=digest(__file__),
+    atomic(ROOT/'validation/moving_char_r4_reader_fixtures.json',dict(checked_utc=utc(),reader_sha256=digest(__file__),
         package_manifest_sha256=digest(PACKAGE/'manifest.json'),manufactured=results,
         scope='Synthetic arrays only, complete history and five rejected corruption types per resolution. No native execution.'))
     print('Two synthetic native-history fixtures and ten corrupted-field rejection checks passed.')

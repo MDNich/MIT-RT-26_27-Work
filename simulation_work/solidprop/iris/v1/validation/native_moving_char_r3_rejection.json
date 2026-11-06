@@ -1,0 +1,28 @@
+{
+  "checked_utc": "2026-11-06T04:32:30.702943+00:00",
+  "passed": false,
+  "job": "mvchar8",
+  "exit_code": 0,
+  "receipt_sha256": "52350784e26f025762059fce8482c7557b31240a876cde9bb1b6208d0468406d",
+  "deck_sha256": "ade719e791d3e1af538a0abe56a398407508a305d99eb55f7f2fe596e87ea28a",
+  "exports": {
+    "mvchar8.out": "79bff27b265ff90ee0018c89bd17a2f8fc9f7a588fe170269a045abd4d383df0",
+    "moving_steps.txt": "5d5ab1c904db03434f77febfbe495b214fd4f723e00dc431327b3592fab08695",
+    "moving_field.txt": "2c88ef409efb4ef5ffdeadbd7ae74c9730005aaa738df1a7a30f33e29d59cf17"
+  },
+  "warnings": 33,
+  "errors": 0,
+  "field_diagnostics": {
+    "passed": true,
+    "steps": 41,
+    "event_s": 8.116470208,
+    "analytic_s": 8.12966526132728,
+    "event_relative_error": 0.001623074616620281,
+    "max_nodal_error_K": 5.100000635138713e-07,
+    "peak_transverse_spread_K": 0.0,
+    "max_remap_readback_error_K": 3.745708454516716e-08,
+    "max_mass_relative_error": 7.940804278499862e-10
+  },
+  "failure": "The last positive-thickness mesh triggered 32 aspect-ratio warnings (35.15 vs limit 20) and their summary. The numerical comparison passed but the strict native acceptance gate rejected this run.",
+  "disposition": "Retain the R3 input and output. R4 reduces the transverse dimensions of the uniform coupon and apportions the final time steps. The native shape checks and all acceptance limits remain active."
+}

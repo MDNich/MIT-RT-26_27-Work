@@ -17,12 +17,12 @@ from coupler import R, blowing, char_rate
 from ops import ROOT, atomic, disks
 from prepare_model import create_mesh
 
-EARLIER=ROOT/'configs/native_verification/moving_char_log_smp10'
-PACKAGE=ROOT/'configs/native_verification/moving_char_log_smp10_r2'
+EARLIER=ROOT/'configs/native_verification/moving_char_log_smp10_r3'
+PACKAGE=ROOT/'configs/native_verification/moving_char_log_smp10_r4'
 PARENT=ROOT/'configs/moving_surface_campaign.json'
 RI,RO,T0,SLOPE=.04,.0406,1150.,-1500.
 RHO,K,CP=600.,.60,1500.
-NT,NY,ANGLE,LENGTH=2,2,.10,.00006
+NT,NY,ANGLE,LENGTH=2,2,.0116,8.1e-6
 
 
 def sha(data):
@@ -64,7 +64,7 @@ def build(cfg,n,dt):
         '! Only actual native outputs can establish an FE result.','/CLEAR,START','/PREP7',
         'ET,1,SOLID278',f'MP,KXX,1,{K}',f'MP,DENS,1,{RHO}',f'MP,C,1,{CP}','TYPE,1','MAT,1']
     lines += [f'N,{i},{x:.16g},{y:.16g},{z:.16g}' for i,x,y,z in nodes]
-    lines += ['EN,'+','.join(map(str,[eid,*ids])) for eid,_,ids in elements]
+    connectivity = ['EN,'+','.join(map(str,[eid,*ids])) for eid,_,ids in elements]
     lines += ['FINISH',f'RN={n}',f'RINGN={ring}',f'RSTART={RI}',f'REND={RO}',f'TSTART={T0}',
         f'TGRAD={SLOPE}',f'RHOCHAR={RHO}',f'KCHAR={K}',f'FCOS={geom:.16g}',
         f'DTLIM={dt}',f'JFAC={jref:.16g}',f'JCAP={cap:.16g}',f'EOVER={law["activation_energy_J_mol"]/R:.16g}',
@@ -84,21 +84,30 @@ def build(cfg,n,dt):
         '*DO,JR,1,RINGN','TSFACE=TSFACE+TN(JR)/RINGN','*ENDDO',
         'JK=JFAC*EXP(-EOVER*(1/(TSFACE+273.15)-1/TREFK))','JACT=1/(1/JK+1/JCAP)',
         'BB=JACT*GASCP/HBASE','HACT=HBASE*BB/(EXP(BB)-1)',
-        'TLOAD=TG-JACT*HCOST/HACT','VFACE=JACT/(RHOCHAR*FCOS)',
-        'DTNOW=DTLIM','RNEW=RPOS+VFACE*DTNOW','*IF,RNEW,GE,REND,THEN',
+        '! Affine tangent to net inward flux at the mapped, solved surface temperature.',
+        'DJDT=JACT*(1-JACT/JCAP)*EOVER/(TSFACE+273.15)**2',
+        'DHDT=HACT*(1/BB-EXP(BB)/(EXP(BB)-1))*GASCP/HBASE*DJDT',
+        'HTAN=HACT+HCOST*DJDT-DHDT*(TG-TSFACE)',
+        'TLOAD=TSFACE+(HACT*(TG-TSFACE)-JACT*HCOST)/HTAN','VFACE=JACT/(RHOCHAR*FCOS)',
+        'DTNOW=DTLIM','DTLEFT=(REND-RPOS)/VFACE',
+        '! Share the penultimate interval to retain a well-shaped positive last mesh.',
+        '*IF,DTLEFT,GT,DTLIM,THEN','*IF,DTLEFT,LT,1.8*DTLIM,THEN',
+        'DTNOW=DTLEFT/2','*ENDIF','*ENDIF','RNEW=RPOS+VFACE*DTNOW','*IF,RNEW,GE,REND,THEN',
         'DTNOW=(REND-RPOS)/VFACE','RNEW=REND','*ENDIF',
-        '/PREP7','*DO,IR,0,RN','RLOC=RPOS+(REND-RPOS)*IR/RN','*DO,JR,1,RINGN',
-        'INODE=IR*RINGN+JR','NMODIF,INODE,RLOC*DXR(JR),YN(JR),RLOC*DZR(JR)','*ENDDO','*ENDDO',
+        '/PREP7','*IF,ISTEP,GT,1,THEN','EDELE,ALL','*ENDIF',
+        '! Modify all unloaded nodes before rebuilding and shape-checking any brick.',
+        '*DO,IR,0,RN','RLOC=RPOS+(REND-RPOS)*IR/RN','*DO,JR,1,RINGN',
+        'INODE=IR*RINGN+JR','NMODIF,INODE,RLOC*DXR(JR),YN(JR),RLOC*DZR(JR)','*ENDDO','*ENDDO',*connectivity,
         'FINISH','/SOLU','ANTYPE,TRANS,NEW','TRNOPT,FULL','KBC,1','AUTOTS,OFF','NSUBST,1,1,1','TIME,DTNOW',
         '*DO,IR,0,RN-1','*DO,JR,1,RINGN','INODE=IR*RINGN+JR','IC,INODE,TEMP,TN(INODE)','*ENDDO','*ENDDO',
         '*DO,JR,1,RINGN','INODE=RN*RINGN+JR','D,INODE,TEMP,TSTART+TGRAD*LOG(REND/RSTART)','*ENDDO']
     for face in mesh['rows'][0]:
         elem=face['element']
-        lines+= [f'SFE,{elem},5,CONV,0,HACT',f'SFE,{elem},5,CONV,2,TLOAD']
+        lines+= [f'SFE,{elem},5,CONV,0,HTAN',f'SFE,{elem},5,CONV,2,TLOAD']
     lines+=['OUTRES,ALL,LAST','SOLVE','FINISH','/POST1','SET,LAST','*GET,STIME,ACTIVE,0,SET,TIME',
         'ELTIME=ELTIME+DTNOW','*CFOPEN,moving_steps,txt,,APPEND',
         '*VWRITE,ISTEP,ELTIME,DTNOW,STIME,RPOS,RNEW,JACT,TSFACE',
-        '(F8.0,7(1X,E16.9))','*CFCLOSE','*CFOPEN,moving_field,txt,,APPEND','*DO,IR,0,RN',
+        '(F5.0,1X,F13.9,2(1X,E15.9),2(1X,F14.12),1X,E17.10,1X,F15.9)','*CFCLOSE','*CFOPEN,moving_field,txt,,APPEND','*DO,IR,0,RN',
         'RLOC=RPOS+(REND-RPOS)*IR/RN','*DO,JR,1,RINGN','INODE=IR*RINGN+JR',
         '*GET,TEND,NODE,INODE,TEMP','TOLD(INODE)=TEND','TBEG=TN(INODE)','*VWRITE,ISTEP,INODE,RLOC,TBEG,TEND',
         '(2(F8.0,1X),3(1X,E20.12))','*ENDDO','*ENDDO','*CFCLOSE','FINISH',
@@ -144,8 +153,8 @@ def main():
             for name,data in files.items(): (stage/name).write_bytes(data)
             atomic(stage/'manifest.json',dict(parent_sha256=sha(PARENT.read_bytes()),
                 files={k:sha(v) for k,v in files.items()},cores=10,prepared_only=True,
-                supersedes_unused_manifest=sha((EARLIER/'manifest.json').read_bytes()),
-                changes='Use scalar field export and documented MAPDL functions; match the facet-normal gradient. Dispatch only this revision.'))
+                predecessor_manifest_sha256=sha((EARLIER/'manifest.json').read_bytes()),
+                changes='Retain the R3 tangent law and mesh rebuild. Reduce the angular and axial spans of the uniform manufactured coupon and share a short final interval to keep the final positive-thickness brick aspect ratios below 20. Recalculate the chord correction and analytic reference. Preserve field and event tolerances.'))
             stage.rename(PACKAGE)
     manifest=json.loads((PACKAGE/'manifest.json').read_text())
     assert manifest['parent_sha256']==sha(PARENT.read_bytes())

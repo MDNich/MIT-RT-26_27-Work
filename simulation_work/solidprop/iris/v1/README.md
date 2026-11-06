@@ -31,7 +31,8 @@ Page 15 traces the initial mass into char, gas and chemical energy. Across
 all twelve sustained exposures the assumed removal cost of 35 MJ/kg of char
 accounts for 79.7–87.3% of film energy. The two independent methods agree
 on integrated film energy within 0.044%. Their heat input and char law still
-need physical calibration. Pages 23–24 print the new native input and complete
+need physical calibration. Page 16 compares accepted native benchmarks with analytical solutions.
+Pages 24–25 print the new native input and complete
 thermal-step generator.
 The final pulse control passed all 5,295 steps. The CF casing reached its
 150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner

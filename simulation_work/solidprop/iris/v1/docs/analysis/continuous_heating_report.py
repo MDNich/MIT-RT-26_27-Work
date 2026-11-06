@@ -18,6 +18,7 @@ from ops import disks, atomic
 from moving_surface_report import build as build_moving_results
 from backing_report import build as build_backing_results
 from sector_report import build as build_sector_results
+from native_wall_report import build as build_native_verification
 from liner_energy_report import build as build_liner_energy
 from backing_film_report import build as build_film_results
 from coupled_cf_report import build as build_coupled_cf_results
@@ -107,6 +108,7 @@ def main():
     build_coupled_cf_results(inputs, film_ranges)
     build_sector_results(CASES,inputs)
     build_liner_energy(CASES, inputs)
+    build_native_verification(inputs)
     date = datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y, %H:%M %Z')
     text = r'''\documentclass[11pt]{article}
 \usepackage[margin=22mm]{geometry}
@@ -124,6 +126,7 @@ def main():
 \input{continuous_sector_comparison.tex}
 \input{continuous_backing_film.tex}
 \input{continuous_liner_energy.tex}
+\input{continuous_native_verification.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
@@ -212,9 +215,7 @@ transition, and matches source and input fingerprints across all twelve records.
 Maximum cumulative relative mass error is MASSERR. Maximum relative residual
 of the inherited discrete step energy equation is ENERGYERR. The new material
 and wall equations below use a separate open-system energy ledger.
-A new 585-node native conduction verification input has been sealed for ten-core
-ANSYS execution after the active job. The independent coupled checks appear in the opening sections. Native comparison
-under matching moving-wall equations is still pending.
+The 585-node native conduction results and moving-wall benchmarks appear in Section~\ref{sec:nativebench}. Whole-exposure MAPDL verification is ongoing.
 Measured heating and recession, high-temperature backing data and sensitivity
 to surface chemistry remain necessary for the physical interpretation.
 

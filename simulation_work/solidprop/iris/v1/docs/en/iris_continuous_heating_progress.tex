@@ -5,7 +5,7 @@
 \lstset{basicstyle=\ttfamily\scriptsize,breaklines=true,numbers=left,numberstyle=\tiny,frame=single}
 \title{Iris Phenolic Liners\\Continuous Heating to Model Exhaustion}
 \author{MIT Rocket Team}
-\date{November 05, 2026, 23:15 EST}
+\date{November 05, 2026, 23:36 EST}
 \begin{document}\maketitle
 \input{continuous_executive.tex}
 \input{continuous_moving_results.tex}
@@ -14,6 +14,7 @@
 \input{continuous_sector_comparison.tex}
 \input{continuous_backing_film.tex}
 \input{continuous_liner_energy.tex}
+\input{continuous_native_verification.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
@@ -108,9 +109,7 @@ transition, and matches source and input fingerprints across all twelve records.
 Maximum cumulative relative mass error is 1.54e-14. Maximum relative residual
 of the inherited discrete step energy equation is 9.22e-11. The new material
 and wall equations below use a separate open-system energy ledger.
-A new 585-node native conduction verification input has been sealed for ten-core
-ANSYS execution after the active job. The independent coupled checks appear in the opening sections. Native comparison
-under matching moving-wall equations is still pending.
+The 585-node native conduction results and moving-wall benchmarks appear in Section~\ref{sec:nativebench}. Whole-exposure MAPDL verification is ongoing.
 Measured heating and recession, high-temperature backing data and sensitivity
 to surface chemistry remain necessary for the physical interpretation.
 

@@ -39,7 +39,7 @@ def spec(case):
     if case in snapshots.CASES:
         return snapshots.PACKAGE,TMP/'runs'/('snapshot_r2_'+case),case,case+'.inp',[case+'.out','snap_field.txt']
     job='mvchar'+case.removeprefix('char')
-    return moving.PACKAGE,TMP/'runs'/('moving_char_log_r2_'+job),job,job+'.inp',[job+'.out','moving_steps.txt','moving_field.txt']
+    return moving.PACKAGE,TMP/'runs'/('moving_char_log_r4_'+job),job,job+'.inp',[job+'.out','moving_steps.txt','moving_field.txt']
 
 
 def expected_sha(case,package,job):
@@ -78,11 +78,11 @@ def prerequisites(case):
         if not f.is_file() or not json.loads(f.read_text()).get('passed'):
             reasons.append('Annular benchmark acceptance pending')
     if case=='char16' or case in snapshots.CASES:
-        f=p/'native_moving_char_r2_mvchar8.json'
+        f=p/'native_moving_char_r4_mvchar8.json'
         if not f.is_file() or not json.loads(f.read_text()).get('passed'):
             reasons.append('Coarse moving-char acceptance pending')
     if case in snapshots.CASES:
-        prior = ['native_moving_char_r2_mvchar16'] + ['native_snapshot_r2_'+s for s in snapshots.CASES[:snapshots.CASES.index(case)]]
+        prior = ['native_moving_char_r4_mvchar16'] + ['native_snapshot_r2_'+s for s in snapshots.CASES[:snapshots.CASES.index(case)]]
         for name in prior:
             record = p/(name+'.json')
             if not record.is_file() or not json.loads(record.read_text()).get('passed'):
@@ -173,6 +173,22 @@ def check_wrapper(script):
     if reply!='PARSE_OK': raise RuntimeError(reply)
 
 
+def assert_guest_idle():
+    """Only repeat the read-only process inventory after a Parallels transport error."""
+    for attempt in range(3):
+        try:
+            reply=guest("$ErrorActionPreference='Stop';"+NATIVE_GUARD+"'IDLE'")
+            if reply!='IDLE':
+                raise RuntimeError('Incomplete native process inventory')
+            return
+        except RuntimeError as exc:
+            known_errors=('PrlJob_GetResult: Invalid argument','PrlJob_GetRetCode: Invalid argument')
+            if not any(msg in str(exc) for msg in known_errors) or attempt == 2:
+                raise
+            host_check()
+            time.sleep(.5)
+
+
 def check_idle(case,run):
     reasons=prerequisites(case)
     registry=json.loads((TMP/'active_runs.json').read_text())
@@ -184,7 +200,7 @@ def check_idle(case,run):
     watch=subprocess.run(['ps','-p',watcher,'-o','command='],capture_output=True,text=True)
     if 'ops.py watch' not in watch.stdout or time.time()-json.loads((TMP/'host_storage_status.json').read_text())['checked_epoch']>45:
         reasons.append('Storage watcher is missing or stale')
-    if not reasons: guest("$ErrorActionPreference='Stop';"+NATIVE_GUARD)
+    if not reasons: assert_guest_idle()
     return reasons
 
 
@@ -224,7 +240,7 @@ def collect(case,run,job):
     intent=json.loads((run/'intent.json').read_text())
     launch_proof=json.loads((run/'guest_launch.json').read_text(encoding='utf-8-sig'))
     assert intent['nonce']==receipt['nonce']==launch_proof['nonce'] and launch_proof['ReturnValue']==0
-    guest("$ErrorActionPreference='Stop';"+NATIVE_GUARD)
+    assert_guest_idle()
     registry=json.loads((TMP/'active_runs.json').read_text())
     if registry and (len(registry)!=1 or registry[0]['job']!=job or registry[0]['relative_runtime']!=str(run.relative_to(ROOT))):
         raise RuntimeError('Registry belongs to another job')

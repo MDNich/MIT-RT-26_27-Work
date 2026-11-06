@@ -22,6 +22,30 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Native heat and moving-char verification, November 6, 04:37 UTC
+
+The annular conduction test passed with a maximum error of 0.0791 K against
+0.25 K allowed. A 0.6 mm manufactured char coupon with an analytic event at
+8.1297 s exhausted at 8.1165 s on eight radial cells and 8.1231 s on sixteen.
+Refinement halved the relative error from 0.162% to 0.081%. R2 distorted
+connected elements during individual node moves and its explicit surface loss
+produced oscillations. R3 corrected both issues but exceeded the element aspect
+ratio warning limit on its last mesh. R4 used a narrower uniform patch and
+shared the short final interval. Both resolutions passed with zero warnings
+and zero errors on ten SMP cores. All input revisions, acceptance limits,
+rejections and full-resolution digests are retained.
+
+Four frozen-state checks also passed, each advancing a motor state at 30 s by
+0.05 s. Their largest nodal difference from full brick quadrature was 8.17e-6 K.
+Page 16 of the 25-page continuous-heating report distinguishes all seven
+accepted benchmarks from physical liner exhaustion.
+
+The first CF terminal window, tails204, returned exit code 1 with a degenerate
+brick during connected node motion. Its original runtime must be retained as
+rejected. Do not redispatch the R1 terminal deck. A successor needs positive,
+well-shaped elements down to the last step, separate checks of normalised
+sector mass and heat, and the same independently specified acceptance targets.
+
 ## Native handoff to continuous heating, November 6, 04:27 UTC
 
 The protected CF320 run and its sole observer have finished. All 5,295
