@@ -62,6 +62,17 @@ def prerequisites(case):
                 queue[0]['accepted_index']==accepted['accepted_steps'] and
                 accepted['time_s']==queue[0]['time_s']==comp['accepted_native_time_s']):
             reasons.append('CF320 terminal identities or controls failed review')
+    handoff_path=p/'native_cf320_handoff.json'
+    if not handoff_path.is_file():
+        reasons.append('CF320 log, restart and full-field handoff audit pending')
+    else:
+        handoff=json.loads(handoff_path.read_text())
+        evidence={kind:p/f'{kind}_{CF}.json' for kind in ('queue','accepted','native_pulse_comparison','native_uniformity')}
+        if (not handoff.get('passed') or handoff.get('runtime')!=CF
+                or handoff.get('auditor_sha256')!=digest(ROOT/'model/audit_native_handoff.py')
+                or any(not path.is_file() or digest(path)!=handoff['receipts_sha256'].get(kind)
+                       for kind,path in evidence.items())):
+            reasons.append('CF320 audited handoff evidence differs from the saved record')
     if case!='annular':
         f=p/'native_annular_mode64_smp10.json'
         if not f.is_file() or not json.loads(f.read_text()).get('passed'):

@@ -1,0 +1,24 @@
+{
+  "runtime": "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
+  "passed": true,
+  "accepted_steps": 5295,
+  "time_s": 29.46874999999977,
+  "status": "CASE_PROPERTY_LIMIT_REACHED",
+  "max_energy_relative_error": 2.52172121663806e-05,
+  "max_hot_power_relative_error": 5.8863815516913265e-08,
+  "max_abs_mass_residual_kg": 1.0567490819306351e-21,
+  "removal_steps": 3,
+  "warning_blocks": [
+    "                         ELAPSED TIME =       6.708   TIME= 18:57:59\n Ansys, Inc.-supplied version of coding for USERCK has been used.        ",
+    "                         ELAPSED TIME =    1073.882   TIME= 19:15:46\n Material property KXX of material 2 of element 1281 is evaluated at a   \n temperature of 21.9999998, which is below the supplied temperature      \n range.  Temperature range checking terminates.                          \n     HT FLOW CONVERGENCE VALUE=  0.1753E-05  CRITERION=  0.1202E-08\n    EQUIL ITER   2 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC= -0.1162E-01\n     HT FLOW CONVERGENCE VALUE=  0.3452E-07  CRITERION=  0.1202E-08\n    EQUIL ITER   3 COMPLETED.  NEW TRIANG MATRIX.  MAX DOF INC=  0.1461E-03\n     HT FLOW CONVERGENCE VALUE=  0.4014E-09  CRITERION=  0.1202E-08 <<<",
+    "                         ELAPSED TIME =   16092.438   TIME= 23:26:05\n During this session the elapsed time exceeds the CPU time by 192%.      \n This often indicates either a lack of physical memory (RAM) required    \n to efficiently handle this simulation or a particularly slow hard       \n drive configuration.  This simulation can be expected to run faster on  \n identical hardware if additional RAM or a faster hard drive             \n configuration is made available.  For more details, please see the      \n Mechanical APDL Performance Guide which is part of the Ansys Help       \n system.                                                       ",
+    "                         ELAPSED TIME =   16092.440   TIME= 23:26:05\n During this session a solution was performed using 10 CPU cores in      \n shared-memory parallel (SMP) mode (-np 10).  It is strongly             \n recommended to use distributed-memory parallel (DMP) mode instead       \n (-dis -np 10).  DMP mode typically outperforms SMP mode, even when      \n running on a single system.  For more information, see the Mechanical   \n APDL Parallel Processing Guide in the Ansys Help system.                "
+  ],
+  "native_logs": [
+    {
+      "name": "solve_20261105_185752.out",
+      "sha256": "2dc3a4e223dd8d26924b0c5ad04a2900f1c2199bc9cdf101ba7474519a9ba974"
+    }
+  ],
+  "config_sha256": "6dd5f6bff5f767038e4aa49b6ed9552c65e58de9d80510c2aca2f0ae571ea9f2"
+}

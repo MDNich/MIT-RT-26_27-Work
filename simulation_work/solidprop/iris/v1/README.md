@@ -33,7 +33,11 @@ accounts for 79.7–87.3% of film energy. The two independent methods agree
 on integrated film energy within 0.044%. Their heat input and char law still
 need physical calibration. Pages 23–24 print the new native input and complete
 thermal-step generator.
-The two full-physics pilot and four whole-exposure MAPDL cases are prepared.
+The final pulse control passed all 5,295 steps. The CF casing reached its
+150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner
+remaining. The continuous-study native queue started with the annular
+heat-conduction benchmark. Two full-physics pilots precede the four whole
+exposures. [Native verification status](OPERATIONS.md)
 The four continuous results above remain independent estimates.
 
 ### Initial backing comparison
@@ -76,8 +80,8 @@ native and high-temperature material work.
 
 **New priority (November 5, 19:53 EST):** the user authorized choosing the
 exposure duration to answer time to burnthrough and requested model improvements.
-See [the continuous-heating plan](burnthrough_campaign_plan.md). The current
-CF320 native verification continues unchanged on ten cores, observed by 28607;
+See [the continuous-heating plan](burnthrough_campaign_plan.md). At that point
+CF320 was under observer 28607 on ten cores;
 the remaining three unstarted pulse refinements and five old bounded controls
 are deferred. The earlier observer 93981 has exited and must not resume.
 New independent continuous-heating scouts use 30/60/120/240/480/960 s reporting

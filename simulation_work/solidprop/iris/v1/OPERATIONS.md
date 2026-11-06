@@ -22,6 +22,25 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Native handoff to continuous heating, November 6, 04:27 UTC
+
+The protected CF320 run and its sole observer have finished. All 5,295
+accepted steps passed the heat, mass, full-field and topology checks. The
+150 °C CF casing temperature limit was first exceeded between 29.4375 and
+29.46875 s, during cooling after the seven-second pulse. At the later point
+4.71785 mm of the original 4.7625 mm of phenolic remained. The largest
+sampled radial profile difference was 0.0151 K. The final restart passed
+all nine file hashes. The two solver warnings concerned USERCK startup and
+a conductivity lookup 0.0000002 K below the cold endpoint. The two
+post-solve messages concerned performance. The complete signed-off record is
+`validation/native_cf320_handoff.json`.
+
+The old observer exited before the new series started. The annular verification
+was dispatched at 04:27 UTC on one ten-core MAPDL process. Use the current
+`ansystmp/native_wall_series.json` and the registered runtime to identify
+the active job. Collect the existing outputs if an audit stops the series.
+Keep the superseded pulse cases deferred.
+
 ## Independent liner-energy audit, November 5, 23:16 EST
 
 The twelve completed evolving-casing film scenarios now have a separate
