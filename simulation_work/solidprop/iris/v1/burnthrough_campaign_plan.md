@@ -6,6 +6,34 @@ burned through, and propose improvements to the simulated model. This replaces
 the previous priority of completing every seven-second pulse refinement first.
 Earlier accepted results remain available as regression evidence.
 
+## Native verification at the last liner element
+
+Near exhaustion the final liner element must represent a thin layer of char
+while the casing still conducts heat. The original whole-sector geometry gives
+longest-to-shortest brick edge ratios of 176 to 4065 in the last planned steps.
+An earlier native char benchmark issued an element warning at an aspect ratio
+of 35.15, above its warning threshold of 20. The edge comparison screens
+candidate inputs. MAPDL's own shape checks remain part of acceptance.
+
+Use a 0.03° sector with two cells in angle and two in height. Set each axial
+edge equal to the circumferential arc at the liner–casing interface. Retain
+80 radial liner cells initially and 20 casing cells. Once only one radial
+liner element remains, use its actual condensed inventory and current
+consumption rate to estimate the duration of the final step. If a normal
+advance would leave a short final interval, shorten the penultimate step
+and reserve about 90% of a normal step for closure. Recalculate reaction and
+heat transfer after that shorter step and solve the actual event from the
+updated state. Every step remains at or below 0.04 s.
+
+In four independent runs from ambient to exhaustion the maximum edge ratios
+were 13.64, 13.64, 18.26 and 12.73 for sustainer Al/CF and booster Al/CF.
+Each case needed one adjustment. Exhaustion shifted by at most 0.00027 s
+relative to the corresponding original sector calculation. Check the native
+startup field, then replay the last five or so steps from each stored donor
+with an evolving casing. Require correct fields and mass/energy closure before
+running each native motor case from first exposure. Record a donor-started
+native window separately from a native run that solves the entire history.
+
 ## Heating sensitivity with evolving backings
 
 Repeat the earlier 500 and 2000 W/(m² K) gas-film scenarios with the
