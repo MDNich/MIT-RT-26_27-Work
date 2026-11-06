@@ -6,6 +6,19 @@ burned through, and propose improvements to the simulated model. This replaces
 the previous priority of completing every seven-second pulse refinement first.
 Earlier accepted results remain available as regression evidence.
 
+## Verified scope and remaining native work, November 5 at 22:08 EST
+
+All eight independent CF calculations and their restart, mass, open-system
+enthalpy and event audits are complete. The 17-page report gives the four
+evolving-backing estimates, including earlier aluminium fusion and CF
+property-range events. The native CF320 prefix passed at 6.33906 s; wait
+for its terminal, restart and cooling receipts before launching the native
+sequence described in OPERATIONS.md. The six CF terminal-window decks use
+the very small residual virgin inventory at the 1000 °C crossing to justify
+a pure-char approximation for the last section only. Their imposed backing
+temperature comes from the independent histories. Full native verification
+from ignition, including independent casing response, is still required.
+
 ## CF backing verification and continuous cases, November 5 at 21:50 EST
 
 A separate eight-case independent campaign now couples the two competing

@@ -38,8 +38,8 @@ the booster. Every casing cell is liquid by 99.1 and 139.4 s respectively,
 while 0.43 and 0.23 mm of phenolic still cover the casing. Holding that liquid
 in place gives conditional liner times of 110.5 and 147.6 s. The alloy, liquid
 motion and mechanical failure of the actual casings remain unresolved.
-Pages 6–7 also distinguish the one-way CF resin-reaction calculation from the
-published inert-backing CF liner times.
+Pages 7–10 cover aluminium fusion, the one-way CF reaction diagnostic and
+the reacting CF model with heat and gas feedback.
 
 The 20 nominal calculations, 42 sensitivity cases and 16 endpoint refinements
 are complete. Doubling and halving the film coefficient gives respectively
