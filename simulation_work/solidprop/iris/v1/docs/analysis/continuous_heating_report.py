@@ -1,177 +1,244 @@
-"""Build a separate, explicitly provisional continuous-heating progress report."""
+"""Render the independent continuous-exposure results and candidate balance derivation."""
 import hashlib
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys
 from datetime import datetime
 from zoneinfo import ZoneInfo
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import numpy as np
 
-ROOT=Path(__file__).resolve().parents[2]
-sys.path.insert(0,str(ROOT/'model'))
-from ops import disks,atomic
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT/'model'))
+from ops import disks, atomic
+
+CASES = [('sustainer_al','Sustainer Al','#194b78'), ('sustainer_cf','Sustainer CF','#af6030'),
+         ('booster_al','Booster Al','#357b53'), ('booster_cf','Booster CF','#82518e')]
+SUFFIX = ['scout_n160','time_half_n160','joint_n320']
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def chart(records):
+    fig, axes = plt.subplots(2, 1, figsize=(7.2, 5.8), sharex=True, layout='constrained')
+    for case, name, color in CASES:
+        r = records[case][2]
+        samples = r['history']
+        t = np.array([x['time_s'] for x in samples])
+        threshold = r['property_limit_bracket_s'][1]
+        cut = np.searchsorted(t, threshold)
+        assert t[cut] == threshold
+        for ax, field in zip(axes, ['remaining_mm','interface_C']):
+            y = [x[field] for x in samples]
+            style = 'steps-post' if field == 'remaining_mm' else 'default'
+            ax.plot(t[:cut+1], y[:cut+1], color=color, label=name, lw=1.5, drawstyle=style)
+            ax.plot(t[cut:], y[cut:], color=color, ls=':', lw=1.7, drawstyle=style)
+            ax.plot(t[cut], y[cut], 'o', color=color, ms=4)
+    axes[0].set(ylabel='Retained liner thickness [mm]', ylim=(0,6.65))
+    axes[1].set(xlabel='Continuous imposed heating [s]', ylabel='Liner–casing interface [°C]')
+    axes[0].legend(ncol=2, fontsize=9)
+    for ax in axes:
+        ax.set_xlim(left=0)
+    path = ROOT/'docs/analysis/continuous_heating_refinement'
+    fig.savefig(path.with_suffix('.pdf'))
+    fig.savefig(path.with_suffix('.png'), dpi=180)
+    plt.close(fig)
 
 
 def main():
     disks()
-    audit_path=ROOT/'validation/continuous_heating_scout_audit.json'
-    audit=json.loads(audit_path.read_text());assert audit['passed']
-    records=[]
-    for a in audit['records']:
-        p=ROOT/'validation/continuous_heating'/f"{a['case']}_continuous_scout_n160.json"
-        assert hashlib.sha256(p.read_bytes()).hexdigest()==a['record_sha256']
-        records.append(json.loads(p.read_text()))
-    kernel=json.loads((ROOT/'validation/moving_surface_remap_verification.json').read_text())
-    assert kernel['passed']
-    assert hashlib.sha256((ROOT/'model/moving_surface_remap.py').read_bytes()).hexdigest()==kernel['source_sha256']
-    plt.rcParams.update({'font.family':'serif','font.size':10,'axes.grid':True,'grid.alpha':.3})
-    fig,axes=plt.subplots(2,1,figsize=(7.0,6.8),layout='constrained')
-    names=['Sustainer Al','Sustainer CF','Booster Al','Booster CF']
-    for r,name,color in zip(records,names,['#194b78','#af6030','#357b53','#82518e']):
-        h=r['history'];scope=r['property_limit_bracket_s'][1]
-        before=[x for x in h if x['time_s']<=scope];after=[before[-1]]+[x for x in h if x['time_s']>scope]
-        for ax,field in zip(axes,['remaining_mm','interface_C']):
-            ax.plot([x['time_s'] for x in before],[x[field] for x in before],color=color,label=name,lw=1.5)
-            ax.plot([x['time_s'] for x in after],[x[field] for x in after],color=color,ls=':',lw=1.6)
-            ax.plot([before[-1]['time_s']],[before[-1][field]],'o',color=color,ms=4)
-    axes[0].set(ylabel='Retained liner mesh [mm]',title='Continuous heating: inherited finite-row model')
-    axes[1].set(xlabel='Continuous imposed heating [s]',ylabel='Inner casing temperature [C]')
-    axes[0].legend(ncol=2)
-    for ax in axes:ax.set_xlim(left=0)
-    out=ROOT/'docs/analysis';fig.savefig(out/'continuous_heating_scouts.pdf');fig.savefig(out/'continuous_heating_scouts.png',dpi=180);plt.close(fig)
-    rows=[]
-    for r,name in zip(records,names):
-        rows.append(f"{name} & {r['model_exhaustion_bracket_s'][1]:.1f} & {r['property_limit_bracket_s'][1]:.1f} "+r'\\')
-    date=datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y, %H:%M %Z')
-    text=r'''\documentclass[11pt]{article}
+    audit_path = ROOT/'validation/continuous_heating_refinement_audit.json'
+    audit = json.loads(audit_path.read_text())
+    assert audit['records_audited'] and not audit['eligible_for_motor_lifetime']
+    assert audit['audit_source_sha256'] == digest(ROOT/'model/audit_continuous_refinement.py')
+    inputs = {str(audit_path.relative_to(ROOT)):digest(audit_path)}
+    for kind in ['thermochemistry','boundary','conduction']:
+        path = ROOT/f'validation/moving_surface_{kind}_verification.json'
+        verification = json.loads(path.read_text())
+        assert verification['passed']
+        for source, sha in verification['sources'].items():
+            assert digest(ROOT/source) == sha
+        inputs[str(path.relative_to(ROOT))] = digest(path)
+    restart = ROOT/'validation/continuous_checkpoint_verification.json'
+    checked = json.loads(restart.read_text())
+    assert checked['passed'] and checked['terminal_checkpoint_byte_equal']
+    assert digest(ROOT/'model/continuous_heating_campaign.py') == checked['runner_sha256']
+    assert digest(ROOT/'model/radial_model.py') == checked['reference_model_sha256']
+    assert digest(ROOT/'model/check_continuous_checkpoint.py') == checked['test_sha256']
+    inputs[str(restart.relative_to(ROOT))] = digest(restart)
+    records = {}
+    event_rows, diff_rows = [], []
+    for case, name, _ in CASES:
+        group = []
+        for suffix in SUFFIX:
+            tag = f'{case}_continuous_{suffix}'
+            path = ROOT/f'validation/continuous_heating/{tag}.json'
+            assert digest(path) == audit['records'][tag]['record_sha256']
+            group.append(json.loads(path.read_text()))
+        records[case] = group
+        ends = [r['model_exhaustion_bracket_s'][1] for r in group]
+        event_rows.append(' & '.join([name, *[f'{t:.2f}' for t in ends],
+                                     f"{group[-1]['property_limit_bracket_s'][1]:.2f}"]) + r' \\')
+        pairs = list(audit['comparisons'][case].values())
+        diff_rows.append(' & '.join([name, *[f"{p['event_change_s']:+.2f}" for p in pairs],
+                                    *[f"{p['half_second_max_thickness_difference_mm']:.4f}" for p in pairs],
+                                    f"{pairs[0]['thickness_threshold_mm']:.4f}"]) + r' \\')
+    pairs = [p for group in audit['comparisons'].values() for p in group.values()]
+    t_pass = sum(p['half_second_thickness_pass'] for p in pairs)
+    bracket_pass = sum(p['event_brackets_overlap'] for p in pairs)
+    largest_pct = max(p['event_abs_percent_finer'] for p in pairs)
+    plt.rcParams.update({'font.family':'serif','font.size':10,'axes.grid':True,'grid.alpha':.25})
+    chart(records)
+    date = datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y, %H:%M %Z')
+    text = r'''\documentclass[11pt]{article}
 \usepackage[margin=22mm]{geometry}
-\usepackage{newtxtext,newtxmath,graphicx,booktabs,float,hyperref,listings,xcolor}
-\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue}
+\usepackage{amsmath,newtxtext,newtxmath,graphicx,booktabs,float,hyperref,listings,xcolor}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=blue,pdftitle={Iris phenolic liners under continuous heating},pdfauthor={MIT Rocket Team}}
 \lstset{basicstyle=\ttfamily\scriptsize,breaklines=true,numbers=left,numberstyle=\tiny,frame=single}
-\title{Iris Phenolic Liners\\Continuous-Heating Campaign}
-\author{MIT Rocket Team --- exploratory numerical study}
+\title{Iris Phenolic Liners\\Continuous Heating to Model Exhaustion}
+\author{MIT Rocket Team}
 \date{DATE}
 \begin{document}\maketitle
-\begin{center}\textbf{Setup and provisional numerical diagnostics.\\No validated motor burnthrough time is claimed.}\end{center}
-\section{New objective and current execution}
-The November 5 instruction is to choose the exposure duration and answer when
-the liner is exhausted, rather than repeatedly demonstrating seven-second
-survival. Four fresh independent radial calculations therefore apply continuous
-nominal heating until the finite-row model records exhaustion. They are not
-native ANSYS results. The already-running CF320 ANSYS verification remains
-intact on ten SMP cores; subsequent short-pulse jobs have been deferred.
+\section{How long does the liner last in the calculation?}
+For a continuously exposed liner, the inherited independent model reaches
+the casing after roughly two minutes for the sustainer and two and a half
+minutes for the booster. Each event occurs after the casing reaches the limit
+of its property evidence. Actual firing heat flux, local exposure duration
+and measured liner loss are unknown. The times below describe a hypothetical
+intact backing under sustained heating. Physical motor burnthrough remains open.
 
-The environment retains gas temperature 2504 K (2230.85 C), uncorrected
-convection coefficient 1000 W/(m$^2$ K), nominal chamber pressure 800 psi,
-the documented blowing correction and zero effective hot-side radiation.
-Initial liner thickness is 4.7625 mm for the sustainer and 6.3500 mm for the
-booster. These scouts use 160 liner and 40 casing cells and a 0.0015625 s step
-ceiling. Reporting milestones extend from 30 to 960 s without switching off
-heating at seven seconds. The chosen environment is hypothetical, not an
-inferred propellant burn duration.
-
-\section{First continuous-heating outcomes}
 \begin{table}[H]\centering
-\begin{tabular}{lrr}\toprule
-Case & Model exhaustion [s] & Earlier property flag [s]\\\midrule
-ROWS
+\begin{tabular}{lrrrr}\toprule
+ & \multicolumn{3}{c}{Time to final liner-row loss [s]} & Property flag [s]\\
+\cmidrule(lr){2-4}
+Case & 160, full step & 160, half step & 320, half step & 320, half step\\\midrule
+EVENTROWS
 \bottomrule\end{tabular}
-\caption{Coarse numerical events of the inherited finite-row closure. All occur
-after the casing model has left its provisional property range. These are
-not accepted physical motor lifetimes or allowable firing durations.}
+\caption{Independent radial calculations. The initial thicknesses are 4.7625 mm
+for the sustainer and 6.3500 mm for the booster. A flag marks the first
+150~$^\circ$C CF or 300~$^\circ$C Al interface crossing. The table separates
+this evidence limit from complete liner-row loss.}
 \end{table}
-The arithmetic now reaches the requested geometric endpoint. It does not yet
-establish its credibility: neither time/mesh convergence of these events nor
-high-temperature casing validity has been demonstrated. The prior rejected
-endurance calculations remain rejected and are not the source of this table.
-The first 150 C CF or 300 C Al property-range crossing is recorded separately;
-these are evidence-range flags, not certified structural failure temperatures.
-Beyond them the equations continue with the inherited surrogate properties.
 
-Source/configuration fingerprints, checkpoint continuity, final-row bookkeeping,
-monotone sampled time and the cumulative mass ledger pass. Maximum cumulative
-mass relative error is MASSERR, and maximum step equation-energy residual is
-ENERGYERR. Closing that discrete energy equation does not prove a physically
-complete open-system enthalpy model. Every record retains
-\texttt{eligible\_for\_motor\_lifetime=false}.
+The gas stays at 2504 K (2230.85~$^\circ$C), with nominal pressure 800 psi and
+uncorrected film coefficient 1000 W/(m$^2$ K). Outgassing modifies convection.
+Effective hot-side emissivity is zero. The outside sees 22~$^\circ$C, a film
+coefficient of 8 W/(m$^2$ K) and emissivity 0.25. The hot surface temperature
+evolves as the wall absorbs heat. The local liner face is exposed from time
+zero until exhaustion. Sustained heating is a chosen scenario.
 
+The three columns use 160/40, 160/40 and 320/80 radial cells in the liner
+and casing. The full step ceiling is 0.0015625 s and the half step is
+0.00078125 s. In all twelve records the final row disappears within that
+run's time increment. Resolution changes move the event by more than an
+individual time increment, so digits beyond those shown carry little meaning.
+
+\clearpage
+\section{Liner remaining and casing temperature}
 \begin{figure}[H]\centering
-\includegraphics[width=\textwidth]{../analysis/continuous_heating_scouts.pdf}
-\caption{Independent mathematical scouts. Dots mark the first casing-property
-flag; dotted curves are subsequent surrogate continuation. Remaining thickness
-is retained mesh, including char, not the thickness of undamaged virgin resin.}
+\includegraphics[width=.94\textwidth]{../analysis/continuous_heating_refinement.pdf}
+\caption{Independent 320/80 finite-row results. Dots mark the first casing-property
+flag. The dotted continuation assumes an intact casing with the inherited
+surrogate properties. Thickness includes retained char and is distinct from
+the thickness of virgin material. Similar curves overlap near ignition.}
 \end{figure}
+Al uses the inherited constant properties. The CF backing uses its radial
+conductivity and a heat-capacity correlation clamped to the inherited interval.
+The plotted temperatures can exceed the materials' supported range by hundreds
+of degrees. Integrity of a hot pressurized case, resin decomposition, bond
+failure and local cracks require additional evidence.
+The previous 7 s pulse and cooling results, native ANSYS verification and
+complete MAPDL and Fortran listings are in the
+\href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/solidprop/iris/v1/output/pdf/iris_phenolic_report.pdf}{companion native report}.
+Earlier rejected endurance jobs are excluded from every comparison here.
 
-\section{Numerical checks now prepared}
-For each motor, a 160/40-cell calculation at half the step isolates temporal
-error. A subsequent 320/80-cell calculation at that same smaller step isolates
-spatial change. Those eight calculations are separate from the four scouts;
-their preparation is not a convergence result. Further 640-cell and time checks
-follow where required. Event-time change must be below five percent, with
-intermediate retained-thickness agreement within the larger of 0.02 mm or one
-percent of initial thickness. Surface histories need their own assessment.
+\clearpage
+\section{What changes with time step and mesh?}
+Time comparisons halve the time step at fixed 160/40 mesh. Mesh comparisons
+double the number of cells in both materials at the same half step.
+All other physics inputs match between each pair. A signed time change is
+the finer result minus the coarser result.
+\begin{table}[H]\centering
+\begin{tabular}{lrr rrr}\toprule
+ & \multicolumn{2}{c}{Event change [s]} & \multicolumn{3}{c}{Remaining thickness [mm]}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-6}
+Case & Time & Mesh & Time diff. & Mesh diff. & Target\\\midrule
+DIFFROWS
+\bottomrule\end{tabular}
+\caption{Thickness columns give the largest absolute difference on a shared
+0.5 s grid up to the first exhaustion. Every row transition was archived, so
+sampling uses the retained row count at each comparison time.}
+\end{table}
+The largest change in event time is MAXPCT percent of the finer calculation.
+THICKPASS of eight comparisons meet the intermediate-thickness target and
+BRACKETPASS of eight pairs have overlapping final-event brackets.
+Both sustainer pairs miss the 0.047625 mm target. Both booster pairs meet
+their 0.0635 mm target on the shared grid and over the full common history.
+Halving the step advances the event in all four cases, while doubling the
+mesh count delays it. Comparing only the first and third columns would
+partially cancel those effects. Each row retains its full thermal capacity during partial consumption
+until its residual-mass criterion removes it. The candidate in the next
+section replaces that discrete handoff with continuous front motion.
 
-\section{Model improvements and implemented first component}
-The priority is a conservative moving surface. In the old model, partially
-consumed rows retain thermal capacity until a residual-mass threshold removes
-them. This couples the apparent recession to row width and cutoff. The new
-candidate will update occupied volume, conductive paths and stored enthalpy
-as the surface moves. The surface velocity must follow a mass/energy closure
-that distinguishes unreacted material, char and escaping gas.
+A separate thin-coupon test paused the independent worker after the second row
+loss and casing flag. A fresh controller then recovered the same complete
+history, final-event bracket and byte-identical terminal checkpoint as uninterrupted
+integration. The audit reconstructs final mass from the saved states, checks each row
+transition, and matches source and input fingerprints across all twelve records.
+Maximum cumulative relative mass error is MASSERR. Maximum relative residual
+of the inherited discrete step energy equation is ENERGYERR. The new material
+and wall equations below use a separate open-system energy ledger.
+A new 585-node native conduction verification input has been sealed for ten-core
+ANSYS execution after the active job. The candidate still needs a coupled transient
+check, then independent time and
+160/320/640 mesh studies and comparison against fresh native verification.
+Measured heating and recession, high-temperature backing data and sensitivity
+to surface chemistry remain necessary for the physical interpretation.
 
-The geometry/remapping component is implemented and tested separately. In the
-cylindrical volume coordinate $x=r^2/2$, each conserved field $u$ satisfies
-\[
- I_i=\int_{r_i}^{r_{i+1}}u(r)r\,dr,\qquad
- \sum I_{\rm old}=\sum I_{\rm retained}+I_{\rm swept}.
-\]
-It remaps extensive mass and enthalpy, not temperature and conversion
-independently, and returns swept-out quantities explicitly. Analytic nonuniform
-overlap, zero-motion and prescribed pure-char front tests pass at three
-resolutions. The artificial 100 s front benchmark is a verification input,
-not an Iris result. No cell or heat capacity remains after exact domain exhaustion.
-
-\textbf{This component is not yet a coupled thermal/pyrolysis solver.}
-Next implement thermodynamic reconstruction, reaction/gas enthalpy terms,
-conservative front transport and an iterated surface energy balance without
-double-counting removal energy. Then verify a Stefan-type moving-front limit,
-reaction limits and integrated mass/energy before native adoption. New ANSYS
-packages will preserve the original sealed runs and restart lineage.
-
-High-temperature Al properties/phase change and CF resin decomposition need
-documented surrogates; otherwise post-range results remain conditional intact-
-backing scenarios. Heat-transfer, radiation and char-consumption sensitivities
-must accompany any eventual event-time range. Measured liner recession and
-actual exposure history remain the strongest missing physical constraints.
-
-Moving-grid energy, decomposition and surface balances are established elements
-of charring-ablation modelling; see Chen and Milos (2013),
+\clearpage
+\input{continuous_moving_balance.tex}
+\paragraph{Reference for the method.}
+Chen and Milos describe a moving-grid treatment of decomposition, energy and
+surface balances for a charring ablator. Their PICA data apply to a different
+material and environment.
 \href{https://ntrs.nasa.gov/citations/20130014432}{NASA NTRS 20130014432}.
-Its PICA/re-entry parameters are not calibration data for this motor.
 
-\appendix\section{Candidate conservative geometry kernel}
-Complete source below. This is a new independent component; the earlier full
-MAPDL/Fortran listings remain in the main report. No native thermal law has
-been replaced by this kernel yet.
+\clearpage\appendix\section{Conservative geometry and remapping code}
+Below is the complete independent geometry kernel. The accompanying
+\href{https://github.com/MDNich/MIT-RT-26_27-Work/tree/main/simulation_work/solidprop/iris/v1/model}{model directory}
+contains the bulk reaction, boundary and conduction implementations and
+their verification programs.
 \lstinputlisting[language=Python]{../../model/moving_surface_remap.py}
 \end{document}
 '''
-    text=text.replace('DATE',date).replace('ROWS','\n'.join(rows)).replace('MASSERR',f"{max(a['cumulative_mass_relative_error'] for a in audit['records']):.3g}").replace('ENERGYERR',f"{max(a['max_step_energy_error'] for a in audit['records']):.3g}")
-    source=ROOT/'docs/en/iris_continuous_heating_progress.tex';source.write_text(text)
-    build=ROOT/'ansystmp/continuous_report_build';build.mkdir(exist_ok=True)
+    fields = dict(DATE=date, EVENTROWS='\n'.join(event_rows), DIFFROWS='\n'.join(diff_rows),
+                  MAXPCT=f'{largest_pct:.2f}', THICKPASS=str(t_pass), BRACKETPASS=str(bracket_pass),
+                  MASSERR=f"{max(e['cumulative_mass_relative_residual'] for e in audit['records'].values()):.3g}",
+                  ENERGYERR=f"{max(e['max_step_equation_energy_residual'] for e in audit['records'].values()):.3g}")
+    for key, value in fields.items():
+        text = text.replace(key, value)
+    source = ROOT/'docs/en/iris_continuous_heating_progress.tex'
+    source.write_text(text)
+    build = ROOT/'ansystmp/continuous_report_build'
+    build.mkdir(exist_ok=True)
     for _ in range(2):
-        subprocess.run(['/Library/TeX/texbin/pdflatex','-interaction=nonstopmode','-halt-on-error','-output-directory',str(build),source.name],cwd=source.parent,check=True,stdout=subprocess.DEVNULL)
-    target=ROOT/'output/pdf/iris_continuous_heating_progress.pdf'
+        subprocess.run(['/Library/TeX/texbin/pdflatex','-interaction=nonstopmode','-halt-on-error',
+                       '-output-directory',str(build),source.name], cwd=source.parent,check=True,stdout=subprocess.DEVNULL)
+    target = ROOT/'output/pdf/iris_continuous_heating_progress.pdf'
     target.write_bytes((build/target.name).read_bytes())
-    atomic(ROOT/'validation/continuous_report_inputs.json',dict(built_at=date,
-        scout_audit_sha256=hashlib.sha256(audit_path.read_bytes()).hexdigest(),
-        kernel_sha256=kernel['source_sha256'],pdf_sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
-        qualification='Provisional diagnostics and tested geometry kernel only; not physically validated burnthrough. Visual review pending.'))
+    for path in [source, ROOT/'docs/en/continuous_moving_balance.tex',Path(__file__),
+                 ROOT/'model/moving_surface_remap.py',ROOT/'docs/analysis/continuous_heating_refinement.pdf']:
+        inputs[str(path.resolve().relative_to(ROOT))] = digest(path)
+    atomic(ROOT/'validation/continuous_report_inputs.json',dict(built_at=date,inputs=inputs,pdf_sha256=digest(target),
+           qualification='Finite-row model refinements and local candidate verification; visual review pending.'))
     print(target)
 
 
-if __name__=='__main__':main()
+if __name__ == '__main__':
+    main()

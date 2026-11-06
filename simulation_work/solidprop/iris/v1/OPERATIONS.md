@@ -22,6 +22,41 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Current handoff, November 5, 20:31 EST
+
+The independent refinement worker 31732 completed all eight fresh integrations
+and exited. Inspect `ansystmp/continuous_heating/refinement_complete.json`
+and `validation/continuous_heating_refinement_audit.json`. Do not relaunch it.
+The four 320/80 cases end at 115.0961, 112.3000, 151.9516 and 147.2656 s
+(S Al, S CF, B Al, B CF). Maximum isolated change in final time is 0.7834%;
+all eight event brackets are disjoint and the sustainer thickness discrepancies
+reach 0.05953 mm against a 0.047625 mm target. Post-property-flag events are
+qualified numerical continuations only. See the seven-page progress report.
+
+The native queue still contains only the active CF320 case under observer
+28607. At 01:24:45 UTC its prefix audit passed through 3.315625 s and the
+first transferred row was verified. The observer owns its terminal checks.
+When complete, verify terminal, restart, topology/transfer and cooling gates
+before recording completion. Never resume the superseded pulse queues.
+
+Candidate component receipts cover cylindrical remap, reference-state
+enthalpy/reaction, mixed hot-face balance and transient diffusion. A synthetic
+coupon restart reproduced the entire terminal dropout history and byte-identical
+checkpoint. Next implement the coupled transient moving-boundary driver,
+check space-time mass/energy closure including the last shell, and run
+independent mesh/time event studies. Keep final exhaustion under an unvalidated
+backing distinguished from an assembled motor lifetime.
+
+A separate inert annular-mode native input is prepared in
+`configs/native_verification/annular_mode64_smp10/`. It has 585 nodes,
+256 SOLID278 elements, 256 time substeps, and a per-node analytical endpoint.
+Use `model/prepare_native_conduction_mode.py verify-input` for readback.
+This package has not run. After the active-only observer exits, verify no
+guest solver/wrapper remains, use a fresh study-only guest directory and one
+ten-core SMP launch with storage monitoring. Verify the deck hash on the guest,
+normal termination, requested cores, warnings, time, all node IDs/temperatures,
+and the frozen 0.25 K criterion before recording a native result.
+
 ## Burnthrough priority revision (November 5, 19:53 EST)
 
 Read `burnthrough_campaign_plan.md` before choosing more work. The user explicitly

@@ -13,16 +13,23 @@ numerical and material-model limitations have been resolved. Source/configuratio
 hashes and restart verification accompany the new worker. Priority improvements
 are conservative moving-surface recession and coupled mass/enthalpy accounting.
 
-The four new continuous scouts have now finished and passed source/history,
-final-event and cumulative-mass bookkeeping checks. Their finite-row model
-exhaustion times are 114.9/112.2 s for sustainer Al/CF and 151.7/147.0 s for
-booster Al/CF. **All occur after their provisional casing-property crossing;
-none is an accepted physical motor lifetime or a convergence result.**
-The independent refinement worker 31732 is now checking time and mesh effects.
-The [separate progress report](output/pdf/iris_continuous_heating_progress.pdf)
-shows these qualifications on the table and curves, plus the new conservative
-geometry kernel and its analytic verification. The 78-page main report retains
-the earlier native results and full MAPDL/Fortran listings.
+**Continuous-heating refinement, November 5, 20:30 EST.** All eight refinements
+and four original scouts passed record, mass and numerical-equation audits.
+At 320/80 cells under sustained nominal heating the inherited independent model
+exhausts 4.7625 mm at 115.10 s (sustainer Al) or 112.30 s (sustainer CF), and
+6.3500 mm at 151.95 s (booster Al) or 147.27 s (booster CF). All four events
+follow the provisional casing-property flags. The largest event-time change
+between refinements is 0.79% or less. The intermediate-thickness comparisons
+fail on both sustainers, pass on both boosters, and all event brackets are
+disjoint. Actual motor burnthrough time remains unresolved.
+
+The [seven-page numerical progress report](output/pdf/iris_continuous_heating_progress.pdf)
+shows event times, validity flags, curves and the revised mass/energy equations.
+The [main native report](output/pdf/iris_phenolic_report.pdf) contains the
+complete MAPDL and Fortran listings. The new candidate's local reaction,
+conservative remap, mixed wall and radial conduction pass manufactured checks.
+Coupled transient integration is next; a sealed native transient-conduction
+verification input awaits the existing CF320 observer's exit.
 
 The refinement updates below are historical context, not the current dispatch.
 
