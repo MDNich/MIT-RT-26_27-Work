@@ -138,6 +138,16 @@ components to the time-dependent radial conduction and front motion, checking
 the integrated balances at each accepted step and at final geometric exhaustion.
 The local verifications do not establish a coupled motor result.
 
+The radial conduction operator now passes a layered analytical resistance
+test and independent time/space comparisons against a transient annular
+eigenmode. See `validation/moving_surface_conduction_verification.json`.
+A fresh 585-node, 256-element SOLID278 deck for that same inert annular mode is
+sealed in `configs/native_verification/annular_mode64_smp10/`. The endpoint
+and all nodal temperatures are prescribed as audit targets in `expected.json`.
+Only inputs have been checked. Run this native verification on ten SMP cores
+after CF320 has exited and its observer has completed the terminal audits.
+Keep material laws and recession absent in this isolated conduction check.
+
 ### 3. Give high-temperature backing a defensible meaning
 
 For Al, obtain a documented alloy surrogate with temperature-dependent heat

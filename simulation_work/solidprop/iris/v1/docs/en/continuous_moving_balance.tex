@@ -79,3 +79,21 @@ mixed wall with blowing and radiation. The face equation residual is below
 $3\times10^{-9}$ W/m$^2$ for those fixtures. These checks exercise individual
 material and boundary balances. The coupled transient wall, native
 implementation and event-time comparison remain open.
+
+\subsection{Radial heat flow between cells}
+On a stationary mesh the conduction operator transfers heat between adjacent
+cell centres through the two cylindrical half-cell resistances. For centre
+radii $r_i,r_{i+1}$ and shared face $r_f$, the heat flow per radian per axial
+metre toward increasing radius is
+\[
+ F_{i+1/2}=\frac{T_i-T_{i+1}}{\log(r_f/r_i)/k_i+\log(r_{i+1}/r_f)/k_{i+1}} .
+\]
+Backward Euler balances each cell's change in sensible heat against the
+difference of its two face flows and any supplied power. A two-layer steady
+wall reproduces the logarithmic temperature solution to within
+$6\times10^{-13}$ K. A transient annular conduction test compares against an
+analytic Bessel eigenmode over one decay time. With the time error removed to
+first order, the maximum errors on 16, 32 and 64 cells are 0.118, 0.0295 and
+0.00738 K. These tests exercise diffusion and the material interface at fixed
+geometry. Verifying the jointly evolving temperature, gas flow and surface
+position is the next step.

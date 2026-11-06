@@ -1,0 +1,49 @@
+{
+  "checked_utc": "2026-11-06T01:28:41.390426+00:00",
+  "passed": true,
+  "sources": {
+    "model/moving_surface_conduction.py": "ecd7cbf9213db178bb879492c619f97e4b1991d985b9c7f5dd16381043195a09",
+    "model/check_moving_surface_conduction.py": "0d562c693723a7ef005ee40450659240009664952863ec0a6ed1438101601194"
+  },
+  "steady": {
+    "log_solution_max_temperature_error_K": 5.115907697472721e-13,
+    "log_solution_max_flux_relative_error": 6.086652624284061e-15,
+    "insulated_energy_relative_error": 1.5643096931761753e-15
+  },
+  "transient": {
+    "annular_wavenumber_per_m": 313.9617578745353,
+    "physical_test_duration_s": 21.13514630670371,
+    "fixed_mesh_320_time_refinement": [
+      {
+        "steps": 16,
+        "max_error_K": 1.1208752819408616
+      },
+      {
+        "steps": 32,
+        "max_error_K": 0.5677326093205224
+      },
+      {
+        "steps": 64,
+        "max_error_K": 0.2858419943309727
+      }
+    ],
+    "space_refinement": [
+      {
+        "cells": 16,
+        "max_error_K_4096": 0.12255776437832822,
+        "time_extrapolated_error_K": 0.11808282676123838
+      },
+      {
+        "cells": 32,
+        "max_error_K_4096": 0.033999648860238096,
+        "time_extrapolated_error_K": 0.02951390422247613
+      },
+      {
+        "cells": 64,
+        "max_error_K_4096": 0.011867153083038318,
+        "time_extrapolated_error_K": 0.007378707541576546
+      }
+    ]
+  },
+  "scope": "Stationary-geometry finite-volume conduction component with frozen properties. Thermochemical and moving-front integration is a separate gate."
+}
