@@ -22,6 +22,32 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Current handoff, November 5, 21:02 EST
+
+All three independent moving-wall workers exited. Their completion receipts are
+under `ansystmp/moving_surface_{campaign,sensitivities,endpoints}`. The
+three completed matrices contain 20, 42 and 16 records respectively. Do not
+restart them or regenerate their parent audits or sealed plans.
+`validation/moving_surface_endpoint_audit.json` includes 16 new fine-case
+balances and comparisons against the corresponding 320/80 or coarser-time
+case. All sixteen meet the event-time and remaining-thickness targets. One
+booster Al high-film time-step pair misses strict final-step overlap (0.0073 s
+event difference). Fifteen overlap. Keep this exception visible.
+
+Read the current 12-page continuous-heating report and its input receipt.
+At 02:00 UTC the CF320 native prefix passed through 4.39375 s, step 2812.
+Observer 28607 owns the only active solve. Keep its terminal, restart and
+topology audits separate from the moving-wall results. After it exits and all
+guest process checks pass, use the sealed inert annular verification input
+described below. Then compare a continuous-heating native calculation under
+matching surface and enthalpy equations against the independent solution.
+Do not dispatch the deferred pulse queue.
+
+The recorded casing flags precede every exhaustion event. Next extend the
+thermal backing physics with phase-change enthalpy for a documented Al
+surrogate and a material-specific decomposition treatment for CF. Journal
+these surrogate and property-limit events separately from liner exhaustion.
+
 ## Moving-wall numerical audit, November 5, 20:53 EST
 
 All twenty nominal moving-wall refinements completed and worker 43139 exited.

@@ -1,5 +1,34 @@
 # Iris exploratory ANSYS study
 
+## Continuous heating to liner exhaustion, November 5, 21:02 EST
+
+With uninterrupted exposure from ignition at the nominal 2504 K gas temperature,
+800 psi and a 1000 W/(m² K) gas-film coefficient, the independent moving-wall
+model reaches the casing at the following times. The event consumes all liner
+thickness, including retained char.
+
+| Initial liner | Aluminium casing | Carbon-fibre casing |
+|---|---:|---:|
+| Sustainer, 4.7625 mm | 106.8 s | 103.9 s |
+| Booster, 6.3500 mm | 142.4 s | 137.7 s |
+
+The four cases cross the assumed casing-property limits earlier, between 20.5
+and 82.0 s. Modelled exposure continues with an intact surrogate casing.
+Heating in the actual motor and measured liner recession remain unknown.
+The [12-page study report](output/pdf/iris_continuous_heating_progress.pdf)
+includes radial histories, mass and energy accounting, isolated mesh and time
+refinements, and sensitivity to five assumed inputs. The [ANSYS companion
+report](output/pdf/iris_phenolic_report.pdf) includes the native MAPDL and
+Fortran listings. Native verification of the revised wall equations remains open.
+
+The 20 nominal calculations, 42 sensitivity cases and 16 endpoint refinements
+are complete. Doubling and halving the film coefficient gives respectively
+56–58 and 195–200 s for the sustainers, and 75–78 and 258–266 s for the boosters.
+These are individual scenarios. See [operations](OPERATIONS.md) for remaining
+native and high-temperature material work.
+
+## Previous models and milestones
+
 **New priority (November 5, 19:53 EST):** the user authorized choosing the
 exposure duration to answer time to burnthrough and requested model improvements.
 See [the continuous-heating plan](burnthrough_campaign_plan.md). The current
@@ -23,12 +52,12 @@ between refinements is 0.79% or less. The intermediate-thickness comparisons
 fail on both sustainers, pass on both boosters, and all event brackets are
 disjoint. Actual motor burnthrough time remains unresolved.
 
-The [seven-page numerical progress report](output/pdf/iris_continuous_heating_progress.pdf)
-shows event times, validity flags, curves and the revised mass/energy equations.
+The original seven-page numerical report (now included in the expanded report)
+showed event times, validity flags, curves and the revised mass/energy equations.
 The [main native report](output/pdf/iris_phenolic_report.pdf) contains the
 complete MAPDL and Fortran listings. The new candidate's local reaction,
 conservative remap, mixed wall and radial conduction pass manufactured checks.
-Coupled transient integration is next; a sealed native transient-conduction
+The coupled transient results are summarized above. The sealed native transient-conduction
 verification input awaits the existing CF320 observer's exit.
 
 The refinement updates below are historical context, not the current dispatch.

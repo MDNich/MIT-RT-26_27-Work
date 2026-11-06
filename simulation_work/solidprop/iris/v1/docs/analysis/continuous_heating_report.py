@@ -15,6 +15,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT/'model'))
 from ops import disks, atomic
+from moving_surface_report import build as build_moving_results
 
 CASES = [('sustainer_al','Sustainer Al','#194b78'), ('sustainer_cf','Sustainer CF','#af6030'),
          ('booster_al','Booster Al','#357b53'), ('booster_cf','Booster CF','#82518e')]
@@ -95,6 +96,7 @@ def main():
     largest_pct = max(p['event_abs_percent_finer'] for p in pairs)
     plt.rcParams.update({'font.family':'serif','font.size':10,'axes.grid':True,'grid.alpha':.25})
     chart(records)
+    build_moving_results(CASES,inputs)
     date = datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y, %H:%M %Z')
     text = r'''\documentclass[11pt]{article}
 \usepackage[margin=22mm]{geometry}
@@ -105,7 +107,8 @@ def main():
 \author{MIT Rocket Team}
 \date{DATE}
 \begin{document}\maketitle
-\section{How long does the liner last in the calculation?}
+\input{continuous_moving_results.tex}
+\section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
 minutes for the booster. Each event occurs after the casing reaches the limit
@@ -183,8 +186,7 @@ their 0.0635 mm target on the shared grid and over the full common history.
 Halving the step advances the event in all four cases, while doubling the
 mesh count delays it. Comparing only the first and third columns would
 partially cancel those effects. Each row retains its full thermal capacity during partial consumption
-until its residual-mass criterion removes it. The candidate in the next
-section replaces that discrete handoff with continuous front motion.
+until its residual-mass criterion removes it. The moving-wall treatment instead tracks the face continuously.
 
 A separate thin-coupon test paused the independent worker after the second row
 loss and casing flag. A fresh controller then recovered the same complete
@@ -195,9 +197,8 @@ Maximum cumulative relative mass error is MASSERR. Maximum relative residual
 of the inherited discrete step energy equation is ENERGYERR. The new material
 and wall equations below use a separate open-system energy ledger.
 A new 585-node native conduction verification input has been sealed for ten-core
-ANSYS execution after the active job. The candidate still needs a coupled transient
-check, then independent time and
-160/320/640 mesh studies and comparison against fresh native verification.
+ANSYS execution after the active job. The independent coupled checks appear in the opening sections. Native comparison
+under matching moving-wall equations is still pending.
 Measured heating and recession, high-temperature backing data and sensitivity
 to surface chemistry remain necessary for the physical interpretation.
 
@@ -236,7 +237,7 @@ their verification programs.
                  ROOT/'model/moving_surface_remap.py',ROOT/'docs/analysis/continuous_heating_refinement.pdf']:
         inputs[str(path.resolve().relative_to(ROOT))] = digest(path)
     atomic(ROOT/'validation/continuous_report_inputs.json',dict(built_at=date,inputs=inputs,pdf_sha256=digest(target),
-           qualification='Finite-row model refinements and local candidate verification; visual review pending.'))
+           qualification='Independent moving-wall numerical and assumed-input comparisons plus historical finite-row evidence; visual review pending.'))
     print(target)
 
 

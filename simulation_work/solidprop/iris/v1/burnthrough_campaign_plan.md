@@ -6,6 +6,16 @@ burned through, and propose improvements to the simulated model. This replaces
 the previous priority of completing every seven-second pulse refinement first.
 Earlier accepted results remain available as regression evidence.
 
+## Progress on November 5 at 21:02 EST
+
+The conservative moving-face radial model, its manufactured checks, and the
+20 nominal, 42 one-factor and 16 endpoint integrations are complete. The
+[report](output/pdf/iris_continuous_heating_progress.pdf) gives conditional
+exhaustion times for all four liners and shows when each casing exceeds its
+property evidence. The remaining work is native verification under matching
+equations and testing the high-temperature backing assumptions. The current
+CF320 verification remains the only authorized active native case.
+
 ## Question and deliverable
 
 For each of sustainer Al, sustainer CF, booster Al and booster CF, determine a

@@ -26,7 +26,7 @@ material consumed. With $\bar T=(T^n+T^{n+1})/2$ and $k=333\exp[-64081/
  d=M_v^n(1-e^{-k\Delta t}),\quad
  M_v^{n+1}=M_v^n-d,\quad M_c^{n+1}=M_c^n+yd,\quad m_g=(1-y)d .
 \]
-Mass and enthalpy use the same $d$. The scalar temperature solve enforces
+Mass and enthalpy use the same $d$. The local scalar temperature solve, and the converged coupled cell equation, enforce
 \[
  H_s^{n+1}-H_s^n=Q_{\rm cell}-L_p d-m_g h_g(\bar T).
 \]
@@ -77,8 +77,8 @@ errors below $2\times10^{-15}$. Separate manufactured tests recover imposed
 face temperatures for a virgin conducting wall, pure reacting char, and a
 mixed wall with blowing and radiation. The face equation residual is below
 $3\times10^{-9}$ W/m$^2$ for those fixtures. These checks exercise individual
-material and boundary balances. The coupled transient wall, native
-implementation and event-time comparison remain open.
+material and boundary balances. The opening sections give the coupled transient checks and event comparisons.
+Native verification of this formulation remains open.
 
 \subsection{Radial heat flow between cells}
 On a stationary mesh the conduction operator transfers heat between adjacent
@@ -95,5 +95,5 @@ $6\times10^{-13}$ K. A transient annular conduction test compares against an
 analytic Bessel eigenmode over one decay time. With the time error removed to
 first order, the maximum errors on 16, 32 and 64 cells are 0.118, 0.0295 and
 0.00738 K. These tests exercise diffusion and the material interface at fixed
-geometry. Verifying the jointly evolving temperature, gas flow and surface
-position is the next step.
+geometry. The coupled checks extend these tests to simultaneously evolving temperature,
+gas flow and surface position.
