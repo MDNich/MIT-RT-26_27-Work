@@ -22,6 +22,18 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Report publication and CF cooling switch, November 5, 22:35 EST
+
+Published report source now includes the full native pilot entry deck, thermal
+step generator, two independent spatial-discretization results, history
+differences and the Windows three-dimensional preflight. The 21-page report
+and its figure were rendered and reviewed. See `validation/continuous_report_inputs.json`.
+The protected ten-core CF320 verification passed the cooling transition and
+three row-transfer checks through 7.21094 s. The largest sampled live-profile
+difference was 0.0151 K. Continue the same observer until terminal and restart
+receipts. The material-scope stop checks and complete native log review are
+still pending. No whole-exposure native job has run.
+
 ## Whole-sector inputs and independent event checks, November 5, 22:33 EST
 
 Twelve independent radial finite-element exposures completed. Mesh comparisons

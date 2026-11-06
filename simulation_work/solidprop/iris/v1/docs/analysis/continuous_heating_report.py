@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT/'model'))
 from ops import disks, atomic
 from moving_surface_report import build as build_moving_results
 from backing_report import build as build_backing_results
+from sector_report import build as build_sector_results
 from coupled_cf_report import build as build_coupled_cf_results
 
 CASES = [('sustainer_al','Sustainer Al','#194b78'), ('sustainer_cf','Sustainer CF','#af6030'),
@@ -101,6 +102,7 @@ def main():
     build_moving_results(CASES,inputs)
     build_backing_results(inputs)
     build_coupled_cf_results(inputs)
+    build_sector_results(CASES,inputs)
     date = datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y, %H:%M %Z')
     text = r'''\documentclass[11pt]{article}
 \usepackage[margin=22mm]{geometry}
@@ -115,6 +117,7 @@ def main():
 \input{continuous_moving_results.tex}
 \input{continuous_backing_results.tex}
 \input{continuous_coupled_cf.tex}
+\input{continuous_sector_comparison.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
@@ -223,6 +226,26 @@ Below is the complete independent geometry kernel. The accompanying
 contains the bulk reaction, boundary and conduction implementations and
 their verification programs.
 \lstinputlisting[language=Python]{../../model/moving_surface_remap.py}
+\clearpage\section{Native continuous-exposure inputs}
+The complete entry deck for the aluminium pilot below checks the controller
+and configuration before transferring control to the solver's embedded Python
+interpreter. The four complete exposures use the same controller archive.
+Each macro-step generates a conventional MAPDL input file, solves one transient
+thermal field and exports every node for replay. The previous pulse study's
+full Fortran material routine and MAPDL listings are printed in the
+\href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/solidprop/iris/v1/output/pdf/iris_phenolic_report.pdf}{companion native report}.
+Here the Python controller advances chemistry and recession between finite-element
+thermal steps.
+\lstinputlisting{../../configs/native_verification/whole_sector_r1/pilotwal.inp}
+\medskip\noindent\textbf{Sector weights used by the command generator.}\par\smallskip
+\lstinputlisting[language=Python,firstline=18,lastline=30,firstnumber=18]{../../model/sector_mapdl.py}
+The ANSYS command and element references document the
+\href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v251/en/ans_cmd/Hlp_C_PYTHON_a.html}{in-process Python interface},
+\href{https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_SOLID278.html}{SOLID278 heat and film options}, and
+\href{https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_MASS71.html}{MASS71 thermal capacitance}.
+\clearpage
+\subsection*{Complete generator for one thermal step}
+\lstinputlisting[language=Python,firstline=33,lastline=86,firstnumber=33]{../../model/sector_mapdl.py}
 \end{document}
 '''
     fields = dict(DATE=date, EVENTROWS='\n'.join(event_rows), DIFFROWS='\n'.join(diff_rows),

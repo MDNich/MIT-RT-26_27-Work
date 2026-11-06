@@ -87,9 +87,10 @@ recession would constrain the two-minute estimate much more directly.
 
 \paragraph{Verification.}
 The burnthrough intervals above come from a conservative radial finite-volume
-solver. Refinements and mass/enthalpy balances are given below. The independent
-coupon and three-dimensional input checks precede the native ANSYS comparison.
-The continuous motor event has yet to pass native verification.
+solver. A second finite-element calculation from ignition gives endpoints within
+0.073 s for all four cases (Section~\ref{sec:sectorcheck}). Both use the same
+gas exposure and material inputs. Continuous-exposure verification in native
+ANSYS remains open.
 \clearpage
 """.replace('SUMMARY','\n'.join(summary))
     body=r"""

@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 5, 21:55 EST
+## Continuous heating to liner exhaustion, November 5, 22:35 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -10,6 +10,12 @@ is all liquid before either liner disappears. The CF surrogate crosses its
 Casing pressure integrity and actual firing heat flux are unresolved.
 The [updated report](output/pdf/iris_continuous_heating_progress.pdf) opens
 with the four estimates and distinguishes the earlier inert-backing results.
+Pages 11–12 compare a second discretization from ignition to exhaustion.
+Its finest event times agree within 0.073 s, with maximum sampled differences
+of 2.3 micrometres of liner thickness and 1.59 K at the casing interface.
+Pages 20–21 print the new native input and complete thermal-step generator.
+The two full-physics pilot and four whole-exposure MAPDL cases are prepared.
+The four continuous results above remain independent estimates.
 
 ### Initial backing comparison
 
@@ -26,7 +32,7 @@ thickness, including retained char.
 The four cases cross the assumed casing-property limits earlier, between 20.5
 and 82.0 s. Modelled exposure continues with an intact surrogate casing.
 Heating in the actual motor and measured liner recession remain unknown.
-The [14-page study report](output/pdf/iris_continuous_heating_progress.pdf)
+The [continuous-heating report](output/pdf/iris_continuous_heating_progress.pdf)
 includes radial histories, mass and energy accounting, isolated mesh and time
 refinements, and sensitivity to five assumed inputs. The [ANSYS companion
 report](output/pdf/iris_phenolic_report.pdf) includes the native MAPDL and
