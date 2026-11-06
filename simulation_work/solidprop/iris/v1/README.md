@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 5, 22:35 EST
+## Continuous heating to liner exhaustion, November 5, 22:58 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -13,7 +13,21 @@ with the four estimates and distinguishes the earlier inert-backing results.
 Pages 11–12 compare a second discretization from ignition to exhaustion.
 Its finest event times agree within 0.073 s, with maximum sampled differences
 of 2.3 micrometres of liner thickness and 1.59 K at the casing interface.
-Pages 20–21 print the new native input and complete thermal-step generator.
+Pages 13–14 compare the same four evolving casings with half and twice the
+nominal gas-film coefficient. The independent estimates below count seconds of
+uninterrupted gas exposure from the first contact with bare phenolic.
+
+| Motor | Initial phenolic | Weaker film (500) | Nominal film (1000) | Stronger film (2000) |
+|---|---:|---:|---:|---:|
+| Sustainer Al | 4.7625 mm | 206.9 s | 110.5 s | 60.2 s |
+| Sustainer CF | 4.7625 mm | 195.4 s | 104.3 s | 56.6 s |
+| Booster Al | 6.3500 mm | 276.4 s | 147.6 s | 80.4 s |
+| Booster CF | 6.3500 mm | 258.7 s | 137.9 s | 74.8 s |
+
+The gas-film coefficients are in W/(m² K). The physical gas temperature and
+pressure assumptions are the same in all three columns. The table isolates the
+effect of the applied film coefficient. The actual firing heat flux is unknown.
+Pages 22–23 print the new native input and complete thermal-step generator.
 The two full-physics pilot and four whole-exposure MAPDL cases are prepared.
 The four continuous results above remain independent estimates.
 

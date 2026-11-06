@@ -9,7 +9,7 @@ import numpy as np
 ROOT=Path(__file__).resolve().parents[2]
 
 
-def build(inputs):
+def build(inputs, film_ranges):
     def track(p):
         sha=hashlib.sha256(p.read_bytes()).hexdigest()
         inputs[str(p.relative_to(ROOT))]=sha
@@ -78,21 +78,21 @@ or fired-liner recession. All four times therefore describe the stated thermal
 scenarios. The casing can lose pressure capacity while phenolic remains.
 
 \paragraph{What most affects the estimate.}
-In the original backing comparison, doubling or halving the nominal film
-coefficient gives roughly 57--200 s for the sustainers and 75--266 s for the
-boosters. These endpoints belong to the baseline backing model. Changing to the
-more detailed backing at the nominal load shifts the estimates by 3.7--5.2 s
-for Al and about 0.3 s for CF. A firing heat-flux history and measured local
-recession would constrain the two-minute estimate much more directly.
+Halving and doubling the nominal film coefficient gives SUSTAINERRANGE s for
+the sustainers and BOOSTERRANGE s for the boosters with the evolving casings.
+Section~\ref{sec:film} gives all twelve times and the heat flux entering the
+liner. These are sustained-load scenarios. A measured firing heat-flux history
+and liner recession would constrain the physical estimate.
 
 \paragraph{Verification.}
-The burnthrough intervals above come from a conservative radial finite-volume
+The four nominal burnthrough times come from a conservative radial finite-volume
 solver. A second finite-element calculation from ignition gives endpoints within
 0.073 s for all four cases (Section~\ref{sec:sectorcheck}). Both use the same
 gas exposure and material inputs. Continuous-exposure verification in native
 ANSYS remains open.
 \clearpage
 """.replace('SUMMARY','\n'.join(summary))
+    executive=executive.replace('SUSTAINERRANGE',film_ranges[0]).replace('BOOSTERRANGE',film_ranges[1])
     body=r"""
 \section{CF casing heat, gas loss and liner exposure}\label{sec:coupledcf}
 The backing now feeds its changing mass, heat storage and through-thickness

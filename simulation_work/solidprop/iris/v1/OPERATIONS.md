@@ -22,6 +22,37 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Evolving-casing heating sensitivity, November 5, 22:58 EST
+
+Completed all 24 planned finite-volume runs and eight independent nodal
+finite-element checks at half and twice the nominal film coefficient. Three
+further time refinements on the high-film aluminium booster resolve the
+initial disjoint event brackets. At 640/160 cells, the last pair overlaps,
+and the endpoint difference is 0.0013 s. The largest endpoint difference
+between methods over the eight load changes is 0.127 s. The cases retain
+molten aluminium or decomposing CF in place. Read the four timing rows
+in the README and the casing-scope discussion on report pages 13–14.
+The initial heat-transfer sweep with fixed backing remains separately labelled.
+
+The frozen source/configuration map is in `configs/evolving_backing_film.json`.
+`model/backing_film_campaign.py` controls the independent worker.
+`model/audit_backing_film.py` audits saved checkpoints and profiles, runs any
+declared refinement under the same exclusive lock and checks each film case
+against the second solver. `validation/evolving_backing_film_audit.json` and
+`validation/evolving_backing_film_histories.json` hold compact results. Full
+field and restart records remain in `ansystmp/evolving_backing_film/`.
+The worker and auditor have exited. Do not re-dispatch them.
+
+At 03:57 UTC on November 6 the CF320 observer's prefix passed through
+15.6875 s, including the cooling transition, three row transfers, and the
+same-mesh comparison (0.0151 K maximum sampled difference). Terminal native
+and restart checks remain outstanding. Wait for those checks and the active
+observer's exit before running the new annular benchmark. The current record
+for the *PYTHON pilot has a standalone guest-Python preflight. The in-process
+API exposes the file-input call in the installed requirements' PyMAPDL
+version. Actual in-process runtime compatibility is still a native pilot
+check. [Ansys PyMAPDL v0.72.0 implementation](https://github.com/ansys/pymapdl/blob/v0.72.0/src/ansys/mapdl/core/mapdl_inprocess.py#L62-L74)
+
 ## Report publication and CF cooling switch, November 5, 22:35 EST
 
 Published report source now includes the full native pilot entry deck, thermal

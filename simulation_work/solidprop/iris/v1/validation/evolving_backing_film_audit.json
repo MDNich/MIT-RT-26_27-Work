@@ -1,0 +1,1670 @@
+{
+  "utc": "2026-11-06T03:53:11.102410+00:00",
+  "plan_sha256": "338ec187a39c8e5e3a89281081d263481bf6828f8509a5b27db861aca04c3d08",
+  "auditor_sha256": "7c0a958502fd5f2ee4d70e2bc4f14bb37fc51e09cf085d20e95ccba9d6049597",
+  "jobs": 24,
+  "histories_sha256": "eeca4565b31694616a6ff45b8906520c159e688cf943813653ccd04b6c718b8f",
+  "results": {
+    "sustainer_al": {
+      "1000": {
+        "event_s": 110.47356394274459,
+        "sha256": "8a91392aa924b6a3c40245ff661ff93eb465f8f108e296c75c8b17f98d2c46f2",
+        "events": {
+          "property_flag": [
+            50.64000000000002,
+            50.660000000000025
+          ],
+          "first_melt": [
+            84.03999999999601,
+            84.05999999999601
+          ],
+          "all_liquid": [
+            99.05999999999302,
+            99.07999999999302
+          ],
+          "exhaustion": [
+            110.45999999999076,
+            110.47356394274459
+          ]
+        }
+      },
+      "500": {
+        "event_s": 206.91906504942403,
+        "events": {
+          "property_flag": [
+            64.59999999999988,
+            64.61999999999988
+          ],
+          "first_melt": [
+            132.7599999999897,
+            132.7799999999897
+          ],
+          "all_liquid": [
+            170.66000000000008,
+            170.6800000000001
+          ],
+          "exhaustion": [
+            206.9000000000002,
+            206.91906504942403
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "2985e626734ff149df9b9f857712950d612d5e7e2ab0251da92603790961edef",
+            "checkpoint_sha256": "c4ade5b676072dd732bd03dc6430449e712f91fe4cf15332f5e2bf57d703b6e7",
+            "events": {
+              "property_flag": [
+                64.58000000000001,
+                64.62000000000002
+              ],
+              "first_melt": [
+                132.77999999999994,
+                132.81999999999994
+              ],
+              "all_liquid": [
+                170.65999999999997,
+                170.69999999999996
+              ],
+              "exhaustion": [
+                206.89999999999992,
+                206.9207042816049
+              ]
+            },
+            "max_mass_error": 1.120682756908608e-12,
+            "max_heat_error": 4.726825624407069e-12
+          },
+          "time": {
+            "sha256": "de01a10f483d6dadf134169c2647b024a1e9238c43171f10d2f4ab6f8f34ef9a",
+            "checkpoint_sha256": "ed8ac45223f2ab5a6a6df45bebdf10ba8e48e11e5a4000ab2cb431e211d7a62a",
+            "events": {
+              "property_flag": [
+                64.58000000000001,
+                64.62000000000002
+              ],
+              "first_melt": [
+                132.73999999999995,
+                132.77999999999994
+              ],
+              "all_liquid": [
+                170.65999999999997,
+                170.69999999999996
+              ],
+              "exhaustion": [
+                206.89999999999992,
+                206.9184891819263
+              ]
+            },
+            "max_mass_error": 1.1490544722733829e-12,
+            "max_heat_error": 5.289103925986736e-12
+          },
+          "fine": {
+            "sha256": "2b6967989131ba6d6f4908575e2d972c22cc4fce40785062195a4bd5f5017132",
+            "checkpoint_sha256": "c345e3bdbfc2305348f73d25b9d5fac90cd80d8799cb78cca7c3c3d4fe9f927f",
+            "events": {
+              "property_flag": [
+                64.59999999999988,
+                64.61999999999988
+              ],
+              "first_melt": [
+                132.7599999999897,
+                132.7799999999897
+              ],
+              "all_liquid": [
+                170.66000000000008,
+                170.6800000000001
+              ],
+              "exhaustion": [
+                206.9000000000002,
+                206.91906504942403
+              ]
+            },
+            "max_mass_error": 2.1733177277470137e-12,
+            "max_heat_error": 7.040012834883827e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.0022150996786081123,
+            "event_relative_percent": 0.0010705180031836395,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 422,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 0.00011168255530780158,
+              "at_s": 3.5
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.019991862876395317,
+              "at_s": 171.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 15.795576890106076,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 2.0648667330165154,
+              "at_s": 2.0
+            },
+            "max_liner_field_difference_K": 1.1208000242774006,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.03969866222561428
+          },
+          "time": {
+            "event_difference_s": 0.000575867497730087,
+            "event_relative_percent": 0.0002783056735697782,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 422,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 3.578853042396357e-05,
+              "at_s": 182.5
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.15163604407757703,
+              "at_s": 181.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 5.346059399437081,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 2.721304883986818,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 1.9567317014640366,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.04004096691212057
+          }
+        },
+        "reference_FE": {
+          "event_s": 206.95301710930184,
+          "delta_event_s": 0.03395205987780514,
+          "max_common_thickness_mm": 0.000839758546138103,
+          "max_common_interface_K": 0.08706184738556999,
+          "balances": {
+            "liner_mass_relative": -2.1548940355659417e-12,
+            "case_mass_relative": 0.0,
+            "energy_relative": -1.3926259458406502e-09
+          },
+          "record_sha256": "34c1e44ab158af854abe8f6c8060a458bc051074ac9756529e093f074009e09d"
+        },
+        "initial_FV_pairs_pass": true,
+        "additional_FV_checks": {},
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "sustainer_al_film500_fine"
+      },
+      "2000": {
+        "event_s": 60.21465089911637,
+        "events": {
+          "property_flag": [
+            37.35000000000005,
+            37.370000000000054
+          ],
+          "first_melt": [
+            51.58000000000001,
+            51.600000000000016
+          ],
+          "all_liquid": [
+            56.84000000000005,
+            56.860000000000056
+          ],
+          "exhaustion": [
+            60.20000000000003,
+            60.21465089911637
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "d9326e638a8a041387969bae7c9220083520dd80b3f4f20ce827e246e26e5dcd",
+            "checkpoint_sha256": "a8a1f63b15a863b4551ef4d254358ad0198e0d17e0474dd91313d5110b315bd9",
+            "events": {
+              "property_flag": [
+                37.339999999999996,
+                37.379999999999995
+              ],
+              "first_melt": [
+                51.58,
+                51.62
+              ],
+              "all_liquid": [
+                56.85999999999999,
+                56.89999999999999
+              ],
+              "exhaustion": [
+                60.199999999999996,
+                60.20873116153649
+              ]
+            },
+            "max_mass_error": 3.956524369228373e-13,
+            "max_heat_error": 7.473668752679295e-12
+          },
+          "time": {
+            "sha256": "ddd2f2da52be65cbec6748eaf0e1cdbd4af1af8ab933bbc3bd6e471c45237fa7",
+            "checkpoint_sha256": "ad3becfe1b0a72d13cab0bbb16ba1e8ef770d15b8b07a57acd1d8dbfb4872a46",
+            "events": {
+              "property_flag": [
+                37.35000000000002,
+                37.370000000000026
+              ],
+              "first_melt": [
+                51.60000000000001,
+                51.61000000000001
+              ],
+              "all_liquid": [
+                56.84,
+                56.88
+              ],
+              "exhaustion": [
+                60.199999999999996,
+                60.207199828309
+              ]
+            },
+            "max_mass_error": 6.30384050761092e-13,
+            "max_heat_error": 3.2959988229730834e-12
+          },
+          "fine": {
+            "sha256": "9018c0e6b3108591b97ef24693521f3dc9249555b65c43afc0d4043b7b5e2ba9",
+            "checkpoint_sha256": "200801f511922af13fea7437b36c922b501eb7dae3acc0e166682486e44336ec",
+            "events": {
+              "property_flag": [
+                37.35000000000005,
+                37.370000000000054
+              ],
+              "first_melt": [
+                51.58000000000001,
+                51.600000000000016
+              ],
+              "all_liquid": [
+                56.84000000000005,
+                56.860000000000056
+              ],
+              "exhaustion": [
+                60.20000000000003,
+                60.21465089911637
+              ]
+            },
+            "max_mass_error": 8.183466650527257e-13,
+            "max_heat_error": 3.2959988229730834e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.001531333227489995,
+            "event_relative_percent": 0.0025434387114113433,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 127,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 0.00022524409711704996,
+              "at_s": 60.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.3587941789909337,
+              "at_s": 57.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 56.07432335510866,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 1.804202875962801,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 1.5747461911266782,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.03974331066298369
+          },
+          "time": {
+            "event_difference_s": 0.007451070807370286,
+            "event_relative_percent": 0.012374182522213423,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 128,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 0.00033532639381883556,
+              "at_s": 59.5
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.9732194285410287,
+              "at_s": 59.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 9.708857610383575,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 1.4728362913997444,
+              "at_s": 60.0
+            },
+            "max_liner_field_difference_K": 2.0368674612309405,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.04011538097440679
+          }
+        },
+        "reference_FE": {
+          "event_s": 60.312114821079795,
+          "delta_event_s": 0.09746392196342413,
+          "max_common_thickness_mm": 0.0052271297882183765,
+          "max_common_interface_K": 7.27361382517438,
+          "balances": {
+            "liner_mass_relative": -7.934235746360066e-13,
+            "case_mass_relative": 0.0,
+            "energy_relative": -9.049174253159676e-10
+          },
+          "record_sha256": "5ee7c7ff6093f6c1a329e1af3c6e0012f3f39808a259cfefec856f0d630da151"
+        },
+        "initial_FV_pairs_pass": true,
+        "additional_FV_checks": {},
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "sustainer_al_film2000_fine"
+      }
+    },
+    "booster_al": {
+      "1000": {
+        "event_s": 147.60967116239294,
+        "sha256": "b3cc943a8a98f855cf756ff0c42a1afebd2fd214f65ca6652523233753d05cac",
+        "events": {
+          "property_flag": [
+            84.33999999999595,
+            84.35999999999595
+          ],
+          "first_melt": [
+            124.41999999998798,
+            124.43999999998798
+          ],
+          "all_liquid": [
+            139.33999999999307,
+            139.35999999999308
+          ],
+          "exhaustion": [
+            147.5999999999973,
+            147.60967116239294
+          ]
+        }
+      },
+      "500": {
+        "event_s": 276.42499985017207,
+        "events": {
+          "property_flag": [
+            113.21999999999021,
+            113.2399999999902
+          ],
+          "first_melt": [
+            205.64000000000007,
+            205.66000000000008
+          ],
+          "all_liquid": [
+            248.76000000000013,
+            248.78000000000014
+          ],
+          "exhaustion": [
+            276.4199999999814,
+            276.42499985017207
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "23799ea02823356a85c1522ad7d1717fe8867e91bca060dce9776ab8ceed5beb",
+            "checkpoint_sha256": "8f5b19a9bfe5377b22b5f83240c7ef53f82f887566005b1ec2b27577fc7d3029",
+            "events": {
+              "property_flag": [
+                113.20000000000003,
+                113.24000000000004
+              ],
+              "first_melt": [
+                205.65999999999997,
+                205.69999999999996
+              ],
+              "all_liquid": [
+                248.77999999999994,
+                248.81999999999994
+              ],
+              "exhaustion": [
+                276.4000000000002,
+                276.4256988034913
+              ]
+            },
+            "max_mass_error": 8.544376107515773e-14,
+            "max_heat_error": 4.407025012597744e-12
+          },
+          "time": {
+            "sha256": "1410cf2d3a6f99efc5255760ea198b6681aefa988715ca06f5d3b56a1ba792e6",
+            "checkpoint_sha256": "d7ac31e845aa058c67d623801bb89241b5b070464e71d1054dc839775a155d2c",
+            "events": {
+              "property_flag": [
+                113.20000000000003,
+                113.24000000000004
+              ],
+              "first_melt": [
+                205.61999999999998,
+                205.65999999999997
+              ],
+              "all_liquid": [
+                248.77999999999994,
+                248.81999999999994
+              ],
+              "exhaustion": [
+                276.4000000000002,
+                276.4223508545283
+              ]
+            },
+            "max_mass_error": 6.474874939987972e-14,
+            "max_heat_error": 5.193654958632319e-12
+          },
+          "fine": {
+            "sha256": "19905f084a443cef9577c3695864b029ff4abf8f47cf899f7014456ad371cc68",
+            "checkpoint_sha256": "5e3ee97ae58b38d9fc6323bd7b934218bfc6e41cda15ee9e762110b83f82cd98",
+            "events": {
+              "property_flag": [
+                113.21999999999021,
+                113.2399999999902
+              ],
+              "first_melt": [
+                205.64000000000007,
+                205.66000000000008
+              ],
+              "all_liquid": [
+                248.76000000000013,
+                248.78000000000014
+              ],
+              "exhaustion": [
+                276.4199999999814,
+                276.42499985017207
+              ]
+            },
+            "max_mass_error": 2.2723532621666649e-13,
+            "max_heat_error": 6.285339932939765e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.0033479489629826276,
+            "event_relative_percent": 0.001211171583134585,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 561,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 0.00016176844809479007,
+              "at_s": 3.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.03130038430481363,
+              "at_s": 249.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 20.763813173994926,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 1.5694684783253479,
+              "at_s": 1.0
+            },
+            "max_liner_field_difference_K": 1.4642883924047965,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.0650981523229718
+          },
+          "time": {
+            "event_difference_s": 0.0026489956437671935,
+            "event_relative_percent": 0.0009583053794711053,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 561,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 6.604994845504919e-05,
+              "at_s": 266.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.15074310120780865,
+              "at_s": 264.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 5.344398273378147,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 2.7215233441619375,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 1.9587271963598596,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.06543972668786166
+          }
+        },
+        "reference_FE": {
+          "event_s": 276.4685359128681,
+          "delta_event_s": 0.043536062696034605,
+          "max_common_thickness_mm": 0.0009505929826209014,
+          "max_common_interface_K": 0.1441941517758778,
+          "balances": {
+            "liner_mass_relative": -5.221796625340568e-14,
+            "case_mass_relative": 0.0,
+            "energy_relative": -1.0803348769117933e-09
+          },
+          "record_sha256": "8df5a86d3afaa8d8f3f3cc3c7c53f42ac277183e01b1e410bf5636b71ea39533"
+        },
+        "initial_FV_pairs_pass": true,
+        "additional_FV_checks": {},
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "booster_al_film500_fine"
+      },
+      "2000": {
+        "event_s": 80.37638413581531,
+        "events": {
+          "property_flag": [
+            58.31249999997607,
+            58.31499999997607
+          ],
+          "first_melt": [
+            72.98249999996273,
+            72.98499999996272
+          ],
+          "all_liquid": [
+            77.76999999995837,
+            77.77249999995837
+          ],
+          "exhaustion": [
+            80.374999999956,
+            80.37638413581531
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "fbcd2ab5d679a6b22a8610c21f6236e51a792bf24606852aa52b5a4cb1219f0f",
+            "checkpoint_sha256": "2a89b7c09a511bf45090adeb979dcfd7f4ce3bbca76ab97f491974f2a6fced19",
+            "events": {
+              "property_flag": [
+                58.31999999999999,
+                58.35999999999999
+              ],
+              "first_melt": [
+                73.0,
+                73.01
+              ],
+              "all_liquid": [
+                77.78000000000004,
+                77.82000000000005
+              ],
+              "exhaustion": [
+                80.32000000000005,
+                80.35955293219413
+              ]
+            },
+            "max_mass_error": 2.4793033789194452e-14,
+            "max_heat_error": 6.466938914724792e-12
+          },
+          "time": {
+            "sha256": "da8a9e2605d5bbc7c6e83054edc497b745f01496650a2f48494409a4938907e3",
+            "checkpoint_sha256": "b89254dac17d4a2d9331643e366acb18035f1b1eff3c4f0cbeebeebead709eb8",
+            "events": {
+              "property_flag": [
+                58.30000000000001,
+                58.34000000000001
+              ],
+              "first_melt": [
+                73.0,
+                73.01
+              ],
+              "all_liquid": [
+                77.74000000000004,
+                77.78000000000004
+              ],
+              "exhaustion": [
+                80.32000000000005,
+                80.35559397501336
+              ]
+            },
+            "max_mass_error": 2.5202836000586095e-14,
+            "max_heat_error": 2.5149713415595138e-12
+          },
+          "fine": {
+            "sha256": "b3dcbc4b603b8c45e0a463e32fa45c184f4d54aa1027c73a26b51eee548ef329",
+            "checkpoint_sha256": "9fd84c46a8a370bdb6ce2e70038c2e9c51be66a101ff61f7611ec959c5a1cb72",
+            "events": {
+              "property_flag": [
+                58.30000000000005,
+                58.32000000000005
+              ],
+              "first_melt": [
+                72.97999999999821,
+                72.99999999999821
+              ],
+              "all_liquid": [
+                77.75999999999726,
+                77.77999999999726
+              ],
+              "exhaustion": [
+                80.35999999999675,
+                80.36694509919812
+              ]
+            },
+            "max_mass_error": 1.2662888332001794e-13,
+            "max_heat_error": 5.260795883234395e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.0039589571807709945,
+            "event_relative_percent": 0.004926797233310272,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 168,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 0.0007553884560640434,
+              "at_s": 79.5
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.4786789592220657,
+              "at_s": 80.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 71.28003084606027,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 8.1023598034717,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 0.9948135693553013,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.06540003918793774
+          },
+          "time": {
+            "event_difference_s": 0.011351124184756145,
+            "event_relative_percent": 0.014124120520874948,
+            "event_under_5_percent": true,
+            "brackets_overlap": false,
+            "shared_samples": 168,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 0.00030957345906190703,
+              "at_s": 80.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.5952243849856131,
+              "at_s": 80.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 9.715195191121893,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 1.4859228293082651,
+              "at_s": 80.0
+            },
+            "max_liner_field_difference_K": 2.231916250416475,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.06549925793774773
+          }
+        },
+        "reference_FE": {
+          "event_s": 80.50305406234222,
+          "delta_event_s": 0.12666992652690112,
+          "max_common_thickness_mm": 0.006066628268810992,
+          "max_common_interface_K": 10.925458369559465,
+          "balances": {
+            "liner_mass_relative": 7.538119583762702e-15,
+            "case_mass_relative": 0.0,
+            "energy_relative": -5.325756013812877e-10
+          },
+          "record_sha256": "015804a2fb6e961a95b06d6deef46cda896419f552ffb496ef8962f502c8f68a"
+        },
+        "initial_FV_pairs_pass": false,
+        "additional_FV_checks": {
+          "time": {
+            "schedule_sha256": "fa8e8ed28fa1a0a86239f08b62ec12ba29e646059ae93f8a5fa3402e65b51a83",
+            "checks": [
+              {
+                "level": [
+                  640,
+                  160,
+                  0.01
+                ],
+                "record": {
+                  "sha256": "17a4cbc675b215a65006b483b793b64a9d257a800fc30848d16ed8c96a0a2f7b",
+                  "checkpoint_sha256": "18cfc7847c82267e746b12cbf13dbfdf906d8a96b801356475a558f8b4fc8122",
+                  "events": {
+                    "property_flag": [
+                      58.309999999994766,
+                      58.319999999994764
+                    ],
+                    "first_melt": [
+                      72.97999999999823,
+                      72.98999999999823
+                    ],
+                    "all_liquid": [
+                      77.77000000000014,
+                      77.78000000000014
+                    ],
+                    "exhaustion": [
+                      80.37000000000019,
+                      80.37246939330535
+                    ]
+                  },
+                  "max_mass_error": 1.7846886306106087e-13,
+                  "max_heat_error": 4.5285086153541246e-12
+                },
+                "pair": {
+                  "event_difference_s": 0.005524294107232208,
+                  "event_relative_percent": 0.006873366152530279,
+                  "event_under_5_percent": true,
+                  "brackets_overlap": false,
+                  "shared_samples": 169,
+                  "thickness_target_mm": 0.06349999999999995,
+                  "remaining_mm": {
+                    "difference": 0.0001669245410090836,
+                    "at_s": 79.5
+                  },
+                  "thickness_pass": true,
+                  "case_interface_K": {
+                    "difference": 0.3960633960875839,
+                    "at_s": 79.5
+                  },
+                  "hot_face_including_initial_K": {
+                    "difference": 10.529108412580854,
+                    "at_s": 0.05
+                  },
+                  "hot_face_from_half_second_K": {
+                    "difference": 0.45210840771210314,
+                    "at_s": 1.0
+                  },
+                  "max_liner_field_difference_K": 1.487218863893304,
+                  "field_time_s": 1.0,
+                  "field_radius_m": 0.06550917981272876
+                },
+                "passed": false
+              },
+              {
+                "level": [
+                  640,
+                  160,
+                  0.005
+                ],
+                "record": {
+                  "sha256": "a27579ab6b4528109523e6e13ae423806b071fc670d8779023fd2ac32440b3f6",
+                  "checkpoint_sha256": "9eb4afffa8808b0b0f6b105e907c95b55a68541676d63ac382c2346c4e12edbb",
+                  "events": {
+                    "property_flag": [
+                      58.31500000000016,
+                      58.320000000000164
+                    ],
+                    "first_melt": [
+                      72.98499999999183,
+                      72.98999999999182
+                    ],
+                    "all_liquid": [
+                      77.76999999998748,
+                      77.77499999998747
+                    ],
+                    "exhaustion": [
+                      80.3749999999851,
+                      80.3751109529836
+                    ]
+                  },
+                  "max_mass_error": 1.4261116956429204e-13,
+                  "max_heat_error": 3.548225078727848e-12
+                },
+                "pair": {
+                  "event_difference_s": 0.0026415596782527473,
+                  "event_relative_percent": 0.0032865393863007663,
+                  "event_under_5_percent": true,
+                  "brackets_overlap": false,
+                  "shared_samples": 169,
+                  "thickness_target_mm": 0.06349999999999995,
+                  "remaining_mm": {
+                    "difference": 7.363956741612832e-05,
+                    "at_s": 80.0
+                  },
+                  "thickness_pass": true,
+                  "case_interface_K": {
+                    "difference": 0.20721130954598266,
+                    "at_s": 80.0
+                  },
+                  "hot_face_including_initial_K": {
+                    "difference": 18.892109541141224,
+                    "at_s": 0.00625
+                  },
+                  "hot_face_from_half_second_K": {
+                    "difference": 0.325262546517024,
+                    "at_s": 0.5
+                  },
+                  "max_liner_field_difference_K": 0.7355955029139523,
+                  "field_time_s": 1.0,
+                  "field_radius_m": 0.06550917981272876
+                },
+                "passed": false
+              },
+              {
+                "level": [
+                  640,
+                  160,
+                  0.0025
+                ],
+                "record": {
+                  "sha256": "cf021e37d4d4167cbb31b740ba00daccb9d203586485353404d58b97e08539c0",
+                  "checkpoint_sha256": "550657ffcc236e8e488ffe68781ed6364afbd1fdfcbf1cd4e6fa73dbddb2e43d",
+                  "events": {
+                    "property_flag": [
+                      58.31249999997607,
+                      58.31499999997607
+                    ],
+                    "first_melt": [
+                      72.98249999996273,
+                      72.98499999996272
+                    ],
+                    "all_liquid": [
+                      77.76999999995837,
+                      77.77249999995837
+                    ],
+                    "exhaustion": [
+                      80.374999999956,
+                      80.37638413581531
+                    ]
+                  },
+                  "max_mass_error": 5.390948090857074e-13,
+                  "max_heat_error": 9.847767930141071e-12
+                },
+                "pair": {
+                  "event_difference_s": 0.0012731828317100735,
+                  "event_relative_percent": 0.0015840260113701105,
+                  "event_under_5_percent": true,
+                  "brackets_overlap": true,
+                  "shared_samples": 167,
+                  "thickness_target_mm": 0.06349999999999995,
+                  "remaining_mm": {
+                    "difference": 3.7657957127623654e-05,
+                    "at_s": 80.0
+                  },
+                  "thickness_pass": true,
+                  "case_interface_K": {
+                    "difference": 0.11134528072250305,
+                    "at_s": 80.0
+                  },
+                  "hot_face_including_initial_K": {
+                    "difference": 15.922718426882568,
+                    "at_s": 0.00625
+                  },
+                  "hot_face_from_half_second_K": {
+                    "difference": 0.1783508633236579,
+                    "at_s": 0.5
+                  },
+                  "max_liner_field_difference_K": 0.3575872047371149,
+                  "field_time_s": 0.9999999999999893,
+                  "field_radius_m": 0.06549925793774773
+                },
+                "passed": true
+              }
+            ],
+            "passed": true
+          }
+        },
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "booster_al_film2000_time_n640_us2500"
+      }
+    },
+    "sustainer_cf": {
+      "1000": {
+        "event_s": 104.25365066772169,
+        "sha256": "cdebe022b4270e0ebaf512f73b10b900d46671de1e302902801291675958f865",
+        "events": {
+          "property_flag": [
+            21.699999999999623,
+            21.719999999999622
+          ],
+          "inner_pool_half": [
+            60.68000000000003,
+            60.70000000000003
+          ],
+          "outer_pool_half": [
+            82.33999999999635,
+            82.35999999999635
+          ],
+          "first_1000C": [
+            95.05999999999382,
+            95.07999999999382
+          ],
+          "exhaustion": [
+            104.239999999992,
+            104.25365066772169
+          ]
+        }
+      },
+      "500": {
+        "event_s": 195.4128157660349,
+        "events": {
+          "property_flag": [
+            24.919999999999554,
+            24.939999999999554
+          ],
+          "inner_pool_half": [
+            85.27999999999577,
+            85.29999999999576
+          ],
+          "outer_pool_half": [
+            111.47999999999055,
+            111.49999999999055
+          ],
+          "first_1000C": null,
+          "exhaustion": [
+            195.4000000000002,
+            195.4128157660349
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "b8a4d5cc4b2d1fb553376a3bf5a08a2b239381f321a7110188c1665689d63e6c",
+            "checkpoint_sha256": "71ce43b33b13362127be6d6a465f1fddcc79d4fac5a69b71087af9af6121240b",
+            "events": {
+              "property_flag": [
+                24.89999999999999,
+                24.93999999999999
+              ],
+              "inner_pool_half": [
+                85.40000000000006,
+                85.44000000000007
+              ],
+              "outer_pool_half": [
+                111.40000000000006,
+                111.44000000000007
+              ],
+              "first_1000C": null,
+              "exhaustion": [
+                195.39999999999992,
+                195.41561162004433
+              ]
+            },
+            "max_mass_error": 1.0324644544462612e-12,
+            "max_heat_error": 4.723554464653178e-12
+          },
+          "time": {
+            "sha256": "76ff8cb72984f2db39a19d40a7a5728ec92469cd98ba9df7065f6b1149547b6c",
+            "checkpoint_sha256": "f7d96cb0d57d3850f41ac3a7f5e8e15490664aa9fba3fa1c0c0f4ca2daf88683",
+            "events": {
+              "property_flag": [
+                24.89999999999999,
+                24.93999999999999
+              ],
+              "inner_pool_half": [
+                85.28000000000004,
+                85.32000000000005
+              ],
+              "outer_pool_half": [
+                111.44000000000007,
+                111.48000000000008
+              ],
+              "first_1000C": null,
+              "exhaustion": [
+                195.39999999999992,
+                195.41347946786394
+              ]
+            },
+            "max_mass_error": 1.0007679286871768e-12,
+            "max_heat_error": 5.294284358099796e-12
+          },
+          "fine": {
+            "sha256": "14542f873b234a5a53b82c422f2bf5fe87b3d50dfa5636c914b8e835c3029c24",
+            "checkpoint_sha256": "d55673a8181f4d9c40b5df16c09a4587e186a0f31f3161912aa13e399b31fa35",
+            "events": {
+              "property_flag": [
+                24.919999999999554,
+                24.939999999999554
+              ],
+              "inner_pool_half": [
+                85.27999999999577,
+                85.29999999999576
+              ],
+              "outer_pool_half": [
+                111.47999999999055,
+                111.49999999999055
+              ],
+              "first_1000C": null,
+              "exhaustion": [
+                195.4000000000002,
+                195.4128157660349
+              ]
+            },
+            "max_mass_error": 1.961194824590064e-12,
+            "max_heat_error": 7.049136122043169e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.002132152180394087,
+            "event_relative_percent": 0.00109109780256726,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 398,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 0.00011168255528026805,
+              "at_s": 3.5
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.018658608557842626,
+              "at_s": 17.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 15.795576890106076,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 2.0648667330153785,
+              "at_s": 2.0
+            },
+            "max_liner_field_difference_K": 1.120800024272853,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.03969866222561428
+          },
+          "time": {
+            "event_difference_s": -0.0006637018290405194,
+            "event_relative_percent": 0.00033964089122750303,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 398,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 2.059995914827084e-05,
+              "at_s": 3.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.11514098987163379,
+              "at_s": 109.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 5.346059399438332,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 2.721304883984203,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 1.9567317014641503,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.04004096691212057
+          }
+        },
+        "reference_FE": {
+          "event_s": 195.43811556831045,
+          "delta_event_s": 0.02529980227555484,
+          "max_common_thickness_mm": 0.000680627508041487,
+          "max_common_interface_K": 0.11035415565970652,
+          "balances": {
+            "liner_mass_relative": -1.9631178464353142e-12,
+            "case_mass_relative": -8.740820977103513e-16,
+            "energy_relative": -4.311888784691182e-14
+          },
+          "record_sha256": "028837ac40e44db9a44eb8ffbb313ca8ba84c2ac774f0241d97221788efc328b"
+        },
+        "initial_FV_pairs_pass": true,
+        "additional_FV_checks": {},
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "sustainer_cf_film500_fine"
+      },
+      "2000": {
+        "event_s": 56.61422568770273,
+        "events": {
+          "property_flag": [
+            18.359999999999992,
+            18.379999999999992
+          ],
+          "inner_pool_half": [
+            40.47000000000006,
+            40.490000000000066
+          ],
+          "outer_pool_half": null,
+          "first_1000C": [
+            51.250000000000036,
+            51.27000000000004
+          ],
+          "exhaustion": [
+            56.600000000000016,
+            56.61422568770273
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "d5254d5346274f08fd8da44e90ba9d348139a6bbac0987bddd7f6936ef42f4df",
+            "checkpoint_sha256": "928b081347031e28b9512111446e0a581dde292dbeb1aae5955b0655dcf9d491",
+            "events": {
+              "property_flag": [
+                18.35999999999995,
+                18.39999999999995
+              ],
+              "inner_pool_half": [
+                40.53999999999999,
+                40.57999999999999
+              ],
+              "outer_pool_half": null,
+              "first_1000C": [
+                51.23999999999999,
+                51.27999999999999
+              ],
+              "exhaustion": [
+                56.579999999999984,
+                56.61514307832565
+              ]
+            },
+            "max_mass_error": 3.723787641626704e-13,
+            "max_heat_error": 7.473851129281689e-12
+          },
+          "time": {
+            "sha256": "5a5140402bf069ca5e6a52e2cdf3786930cad4e8d1ec5d9da281222c413b80a4",
+            "checkpoint_sha256": "8b81d10e6b1081af1645408a10e1aa609546bdd393ff6322e407ca68009537f2",
+            "events": {
+              "property_flag": [
+                18.36,
+                18.4
+              ],
+              "inner_pool_half": [
+                40.485000000000014,
+                40.5
+              ],
+              "outer_pool_half": null,
+              "first_1000C": [
+                51.250000000000014,
+                51.27000000000002
+              ],
+              "exhaustion": [
+                56.58,
+                56.61422284113135
+              ]
+            },
+            "max_mass_error": 5.310830469843799e-13,
+            "max_heat_error": 3.2959906739677925e-12
+          },
+          "fine": {
+            "sha256": "3fa2da3d05400cfc0b08eb085bfb308f73e63cbb35240b71296f0f68b62136a5",
+            "checkpoint_sha256": "bfc69f1e2aa1e98898e194c5a01cbe2e3d8e5be57487172c8f29245bce01e66a",
+            "events": {
+              "property_flag": [
+                18.359999999999992,
+                18.379999999999992
+              ],
+              "inner_pool_half": [
+                40.47000000000006,
+                40.490000000000066
+              ],
+              "outer_pool_half": null,
+              "first_1000C": [
+                51.250000000000036,
+                51.27000000000004
+              ],
+              "exhaustion": [
+                56.600000000000016,
+                56.61422568770273
+              ]
+            },
+            "max_mass_error": 7.044164955410515e-13,
+            "max_heat_error": 3.2959906739677925e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.000920237194300455,
+            "event_relative_percent": 0.0016254523123681998,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 121,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 0.00022331834324784694,
+              "at_s": 0.5
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.5244099683093282,
+              "at_s": 56.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 56.07432335510866,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 1.804202875962801,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 1.5747461911266782,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.03974331066298369
+          },
+          "time": {
+            "event_difference_s": 2.846571376835527e-06,
+            "event_relative_percent": 5.028014323710579e-06,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 121,
+            "thickness_target_mm": 0.04762500000000003,
+            "remaining_mm": {
+              "difference": 6.94346198315543e-05,
+              "at_s": 2.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.3355158384775905,
+              "at_s": 49.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 9.708857610383575,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 0.3407639949737131,
+              "at_s": 1.0
+            },
+            "max_liner_field_difference_K": 2.0368674612309405,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.04011538097440679
+          }
+        },
+        "reference_FE": {
+          "event_s": 56.67613829567214,
+          "delta_event_s": 0.061912607969411226,
+          "max_common_thickness_mm": 0.005494588777313347,
+          "max_common_interface_K": 2.0417592571220666,
+          "balances": {
+            "liner_mass_relative": -7.089110504256505e-13,
+            "case_mass_relative": 0.0,
+            "energy_relative": -9.800909656837708e-15
+          },
+          "record_sha256": "c0275e580ad9ab0c25c951f938354ed1436972e4d63ac4912836845556fc903f"
+        },
+        "initial_FV_pairs_pass": true,
+        "additional_FV_checks": {},
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "sustainer_cf_film2000_fine"
+      }
+    },
+    "booster_cf": {
+      "1000": {
+        "event_s": 137.94643770014218,
+        "sha256": "72577da16b07ac50036a19396a3b14129aeb99019b454d283ab8374c26e8e49b",
+        "events": {
+          "property_flag": [
+            37.26000000000004,
+            37.280000000000044
+          ],
+          "inner_pool_half": [
+            91.41999999999454,
+            91.43999999999454
+          ],
+          "outer_pool_half": [
+            135.299999999991,
+            135.319999999991
+          ],
+          "first_1000C": [
+            129.67999999998813,
+            129.69999999998814
+          ],
+          "exhaustion": [
+            137.93999999999235,
+            137.94643770014218
+          ]
+        }
+      },
+      "500": {
+        "event_s": 258.7066244622776,
+        "events": {
+          "property_flag": [
+            43.70000000000003,
+            43.720000000000034
+          ],
+          "inner_pool_half": [
+            134.8799999999908,
+            134.8999999999908
+          ],
+          "outer_pool_half": [
+            191.32000000000016,
+            191.34000000000017
+          ],
+          "first_1000C": null,
+          "exhaustion": [
+            258.69999999999754,
+            258.7066244622776
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "250902fb6653728c2af34565afc2e90c555454bd7cf47decfe545913f430aeef",
+            "checkpoint_sha256": "cc0d13a66b9dd5e41f37aaf540f0d508c3babc9d5c962204320652ee3eaca412",
+            "events": {
+              "property_flag": [
+                43.66,
+                43.699999999999996
+              ],
+              "inner_pool_half": [
+                135.11999999999998,
+                135.15999999999997
+              ],
+              "outer_pool_half": [
+                191.19999999999996,
+                191.23999999999995
+              ],
+              "first_1000C": null,
+              "exhaustion": [
+                258.7000000000001,
+                258.7101757110002
+              ]
+            },
+            "max_mass_error": 4.876646315560561e-14,
+            "max_heat_error": 4.402093265297919e-12
+          },
+          "time": {
+            "sha256": "e24a8fda8a85243a7b8028aa938e2e8c71f610d1977a9870b9875699578d08a0",
+            "checkpoint_sha256": "4b8165c7416955cbeff3b1cdfa39ca76b877549ed0bf9ac3863c1f7c35fb8559",
+            "events": {
+              "property_flag": [
+                43.699999999999996,
+                43.739999999999995
+              ],
+              "inner_pool_half": [
+                134.85999999999993,
+                134.89999999999992
+              ],
+              "outer_pool_half": [
+                191.31999999999994,
+                191.35999999999993
+              ],
+              "first_1000C": null,
+              "exhaustion": [
+                258.7000000000001,
+                258.7071419022405
+              ]
+            },
+            "max_mass_error": 4.9176265366997255e-14,
+            "max_heat_error": 5.194454592870581e-12
+          },
+          "fine": {
+            "sha256": "c39c7fed080e61a7739768993df2fa01f032260dea8cc717eafa57c5d6d8fc49",
+            "checkpoint_sha256": "efddf073636c6340bd1e60c51f5a0b508e30ff8e062006ad45dab4d1e82d559a",
+            "events": {
+              "property_flag": [
+                43.70000000000003,
+                43.720000000000034
+              ],
+              "inner_pool_half": [
+                134.8799999999908,
+                134.8999999999908
+              ],
+              "outer_pool_half": [
+                191.32000000000016,
+                191.34000000000017
+              ],
+              "first_1000C": null,
+              "exhaustion": [
+                258.69999999999754,
+                258.7066244622776
+              ]
+            },
+            "max_mass_error": 2.721086683640515e-13,
+            "max_heat_error": 6.281730398308531e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.003033808759710155,
+            "event_relative_percent": 0.0011726807143409136,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 524,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 0.00016176844809479007,
+              "at_s": 3.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.01591311076496993,
+              "at_s": 27.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 20.763813173994926,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 1.5694684783228467,
+              "at_s": 1.0
+            },
+            "max_liner_field_difference_K": 1.4642883924022954,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.0650981523229718
+          },
+          "time": {
+            "event_difference_s": -0.0005174399628913307,
+            "event_relative_percent": 0.00020001032596936045,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 525,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 1.9256619451901713e-05,
+              "at_s": 2.5
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.09993668963579694,
+              "at_s": 164.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 5.344398273377351,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 2.721523344162165,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 1.9587271963562216,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.06543972668786166
+          }
+        },
+        "reference_FE": {
+          "event_s": 258.7367574497609,
+          "delta_event_s": 0.030132987483284523,
+          "max_common_thickness_mm": 0.0008057014019430264,
+          "max_common_interface_K": 0.10341334155668847,
+          "balances": {
+            "liner_mass_relative": -2.6107682484918636e-14,
+            "case_mass_relative": 6.516454348521605e-16,
+            "energy_relative": -7.034759923746469e-15
+          },
+          "record_sha256": "2cf033247ac75193580ca78dd2a74640f250afb6c08aac71da57ca1d9b784b62"
+        },
+        "initial_FV_pairs_pass": true,
+        "additional_FV_checks": {},
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "booster_cf_film500_fine"
+      },
+      "2000": {
+        "event_s": 74.84766546699005,
+        "events": {
+          "property_flag": [
+            30.419999999999437,
+            30.439999999999436
+          ],
+          "inner_pool_half": [
+            58.20000000000003,
+            58.220000000000034
+          ],
+          "outer_pool_half": null,
+          "first_1000C": [
+            69.67999999999887,
+            69.69999999999887
+          ],
+          "exhaustion": [
+            74.83999999999784,
+            74.84766546699005
+          ]
+        },
+        "FV_records": {
+          "mesh": {
+            "sha256": "2b22e61d5b5242721b5e46087d8494da49e8e12a3c1c720180d6bcbc1c918550",
+            "checkpoint_sha256": "b11c5c2849e7b62fad4de6779059b4a457d7c9e67d67f63b8af9271edd288dc6",
+            "events": {
+              "property_flag": [
+                30.39999999999999,
+                30.43999999999999
+              ],
+              "inner_pool_half": [
+                58.31999999999999,
+                58.35999999999999
+              ],
+              "outer_pool_half": null,
+              "first_1000C": [
+                69.70000000000003,
+                69.74000000000004
+              ],
+              "exhaustion": [
+                74.82000000000005,
+                74.8494773709562
+              ]
+            },
+            "max_mass_error": 2.028520946388637e-14,
+            "max_heat_error": 6.465688408906761e-12
+          },
+          "time": {
+            "sha256": "afbb2444dfe91f81d3f9d2cb488b2c1008b1b045befe22b986d516b2623b9ba5",
+            "checkpoint_sha256": "d22af0aa060f3c8fb48c77966797d73688e8c2e760f5c7d9e6a9fd309c7059d0",
+            "events": {
+              "property_flag": [
+                30.39999999999999,
+                30.43999999999999
+              ],
+              "inner_pool_half": [
+                58.2,
+                58.220000000000006
+              ],
+              "outer_pool_half": null,
+              "first_1000C": [
+                69.70000000000002,
+                69.72000000000001
+              ],
+              "exhaustion": [
+                74.84000000000003,
+                74.84724668146973
+              ]
+            },
+            "max_mass_error": 1.5367582927186644e-14,
+            "max_heat_error": 2.513599328205697e-12
+          },
+          "fine": {
+            "sha256": "e47de3ddb47e020ccbbecf6993191ee946ba7d7467fbe1d1a744c129d477e76c",
+            "checkpoint_sha256": "8e21930f4b1821dd1da2b8778d79307a9c3d8fc183b47d34bca0a8c74b7b7a3c",
+            "events": {
+              "property_flag": [
+                30.419999999999437,
+                30.439999999999436
+              ],
+              "inner_pool_half": [
+                58.20000000000003,
+                58.220000000000034
+              ],
+              "outer_pool_half": null,
+              "first_1000C": [
+                69.67999999999887,
+                69.69999999999887
+              ],
+              "exhaustion": [
+                74.83999999999784,
+                74.84766546699005
+              ]
+            },
+            "max_mass_error": 1.2232596010040568e-13,
+            "max_heat_error": 5.260339485831281e-12
+          }
+        },
+        "FV_comparisons": {
+          "mesh": {
+            "event_difference_s": -0.0022306894864669857,
+            "event_relative_percent": 0.0029803227044011595,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 157,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 0.0003206995899258658,
+              "at_s": 1.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.2585437161161508,
+              "at_s": 70.0
+            },
+            "hot_face_including_initial_K": {
+              "difference": 71.28003084606027,
+              "at_s": 0.0
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 8.1023598034717,
+              "at_s": 0.5
+            },
+            "max_liner_field_difference_K": 0.9948135693553013,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.06540003918793774
+          },
+          "time": {
+            "event_difference_s": 0.00041878552032414973,
+            "event_relative_percent": 0.0005595171442038443,
+            "event_under_5_percent": true,
+            "brackets_overlap": true,
+            "shared_samples": 158,
+            "thickness_target_mm": 0.06349999999999995,
+            "remaining_mm": {
+              "difference": 9.354105641534716e-05,
+              "at_s": 2.0
+            },
+            "thickness_pass": true,
+            "case_interface_K": {
+              "difference": 0.5044805427055508,
+              "at_s": 74.5
+            },
+            "hot_face_including_initial_K": {
+              "difference": 9.715195191121893,
+              "at_s": 0.1
+            },
+            "hot_face_from_half_second_K": {
+              "difference": 0.2548405485740659,
+              "at_s": 1.5
+            },
+            "max_liner_field_difference_K": 2.231916250416475,
+            "field_time_s": 1.0,
+            "field_radius_m": 0.06549925793774773
+          }
+        },
+        "reference_FE": {
+          "event_s": 74.92279359194724,
+          "delta_event_s": 0.0751281249571889,
+          "max_common_thickness_mm": 0.0065927396428744345,
+          "max_common_interface_K": 2.2613326014109134,
+          "balances": {
+            "liner_mass_relative": 1.2958394145372494e-14,
+            "case_mass_relative": -1.2531642977926164e-16,
+            "energy_relative": -4.929890931123005e-16
+          },
+          "record_sha256": "d725ab5addc3e3ee1d416fd280e8fa479e4b9f7487b9b8da048fdf744704095d"
+        },
+        "initial_FV_pairs_pass": true,
+        "additional_FV_checks": {},
+        "final_FV_pairs_pass": true,
+        "reported_FV_tag": "booster_cf_film2000_fine"
+      }
+    }
+  },
+  "native": false,
+  "eligible_for_motor_lifetime": false
+}

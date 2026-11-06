@@ -18,6 +18,7 @@ from ops import disks, atomic
 from moving_surface_report import build as build_moving_results
 from backing_report import build as build_backing_results
 from sector_report import build as build_sector_results
+from backing_film_report import build as build_film_results
 from coupled_cf_report import build as build_coupled_cf_results
 
 CASES = [('sustainer_al','Sustainer Al','#194b78'), ('sustainer_cf','Sustainer CF','#af6030'),
@@ -101,7 +102,8 @@ def main():
     chart(records)
     build_moving_results(CASES,inputs)
     build_backing_results(inputs)
-    build_coupled_cf_results(inputs)
+    film_ranges = build_film_results(CASES, inputs)
+    build_coupled_cf_results(inputs, film_ranges)
     build_sector_results(CASES,inputs)
     date = datetime.now(ZoneInfo('America/New_York')).strftime('%B %d, %Y, %H:%M %Z')
     text = r'''\documentclass[11pt]{article}
@@ -118,6 +120,7 @@ def main():
 \input{continuous_backing_results.tex}
 \input{continuous_coupled_cf.tex}
 \input{continuous_sector_comparison.tex}
+\input{continuous_backing_film.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
