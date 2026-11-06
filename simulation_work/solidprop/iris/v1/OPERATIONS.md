@@ -22,7 +22,89 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Burnthrough priority revision (November 5, 19:53 EST)
+
+Read `burnthrough_campaign_plan.md` before choosing more work. The user explicitly
+authorized choosing exposure duration, moving beyond seven seconds, answering
+time to burnthrough and improving the model. This supersedes the previous
+requirement to finish every pulse refinement before long-exposure work.
+
+The host-only observer 93981 was terminated after confirming its exact command
+and absence of child processes. **The native solver was not stopped or changed.**
+Replacement observer **28607** monitors only the already-running
+`sustainer_cf_pulse7_midpoint_joint320_geom005_smp10`, using its existing launch
+receipts, then performs the normal terminal audits and exits. Its log is
+`ansystmp/burnthrough_priority_active_verification.log` and receipt is
+`validation/burnthrough_priority_transition.json`. Watcher 82419 and keep-awake
+86412 remain in place. Never resume observer 93981 or the superseded queue.
+
+The three unstarted pulse refinements are now in
+`deferred_pulse_resolution_runtimes`. The five old sensitivity/cutoff controls
+also remain deferred. The next native dispatch must support the continuous-
+heating/moving-surface study and pass the new plan's gates, after the current
+solver exits. Native input packages remain sealed and one solver at ten cores
+is still the maximum native concurrency.
+
+The new independent campaign is `model/continuous_heating_campaign.py`, with
+immutable `configs/continuous_heating_campaign.json`. Its `prepare` action has
+already run; do not regenerate. Its `run` action uses a nonblocking worker lock
+and can resume its ignored checkpoints under `ansystmp/continuous_heating`.
+Read `worker.pid`, `status.json`, `worker.log`, and any `worker_error.json` or
+`complete.json` before doing anything. Verify PID commands; do not duplicate it.
+Compact outcomes go to `validation/continuous_heating/`. These are **independent
+mathematical scouts**, not native ANSYS or physical lifetime results.
+
+The scout worker was launched with PID **29748**. Eight following refinement
+checks are prepared in `configs/continuous_heating_refinement.json`; do not
+regenerate that plan. `model/continuous_heating_refinement.py run` requires the
+scout completion receipt and the same exclusive worker lock. Inspect
+`refinement_worker.pid`, `refinement_complete.json` and `refinement_error.json`
+before dispatch/resume. They isolate fixed-mesh time error and then fixed-step
+mesh changes. A prepared plan is not a running calculation or a passed gate.
+
+At 20:05 EST the four scouts finished normally and PID 29748 exited.
+`validation/continuous_heating_scout_audit.json` rechecks source/configuration
+hashes, checkpoint states, monotone histories, exhaustion bookkeeping and
+cumulative gas/char/residual mass. Maximum cumulative mass relative error is
+1.54e-14. New model-event times are 114.946875 / 112.181250 / 151.696875 /
+147.046875 s for S Al / S CF / B Al / B CF; corresponding property flags are
+49.6000 / 18.465625 / 87.3671875 / 32.88125 s. **These are unvalidated finite-row,
+post-scope mathematical events; do not put them in physical-lifetime tables.**
+The earlier rejected endurance records remain rejected.
+
+The refinement worker **31732** started only after scout exit and audit. It uses
+the same exclusive lock, logs to `ansystmp/continuous_heating/refinement_worker.log`
+and updates the common `status.json`. Scout `complete.json` is historical;
+look for `refinement_complete.json` to establish completion of this next stage.
+Inspect errors before resume. Do not duplicate either worker from old PID files.
+The separate four-page `output/pdf/iris_continuous_heating_progress.pdf` contains
+the provisional results and full tested remapping-kernel source. Its review
+and input provenance are in `validation/continuous_report_inputs.json`.
+
+They keep continuous nominal heating and record rather than stop at the first
+casing-property flag. Preserve the explicit post-scope qualification. Earlier
+rejected endurance runs must not be promoted. A short restart-control check
+is in `validation/continuous_heating_worker_verification.json`.
+
+While these scouts run, implement and verify the conservative moving-surface
+candidate specified in the new plan; do not spend subsequent turns merely
+polling or add another large seven-second matrix. Reuse completed short-time
+fields as regression evidence. Publish new setup/model/result milestones with
+the existing limits. The current 78-page PDF remains the earlier reviewed
+results edition until the next meaningful tested-model or accepted-result update.
+
+The first candidate component, `moving_surface_remap.py`, now passes analytic
+geometry/conservation checks in `moving_surface_remap_verification.json`. It
+preserves extensive mass/enthalpy, reports swept-out quantities and locates a
+prescribed-speed exhaustion event. It is **not yet a coupled thermal/pyrolysis
+model or native ANSYS implementation**. Its 100 s manufactured example must
+never enter motor-result tables. Next implement the enthalpy reconstruction and
+surface mass/energy closure before treating this as a replacement solver.
+
 ## Active corrected-geometry resolution queue (November 5, 19:10 EST)
+
+This dispatch description is historical and superseded by the priority revision
+above. Its completed results remain valid within their stated qualifications.
 
 Sustainer Al320/80 completed 127 s / 8416 accepted intervals. Repeated full
 native/log/restart validation exactly reproduced the queue acceptance record;

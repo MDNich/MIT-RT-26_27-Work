@@ -1,5 +1,31 @@
 # Iris exploratory ANSYS study
 
+**New priority (November 5, 19:53 EST):** the user authorized choosing the
+exposure duration to answer time to burnthrough and requested model improvements.
+See [the continuous-heating plan](burnthrough_campaign_plan.md). The current
+CF320 native verification continues unchanged on ten cores, observed by 28607;
+the remaining three unstarted pulse refinements and five old bounded controls
+are deferred. The earlier observer 93981 has exited and must not resume.
+New independent continuous-heating scouts use 30/60/120/240/480/960 s reporting
+milestones with no seven-second cutoff. They record earlier property-scope
+crossings and are not eligible as motor-lifetime predictions until the
+numerical and material-model limitations have been resolved. Source/configuration
+hashes and restart verification accompany the new worker. Priority improvements
+are conservative moving-surface recession and coupled mass/enthalpy accounting.
+
+The four new continuous scouts have now finished and passed source/history,
+final-event and cumulative-mass bookkeeping checks. Their finite-row model
+exhaustion times are 114.9/112.2 s for sustainer Al/CF and 151.7/147.0 s for
+booster Al/CF. **All occur after their provisional casing-property crossing;
+none is an accepted physical motor lifetime or a convergence result.**
+The independent refinement worker 31732 is now checking time and mesh effects.
+The [separate progress report](output/pdf/iris_continuous_heating_progress.pdf)
+shows these qualifications on the table and curves, plus the new conservative
+geometry kernel and its analytic verification. The 78-page main report retains
+the earlier native results and full MAPDL/Fortran listings.
+
+The refinement updates below are historical context, not the current dispatch.
+
 **Refinement update (November 5, 19:10 EST):** sustainer aluminium with
 320/80 radial rows completed its 127-second scenario and 8416 accepted intervals.
 Native, restart, exact-event, independent and full-field checks pass. Its inner

@@ -1,0 +1,36 @@
+{
+  "checked_utc": "2026-11-06T01:00:27.064653+00:00",
+  "passed": true,
+  "source_sha256": "2d1a9b29d2bf284d943e20637421b69ac7e3d9c1d02d5eeed97cb47188cbd074",
+  "checks": [
+    "Exact nonuniform cylindrical overlap integrals",
+    "Identity and zero-motion limits",
+    "Mass and enthalpy carried out with swept volume",
+    "Analytic prescribed-flux pure-char front",
+    "Exact geometric final event with no residual thermal capacity"
+  ],
+  "cases": [
+    {
+      "cells": 20,
+      "dt_s": 0.7,
+      "prescribed_exhaustion_s": 99.99999999999932,
+      "analytic_exhaustion_s": 99.99999999999996,
+      "mass_enthalpy_relative_error": 6.087075651081562e-16
+    },
+    {
+      "cells": 80,
+      "dt_s": 0.13,
+      "prescribed_exhaustion_s": 100.00000000000598,
+      "analytic_exhaustion_s": 99.99999999999996,
+      "mass_enthalpy_relative_error": 1.8261226953244684e-15
+    },
+    {
+      "cells": 160,
+      "dt_s": 0.031,
+      "prescribed_exhaustion_s": 99.9999999998156,
+      "analytic_exhaustion_s": 99.99999999999996,
+      "mass_enthalpy_relative_error": 3.047671047990627e-15
+    }
+  ],
+  "qualification": "Manufactured tests of a geometry/remapping kernel only. No coupled reaction/thermal solver, physical recession law, native implementation or motor lifetime is established."
+}

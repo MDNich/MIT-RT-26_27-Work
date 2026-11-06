@@ -14,7 +14,7 @@
     "booster_cf_pulse7_n80_midpoint_tight"
   ],
   "first_resume_explicitly_launched": true,
-  "notes": "Sustainer Al320/80 completed its full 127 s horizon and passed native/restart, independent and full-field checks; its joint mesh/time casing and thickness targets pass. Four resolution cases remain in the same serial ten-core queue, currently sustainer CF320; five controls remain deferred. Original one-core and older-sector inputs are preserved.",
+  "notes": "One active native ten-core solve is unchanged. Replacement observer monitors only the already-launched CF320 case and exits after audits. Unstarted pulse refinements are deferred, not cancelled or modified.",
   "topology_verification_before": "booster_al_baseline7_n20_dt0125",
   "reaction_verification_before": "booster_cf_baseline7_n20_dt0125",
   "superseded_refined_runtimes": [
@@ -43,10 +43,7 @@
     "sustainer_al_pulse7_n80_tight_coolcheck"
   ],
   "current_dispatch": [
-    "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10",
-    "booster_al_pulse7_midpoint_joint320_geom005_smp10",
-    "booster_cf_pulse7_midpoint_joint320_geom005_smp10",
-    "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10"
+    "sustainer_cf_pulse7_midpoint_joint320_geom005_smp10"
   ],
   "verified_historical_prefixes": {
     "sustainer_al_pulse7_n80_dt0125_restartfix": 560
@@ -114,11 +111,11 @@
     "booster_cf_sensitivity_heating_consumption_midpoint_control20": "booster_cf_sensitivity_heating_consumption_midpoint_control20_smp10",
     "sustainer_cf_cutoff1e6_midpoint_control60": "sustainer_cf_cutoff1e6_midpoint_control60_smp10"
   },
-  "current_observer_pid": 93981,
+  "current_observer_pid": 28607,
   "parallel_restart_verification": "validation/parallel_restart_comparison.json",
   "diagnostic_dispatch": [],
   "diagnostic_observer_pid": 38695,
-  "current_observer_role": "serial_geometry_corrected_resolution_recovered_launch",
+  "current_observer_role": "finish_active_verification_only_then_continuous_heating_priority",
   "superseded_dispatch_geometry_legacy": [
     "booster_cf_pulse7_midpoint_time_quarter_smp10",
     "sustainer_al_pulse7_midpoint_space160_smp10",
@@ -163,5 +160,11 @@
       "previous_observer_pid": 73021,
       "new_observer_pid": 93981
     }
-  ]
+  ],
+  "deferred_pulse_resolution_runtimes": [
+    "booster_al_pulse7_midpoint_joint320_geom005_smp10",
+    "booster_cf_pulse7_midpoint_joint320_geom005_smp10",
+    "sustainer_cf_pulse7_midpoint_joint640_geom005_smp10"
+  ],
+  "mission_update": "User authorized free exposure duration and prioritizes burnthrough on November 5, 2026. Current already-running CF320 finishes as verification; all unstarted short-pulse resolution and old controls defer. Next native dispatch must target continuous heating/model validation under the new plan."
 }

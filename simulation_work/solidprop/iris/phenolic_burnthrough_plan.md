@@ -1,5 +1,14 @@
 # Iris Phenolic Burnthrough Simulation Plan
 
+**Priority revision, November 5, 2026:** the user now authorizes choosing the
+exposure duration and explicitly prioritizes finding burnthrough time over
+further seven-second survival studies. The execution and model-improvement
+plan is [the continuous-heating campaign](v1/burnthrough_campaign_plan.md).
+Preserve the earlier verification evidence below, but follow that new plan
+and the current operations record for dispatch. The next work is continuous
+heating, recession/conservation improvements and conditional exhaustion-time
+verification, with material-scope crossings reported separately.
+
 Updated November 4, 2026. Scope: sustainer and booster, each with an aluminium or carbon-fibre composite casing. The Windows VM is running and the user has authorized autonomous implementation, exploratory simulations, English reports and milestone pushes to GitHub.
 
 The calculation will answer **when the phenolic liner loses its remaining physical thickness under a specified motor firing history**. It will also report pyrolysis depth and casing temperatures, because the casing or its bond can exceed a thermal limit while char still remains. The starting point is the previous ANSYS MAPDL thermochemical model in `newmotor_phenolic_study/v0`, extended to the four Iris configurations.
