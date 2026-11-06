@@ -1,0 +1,81 @@
+\section{A moving surface with separate virgin, char and gas inventories}
+The candidate transports the masses of virgin phenolic $M_v$, char $M_c$, and
+their combined sensible enthalpy $H_s$ in each cylindrical cell. A cell has
+volume $(r_o^2-r_i^2)/2$ per radian per metre of axial length. Conservative
+overlap integration in $r^2/2$ returns both the retained and swept inventories
+as the face advances. In the equations below, $M$ and $H$ may refer either to
+a physical cell or to these quantities per radian per metre, provided every
+source uses the same convention.
+
+\subsection{Bulk reaction and reconstruction}
+We use a common reference $T_*=22\,{}^\circ$C for virgin solid, char and gas.
+The inherited table defines piecewise-linear specific heat capacities. Let
+$h_i(T)=\int_{T_*}^T c_{p,i}(u)\,du$ for $i=v,c$ and
+$h_g(T)=1600(T-T_*)$ J/kg when $T$ is in degrees Celsius. The candidate
+holds the first heat capacity constant between 0 and 22 degrees Celsius and
+rejects states above the final 2476.85 degree table entry or below zero.
+Positive phase masses give a strictly increasing enthalpy relation
+$H_s=M_vh_v(T)+M_ch_c(T)$. Inverting the quadratic integral within its
+table interval recovers a single temperature after remapping. An exhausted
+cell carries zero mass and enthalpy and has no temperature to reconstruct.
+
+Let $y=600/1250=0.48$ denote the assumed char yield per kilogram of virgin
+material consumed. With $\bar T=(T^n+T^{n+1})/2$ and $k=333\exp[-64081/
+(R(\bar T+273.15))]$ in reciprocal seconds, the update uses
+\[
+ d=M_v^n(1-e^{-k\Delta t}),\quad
+ M_v^{n+1}=M_v^n-d,\quad M_c^{n+1}=M_c^n+yd,\quad m_g=(1-y)d .
+\]
+Mass and enthalpy use the same $d$. The scalar temperature solve enforces
+\[
+ H_s^{n+1}-H_s^n=Q_{\rm cell}-L_p d-m_g h_g(\bar T).
+\]
+The chosen basis for $L_p=418$ kJ/kg is virgin mass consumed at $T_*$. Gas
+leaves carrying its sensible enthalpy at generation. The phase inventories on
+the left already include the change in stored solid sensible heat.
+
+\subsection{Partially converted material at the wall}
+Let $a$ and $b$ be the virgin and char mass densities in the material adjacent
+to the gas. The current candidate assumes that residual virgin material swept
+by the front completes pyrolysis there and its char reacts at that same face.
+For speed $v\geq0$ the outgoing surface pyrolysis gas flux is $j_g=(1-y)av$
+and the outgoing char-product flux is $j_c=(b+ya)v$, in kg/(m$^2$ s).
+Their sum equals the rate $(a+b)v$ at which the surface sweeps up solid.
+Writing $\alpha=b/(b+ya)$, we impose $j_c=\alpha j_{\rm law}(T_s,p)$ with
+the inherited kinetic and mass-transfer law. A virgin wall can heat and
+pyrolyse volumetrically before surface recession begins.
+
+For a first-cell temperature $T_1$, define the sensible power delivered to
+the boundary by swept inventory as $q_{\rm swept}=v[ah_v(T_1)+bh_c(T_1)]$.
+Per unit hot-face area the wall balance is
+\begin{align*}
+ q_{\rm conv}+q_{\rm rad}+q_{\rm swept}
+ &=q_{\rm cond}+j_gh_g(T_s)+j_ch_c(T_s)+avL_p+j_cL_c,\\
+ q_{\rm cond}
+ &=\frac{\displaystyle\int_{T_1}^{T_s}[(1-\alpha)k_v(T)+\alpha k_c(T)]\,dT}
+ {r_s\log(r_1/r_s)} .
+\end{align*}
+Here $q_{\rm cond}>0$ flows into the retained solid, $r_s$ is the moving wall
+radius and $r_1$ the adjacent cell centre. The conduction expression integrates
+the cylindrical resistance at fixed local composition. The film coefficient
+uses total outward mass flux, including bulk gas arriving at the surface and
+both $j_g$ and $j_c$. A bracketed scalar solve closes film heating, optional
+radiation, conduction and recession at the same $T_s$. Bulk gas has already
+exported its sensible heat in the bulk equation. The chosen proxy $h_c(T_s)$
+for the char product and excess cost $L_c=35$ MJ/kg together specify a
+provisional removal energy. Data for reaction products, recession and pyrolysis
+are needed to determine whether these assumptions hold for the Iris liner.
+
+\subsection{Verification to date}
+Tests compare the enthalpy primitive against independent quadrature and the
+isothermal reaction against the analytic solution. In a four-second manufactured
+heated cell, doubling the time steps from 8 to 16, 32 and 64 reduces temperature
+error against an independent ODE integration from 0.151 to 0.0376, 0.00940
+and 0.00235 K. A nonuniform reacting shell with prescribed recession closes
+the integrated mass and energy ledgers through final-cell removal to relative
+errors below $2\times10^{-15}$. Separate manufactured tests recover imposed
+face temperatures for a virgin conducting wall, pure reacting char, and a
+mixed wall with blowing and radiation. The face equation residual is below
+$3\times10^{-9}$ W/m$^2$ for those fixtures. These checks exercise individual
+material and boundary balances. The coupled transient wall, native
+implementation and event-time comparison remain open.

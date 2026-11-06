@@ -128,6 +128,16 @@ recession fraction and temperature/energy error, with event localization as the
 liner approaches zero thickness. A large solver step is acceptable only after
 comparison against a refined solution, not merely because convergence occurs.
 
+The candidate bulk and local wall balances are now implemented in
+`model/moving_surface_thermochemistry.py` and `model/moving_surface_boundary.py`.
+Their mass bases, enthalpy reference, reaction update, mixed-front assumptions,
+and manufactured checks are derived in `docs/en/continuous_moving_balance.tex`.
+Verification receipts are `validation/moving_surface_thermochemistry_verification.json`
+and `validation/moving_surface_boundary_verification.json`. Next couple these
+components to the time-dependent radial conduction and front motion, checking
+the integrated balances at each accepted step and at final geometric exhaustion.
+The local verifications do not establish a coupled motor result.
+
 ### 3. Give high-temperature backing a defensible meaning
 
 For Al, obtain a documented alloy surrogate with temperature-dependent heat

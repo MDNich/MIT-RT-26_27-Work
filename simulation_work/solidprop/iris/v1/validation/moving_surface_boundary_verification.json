@@ -1,0 +1,24 @@
+{
+  "checked_utc": "2026-11-06T01:18:59.289937+00:00",
+  "passed": true,
+  "sources": {
+    "model/moving_surface_boundary.py": "8695bcba92d04b5c30aa4774c99a74099ea952335b9a323766bb31a2b18e0bb0",
+    "model/check_moving_surface_boundary.py": "f91007bc56b995d0104c3c1b084fe5dd8311e47964f820c6143fd2a34ee55abe",
+    "model/moving_surface_thermochemistry.py": "7219615b91105aa466bb4aecf126d2b7f3e8f055071f6770d5fc2b0366540e6b",
+    "model/moving_surface_remap.py": "2d1a9b29d2bf284d943e20637421b69ac7e3d9c1d02d5eeed97cb47188cbd074",
+    "model/coupler.py": "1bde9f56c22f19aa00f7ba1ebb433f9ad424a5ae67f9f591476587ce7b2b8c69",
+    "model/radial_model.py": "fca10061d1737ad298b0b760c054e45b3813556a1c89092c5127b12be14bdbb6",
+    "configs/continuous_heating_campaign.json": "b2895fa81c2d3cb3d0c520e05742cb4da26200c77c1abde61f1ed0f6070c027e"
+  },
+  "cases": [
+    "stationary virgin film-conduction",
+    "zero heat stationary virgin",
+    "isothermal pure-char energy-limited wall",
+    "mixed front with radiation and outgassing",
+    "integrated uniform mixed final shell with prescribed face state"
+  ],
+  "max_face_balance_abs_W_m2": 2.938369360641884e-09,
+  "final_shell_mass_relative_error": 1.951379914712738e-14,
+  "final_shell_energy_relative_error": 0.0,
+  "qualification": "Manufactured local wall and remap checks. No transient wall integration, independent motor prediction, native verification or physical event-time claim."
+}

@@ -1,0 +1,56 @@
+{
+  "checked_utc": "2026-11-06T01:16:35.425146+00:00",
+  "passed": true,
+  "sources": {
+    "model/moving_surface_thermochemistry.py": "7219615b91105aa466bb4aecf126d2b7f3e8f055071f6770d5fc2b0366540e6b",
+    "model/check_moving_surface_thermochemistry.py": "9c3ca85462272d32fc8a9d122150dbcc2d0e1ecd44e8536fbc90363d756f2fc9",
+    "model/moving_surface_remap.py": "2d1a9b29d2bf284d943e20637421b69ac7e3d9c1d02d5eeed97cb47188cbd074",
+    "model/radial_model.py": "fca10061d1737ad298b0b760c054e45b3813556a1c89092c5127b12be14bdbb6",
+    "configs/continuous_heating_campaign.json": "b2895fa81c2d3cb3d0c520e05742cb4da26200c77c1abde61f1ed0f6070c027e"
+  },
+  "enthalpy": {
+    "max_quadrature_difference_J_kg": 2.3283064365386963e-10,
+    "max_round_trip_K": 0.0
+  },
+  "analytic": {
+    "isothermal_reacted_kg": 0.03159483991150569,
+    "isothermal_error_K": 1.1368683772161603e-13,
+    "pure_char_heating_error_K": 0.0
+  },
+  "transient": {
+    "reference_final_C": 809.4299285721147,
+    "refinement": [
+      {
+        "steps": 8,
+        "temperature_error_K": 0.15084778606023974,
+        "virgin_mass_error_kg": 0.00012294850132280044
+      },
+      {
+        "steps": 16,
+        "temperature_error_K": 0.03761559009853954,
+        "virgin_mass_error_kg": 3.066256688211144e-05
+      },
+      {
+        "steps": 32,
+        "temperature_error_K": 0.009397948229548092,
+        "virgin_mass_error_kg": 7.661048828933037e-06
+      },
+      {
+        "steps": 64,
+        "temperature_error_K": 0.0023491106085202773,
+        "virgin_mass_error_kg": 1.9149762290893158e-06
+      }
+    ]
+  },
+  "moving_inventory": {
+    "max_mass_relative_error": 1.4415246027720596e-16,
+    "max_energy_relative_error": 1.0417173721907306e-15,
+    "applied_J": 65902.09999999996,
+    "initial_sensible_J": 129666.12093568304,
+    "exported_solid_sensible_J": 187340.8228861205,
+    "pyrolysis_J": 3153.3494262086315,
+    "exported_gas_sensible_J": 5074.048623354061,
+    "final_retained_J": 0
+  },
+  "scope": "Candidate bulk reaction, enthalpy and conservative remap with prescribed motion. Surface kinetics, conduction and motor burnthrough require separate coupled verification."
+}
