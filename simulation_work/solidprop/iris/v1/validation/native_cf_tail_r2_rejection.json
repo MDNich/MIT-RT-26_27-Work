@@ -1,0 +1,86 @@
+{
+  "passed": false,
+  "checked_utc": "2026-11-06T04:42:46.960047+00:00",
+  "runtime": "cf_tail_r2_tails204",
+  "terminal_sha256": "68f0471013e4185be099bef72e4876f950fec7f374fbdd97939e160e9925d03d",
+  "deck_sha256": "c0a2658ce9f482ac6ea7d76699262b1a07f38280af72d09d9c2fdcb6fb2229cd",
+  "export_sha256": {
+    "tail_steps.txt": "6cd99c545ea08075bc83359b346bb5882b963d1cb8382a6c59c732eb4607f96b",
+    "tail_field.txt": "75a1c94d6da38edb67443e368ff474f6a621b35315795d31744746fda847bf66",
+    "tails204.out": "8a50e84a2752ae91f4a5ef7332374240a9e2f0bf80ffbe722806c85ba1ff7f8a"
+  },
+  "warnings": 8,
+  "exit_code": 0,
+  "reason": "Tail thresholds failed: map 9.48587e-07, spread 1.00044e-10, mass 1.10159e-09, energy 0.000205866, event 0.00129093, hot field 17.688",
+  "warning_review": "All eight warnings concerned the 1e-6 W default minimum heat-flow reference on tiny final sectors. No element shape or solver errors.",
+  "reference_tests": {
+    "tails204": [
+      {
+        "ceiling_s": 0.04,
+        "largest_successive_face_change_K": 122.7574361234681,
+        "terminal_window_duration_s": 9.147780935233493
+      },
+      {
+        "ceiling_s": 0.01,
+        "largest_successive_face_change_K": 0.8195741663396348,
+        "terminal_window_duration_s": 9.178451496316132
+      },
+      {
+        "ceiling_s": 0.005,
+        "largest_successive_face_change_K": 0.3845027468812532,
+        "terminal_window_duration_s": 9.177502773932854
+      }
+    ],
+    "tailb204": [
+      {
+        "ceiling_s": 0.04,
+        "largest_successive_face_change_K": 48.07828876315625,
+        "terminal_window_duration_s": 8.251201543352078
+      },
+      {
+        "ceiling_s": 0.01,
+        "largest_successive_face_change_K": 0.8817654026386208,
+        "terminal_window_duration_s": 8.25139734174806
+      },
+      {
+        "ceiling_s": 0.005,
+        "largest_successive_face_change_K": 0.4283872354731102,
+        "terminal_window_duration_s": 8.250421300688192
+      }
+    ],
+    "tails404": [
+      {
+        "ceiling_s": 0.04,
+        "largest_successive_face_change_K": 90.70202338753256,
+        "terminal_window_duration_s": 9.164083302363595
+      },
+      {
+        "ceiling_s": 0.01,
+        "largest_successive_face_change_K": 0.44635757761489003,
+        "terminal_window_duration_s": 9.178314034485267
+      },
+      {
+        "ceiling_s": 0.005,
+        "largest_successive_face_change_K": 0.2428699762733686,
+        "terminal_window_duration_s": 9.177428969756706
+      }
+    ],
+    "tailb404": [
+      {
+        "ceiling_s": 0.04,
+        "largest_successive_face_change_K": 25.97913910047032,
+        "terminal_window_duration_s": 8.253592574130417
+      },
+      {
+        "ceiling_s": 0.01,
+        "largest_successive_face_change_K": 0.5023891735550023,
+        "terminal_window_duration_s": 8.251253836000295
+      },
+      {
+        "ceiling_s": 0.005,
+        "largest_successive_face_change_K": 0.2778381422426719,
+        "terminal_window_duration_s": 8.25035182823083
+      }
+    ]
+  }
+}

@@ -35,7 +35,7 @@ def spec(case):
     if case=='annular':
         return mode.PACKAGE,mode.RUN,'irmode64',mode.DECK,[mode.LOG,'mode_time.txt','mode_end.txt']
     if case in tail.JOBS:
-        return tail.PACKAGE,TMP/'runs'/('cf_tail_r2_'+case),case,case+'.inp',[case+'.out','tail_steps.txt','tail_field.txt']
+        return tail.PACKAGE,TMP/'runs'/('cf_tail_r3_'+case),case,case+'.inp',[case+'.out','tail_steps.txt','tail_field.txt']
     if case in snapshots.CASES:
         return snapshots.PACKAGE,TMP/'runs'/('snapshot_r2_'+case),case,case+'.inp',[case+'.out','snap_field.txt']
     job='mvchar'+case.removeprefix('char')

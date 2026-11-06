@@ -13,7 +13,7 @@ from moving_surface_remap import remap
 from ops import ROOT,TMP,atomic,disks,utc
 from prepare_native_cf_tail import PACKAGE, PLAN, RHO, H, TEMP, dual, step_reference
 
-JOBS=('tails204','tails404','tails402','tailb204','tailb404','tailb402')
+JOBS=('tails20x10','tails40x10','tails40x5','tailb20x10','tailb40x10','tailb40x5')
 
 
 def sources(job):
@@ -157,5 +157,5 @@ if __name__=='__main__':
     parser.parse_args()
     disks()
     result={job:fixture(job) for job in JOBS}
-    atomic(ROOT/'validation/cf_tail_r2_reader_fixtures.json',dict(scope='Synthetic histories only, no native output.',
+    atomic(ROOT/'validation/cf_tail_r3_reader_fixtures.json',dict(scope='Synthetic histories only, no native output.',
            preflight=result,source_sha256=digest(Path(__file__)),manifest_sha256=digest(PACKAGE/'manifest.json')))

@@ -22,7 +22,7 @@ from ops import ROOT, atomic, disks
 from prepare_model import create_mesh
 from radial_model import TABLE
 
-PACKAGE=ROOT/'configs/native_verification/cf_tail_char_smp10_r2'
+PACKAGE=ROOT/'configs/native_verification/cf_tail_char_smp10_r3'
 AUDIT=ROOT/'validation/cf_backing_audit.json'
 PLAN=ROOT/'configs/cf_backing_campaign.json'
 RHO=600.
@@ -175,7 +175,7 @@ def build(item,d,n,dt,job):
             'THETA=DXR(JR)*DTH','NMODIF,ND,RLOC*SIN(THETA),YN(JR)*PITCH,RLOC*COS(THETA)',
             '*ENDDO','*ENDDO',*connectivity,'FINISH',
             '/SOLU','ANTYPE,TRANS,NEW','THOPT,FULL','TRNOPT,FULL','TINTP,,,,1','KBC,1',
-            'AUTOTS,OFF','NSUBST,1,1,1','TIME,DTNOW','NEQIT,60','*DO,ND,1,RN*NRING',
+            'AUTOTS,OFF','NSUBST,1,1,1','TIME,DTNOW','NEQIT,60','CNVTOL,HEAT,,1e-4,2,1e-20','*DO,ND,1,RN*NRING',
             'IC,ND,TEMP,TN(ND)','*ENDDO','*DO,JR,1,NRING','ND=RN*NRING+JR',
             'IC,ND,TEMP,TN(ND)','D,ND,TEMP,TBACK','*ENDDO']
     for f in mesh['rows'][0]:
@@ -229,8 +229,8 @@ def main():
             name=item['case']; path=ROOT/'validation/cf_backing_cases'/(item['tag']+'.json')
             assert digest(path)==audit['records'][item['tag']]['sha256']
             d=json.loads(path.read_text())
-            for n,dt in ((20,.04),(40,.04),(40,.02)):
-                job=f"tail{name[0]}{n}{round(dt*100)}"
+            for n,dt in ((20,.01),(40,.01),(40,.005)):
+                job=f"tail{name[0]}{n}x{round(dt*1000)}"
                 deck,expected=build(item,d,n,dt,job)
                 p=stage/(job+'.inp');p.write_text(deck,encoding='ascii')
                 expected.update(deck_sha256=digest(p),donor_sha256=digest(path),case=name)

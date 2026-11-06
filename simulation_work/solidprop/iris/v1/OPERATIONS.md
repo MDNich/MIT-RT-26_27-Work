@@ -22,6 +22,26 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Finer time steps for final CF liner loss, November 6, 04:43 UTC
+
+R2 solved the sustainer window through the last cell with zero element errors.
+The 0.04 s calculation still exceeded the 2 K profile tolerance by reaching a
+maximum difference of 17.688 K. Both methods produced alternating face
+temperatures. On the 20-cell sustainer reference the largest adjacent-step
+change fell from 122.8 K to 0.82 K and 0.39 K at 0.01 and 0.005 s. R2 also
+emitted eight heat-flow reference warnings from the default 1e-6 W floor
+near exhaustion. Its result is rejected and archived.
+
+The six sealed R3 windows use 20 and 40 radial cells, a 0.01 s baseline ceiling
+and 0.005 s fine-mesh time refinement. They retain per-step geometrical scaling,
+the original material laws and all acceptance thresholds. The native heat-flow
+convergence tolerance is 1e-4 relative with a 1e-20 W minimum reference.
+The first native R3 job is tails20x10. Its original wrapper acknowledged the
+launch. Windows showed one ANSYS calculation with a matching parent launcher
+and a ten-core SMP request. Consult the existing series status and native
+receipts for later outcomes. The independent full-exposure results appear
+on page 1 of the 25-page report.
+
 ## Current CF terminal-window successor, November 6, 04:40 UTC
 
 The six R2 inputs rebuild disconnected nodes before recreating checked

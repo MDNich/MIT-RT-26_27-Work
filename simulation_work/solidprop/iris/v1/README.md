@@ -36,9 +36,10 @@ Pages 24–25 print the new native input and complete
 thermal-step generator.
 The final pulse control passed all 5,295 steps. The CF casing reached its
 150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner
-remaining. The continuous-study native queue started with the annular
-heat-conduction benchmark. Two full-physics pilots precede the four whole
-exposures. [Native verification status](OPERATIONS.md)
+remaining. The annular conduction test, two moving-char tests and all four
+frozen motor-field checks passed. The earlier CF terminal-window comparison
+missed its temperature tolerance. The current series tests the corrected mesh
+and smaller time steps before two pilots and four whole exposures. [Native verification status](OPERATIONS.md)
 The four continuous results above remain independent estimates.
 
 ### Initial backing comparison
