@@ -9,6 +9,7 @@ from removal_cutoff_report import create as removal_cutoff_report
 from native_cf_refinement_report import create as native_cf_refinement_report
 from native_booster_refinement_report import create as native_booster_refinement_report
 from native_sustainer_al_refinement_report import create as native_sustainer_al_refinement_report
+from early_surface_report import create as early_surface_report
 
 
 def create(root,out,captured):
@@ -222,6 +223,7 @@ def create(root,out,captured):
         else:
             parts += ['At this edition no completed native refinement pair is available. The independent refinement results below remain distinct.']
 
+    parts += early_surface_report(root,out,read)
     parts += removal_cutoff_report(root,read)
     parts += combined_sensitivity_report(root,out,read)
     convergence=read('validation/pulse_resolution.json')

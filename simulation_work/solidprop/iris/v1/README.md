@@ -9,7 +9,10 @@ Relative to the corrected 160/40-row case, casing peaks change by at most
 targets. This pair keeps the same sector measures and solver controls while
 refining radial cells and time steps together. It does not establish convergence
 of the entire hot-face history: the largest shared-sample heating difference
-is 165.81 K, before any row removal. It does not establish a motor lifetime.
+is 165.81 K, before any row removal. Six short independent checks now show
+that fixed-mesh step refinement changes that sample by less than 0.2 K, while
+mesh sensitivity persists through 1280 liner cells. These diagnostics are
+separate from native results and do not establish a motor lifetime.
 Four resolution cases and
 five deferred controls remain; observer 93981 is running sustainer CF320 on ten
 SMP cores. The earlier CF scope-time refinement failure remains unresolved.

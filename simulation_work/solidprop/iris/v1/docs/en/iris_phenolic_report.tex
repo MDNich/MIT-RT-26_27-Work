@@ -13,7 +13,7 @@ frame=single,framerule=.2pt,rulecolor=\color{black!25},
 xleftmargin=22pt,framexleftmargin=3pt,aboveskip=9pt,belowskip=9pt}
 \title{\sc Thermochemical Simulation of the Iris Phenolic Liners\\\large Detailed Physics, Implementation and Accepted Results}
 \author{\sc MIT Rocket Team --- Solid Propulsion Simulations}
-\date{November 05, 2026 at 19:12 UTC-05:00}
+\date{November 05, 2026 at 19:42 UTC-05:00}
 \begin{document}\maketitle
 \markboth{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}{IRIS PHENOLIC: PHYSICS, IMPLEMENTATION AND RESULTS}
 \begin{center}\includegraphics[height=1.1cm]{logos/rtlogo.pdf}\hspace{2cm}\includegraphics[height=.65cm]{logos/ansys.png}\end{center}
@@ -364,7 +364,7 @@ The user's storage floors are 400 GB decimal free on the Mac disk and 10 GB free
 Native results/restarts remain in ignored storage. Major setup and report milestones are pushed to GitHub after verification; staged files and new Git objects at or above 100 MB are rejected. Reports freeze accepted state indices and source hashes. Recovery preserves the failed run and matches native restart state with controller state before continuation.
 
 \section{Accepted results at this edition}
-This snapshot was frozen at November 05, 2026 at 19:12 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
+This snapshot was frozen at November 05, 2026 at 19:42 UTC-05:00. The table and primary histories use corrected midpoint cases only, with tighter heat-flow convergence and strict single-substep accounting. Historical results remain in their explicitly labelled verification sections. Longer runs are displayed only as their states are accepted; queued cases do not acquire predicted ANSYS values. These results are provisional until spatial and temporal comparisons are complete. No burnthrough event has been accepted. The table gives hot-face temperature at the listed endpoint, after cooling; heating maxima are in Section~\ref{sec:temperature-locations}.
 \begin{table}[H]\centering\scriptsize
 \begin{tabular}{lrrrr}\toprule
 Run & Time [s] & Endpoint $T_s$ [$^\circ$C] & Remaining [mm] & Energy error [\%]\\\midrule
@@ -709,6 +709,27 @@ The exposed phenolic mean at 7 s changes from 1438.802 to 1444.034 degrees Celsi
 \begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/native_sustainer_al_refinement.pdf}\caption{Completed native sustainer aluminium histories with common geometry and solver controls. Left: exposed phenolic mean during heating. Right: inner-casing temperature through the full cooling horizon; dots mark sampled peaks. Radial cells double and coupling steps halve together. These are conditional numerical results, not measured motor temperatures or allowable firing times.}\end{figure}
 
 4 prepared native resolution cases remain without terminal accepted comparisons at this edition. The primary histories remain separate from these refinements; the hot-face time comparison is reported earlier.
+
+\subsection{Independent diagnosis of the early surface discrepancy}
+
+Six short independent calculations isolate the first two seconds of the sustainer Al heating model. They use the same physical inputs as the completed native 320/80-row case, retain the same surface-consumption rule, and do not modify any native package. Every calculation completes 2 s without row removal or a casing-property flag. Maximum relative equation-balance residuals are 8.2e-12 for energy and 6.77e-16 for mass. At the three shared sampling times, the matching 160- and 320-row independent cases reproduce the accepted native surface temperatures within 0.00068 K.
+
+\begin{table}[H]\centering\scriptsize\begin{tabular}{rrrr}\toprule Liner/casing cells & Step [s] & Surface at 1.24375 s [$^\circ$C] & Surface at 2 s [$^\circ$C]\\\midrule
+
+160/40 & 0.00312500 & 1056.068 & 1278.918 \\
+160/40 & 0.00019531 & 1055.987 & 1279.405 \\
+320/80 & 0.00156250 & 1221.877 & 1339.535 \\
+320/80 & 0.00019531 & 1222.056 & 1339.718 \\
+640/160 & 0.00019531 & 1261.280 & 1363.387 \\
+1280/320 & 0.00004883 & 1280.058 & 1373.442 \\
+
+\bottomrule\end{tabular}\caption{Independent early-heating results, not new ANSYS runs. The first and third rows match the completed native schedules; other rows are diagnostic refinements.}\end{table}
+
+At the disputed 1.24375 s sample, reducing the step at fixed mesh changes the 160- and 320-row values by only 0.081 and 0.178 K. At the common smaller step, their radial-mesh difference remains 166.069 K. The 640-to-1280-row pair still changes this sample by 18.778 K; that last pair also quarters the step and is explicitly a joint comparison. The large early discrepancy is therefore predominantly a mesh effect in these tests, rather than a native/reference mismatch or a whole-row transfer jump. No complete hot-face convergence claim follows.
+
+The implemented available-char cap uses the mass and mean conversion of the current surface row. Refinement changes that mass, the sampled reaction state and their coupled surface energy sink. These checks do not isolate one term as the sole cause or calibrate this cell-based removal closure. Passing casing-peak and retained-mesh targets does not settle this local surface-history sensitivity. The two-second diagnostics are neither a longer firing calculation nor a burnthrough-time estimate.
+
+\begin{figure}[H]\centering\includegraphics[width=\textwidth]{../analysis/independent_early_surface_resolution.pdf}\caption{Independent early surface histories for the smaller-step mesh checks. The vertical line marks the disputed sample. The 160/320/640-cell curves share one time step; the 1280-cell curve uses a step four times smaller. No material row has been removed anywhere in these histories.}\end{figure}
 
 \subsection{Sensitivity to the row-removal cutoff}
 

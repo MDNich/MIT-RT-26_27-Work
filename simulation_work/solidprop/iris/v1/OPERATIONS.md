@@ -71,6 +71,33 @@ backups, logs and inputs remain intact. Receipt:
 `validation/guest_result_archive_20261106.json`. The active CF320 solver was
 unaffected. Recheck actual growth/capacity before later 320/640 cases.
 
+### Independent early-surface diagnosis (November 5, 19:42 EST)
+
+Six independent two-second calculations now separate early mesh/time effects.
+They are **not native ANSYS results** and never enter the serial native queue.
+All finish with zero removed rows and no material-scope crossing; maximum energy
+and mass residuals are 8.20e-12 and 6.77e-16. Six shared native surface samples
+from the 160/320 schedules agree within 0.000683 K. Full configurations, source
+hashes and archived producer/model/configuration files are pinned in
+`validation/early_surface_resolution.json`.
+
+At 1.24375 s, reducing dt from 0.003125 to 0.0001953125 s at 160 rows changes
+surface temperature by only 0.08103 K; reducing dt from 0.0015625 to the same
+smaller step at 320 rows changes it by 0.17818 K. The common-step 160-to-320
+mesh difference remains 166.06864 K. At that same step, 640 rows give
+1261.27988 C; 1280 rows with a further quarter-step give 1280.05801 C.
+The last 18.77812 K difference is a joint mesh/time change, not isolated mesh
+error. Full hot-face history convergence remains unestablished. The row's
+available-char mass and conversion enter the coupled consumption/energy cap;
+these tests identify predominant mesh sensitivity, not one uniquely isolated
+term or a validated continuum ablation law. They are not lifetime calculations.
+
+The short diagnostic worker has finished. Do not duplicate it from a stale PID.
+Its exact source is archived by hash under `validation/source_archive`; the
+ignored original is `ansystmp/heartbeat_checks/check_early_surface_resolution.py`.
+The updated report includes the paired-step table and early heating curves.
+The native queue, sealed input packages and thresholds are unchanged.
+
 ## Previous corrected-geometry queue record (November 5, 15:40 UTC)
 
 The following record is historical; active runtime and counts are superseded above.
