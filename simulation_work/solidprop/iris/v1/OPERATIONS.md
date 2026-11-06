@@ -22,6 +22,26 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Independent liner-energy audit, November 5, 23:16 EST
+
+The twelve completed evolving-casing film scenarios now have a separate
+terminal energy check. It recovers the original annular mass from the motor
+dimensions, species inventories from the fixed char yield, and the chemical
+energy from the consumed virgin and expelled char. Finite-volume histories
+match those identities within a fractional error of 1.4e-12. All nodal FE
+terminal states were checked independently. The two methods agree on film dose
+within 0.044% over these cases. No additional motor integration was needed.
+
+The largest energy term is the assumed 35 MJ/kg removal cost per kg of char.
+Nominal char consumption costs 106.0 MJ per original square metre on the
+sustainer and 139.9 MJ/m² on the booster. The 24-page continuous-heating
+report shows how this compares with casing storage, gas and ambient loss.
+The audit is in `validation/liner_exhaustion_energy.json`. A local rejection
+check tested an incorrect initial radius, unconsumed terminal virgin material
+and four damaged ledger quantities. The CF320 native run remained under its
+original observer. Its 22.5 s prefix passed the heat, mass, transfer and
+cooling checks at 04:11 UTC on November 6.
+
 ## Serial native continuation after CF320, November 5, 23:03 EST
 
 The existing guarded launcher now also supports `annular series`. Use it once

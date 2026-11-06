@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 5, 22:58 EST
+## Continuous heating to liner exhaustion, November 5, 23:16 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -27,7 +27,12 @@ uninterrupted gas exposure from the first contact with bare phenolic.
 The gas-film coefficients are in W/(m² K). The physical gas temperature and
 pressure assumptions are the same in all three columns. The table isolates the
 effect of the applied film coefficient. The actual firing heat flux is unknown.
-Pages 22–23 print the new native input and complete thermal-step generator.
+Page 15 traces the initial mass into char, gas and chemical energy. Across
+all twelve sustained exposures the assumed removal cost of 35 MJ/kg of char
+accounts for 79.7–87.3% of film energy. The two independent methods agree
+on integrated film energy within 0.044%. Their heat input and char law still
+need physical calibration. Pages 23–24 print the new native input and complete
+thermal-step generator.
 The two full-physics pilot and four whole-exposure MAPDL cases are prepared.
 The four continuous results above remain independent estimates.
 
