@@ -22,6 +22,49 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Whole-sector inputs and independent event checks, November 5, 22:33 EST
+
+Twelve independent radial finite-element exposures completed. Mesh comparisons
+double the liner/casing counts from 80/20 to 160/40 at 0.04 s. Time comparisons
+halve the step ceiling to 0.02 s on the finer mesh. All reach zero geometrical
+liner thickness. Across the four motors, those endpoints differ from the
+separately audited 640/160-cell finite-volume models by 0.039 to 0.073 s.
+All pass their provisional casing property limits first. Their common exposure
+and material assumptions still dominate the physical interpretation.
+The independent jobs exited. Their receipts and retained sample hashes are in
+`validation/sector_exposure_reduction.json`.
+
+The input package `configs/native_verification/whole_sector_r1/` contains
+two 0.1 s pilots and four whole-exposure jobs, each with 80/20 radial rows,
+two angular and two axial divisions. Each production job starts from uniform
+22 °C, solves both materials through their common interface, and locates
+exhaustion from the advancing surface. The 220 s ceiling is a missing-event
+guard. MP, real constants and applied loads are updated inside one persistent
+ten-core solver using an embedded Python controller. The compressed controller
+contains only text source. Keep it and its configuration hashes immutable.
+The file `model/sector_mapdl.py` generates the complete brick commands.
+
+Windows' bundled Python 3.10.19 imported the sealed controller and independently
+assembled its generated SOLID278 conduction, MASS71 capacities, and boundary
+loads using eight volume quadrature points per brick. This is a Python preflight.
+It covered both short pilots, the first liner cell merge, aluminium fusion or
+CF heating above 1000 °C, and the last live increment of each whole run. Every
+temperature differed from the independently reduced linear system by less than
+1e-9 K. The actual MAPDL integration and its terminal logs still require review.
+
+The sole active native process remains the protected CF320 pulse verification
+under observer 28607. After its terminal records and the previously specified
+annular, moving-char, frozen-field and six CF-tail controls have passed, use
+`run_native_wall_verification.py` for pilotwal, pilotwcf, wallsa, wallsc,
+wallba and wallbc in order. No additional queue was launched. Readiness and
+wrapper checks are read-only. For a new dispatch use the guarded launcher.
+A worker writes post-reaction state and ledgers to a host checkpoint every
+half simulated second and archives the full free nodal field from every
+native thermal solve. On exit the collector verifies output and input hashes,
+ten-core startup, solver messages, the field archive and a replay of all
+material/energy updates. Inspect failures before preparing any successor.
+Never resume a stopped or interrupted job by overwriting its directory.
+
 ## CF end-of-exposure native inputs, November 5, 22:07 EST
 
 Six ten-core SOLID278 decks now cover the last part of each CF exposure.

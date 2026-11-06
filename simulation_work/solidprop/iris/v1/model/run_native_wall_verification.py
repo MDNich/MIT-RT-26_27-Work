@@ -16,6 +16,7 @@ import audit_native_moving_char as moving
 import audit_native_conduction_mode as mode
 import native_snapshot_verification as snapshots
 import audit_native_cf_tail as tail
+import audit_sector_exposures as whole
 from continuous_heating_campaign import digest
 from ops import ROOT, TMP, UNC, StorageLimitError, atomic, disks, guest, stop_runs, utc
 
@@ -26,6 +27,8 @@ if($solvers.Count){throw 'Another native solver or wrapper is active'}
 
 
 def spec(case):
+    if case in whole.JOBS:
+        return whole.PACKAGE,TMP/'runs'/('sector_'+case),case,case+'.inp',[case+'.out','sector_fields.zip','sector_terminal.json']
     if case=='annular':
         return mode.PACKAGE,mode.RUN,'irmode64',mode.DECK,[mode.LOG,'mode_time.txt','mode_end.txt']
     if case in tail.JOBS:
@@ -77,6 +80,30 @@ def prerequisites(case):
             record = p/(name+'.json')
             if not record.is_file() or not json.loads(record.read_text()).get('passed'):
                 reasons.append('Pending acceptance of '+name)
+    if case in whole.JOBS:
+        prior=['native_cf_terminal_window_'+j for j in tail.JOBS]
+        prior+=['native_whole_sector_'+j for j in whole.JOBS[:whole.JOBS.index(case)]]
+        for name in prior:
+            record=p/(name+'.json')
+            if not record.is_file() or not json.loads(record.read_text()).get('passed'):
+                reasons.append('Pending acceptance of '+name)
+        expected,_=whole.load_job(case)
+        for name in ('sector_exposure_reduction','sector_pilot_fixtures','sector_guest_preflight'):
+            proof=p/(name+'.json')
+            if not proof.is_file():
+                reasons.append('Missing '+name)
+                continue
+            record=json.loads(proof.read_text())
+            if name=='sector_exposure_reduction':
+                valid=record.get('passed') and digest(proof)==expected['independent_reference_sha256']
+            elif name=='sector_pilot_fixtures':
+                valid=(record.get('synthetic_only') and record.get('archive_sha256')==expected['controller_sha256']
+                       and record.get('auditor_sha256')==digest(ROOT/'model/audit_sector_exposures.py'))
+            else:
+                valid=(record.get('passed') and record.get('package_sha256')==expected['controller_sha256']
+                       and record.get('audit_sha256')==digest(ROOT/'model/check_sector_guest.py')
+                       and len(record.get('stations',{}))==4)
+            if not valid: reasons.append('Mismatched '+name)
     return reasons
 
 
@@ -189,6 +216,8 @@ def collect(case,run,job):
         raise RuntimeError('Registry belongs to another job')
     if case=='annular':
         subprocess.run([sys.executable,str(ROOT/'model/audit_native_conduction_mode.py'),'audit'],check=True)
+    elif case in whole.JOBS:
+        whole.audit(job,run)
     elif case in snapshots.CASES:
         snapshots.audit(case,run)
     elif case in tail.JOBS:
@@ -200,7 +229,7 @@ def collect(case,run,job):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('case',choices=('annular','char8','char16',*snapshots.CASES,*tail.JOBS))
+    p.add_argument('case',choices=('annular','char8','char16',*snapshots.CASES,*tail.JOBS,*whole.JOBS))
     p.add_argument('action',choices=('readiness','check-wrapper','launch','collect'))
     args=p.parse_args()
     disks()

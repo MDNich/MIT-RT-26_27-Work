@@ -6,6 +6,19 @@ burned through, and propose improvements to the simulated model. This replaces
 the previous priority of completing every seven-second pulse refinement first.
 Earlier accepted results remain available as regression evidence.
 
+## Whole-wall verification milestone, November 5 at 22:33 EST
+
+The second spatial discretization now carries nodal liner and backing mass and
+enthalpy from ignition to the final moving-surface event. Its four refined
+endpoints agree with the finite-volume model within 0.073 s. Native setup now
+covers both backings throughout exposure with no prescribed casing temperature
+or empirical time-to-event input. The two short native pilots precede the four
+whole-wall exposures. The full-field output reader must independently reconstruct
+the applied loads, heat balance, material histories and terminal event before
+any native lifetime comparison is eligible. The active CF320 control and the
+earlier native prerequisites retain their original sequence. See the current
+operations record for the sealed inputs and the completed Windows preflight.
+
 ## Verified scope and remaining native work, November 5 at 22:08 EST
 
 All eight independent CF calculations and their restart, mass, open-system
