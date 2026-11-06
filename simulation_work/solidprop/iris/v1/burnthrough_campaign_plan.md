@@ -6,6 +6,21 @@ burned through, and propose improvements to the simulated model. This replaces
 the previous priority of completing every seven-second pulse refinement first.
 Earlier accepted results remain available as regression evidence.
 
+## CF backing verification and continuous cases, November 5 at 21:50 EST
+
+A separate eight-case independent campaign now couples the two competing
+T700/M21 reaction channels to temperature, mass loss, gas enthalpy and radial
+conductivity in each casing cell. It holds the dimensions fixed and vents
+generated backing gas locally at its formation temperature. Liner gases still
+enter the inherited blowing law. Resin conversion, the original 150 °C flag,
+the 1000 °C literature ceiling and exhaustion each have separate event records.
+The fine runs use 640 liner and 160 casing cells. Compare 320 versus 640 at
+0.04 s, then 0.04 versus 0.02 s at 640, then the alternative catalyst at 0.02 s.
+The scope is a literature surrogate under sustained heating. A two-cell coupon
+first checked the coupling against an independently integrated temperature-form
+ODE. Each refinement must pass its own record, source, mass and energy checks
+before publication. Native dispatch remains gated by the existing CF320 run.
+
 ## Progress on November 5 at 21:27 EST
 
 The conservative moving-face radial model, its manufactured checks, and the
