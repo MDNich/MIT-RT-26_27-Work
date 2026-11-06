@@ -36,6 +36,17 @@ native window separately from a native run that solves the entire history.
 
 ## Heating sensitivity with evolving backings
 
+The nominal energy audit attributes about four-fifths of the heat supplied to
+the assumed energy needed to remove char. To test this assumption with each
+evolving casing, rerun the existing 17.5 and 70 MJ/kg scenarios about the
+35 MJ/kg nominal value. Keep gas temperature, film coefficient, pressure,
+kinetics and initial liner geometry fixed. Start with 320/80 and 640/160
+liner/casing cells at 0.04 s; halve the maximum step on the fine mesh. Check
+adjacent final-step brackets, thickness histories, heat balance and an
+independently assembled 160/40-cell finite-element model. A failed coordinate
+gets only the predeclared consecutive refinements. Publish the outcome
+separately from experimental calibration or native ANSYS verification.
+
 Repeat the earlier 500 and 2000 W/(m² K) gas-film scenarios with the
 caloric aluminium and reacting CF backings used for the nominal estimates.
 The imposed gas temperature stays at 2504 K, pressure at 800 psi and initial
