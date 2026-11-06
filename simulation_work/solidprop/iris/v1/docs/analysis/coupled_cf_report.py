@@ -91,16 +91,18 @@ kilogram of char gives 72--185 s for the aluminium sustainer
 and liner recession would constrain the physical estimate.
 
 \paragraph{Verification.}
-The four nominal burnthrough times come from a conservative radial finite-volume
-solver. A second finite-element calculation from ignition gives endpoints within
-0.073 s for all four cases (Section~\ref{sec:sectorcheck}). Both use the same
-gas exposure and material inputs. Native ANSYS verifies the final char layer
-in both CF cases with a prescribed casing temperature (Section~\ref{sec:nativecfend}).
-Section~\ref{sec:whole} gives the full native runs that passed audit. FULLSTATUS
+Each native calculation started with both bodies at 22~$^\circ$C and
+continued to zero liner thickness (Section~\ref{sec:whole}). The prescribed
+gas is 2231~$^\circ$C. The highest sampled exposed solid surface temperature
+in the four native runs was about 1077~$^\circ$C (1350~K).
+The two independent methods at matched fine resolution gave event times
+within 0.008~s of each other. Their last integration intervals are disjoint
+(Section~\ref{sec:matched}). Table values support a seconds-scale comparison
+for this loading. The actual time for the firing motor depends on the delivered
+heat and the response of the manufactured wall.
 \clearpage
 """.replace('SUMMARY','\n'.join(summary))
     executive=executive.replace('SUSTAINERRANGE',film_ranges[0]).replace('BOOSTERRANGE',film_ranges[1])
-    executive=executive.replace('FULLSTATUS', 'A dash marks a pending full native run.' if len(whole)<4 else 'All four native runs started at ambient temperature.')
     body=r"""
 \section{CF casing heat, gas loss and liner exposure}\label{sec:coupledcf}
 The backing now feeds its changing mass, heat storage and through-thickness

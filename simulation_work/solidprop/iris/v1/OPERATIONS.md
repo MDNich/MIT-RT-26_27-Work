@@ -22,6 +22,19 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Four full native cases complete, November 6, 06:51 UTC
+
+The final CF booster passed strict native replay at 06:45:50 UTC. Its 3,590
+native thermal solves consumed the full 6.350 mm liner in 138.04124 s at the
+nominal continuous load. The casing crossed 1000 °C by 129.78 s. Approximately
+0.404 mm of liner remained at that time. The independent FV event was
+137.94644 s. The nearest ends of their last integration steps differ by
+0.05882 s. The largest thickness difference on the common grid was 0.00464 mm.
+The unrestricted four-case comparison passed its event and thickness targets.
+The native series has exited and the run registry is empty. Do not dispatch
+further native cases. The 24-case independent sensitivity series is the
+remaining active worker. Check its completion and full audit before publication.
+
 ## Matched event-time comparison complete, November 6, 06:33 UTC
 
 The seven unchanged parent records and five successor paths passed all original

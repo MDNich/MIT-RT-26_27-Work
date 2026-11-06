@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 6, 01:33 EST
+## Continuous heating to liner exhaustion, November 6, 01:51 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -35,7 +35,7 @@ need physical calibration. Page 16 compares accepted native benchmarks with anal
 Page 17 compares mesh and time refinement in both native CF end windows.
 Page 18 gives separate terminal checks with the casing and liner solved together for all four motors.
 Page 19 compares complete native and independent runs from first gas contact
-for both 4.7625 mm sustainers and the 6.350 mm aluminium booster. With the aluminium casing, ANSYS reached zero
+for both 4.7625 mm sustainers and both 6.350 mm boosters. With the aluminium casing, ANSYS reached zero
 phenolic at 110.576 s and the independent model at 110.474 s. About 0.430 mm
 remained when all aluminium had melted at 99.14 s. With the carbon-fibre
 casing, ANSYS reached zero at 104.332 s and the independent model at
@@ -62,7 +62,9 @@ ANSYS consumed the last 0.453 mm of char in the sustainer and 0.404 mm in the
 booster in 9.177 s and 8.250 s, respectively. Both calculations prescribe the
 interface temperature from the independent model at 95.08 s and 129.70 s onward.
 Changing either mesh or time resolution shifted each end-window duration by
-less than 0.001 s. The carbon-fibre booster is the remaining full native case.
+less than 0.001 s. The native carbon-fibre booster reached zero at 138.041 s. Its casing reached
+1000 °C at 129.78 s with approximately 0.404 mm of phenolic remaining.
+All four native full exposures passed replay and conservation checks.
 [Native verification status](OPERATIONS.md)
 The four entries in the film-coefficient table come from the independent model.
 
