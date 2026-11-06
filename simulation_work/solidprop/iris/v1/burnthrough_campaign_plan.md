@@ -59,6 +59,17 @@ finite-element solution at the same loading. The 360 s ceiling is an
 explicit no-event outcome if the liner survives. These are controlled input
 changes. Actual firing heat transfer and pressure-casing integrity remain open.
 
+Complete the gas-side comparison on the evolving cases with the six remaining
+previously defined probes. Run 600 and 1000 psi at fixed film and gas temperature,
+effective hot-side emissivity 0.10 and 0.30 at fixed radiating temperature,
+and 0.9 and 1.1 times the baseline gas-to-initial-wall temperature difference
+at zero hot-side emissivity. Each probe changes a single physical input.
+Retain the finite-volume time and mesh checks, independent nodal comparison,
+and liner and casing heat and mass balances. Report radiation and convective
+doses separately on the original hot-face area. Treat a surviving liner at the
+360 s horizon as a censored result, and label any failed comparison. The three
+pairs test assumed loads, without assigning their values a probability.
+
 ## Whole-wall verification milestone, November 5 at 22:33 EST
 
 The second spatial discretization now carries nodal liner and backing mass and
