@@ -22,6 +22,27 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Native sector preflight, November 5, 21:44 EST
+
+The original four frozen-field decks left the element's heat-capacity option
+at its default. In a SOLID278 conduction analysis the default uses diagonal
+storage, while these checks specify a consistent capacity matrix. The first
+package was never dispatched. Only `motor_snapshots_30s_smp10_r2` may run.
+Its decks explicitly select KEYOPT(15)=2 and backward Euler. The official
+[ANSYS element reference](https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_SOLID278.html)
+documents the option.
+
+A separate three-dimensional brick assembly read the printed connectivity,
+coordinates, initial temperatures, source and boundary loads of each deck.
+All four sets of 9,090 nodal comparisons against the independent radial
+reference passed before native execution. The reader checks native storage
+against the total applied energy at each increment as well as ring spread and
+all nodal temperatures. See `validation/native_snapshot_preflight.json`.
+The same guarded dispatcher recognizes the four motor names after annular,
+char8 and char16 have successful native receipts. Its native motor order is
+sustainer Al, sustainer CF, booster Al, booster CF. The existing CF320
+observer alone owns the current native run.
+
 ## Native verification handoff, November 5, 21:37 EST
 
 The sole native job is still the 320-row sustainer CF pulse under its active-only
