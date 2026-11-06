@@ -262,7 +262,7 @@ loads held fixed over that interval.
 TAILMM~mm of char in TAILSEC~s on 20 radial cells. The starting temperature and
 the casing temperature history came from the independent model at and after
 STARTSEC~s of continuous exposure. The maximum nodal difference from the matched
-calculation was TAILDIFF~K. Native verification from first exposure remains open.
+calculation was TAILDIFF~K. Section~\ref{sec:whole} gives the separate full-exposure checks.
 
 \paragraph{Separate pulse control.} In the final 320-row CF control, heating
 ended at 7~s. The casing continued to warm during cooling and first exceeded

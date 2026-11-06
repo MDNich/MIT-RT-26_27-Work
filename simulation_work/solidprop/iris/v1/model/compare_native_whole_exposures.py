@@ -1,9 +1,11 @@
 """Compare only accepted ambient-to-exhaustion MAPDL runs with the independent FV scenarios."""
+import argparse
 import json
 from pathlib import Path
 
 import numpy as np
 
+from audit_liner_energy import analyze
 from audit_sector_endpoint import sha
 from ops import ROOT, TMP, atomic, disks
 from prepare_sector_endpoint import PACKAGE
@@ -59,7 +61,14 @@ def case(job):
     other_limit='backing_1000_C' if cf else 'all_liquid'
     assert receipt['events']==e and e['exhaustion'][1]==history[-1]['time_s']==native_end
     assert e[other_limit][1]<native_end and abs(history[-1]['remaining_mm'])<1e-9
+    assert sha(ROOT/'model/audit_sector_endpoint.py')==receipt['auditor_sha256']
+    energy=analyze(fv,data['settings'],data['record'])
+    live=[s for s in history if s['remaining_mm']>0]
+    peak=max(live,key=lambda s:s['hot_C'])
     detail=compare_history(history,fv['history'])
+    n_interval=e['exhaustion']
+    f_interval=fv['events']['exhaustion']
+    gap=max(0.,max(n_interval[0],f_interval[0])-min(n_interval[1],f_interval[1]))
     original=fv['history'][0]['remaining_mm']
     limits=dict(event_relative=.01,thickness_mm=max(.02,.01*original))
     numerical_agreement=(abs(native_end/fv_end-1)<limits['event_relative'] and
@@ -67,6 +76,12 @@ def case(job):
     return dict(case=name,job=job,initial_mm=original,native_blocks=receipt['native_blocks'],
                 native_end_s=native_end,independent_end_s=fv_end,native_minus_independent_s=native_end-fv_end,
                 preceding_casing_event=other_limit,casing_event_bracket_s=e[other_limit],
+                native_event_bracket_s=n_interval,independent_event_bracket_s=f_interval,
+                event_intervals_overlap=gap==0.,event_interval_gap_s=gap,
+                native_events=e,peak_sampled_live_face_C=peak['hot_C'],peak_sample_time_s=peak['time_s'],
+                heat_dose_MJ_m2=dict(native=energy['FE']['film_MJ_m2'],finite_volume=energy['FV']['film_MJ_m2']),
+                native_char_percent=energy['FE']['char_percent'],
+                species_and_reaction_error=energy['max_mass_or_chemical_energy_fractional_error'],
                 native_balance_errors=receipt['balances'],native_max_block_error_K=receipt['max_field_error_K'],
                 common_times=detail,limits=limits,meets_event_and_thickness_targets=bool(numerical_agreement),
                 native_evidence_sha256=sha(evidence),fv_sha256=sha(fv_path),history=history)
@@ -74,11 +89,23 @@ def case(job):
 
 def main():
     disks()
-    results=[case(job) for job in ('wall2sa','wall2sc','wall2ba','wall2bc')]
-    assert len({r['case'] for r in results})==4
-    atomic(ROOT/'validation/native_whole_exposure_comparison.json',dict(
-        eligible_for_motor_lifetime=False,source_sha256=sha(Path(__file__)),cases=results,
-        meets_all_event_and_thickness_targets=all(r['meets_event_and_thickness_targets'] for r in results),
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--accepted-only',action='store_true',help='Write a partial comparison using completed native audits.')
+    args=parser.parse_args()
+    jobs=('wall2sa','wall2sc','wall2ba','wall2bc')
+    accepted=[j for j in jobs if (ROOT/f'validation/native_sector_r2_{j}.json').is_file()]
+    if not accepted or (not args.accepted_only and len(accepted)!=len(jobs)):
+        raise SystemExit(f'Accepted whole-exposure runs: {len(accepted)}/{len(jobs)}')
+    out=ROOT/'validation/native_whole_exposure_comparison.json'
+    if out.exists() and not set(read(out)['accepted_jobs']).issubset(accepted):
+        raise ValueError('Previously accepted case is missing')
+    results=[case(job) for job in accepted]
+    atomic(out,dict(
+        complete_four_cases=len(accepted)==len(jobs),accepted_jobs=accepted,
+        pending_jobs=[job for job in jobs if job not in accepted],
+        eligible_for_motor_lifetime=False,source_sha256=sha(Path(__file__)),
+        energy_auditor_sha256=sha(ROOT/'model/audit_liner_energy.py'),cases=results,
+        accepted_cases_meet_event_and_thickness_targets=all(r['meets_event_and_thickness_targets'] for r in results),
         scope='Native and independent times from first gas exposure under continuous nominal heating, with surrogate backing beyond its material limits.'))
 
 

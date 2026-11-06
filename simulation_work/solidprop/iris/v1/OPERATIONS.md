@@ -22,6 +22,48 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## First complete native liner exposure and char-cost study, November 6, 05:39 UTC
+
+The aluminium sustainer started at 22 °C with 4.7625 mm of exposed liner and
+reached zero thickness at 110.57596 s. It crossed the baseline casing flag by
+50.66 s, began Al fusion by 84.12 s and finished fusion by 99.14 s. The
+independent finite-volume event was 110.47356 s. Over 220 common half-second
+stations the largest thickness difference was 0.00403 mm. The raw last
+integration intervals are separated by 0.06624 s. Both computations assume
+continuous 2504 K gas, the nominal film and 800 psi, with molten Al retained.
+
+The original queue stopped after the run at its output review. MAPDL reported
+zero warnings and errors at solver exit and then issued exactly one ten-core
+SMP performance notice. The revised reader verifies its full wording and
+placement between the zero totals and the statistics trailer. Six injection
+checks rejected altered text, an early warning, duplicates, a nonzero count,
+a missing completion stamp or an error. The six startup/terminal fixtures were
+rechecked. No new thermal solve was needed. Direct replay on macOS observed
+a 1.07e-12 s deviation at the penultimate shortened increment. A standalone
+postprocessor using Windows CPython now replays all archived fields from cold
+with the original, sealed SET-time, topology and temperature tolerances.
+For the first motor the entire checkpoint and terminal record reproduced
+exactly. The largest radial temperature discrepancy was 1.98e-9 K. The original
+output, failed host audit, launch and receipt are retained in the runtime.
+
+The previous series status is archived as
+`ansystmp/native_series_through_wall2sa_review.json`. After successful collection
+and explicit idle/readiness checks, a single ten-core series starting at
+`wall2sc` continues to `wall2ba` and `wall2bc`. Check `ansystmp/native_wall_series.json`,
+`active_runs.json`, and live processes before acting. Run the comparison script
+with `--accepted-only` for intermediate releases. Its default requires all four.
+
+All eight additional char-removal energy scenarios passed their independent
+mesh, time, inventory and second-solver checks, recorded in
+`validation/evolving_removal_cost.json`. The next independent worker,
+`check_whole_event_intervals.py`, uses the sealed R2 radial equations and changes
+radial cells and time step separately through 640 liner cells and a 0.0025 s
+ceiling. It compares the raw last interval with the finer FV reference and
+preserves conditional scope. Check `ansystmp/whole_event_intervals/{status.json,run.log,complete.json}`
+and the shared independent worker lock. Never dispatch another native job to
+repeat this postprocessing. A final timing comparison should distinguish matched
+native-equation replay, convergence within each method, and cross-method intervals.
+
 ## Coupled native terminal controls complete, November 6, 05:14 UTC
 
 Both revised startup cases and all four near-exhaustion checks passed. On the

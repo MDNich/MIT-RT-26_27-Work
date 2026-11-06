@@ -9,7 +9,7 @@ import numpy as np
 ROOT=Path(__file__).resolve().parents[2]
 
 
-def build(inputs, film_ranges):
+def build(inputs, film_ranges, whole):
     def track(p):
         sha=hashlib.sha256(p.read_bytes()).hexdigest()
         inputs[str(p.relative_to(ROOT))]=sha
@@ -37,8 +37,12 @@ def build(inputs, film_ranges):
         rows.append(f'{label} & {half_i:.1f} & {half_o:.1f} & {ceiling:.1f} & {left:.2f} & {end:.1f} '+r'\\')
         al_tag=stage+'_al_phase_n640_ms20_mK500'
         al_event=al['records'][al_tag]['events']
-        summary.extend([f'{label} Al & {hist[0]["remaining_mm"]:.2f} & {al_event["exhaustion"][1]:.1f} & All Al liquid at {al_event["all_liquid"][1]:.1f} s '+r'\\',
-                        rf'{label} CF & {hist[0]["remaining_mm"]:.2f} & {end:.1f} & Casing reaches 1000 $^\circ$C at {ceiling:.1f} s '+r'\\'])
+        for material,t_final,casing in [('al',al_event['exhaustion'][1],f"All Al liquid at {al_event['all_liquid'][1]:.1f} s"),
+                                        ('cf',end,rf"Casing at 1000 $^\circ$C at {ceiling:.1f} s")]:
+            key=stage+'_'+material
+            native=f"{whole[key]['native_end_s']:.1f}" if key in whole else '---'
+            summary.append(f'{label} {material.upper() if material=="cf" else "Al"} & {hist[0]["remaining_mm"]:.2f} & '
+                           f'{t_final:.1f} & {native} & {casing} '+r'\\')
         t=np.array([r['time_s'] for r in hist])
         i=np.searchsorted(t,ceiling)
         data=[100*(1.-np.array([r['backing_retained_kg_per_rad_m'] for r in hist])/hist[0]['backing_retained_kg_per_rad_m']),
@@ -64,8 +68,8 @@ exposes the casing after about 104--111 s in the sustainer and 138--148 s in
 the booster. The clock starts when hot gas first reaches bare phenolic.
 Burnthrough occurs when the moving char surface reaches the casing.
 \begin{table}[H]\centering
-\begin{tabular}{lrrl}\toprule
-Motor & Liner [mm] & Liner gone [s] & Earlier casing event \\\midrule
+\small\begin{tabular}{lrrrl}\toprule
+Motor & Liner [mm] & Radial [s] & ANSYS [s] & Earlier radial casing event \\\midrule
 SUMMARY
 \bottomrule\end{tabular}
 \end{table}
@@ -81,7 +85,9 @@ scenarios. The casing can lose pressure capacity while phenolic remains.
 Halving and doubling the nominal film coefficient gives SUSTAINERRANGE s for
 the sustainers and BOOSTERRANGE s for the boosters with the evolving casings.
 Section~\ref{sec:film} gives all twelve times and the heat flux entering the
-liner. These are sustained-load scenarios. A measured firing heat-flux history
+liner. With nominal heating, changing only the energy required to remove a
+kilogram of char gives 72--185 s for the aluminium sustainer
+(Section~\ref{sec:removal}). A measured firing heat-flux history
 and liner recession would constrain the physical estimate.
 
 \paragraph{Verification.}
@@ -90,10 +96,11 @@ solver. A second finite-element calculation from ignition gives endpoints within
 0.073 s for all four cases (Section~\ref{sec:sectorcheck}). Both use the same
 gas exposure and material inputs. Native ANSYS verifies the final char layer
 in both CF cases with a prescribed casing temperature (Section~\ref{sec:nativecfend}).
-Native verification from first exposure remains open.
+Section~\ref{sec:whole} gives the full native runs that passed audit. FULLSTATUS
 \clearpage
 """.replace('SUMMARY','\n'.join(summary))
     executive=executive.replace('SUSTAINERRANGE',film_ranges[0]).replace('BOOSTERRANGE',film_ranges[1])
+    executive=executive.replace('FULLSTATUS', 'A dash marks a pending full native run.' if len(whole)<4 else 'All four native runs started at ambient temperature.')
     body=r"""
 \section{CF casing heat, gas loss and liner exposure}\label{sec:coupledcf}
 The backing now feeds its changing mass, heat storage and through-thickness

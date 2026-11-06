@@ -18,6 +18,8 @@ from ops import disks, atomic
 from moving_surface_report import build as build_moving_results
 from backing_report import build as build_backing_results
 from sector_report import build as build_sector_results
+from removal_cost_report import build as build_removal_cost
+from native_whole_report import build as build_whole_results
 from native_wall_report import build as build_native_verification
 from liner_energy_report import build as build_liner_energy
 from backing_film_report import build as build_film_results
@@ -105,7 +107,9 @@ def main():
     build_moving_results(CASES,inputs)
     build_backing_results(inputs)
     film_ranges = build_film_results(CASES, inputs)
-    build_coupled_cf_results(inputs, film_ranges)
+    whole = build_whole_results(CASES, inputs)
+    build_removal_cost(CASES,inputs)
+    build_coupled_cf_results(inputs, film_ranges, whole)
     build_sector_results(CASES,inputs)
     build_liner_energy(CASES, inputs)
     build_native_verification(inputs)
@@ -127,6 +131,8 @@ def main():
 \input{continuous_backing_film.tex}
 \input{continuous_liner_energy.tex}
 \input{continuous_native_verification.tex}
+\input{continuous_native_whole.tex}
+\input{continuous_removal_cost.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half
@@ -215,7 +221,7 @@ transition, and matches source and input fingerprints across all twelve records.
 Maximum cumulative relative mass error is MASSERR. Maximum relative residual
 of the inherited discrete step energy equation is ENERGYERR. The new material
 and wall equations below use a separate open-system energy ledger.
-The 585-node native conduction results and moving-wall benchmarks appear in Section~\ref{sec:nativebench}. Whole-exposure MAPDL verification is ongoing.
+The 585-node native conduction results and moving-wall benchmarks appear in Section~\ref{sec:nativebench}. Section~\ref{sec:whole} gives the accepted full-exposure MAPDL results.
 Measured heating and recession, high-temperature backing data and sensitivity
 to surface chemistry remain necessary for the physical interpretation.
 

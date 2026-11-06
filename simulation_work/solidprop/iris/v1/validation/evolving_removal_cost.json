@@ -1,0 +1,1485 @@
+{
+  "plan_sha256": "b8103ec9dd09cba6f03c0c6b350d22d150b3b46a9f09459da8487004ef156221",
+  "cases": {
+    "sustainer_al_cost17.5": {
+      "case": "sustainer_al",
+      "cost_J_kg": 17500000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "sustainer_al_cost17.5_n640_us5000",
+      "event_s": 71.7739134050226,
+      "events": {
+        "property_flag": [
+          40.91000000000021,
+          40.91500000000021
+        ],
+        "first_melt": [
+          58.65500000000008,
+          58.66000000000008
+        ],
+        "all_liquid": [
+          66.04999999999814,
+          66.05499999999813
+        ],
+        "exhaustion": [
+          71.76999999999293,
+          71.7739134050226
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_al_cost17.5_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0019666562173483726,
+                "event_relative_percent": 0.0027406197124960853,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 152,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00022462751592744468,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.14319173111857708,
+                  "at_s": 66.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.960649960983119,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.0019728274210138,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.039711992882968374
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_al_cost17.5_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.007981249769869692,
+                "event_relative_percent": 0.011120976661840568,
+                "event_under_5_percent": true,
+                "brackets_overlap": false,
+                "shared_samples": 152,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.000339499523709097,
+                  "at_s": 71.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.5948331367396804,
+                  "at_s": 71.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.41171229065776,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.3632075596815412,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.399293485147723,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04007817394326358
+              }
+            },
+            {
+              "tag": "sustainer_al_cost17.5_n640_us10000",
+              "comparison": {
+                "event_difference_s": 0.004317995613519088,
+                "event_relative_percent": 0.006016280756851961,
+                "event_under_5_percent": true,
+                "brackets_overlap": false,
+                "shared_samples": 152,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.0001864297617809596,
+                  "at_s": 71.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.32387872515278104,
+                  "at_s": 71.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 6.861802035595815,
+                  "at_s": 0.05
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.958264315119095,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 1.373839454221752,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03971195129055628
+              }
+            },
+            {
+              "tag": "sustainer_al_cost17.5_n640_us5000",
+              "comparison": {
+                "event_difference_s": 0.0020698353668962,
+                "event_relative_percent": 0.0028838268232861284,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 151,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 8.803831116205307e-05,
+                  "at_s": 71.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.16640380519356768,
+                  "at_s": 71.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 11.151954144417402,
+                  "at_s": 0.00625
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.30800657154918554,
+                  "at_s": 2.5
+                },
+                "max_liner_field_difference_K": 0.6421279459572133,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.040085615349492204
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "sustainer_al_cost17.5_n320_us40000": {
+          "sha256": "d6a4aeed9b61553dfd7c2df5685f7f42e52a7cac79f6b8aafda8ead6893837b3",
+          "bracket_s": [
+            71.74000000000004,
+            71.76151098048966
+          ],
+          "checkpoint_sha256": "7bd7d18ed7bda4aa07d4678f452f5c900966b448ca001d6e7d51448d7f33c85a"
+        },
+        "sustainer_al_cost17.5_n640_us40000": {
+          "sha256": "c48d372354e6879ae78f1c7906aae3e33cc81567934be5e1a31c8486c9640530",
+          "bracket_s": [
+            71.74000000000004,
+            71.75954432427231
+          ],
+          "checkpoint_sha256": "2f3d27348741134f566bf06794889ae81ba2962d85c591fa63870b74237429e3"
+        },
+        "sustainer_al_cost17.5_n640_us20000": {
+          "sha256": "4c1c2d83d2e1801ee29c4e9dd52c45d95bdc31d277b12f660aef23347325532b",
+          "bracket_s": [
+            71.75999999999846,
+            71.76752557404218
+          ],
+          "checkpoint_sha256": "44c2735236e3bee0a071febc34a3d6fe06d81f3c97074bae9e164453005d977e"
+        },
+        "sustainer_al_cost17.5_n640_us10000": {
+          "sha256": "f8f6366eb496e49acd9bb874b50857e271d9a49cb94c6fc8d404233594c6fd4e",
+          "bracket_s": [
+            71.76999999999761,
+            71.7718435696557
+          ],
+          "checkpoint_sha256": "f55f4db230a03abc9b1f6a3e317fe348965d993f542792498bf9637498d25dd9"
+        },
+        "sustainer_al_cost17.5_n640_us5000": {
+          "sha256": "39f31bcd167799a9fb399aec5ca7a9fd7a9996ea85cbd131393f73fffef4236b",
+          "bracket_s": [
+            71.76999999999293,
+            71.7739134050226
+          ],
+          "checkpoint_sha256": "8cc132b86b7bfbc841c756f47817ee2f5cbd1987dbf618acaf11b68cedcf919f"
+        }
+      },
+      "FE_event_s": 71.8521252460862,
+      "FE_evidence_sha256": "2c75d2f84ade371aca2b4233a9e21a483a37f2ddb63b9ce871145090623d371e",
+      "FE_balances": {
+        "liner_mass_relative": -9.280489571801774e-13,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.4395364793364378e-09
+      },
+      "max_common_thickness_mm": 0.003986207986167445,
+      "energy": {
+        "event_s": 71.7739134050226,
+        "initial_virgin_kg_per_m2": 6.310312500000004,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 17500000.0,
+        "analytic_reaction_MJ_m2": 55.64433562500003,
+        "checked_FV_times": 154,
+        "max_mass_or_chemical_energy_fractional_error": 1.8142936186681536e-12,
+        "hottest_sampled_live_face_C": 1141.5066125218095,
+        "hottest_sample_time_s": 30.999999999997016,
+        "mean_film_per_original_area_MW_m2": 1.1036251092272023,
+        "FV": {
+          "film_MJ_m2": 79.21149302128183,
+          "partition_MJ_m2": {
+            "char_removal": 53.006625000000035,
+            "pyrolysis": 2.6377106250000018,
+            "liner_products": 7.821733646880033,
+            "stored_in_case": 15.173953131020815,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 0.571470618533205
+          },
+          "char_percent": 66.917846108214
+        },
+        "FE": {
+          "film_MJ_m2": 79.23110529263238,
+          "partition_MJ_m2": {
+            "char_removal": 53.00662373853587,
+            "pyrolysis": 2.637710562227142,
+            "liner_products": 7.825389498088708,
+            "stored_in_case": 15.187147561210853,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 0.5742338185682941
+          },
+          "char_percent": 66.90128017621497
+        },
+        "FE_minus_FV_film_percent": 0.02475937594723643,
+        "FE_minus_FV_char_share_points": -0.01656593199902545
+      }
+    },
+    "sustainer_al_cost70": {
+      "case": "sustainer_al",
+      "cost_J_kg": 70000000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "sustainer_al_cost70_n640_us20000",
+      "event_s": 184.748922433926,
+      "events": {
+        "property_flag": [
+          61.220000000000034,
+          61.24000000000004
+        ],
+        "first_melt": [
+          122.11999999998844,
+          122.13999999998843
+        ],
+        "all_liquid": [
+          154.9000000000002,
+          154.92000000000021
+        ],
+        "exhaustion": [
+          184.74000000000012,
+          184.748922433926
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_al_cost70_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0022904852362444217,
+                "event_relative_percent": 0.0012397841874879272,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 379,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00010195624308018125,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.024598889479079844,
+                  "at_s": 155.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.644458277162471,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 3.454674425954636,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03970688927191278
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_al_cost70_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.00021702533035750093,
+                "event_relative_percent": 0.00011747041741751882,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 377,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 2.1187221817264845e-05,
+                  "at_s": 166.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.19189883769752214,
+                  "at_s": 165.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.388030600636966,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.25384917627957293,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.1514804190549057,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04017491222423633
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "sustainer_al_cost70_n320_us40000": {
+          "sha256": "e524619149695c7903348e3205dbe1bdd85a4f265c2e20121bfd56cfe32580ae",
+          "bracket_s": [
+            184.73999999999995,
+            184.75099589383188
+          ],
+          "checkpoint_sha256": "56525dc50fb737ab6c33ffc85d157d8f3add7227a57931ee1429146f87fc7ac1"
+        },
+        "sustainer_al_cost70_n640_us40000": {
+          "sha256": "6e94d29826cc156dad9645e51c9efd3fc6db6cdb350eafec4a90b1bc493fbb8c",
+          "bracket_s": [
+            184.73999999999995,
+            184.74870540859564
+          ],
+          "checkpoint_sha256": "63debf37d78ed6a558980edb5077d17a4e0ef4e38a8a34c9cfecfd5e8d6d2553"
+        },
+        "sustainer_al_cost70_n640_us20000": {
+          "sha256": "4706711564fffacb27f90c5a9ed9419454b5ec01da32d1652d33c832be08b185",
+          "bracket_s": [
+            184.74000000000012,
+            184.748922433926
+          ],
+          "checkpoint_sha256": "cd96dcbe1225016020d5cd19d371ff8a64eb6bcf4228567cebf39a24c8839dc8"
+        }
+      },
+      "FE_event_s": 184.51360492561017,
+      "FE_evidence_sha256": "d7b8719fc48903d5d20fb4767f036cd982942e74d914fd9bb604621ff46f28a7",
+      "FE_balances": {
+        "liner_mass_relative": -1.9652659856510125e-12,
+        "case_mass_relative": 0.0,
+        "energy_relative": -8.660264691626543e-10
+      },
+      "max_common_thickness_mm": 0.00751115379206424,
+      "energy": {
+        "event_s": 184.748922433926,
+        "initial_virgin_kg_per_m2": 6.310312500000004,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 70000000.0,
+        "analytic_reaction_MJ_m2": 214.66421062500012,
+        "checked_FV_times": 380,
+        "max_mass_or_chemical_energy_fractional_error": 1.1833000193347713e-12,
+        "hottest_sampled_live_face_C": 1039.4522407370282,
+        "hottest_sample_time_s": 0.5,
+        "mean_film_per_original_area_MW_m2": 1.287827117084782,
+        "FV": {
+          "film_MJ_m2": 237.92467216260292,
+          "partition_MJ_m2": {
+            "char_removal": 212.02650000000014,
+            "pyrolysis": 2.6377106250000018,
+            "liner_products": 6.43773082167008,
+            "stored_in_case": 14.411283232612403,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 2.4114474838209206
+          },
+          "char_percent": 89.11496990740692
+        },
+        "FE": {
+          "film_MJ_m2": 237.8854628530059,
+          "partition_MJ_m2": {
+            "char_removal": 212.0264949541435,
+            "pyrolysis": 2.637710562227142,
+            "liner_products": 6.406876226101547,
+            "stored_in_case": 14.412560964730492,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 2.401819940315912
+          },
+          "char_percent": 89.12965610057427
+        },
+        "FE_minus_FV_film_percent": -0.016479715718686894,
+        "FE_minus_FV_char_share_points": 0.01468619316734987
+      }
+    },
+    "booster_al_cost17.5": {
+      "case": "booster_al",
+      "cost_J_kg": 17500000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "booster_al_cost17.5_n640_us20000",
+      "event_s": 95.89181004700409,
+      "events": {
+        "property_flag": [
+          64.27999999999994,
+          64.29999999999994
+        ],
+        "first_melt": [
+          83.37999999999614,
+          83.39999999999614
+        ],
+        "all_liquid": [
+          90.91999999999464,
+          90.93999999999464
+        ],
+        "exhaustion": [
+          95.87999999999366,
+          95.89181004700409
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_al_cost17.5_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.00625118068560937,
+                "event_relative_percent": 0.006519762575655779,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 199,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.000353227968361014,
+                  "at_s": 95.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.1166186439069179,
+                  "at_s": 93.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.630293282172943,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.5416898248926145,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06526113293820474
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_al_cost17.5_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.011314199644104406,
+                "event_relative_percent": 0.011798921762513848,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 200,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.0002937076426928753,
+                  "at_s": 95.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.35053412532408856,
+                  "at_s": 95.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.41536510847834,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.3515195918571408,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.359606672585187,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06547941418778569
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "booster_al_cost17.5_n320_us40000": {
+          "sha256": "01425a19969c80992117a1a43c9198c8b3f45827c03081ad71dd4f36c9e5702e",
+          "bracket_s": [
+            95.86000000000006,
+            95.88674702804559
+          ],
+          "checkpoint_sha256": "c132b6638d2921f0f34b96adfb85eeabc8211c21d59902c1b0177c39f089a588"
+        },
+        "booster_al_cost17.5_n640_us40000": {
+          "sha256": "573a107c7499da2d3b5cf2ef9130eb639b285636cc02b5bb6eecd5334856a595",
+          "bracket_s": [
+            95.86000000000006,
+            95.88049584735998
+          ],
+          "checkpoint_sha256": "262f53d6c1c132d6c98ddac67f63550260bae3479a2b5f793c6f722e5733a843"
+        },
+        "booster_al_cost17.5_n640_us20000": {
+          "sha256": "df9e65574217707225ea5011ee6bc7bd51f2cf918204433158a66e1e4c140112",
+          "bracket_s": [
+            95.87999999999366,
+            95.89181004700409
+          ],
+          "checkpoint_sha256": "e484c6227db85cf4784d120891f1bd9e7b0abf55c5f58ee9bdcd8b699f010b09"
+        }
+      },
+      "FE_event_s": 96.01016245267799,
+      "FE_evidence_sha256": "1b2cceadeb601119bf0d18aa82cfe4a9063d0d7ee50ea7fceac098ad329cb7b5",
+      "FE_balances": {
+        "liner_mass_relative": 2.983232035740109e-14,
+        "case_mass_relative": 0.0,
+        "energy_relative": -1.2899312478751892e-09
+      },
+      "max_common_thickness_mm": 0.004808238960513078,
+      "energy": {
+        "event_s": 95.89181004700409,
+        "initial_virgin_kg_per_m2": 8.324695121951212,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 17500000.0,
+        "analytic_reaction_MJ_m2": 73.40716158536578,
+        "checked_FV_times": 202,
+        "max_mass_or_chemical_energy_fractional_error": 7.007617814797109e-14,
+        "hottest_sampled_live_face_C": 1145.0640880862054,
+        "hottest_sample_time_s": 42.0,
+        "mean_film_per_original_area_MW_m2": 1.0971952560096736,
+        "FV": {
+          "film_MJ_m2": 105.21203907375364,
+          "partition_MJ_m2": {
+            "char_removal": 69.92743902439018,
+            "pyrolysis": 3.479722560975606,
+            "liner_products": 10.222665889365073,
+            "stored_in_case": 21.04687848993951,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 0.5353331088204383
+          },
+          "char_percent": 66.46334358691693
+        },
+        "FE": {
+          "film_MJ_m2": 105.26694550221839,
+          "partition_MJ_m2": {
+            "char_removal": 69.92743736024049,
+            "pyrolysis": 3.479722478164348,
+            "liner_products": 10.227605177000047,
+            "stored_in_case": 21.093370404929683,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 0.5388099460963202
+          },
+          "char_percent": 66.42867523762894
+        },
+        "FE_minus_FV_film_percent": 0.05218645028470803,
+        "FE_minus_FV_char_share_points": -0.03466834928799756
+      }
+    },
+    "booster_al_cost70": {
+      "case": "booster_al",
+      "cost_J_kg": 70000000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "booster_al_cost70_n640_us20000",
+      "event_s": 246.66616775057443,
+      "events": {
+        "property_flag": [
+          107.31999999999138,
+          107.33999999999138
+        ],
+        "first_melt": [
+          189.46000000000024,
+          189.48000000000025
+        ],
+        "all_liquid": [
+          225.6800000000001,
+          225.7000000000001
+        ],
+        "exhaustion": [
+          246.66000000000008,
+          246.66616775057443
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_al_cost70_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0035453689115456655,
+                "event_relative_percent": 0.0014373256864919997,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 501,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00014928143757231283,
+                  "at_s": 2.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.04259925722203661,
+                  "at_s": 226.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.616414080340064,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 0.988081881590233,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06512222668847285
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_al_cost70_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.0018977896966987373,
+                "event_relative_percent": 0.0007693757575290006,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 501,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 5.0740124990511504e-05,
+                  "at_s": 241.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.2188155178874922,
+                  "at_s": 240.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.392536517364192,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.23801661278957909,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.1515961563230803,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06556871106261505
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "booster_al_cost70_n320_us40000": {
+          "sha256": "3fd6eed86903428584d70cbd24e96ad8936dce0d40d2c3abe2a3263839d95ccf",
+          "bracket_s": [
+            246.65999999999997,
+            246.66781532978928
+          ],
+          "checkpoint_sha256": "121ffcccffd54aff8951bb6df390105448dab7cf7b3237bce7bedf6eaf1053d4"
+        },
+        "booster_al_cost70_n640_us40000": {
+          "sha256": "bd3cba8c85c47579f46ff0fba14586a5371ddf672dfdc8302a08d74f331fe9b6",
+          "bracket_s": [
+            246.65999999999997,
+            246.66426996087773
+          ],
+          "checkpoint_sha256": "5a53c17a5d07cc70623b5d3bd3344cb1c01404fcf40d6062861e1bae0aec86f8"
+        },
+        "booster_al_cost70_n640_us20000": {
+          "sha256": "e8806394ab85242d9fe864a864051f6dbf357039516797fcd5660f947ebc24e1",
+          "bracket_s": [
+            246.66000000000008,
+            246.66616775057443
+          ],
+          "checkpoint_sha256": "302c1335593c87096af0bbfcb90c44364b2bb9e3875cd33cd05051b7eac36d73"
+        }
+      },
+      "FE_event_s": 246.58316282902848,
+      "FE_evidence_sha256": "513e83649d2bb158c4a343746614401749cb75ce831931d2171cffe861dcbab2",
+      "FE_balances": {
+        "liner_mass_relative": -7.973934630838387e-15,
+        "case_mass_relative": 0.0,
+        "energy_relative": -6.306615911271949e-10
+      },
+      "max_common_thickness_mm": 0.002867040291579359,
+      "energy": {
+        "event_s": 246.66616775057443,
+        "initial_virgin_kg_per_m2": 8.324695121951212,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 70000000.0,
+        "analytic_reaction_MJ_m2": 283.1894786585363,
+        "checked_FV_times": 504,
+        "max_mass_or_chemical_energy_fractional_error": 8.667316770933267e-14,
+        "hottest_sampled_live_face_C": 1040.5347981621833,
+        "hottest_sample_time_s": 0.5,
+        "mean_film_per_original_area_MW_m2": 1.2758469055491175,
+        "FV": {
+          "film_MJ_m2": 314.7082668282299,
+          "partition_MJ_m2": {
+            "char_removal": 279.7097560975607,
+            "pyrolysis": 3.479722560975606,
+            "liner_products": 8.333132925420179,
+            "stored_in_case": 20.888633376604087,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 2.2970218676675094
+          },
+          "char_percent": 88.87906216020323
+        },
+        "FE": {
+          "film_MJ_m2": 314.69655002180883,
+          "partition_MJ_m2": {
+            "char_removal": 279.70974944096196,
+            "pyrolysis": 3.479722478164348,
+            "liner_products": 8.319429649769607,
+            "stored_in_case": 20.892756874098016,
+            "casing_gas": 0.0,
+            "casing_net_reaction": -0.0,
+            "ambient_loss": 2.2948913803576843
+          },
+          "char_percent": 88.88236919711314
+        },
+        "FE_minus_FV_film_percent": -0.00372306915835674,
+        "FE_minus_FV_char_share_points": 0.0033070369099021946
+      }
+    },
+    "sustainer_cf_cost17.5": {
+      "case": "sustainer_cf",
+      "cost_J_kg": 17500000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "sustainer_cf_cost17.5_n640_us20000",
+      "event_s": 64.9316117344773,
+      "events": {
+        "property_flag": [
+          19.579999999999668,
+          19.599999999999667
+        ],
+        "inner_pool_half": [
+          45.220000000000034,
+          45.24000000000004
+        ],
+        "outer_pool_half": [
+          63.220000000000034,
+          63.24000000000004
+        ],
+        "first_1000C": [
+          58.750000000000036,
+          58.77000000000004
+        ],
+        "exhaustion": [
+          64.92999999999994,
+          64.9316117344773
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_cf_cost17.5_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0004647027884061572,
+                "event_relative_percent": 0.0007156760763748769,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 137,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00022462751592744468,
+                  "at_s": 1.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.31161688628253614,
+                  "at_s": 63.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.960649960979481,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.0019728274255613,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.039711992882968374
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_cf_cost17.5_n640_us20000",
+              "comparison": {
+                "event_difference_s": -0.00038805515129070045,
+                "event_relative_percent": 0.0005976367148832862,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 138,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 8.563375428227715e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.30874102701955053,
+                  "at_s": 64.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.41171229066265,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.3632075596742652,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.399293485142266,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04007817394326358
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "sustainer_cf_cost17.5_n320_us40000": {
+          "sha256": "c63e795c7928a4d13e92e52763586901670ce5d87ad1ab868d8fe0e844f0ad56",
+          "bracket_s": [
+            64.90000000000006,
+            64.932464492417
+          ],
+          "checkpoint_sha256": "49aff57191185dea49197c855467243c3609e1d1b5fefdbd64c8e62f8eb15351"
+        },
+        "sustainer_cf_cost17.5_n640_us40000": {
+          "sha256": "d3fc4b37d4c0ac1b68af3db3133f9fc1965c94caecd717aad0b4390d123bb660",
+          "bracket_s": [
+            64.93000000000002,
+            64.93199978962859
+          ],
+          "checkpoint_sha256": "e16fe50e14023d99834e854bb2f41eb55b9eef14479e6b0bb2a177f0bb8edeb5"
+        },
+        "sustainer_cf_cost17.5_n640_us20000": {
+          "sha256": "81c3dae42fb902acf060d0e2341f7b8936dc46f9b6dd3e1a64911cdd6ee9eaeb",
+          "bracket_s": [
+            64.92999999999994,
+            64.9316117344773
+          ],
+          "checkpoint_sha256": "49cd08b9b849d6fa602eef40250118cd7a5c4ba7a5125ed79115a40e7275af71"
+        }
+      },
+      "FE_event_s": 64.98891625712633,
+      "FE_evidence_sha256": "56c89f860db854418e12b2e1c2afc0d860023531250b47e60c79a8c39c083ca4",
+      "FE_balances": {
+        "liner_mass_relative": -7.824785412520308e-13,
+        "case_mass_relative": 2.1098533393008477e-16,
+        "energy_relative": -2.2715293755271756e-14
+      },
+      "max_common_thickness_mm": 0.004656498131937192,
+      "energy": {
+        "event_s": 64.9316117344773,
+        "initial_virgin_kg_per_m2": 6.310312500000004,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 17500000.0,
+        "analytic_reaction_MJ_m2": 55.64433562500003,
+        "checked_FV_times": 141,
+        "max_mass_or_chemical_energy_fractional_error": 4.2141971747873636e-13,
+        "hottest_sampled_live_face_C": 1155.2782622605646,
+        "hottest_sample_time_s": 64.5,
+        "mean_film_per_original_area_MW_m2": 1.0710212276226956,
+        "FV": {
+          "film_MJ_m2": 69.5431345113801,
+          "partition_MJ_m2": {
+            "char_removal": 53.006625000000035,
+            "pyrolysis": 2.6377106250000018,
+            "liner_products": 7.91345805862068,
+            "stored_in_case": 4.556015057251399,
+            "casing_gas": 1.0099656599095874,
+            "casing_net_reaction": 0.20194177433637206,
+            "ambient_loss": 0.21741833628277274
+          },
+          "char_percent": 76.22121920795212
+        },
+        "FE": {
+          "film_MJ_m2": 69.55438896761332,
+          "partition_MJ_m2": {
+            "char_removal": 53.00662373853587,
+            "pyrolysis": 2.637710562227142,
+            "liner_products": 7.916903077811406,
+            "stored_in_case": 4.561344277448066,
+            "casing_gas": 1.0114500658988845,
+            "casing_net_reaction": 0.20222552723686527,
+            "ambient_loss": 0.2181317185016483
+          },
+          "char_percent": 76.20888419164663
+        },
+        "FE_minus_FV_film_percent": 0.016183418122128757,
+        "FE_minus_FV_char_share_points": -0.01233501630548517
+      }
+    },
+    "sustainer_cf_cost70": {
+      "case": "sustainer_cf",
+      "cost_J_kg": 70000000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "sustainer_cf_cost70_n640_us20000",
+      "event_s": 179.02018213383593,
+      "events": {
+        "property_flag": [
+          23.799999999999578,
+          23.819999999999578
+        ],
+        "inner_pool_half": [
+          79.75999999999686,
+          79.77999999999686
+        ],
+        "outer_pool_half": [
+          105.2199999999918,
+          105.2399999999918
+        ],
+        "first_1000C": null,
+        "exhaustion": [
+          179.02,
+          179.02018213383593
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_cf_cost70_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.002244459793871556,
+                "event_relative_percent": 0.0012537430971220787,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 366,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 0.00010195624308018125,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.021914936488073522,
+                  "at_s": 16.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 30.29613393306284,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.644458277162471,
+                  "at_s": 1.0
+                },
+                "max_liner_field_difference_K": 3.454674425954636,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.03970688927191278
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "sustainer_cf_cost70_n640_us20000",
+              "comparison": {
+                "event_difference_s": -0.0005278524149332497,
+                "event_relative_percent": 0.00029485637241650554,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 368,
+                "thickness_target_mm": 0.04762500000000003,
+                "remaining_mm": {
+                  "difference": 2.0809890775908002e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.13091364236993286,
+                  "at_s": 101.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.388030600636966,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.25384917627957293,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.1514804190549057,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.04017491222423633
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "sustainer_cf_cost70_n320_us40000": {
+          "sha256": "37ed7f06dab4593944c2bf565c6bd2f824a99ef41c8c9ebee0d569628ed580a5",
+          "bracket_s": [
+            179.0,
+            179.02295444604474
+          ],
+          "checkpoint_sha256": "caa42fc6bc34e9c8ef44477be087e165d0362e2e40202b1b3994ad9b29c80aeb"
+        },
+        "sustainer_cf_cost70_n640_us40000": {
+          "sha256": "305629b5f023ee0a939c77dcc26fbcb47ebfeaffd6b75f7e9eea6665bf009d72",
+          "bracket_s": [
+            179.0,
+            179.02070998625086
+          ],
+          "checkpoint_sha256": "44e45c908c4d3d55cadf7102d62ee3e81b485d6a692730c1e8d92aa5a442579c"
+        },
+        "sustainer_cf_cost70_n640_us20000": {
+          "sha256": "004550838f8574dd73f4f2ce43ccf0a8e0d123f75aababba44f75275aa84f01b",
+          "bracket_s": [
+            179.02,
+            179.02018213383593
+          ],
+          "checkpoint_sha256": "e08cd3597761ba97c4d1e36023710f3277c7bebf9bd096e1610774106bf6fe02"
+        }
+      },
+      "FE_event_s": 177.84270786856436,
+      "FE_evidence_sha256": "d3e38b15aa9a36eae2c51f6a6a7b6c1aa2333a73fe3be80ba2d7156fef97811e",
+      "FE_balances": {
+        "liner_mass_relative": -1.7940594633270548e-12,
+        "case_mass_relative": 2.411260959200969e-16,
+        "energy_relative": 1.5636807619639052e-15
+      },
+      "max_common_thickness_mm": 0.03345764002376378,
+      "energy": {
+        "event_s": 179.02018213383593,
+        "initial_virgin_kg_per_m2": 6.310312500000004,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 70000000.0,
+        "analytic_reaction_MJ_m2": 214.66421062500012,
+        "checked_FV_times": 369,
+        "max_mass_or_chemical_energy_fractional_error": 1.1374176358932995e-12,
+        "hottest_sampled_live_face_C": 1039.4522407370282,
+        "hottest_sample_time_s": 0.5,
+        "mean_film_per_original_area_MW_m2": 1.2809827801637341,
+        "FV": {
+          "film_MJ_m2": 229.32177061521918,
+          "partition_MJ_m2": {
+            "char_removal": 212.02650000000014,
+            "pyrolysis": 2.6377106250000018,
+            "liner_products": 6.488112651692188,
+            "stored_in_case": 5.211569773330485,
+            "casing_gas": 0.9915781561199933,
+            "casing_net_reaction": 0.21272936970183515,
+            "ambient_loss": 1.7535700399050698
+          },
+          "char_percent": 92.45807732566355
+        },
+        "FE": {
+          "film_MJ_m2": 229.06424535225582,
+          "partition_MJ_m2": {
+            "char_removal": 212.0264949541435,
+            "pyrolysis": 2.637710562227142,
+            "liner_products": 6.3501643955667495,
+            "stored_in_case": 5.154204786988235,
+            "casing_gas": 0.9907828643631894,
+            "casing_net_reaction": 0.21270174636099096,
+            "ambient_loss": 1.6921860431113487
+          },
+          "char_percent": 92.56202102955369
+        },
+        "FE_minus_FV_film_percent": -0.11229865453789012,
+        "FE_minus_FV_char_share_points": 0.1039437038901383
+      }
+    },
+    "booster_cf_cost17.5": {
+      "case": "booster_cf",
+      "cost_J_kg": 17500000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "booster_cf_cost17.5_n640_us20000",
+      "event_s": 85.38526784680944,
+      "events": {
+        "property_flag": [
+          32.53999999999949,
+          32.55999999999949
+        ],
+        "inner_pool_half": [
+          65.0399999999998,
+          65.05999999999979
+        ],
+        "outer_pool_half": null,
+        "first_1000C": [
+          79.53999999999691,
+          79.5599999999969
+        ],
+        "exhaustion": [
+          85.37999999999575,
+          85.38526784680944
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_cf_cost17.5_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.001835803740888764,
+                "event_relative_percent": 0.002150030003135626,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 179,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.000326964102307592,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.18055187285858665,
+                  "at_s": 82.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 2.630293282172943,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 1.5416898248926145,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06526113293820474
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_cf_cost17.5_n640_us20000",
+              "comparison": {
+                "event_difference_s": 0.00023888389223714057,
+                "event_relative_percent": 0.0002797717899834015,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 177,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 7.981337205009709e-05,
+                  "at_s": 2.0
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.46384193360904646,
+                  "at_s": 74.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.41536510847834,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 1.3515195918571408,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.359606672585187,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06547941418778569
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "booster_cf_cost17.5_n320_us40000": {
+          "sha256": "90f8407839e4e3fc1d74e2ae80fb11316989462b89c5742050472570255d0914",
+          "bracket_s": [
+            85.36000000000006,
+            85.38686476665809
+          ],
+          "checkpoint_sha256": "d20145ac1edc343a79f40974c594979e9d91c5227d75970a8950446c500c5a89"
+        },
+        "booster_cf_cost17.5_n640_us40000": {
+          "sha256": "52ba2dc8bfc67d81fc5a88fcf5152085d8c4635a8363ec11900e3e8d55f0baf8",
+          "bracket_s": [
+            85.36000000000004,
+            85.3850289629172
+          ],
+          "checkpoint_sha256": "d72a92f689ba0ca917914edab27139107f14ed2d1479c63555ca59f7a69962f8"
+        },
+        "booster_cf_cost17.5_n640_us20000": {
+          "sha256": "f6a4fc385a0b47cf20e73cfe1de07bfd18b553cfcdd583875598cfa5de7208e5",
+          "bracket_s": [
+            85.37999999999575,
+            85.38526784680944
+          ],
+          "checkpoint_sha256": "7d4148fcf154bc19a0dd9097b7398025db2578ad624e38b9bee04590b5f27c32"
+        }
+      },
+      "FE_event_s": 85.45547803529796,
+      "FE_evidence_sha256": "75df4bfb81d2901322d30c9d6f17c1f7ac9486367f7315851559b05103d261d4",
+      "FE_balances": {
+        "liner_mass_relative": -9.785628586863751e-15,
+        "case_mass_relative": -1.2531642977926166e-17,
+        "energy_relative": -2.2791254744950415e-15
+      },
+      "max_common_thickness_mm": 0.005591757424552868,
+      "energy": {
+        "event_s": 85.38526784680944,
+        "initial_virgin_kg_per_m2": 8.324695121951212,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 17500000.0,
+        "analytic_reaction_MJ_m2": 73.40716158536578,
+        "checked_FV_times": 181,
+        "max_mass_or_chemical_energy_fractional_error": 5.6142902960655205e-14,
+        "hottest_sampled_live_face_C": 1152.2834806962699,
+        "hottest_sample_time_s": 78.99999999999702,
+        "mean_film_per_original_area_MW_m2": 1.0579274465770308,
+        "FV": {
+          "film_MJ_m2": 90.33141838847096,
+          "partition_MJ_m2": {
+            "char_removal": 69.92743902439018,
+            "pyrolysis": 3.479722560975606,
+            "liner_products": 10.322172896948066,
+            "stored_in_case": 5.616105659290216,
+            "casing_gas": 0.7062320982885483,
+            "casing_net_reaction": 0.14212235493306827,
+            "ambient_loss": 0.13762379335098762
+          },
+          "char_percent": 77.4120901364204
+        },
+        "FE": {
+          "film_MJ_m2": 90.34704444066146,
+          "partition_MJ_m2": {
+            "char_removal": 69.92743736024049,
+            "pyrolysis": 3.479722478164348,
+            "liner_products": 10.3263397482891,
+            "stored_in_case": 5.623600386179724,
+            "casing_gas": 0.7091393949375829,
+            "casing_net_reaction": 0.1427221039292079,
+            "ambient_loss": 0.138082968922792
+          },
+          "char_percent": 77.39869941862652
+        },
+        "FE_minus_FV_film_percent": 0.017298579463576047,
+        "FE_minus_FV_char_share_points": -0.013390717793882345
+      }
+    },
+    "booster_cf_cost70": {
+      "case": "booster_cf",
+      "cost_J_kg": 70000000.0,
+      "numerical_checks_passed": true,
+      "reported_tag": "booster_cf_cost70_n640_us20000",
+      "event_s": 237.74485997488316,
+      "events": {
+        "property_flag": [
+          41.90000000000006,
+          41.920000000000066
+        ],
+        "inner_pool_half": [
+          126.2999999999876,
+          126.3199999999876
+        ],
+        "outer_pool_half": [
+          181.04000000000002,
+          181.06000000000003
+        ],
+        "first_1000C": null,
+        "exhaustion": [
+          237.74000000000012,
+          237.74485997488316
+        ]
+      },
+      "FV_gates": {
+        "mesh": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_cf_cost70_n640_us40000",
+              "comparison": {
+                "event_difference_s": -0.0033369334770725345,
+                "event_relative_percent": 0.0014035749079271632,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 483,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 0.00014928143757231283,
+                  "at_s": 2.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.018580562978343096,
+                  "at_s": 25.5
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 39.33124507817625,
+                  "at_s": 0.0
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 3.616414080340064,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 0.988081881590233,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06512222668847285
+              }
+            }
+          ]
+        },
+        "time": {
+          "passed": true,
+          "chain": [
+            {
+              "tag": "booster_cf_cost70_n640_us20000",
+              "comparison": {
+                "event_difference_s": -0.00044725639293119457,
+                "event_relative_percent": 0.00018812452684716108,
+                "event_under_5_percent": true,
+                "brackets_overlap": true,
+                "shared_samples": 483,
+                "thickness_target_mm": 0.06349999999999995,
+                "remaining_mm": {
+                  "difference": 2.2654263895027782e-05,
+                  "at_s": 1.5
+                },
+                "thickness_pass": true,
+                "case_interface_K": {
+                  "difference": 0.11249782319168844,
+                  "at_s": 152.0
+                },
+                "hot_face_including_initial_K": {
+                  "difference": 8.392536517364192,
+                  "at_s": 0.1
+                },
+                "hot_face_from_half_second_K": {
+                  "difference": 0.23801661278957909,
+                  "at_s": 0.5
+                },
+                "max_liner_field_difference_K": 2.1515961563230803,
+                "field_time_s": 1.0,
+                "field_radius_m": 0.06556871106261505
+              }
+            }
+          ]
+        }
+      },
+      "FV_records": {
+        "booster_cf_cost70_n320_us40000": {
+          "sha256": "fe574638acd44ad95c39015e7cb3227d775caebec031c9cf59111178e7cc1d46",
+          "bracket_s": [
+            237.73999999999995,
+            237.74864416475316
+          ],
+          "checkpoint_sha256": "485d2fdf15f90304065abbfe73955f680247a5b4b3a64a8cc367fa62eedd844c"
+        },
+        "booster_cf_cost70_n640_us40000": {
+          "sha256": "7a34c65f4fb1f0e70caecf4b862fb35d7f70d3fa5327098112e63541e09632d5",
+          "bracket_s": [
+            237.73999999999995,
+            237.7453072312761
+          ],
+          "checkpoint_sha256": "273b56df9317d13b1fc1f8d0a66ba64df44992a52b5f0ac2e87550fc4725a420"
+        },
+        "booster_cf_cost70_n640_us20000": {
+          "sha256": "b4847fe02f9ffed4bcdb329e3157fa6344f906b4901c28682e404ee97f3281b5",
+          "bracket_s": [
+            237.74000000000012,
+            237.74485997488316
+          ],
+          "checkpoint_sha256": "6c4123b2d2b6fd42b1ae4567fe4df1d497db931839e53feec6bf15c066668d13"
+        }
+      },
+      "FE_event_s": 236.83608170425063,
+      "FE_evidence_sha256": "42d5673913471734ac662c004cac08e732de8ac00506174e5d0bcc2110ca8767",
+      "FE_balances": {
+        "liner_mass_relative": -3.0745971186118984e-14,
+        "case_mass_relative": 2.506328595585233e-16,
+        "energy_relative": 1.650816076223052e-14
+      },
+      "max_common_thickness_mm": 0.025717119747512007,
+      "energy": {
+        "event_s": 237.74485997488316,
+        "initial_virgin_kg_per_m2": 8.324695121951212,
+        "yield_kg_char_per_kg_virgin": 0.48,
+        "pyrolysis_J_kg_virgin": 418000.0,
+        "removal_J_kg_char": 70000000.0,
+        "analytic_reaction_MJ_m2": 283.1894786585363,
+        "checked_FV_times": 486,
+        "max_mass_or_chemical_energy_fractional_error": 9.292265143305523e-14,
+        "hottest_sampled_live_face_C": 1040.5347981621833,
+        "hottest_sample_time_s": 0.5,
+        "mean_film_per_original_area_MW_m2": 1.2677986158974632,
+        "FV": {
+          "film_MJ_m2": 301.4126044128931,
+          "partition_MJ_m2": {
+            "char_removal": 279.7097560975607,
+            "pyrolysis": 3.479722560975606,
+            "liner_products": 8.391555896074596,
+            "stored_in_case": 6.801679876444743,
+            "casing_gas": 1.4085640142602724,
+            "casing_net_reaction": 0.3095991699781646,
+            "ambient_loss": 1.3117267977119897
+          },
+          "char_percent": 92.79962151629117
+        },
+        "FE": {
+          "film_MJ_m2": 301.21271033236536,
+          "partition_MJ_m2": {
+            "char_removal": 279.70974944096196,
+            "pyrolysis": 3.479722478164348,
+            "liner_products": 8.284622434263458,
+            "stored_in_case": 6.733906760804366,
+            "casing_gas": 1.4072910115969532,
+            "casing_net_reaction": 0.30950801206892536,
+            "ambient_loss": 1.287910194527179
+          },
+          "char_percent": 92.86120400839775
+        },
+        "FE_minus_FV_film_percent": -0.06631908473671011,
+        "FE_minus_FV_char_share_points": 0.061582492106580844
+      }
+    }
+  },
+  "native": false,
+  "eligible_for_motor_lifetime": false,
+  "all_numerical_checks_passed": true
+}

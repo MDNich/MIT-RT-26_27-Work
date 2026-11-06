@@ -5,12 +5,12 @@ exposes the casing after about 104--111 s in the sustainer and 138--148 s in
 the booster. The clock starts when hot gas first reaches bare phenolic.
 Burnthrough occurs when the moving char surface reaches the casing.
 \begin{table}[H]\centering
-\begin{tabular}{lrrl}\toprule
-Motor & Liner [mm] & Liner gone [s] & Earlier casing event \\\midrule
-Sustainer Al & 4.76 & 110.5 & All Al liquid at 99.1 s \\
-Sustainer CF & 4.76 & 104.3 & Casing reaches 1000 $^\circ$C at 95.1 s \\
-Booster Al & 6.35 & 147.6 & All Al liquid at 139.4 s \\
-Booster CF & 6.35 & 137.9 & Casing reaches 1000 $^\circ$C at 129.7 s \\
+\small\begin{tabular}{lrrrl}\toprule
+Motor & Liner [mm] & Radial [s] & ANSYS [s] & Earlier radial casing event \\\midrule
+Sustainer Al & 4.76 & 110.5 & 110.6 & All Al liquid at 99.1 s \\
+Sustainer CF & 4.76 & 104.3 & --- & Casing at 1000 $^\circ$C at 95.1 s \\
+Booster Al & 6.35 & 147.6 & --- & All Al liquid at 139.4 s \\
+Booster CF & 6.35 & 137.9 & --- & Casing at 1000 $^\circ$C at 129.7 s \\
 \bottomrule\end{tabular}
 \end{table}
 The calculation applies 2504 K gas continuously at 800 psi with an initial
@@ -25,7 +25,9 @@ scenarios. The casing can lose pressure capacity while phenolic remains.
 Halving and doubling the nominal film coefficient gives 57--207 s for
 the sustainers and 75--276 s for the boosters with the evolving casings.
 Section~\ref{sec:film} gives all twelve times and the heat flux entering the
-liner. These are sustained-load scenarios. A measured firing heat-flux history
+liner. With nominal heating, changing only the energy required to remove a
+kilogram of char gives 72--185 s for the aluminium sustainer
+(Section~\ref{sec:removal}). A measured firing heat-flux history
 and liner recession would constrain the physical estimate.
 
 \paragraph{Verification.}
@@ -34,5 +36,5 @@ solver. A second finite-element calculation from ignition gives endpoints within
 0.073 s for all four cases (Section~\ref{sec:sectorcheck}). Both use the same
 gas exposure and material inputs. Native ANSYS verifies the final char layer
 in both CF cases with a prescribed casing temperature (Section~\ref{sec:nativecfend}).
-Native verification from first exposure remains open.
+Section~\ref{sec:whole} gives the full native runs that passed audit. A dash marks a pending full native run.
 \clearpage
