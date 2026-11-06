@@ -22,6 +22,29 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Moving-wall numerical audit, November 5, 20:53 EST
+
+All twenty nominal moving-wall refinements completed and worker 43139 exited.
+`validation/moving_surface_campaign_audit.json` checks sealed sources, per-case
+final checkpoints, profiles, shared-time thickness/temperature histories, mass
+and open-system energy. At 640/160 cells and a 0.02 s ceiling the S Al/S CF/B Al/B CF
+liner-exhaustion times are 106.774/103.934/142.409/137.663 s. These independent
+hypothetical intact-backing events all follow the earlier property flags.
+All four finest fixed-step mesh pairs and all four finest fixed-mesh time pairs
+pass the event-change and thickness targets and have overlapping final-step
+brackets. Three coarser comparisons miss strict bracket overlap. The discrete
+instantaneous hot-face temperature after the load step remains mesh-sensitive.
+
+The separate one-factor sensitivity matrix is now running under PID 44706
+after nominal worker completion. It uses the same exclusive lock. See
+`configs/moving_surface_sensitivities.json` (sealed),
+`ansystmp/moving_surface_sensitivities/{worker,status,complete,error}.json`,
+and `worker.log`. It checks 42 independent perturbations at 320/80 and 0.04 s.
+Read back source/configuration identities, per-case balances, first property
+flags and event brackets; refine the influential endpoints before presenting
+any span as a numerically checked sensitivity result. Never treat one-factor
+extrema as firing uncertainty bounds. No additional native solver was started.
+
 ## Coupled moving-wall campaign, November 5, 20:48 EST
 
 The prior continuous finite-row workers have exited. A new independent worker
