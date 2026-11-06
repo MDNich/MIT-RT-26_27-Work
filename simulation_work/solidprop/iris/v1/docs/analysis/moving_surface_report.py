@@ -101,8 +101,8 @@ def build(names,inputs):
     new7=next(x for x in h if abs(x['time_s']-7.)<1e-9)
     ep=[p for g in endpoint['comparisons'].values() for p in g.values()]
     assert all(p['event_under_5_percent'] and p['thickness_pass'] for p in ep)
-    text=r'''\section{Continuous exposure until the casing is uncovered}
-The moving-wall calculation gives about 104--107 s for the sustainer and
+    text=r'''\section{Baseline comparison with fixed casing properties}
+With the original casing properties, the moving-wall calculation gives about 104--107 s for the sustainer and
 138--142 s for the booster under the nominal continuous load. It advances the
 gas-facing radius until it reaches the casing. Char can remain after the
 virgin resin has decomposed, so conversion and casing exposure occur at

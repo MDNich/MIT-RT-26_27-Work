@@ -22,6 +22,22 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Reacting CF results, November 5, 21:55 EST
+
+Worker 61181 completed all eight independent moving-wall jobs and exited.
+`validation/cf_backing_audit.json` checks all profiles, native-independent
+separation, separate casing and liner mass ledgers, total enthalpy, event
+intervals, refinements and restart. At 640/160 cells the sustained model
+exhausts the CF liners in 104.254 and 137.946 s. The first backing temperature
+of 1000 °C precedes exhaustion in both. Further extension assumes the property
+endpoints and a retained, venting composite. Nominal four-case results,
+sensitivities and the conduction audit appear in the updated report.
+
+Do not rerun the completed independent matrices. The native sequence, starting
+with CF320 under observer 28607 and continuing with annular, char8, char16 and
+four R2 snapshots, remains outstanding. Full continuous thermochemical FE
+coupling is a separate verification requirement.
+
 ## Native sector preflight, November 5, 21:44 EST
 
 The original four frozen-field decks left the element's heat-capacity option

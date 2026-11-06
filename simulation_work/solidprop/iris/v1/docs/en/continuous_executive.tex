@@ -1,0 +1,37 @@
+
+\section*{How long until the gas reaches the casing?}
+For the sustained nominal load, the independent moving-wall calculation
+exposes the casing after about 104--111 s in the sustainer and 138--148 s in
+the booster. The clock starts when hot gas first reaches bare phenolic.
+Burnthrough occurs when the moving char surface reaches the casing.
+\begin{table}[H]\centering
+\begin{tabular}{lrrl}\toprule
+Motor & Liner [mm] & Liner gone [s] & Earlier casing event \\\midrule
+Sustainer Al & 4.76 & 110.5 & All Al liquid at 99.1 s \\
+Sustainer CF & 4.76 & 104.3 & Casing reaches 1000 $^\circ$C at 95.1 s \\
+Booster Al & 6.35 & 147.6 & All Al liquid at 139.4 s \\
+Booster CF & 6.35 & 137.9 & Casing reaches 1000 $^\circ$C at 129.7 s \\
+\bottomrule\end{tabular}
+\end{table}
+The calculation applies 2504 K gas continuously at 800 psi with an initial
+film coefficient of 1000 W/(m$^2$ K), gas blowing and zero hot-side radiation.
+The Al comparison follows pure-metal fusion and retains the molten metal in
+place. The CF comparison follows oxygen-free T700/M21 resin decomposition
+and holds the residue in place. The study has no measured Iris wall heat flux
+or fired-liner recession. All four times therefore describe the stated thermal
+scenarios. The casing can lose pressure capacity while phenolic remains.
+
+\paragraph{What most affects the estimate.}
+In the original backing comparison, doubling or halving the nominal film
+coefficient gives roughly 57--200 s for the sustainers and 75--266 s for the
+boosters. These endpoints belong to the baseline backing model. Changing to the
+more detailed backing at the nominal load shifts the estimates by 3.7--5.2 s
+for Al and about 0.3 s for CF. A firing heat-flux history and measured local
+recession would constrain the two-minute estimate much more directly.
+
+\paragraph{Verification.}
+The burnthrough intervals above come from a conservative radial finite-volume
+solver. Refinements and mass/enthalpy balances are given below. The independent
+coupon and three-dimensional input checks precede the native ANSYS comparison.
+The continuous motor event has yet to pass native verification.
+\clearpage

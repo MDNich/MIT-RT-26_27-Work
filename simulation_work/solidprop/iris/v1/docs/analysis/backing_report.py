@@ -126,10 +126,8 @@ $^\circ$C, or the end of the supplied temperature history, whichever occurs firs
 The local rates of temperature rise at 50\% conversion are 492--697
 $^\circ$C/min, above the reported nitrogen tests at 5--100 $^\circ$C/min.
 The Iris casing resin and layup are unspecified. These times identify when a
-reacting backing can affect the heat balance. They give neither a pressure
-vessel failure time nor a new CF liner lifetime. The next comparison requires
-coupled heat storage, radial conductivity, decomposition energy and escaping
-gas for the backing.
+reacting backing can affect the heat balance. The following section couples heat storage, radial
+conductivity, decomposition energy and escaping gas to both motor geometries.
 \clearpage
 '''
     shift=max(abs(v['event_difference_s']) for g in a['comparisons'].values() for v in g.values())

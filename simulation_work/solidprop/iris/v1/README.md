@@ -1,6 +1,17 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 5, 21:02 EST
+## Continuous heating to liner exhaustion, November 5, 21:55 EST
+
+At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
+moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
+(sustainer CF), 147.6 s (booster Al) and 137.9 s (booster CF). The Al surrogate
+is all liquid before either liner disappears. The CF surrogate crosses its
+1000 °C property ceiling at 95.1 and 129.7 s, before either CF liner disappears.
+Casing pressure integrity and actual firing heat flux are unresolved.
+The [updated report](output/pdf/iris_continuous_heating_progress.pdf) opens
+with the four estimates and distinguishes the earlier inert-backing results.
+
+### Initial backing comparison
 
 With uninterrupted exposure from ignition at the nominal 2504 K gas temperature,
 800 psi and a 1000 W/(m² K) gas-film coefficient, the independent moving-wall
