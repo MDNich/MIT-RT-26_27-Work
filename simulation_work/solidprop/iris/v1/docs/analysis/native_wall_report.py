@@ -91,6 +91,83 @@ response above the temperature covered by the CF properties.
             .replace('FIELDERR',f'{max(field_error):.4f}').replace('ENERGYPC',f'{np.ceil(1e5*max(energy))/1e3:.3f}'))
 
 
+def coupled_endpoints(register, read):
+    pkg=ROOT/'configs/native_verification/whole_sector_r2'
+    proof=read(ROOT/'validation/terminal_brick_geometry.json')
+    assert register(ROOT/'model/sector_terminal_step.py')==proof['step_sha256']
+    signature=register(pkg/'controller.zip')
+    register(pkg/'start2al.inp')
+    startup=[]
+    for job in ('start2al','start2cf'):
+        result=read(ROOT/f'validation/native_sector_r2_{job}.json')
+        assert result['passed'] and result['role']=='startup' and result['archive_sha256']==signature
+        startup.append(result['max_field_error_K'])
+    rows=[]
+    max_error=0.
+    for suffix,name in [('sa','Sustainer Al'),('sc','Sustainer CF'),('ba','Booster Al'),('bc','Booster CF')]:
+        job='end2'+suffix
+        result=read(ROOT/f'validation/native_sector_r2_{job}.json')
+        settings=read(pkg/(job+'_settings.json'))
+        assert result['passed'] and result['role']=='terminal' and result['archive_sha256']==signature
+        assert digest(pkg/(job+'_settings.json'))==result['settings_sha256']
+        state=settings['donor_record']['state']
+        start=result['native_interval_start_s']
+        assert start==state['time']
+        nodes=state['nodes']
+        left=(nodes[-1]-nodes[0])*1e6
+        row=proof['cases']['wall'+suffix]
+        rows.append(f"{name} & {start:.2f} & {left:.2f} & {result['native_blocks']} & "
+                    f"{result['terminal_s']-start:.5f} & {row['candidate_peak_edge_ratio']:.2f}"+r' \\')
+        max_error=max(max_error,result['max_field_error_K'])
+    text=r'''\section{Native checks with an evolving casing}\label{sec:coupledends}
+Here MAPDL solves temperatures through both the liner and the casing.
+At the interface the liner and casing share one temperature degree of freedom.
+The controller advances the aluminium fusion enthalpy or CF decomposition
+after each native field solve. The hot surface moves according to the remaining
+solid inventory and the calculated mass flux. Two cold-start pilots also
+advanced virgin sustainer walls from ambient temperature through their first
+0.1~s. Their largest difference from independently assembled nodal temperatures
+was STARTERR~K.
+
+\paragraph{Handoff near exhaustion.} The independent model supplied a complete
+state about 0.2~s before its predicted event for each motor. From that state
+MAPDL solved both sides of the interface until the last char disappeared. The
+casing was already fully liquid in the aluminium models or above the CF
+property range at handoff. These tests verify the last few coupled steps. The
+elapsed time before handoff belongs to the independent model.
+
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+& Handoff & Liner at handoff & Native & Native interval & Max. edge\\
+Motor & [s] & [$\mu$m] & solves & to loss [s] & ratio$^\dagger$\\\midrule
+ROWS
+\bottomrule\end{tabular}\end{center}
+\noindent $^\dagger$Largest brick edge divided by its shortest edge, screened
+over the independent full history using the revised geometry.
+All four native terminal checks finished without a solver warning or error.
+Across their archived fields the largest nodal difference from the matched
+radial system was ENDERR~K.
+
+\paragraph{Why change the final step?} With the original sector the final
+brick edge ratios ranged from 176 to 4065 as the wall became extremely thin.
+The revised sector spans $0.03^\circ$. It has two cells circumferentially and
+two axially, with axial pitch equal to the circumferential arc at the
+liner--casing interface. The radial mesh starts with 80 cells through the
+liner and 20 through the case. With one liner cell left, the controller
+estimates the time to consume the remaining material at the current rate. It
+shortens the penultimate step when needed so that the final increment retains
+enough physical thickness to mesh. The following solve recomputes the mass
+flux, available char and event time. In each independent exposure this
+adjustment occurred once, with a maximum shift of 0.00027~s in exhaustion.
+\medskip
+\lstinputlisting[language=Python]{../../model/sector_terminal_step.py}
+\clearpage
+'''
+    for key,value in [('STARTERR',max(startup)),('ENDERR',max_error)]:
+        mantissa,exponent=f'{value:.1e}'.split('e')
+        text=text.replace(key,rf'${mantissa}\times 10^{{{int(exponent)}}}$')
+    return text.replace('ROWS','\n'.join(rows))
+
+
 def build(inputs):
     def register(path):
         sha = digest(path)
@@ -202,6 +279,6 @@ The largest sampled native versus radial temperature difference was DIFF~K.
                       'STEPS':f"{pulse['steps']:,}",'REMAIN':f"{pulse['remaining_liner_mm']:.3f}",'DIFF':f"{pulse['max_profile_difference_K']:.4f}"}.items():
         text=text.replace(key,value)
     tex=ROOT/'docs/en/continuous_native_verification.tex'
-    tex.write_text(text+terminal_windows(register,read))
+    tex.write_text(text+terminal_windows(register,read)+coupled_endpoints(register,read))
     register(tex)
     register(Path(__file__))

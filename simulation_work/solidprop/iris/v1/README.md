@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 6, 00:09 EST
+## Continuous heating to liner exhaustion, November 6, 00:15 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -33,7 +33,8 @@ accounts for 79.7–87.3% of film energy. The two independent methods agree
 on integrated film energy within 0.044%. Their heat input and char law still
 need physical calibration. Page 16 compares accepted native benchmarks with analytical solutions.
 Page 17 compares mesh and time refinement in both native CF end windows.
-Pages 25–26 print the new native input and complete
+Page 18 gives separate terminal checks with the casing and liner solved together for all four motors.
+Pages 26–27 print the new native input and complete
 thermal-step generator.
 The final pulse control passed all 5,295 steps. The CF casing reached its
 150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner

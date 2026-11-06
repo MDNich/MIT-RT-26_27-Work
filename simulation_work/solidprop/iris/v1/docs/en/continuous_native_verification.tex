@@ -84,3 +84,48 @@ windows verify final char consumption conditional on the prescribed casing
 temperature. A physical firing time also depends on the heat load and casing
 response above the temperature covered by the CF properties.
 \clearpage
+\section{Native checks with an evolving casing}\label{sec:coupledends}
+Here MAPDL solves temperatures through both the liner and the casing.
+At the interface the liner and casing share one temperature degree of freedom.
+The controller advances the aluminium fusion enthalpy or CF decomposition
+after each native field solve. The hot surface moves according to the remaining
+solid inventory and the calculated mass flux. Two cold-start pilots also
+advanced virgin sustainer walls from ambient temperature through their first
+0.1~s. Their largest difference from independently assembled nodal temperatures
+was $5.7\times 10^{-11}$~K.
+
+\paragraph{Handoff near exhaustion.} The independent model supplied a complete
+state about 0.2~s before its predicted event for each motor. From that state
+MAPDL solved both sides of the interface until the last char disappeared. The
+casing was already fully liquid in the aluminium models or above the CF
+property range at handoff. These tests verify the last few coupled steps. The
+elapsed time before handoff belongs to the independent model.
+
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+& Handoff & Liner at handoff & Native & Native interval & Max. edge\\
+Motor & [s] & [$\mu$m] & solves & to loss [s] & ratio$^\dagger$\\\midrule
+Sustainer Al & 110.40 & 6.97 & 5 & 0.17596 & 13.64 \\
+Sustainer CF & 104.16 & 8.50 & 5 & 0.17157 & 13.64 \\
+Booster Al & 147.58 & 4.73 & 5 & 0.16558 & 18.26 \\
+Booster CF & 137.86 & 8.88 & 6 & 0.18124 & 12.73 \\
+\bottomrule\end{tabular}\end{center}
+\noindent $^\dagger$Largest brick edge divided by its shortest edge, screened
+over the independent full history using the revised geometry.
+All four native terminal checks finished without a solver warning or error.
+Across their archived fields the largest nodal difference from the matched
+radial system was $2.3\times 10^{-9}$~K.
+
+\paragraph{Why change the final step?} With the original sector the final
+brick edge ratios ranged from 176 to 4065 as the wall became extremely thin.
+The revised sector spans $0.03^\circ$. It has two cells circumferentially and
+two axially, with axial pitch equal to the circumferential arc at the
+liner--casing interface. The radial mesh starts with 80 cells through the
+liner and 20 through the case. With one liner cell left, the controller
+estimates the time to consume the remaining material at the current rate. It
+shortens the penultimate step when needed so that the final increment retains
+enough physical thickness to mesh. The following solve recomputes the mass
+flux, available char and event time. In each independent exposure this
+adjustment occurred once, with a maximum shift of 0.00027~s in exhaustion.
+\medskip
+\lstinputlisting[language=Python]{../../model/sector_terminal_step.py}
+\clearpage

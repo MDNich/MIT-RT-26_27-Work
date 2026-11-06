@@ -243,7 +243,7 @@ full Fortran material routine and MAPDL listings are printed in the
 \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/solidprop/iris/v1/output/pdf/iris_phenolic_report.pdf}{companion native report}.
 Here the Python controller advances chemistry and recession between finite-element
 thermal steps.
-\lstinputlisting{../../configs/native_verification/whole_sector_r1/pilotwal.inp}
+\lstinputlisting{../../configs/native_verification/whole_sector_r2/start2al.inp}
 \medskip\noindent\textbf{Sector weights used by the command generator.}\par\smallskip
 \lstinputlisting[language=Python,firstline=18,lastline=30,firstnumber=18]{../../model/sector_mapdl.py}
 The ANSYS command and element references document the

@@ -22,6 +22,23 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Coupled native terminal controls complete, November 6, 05:14 UTC
+
+Both revised startup cases and all four near-exhaustion checks passed. On the
+terminal checks, the native model evolved the casing and consumed the last
+4.73–8.88 micrometres of liner in 0.166–0.181 s. MAPDL started from a donor
+state in each case. Baseline-temperature, all-liquid and CF range flags already
+true at that handoff describe conditions on entry. Their first recorded native
+step in a terminal receipt cannot establish when they originally occurred.
+Page 18 of the reviewed report lists every handoff and local interval.
+
+The original series and R1 evidence were retained. The single ten-core
+revised series moved automatically into wall2sa from ambient. On completion
+of all four whole exposures run `model/compare_native_whole_exposures.py`.
+It requires four native whole-history acceptance receipts and checks them
+against the independent finite-volume cases on the common half-second grid.
+It rejects a donor or startup receipt in place of a whole exposure.
+
 ## Revised continuous native queue, November 6, 05:11 UTC
 
 Both original R1 startup pilots passed all three free-field increments from
