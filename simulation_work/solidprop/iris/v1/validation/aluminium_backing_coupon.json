@@ -1,0 +1,50 @@
+{
+  "checked_utc": "2026-11-06T02:13:08.568398+00:00",
+  "passed": true,
+  "sources": {
+    "aluminium_backing_wall": "d19e05e9cee45a9cc4f4d0a1f676074ea48f475a7f77faed87fc8ba692f61ff0",
+    "aluminium_phase_enthalpy": "66da1ac22a1c75a22b7c4c9e8ca3de27ff77b7c80ea2ea6996a98be713059faa",
+    "moving_surface_transient": "7b184977bc862c3d7da968cef11d6d065735ea1a5d7441979824570273a01bbe",
+    "check_aluminium_backing_wall": "119737e79b1575fc4e588f3ed7c728928c0c8e67d9c99f86741d27dfd33a0c0b",
+    "moving_surface_thermochemistry": "7219615b91105aa466bb4aecf126d2b7f3e8f055071f6770d5fc2b0366540e6b"
+  },
+  "runs": [
+    {
+      "width_K": 4.0,
+      "dt_s": 0.16,
+      "maximum_Al_temperature_error_K": 1.9619244875286768,
+      "maximum_liquid_fraction_error": 0.0004309260899001653,
+      "max_energy_residual_J": 0.0006329629776199253,
+      "gas_film_energy_J": -5.051587696606285e-05,
+      "mixed_state_samples": 144
+    },
+    {
+      "width_K": 2.0,
+      "dt_s": 0.08,
+      "maximum_Al_temperature_error_K": 0.9888104132290891,
+      "maximum_liquid_fraction_error": 0.00021770675755736213,
+      "max_energy_residual_J": 9.029957005903453e-05,
+      "gas_film_energy_J": -5.028488091109649e-05,
+      "mixed_state_samples": 288
+    },
+    {
+      "width_K": 1.0,
+      "dt_s": 0.04,
+      "maximum_Al_temperature_error_K": 0.4977000121077708,
+      "maximum_liquid_fraction_error": 0.00011002427728325735,
+      "max_energy_residual_J": 1.755215942564252e-05,
+      "gas_film_energy_J": -5.01680394824575e-05,
+      "mixed_state_samples": 577
+    },
+    {
+      "width_K": 0.5,
+      "dt_s": 0.02,
+      "maximum_Al_temperature_error_K": 0.24929413140694123,
+      "maximum_liquid_fraction_error": 5.532326679492071e-05,
+      "max_energy_residual_J": 1.6866011002102615e-05,
+      "gas_film_energy_J": -5.0109687108832977e-05,
+      "mixed_state_samples": 1154
+    }
+  ],
+  "qualification": "Fixed geometry, stationary pure char and pure Al. Two-cell sharp-phase ODE versus coupled wall under prescribed outside power. No motor event."
+}
