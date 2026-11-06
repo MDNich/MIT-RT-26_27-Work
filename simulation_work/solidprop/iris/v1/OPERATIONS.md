@@ -22,6 +22,25 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Matched event-time comparison complete, November 6, 06:33 UTC
+
+The seven unchanged parent records and five successor paths passed all original
+balance and event checks. At 640/160 liner/casing cells and a 2.5 ms maximum
+step, the independent nodal and finite-volume endpoints differed by 3.96–7.35 ms.
+The largest common-station differences were 0.23 micrometres of liner and
+0.17 K at the interface. The final step intervals were disjoint by 1.71–5.10 ms.
+Both methods support the same practical duration to the nearest second for
+these nominal inputs. Exact last-step agreement remains unmet. See the
+reviewed report, page 22, and `validation/matched_event_recovery.json`.
+
+Supervisor PID 17157 verified that receipt and released the independent
+sensitivity worker. Use `ansystmp/evolving_exposure_sensitivities/worker.json`
+and the real process command, its status/complete files and
+`run_recovery.log`. The candidate report builder for the six one-factor probes
+is at `ansystmp/evolving_exposure_sensitivities/report_candidate.py`. Promote
+it to docs/analysis and check its tables against the completed audit before
+adding it to the published report. The CF booster continues under native PID 6658.
+
 ## Aluminium booster and independent timing recovery, November 6, 06:24 UTC
 
 The third full native case passed the strict field replay and mass, energy,
@@ -29,7 +48,7 @@ event-time and thickness audits. Under continuous nominal exposure the
 6.350 mm liner reached zero by 147.74558 s in ANSYS versus 147.60967 s in the
 independent FV reference. The aluminium was wholly liquid by 139.44 s with
 about 0.229 mm of lining left (interpolated between native half-second
-samples). The maximum sampled thickness discrepancy was 0.00434 mm, across
+samples). The maximum sampled thickness discrepancy was 0.00433 mm, across
 295 common stations. The last integration intervals are 0.10022 s apart.
 The existing ten-core series advanced to its final case, wall2bc.
 

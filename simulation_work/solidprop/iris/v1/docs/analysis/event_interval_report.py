@@ -78,10 +78,9 @@ At 320 liner cells, halving the maximum step from 5 to 2.5~ms changes the
 endpoint by at most TIME~ms. At 2.5~ms, increasing from 320 to 640 cells
 changes it by at most SPACE~ms. The fine nodal and reference FV estimates
 support the same whole-second scale. The positive gaps still matter for a
-claim of tighter agreement. A comparison at matched mesh and time settings
-can distinguish residual differences between the two methods from the effect
-of their unequal time steps. Material and firing assumptions limit the
-physical interpretation throughout.
+claim of tighter agreement. Section~\ref{sec:matched} repeats the comparison
+at matched mesh and time settings to separate spatial and temporal effects.
+Material and firing assumptions limit the physical interpretation throughout.
 \clearpage
 '''
     text = text.replace('ROWS', '\n'.join(rows))

@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 6, 01:24 EST
+## Continuous heating to liner exhaustion, November 6, 01:33 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -49,7 +49,9 @@ heating, 17.5–70 MJ/kg gives 71.8–184.7 s for the aluminium sustainer in the
 independent model. These scenario limits describe the assumed material inputs.
 Page 21 compares 32 independent nodal refinements with the finite-volume
 reference. Their finest endpoints differ by 0.003–0.014 s. The final time-step
-intervals are still separated. Pages 29–30 print the native input and complete
+intervals are still separated. Page 22 uses identical refinement settings in
+both independent methods. At 640/160 cells and a 2.5 ms step, the times
+differ by at most 0.0074 s. Pages 30–31 print the native input and complete
 thermal-step generator.
 The final pulse control passed all 5,295 steps. The CF casing reached its
 150 °C property limit during cooling at 29.47 s, with 4.718 mm of liner

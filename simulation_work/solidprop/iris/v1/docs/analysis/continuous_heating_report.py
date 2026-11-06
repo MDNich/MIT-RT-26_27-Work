@@ -20,6 +20,7 @@ from backing_report import build as build_backing_results
 from sector_report import build as build_sector_results
 from removal_cost_report import build as build_removal_cost
 from event_interval_report import build as build_event_intervals
+from matched_interval_report import build as build_matched_intervals
 from native_whole_report import build as build_whole_results
 from native_wall_report import build as build_native_verification
 from liner_energy_report import build as build_liner_energy
@@ -111,6 +112,7 @@ def main():
     whole = build_whole_results(CASES, inputs)
     build_removal_cost(CASES,inputs)
     build_event_intervals(CASES,inputs)
+    build_matched_intervals(CASES,inputs)
     build_coupled_cf_results(inputs, film_ranges, whole)
     build_sector_results(CASES,inputs)
     build_liner_energy(CASES, inputs)
@@ -136,6 +138,7 @@ def main():
 \input{continuous_native_whole.tex}
 \input{continuous_removal_cost.tex}
 \input{continuous_event_intervals.tex}
+\input{continuous_matched_intervals.tex}
 \section{Comparison with the preceding finite-row model}
 For a continuously exposed liner, the inherited independent model reaches
 the casing after roughly two minutes for the sustainer and two and a half

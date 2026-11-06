@@ -1,5 +1,5 @@
 {
-  "built_at": "November 06, 2026, 01:25 EST",
+  "built_at": "November 06, 2026, 01:33 EST",
   "inputs": {
     "validation/continuous_heating_refinement_audit.json": "ca84abd3bc1349221ec93b8fbb6b39f15fc506ea4c94487753ae1cfe62d3f191",
     "validation/moving_surface_thermochemistry_verification.json": "22ae9541bbdc36a72b543be3fe886136d381feecb3374ceb7d2413405dac2fa7",
@@ -90,8 +90,17 @@
     "configs/native_verification/whole_sector_r2/wall2ba_settings.json": "1386bb84379054ca5cfa3982ffcb3267e21246bd1ad1ad72f680e56cbe758260",
     "configs/native_verification/whole_sector_r2/wall2bc_settings.json": "5a5ca81b64bd012cbec5cfa792f9e54e9d59d0173959d429a2b8742a27882e2c",
     "docs/analysis/whole_event_refinement.png": "e22be6634813f7db1e26cab3267286e8f4ad486d65dd54ee28cf3d03ce3cdec4",
-    "docs/en/continuous_event_intervals.tex": "519f500735d85cb40b3ca74b85949e6d231c08670d857c1984fb15d99284429c",
-    "docs/analysis/event_interval_report.py": "99c0defed7080f8408cb6f4ac885d1c32dbac7b93de36b62172c39e54a78779d",
+    "docs/en/continuous_event_intervals.tex": "fe327d74937121a71a46e3643a50134d772e8cf20fb7203f204a149c5db2c0fb",
+    "docs/analysis/event_interval_report.py": "b7b429da88b550570fbfa29fb9a7a70a6b8576f7f44e3c5b6bcbf10e1749a0e9",
+    "validation/matched_event_recovery.json": "50581d20150efcb70187426bed995624b3b618ddeb5cdfa425a5fb9f3c8f879c",
+    "configs/matched_event_recovery/manifest.json": "ce41dd39e40fcaa78ec0200a7bdc84859371f06065495f495ab4bf1d0bfd48b7",
+    "configs/matched_event_intervals.json": "2e77fa4bf82611a0f3689722d900ffb11d273b419329d85cae167489b5653fda",
+    "model/recover_matched_intervals.py": "2444c40d30da19834de918682685cdd204afa6379b76e098a226d35d89ebfbe9",
+    "configs/matched_event_recovery/al_driver.py": "a346bb5cbe1d83fcb8613de9a1fe4f1b38196e32fee808abe1c3da9eef3994d3",
+    "configs/matched_event_recovery/cf_driver.py": "08c4add0c3aa344fedbced8d898618d683fcfeae04d5a76fdb41370d549a986b",
+    "docs/analysis/matched_final_intervals.png": "df9e8266651b1247f1354049555c80a3bddc458e9034ea6996765f10a3dfe23b",
+    "docs/en/continuous_matched_intervals.tex": "7dfffd5d78ee90f04e3341817806b0abf49c846bf92dbeddabfae156d95b83e6",
+    "docs/analysis/matched_interval_report.py": "f52e20904c618ae509358b16818495d811c962d52a685eb6625a37efb5b5d3f5",
     "validation/cf_backing_coupon.json": "b07ea34659bbfc1b46b75a56e832cd2a141899e228d5cf3b489247add9aca666",
     "validation/cf_backing_cases/booster_cf_reacting_fine.json": "72577da16b07ac50036a19396a3b14129aeb99019b454d283ab8374c26e8e49b",
     "docs/analysis/cf_backing_response.png": "47c85ba3f696719577be1ea71e51143864a252631f93a2cbd2a23883e3fbb6c8",
@@ -152,15 +161,15 @@
     "configs/native_verification/whole_sector_r2/end2bc_settings.json": "59975da5078d63c9def2150279a8626d89949cfa63daa8276a58ee35dc84ed6b",
     "docs/en/continuous_native_verification.tex": "bd53aed6fd700ce8a094c19e191d3a7aa839d5f186f29f1b9874620a9b9896db",
     "docs/analysis/native_wall_report.py": "a1b72172fa2328d218cca64c9751821920c5fc1002ee6355b20feab0bf746825",
-    "docs/en/iris_continuous_heating_progress.tex": "572756df5f71b66248a2cba0deb50f6a555bee5f8e55805bc00e6f196ca4bb0d",
+    "docs/en/iris_continuous_heating_progress.tex": "b1d977735e49dea6ae0f2c4d10ce55afc9abe1fe0cecd475b2e974eda2693df1",
     "docs/en/continuous_moving_balance.tex": "056eeba7df5f3fa9841dfa660c39529a96ad13d2c78d839617f76ee32868abda",
-    "docs/analysis/continuous_heating_report.py": "2509e7470beea9edd0fe4b20bf46dcba14971860413fc7e5d7da0cd128636bea",
-    "docs/analysis/continuous_heating_refinement.pdf": "f39180318e7da5d5f8723af5776d610821c35388c0ca4178c6661a3e2d4ba695"
+    "docs/analysis/continuous_heating_report.py": "ab68ee9a4c4975a71cb77093814eba0f6a6a5d87a177c065d8e5d44a7a6f319e",
+    "docs/analysis/continuous_heating_refinement.pdf": "9d673cd6dcaeff30a4b91051b74b3e868451db401557af5f1ac626c19bcbad77"
   },
-  "pdf_sha256": "0b690bf2ce8c4091947e989c2dc1700376278713941c65682bca6f65ac4b5b0e",
-  "qualification": "Three audited native full exposures. The CF booster is pending. All times are continuous-exposure scenarios with retained casing geometry beyond material limits.",
-  "visual_reviewed_utc": "2026-11-06T06:26:24.078424+00:00",
-  "pages": 30,
-  "render_directory": "ansystmp/pdf_review/native_booster_al_reviewed",
-  "visual_review": "Rerendered both PDFs. Inspected both changed pages, 1 and 19, at full size. All other 28 pages and the separate historical figure match the earlier visually reviewed renders pixel for pixel."
+  "pdf_sha256": "3cad5a3d3a7c9356b5b8040baf57327b1b6080be8c0a360635810aacba342053",
+  "qualification": "Three audited native exposures. Twelve matched-resolution independent method comparisons, with nonoverlapping finest integration intervals. Unknown physical load and retained high-temperature casings.",
+  "visual_reviewed_utc": "2026-11-06T06:34:20.457150+00:00",
+  "pages": 31,
+  "render_directory": "ansystmp/pdf_review/matched_event_final",
+  "visual_review": "Rendered all 31 pages and standalone figure. Checked new page 22 at full size, cross-reference on 21, and repaginated history and code listings. Pages 2\u201320 and standalone historical figure are pixel-identical to the reviewed aluminium-booster edition."
 }
