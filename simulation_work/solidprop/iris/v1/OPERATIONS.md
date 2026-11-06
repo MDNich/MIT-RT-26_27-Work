@@ -22,6 +22,42 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Aluminium booster and independent timing recovery, November 6, 06:24 UTC
+
+The third full native case passed the strict field replay and mass, energy,
+event-time and thickness audits. Under continuous nominal exposure the
+6.350 mm liner reached zero by 147.74558 s in ANSYS versus 147.60967 s in the
+independent FV reference. The aluminium was wholly liquid by 139.44 s with
+about 0.229 mm of lining left (interpolated between native half-second
+samples). The maximum sampled thickness discrepancy was 0.00434 mm, across
+295 common stations. The last integration intervals are 0.10022 s apart.
+The existing ten-core series advanced to its final case, wall2bc.
+
+Separately, the matched-resolution independent comparison stopped on the
+aluminium booster approaching its 142 s output. From its saved 126.235 s
+checkpoint we reproduced the failing state at 141.99999999989996 s. Repeated
+2.5 ms additions left a 1.00044e-10 s output step. The thermal iteration
+accepted the starting temperatures, but the open-system energy check rejected
+the increment (−4.45306e-6 J per radian per axial metre). The failure and
+the untouched parent checkpoints remain in `ansystmp/matched_event_intervals`.
+The sensitivity follower exited before dispatch because the prerequisite
+completion receipt was missing.
+
+The sealed successor is `configs/matched_event_recovery/manifest.json`.
+If an otherwise regular step would leave less than 5% of one step to the
+next output, divide the remaining interval in two. This preserves the
+maximum step and every original thermal, energy and mass check. The
+reproduced pair is 0.00125000005002 s each and lands exactly on 142 s.
+Seven complete paths retain their original input and checkpoint hashes.
+The eighth resumes with the original accepted state and full balance history.
+Check `ansystmp/matched_event_recovery/{series.json,worker.json,status.json,run.log}`
+and its completion receipt. The serial supervisor (PID 17157 at handoff)
+starts the sealed independent sensitivity cases only after verifying the
+successor audit and plan hashes. Check the sensitivity log
+`ansystmp/evolving_exposure_sensitivities/run_recovery.log` once it advances.
+The original matched worker and its first sensitivity follower have exited.
+Do not restart either one. No native case uses this independent driver.
+
 ## Both sustainer whole exposures audited, November 6, 06:00 UTC
 
 The ten-core CF sustainer completed 2,713 thermal solves. Replay of every saved

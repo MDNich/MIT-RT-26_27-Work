@@ -87,24 +87,21 @@ def build(cases, inputs):
     plt.close(fig)
     track(plot)
     text = r'''\section{Native ANSYS from first exposure to burnthrough}\label{sec:whole}
-The entire liner and casing start at 22~$^\circ$C. At zero time, 2504~K gas contacts
-bare phenolic and the nominal film and pressure are held until all liner mass
-has left the wall. The controller updates chemistry and material removal after
-each MAPDL thermal solve. Both bodies evolve from their initial state throughout.
-The table gives the audited full-exposure results.
+The liner and casing start at 22~$^\circ$C. From first exposure to liner loss,
+the model holds the gas at 2504~K and 800~psi with a nominal film coefficient of
+1000~W/(m$^2$~K). After each MAPDL thermal solve the controller updates
+chemistry, surface position and casing state.
 
 \begin{center}\small\begin{tabular}{lrrrrrr}\toprule
  & Casing & Liner left & ANSYS & Radial & Difference & Interval\\
 Motor & event [s] & [mm] & gone [s] & gone [s] & [s] & gap [s]\\\midrule
 EVENTS
 \bottomrule\end{tabular}\end{center}
-The earlier casing event marks all aluminium liquid or the CF casing reaching
-1000~$^\circ$C. Liner thickness at that time is interpolated between adjacent
-half-second samples. Times use the upper end of each recorded event interval.
-The gap is the separation between the two final time-step intervals. A positive
-value leaves exact event-interval agreement unresolved.
-Molten Al and hot CF residue retain their prescribed geometry in these
-calculations. Their ability to contain 800~psi lies outside this thermal model.
+The casing event marks complete Al fusion or the CF reaching 1000~$^\circ$C.
+The liner thickness there is interpolated between half-second samples. Times
+use the upper ends of the exhaustion intervals. The gap separates their nearest
+ends. Beyond the casing event, the thermal model holds the molten Al or CF
+residue in place. Casing pressure capacity remains undetermined.
 
 \begin{figure}[H]\centering\includegraphics[width=.98\textwidth]{../analysis/native_whole_exposure.png}
 \caption{Left, native liner thickness and independent finite-volume
@@ -117,18 +114,14 @@ retained casing model after complete fusion or the CF property limit.}
 Motor & solves & diff.\ [$\mu$m] & [MJ/m$^2$] & face [$^\circ$C] & thickness\\\midrule
 CHECKS
 \bottomrule\end{tabular}\end{center}
-Thickness differences use common half-second stations before either liner
-vanishes. The peak uses the sampled exposed phenolic surface while mass remains.
-Film dose integrates heat entering the moving wall per original hot-face area.
-The comparison targets a time difference below 1\% and thickness difference
-no greater than the larger of 0.02~mm and 1\% of initial thickness. Both
-models use the same assumed heating history and char-removal energy.
+Thickness differences use common half-second samples while liner remains.
+Film dose is heat entering the moving wall per original exposed area. A pass
+requires event times within 1\% and thickness within the larger of 0.02~mm and
+1\% of initial thickness. Both solvers use the same heating and char law.
 
-Every saved native field was replayed from the initial state using the sealed
-controller and an independently assembled radial thermal system. The largest
-field discrepancy was ERR~K. The largest absolute net energy residual was
-RES of the film energy. The audit distinguishes solver messages during the
-calculation from the ten-core performance advisory MAPDL can issue at exit.
+Replaying all native fields with the sealed controller and an independent
+radial thermal system gave a maximum discrepancy of ERR~K. The largest
+absolute energy imbalance was RES of the film dose.
 \clearpage
 '''
     for label,value in [('ERR',max(errors)),('RES',max(residuals))]:

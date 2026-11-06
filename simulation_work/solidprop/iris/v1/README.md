@@ -1,6 +1,6 @@
 # Iris exploratory ANSYS study
 
-## Continuous heating to liner exhaustion, November 6, 01:00 EST
+## Continuous heating to liner exhaustion, November 6, 01:24 EST
 
 At 2504 K, 800 psi and continuous nominal gas-side heating, the independent
 moving-wall models with evolving backing give 110.5 s (sustainer Al), 104.3 s
@@ -35,12 +35,15 @@ need physical calibration. Page 16 compares accepted native benchmarks with anal
 Page 17 compares mesh and time refinement in both native CF end windows.
 Page 18 gives separate terminal checks with the casing and liner solved together for all four motors.
 Page 19 compares complete native and independent runs from first gas contact
-for both 4.7625 mm sustainers. With the aluminium casing, ANSYS reached zero
+for both 4.7625 mm sustainers and the 6.350 mm aluminium booster. With the aluminium casing, ANSYS reached zero
 phenolic at 110.576 s and the independent model at 110.474 s. About 0.430 mm
 remained when all aluminium had melted at 99.14 s. With the carbon-fibre
 casing, ANSYS reached zero at 104.332 s and the independent model at
 104.254 s. About 0.453 mm remained when the CF reached its 1000 °C property
-limit at 95.16 s. Each calculation retains the casing geometry beyond that event.
+limit at 95.16 s. The aluminium booster exhausted its liner at 147.746 s
+in ANSYS and 147.610 s in the independent reference. About 0.229 mm of
+phenolic remained when all its aluminium had melted at 139.44 s. Each
+calculation retains the casing geometry beyond the material event.
 Page 20 varies the effective energy required to remove char. At fixed nominal
 heating, 17.5–70 MJ/kg gives 71.8–184.7 s for the aluminium sustainer in the
 independent model. These scenario limits describe the assumed material inputs.
@@ -57,7 +60,7 @@ ANSYS consumed the last 0.453 mm of char in the sustainer and 0.404 mm in the
 booster in 9.177 s and 8.250 s, respectively. Both calculations prescribe the
 interface temperature from the independent model at 95.08 s and 129.70 s onward.
 Changing either mesh or time resolution shifted each end-window duration by
-less than 0.001 s. Both booster cases await full native verification.
+less than 0.001 s. The carbon-fibre booster is the remaining full native case.
 [Native verification status](OPERATIONS.md)
 The four entries in the film-coefficient table come from the independent model.
 
