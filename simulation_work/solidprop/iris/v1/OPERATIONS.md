@@ -22,6 +22,30 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## Native verification handoff, November 5, 21:37 EST
+
+The sole native job is still the 320-row sustainer CF pulse under its active-only
+observer. The 02:38 UTC prefix passed through 5.53281 s and both row-transfer
+checks passed. After it exits, check the terminal acceptance, cooling comparison and
+queue receipts. Use `model/run_native_wall_verification.py CASE readiness`
+to check these receipts, the registry, storage and solver occupancy. Run
+`launch` once for an eligible case and `collect` after guest completion. An
+ambiguous launch requires inspection of the existing intent and guest job.
+The order is `annular`, `char8`, then `char16`. All three PowerShell wrappers
+passed a guest parse check. Synthetic exports exercised every nodal field and
+the removal ledger in the moving-char reader, including ten deliberately broken
+exports. Native verification of those fields is still pending.
+
+Four 30 s fields from the audited nominal moving-wall runs now have sealed
+native comparison decks in `configs/native_verification/motor_snapshots_30s_smp10/`.
+Each uses 80 liner rows, 20 casing rows and ten 0.005 s increments. Geometry,
+reaction rates, properties and surface loads are held at the donor state.
+Compare every node against the consistent-capacity reference in the matching
+JSON. The lumped-capacity result is an additional diagnostic. These inputs test
+conduction and energy storage for actual motor temperature gradients.
+A native run that couples surface motion to evolving material and surface loads
+is still required to verify a continuous-heating liner exhaustion time.
+
 ## Material comparisons, November 5, 21:27 EST
 
 The ten retained-Al integrations under worker 52320 completed and the worker
