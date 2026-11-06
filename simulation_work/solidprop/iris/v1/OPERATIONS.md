@@ -64,6 +64,14 @@ and the shared independent worker lock. Never dispatch another native job to
 repeat this postprocessing. A final timing comparison should distinguish matched
 native-equation replay, convergence within each method, and cross-method intervals.
 
+The matched finite-volume follow-up is prepared in
+`configs/matched_event_intervals.json`. Three matched resolution levels isolate
+the step effect at 320 liner cells, then the mesh effect at 0.0025 s. This
+tests whether the reference finite-volume interval also moves as the step
+shrinks. A single waiting process in `ansystmp/matched_event_intervals/follower.json`
+verifies the nodal completion hash before entering the shared worker lock.
+Check its PID, log and completion record before restarting any worker.
+
 ## Coupled native terminal controls complete, November 6, 05:14 UTC
 
 Both revised startup cases and all four near-exhaustion checks passed. On the
