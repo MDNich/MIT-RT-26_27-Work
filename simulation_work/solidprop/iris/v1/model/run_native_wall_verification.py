@@ -15,6 +15,7 @@ import uuid
 import audit_native_moving_char as moving
 import audit_native_conduction_mode as mode
 import native_snapshot_verification as snapshots
+import audit_native_cf_tail as tail
 from continuous_heating_campaign import digest
 from ops import ROOT, TMP, UNC, StorageLimitError, atomic, disks, guest, stop_runs, utc
 
@@ -27,6 +28,8 @@ if($solvers.Count){throw 'Another native solver or wrapper is active'}
 def spec(case):
     if case=='annular':
         return mode.PACKAGE,mode.RUN,'irmode64',mode.DECK,[mode.LOG,'mode_time.txt','mode_end.txt']
+    if case in tail.JOBS:
+        return tail.PACKAGE,TMP/'runs'/('cf_tail_'+case),case,case+'.inp',[case+'.out','tail_steps.txt','tail_field.txt']
     if case in snapshots.CASES:
         return snapshots.PACKAGE,TMP/'runs'/('snapshot_r2_'+case),case,case+'.inp',[case+'.out','snap_field.txt']
     job='mvchar'+case.removeprefix('char')
@@ -63,6 +66,13 @@ def prerequisites(case):
             reasons.append('Coarse moving-char acceptance pending')
     if case in snapshots.CASES:
         prior = ['native_moving_char_r2_mvchar16'] + ['native_snapshot_r2_'+s for s in snapshots.CASES[:snapshots.CASES.index(case)]]
+        for name in prior:
+            record = p/(name+'.json')
+            if not record.is_file() or not json.loads(record.read_text()).get('passed'):
+                reasons.append('Pending acceptance of '+name)
+    if case in tail.JOBS:
+        prior = ['native_snapshot_r2_'+s for s in snapshots.CASES]
+        prior += ['native_cf_terminal_window_'+job for job in tail.JOBS[:tail.JOBS.index(case)]]
         for name in prior:
             record = p/(name+'.json')
             if not record.is_file() or not json.loads(record.read_text()).get('passed'):
@@ -179,17 +189,18 @@ def collect(case,run,job):
         raise RuntimeError('Registry belongs to another job')
     if case=='annular':
         subprocess.run([sys.executable,str(ROOT/'model/audit_native_conduction_mode.py'),'audit'],check=True)
+    elif case in snapshots.CASES:
+        snapshots.audit(case,run)
+    elif case in tail.JOBS:
+        tail.audit(case,run)
     else:
-        if case in snapshots.CASES:
-            snapshots.audit(case,run)
-        else:
-            moving.audit(int(case.removeprefix('char')))
+        moving.audit(int(case.removeprefix('char')))
     if registry: atomic(TMP/'active_runs.json',[])
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('case',choices=('annular','char8','char16',*snapshots.CASES))
+    p.add_argument('case',choices=('annular','char8','char16',*snapshots.CASES,*tail.JOBS))
     p.add_argument('action',choices=('readiness','check-wrapper','launch','collect'))
     args=p.parse_args()
     disks()

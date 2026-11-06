@@ -22,6 +22,34 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
+## CF end-of-exposure native inputs, November 5, 22:07 EST
+
+Six ten-core SOLID278 decks now cover the last part of each CF exposure.
+Their starting point is the first 1000 °C backing crossing in the audited
+reacting CF model, 95.08 s or 129.70 s. At those instants the residual virgin
+fraction of the retained liner mass is below 0.0006 percent in both motors.
+These checks approximate the remaining phenolic as pure char and prescribe
+the archived casing interface history. Each solve updates the hot face,
+char reaction, film reduction, radius and remeshed enthalpy. The supplied
+backing trace is held at its last value if a check extends beyond the trace.
+ANSYS integrates the thermal state of the char sector; the source histories
+are independent-model inputs. The two Al tails still contain about five percent
+virgin material by mass at complete casing melting, so these CF-only inputs
+must not be reused as Al checks.
+
+The package is `configs/native_verification/cf_tail_char_smp10/`. Mesh/time
+pairs are 20 rows at 0.04 s, 40 at 0.04 s and 40 at 0.02 s. The initial mass
+substitution, initial enthalpy difference, independent FE history and horizons
+are recorded per deck. The output reader checks all start/end nodal fields,
+all increments, kinetic flux, radius, applied face power, backing heat reaction,
+total storage, and donor-to-recipient remap. Six synthetic exports and damaged
+copies exercised the gates. There has been no native end-window solve yet.
+After both manufactured checks and all four frozen-field receipts, use the same
+guarded dispatcher for tails204, tails404, tails402, tailb204, tailb404, tailb402
+in order. Before accepting these results, inspect solver property/mesh warnings
+and heat-balance checks. A matched terminal segment cannot validate the
+preceding heating history or casing strength.
+
 ## Reacting CF results, November 5, 21:55 EST
 
 Worker 61181 completed all eight independent moving-wall jobs and exited.
