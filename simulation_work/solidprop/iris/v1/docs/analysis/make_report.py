@@ -181,6 +181,13 @@ def write_report(runs, snapshot):
             peak=booster['sampled_maxima']['case_inner_max_C']
             outcome='both stated targets pass' if pair['passed'] else 'at least one stated target is not met'
             native_status+=f" {label} with 160/40 rows completes 300 s with an inner-casing peak of {peak['temperature_C']:.2f} degrees Celsius at {peak['time_s']:.2f} s and {booster['remaining_mm']:.4f} mm retained. Its mixed numerical comparison changes casing peaks by at most {max(abs(v) for v in pair['peak_differences_K'].values()):.3f} K and retained thickness by {pair['remaining_difference_mm']:.5f} mm; {outcome}, while finer mesh/time checks remain necessary."
+    joint_name='sustainer_al_pulse7_midpoint_joint320_geom005_smp10'
+    if resolution_path.exists() and joint_name in resolution['records']:
+        joint=resolution['records'][joint_name]
+        pair=next(a for a in resolution['comparisons'] if a['fine']==joint_name)
+        assert joint['complete'] and pair['configuration_comparison']['kind']=='joint_mesh_time'
+        peak=joint['sampled_maxima']['case_inner_max_C']
+        native_status+=f" Sustainer Al with 320/80 rows completes 127 s with an inner-casing peak of {peak['temperature_C']:.2f} degrees Celsius at {peak['time_s']:.2f} s and {joint['remaining_mm']:.4f} mm retained. Against the corrected 160/40-row case, the joint mesh/time change is {max(abs(v) for v in pair['peak_differences_K'].values()):.3f} K in casing peaks and {pair['remaining_difference_mm']:.5f} mm in retained mesh; both stated targets pass. Common sector and solver controls are retained. The hot-face history remains sensitive to recession discretization, and the CF refinement is still pending."
     cutoff_path=ROOT/'validation/removal_cutoff_sensitivity.json'
     if cutoff_path.exists() and json.loads(cutoff_path.read_text()).get('complete'):
         native_status+=' Independent tests also show that the residual-solid cutoff materially affects sustainer CF scope timing. Current native values remain conditional on the sealed 0.1-percent removal rule; tighter-cutoff convergence is investigated separately.'

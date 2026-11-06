@@ -1,5 +1,19 @@
 # Iris exploratory ANSYS study
 
+**Refinement update (November 5, 19:10 EST):** sustainer aluminium with
+320/80 radial rows completed its 127-second scenario and 8416 accepted intervals.
+Native, restart, exact-event, independent and full-field checks pass. Its inner
+casing peaks at 123.8504 C at 77.78125 s; 4.717852 mm of liner mesh remains.
+Relative to the corrected 160/40-row case, casing peaks change by at most
+1.60494 K and retained thickness by 0.014883 mm, meeting the 5 K and 0.047625 mm
+targets. This pair keeps the same sector measures and solver controls while
+refining radial cells and time steps together. It does not establish convergence
+of the entire hot-face history: the largest shared-sample heating difference
+is 165.81 K, before any row removal. It does not establish a motor lifetime.
+Four resolution cases and
+five deferred controls remain; observer 93981 is running sustainer CF320 on ten
+SMP cores. The earlier CF scope-time refinement failure remains unresolved.
+
 **Refinement update (November 5, 15:40 UTC):** booster CF with 160/40 radial rows
 completed its 300-second scenario and passed native, restart, exact-event,
 independent and full-field checks. Its inner/outer casing peaks are
@@ -44,7 +58,8 @@ cooling, balance and independent-reference gates remain required.
 
 Ten continuing resolution cases and five deferred controls received ten-core
 successor inputs. Booster CF quarter-step has now completed its full 300 s
-horizon; five resolution cases remain after all four verified 160/40-row cases.
+horizon; four resolution cases remain after all four verified 160/40-row cases
+and the verified sustainer Al320/80 case.
 Fresh corrected-geometry successors replace the unstarted
 old-sector cases. `configs/campaign_queue.json` records their names and the single
 current observer. Prior one-core results, inputs and checkpoint lineage are

@@ -22,7 +22,58 @@ delegation is authorized.
    can justify guest cleanup. Keep native databases/results ignored. No Git
    file or newly reachable blob may reach 100,000,000 bytes.
 
-## Active corrected-geometry resolution queue (November 5, 15:40 UTC)
+## Active corrected-geometry resolution queue (November 5, 19:10 EST)
+
+Sustainer Al320/80 completed 127 s / 8416 accepted intervals. Repeated full
+native/log/restart validation exactly reproduced the queue acceptance record;
+all 22 independently compared checkpoint hashes were rechecked. Maximum sampled
+native/reference profile difference is 0.015045902 K. Three row-removal events
+at 3.1421875, 5.2015625 and 6.315625 s match the independent schedule exactly;
+their next-step transfers, persistent topology and cooling transition pass.
+The maximum native energy residual is 2.72316e-5 relative, hot-load error
+5.88639e-8 and absolute mass residual 1.05673e-21 kg. The final log has zero
+errors and the documented USERCK and generic elapsed-time/SMP advisories.
+
+Sampled inner/outer casing peaks are 123.850357/123.829494 C at
+77.78125/77.875 s, with 4.7178515625 mm retained mesh. Against the corrected
+160/40-row case, peak changes are 1.604934/1.604579 K and retained thickness
+changes by 0.0148828125 mm, below the 5 K and 0.047625 mm targets. Physical
+inputs, sector geometry/measures and native tolerance are identical; radial
+resolution doubles while heating/cooling steps halve. This is a joint mesh/time
+comparison, not isolated spatial convergence or a calibrated lifetime. The
+hot-face history is assessed separately in the updated report. At 7 s its mean
+changes by +5.231525 K, but the maximum shared-sample heating discrepancy is
+165.810022 K at 1.24375 s (1056.067296 versus 1221.877318 C). Both cases still
+have zero removed rows at the same radius then, so this discrepancy is not
+solely a row-transfer jump. The coupled surface history remains unresolved
+even though the stated casing/thickness targets pass; preserve this distinction
+when assessing the remaining finer cases.
+
+All 8416 full temperature fields were checked: maximum same-radius ranges
+are 1.64466e-8 K in live phenolic and 1.17240e-12 K in casing. These describe
+numerical uniformity in the prescribed sector, not real-motor hot spots.
+The accepted, independent and full-field records use the complete runtime
+name `sustainer_al_pulse7_midpoint_joint320_geom005_smp10` in `validation/`.
+
+The unchanged observer **93981** advanced normally to
+`sustainer_cf_pulse7_midpoint_joint320_geom005_smp10`. Four resolution cases
+remain in `current_dispatch`, followed by five deferred controls. Initial
+accepted CF320 states and the actual single ten-core SMP process have been
+verified. Keep watcher 82419 and keep-awake 86412. Never resume superseded
+observers or modify sealed packages. The earlier CF scope-time failure still
+requires its 320/640 comparisons; a 150 C scope flag is not failure/burnthrough.
+
+At 19:10 EST, the completed sustainer Al320 guest `file.rth` was removed only
+after full Mac/guest size and SHA256 agreement, terminal-state verification and
+process-absence checks. This reclaimed 8,315,666,432 bytes; Windows then had
+46,907,797,504 bytes free. The full Mac result, checkpoints, native restart
+backups, logs and inputs remain intact. Receipt:
+`validation/guest_result_archive_20261106.json`. The active CF320 solver was
+unaffected. Recheck actual growth/capacity before later 320/640 cases.
+
+## Previous corrected-geometry queue record (November 5, 15:40 UTC)
+
+The following record is historical; active runtime and counts are superseded above.
 
 Booster CF 160/40 rows completed 300 s / 6976 accepted intervals. The full
 native/log/restart validation was repeated and exactly reproduced the queue's
@@ -70,7 +121,7 @@ was unaffected.
 ## Previous corrected-geometry queue record (November 5, 10:35 UTC)
 
 The following paragraphs preserve the state at 10:35 UTC. The active case and
-remaining counts are superseded by the 15:40 UTC record above.
+remaining counts are superseded by the later records above.
 
 Booster Al 160/40 rows completed 300 s / 6976 accepted intervals. The terminal
 native/log/restart audit was repeated and matches the queue's acceptance record;
@@ -904,7 +955,7 @@ and independent acceptance gates. Keep runtime-specific comparison files.
 
 ## Remaining substantive work
 
-1. Complete the five remaining queued native spatial/joint checks. Preserve the strict
+1. Complete the four remaining queued native spatial/joint checks. Preserve the strict
    native acceptance gates, exact row scheduling, restart topology and independent
    comparison at every terminal record. Keep all four primary results intact.
 2. Rerun `compare_native_pulses.py` at meaningful checkpoints and completion.

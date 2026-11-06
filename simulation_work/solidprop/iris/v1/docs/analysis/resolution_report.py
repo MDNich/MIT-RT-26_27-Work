@@ -8,6 +8,7 @@ from combined_sensitivity_report import create as combined_sensitivity_report
 from removal_cutoff_report import create as removal_cutoff_report
 from native_cf_refinement_report import create as native_cf_refinement_report
 from native_booster_refinement_report import create as native_booster_refinement_report
+from native_sustainer_al_refinement_report import create as native_sustainer_al_refinement_report
 
 
 def create(root,out,captured):
@@ -22,6 +23,7 @@ def create(root,out,captured):
         kind=check.get('configuration_comparison',{}).get('kind')
         if kind=='combined_numerical_changes':return 'Combined numerical'
         if kind=='different_physical_model':return 'Model changed'
+        if kind=='joint_mesh_time':return 'Joint mesh/time'
         return check['fine'].split('_midpoint_')[-1].replace('_smp10','').replace('_',' ')
     def row(values):return ' & '.join(str(v) for v in values)+r' \\'
 
@@ -131,6 +133,14 @@ def create(root,out,captured):
                 f"{d['maximum_same_radius_ranges']['casing']['range_K']:.3g}"]) for d in refined_uniformity),
             r'\bottomrule\end{tabular}\end{table}']
 
+    joint_uniformity=read('validation/native_uniformity_sustainer_al_pulse7_midpoint_joint320_geom005_smp10.json')
+    if joint_uniformity:
+        d=joint_uniformity['records'][0]['maximum_same_radius_ranges']
+        parts += [f"The completed sustainer Al 320/80-row case was checked at all 8416 accepted checkpoints. "
+            f"Maximum same-radius phenolic/casing ranges are {d['live_phenolic']['range_K']:.3g}/"
+            f"{d['casing']['range_K']:.3g} K. Radial averaging conceals no appreciable numerical "
+            'temperature spread in this uniform sector; real-motor hot spots remain outside the model.']
+
     native_plan=read('validation/native_resolution_plan.json')
     native_resolution=read('validation/native_resolution_comparison.json')
     if native_plan:
@@ -206,6 +216,7 @@ def create(root,out,captured):
             parts += native_cf_refinement_report(root,out,read,native_resolution)
             parts += native_booster_refinement_report(root,out,read,native_resolution,'booster_al')
             parts += native_booster_refinement_report(root,out,read,native_resolution,'booster_cf')
+            parts += native_sustainer_al_refinement_report(root,out,read,native_resolution)
             parts += [f"{len(native_resolution['pending'])} prepared native resolution cases remain without terminal accepted comparisons at this edition. "
                 'The primary histories remain separate from these refinements; the hot-face time comparison is reported earlier.']
         else:
