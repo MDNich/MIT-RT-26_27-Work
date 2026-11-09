@@ -1,4 +1,4 @@
-"""Compare all three native base spectra on the bare board and both raised installations."""
+"""Compare the native base spectra for the bare board and both screw materials at one fit."""
 from report_plot import plt
 import numpy as np
 from audit_local import ROOT,read
@@ -7,11 +7,11 @@ from psd_comparison import published_values
 from study_cases import native_case
 
 
-def axis_results(axis):
+def axis_results(axis,fit='stand3'):
     assert axis in ('X','Y','Z')
     base=ROOT/'validation'
     rows={}
-    for variant in ('bare','stand3_nylon','stand3_aluminium'):
+    for variant in ('bare',fit+'_nylon',fit+'_aluminium'):
         name=native_case(variant,'psd_'+axis)
         path=base/'global'/(name+'.json');data=read(path)
         assert data['case']==name and data['campaign']=='nov08_01'
@@ -31,10 +31,12 @@ def axis_results(axis):
     return rows
 
 
-def draw(data):
+def draw(data,fit='stand3'):
+    snug=fit=='snug125'
+    seat='1.25 mm' if snug else '3 mm'
     fig,axes=plt.subplots(1,2,figsize=(8.0,2.8),layout='constrained')
-    for j,(key,label,col,mk) in enumerate([('bare','Bare board','#08357E','o'),('stand3_nylon','3 mm / nylon','#3C78D8','s'),
-                                            ('stand3_aluminium','3 mm / aluminium','#38761D','^')]):
+    for j,(key,label,col,mk) in enumerate([('bare','Bare board','#08357E','o'),(fit+'_nylon',seat+' / nylon','#3C78D8','s'),
+                                            (fit+'_aluminium',seat+' / aluminium','#38761D','^')]):
         for ax,metric in zip(axes,['pcb_Z_displacement_um','pcb_equivalent_stress_MPa'],strict=True):
             values=[data[a][key][metric] for a in 'XYZ']
             ax.scatter(np.arange(3)+(j-1)*.14,values,color=col,marker=mk,s=35,label=label,zorder=3)
@@ -44,12 +46,19 @@ def draw(data):
         ax.set_ylim(bottom=0);ax.spines[['top','right']].set_visible(False);ax.grid(axis='y',alpha=.2)
     h,l=axes[0].get_legend_handles_labels()
     fig.legend(h,l,loc='outside lower center',ncol=3,fontsize=8,frameon=False)
-    fig.savefig(ROOT/'docs/figures/raised-native-spectra.pdf',metadata={'CreationDate':None,'ModDate':None})
+    name='snug-native-spectra.pdf' if snug else 'raised-native-spectra.pdf'
+    fig.savefig(ROOT/'docs/figures'/name,metadata={'CreationDate':None,'ModDate':None})
     plt.close(fig)
 
 
 if __name__=='__main__':
-    records={axis:axis_results(axis) for axis in 'XYZ'};draw(records)
-    write_json(ROOT/'validation/psd_comparisons/three_axis_native.json',dict(base_cases=records,
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--fit',choices=('stand3','snug125'),default='stand3')
+    fit=parser.parse_args().fit
+    records={axis:axis_results(axis,fit) for axis in 'XYZ'}
+    draw(records,fit)
+    output=('snug125/three_axis_native.json' if fit=='snug125' else 'psd_comparisons/three_axis_native.json')
+    write_json(ROOT/'validation'/output,dict(base_cases=records,
         scope='Peak one-sigma responses in three separate 20–2000 Hz base excitations, at the tightened contact states. '
               'Each maximum is taken over the specified material scope. The base axes are separate load cases.'))

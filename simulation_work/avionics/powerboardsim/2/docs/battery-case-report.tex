@@ -132,7 +132,7 @@ Bare & 23.37 & 19.45 & 52.67\\
 Snug, nylon screws & 86.31 & 104.58 & 139.49\\
 Snug, aluminium screws & 78.96 & 66.78 & 75.86\\\bottomrule
 \end{tabular}\end{center}
-Both mounts reduced PCB deflection during bolt tightening. Under base-Z vibration, the calculated RMS board motion increased to 2.65 times bare with nylon and 1.44 times bare with aluminium. The native bases retained 38 bare modes and 48 modes for each mount up to 4~kHz. Removing modes above 3.5~kHz changed all nine tabulated peaks by less than 0.003\%. The independent bare calculation reproduced the 18 archived native displacement peaks within 0.013\%. Page~8 gives the native base-X check for both mounts.
+Both mounts reduced PCB deflection during bolt tightening. Under base-Z vibration, the calculated RMS board motion increased to 2.65 times bare with nylon and 1.44 times bare with aluminium. The native bases retained 38 bare modes and 48 modes for each mount up to 4~kHz. Removing modes above 3.5~kHz changed all nine tabulated peaks by less than 0.003\%. The independent bare calculation reproduced the 18 archived native displacement peaks within 0.013\%. The six cased MAPDL spectra reproduced the independent peak PCB Z displacements within 0.002~$\mu$m. Pages~11--12 compare the native stresses across directions.
 
 \heading{Case-mesh qualification}
 After tightening, MAPDL flagged the same PLA tetrahedron in both mounts at its 179.9$^\circ$ edge-angle limit. On each locked mesh, an independent polynomial bound confirmed a positive Jacobian determinant throughout all 45,549 case elements. The flagged element had the smallest lower bound, 0.01286~mm$^3$ in both cases. The separate 1.5~mm nylon prestressed basis will test frequency and vibration-response sensitivity.
@@ -161,7 +161,7 @@ Outer-pocket engagement also appeared during the 0.10~s startup ramp. We selecte
 The extra supports can redirect load once an outer cell engages. The spectrum values on page~6 quantify the response with the installed contact state held fixed. To check load transfer at frame 353, paired local nonlinear models will drive the same region of each mount with the signed base-Z displacement. Each has a contact-enabled and a free control at two cut sizes. The six samples above establish neither the first contact time nor its duration.
 
 \newpage
-\pageheading{Native lateral vibration raises board travel while reducing peak stress}
+\pageheading{Base-X vibration raises board travel and reduces peak stress}
 MAPDL applied the original 20--2000~Hz random acceleration along PCB X to the bare assembly and both installed cases. The three native runs used the same 2\% modal damping. The table gives the largest one-sigma response within each named part. Each maximum can occur at a different node.
 
 \begin{center}\small\begin{tabular}{lrrr}\toprule
@@ -183,7 +183,7 @@ At bolt lock the middle cell touches the case and remains attached to its two ni
 With base-X excitation, independent spectrum integration gave middle-pocket force components of 17.53~N RMS along X and 7.75~N RMS along Z with nylon screws. Aluminium gave 15.83 and 6.07~N RMS. These dynamic components assume the middle contact stays engaged. The native base-X solid-element force records provided a separate check on the modal calculation. Page~7 shows where the fixed contact assumption breaks in the seeded motion.
 
 \heading{Nickel response and movie coverage}
-The global nickel strips are linear elastic. The archived local damage model uses an exploratory yield reference of 185~MPa. Including preload, the first base-X seeded stress crossing fell at 38.12--38.13~ms bare, 37.83--37.84~ms with nylon and 40.39--40.41~ms with aluminium. Establishing permanent strain or tearing requires the nonlinear strip model. The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{movie catalogue} includes the three mode pairs and four base-X RMS pairs. The RMS camera orbits show a fixed statistical field on a shared colour scale.
+The global nickel strips are linear elastic. The archived local damage model uses an exploratory yield reference of 185~MPa. Including preload, the first base-X seeded stress crossing fell at 38.12--38.13~ms bare, 37.83--37.84~ms with nylon and 40.39--40.41~ms with aluminium. Establishing permanent strain or tearing requires the nonlinear strip model. The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{movie catalogue} lists each reviewed pair by base direction and response component. The RMS camera orbits show a fixed statistical field on a shared colour scale.
 
 \newpage
 \pageheading{Printed-tab tension peaks beside the screw bearing}
@@ -219,6 +219,45 @@ At the six sampled crossing instants, tests of the complete quadratic surfaces f
 
 \heading{How closely did the installed models balance?}
 On the 2~mm mesh, the whole-model force residual was 3.01~N at peak pocket load and 0.028~N at lock. On the 1.5~mm mesh the corresponding values were 2.97 and 0.00071~N. A global residual measures imbalance across the assembly. It does not directly measure the error in one pocket force. A same-mesh repeat with a 0.01~N force criterion will check the sensitivity to nonlinear convergence. The two independent readbacks of contact force agreed within $10^{-10}$~N at every station on both meshes.
+\newpage
+\pageheading{Under base Y, stress rises across most of the PCB}
+The peak equivalent stress under Y excitation increased from 17.85~MPa RMS bare to 50.21~MPa with nylon screws and 48.40~MPa with aluminium. The bare peak lies at $(10.0,16.0)$~mm in the PCB plane. The nylon peak shifts to $(9.5,118.2)$~mm, and the aluminium peak to $(62.6,5.5)$~mm.
+
+\begin{center}\includegraphics[width=.92\linewidth]{figures/snug-native-pcb-y.pdf}
+\captionof{figure}{Native base-Y stress fields in the original board coordinates. A ring marks the peak in each assembly. The three maps share one square-root colour scale, labelled in MPa RMS. Each mesh footprint shows the largest stored equivalent stress among all corners through the board thickness.}\end{center}
+
+\heading{How much of the board changes?}
+We matched the two thickness layers by their common mid-plane nodes, giving 19,507 columns across 39,014 quadratic PCB elements. The footprint areas sum to 8,150.067~mm$^2$. Dividing the native element volume at the first bare preload station by nominal thickness gave 8,150.066~mm$^2$. Comparing each column to the same place on the bare board, the base-Y stress rose by more than 10\% over 98.0\% of the footprint with nylon and 97.6\% with aluminium.
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Base-Y equivalent stress [MPa RMS] & Bare & Nylon & Aluminium\\\midrule
+Area-weighted median & 0.264 & 0.695 & 0.622\\
+Area-weighted 95th percentile & 1.85 & 8.84 & 7.22\\
+Highest element-corner result & 17.85 & 50.21 & 48.40\\\bottomrule
+\end{tabular}\end{center}
+Under base X the highest stress fell with both mounts, but the area-weighted 95th percentile rose from 3.54~MPa bare to 9.97~MPa with nylon and 10.06~MPa with aluminium. A lower peak at one corner can therefore coexist with higher stress across a substantial part of the board.
+
+\newpage
+\pageheading{Board-normal vibration separates screw stiffness from peak stress}
+Under base Z, aluminium screws limited peak board-normal motion to 75.86~$\mu$m RMS, compared with 139.49~$\mu$m with nylon. The aluminium assembly nevertheless developed the larger peak PCB stress, 98.65 versus 69.37~MPa RMS. The bare values were 52.67~$\mu$m and 32.48~MPa. All nine spectra used the original load level and damping and held each assembly's contact state fixed at bolt lock.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-native-spectra.pdf}
+\captionof{figure}{Native MAPDL results for separate X, Y and Z base excitations. The left panel shows peak board-normal motion relative to the base. The right shows the largest stored equivalent stress within the PCB. Each maximum is taken over the whole PCB for that load case.}\end{center}
+
+\heading{Which excitation frequencies drive the peak stress?}
+At each assembly's own governing PCB corner, we integrated the signed modal stresses over disjoint forcing-frequency bands, retaining all cross-correlations between modes. The bands sum to the full mean square. Under base X, the 500--800~Hz band accounted for 95--97\% of the mean square in all three assemblies. Under base Z, the strongest band changed with the mount.
+
+\begin{center}\small\begin{tabular}{lrr}\toprule
+Base-Z assembly & Strongest forcing band & Share of stress mean square\\\midrule
+Bare & 800--1200 Hz & 74.9\%\\
+Snug, nylon screws & 200--350 Hz & 94.7\%\\
+Snug, aluminium screws & 350--500 Hz & 92.1\%\\\bottomrule
+\end{tabular}\end{center}
+
+The full signed-tensor calculation reproduced all nine native peak PCB stresses within 0.1\%. Reducing the modal cutoff from 4 to 3.5~kHz changed those peaks by at most 0.20\%. This checks modal truncation within the 2~mm case model. The finer case mesh has its own installed contact state and prestressed calculation.
+
+Peak nickel-strip equivalent stress under base Z also increased, from 38.13~MPa RMS bare to 122.82~MPa with nylon and 138.21~MPa with aluminium. The signed linear startup histories first crossed the local model's assumed 185~MPa yield reference at 70.30--70.31~ms and 61.25--61.26~ms, respectively. The bare history stayed below it over the first 100~ms. These conditional elastic crossings locate a demand for nonlinear analysis. Permanent strain and tearing require the local material and contact histories.
+
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}

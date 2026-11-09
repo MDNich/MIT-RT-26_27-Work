@@ -1,0 +1,65 @@
+{
+  "campaign": "nov08_01",
+  "base": "X",
+  "area_reference": {
+    "rst_sha256": "22b8a2bda1cf7fc68e77b25be5ad12a34ba558b6ed9bc563e30511f1302249bc",
+    "native_volume_set": 1,
+    "native_volume_divided_by_thickness_mm2": 8150.066016607244,
+    "nominal_thickness_mm": 1.10236
+  },
+  "columns": 19507,
+  "SOLID186_elements": 39014,
+  "footprint_area_mm2": 8150.067020489569,
+  "relative_chord_area_error": 4.218847493575595e-15,
+  "models": {
+    "bare": {
+      "case": "bare_psd_X",
+      "rst_sha256": "4fd4cba66b1c660d14e6d53abe36c63fef599a3d40847edc01372b5da49a0c2b",
+      "peak_element": 105927,
+      "peak_node": 173651,
+      "original_peak_xyz_mm": [
+        60.5464864,
+        101.10905600000001,
+        0.55118
+      ],
+      "maximum_MPa": 90.32450399999999,
+      "area_median_MPa": 0.8786970625,
+      "area_95th_percentile_MPa": 3.538513
+    },
+    "snug125_nylon": {
+      "case": "snug125_nylon_psd_X_private1",
+      "rst_sha256": "d99b32c59acf6d4e97c86b67e7946a263bc012f548cc2d7504a765c1d00197ba",
+      "peak_element": 105927,
+      "peak_node": 173651,
+      "original_peak_xyz_mm": [
+        60.5464864,
+        101.10905600000001,
+        0.55118
+      ],
+      "maximum_MPa": 82.68180799999999,
+      "area_median_MPa": 1.436504625,
+      "area_95th_percentile_MPa": 9.974254,
+      "footprint_percent_over_1p1_times_bare": 64.95499692572906,
+      "footprint_percent_below_0p9_times_bare": 6.198707121811726,
+      "area_median_paired_ratio": 1.2029632384397881
+    },
+    "snug125_aluminium": {
+      "case": "snug125_aluminium_psd_X_private1",
+      "rst_sha256": "da99341148edcf3261e9cf3290715c341e7f8c0755a1977d9ecd98f8bf0a837c",
+      "peak_element": 105927,
+      "peak_node": 173651,
+      "original_peak_xyz_mm": [
+        60.5464864,
+        101.10905600000001,
+        0.55118
+      ],
+      "maximum_MPa": 79.353528,
+      "area_median_MPa": 1.27111925,
+      "area_95th_percentile_MPa": 10.058658,
+      "footprint_percent_over_1p1_times_bare": 45.29974882229701,
+      "footprint_percent_below_0p9_times_bare": 7.123787174650517,
+      "area_median_paired_ratio": 1.0665545808653116
+    }
+  },
+  "scope": "Each original PCB mesh column represents two thickness layers. Its scalar is the largest stored equivalent RMS stress among all corners of those two solids. Area statistics weight the original quadratic footprint. Each model uses its own locked contact tangent and the same single-axis base spectrum."
+}
