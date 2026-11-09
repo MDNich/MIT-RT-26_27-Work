@@ -8,9 +8,9 @@ The scalar was calibrated only on five atlas rockets. The subsequent blend uses 
 
 ## Handover and interference follow-up
 
-[Five-page experimental extension (Section 10)](docs/writeup/supersonic-cp-calibration.pdf#page=10) · [Iris handover plot](figures/handover-flight.pdf) · [TN 3795 measurements and original tables](inputs/tn3795) · [Analysis and fixture definitions](followup/README.md).
+[Crossover and interference experiments (Section 10)](docs/writeup/supersonic-cp-calibration.pdf#page=10) · [Iris handover plot](figures/handover-flight.pdf) · [TN 3795 measurements and original tables](inputs/tn3795) · [Analysis and fixture definitions](followup/README.md).
 
-The fin crossover trial reduced burn-wide Iris margin RMS from 0.563 to 0.439 cal, but predicted minimum margin at 15.53 s versus RASAero’s 20.60 s, and retained the high-Mach burnout discrepancy. At Mach 2.80 and 2° the additional finless airframe contributed +0.331 D to CP error, installed fins +0.134 D and bare forebody −0.146 D. On held-out NACA triangular wings the assembled lift and pitching moment improved while the interaction after subtracting the isolated body and wing worsened. The separately runnable trial and all pointwise scores are under `followup/` and `results/followup/`.
+The fin crossover trial reduced burn-wide Iris margin RMS from 0.563 to 0.439 cal, but predicted minimum margin at 15.53 s versus RASAero’s 20.60 s, and retained the high-Mach burnout discrepancy. At Mach 2.80 the low-incidence native probe slopes assign about +0.43 D of the +0.57 D CP error to the additional airframe, +0.11 D to installed fins and +0.04 D to the bare forebody. At 2° the corresponding contributions are +0.331, +0.134 and −0.146 D. On held-out NACA triangular wings the assembled lift and pitching moment improved while the interaction after subtracting the isolated body and wing worsened. The separately runnable trial and all pointwise scores are under `followup/` and `results/followup/`.
 
 ## Reproduce
 

@@ -21,6 +21,6 @@ tex('body-table',[(r['case'],lab.get(r['model'],r['model']),*[fmt(r[v]) for v in
 for path in (W,S):
     (path/'figures').mkdir(exist_ok=True)
     for figure in (D/'figures').glob('*.pdf'):
-        if path == S and figure.stem in {'handover-loads','handover-components'}:
+        if path == S and figure.stem in {'handover-loads','handover-components','handover-interference'}:
             continue
         copyfile(figure, path/'figures'/figure.name)

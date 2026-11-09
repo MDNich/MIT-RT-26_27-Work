@@ -24,6 +24,7 @@ python3 literature/export-patch.py
 ./followup/run-loads.sh
 python3 followup/analyze.py
 python3 followup/diagnostics.py
+python3 followup/probes.py
 python3 followup/figures.py
 python3 make-tables.py
 ./docs/build.sh

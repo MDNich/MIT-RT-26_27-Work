@@ -1,1 +1,17 @@
-RASAero's static test interface exported 1.00 degree when given 0.01 degree. We exclude that setting from the near-zero comparison. The finite-incidence table above gives direct native results; individual zero-incidence shares in this section depend on the stated slope estimate.
+
+\sub{Direct native flight probes.} RASAero's static interface exported 1.00 degree when given 0.01 degree. We therefore flew each external geometry as a separate coefficient probe. The finless probe uses a slightly inclined launch. Motor, mass and launch conditions in these synthetic runs serve only to reach Mach 2.80 at small incidence. The original records and neighboring samples are preserved in \path{inputs/iris-components/small-incidence/}.
+
+The native flight file exports lift, drag and angle on each row. Near a zero crossing, reconstruction from the same row gives widely varying slopes. We tested alignments from two rows earlier through two rows later on the same set of samples. For each geometry and each monotone Mach branch we retained $2.75\le M_i\le2.85$ with $|\alpha_{i-1}|,|\alpha_i|<0.05^\circ$. We estimated the slope at 2.80 without dividing by each tiny angle, using least squares in force space:
+\[
+ C_{L,i}\cos\alpha_{i+k}+C_{D,i}\sin\alpha_{i+k}
+ =\alpha_{i+k}\,[A+B(M_i-2.80)] .
+\]
+The preceding-angle pairing $k=-1$ gives the smallest angle-scaled residual on each of the six independent branches and on both branches of the original half-inch mission. This establishes a reproducible alignment of the exported columns for these cases. At the finless probe's increasing-Mach crossing, the scaled residual falls from 2.74 to 0.0055/rad; at its decreasing-Mach crossing it falls from 3.00 to 0.0048/rad.
+
+\begin{center}\small\begin{tabular}{lrrrr}\toprule
+&\multicolumn{2}{c}{Native slopes on case area (/rad)}&\multicolumn{2}{c}{CP contribution ($D$)}\\
+Geometry / increment & Increasing $M$ & Decreasing $M$ & Increasing $M$ & Decreasing $M$\\\midrule
+Forebody &2.2735&2.2732&+.037&+.036\\
+Finless / additional airframe &3.0665&3.0675&+.428&+.430\\
+Finned / installed fins &8.4061&8.4062&+.109&+.107\\\bottomrule\end{tabular}\end{center}
+The first two numeric columns are whole-geometry slopes. The last two use successive differences, convert to the common 4.20-in area, and pair the fitted slopes with the directly exported static CP at zero incidence. The finless fit has five increasing-Mach rows and three decreasing-Mach rows. The forebody has 15 and 115; the finned vehicle has 23 and 27. The original mission independently gives 8.4062/rad on both branches. Thus the aft-airframe contribution is about three quarters of the $+0.573\,D$ error at Mach 2.80. This result describes the difference between the two simulators near burnout.

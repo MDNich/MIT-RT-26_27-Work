@@ -45,7 +45,7 @@ At the 20.77-s native burnout sample, $M=2.8081$ and $\alpha=0.000434^\circ$. Th
 At Mach 2.80 on the actual ORK the resulting three contributions are $+0.036$ (forebody), $+0.391$ (additional airframe), and $+0.146\,D$ (installed fins). Using the potential value at $4^\circ$ reproduces all three to the shown precision. As a stress test, substituting the \emph{total} $2^\circ$ secant yields $+1.67,+1.04,-2.13\,D$ with the same total. The choice of force derivative matters for individual terms even though the zero-incidence CP positions themselves are directly exported.
 \input{small-incidence}
 
-\subsection*{Physical test definition}
+\clearpage\subsection*{Physical test definition}
 We transcribed the experimental entries of Tables I and II in \href{https://ntrs.nasa.gov/citations/19930084523}{Nielsen, Katzen and Tang, NACA TN 3795 (1956)}. The six complete triangular wings have aspect ratios 0.67, 1.34, 2.02, 2.69, 3.33 and 4.00. The split was recorded before inspecting Table II. W1/W3/W5 form the development set and W2/W4/W6 the reserved set, each at Mach 1.50 and 2.02. The candidate used the same coefficients on every test. Repetition of one shared body reading across wing sizes does not increase the sample count.
 
 The body has length 11 in, diameter 1.50 in and a 15-degree semiangle cone tangent to a circular fairing of radius 11.02 in. We represented the fairing as 24 successive frusta. All trailing edges lie 8 in aft of the nose. For the isolated wing the full triangle extends to the centerline on a negligible-radius carrier. For the assembled configuration each exposed semispan is $s_m-0.75$ in with a 3-in root chord. We evaluated two opposing fins in their lift plane and matched the tunnel Reynolds number of $5.5\times10^6$ based on body length. OpenRocket approximates the tested double-wedge section of 8\% local thickness with a constant-thickness rounded plate. This affects the axial-drag correction and limits the precision of the isolated-wing comparison. Doubling the fairing resolution and halving the carrier radius changed the predicted load station by at most 0.00053 in and the base-area normal-force slope by less than 0.00004/rad across all fixtures.
@@ -56,9 +56,9 @@ Convert measured lift slope from per degree to per radian and compute $C_{m\alph
  C_{m\alpha}=N(S_b/S)(x_r-x_{\rm CP})/\bar c .
 \]
 We compare these directly to Table II before interpreting $x_r-\bar c C_{m\alpha}/C_{L\alpha}$ as an effective lift-center position.
-\clearpage
-\subsection*{Independent force and moment results}
-\fig{.96}{handover-tn3795}{Measured and predicted assembled-vehicle lift and centroid-reference pitching-moment slopes. Open and filled markers identify the preassigned development and reserved geometries. Each reserved score below uses six measurements over three geometries and two Mach numbers.}
+\fig{.88}{handover-tn3795}{Measured and predicted assembled-vehicle lift and centroid-reference pitching-moment slopes. Open and filled markers identify the preassigned development and reserved geometries. Each reserved score below uses six measurements over three geometries and two Mach numbers.}
+\clearpage\subsection*{Independent force, moment and interference results}
+\fig{.89}{handover-interference}{Subtract the isolated body and complete wing from the assembled measurements on common references. The observed lift increment approaches zero as span increases. Both OpenRocket variants give a larger loss and a larger nose-reference moment change over much of the tested range.}
 \begin{center}\small\begin{tabular}{lrrrr}\toprule
 &\multicolumn{2}{c}{Lift-slope RMS (/rad)}&\multicolumn{2}{c}{Moment-slope RMS (/rad)}\\
 Reserved cases & Prior & Handover & Prior & Handover\\\midrule

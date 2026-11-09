@@ -2,7 +2,7 @@
 from pathlib import Path
 from zipfile import ZipFile,ZIP_DEFLATED
 root=Path(__file__).resolve().parent
-for sub,name,figs in [('writeup','supersonic-cp-calibration',['calibration','planforms','transfer-tests','iris-flight','iris-replay','handover-loads','handover-flight','handover-components','handover-tn3795']),('slides','supersonic-cp-slides',['transfer-tests','iris-flight','handover-flight','handover-tn3795'])]:
+for sub,name,figs in [('writeup','supersonic-cp-calibration',['calibration','planforms','transfer-tests','iris-flight','iris-replay','handover-loads','handover-flight','handover-components','handover-tn3795','handover-interference']),('slides','supersonic-cp-slides',['transfer-tests','iris-flight','handover-flight','handover-tn3795'])]:
     path=root/sub
     with ZipFile(path/(name+'_source.zip'),'w',compression=ZIP_DEFLATED) as z:
         for p in sorted(path.glob('*.tex')):z.write(p,sub+'/'+p.name)
