@@ -155,6 +155,8 @@ Z & 353 & 1.02155 & All three & Left, middle\\
 Z & 451 & 1.02753 & Middle & None\\\bottomrule
 \end{tabular}\end{center}
 
+Outer-pocket engagement also appeared during the 0.10~s startup ramp. We selected two earlier base-Z stations using left-cell motion relative to the case and checked all the surfaces again. At 82.14~ms all three cells intersected the nylon-mounted case, while only the middle cell intersected the aluminium-mounted case. At 83.83~ms the aluminium case also intersected the right cell. Both geometric refinements agreed. These instants precede the first calculated PLA strength-reference crossing on page~9.
+
 The extra supports can redirect load once an outer cell engages. The spectrum values on page~6 quantify the response with the installed contact state held fixed. To check load transfer at frame 353, paired local nonlinear models will drive the same region of each mount with the signed base-Z displacement. Each has a contact-enabled and a free control at two cut sizes. The six samples above establish neither the first contact time nor its duration.
 
 \newpage
@@ -191,6 +193,8 @@ During each nine-second excitation we combined the locked stress tensor and sign
 
 \heading{What the percentages measure}
 The reference strengths are the reported means for uniaxial printed specimens, 40.5~MPa through layers and 52.3~MPa in plane. Nylon mounting reached 77\% through layers and 38\% in plane, both under base Y. Aluminium reached 208\% through layers and 115\% in plane under base Z. Across all three aluminium runs, excluding the 2~mm bearing band brought the highest layer-normal and in-plane results to 46\% and 74\% of their respective means. The rigid screw-bearing footprint and the actual print orientation matter to this local comparison. \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{PolyLite PLA reference data.}
+
+For aluminium screws the calculated through-layer tension first crossed the coupon mean at 129.64--129.65~ms under Z, 190.57--190.58~ms under X and 517.99--518.01~ms under Y. The in-plane reference was crossed only under Z, at 845.18--845.20~ms. The exact oscillator integration reproduced all four crossing brackets at the original $1/65{,}536$~s sample interval. The nylon histories remained below both coupon means throughout.
 
 At both worst through-layer instants, the deformed surfaces of all three cells intersected the case in the linear reconstruction. The elastic continuation holds the initial contact tangent fixed even when a new pocket would engage. The aluminium peak is a demand beyond the coupon reference. Predicting cracking or a failure time would require changed contact and a calibrated print failure law.
 

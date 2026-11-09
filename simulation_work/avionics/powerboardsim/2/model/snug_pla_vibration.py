@@ -9,7 +9,7 @@ from scipy.spatial import cKDTree
 from audit_local import ROOT, read
 from audit_motion import native_series
 from case_stress import case_elements, corners, printed_compliance, source
-from film_identity import verified, write_json
+from film_identity import digest, verified, write_json
 from film_cell_timestep import refined_coordinates
 from installation_material import PLA
 from seeded_motion import FS, FRAMES, integrate, participation
@@ -61,6 +61,37 @@ def maximum(q,base,shapes,indices,metric):
                        corners_in_scope=len(indices),possible_corners=len(possible),evaluated_corner_stations=evaluations)
 
 
+def first_crossing(q,base,shapes,metric,limit):
+    """Find the first sampled crossing, checking the global maximum at both bracket endpoints."""
+    bound=interval_upper(q.min(0),q.max(0),base,shapes,metric)
+    eligible=np.flatnonzero(bound>=limit-1.e-8)
+    if not len(eligible):return None
+    coeff=shapes[eligible];locked=base[eligible]
+    for start in range(0,len(q),1024):
+        block=q[start:start+1024]
+        upper=interval_upper(block.min(0),block.max(0),locked,coeff,metric)
+        candidates=np.flatnonzero(upper>=limit-1.e-8)
+        first=len(block)
+        for j in range(0,len(candidates),64):
+            ix=candidates[j:j+64]
+            stress=values(block[:first],locked[ix],coeff[ix],metric)
+            crossings=np.flatnonzero(stress.max(axis=1)>=limit)
+            if len(crossings):
+                first=int(crossings[0])
+                if first==0:break
+        if first<len(block):
+            sample=start+first
+            assert sample>0
+            bracket=[]
+            for n in (sample-1,sample):
+                stress=values(q[n:n+1],base,shapes,metric).ravel()
+                corner=int(stress.argmax())
+                bracket.append(dict(corner=corner,sample=n,time_s=n/FS,MPa=float(stress[corner])))
+            assert bracket[0]['MPa']<limit<=bracket[1]['MPa']
+            return bracket
+    return None
+
+
 def check_bounds():
     rng=np.random.default_rng(1285)
     q=rng.normal(size=(8201,6));shapes=rng.normal(size=(23,4,6));base=rng.normal(size=(23,4))
@@ -69,6 +100,10 @@ def check_bounds():
         a=values(q,base[ids],shapes[ids],metric);row,col=np.unravel_index(a.argmax(),a.shape)
         i,r=maximum(q,base,shapes,ids,metric)
         assert (row,ids[col])==(r['sample'],i) and abs(a.max()-r['maximum_MPa'])<1.e-10
+        threshold=(float(a[0].max())+float(a.max()))*.5
+        first=int(np.flatnonzero(a.max(axis=1)>=threshold)[0])
+        bracket=first_crossing(q,base[ids],shapes[ids],metric,threshold)
+        assert bracket[1]['sample']==first and bracket[1]['corner']==int(a[first].argmax())
 
 
 def setup(variant,campaign):
@@ -111,7 +146,7 @@ def setup(variant,campaign):
     return modal,folder,rst.time_values,preload,elements,ids,base,shapes,xyz,distance,max(errors)
 
 
-def run(variant,campaign,method,axes):
+def run(variant,campaign,method,axes,onset_only=False):
     check_bounds()
     modal,folder,freq,preload,elems,ids,base,shapes,xyz,distance,error=setup(variant,campaign)
     assert np.array_equal(freq,modal['frequencies_Hz'])
@@ -144,6 +179,29 @@ def run(variant,campaign,method,axes):
             q=native_series(mcf,freq)
             coordinate_source=native['mcf_sha256']
         assert q.shape==(9*FS+1,len(freq)) and np.isfinite(q).all()
+        if onset_only:
+            filename=f'{variant}_{axis}_PLA_{method}'
+            peak_path=ROOT/'validation/snug125'/(filename+'.json')
+            published=read(peak_path)
+            assert published['native_basis_sha256']==modal['rst_sha256']
+            assert published['native_static_sha256']==preload['rst_sha256']
+            assert published['coordinate_source_sha256']==coordinate_source
+            brackets={}
+            for metric,peak in published['scopes']['all'].items():
+                bracket=first_crossing(q,base,shapes,metric,PLA[metric])
+                assert (bracket is not None)==(peak['maximum_MPa']>=PLA[metric])
+                for event in bracket or []:
+                    i=event.pop('corner')
+                    event.update(element=int(elems[i//4]),node=int(ids[i]),xyz_mm=xyz[i].tolist(),
+                                 distance_to_bearing_nodes_mm=float(distance[i]))
+                brackets[metric]=bracket
+            write_json(peak_path.with_name(filename+'_onset.json'),dict(variant=variant,axis=axis,method=method,
+                       campaign=campaign,maximum_record_sha256=digest(peak_path),brackets=brackets,
+                       scope='First sampled crossings of the printed-coupon means on the fixed-contact '
+                             'elastic path. Each bracket contains the global all-corner maximum at both '
+                             'stations. A missing bracket means every sampled corner stayed below that reference.'))
+            print(variant,axis,method,brackets,flush=True)
+            continue
         records={}
         for group,indices in [('all',np.arange(len(ids))),('2mm_from_bearing',np.flatnonzero(distance>=2.))]:
             records[group]={}
@@ -169,5 +227,6 @@ if __name__=='__main__':
     p.add_argument('--campaign',default='nov08_01')
     p.add_argument('--method',choices=('native','independent','exact'),default='independent')
     p.add_argument('--axes',choices=('XYZ','X','Y','Z'),default='XYZ')
+    p.add_argument('--onset',action='store_true')
     args=p.parse_args()
-    run(args.variant,args.campaign,args.method,args.axes)
+    run(args.variant,args.campaign,args.method,args.axes,args.onset)
