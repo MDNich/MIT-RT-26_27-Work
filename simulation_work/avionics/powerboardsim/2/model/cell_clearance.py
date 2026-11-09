@@ -2,12 +2,13 @@
 import json,math
 from pathlib import Path
 import gmsh
+from case_fit import old as board_step, case as case_step
 ROOT=Path(__file__).resolve().parents[1]
 def run():
     gmsh.initialize();gmsh.option.setNumber('General.Terminal',0)
     occ=gmsh.model.occ
-    cells=occ.importShapes(str(ROOT.parent/'1/src/Power_Board_Batt_Screw_defeatured_2.STEP'))
-    cap,=occ.importShapes(str(next((ROOT/'geometry').glob('*.STEP'))))
+    occ.importShapes(str(board_step))
+    cap,=occ.importShapes(str(case_step))
     occ.rotate([cap],0,0,0,1,0,0,-math.pi/2)
     occ.translate([cap],34.6075,60.3885,-13.55118)
     data=[]

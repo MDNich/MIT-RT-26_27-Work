@@ -5,12 +5,28 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from audit_local import ROOT,read
+from audit_local import ROOT,read,table
 from compare_pull_laws import loading_curve
-from film_identity import digest,write_json
+from film_identity import digest,verified,write_json
 
 
-def draw(branch):
+def fine_curve(parent):
+    case=parent['case']+'_load8ref1'
+    proof=read(ROOT/'validation/local'/(case+'.json'))
+    path=ROOT/'validation/refined_pull_force'/(case+'.json')
+    control=read(path)
+    assert proof['full_requested_path'] and proof['campaign']==control['campaign']==parent['campaign']
+    assert control['parent']==parent['case'] and proof['case']==control['case']==case
+    assert parent['native_history_sha256']==control['original_inventory_sha256']
+    inventory=ROOT/'.runtime/archive'/proof['campaign']/case/'set_inventory.csv'
+    verified(inventory,control['refined_inventory_sha256'])
+    rows=table(inventory)
+    first=int(np.flatnonzero(rows['loadstep']==rows['loadstep'][-1])[0])
+    assert first>0
+    return rows[first-1:],digest(path)
+
+
+def draw(branch, refined=False):
     comparison=ROOT/'validation/pull_laws'/(branch+'.json')
     common=read(comparison)
     bare,bare_proof=loading_curve('bare',True)
@@ -37,12 +53,25 @@ def draw(branch):
             station.update(requested_travel_mm=float(travel),next_saved_travel_mm=float(x[i+1]))
         snapshots.append(station)
     fig,axes=plt.subplots(1,2,figsize=(8.15,3.05),layout='constrained')
-    for rows,colour,label in [(bare,'#08357E','Bare'),(case,'#3C78D8',branch.split('_')[-1].capitalize()+' screws')]:
-        keep=(rows['ux_mm']>=.135)&(rows['ux_mm']<=.251)
-        axes[0].plot(rows['ux_mm'][keep],rows['cell_fx_N'][keep],'.-',ms=5,color=colour,label=label)
+    fine_checks={}
+    for rows,source,colour,label in [(bare,bare_proof,'#08357E','Bare'),
+                                     (case,case_proof,'#3C78D8',branch.split('_')[-1].capitalize()+' screws')]:
+        if refined:
+            series,fine_checks[source['case']]=fine_curve(source)
+            brackets=curves[source['case']]['at_bare_control_force']['bracket']
+            axes[0].plot([s['travel_mm'] for s in brackets],[s['force_N'] for s in brackets],
+                         'o--',ms=3,lw=.85,alpha=.8,color=colour)
+            axes[0].plot(series['ux_mm'],series['fx_N'],lw=1.6,color=colour,label=label)
+        else:
+            keep=(rows['ux_mm']>=.135)&(rows['ux_mm']<=.251)
+            axes[0].plot(rows['ux_mm'][keep],rows['cell_fx_N'][keep],'.-',ms=5,color=colour,label=label)
     axes[0].axhline(target,ls='--',lw=1,color='#7A0101',label=f'{target:.2f} N')
-    axes[0].set(title='Saved states near the reference load',xlim=(.134,.253),ylabel='Lateral force [N]')
-    axes[0].set_ylim(bottom=5)
+    axes[0].set(title='Saved states near the reference load',ylabel='Lateral force [N]')
+    if refined:
+        axes[0].set_xlim(.1865,.220)
+    else:
+        axes[0].set_xlim(.134,.253)
+        axes[0].set_ylim(bottom=5)
     for values,colour,label,marker in [(total,'#08357E','Applied to cell','o'),(screws,'#3C78D8','Four case screws','s'),
                                       (neighbour,'#38761D','Fixed neighbour','^'),(clamps,'#5A43A0','Original clamps','D')]:
         axes[1].plot(x,values,color=colour,marker=marker,ms=3,lw=1.2,label=label)
@@ -54,6 +83,7 @@ def draw(branch):
     plt.close(fig)
     write_json(ROOT/'validation/pull_laws'/(branch+'_support_loads.json'),dict(branch=branch,
                common_comparison_sha256=digest(comparison),support_history_sha256=digest(ROOT/'.runtime/post'/case_proof['campaign']/case_proof['case']/'whole_fixture_balance.csv'),
+               **({'refined_checks_sha256':fine_checks} if refined else {}),
                selected_states=snapshots,bare_travel_bracket_mm=[v['travel_mm'] for v in bare_bracket],
                raised_travel_bracket_mm=[v['travel_mm'] for v in case_bracket],
                scope='Signed X reactions at the fixed case screws and neighbouring-cell pilot; remaining load at the '
@@ -63,4 +93,6 @@ def draw(branch):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('branch',choices=['stand3_nylon','stand3_aluminium'])
-    draw(p.parse_args().branch)
+    p.add_argument('--refined',action='store_true',help='Overlay the two accepted fine-step histories near the reference load')
+    args=p.parse_args()
+    draw(args.branch,args.refined)

@@ -5,7 +5,7 @@ import gmsh
 
 ROOT=Path(__file__).resolve().parents[1]
 case=next((ROOT/'geometry').glob('*.STEP'))
-old=ROOT.parent/'1/src/Power_Board_Batt_Screw_defeatured_2.STEP'
+old=ROOT/'geometry/october/Power_Board_Batt_Screw_defeatured_2.STEP'
 # Coordinates of four nonplated mounting holes in the archived PCB ODB++ drill file.
 PCB_CENTER=(34.6075,60.3885)
 PCB_BOTTOM=-0.55118

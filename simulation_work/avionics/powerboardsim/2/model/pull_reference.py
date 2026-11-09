@@ -6,11 +6,14 @@ from pathlib import Path
 import numpy as np
 from audit_local import ROOT,read,table
 from film_identity import digest,verified,write_json
+from stage_local_jobs import seal
 
 
 def references(archive):
     manifest=read(ROOT/'validation/local_inputs.json')
     data={}
+    controls=ROOT/'validation/pull_repeats/october'
+    controls.mkdir(parents=True,exist_ok=True)
     for key,source in manifest.items():
         if not key.startswith('lateral_'):
             continue
@@ -24,7 +27,15 @@ def references(archive):
         listing=(origin/'run.out').read_text(errors='replace')
         states=re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)
         assert len(states)==len(rows) and re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',listing)
+        # The original CSVs use Windows line endings. Keep a portable, byte-reversible
+        # copy of each verified control for comparison from revision 2 alone.
+        original=checked.read_bytes()
+        normalized=original.replace(b'\r\n',b'\n')
+        assert normalized.replace(b'\n',b'\r\n')==original
+        control=controls/(key+'.csv')
+        control_sha=seal(control,normalized)
         data[key]=dict(history=str(checked.relative_to(ROOT.parent/'1')),history_sha256=sha,
+                       standalone_history=str(control.relative_to(ROOT)),standalone_sha256=control_sha,
                        original_run_sha256=source['files']['run.dat'],converged_states=len(states),
                        original_listing_sha256=digest(origin/'run.out'),end_reaction_N=float(rows['fx_N'][-1]))
     assert len(data)==9
@@ -34,8 +45,8 @@ def references(archive):
 def compare(case,campaign):
     key=case.removeprefix('bare_')
     source=read(ROOT/'validation/october_local_pull_references.json')[key]
-    old=ROOT.parent/'1'/source['history']
-    verified(old,source['history_sha256'])
+    old=ROOT/source['standalone_history']
+    verified(old,source['standalone_sha256'])
     root=ROOT/'.runtime'
     folder=root/'archive'/campaign/case
     ledger=read(root/'receipts'/campaign/case/'archived.json')

@@ -1,0 +1,95 @@
+{
+  "case": "stand3_aluminium_damage_cont_nominal_pin1",
+  "fixture_sha256": "2f66c44ff1a4fe8b3b7ec0efc658ec2eccaad5c57d222994e9c15d771d9840d2",
+  "rst_sha256": "e3fbd7148482ca5a34a3d0a288ed1d86b9a69e30d94823d6a598260d19ec5da7",
+  "board_step_sha256": "89736bd0df1f686a68624276203d0cb153f728042bd5a4eeab82d57c36972b81",
+  "case_step_sha256": "9237b5ee749c19234c4dd44855c56dae49a1099a426260f5dd29832a51e867d0",
+  "attachment_nodes": 784,
+  "PLA_nodes": 29610,
+  "rest_CAD_gap_mm": 0.161251896356895,
+  "displacement_audit_sha256": "de1affa53150175b8fe5bd1816f239a2cd6cbd2bf9953479a2bd6fe683861984",
+  "native_contact_travel_bracket_mm": [
+    0.1875,
+    0.21875
+  ],
+  "precontact_poses": [
+    {
+      "native_set": 13,
+      "travel_mm": 0.1375,
+      "force_N": 6.9690658542,
+      "max_PLA_nodal_motion_mm": 3.3712781429285763e-13,
+      "rotation_vector_rad": [
+        1.6266159884580067e-13,
+        -0.012856852007133615,
+        5.45375047057059e-13
+      ],
+      "pilot_translation_mm": [
+        0.13749999996123208,
+        1.5560885913146194e-12,
+        0.0018740839341973015
+      ],
+      "max_rigid_fit_error_mm": 5.008399926632403e-09,
+      "displacements_sha256": "48a80249c1a043e9e587b4be16e96cd1f51e072c7aba24b875bc7b9b332ca70f",
+      "CAD_gap_mm": 0.02582873621429748,
+      "CAD_overlap_mm3": 0,
+      "travel_past_first_CAD_touch_at_fixed_pose_mm": null,
+      "meshed_geometry": [
+        {
+          "case_triangles": 128608,
+          "intersects": false,
+          "active_patch_triangles": 29824,
+          "active_patch_intersects": false,
+          "min_target_vertex_gap_mm": 0.026115142382024066
+        },
+        {
+          "case_triangles": 514432,
+          "intersects": false,
+          "active_patch_triangles": 119296,
+          "active_patch_intersects": false,
+          "min_target_vertex_gap_mm": 0.026115142382024066
+        }
+      ]
+    },
+    {
+      "native_set": 14,
+      "travel_mm": 0.1875,
+      "force_N": 8.261713237,
+      "max_PLA_nodal_motion_mm": 3.335404505569335e-13,
+      "rotation_vector_rad": [
+        1.3020468195062099e-13,
+        -0.01754899194585605,
+        5.132310222244895e-13
+      ],
+      "pilot_translation_mm": [
+        0.18750000000685318,
+        2.7640112421067897e-12,
+        0.0034662295437684065
+      ],
+      "max_rigid_fit_error_mm": 6.874864077191282e-09,
+      "displacements_sha256": "c6b07f900c15932416077d62d84b78e7f7cff65c94737aa7dd2a770c697aa7c0",
+      "CAD_gap_mm": 0.0,
+      "CAD_overlap_mm3": 0.11833463668275887,
+      "travel_past_first_CAD_touch_at_fixed_pose_mm": [
+        0.023437500000856648,
+        0.023620605469613337
+      ],
+      "meshed_geometry": [
+        {
+          "case_triangles": 128608,
+          "intersects": true,
+          "active_patch_triangles": 29824,
+          "active_patch_intersects": true,
+          "min_target_vertex_gap_mm": 0.02341248409077235
+        },
+        {
+          "case_triangles": 514432,
+          "intersects": true,
+          "active_patch_triangles": 119296,
+          "active_patch_intersects": true,
+          "min_target_vertex_gap_mm": 0.026751047098260115
+        }
+      ]
+    }
+  ],
+  "scope": "Native cell poses against the registered case, with its negligible displacement verified using DPF. Solid intersection volume is a geometric test. The native force law samples contact on mesh faces; this check does not calculate an impact force or a corrected fixture reaction."
+}

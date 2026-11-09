@@ -10,6 +10,7 @@ from extend_board import ROOT,SCREWS,NODE,component
 
 def target_skin():
     """Tessellate the actual B-reps and orient triangles outward using their volume boundary."""
+    from case_fit import old as board_step
     from OCP.BRep import BRep_Tool
     from OCP.BRepMesh import BRepMesh_IncrementalMesh
     from OCP.BRepGProp import BRepGProp
@@ -20,7 +21,7 @@ def target_skin():
     from OCP.TopoDS import TopoDS
     from OCP.TopAbs import TopAbs_SOLID,TopAbs_FACE,TopAbs_REVERSED
     cad=STEPControl_Reader()
-    cad.ReadFile(str(ROOT.parent/'1/src/Power_Board_Batt_Screw_defeatured_2.STEP'))
+    cad.ReadFile(str(board_step))
     cad.TransferRoots()
     ex=TopExp_Explorer(cad.OneShape(),TopAbs_SOLID)
     groups={'cell':[],'washer':[]}

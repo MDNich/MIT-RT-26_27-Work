@@ -258,6 +258,15 @@ def jobs():
                 if resolution.is_file():
                     for name,control in read(resolution).items():
                         yield name,control['parent']
+                # Complete the original signed frictional pull for the bare and both raised fixtures.
+                reverse='lateral_friction_locked_minus'
+                yield 'bare_'+reverse,''
+                for raised in ('stand3_nylon','stand3_aluminium'):
+                    yield raised+'_'+reverse+'_pin1','bare_'+reverse
+                detection=ROOT/'validation/pull_detection_control.json'
+                if detection.is_file():
+                    for name,control in read(detection).items():
+                        yield name,control['parent']
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
                     if (ROOT/'validation/rocking_bearing_input.json').is_file():

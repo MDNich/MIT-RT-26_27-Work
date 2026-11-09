@@ -63,6 +63,36 @@ def stage():
     write_json(OUT,cases)
 
 
+def case_contact(case,campaign,balance,target,corner_sha):
+    folder=ROOT/'.runtime/archive'/campaign/case
+    archive=read(ROOT/'.runtime/receipts'/campaign/case/'archived.json')
+    native=folder/'case_pairs.csv'
+    verified(native,next(f['sha256'] for f in archive['files'] if f['name']==native.name))
+    pairs=table(native)
+    active=pairs[pairs['pair']==861]
+    assert np.array_equal(active['set'],balance['native_set'])
+    # Both result readers must agree on each loaded face classification.
+    cross=ROOT/'validation/pulls'/(case+'_contact.csv')
+    verified(cross,corner_sha)
+    checks=np.genfromtxt(cross,names=True,delimiter=',',usecols=('native_set','pair','closed_faces'))
+    checks=checks[checks['pair']==861]
+    assert np.array_equal(checks['native_set'],active['set']) and np.array_equal(checks['closed_faces'],active['closed'])
+    def contact_state(i):
+        return dict(native_set=int(active['set'][i]),travel_mm=float(balance['ux_mm'][i]),
+                    cell_force_N=float(balance['cell_fx_N'][i]),closed_faces=int(active['closed'][i]),
+                    active_cell_contact_x_N=float(active['fx_N'][i]),
+                    case_screws_x_N=float(balance['screw_support_N_x'][i]))
+    hits=np.flatnonzero(active['closed']>0)
+    onset=None
+    if len(hits):
+        i=int(hits[0])
+        assert i>0
+        onset=[contact_state(i-1),contact_state(i)]
+    bounds=[int(np.flatnonzero(active['set']==s['native_set']).item()) for s in target['bracket']]
+    return dict(first_closed_face_bracket=onset,at_reference_force_bracket=[contact_state(i) for i in bounds],
+                 native_pairs_sha256=digest(native),corner_readback_sha256=digest(cross))
+
+
 def check(case,campaign):
     info=read(OUT)[case];parent=info['parent']
     def history(name):
@@ -95,15 +125,21 @@ def check(case,campaign):
     # Use the same native binary reactions and verified case material/contact range as the main comparison.
     balance=table(ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv')
     assert np.array_equal(balance['native_set'],fine['set']) and np.allclose(balance['cell_fx_N'],fine['fx_N'],rtol=1e-7,atol=1e-6)
+    coarse_endpoint,=coarse[np.isclose(coarse['ux_mm'],fine['ux_mm'][-1],atol=1e-8,rtol=0)]
+    endpoint=dict(travel_mm=float(fine['ux_mm'][-1]),parent_force_N=float(coarse_endpoint['fx_N']),
+                  refined_force_N=float(fine['fx_N'][-1]))
+    target=at_first_crossing(balance[balance['loadstep']>=3],'cell_fx_N',info['target_force_N'])
+    assert target is not None and target['bracket'][0]['travel_mm']>=start-1e-8
+    contact=None
     if not case.startswith('bare_'):
         scope=read(ROOT/'validation/pulls'/(case+'_damage_scope.json'))
         assert scope['last_station_before_limits']['native_set']==int(fine['set'][-1]) and not scope['first_criterion_sets']
-    target=at_first_crossing(balance[balance['loadstep']>=3],'cell_fx_N',info['target_force_N'])
-    assert target is not None and target['bracket'][0]['travel_mm']>=start-1e-8
+        contact=case_contact(case,campaign,balance,target,scope['contact_table_sha256'])
     write_json(ROOT/'validation/refined_pull_force'/(case+'.json'),dict(case=case,parent=parent,campaign=campaign,
                original_inventory_sha256=coarse_sha,refined_inventory_sha256=fine_sha,setup_sha256=digest(OUT),
                target_force_N=info['target_force_N'],original_prefix_states=original_prefix_states,matched_prefix_states=len(prefix),max_prefix_force_difference_N=err,
-               max_refined_travel_increment_mm=float(np.diff(interval['ux_mm']).max()),at_reference_force=target))
+               max_refined_travel_increment_mm=float(np.diff(interval['ux_mm']).max()),at_reference_force=target,
+               shared_upper_endpoint=endpoint,cell_case_contact=contact))
 
 
 if __name__=='__main__':

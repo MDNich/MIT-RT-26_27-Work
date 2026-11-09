@@ -60,7 +60,7 @@ The solver stored eight equilibrium states and completed the two load steps in a
 \heading{How the side-pull comparison measures load transfer}
 The local model drives the outer cell sideways through its rigid pilot while the two nickel strips bend. In the washer-clamped fixture, each strip is compressed with 750~N and the clamp height is then locked. During the pull, the cell can translate in the other two directions and rotate. The cased fixture adds a deformable printed enclosure, four screw shanks and compression-only tab seats. The neighboring cells and screw tops are fixed in this local approximation. The native model check counted 9,502 potential PLA contact faces. These contacts carry compression between PLA and the cell or washer surfaces. Direct PLA-to-nickel contact is omitted from this local fixture. That omission matters most in the flush geometry, where the CAD also intersects the strips.
 
-The audit sums external forces and moments about the displaced cell centre at each converged increment. Both nominal nickel studies used the same bare mesh and 750~N clamp preloads. At 0.500~mm lateral travel, the bilinear model (148~MPa initial yield) required 8.54~N, and the multilinear damage model (185~MPa initial yield) required 11.33~N. At the same 8.54~N, linear interpolation in the latter model gave 0.203~mm between saved states at 0.188 and 0.219~mm. The two loading schedules used different increments. Page~6 compares enclosures using the bilinear law throughout.
+The audit sums external forces and moments about the displaced cell centre at each converged increment. Both nominal nickel studies used the same bare mesh and 750~N clamp preloads. At 0.500~mm lateral travel, the bilinear model (148~MPa initial yield) required 8.54~N, and the multilinear damage model (185~MPa initial yield) required 11.33~N. At the same 8.54~N, the refined multilinear bare and raised-nylon histories both gave 0.20190~mm between saved states at 0.20166 and 0.20215~mm. The two loading schedules used different increments. Page~6 compares enclosures using the bilinear law throughout.
 
 With the continuous nickel-damage law, the October run and its fresh repeat reached the same 110 equilibria. Both first crossed the $10^{-4}$ damage threshold between 3.250 and 3.275~mm, at 42.87--43.37~N. The maximum force difference over the two curves was $2.5\times10^{-8}$~N. At their last converged state (3.347~mm, 44.86~N), four flat shell elements exceeded the threshold on the bottom face, two per strip, over 1.50~mm$^2$ of original shell area. The force was still rising when convergence stopped. The rupture load remains undetermined.
 
@@ -100,7 +100,20 @@ Global: enclosure to assembly & $+0.199$ & $+0.199$ & $+0.199$\\\bottomrule
 
 The CAD solids do not intersect at this stand-off. We rejected the first raised local calculation because its 7.685 mm overlap contradicted that independent check. It did not reach a converged load increment. The replacement uses a 1 mm search radius for the two added contact pairs and leaves the nickel clamp contacts unchanged. The comparison calls for the cell travel at first closure, contact pressure, penetration, and load transferred to the case mounts.
 
-The finite-element gap is sampled at contact detection points on a curved mesh. The closest point on each exact cell surface is 0.144--0.161 mm from the case. The sideways travel to first rigid contact at the edge cell is 0.163 mm in positive X and 0.308 mm in negative X. Those are different measurements: the shortest distance can be oblique, and a loaded cell can rotate. Agreement among search radii checks the search procedure; it does not establish mesh convergence of contact onset or case stiffness.
+The shortest unloaded distance from any cell to the STEP case is 0.144--0.161~mm. Translating the edge cell rigidly along X first closes the gap at 0.163~mm in positive X and 0.308~mm in negative X. In the loaded fixture the cell also rotates and moves vertically.
+
+\heading{The cell reaches the STEP case before the native contact pair carries load}
+We recovered each cell pose from the motion of 784 nickel nodes rigidly attached to the cell. In both raised nominal damage fixtures, those motions fitted one rigid transformation to within $10^{-5}$~mm and reproduced the independently exported cell-pilot translations. A separate displacement readback covered all 29,610 printed-case nodes. At the stations below, their maximum movement was below $10^{-9}$~mm.
+
+\begin{center}\small\begin{tabular}{lccc}\toprule
+Cell travel & STEP solids & Meshed contact faces & Native contact reaction\\\midrule
+0.1375~mm & 0.02583~mm gap & Disjoint & 0~N\\
+0.1875~mm & 0.1183~mm$^3$ overlap & Intersecting & 0~N\\
+0.211914~mm (nylon) & 0.4864~mm$^3$ overlap & Intersecting & 0~N\\\bottomrule
+\end{tabular}
+\captionof*{table}{Both screw materials gave the first two rows. The last row is the final open state of the refined nylon pull. Independent intersection tests used the actual cell target facets and only the PLA faces selected for contact. Both surface refinements gave the same classification.}\end{center}
+
+At 0.1875~mm the cell was 23.4--23.6~$\mu$m past first STEP contact along X with its rotation and transverse translations held at their measured values. At the final open nylon station this excess travel reached 47.8--48.0~$\mu$m. Testing only the target vertices missed intersections between faces at 0.1875~mm. The finer load steps on page~25 resolve when this model carries force. Contact discretization also affects how that force relates to the physical assembly.
 
 \heading{Why the flush installation needs a separate check}
 The flush STEP has real interference. In the local model, a 2 mm search recovered the 1.178 mm crown overlap of the moving cell. A 1 mm search found only 1.000 mm, and a 0.6 mm search found only 0.598 mm. Tightening the search around the flush configuration can therefore hide real interference. Conversely, the default global search reported a peak overlap of 10.093 mm, versus 1.848 mm with a 2 mm search. These values identify a contact-model discrepancy. They do not establish an installation force. The flush comparison requires a verified path into contact, including the washers and strips, and force balance in the installed assembly before the vibration solve.
@@ -535,24 +548,24 @@ The bare fixture and the raised fixture with nylon screws used the same nominal 
 Local sliding at the washer--nickel interfaces began in the same 0.0500--0.0875~mm travel interval in both fixtures, before the cell touched the case. At 0.500~mm the peak element-averaged frictional stress rose from 0.801~MPa bare to 1.144~MPa cased, and peak accumulated tangential motion rose from 1.29 to 1.77~$\mu$m. Ten bare and eleven cased contact corners registered sliding. Every face with a sliding corner also retained a sticking corner.
 
 \begin{center}\includegraphics[width=.97\linewidth]{figures/stand3_nylon-damage-pull.pdf}
-\captionof{figure}{Left, the native reaction histories coincide through 0.1875~mm. Between that state and 0.21875~mm the moving cell engages the case. Points mark saved equilibria. Lines interpolate between adjacent points. Right, the load paths through the last station below the PLA and contact limits. The local fixture holds the other cells and the case screw tops fixed.}\end{center}
+\captionof{figure}{Left, dashed lines join the original interval endpoints. The solid lines use 64 refined increments and coincide at 8.54~N. With nylon the native contact pair first carried load between 0.21191 and 0.21240~mm. Right, the load paths through the last station below the PLA and contact limits. The local fixture holds the other cells and the case screw tops fixed.}\end{center}
 
 \begin{center}\small
 \begin{tabular}{lrrr}\toprule
 Nickel model & Bare travel at 8.54~N & Raised travel at 8.54~N & Force at 0.50~mm, bare / cased\\\midrule
 Bilinear & 0.500~mm & 0.207~mm & 8.54 / 138.53~N\\
-Multilinear with damage & 0.203~mm & 0.191~mm & 11.33 / 141.82~N\\\bottomrule
+Multilinear with damage & 0.20190~mm & 0.20190~mm & 11.33 / 141.82~N\\\bottomrule
 \end{tabular}
-\captionof{table}{Travel at 8.54~N is linearly interpolated except for the bilinear bare endpoint. Both multilinear estimates fall in the same 0.18750--0.21875~mm bracket. Their 0.0125~mm difference is smaller than the saved travel interval. All four forces in the last column come from actual saved states.}\end{center}
+\captionof{table}{Both refined multilinear histories bracketed 8.54205~N between 0.201660 and 0.202148~mm. The nylon case carried zero contact force at both stations. The original coarse interpolation had suggested 0.0125~mm less travel with the case. All four forces at 0.50~mm come from saved equilibria.}\end{center}
 
 \heading{Printed-material scope and the last equilibrium}
 The fixed neighbour began sharing the load between 0.625 and 0.675~mm of cell travel. At 0.675~mm the applied pull was 389.45~N. The case screws carried 176.89~N, the fixed neighbour carried 147.66~N and the original clamps carried 64.90~N. Between 0.675 and 0.725~mm the peak in-plane tension first exceeded the 52.3~MPa printed-coupon mean. The crossing occurred 4.36~mm from the nearest coupled bearing node. The first through-layer stress crossing followed at 0.800--0.825~mm. These local results depend on the actual stiffness of the mounts and neighbouring cells.
 
-ANSYS retained 59 converged states, including 50 pull states, through 0.923275~mm. It terminated when the next increment failed to converge after cutbacks. None of the three nickel section summaries reached the $10^{-4}$ damage reporting threshold at any converged state. The two strips retained a graph path from the modelled battery attachment to the clamp at every station under the original October 0.99 section-damage diagnostic. The later equilibria extend beyond the onset of the printed-material limit. The early force--travel response is supported within the stated fixture and material limits. The physical rupture load remains unresolved.
+ANSYS retained 59 converged states, including 50 pull states, through 0.923275~mm. It terminated when the next increment failed to converge after cutbacks. None of the three nickel section summaries reached the $10^{-4}$ damage reporting threshold at any converged state. The two strips retained a graph path from the modelled battery attachment to the clamp at every station under the original October 0.99 section-damage diagnostic. The later equilibria extend beyond the onset of the printed-material limit. The contact-position comparison on page~5 also limits the interpretation of the low-load response. The physical rupture load remains unresolved.
 
 \newpage
 \pageheading{How the raised case changes strain in the nickel strips}
-The three local fixtures used the same 2,304 nickel shell elements, multilinear plasticity and damage law, and 750~N washer preloads. In positive X, both raised cases first touched the moving edge cell between 0.1875 and 0.21875~mm. The last travel saved at exactly the same value in all three models before either raised fixture exceeded its material limits was 0.3375~mm.
+The three local fixtures used the same 2,304 nickel shell elements, multilinear plasticity and damage law, and 750~N washer preloads. In positive X, both original raised contact pairs first carried load between 0.1875 and 0.21875~mm. The STEP surfaces already intersected at the lower station (page~5). The last travel saved at exactly the same value in all three models before either raised fixture exceeded its material limits was 0.3375~mm.
 
 \begin{center}\small
 \begin{tabular}{lrrrr}\toprule
