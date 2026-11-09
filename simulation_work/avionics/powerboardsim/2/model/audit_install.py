@@ -10,7 +10,7 @@ from local_equilibrium import movement_table, recover, write_csv
 from stage_local_jobs import digest
 
 
-def contact_history(raw, records, tab, topology):
+def contact_history(raw, records, tab, topology, clamp_steps=2):
     """Independently decode binary corner statuses/penetration and the native force on each oriented pair."""
     faces=raw.grid.cell_data
     groups={}
@@ -42,7 +42,7 @@ def contact_history(raw, records, tab, topology):
             if contacts[pid] and pid not in first:
                 first[pid]=dict(native_set=k,stage=rec['loadstep'],top_travel_bracket_mm=[
                     records[max(0,ii-1)]['screw1_u_mm_z'],rec['screw1_u_mm_z']])
-            if rec['loadstep']<=2 and (closed.any() or np.linalg.norm(f)>.005):
+            if rec['loadstep']<=clamp_steps and (closed.any() or np.linalg.norm(f)>.005):
                 raise ValueError(f'Case already engaged during washer clamping at set {k}, pair {pid}')
             worst[pid]=max(worst[pid],p)
             output.append(dict(native_set=k,stage=rec['loadstep'],pair=pid,closed=int(closed.sum()),
@@ -78,12 +78,13 @@ def audit(case,campaign):
     folder=ROOT/'.runtime/archive'/campaign/case;receipt=ROOT/'.runtime/receipts'/campaign/case
     status=read(receipt/'status.json');ledger=read(receipt/'archived.json');spec=read(folder/'local_job.json')
     face_seats=case.endswith('_seatfaces1')
-    registry='local_seat_jobs.json' if face_seats else 'local_install_jobs.json'
+    grip=spec.get('load_protocol')=='grip_install'
+    registry='perfect_grip_cases.json' if grip else ('local_seat_jobs.json' if face_seats else 'local_install_jobs.json')
     catalog=read(ROOT/'validation'/registry)
     if face_seats and case not in catalog:catalog=read(ROOT/'validation/flush_pull_variants.json')
     ref=catalog[case]
     assert status['phase']=='solver_complete' and case==spec['case']==status['case']==ledger['case']
-    assert spec['load_protocol']=='four_stage_install' and digest((folder/'local_job.json').read_bytes())==ref['spec_sha256']
+    assert spec['load_protocol'] in ('four_stage_install','grip_install') and digest((folder/'local_job.json').read_bytes())==ref['spec_sha256']
     assert status['input_sha256'].lower()==ref['input_sha256']==spec['files']['model.inp']
     for name,sha in spec['files'].items():assert digest((folder/name).read_bytes())==sha
     assert all((folder/r['name']).stat().st_size==r['bytes'] for r in ledger['files'])
@@ -110,14 +111,17 @@ def audit(case,campaign):
             clamp[f'washer{j}_uz']=np.array([r[f'washer{j}_u_mm_z'] for r in rows])
     else:
         h=indexed(table(folder/'history.csv'),sets)
-        clamp=indexed(table(folder/'contact_history.csv'),sets)
+        if not grip:clamp=indexed(table(folder/'contact_history.csv'),sets)
     solid=indexed(table(folder/'case_solid.csv'),sets)
     assert np.all(solid['solids']==16108) and np.all(solid['seqv_MPa']>=0)
     times=np.array([r['time'] for r in rows])
-    assert np.allclose(times,h['time'],atol=5e-9,rtol=0) and np.allclose(times,clamp['time'],atol=5e-9,rtol=0)
+    assert np.allclose(times,h['time'],atol=5e-9,rtol=0)
+    if not grip:assert np.allclose(times,clamp['time'],atol=5e-9,rtol=0)
     assert np.allclose([r['cell_fx_N'] for r in rows],h['fx_N'],atol=1e-5,rtol=1e-6)
-    lock,seat,end=spec['washer_lock_time'],spec['installed_time'],spec['end_time']
-    assert (lock,seat,end)==(2.,3.,11. if damage else 4.) and times[-1]<=end+1e-8
+    lock=spec['installation_start_time'] if grip else spec['washer_lock_time']
+    seat,end=spec['installed_time'],spec['end_time']
+    expected=(0.,1.,2.) if grip else (2.,3.,11. if damage else 4.)
+    assert (lock,seat,end)==expected and times[-1]<=end+1e-8
     # Check the complete displacement path, not just whether the last actuator happened to reach 3 mm.
     uz=spec['top_travel_mm']*np.clip((times-lock)/(seat-lock),0,1)
     ux=spec['cell_pull_mm']*np.clip((times-seat)/(end-seat),0,1)
@@ -126,9 +130,9 @@ def audit(case,campaign):
     for i in range(1,5):
         for axis in 'xyz':
             assert np.allclose([r[f'screw{i}_u_mm_{axis}'] for r in rows],uz if axis=='z' else 0.,atol=2e-6,rtol=0)
-    for t in (1.,lock,seat,end):
+    for t in ((seat,end) if grip else (1.,lock,seat,end)):
         if times[-1]>=t-1e-9:assert np.count_nonzero(np.isclose(times,t,rtol=0,atol=1e-9))==1
-    if times[-1]>=lock-1e-9:
+    if not grip and times[-1]>=lock-1e-9:
         for i in (1,2):
             at=np.flatnonzero(np.isclose(times,lock,rtol=0,atol=1e-9))[0]
             assert abs(clamp[f'washer{i}_RFz'][at]-750)<.2
@@ -146,7 +150,7 @@ def audit(case,campaign):
     if 'nickel_faces_per_side' in spec:
         topology.update({pid:spec['nickel_faces_per_side'] for pid in (863,864)})
     raw=reader.read_binary(str(rst))
-    pairs,checks=contact_history(raw,rows,table(folder/'case_pairs.csv'),topology)
+    pairs,checks=contact_history(raw,rows,table(folder/'case_pairs.csv'),topology,clamp_steps=0 if grip else 2)
     from tab_seating import trace
     tab_history=trace(raw,sets)
     (dest/'tab_plane_history.json').write_text(json.dumps(tab_history,indent=2)+'\n')
@@ -154,7 +158,8 @@ def audit(case,campaign):
     # Mechanical work of the four driven tops, prescribed cell UX and the two washer loads.
     # Rotation at each screw is held at zero and released cell DOFs carry no imposed moment.
     work={};groups={'drawdown':[(f'screw{i}_u_mm_z',f'screw{i}_force_N_z') for i in range(1,5)],
-        'side_pull':[('ux_mm','cell_fx_N')], 'washer_preload':[(f'washer{i}_u_mm_z',f'washer{i}_force_N_z') for i in (1,2)]}
+        'side_pull':[('ux_mm','cell_fx_N')]}
+    if not grip:groups['washer_preload']=[(f'washer{i}_u_mm_z',f'washer{i}_force_N_z') for i in (1,2)]
     for name,signals in groups.items():
         w=0.
         for u,f in signals:

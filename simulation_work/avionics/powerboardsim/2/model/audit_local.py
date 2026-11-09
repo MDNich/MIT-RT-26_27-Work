@@ -116,6 +116,8 @@ def audit(case, campaign):
     ledger = read(receipts/'archived.json')
     spec = read(folder/'local_job.json')
     catalog='local_contact_retries.json' if case.endswith('_pin1') else 'local_jobs.json'
+    if spec.get('case_template') and spec['source'].startswith('lateral_grip_'):
+        catalog='perfect_grip_cases.json'
     manifest = read(ROOT/'validation'/catalog)[case]
     assert hashlib.sha256((folder/'local_job.json').read_bytes()).hexdigest()==manifest['spec_sha256']
     assert spec['case']==ledger['case']==status['case']==case and status['phase']=='solver_complete'
@@ -141,6 +143,9 @@ def audit(case, campaign):
     dest=ROOT/'validation'/('local' if complete else 'partial_local')
     dest.mkdir(exist_ok=True)
     (dest/(case+'.json')).write_text(json.dumps(data,indent=2)+'\n')
+    if case.startswith('bare_lateral_'):
+        from pull_reference import compare
+        compare(case,campaign)
     print(data['scope'],case,flush=True)
 
 if __name__ == '__main__':

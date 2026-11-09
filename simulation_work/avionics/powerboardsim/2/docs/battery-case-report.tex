@@ -63,15 +63,17 @@ For each converged load increment the audit sums external forces and moments abo
 \heading{Both default-contact meshes reproduce the October modal spectra}
 Each unpreloaded model used the archived mounting constraints and searched for 20 undamped natural frequencies between 1 and 10,000~Hz. The original mesh returned modes from 62.805 to 2205.547~Hz and the refined mesh from 66.611 to 2247.595~Hz. The maximum relative differences from the corresponding October exports were $1.78\times10^{-8}$ and $1.74\times10^{-9}$. Repeating a given discretization thus produced the same frequency spectrum to the stated precision.
 
-\begin{center}\includegraphics[width=.93\linewidth]{figures/bare-modal-frequencies.pdf}
+\begin{center}\includegraphics[width=.73\linewidth]{figures/bare-modal-frequencies.pdf}
 \captionof{figure}{Fresh ANSYS results with the original default contacts. Rank orders the frequencies within each mesh. A shared rank can contain different mode shapes, particularly where modes exchange order.}\end{center}
 
 The first original-mesh run returned only four modes and exited normally. The repeat kept the same input geometry, material properties, supports and search range. It changed the Block Lanczos algorithm to its alternate formulation and requested the Sturm sequence check. This recovered the complete spectrum. The default models retain the detached nine-body group in the earlier connection diagnosis. The bearing, locking and contact states of the six-bolt model provide the starting point for the connected vibration comparison.
 
-\heading{How the seeded motion and stress movies will be checked}
+\heading{PCB stress over the 480 frames of the seeded motion movie}
 The three accelerations are separate deterministic realizations of the October 20--2000~Hz base spectrum. Each contains 589,825 samples over 9~s at 65,536~Hz. The input rises over 0.1~s. During the final eight seconds the periodic waveform has 14.136~g RMS. The native transient integration uses the retained prestressed modes, 2\% modal damping and motion relative to the common support. Each clip uses 480 signed states from 1.000061 to 1.029297~s, displayed at 60 frames per second.
 
-The PCB stress movie combines the six signed stress components of every mode with the corresponding time-dependent modal coordinate. It calculates von Mises stress separately at every element corner. At an interface, two neighboring elements can return different values. The stress field contains the dynamic fluctuation about the preloaded equilibrium. On the October reference, the independent reconstruction reproduced all 480 native frame maxima within $1.1\times10^{-7}$~Pa across 39,014 PCB elements. The peak for that specific historical X-axis realization was 154.41~MPa.
+The six signed dynamic stress components were summed at each of 312,112 PCB element corners before calculating von Mises stress. Independent integration of the fresh native modes reproduced the 480 October bare-board frame maxima within 0.00182\%. The largest value in this particular clip was 154.41~MPa bare, 169.94~MPa with raised nylon screws and 151.03~MPa with raised aluminium screws. The nylon peak occurred about 3.85~ms earlier and at a different board node from the bare peak.
+\begin{center}\includegraphics[width=.82\linewidth]{figures/raised-seeded-pcb-stress.pdf}
+\captionof{figure}{Maximum dynamic PCB stress at each of the original 480 movie times. The three curves use independent coordinates on each tightened modal basis. Each dot marks a clip maximum.}\end{center}
 
 Four base-X camera orbits now compare the bare assembly with the 3~mm nylon- and aluminium-screw cases. Corresponding bare and cased movies use the same displacement scale, camera path, 4K resolution and 60~fps playback. The camera moves across a fixed one-sigma RMS field. The separate seeded movies follow physical time. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
 \newpage
@@ -290,5 +292,24 @@ Lower bound on cell clearance through crossing [mm] & --- & 0.038 & 0.068\\\bott
 \captionof{table}{Each time refers to this excitation with its prescribed 0.1~s ramp. The material threshold is a property assumed in the local model. Actual strip temper and weld properties would be needed to infer yielding or fatigue life.}\end{center}
 
 The clearance check covers every quadratic exterior face on all three cells and the PLA. At the tightened position their separation exceeded 0.130~mm. We bounded the subsequent motion of each face by tracking its quadratic B\'ezier control points in a common translating frame at 65,536 samples/s. The two bodies' maximum excursions summed to 0.092~mm with nylon and 0.062~mm with aluminium through their respective threshold crossings. This places the early stress excursion before direct cell-to-case contact in both calculations. The air gap can close later in the same waveform (pages~10 and~15).
+
+\newpage
+\heading{The local flush fixture exceeds the printed-PLA tensile references early in tightening}
+The four outer washers first loaded the nylon-screw fixture at 0.59--0.63~mm of screw-head travel. Between 0.91 and 0.95~mm, the greatest tensile stress in the assumed print plane crossed 52.3~MPa. Through-layer tension crossed 40.5~MPa between 0.99 and 1.03~mm. These are typical tensile strengths for the 100\%-infill reference coupons. Comparing the native true stresses with these nominal coupon strengths gives an approximate check on the range of the elastic model. \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{Polymaker coupon data.}
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/flush-local-material.pdf}
+\captionof{figure}{Native converged local states with rigid neighboring hardware and prescribed screw-head travel. Left, maximum tensile stress over the 16,108 quadratic PLA elements. Right, section-node tension including bending and the direct axial component in the four idealized short screw shanks. Curves stop at the last sampled travel before loaded penetration first exceeded 0.05~mm.}\end{center}
+
+\begin{center}\small\begin{tabular}{lrr}\toprule
+Local material reference & First corner crossing [mm] & First element with all four corners above [mm]\\\midrule
+In-plane tension, 52.3 MPa & 0.91--0.95 & 1.55--1.59\\
+Through-layer tension, 40.5 MPa & 0.99--1.03 & 2.57--2.61\\
+Through-layer elongation, 1.8\% & 1.23--1.27 & No sampled element\\\bottomrule
+\end{tabular}
+\captionof{table}{The coupon elongation corresponds to logarithmic strain $\ln(1.018)=0.01784$. The first in-plane and through-layer stress crossings occurred 3.72 and 3.78~mm from the nearest coupled bearing node. Contact penetration already exceeded the local screen by the time all four corners of an element crossed the through-layer stress reference.}\end{center}
+
+At 0.95~mm travel each prescribed screw head carried 64.0--64.5~N along board Z. The largest direct axial screw stress was 7.37~MPa. Including bending, the most tensile modelled screw fibre reached 85.34~MPa. A rigid connection between the screw rotation and its bearing footprint strongly influences that value. The McMaster-Carr listing for the representative nylon screw (93640A145) gives its dimensions and lists tensile strength as unrated. Its installed strength, head rocking and thread engagement therefore remain unverified. \href{https://www.mcmaster.com/products/nylon-allen-screws/}{McMaster-Carr screw data.}
+
+For comparison, tightening the six original bolts in the raised full-board models produced a maximum case-screw fibre tension of 1.15~MPa with nylon and 1.63~MPa with aluminium. Neither raised case reached a printed-PLA coupon reference during tightening. The local flush trial subsequently crossed the board datum (page~11). Resolving the force required for an actual flush seat depends on the full-board contact path and the as-built material and joint behaviour.
 
 \end{document}

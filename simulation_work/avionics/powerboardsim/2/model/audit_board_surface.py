@@ -4,7 +4,7 @@ import numpy as np
 from audit_local import ROOT,table,read
 from film_identity import verified,write_json,digest
 from native_rst import read_rst
-from global_contact import history
+from global_contact import histories
 
 def audit(case,campaign):
     assert re.fullmatch(r'flush_(nylon|aluminium)_surf1_static',case)
@@ -19,6 +19,8 @@ def audit(case,campaign):
     from board_reactions import run as audit_supports
     audit_gaps(case,campaign,[])
     audit_supports(case,campaign)
+    from installation_material import run as audit_material
+    audit_material(case,campaign)
 
 def audit_complete(case,campaign,d,r):
     ledger=read(r/'archived.json');status=read(r/'status.json');job=read(d/'surface_job.json')
@@ -55,9 +57,9 @@ def audit_complete(case,campaign,d,r):
         drives.append(dict(foot=i+1,final_drive_N=float(z['drive_N'][-1]),peak_abs_drive_N=max(abs(z['drive_N'])),
                            signed_actuator_work_J=float(np.trapezoid(z['drive_N'],z['travel_m']))))
     evidence={}
-    for k in (853,880,881,882,883):
-        etype=853 if k==853 else 858
-        hist=history(rst,etype,k);p=c[c['pair']==k]
+    pairs={853:853,880:858,881:858,882:858,883:858}
+    for k,hist in histories(rst,pairs).items():
+        p=c[c['pair']==k]
         assert len(hist)==len(p)==len(times)
         for z,h in zip(p,hist,strict=True):
             assert int(z['set'])==h['set'] and abs(z['time_s']-h['time_s'])<1e-8 and int(z['faces'])==h['n_contact']

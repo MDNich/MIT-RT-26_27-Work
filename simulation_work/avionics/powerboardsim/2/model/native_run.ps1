@@ -111,7 +111,7 @@ try {
         $spec=Get-Content "$work\local_job.json" -Raw|ConvertFrom-Json
         $stage.cores=$spec.cores
         Update 'solving'
-        $localResult=& "$PSScriptRoot\local_solve.ps1" -Work $work -Case $Case -Exe $exe
+        $localResult=& "$PSScriptRoot\local_solve.ps1" -Work $work -Case $Case -Exe $exe -Receipt $out
         $stage.exit=$localResult.exit
         $stage.native_clean=$localResult.clean
         $stage.result_job=$localResult.job

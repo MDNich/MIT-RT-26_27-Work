@@ -60,10 +60,10 @@ def audit(case,campaign):
         assert np.array_equal(rows['set'],np.repeat(sets,nrows)) and np.allclose(rows['time_s'],np.repeat(t,nrows),atol=1e-8,rtol=0)
     assert np.allclose(drives['head_z_m']-drives['board_z_m'],drives['travel_m'],atol=1e-8,rtol=0)
     assert np.allclose(drives['travel_m'],.003*np.clip(drives['time_s']-2.,0.,1.),atol=1e-8,rtol=0)
-    from global_contact import history
+    from global_contact import histories
     last={}
-    for pair in (853,880,881,882,883):
-        h=history(raw,853 if pair==853 else 858,pair,indices)
+    pairs={853:853,880:858,881:858,882:858,883:858}
+    for pair,h in histories(raw,pairs,indices).items():
         p=contacts[contacts['pair']==pair]
         for a,b in zip(p,h,strict=True):
             assert a['set']==b['set'] and a['faces']==b['n_contact']

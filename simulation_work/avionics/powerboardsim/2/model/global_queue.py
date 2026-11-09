@@ -51,7 +51,7 @@ def dispatch_solver(script,flags,folder):
         if any(p.exists() for p in expected):return
         if not request.exists():
             local=(RT/'inputs'/name/'local_job.json')
-            required=24_000_000_000 if native and local.is_file() and read(local).get('load_protocol')=='four_stage_install' else 18_000_000_000
+            required=24_000_000_000 if native and local.is_file() and read(local).get('load_protocol') in ('four_stage_install','grip_install') else 18_000_000_000
             wait_for_scratch(required)
             try:
                 launch(script,flags,request)
@@ -189,7 +189,11 @@ def jobs():
                 yield 'bare_enforced','bare_basis'
                 for direction in 'XYZ':yield 'bare_motion_'+direction,'bare_enforced'
                 yield 'stand3_aluminium_lateral_friction_locked_pin1','bare_lateral_friction_locked'
-                for direction in 'YZ':yield native_case('stand3_nylon','psd_'+direction),'stand3_nylon_basis'
+                for direction in 'YZ':
+                    for raised in ('stand3_nylon','stand3_aluminium'):
+                        yield native_case(raised,'psd_'+direction),raised+'_basis'
+                yield 'bare_damage_cont_nominal',''
+                yield 'stand3_nylon_damage_cont_nominal_pin1','bare_damage_cont_nominal'
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
             if branch=='bare' and axis=='Z' and (ROOT/'validation/board_surface_jobs.json').exists():
@@ -223,6 +227,12 @@ def jobs():
     if extra.exists():
         for case,record in read(extra).items():
             yield case,'bare_'+record['source']
+
+    grip=ROOT/'validation/perfect_grip_cases.json'
+    if grip.is_file():
+        for case,spec in read(grip).items():
+            yield case,'bare_'+spec['source']
+
 
 def result_path(case):
     if case.startswith('replay_'):

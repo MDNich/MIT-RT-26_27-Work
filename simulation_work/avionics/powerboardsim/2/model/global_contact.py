@@ -4,38 +4,50 @@ import numpy as np
 from ansys.mapdl import reader
 
 
-def history(raw,etype,real,indices=None):
+def pair_summary(k,t,ids,enum,data,nodes):
+    loc=np.searchsorted(enum,ids)
+    assert np.array_equal(enum[loc],ids)
+    groups=[];missing=0
+    for i in loc:
+        vals=data[i]
+        if vals is None or not len(vals):missing+=1;continue
+        count=len(nodes[i]);assert count in (3,4)
+        if len(vals)==10*count+1:
+            assert vals[-1] in (10.,32.), 'Unsupported ECT trailer'
+            vals=vals[:-1]
+        assert len(vals)==10*count
+        groups.append(np.array(vals).reshape(count,10))
+    st=[int(a[:,0].max()) for a in groups]
+    assert all(np.isin(a[:,0],[0,1,2,3]).all() for a in groups)
+    mixed=sum(np.min(a[:,0])!=np.max(a[:,0]) for a in groups)
+    full=[int(a[0,0]) for a in groups if np.min(a[:,0])==np.max(a[:,0])]
+    far=missing+st.count(0);near=st.count(1);sliding=st.count(2);sticking=st.count(3)
+    assert far+near+sliding+sticking==len(ids)
+    a=np.vstack(groups) if groups else np.empty((0,10))
+    loaded=a[:,0]>=2
+    gap=-a[a[:,0]==1,6]
+    return dict(set=k+1,time_s=float(t),n_contact=len(ids),far=far,near=near,sliding=sliding,sticking=sticking,
+                    p_max=float(a[:,2].max(initial=0)),loaded_corner_pen_max=float(a[loaded,1].max(initial=0)),
+                    missing_far_records=missing,mixed_corner_faces=int(mixed),fully_uniform_face_bins=[missing+full.count(0),full.count(1),full.count(2),full.count(3)],smallest_positive_open_gap=float(gap[gap>0].min()) if np.any(gap>0) else None)
+
+
+def histories(raw,pairs,indices=None):
     g=raw.grid.cell_data
-    ids=g['ansys_elem_num'][(g['ansys_etype']==etype)&(g['ansys_real_constant']==real)]
-    if len(ids)==0:raise ValueError('No contact elements in expected pair')
-    out=[]
+    elements={real:g['ansys_elem_num'][(g['ansys_etype']==etype)&(g['ansys_real_constant']==real)]
+              for real,etype in pairs.items()}
+    if not all(len(ids) for ids in elements.values()):
+        raise ValueError('No contact elements in expected pair')
+    summary={real:[] for real in pairs}
     for k in (range(raw.nsets) if indices is None else indices):
-        k=int(k);t=raw.time_values[k]
-        enum,data,nodes=raw.element_solution_data(k,'ECT');loc=np.searchsorted(enum,ids)
-        assert np.array_equal(enum[loc],ids)
-        groups=[];missing=0
-        for i in loc:
-            vals=data[i]
-            if vals is None or not len(vals):missing+=1;continue
-            count=len(nodes[i]);assert count in (3,4)
-            if len(vals)==10*count+1:
-                assert vals[-1] in (10.,32.), 'Unsupported ECT trailer'
-                vals=vals[:-1]
-            assert len(vals)==10*count
-            groups.append(np.array(vals).reshape(count,10))
-        st=[int(a[:,0].max()) for a in groups]
-        assert all(np.isin(a[:,0],[0,1,2,3]).all() for a in groups)
-        mixed=sum(np.min(a[:,0])!=np.max(a[:,0]) for a in groups)
-        full=[int(a[0,0]) for a in groups if np.min(a[:,0])==np.max(a[:,0])]
-        far=missing+st.count(0);near=st.count(1);sliding=st.count(2);sticking=st.count(3)
-        assert far+near+sliding+sticking==len(ids)
-        a=np.vstack(groups) if groups else np.empty((0,10))
-        loaded=a[:,0]>=2
-        gap=-a[a[:,0]==1,6]
-        out.append(dict(set=k+1,time_s=float(t),n_contact=len(ids),far=far,near=near,sliding=sliding,sticking=sticking,
-                        p_max=float(a[:,2].max(initial=0)),loaded_corner_pen_max=float(a[loaded,1].max(initial=0)),
-                        missing_far_records=missing,mixed_corner_faces=int(mixed),fully_uniform_face_bins=[missing+full.count(0),full.count(1),full.count(2),full.count(3)],smallest_positive_open_gap=float(gap[gap>0].min()) if np.any(gap>0) else None))
-    return out
+        k=int(k)
+        enum,values,nodes=raw.element_solution_data(k,'ECT')
+        for real,ids in elements.items():
+            summary[real].append(pair_summary(k,raw.time_values[k],ids,enum,values,nodes))
+    return summary
+
+
+def history(raw,etype,real,indices=None):
+    return histories(raw,{real:etype},indices)[real]
 
 
 def verify_local():
