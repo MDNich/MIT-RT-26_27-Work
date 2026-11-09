@@ -203,6 +203,9 @@ def jobs():
                 yield native_case('stand3_aluminium','psd_X'),'stand3_aluminium_basis'
                 if (ROOT/'validation/board_surface_jobs.json').exists():
                     yield 'flush_nylon_surf1_static',''
+                # Both remaining default-contact film subjects use the same refined extraction.
+                for raised in ('stand3_nylon','stand3_aluminium'):
+                    yield raised+'_refined',''
                 # Interleave the original signed-motion comparison with the two long installations.
                 yield 'bare_enforced','bare_basis'
                 for direction in 'XYZ':yield 'bare_motion_'+direction,'bare_enforced'

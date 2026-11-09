@@ -75,7 +75,7 @@ The six signed dynamic stress components were summed at each of 312,112 PCB elem
 \begin{center}\includegraphics[width=.82\linewidth]{figures/raised-seeded-pcb-stress.pdf}
 \captionof{figure}{Maximum dynamic PCB stress at each of the original 480 movie times. The three curves use independent coordinates on each tightened modal basis. Each dot marks a clip maximum.}\end{center}
 
-The seven seeded movie subjects each show the bare board and both 3~mm screw variants. Playback slows time by a factor of 273 and magnifies displacements 50 times. Each pair shares an absolute colour scale. Four further pairs show camera orbits over fixed base-X one-sigma RMS fields. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
+The seven seeded movie subjects each show the bare board and both 3~mm screw variants. Playback slows time by a factor of 273 and magnifies displacements 50 times. Each pair shares an absolute colour scale. Twelve further pairs show camera orbits over one-sigma RMS fields. The bare fields and both raised base-X fields come from native PSD solutions. The raised Y and Z fields use independent frequency integration. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
 \newpage
 \heading{Does the contact model start with the gap measured in CAD?}
 An enclosure that presses on the cells at the start of a raised-case calculation will appear to stiffen the assembly before the real parts would touch. We checked the undeformed contact pairs separately from the load solution. The local fixture uses one target for the moving edge cell and another for the fixed neighboring cells and washers. The global assembly uses deformable targets. The search radius tells MAPDL which nearby facets to examine; it does not set the physical clearance.
@@ -148,6 +148,8 @@ Raised aluminium, all 48 retained modes & 90.1\% & 91.4\% & 90.3\%\\\bottomrule
 
 \heading{How the shape comparison was made}
 Both modal meshes contain their assembly's static deformation. Before comparing vectors, we checked every original solid node against its own preload displacement and matched the 369,584 node IDs and their undeformed coordinates. The modal assurance criterion (MAC) is the squared, unweighted correlation of the global X, Y and Z eigenvector components at these nodes. It ranges from zero to one and is independent of the sign and normalization of a mode. It excludes the new case nodes so that both vectors describe the same structure. Modes with weak or competing matches remain ambiguous. For the two screw materials we also matched all 399,194 solid nodes, including 29,610 PLA nodes. The first mode rose by 26.5\% from 253.16 to 320.17~Hz with full-solid MAC 0.989 and PLA-only MAC 0.994. It is a closely corresponding shape. The next two matches had full-solid MACs of 0.739 and 0.785.
+
+The October bolted movie shows mode 20 at 2364.18~Hz. The two raised assemblies have mode 20 at 1836.45 and 1950.27~Hz. Its MAC with the bare mode is below 0.00023 in both. Searching the full native bases instead places the closest shape at mode 27, at 2365.06~Hz with nylon (MAC 0.717) and 2368.47~Hz with aluminium (MAC 0.640). The movie preserves the original rank and identifies this match on screen.
 \newpage
 \heading{The linear model predicts more PCB motion with the raised case}
 We applied the October base acceleration spectrum separately along X, Y and Z to the three bolt-locked assemblies. For the 3~mm stand-off with nylon screws, the independent calculation predicts greater out-of-plane PCB motion for all three excitation directions. Under X excitation the peak PCB response in Z rises from 23.37 to 145.55~$\mu$m RMS, a factor of 6.23. In the same calculation the largest cell response in X falls from 61.43 to 53.79~$\mu$m RMS (12.4\%). With aluminium screws, the peak PCB Z responses were 120.00, 82.33 and 100.55~$\mu$m RMS for base X, Y and Z. Compared with nylon, these fall by 17.6\%, 5.0\% and 23.6\%. In particular, the 32\% reduction in static board deflection during tightening did not carry over to this vibration metric.
@@ -354,5 +356,29 @@ High X, high Y & 327 & 4.9 & 2.418\\\bottomrule
 The first through-layer tensile stress crossed 40.5~MPa between 0.95 and 1.10~mm, at a node tied to the idealized screw bearing. In-plane tension crossed 52.3~MPa at 1.10--1.25~mm. When the search excluded points within 2~mm of tied bearing nodes, both references were first crossed at 1.25--1.40~mm. The latter interval follows the first crossing of the 15~$\mu$m hardware-penetration screen (1.10--1.25~mm). At 2.75~mm the contact field reached 71~$\mu$m penetration. The four drive reactions summed to 1.255~kN in this elastic continuation. Neither coupon response beyond its measured range nor the contact law supports an installation-load rating.
 
 The 12 native result partitions contained the same 28 converged equilibria. Against a completed raised assembly, the partition reader reproduced the combined result's material extrema, contact history, bolt reactions and fixed-support resultants. For the flush trial, DPF recovered the screw travel relative to each deformed PCB bearing. The 1,482 solid parents used to interpolate the eight opposing patches matched the checkpoint in connectivity and coordinates. Two surface refinements changed the gap extrema by less than 0.00017~mm. At four selected equilibria, the 9,466 hardware target facets also formed closed skins. The four outer washers were the only hardware surfaces intersecting the PLA at 0.65, 2.675 and 2.75~mm.
+
+\newpage
+\heading{The raised nylon case lowers the transverse load on all three cells}
+Under base-X vibration, the X component of the right-hand cell's net dynamic force fell from 30.51~N RMS bare to 26.67~N with nylon screws and 29.73~N with aluminium. These are reductions of 12.6\% and 2.6\%. Nylon also reduced this load on the left and centre cells. Aluminium raised the centre-cell load from 25.60 to 26.28~N RMS. The PSD calculation keeps the tightened cell-to-case gap open. The two nickel attachments on each cell therefore carry its net dynamic load until additional contact occurs.
+
+\begin{center}\includegraphics[width=.94\linewidth]{figures/raised-cell-inertial-force.pdf}
+\captionof{figure}{Net force component parallel to each of three separate base excitations. Markers within each group correspond to the same physical cell. The ordinate is shared across panels. The material model gives each cell a mass of 55.38~g.}\end{center}
+
+\begin{center}\small
+\begin{tabular}{lrrr}\toprule
+Base X, cell force [N RMS] & Bare board & 3 mm / nylon & 3 mm / aluminium\\\midrule
+Left & 29.97 & 28.51 & 29.80\\
+Centre & 25.60 & 25.13 & 26.28\\
+Right & 30.51 & 26.67 & 29.73\\\bottomrule
+\end{tabular}\end{center}
+
+Along the excited direction, the Y and Z cases changed by less than 0.13~N on each cell. A transverse component can still grow. With Y input the X force on the left cell was 0.12~N RMS bare, 1.75~N with nylon and 1.01~N with aluminium. Load sharing between the two welds and stress at the printed tabs require their local fields.
+
+\heading{Mass averaging and verification}
+For each native mode we integrated the signed translations over each curved ten-node cell tetrahedron with its material density. The relative acceleration transfer function follows from differentiating modal displacement twice. We added the common base acceleration before integrating over the 20--2000~Hz spectrum. Combining the signed quantities in this order accounts for phase cancellation within the cell. Multiplying the resulting centre-of-mass acceleration by cell mass gives the force.
+
+The four- and five-point-per-coordinate volume rules agreed within $10^{-9}$ in relative norm. Reducing the upper modal cutoff from 4 to 3.5~kHz changed the driven-axis forces by at most 0.30\%. Independent nodal acceleration RMS fields matched the five available native PSD fields within 0.037\% in relative norm over cell nodes. Separately, the original bare-board native time histories and original signed shapes reproduced the independently integrated seeded cell accelerations within 0.0075\%.
+
+For the eight stationary seconds of the historical forcing, the driven-axis RMS loads differed from the continuous-spectrum estimates by at most 0.88\%. The largest discrepancy over all components was 10.4\% and occurred in a smaller transverse component. Evaluating the same sampled waveform with the discrete Newmark transfer function reproduced the time integration. At one-quarter of the historical time step, its largest discrepancy from the continuous-frequency response at the same Fourier bins fell to 0.59\%.
 
 \end{document}

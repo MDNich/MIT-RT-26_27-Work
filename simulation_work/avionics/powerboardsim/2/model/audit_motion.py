@@ -64,6 +64,10 @@ def audit(case,campaign):
         assert sha(folder/'acc.txt')==spec['acc_sha256']
         parent=(ROOT/f'.runtime/archive/{campaign}/{branch}_basis/solve.out').read_text(errors='replace')
         data,metrics=full_history(folder/'file.mcf',basis['frequencies_Hz'],parent,axis)
+        if (ROOT/'validation/cell_force'/(branch+'.json')).is_file():
+            from check_cell_force_history import repeat as check_cell_force
+            evidence['cell_acceleration_from_native_coordinates']=check_cell_force(
+                branch,campaign,axis,data,basis['rst_sha256'],parent)
         nickel_path=ROOT/'validation/nickel_vibration'/f'{branch}_{axis}.json'
         if nickel_path.is_file():
             from nickel_vibration import early_crossing
