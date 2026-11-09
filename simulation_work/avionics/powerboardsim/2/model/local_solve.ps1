@@ -28,13 +28,23 @@ if (!(Test-Path -LiteralPath "$Work\$job.rst")){throw 'No local result file'}
 if (!$clean -and !(Select-String -LiteralPath $listing -Pattern 'LOAD STEP\s+\d+\s+SUBSTEP\s+\d+\s+COMPLETED' -Quiet)){
     throw 'Local solve failed before its first equilibrium state'
 }
-if (!$spec.coupon) {
-    foreach ($stem in 'moving','local_post'){
-        $p=Start-Process -FilePath $Exe -WorkingDirectory $Work -Wait -PassThru -ArgumentList @(
-            '-b','nolist','-s','noread','-smp','-np','1','-p','preppost','-j',$stem,'-i',"$stem.inp",'-o',"$stem.out")
-        if ($p.ExitCode -ne 0 -or !(Select-String -LiteralPath "$Work\$stem.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){
-            throw "Local $stem result readback failed"
-        }
+# A failed coupon solve can exit before its inline POST1 commands. Read the closed
+# RST in a new process and skip the unbalanced diagnostic set in every coupon.
+if ($spec.coupon) {
+    $postInput=Join-Path $PSScriptRoot 'coupon_post.inp'
+    $postProof=Get-Content -LiteralPath "$PSScriptRoot\..\validation\coupon_reference\october.json" -Raw|ConvertFrom-Json
+    $destination=Join-Path $Work 'coupon_post.inp'
+    Copy-Item -LiteralPath $postInput -Destination $destination
+    if ((Get-FileHash -LiteralPath $destination).Hash -ne $postProof.post_input_sha256){throw 'Coupon readback input identity failed'}
+    $readbacks=@('coupon_post')
+} else {
+    $readbacks=@('moving','local_post')
+}
+foreach ($stem in $readbacks){
+    $p=Start-Process -FilePath $Exe -WorkingDirectory $Work -Wait -PassThru -ArgumentList @(
+        '-b','nolist','-s','noread','-smp','-np','1','-p','preppost','-j',$stem,'-i',"$stem.inp",'-o',"$stem.out")
+    if ($p.ExitCode -ne 0 -or !(Select-String -LiteralPath "$Work\$stem.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){
+        throw "Local $stem result readback failed"
     }
 }
 [PSCustomObject]@{exit=$native.ExitCode;clean=$clean;job=$job;cores=$spec.cores}

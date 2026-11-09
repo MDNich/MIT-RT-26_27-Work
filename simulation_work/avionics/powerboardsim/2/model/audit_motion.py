@@ -40,21 +40,26 @@ def selected_native_coordinates(path,frequencies,samples):
     return values
 
 
-def full_history(path,frequencies,listing,axis):
+def native_series(path,frequencies):
     modes=len(frequencies)
     with path.open() as stream:
         check_modal_columns([stream.readline().strip() for _ in range(9)],frequencies)
     data=np.loadtxt(path,skiprows=9)
     if data.shape!=(9*FS+1,modes+1) or not np.isfinite(data).all():
         raise ValueError('Unexpected native time history')
+    if np.max(np.abs(data[:,0]-np.arange(len(data))/FS))>5.1e-7 or np.linalg.norm(data[0,1:])>1e-13:
+        raise ValueError('Native sampling times or initial state differ')
+    return data[:,1:]
+
+
+def full_history(path,frequencies,listing,axis):
+    coordinates=native_series(path,frequencies)
     gamma=participation(listing,axis)
     t,expected,input_rms=integrate(frequencies,gamma,axis,slice(None))
-    if np.max(np.abs(data[:,0]-t))>5.1e-7 or np.linalg.norm(data[0,1:])>1e-13:
-        raise ValueError('Native sampling times or initial state differ')
-    relative_l2=float(np.linalg.norm(data[:,1:]-expected)/np.linalg.norm(expected))
+    relative_l2=float(np.linalg.norm(coordinates-expected)/np.linalg.norm(expected))
     if relative_l2>=.005:
         raise ValueError(f'Native and independent modal histories differ by {relative_l2:.4%}')
-    return data[:,1:],dict(axis=axis,modes=modes,samples=len(t),duration_s=float(t[-1]),sampling_Hz=FS,
+    return coordinates,dict(axis=axis,modes=len(frequencies),samples=len(t),duration_s=float(t[-1]),sampling_Hz=FS,
                            input_stationary_rms_g=input_rms,full_history_relative_L2=relative_l2)
 
 

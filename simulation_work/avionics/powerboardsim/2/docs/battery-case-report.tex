@@ -477,4 +477,28 @@ For 90 sampled cell and nickel elements, the independently combined stiffness-fo
 
 The bonds cover the areas joined in the model. Actual weld sizes, local separation and the response after cell-to-case impact remain unmeasured.
 
+\newpage
+\heading{Case support shifts the peak dynamic load at the nickel attachments}
+For each of the three original nine-second acceleration records, we recovered all three force components at both nickel attachments on each cell. We took the vector magnitude at each of the 589,825 saved instants, then found the largest magnitude across the six ends. These forces describe the extra load from vibration above the locked preload in the linear model.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/attachment-native-history.pdf}
+\captionof{figure}{Left, the maximum at a single cell end under each base direction. Right, the simultaneous signed components at the low-Y end of the right-hand cell. All three assemblies reached their base-Z maximum there at 1.86743~s. The positive lengthwise force increased with both raised mounts.}\end{center}
+
+\begin{center}\small
+\begin{tabular}{lrrrl}\toprule
+Drive & Bare [N] & 3 mm nylon [N] & 3 mm aluminium [N] & Governing attachment\\\midrule
+Base X & 69.39 & 66.39 & 68.23 & Left cell, low-Y end\\
+Base Y & 29.25 & 29.17 & 29.79 & Left cell, end varies\\
+Base Z & 30.22 & 32.21 & 33.30 & Right cell, low-Y end\\\bottomrule
+\end{tabular}
+\captionof{table}{Largest dynamic force magnitude at one cell-to-nickel bond over the full record. Under base Y the bare and nylon peaks occur at the high-Y end and the aluminium peak occurs at the low-Y end.}\end{center}
+
+Under base X the peak end load fell by 4.3\% with nylon and 1.7\% with aluminium. Under base Z it rose by 6.6\% and 10.2\%. At the base-Z peak the Z component stayed close to $-29$~N in all three assemblies. The lengthwise component rose from 8.17~N bare to 13.21~N with nylon and 15.32~N with aluminium. The force on an individual attachment can therefore grow even while the two lengthwise end loads partly cancel across the cell (page~22).
+
+\heading{Response before the nickel yield reference is reached}
+The first 38.116~ms of base X precede the first sampled exceedance of the local pull model's 185~MPa nickel reference in any assembly (page~16). Over this common interval, the right cell's low-Y end carried the largest force in all three assemblies. Its magnitude reached 9.57~N bare, 8.92~N with nylon and 9.50~N with aluminium. The bounds on the raised assemblies' relative surface motion leave the cells clear of the PLA through this interval. The full-record peaks above include later excursions beyond the elastic and fixed-contact assumptions.
+
+\heading{Numerical checks and physical scope}
+The main results use signed native MAPDL time histories and bonded-interface forces from the prestressed modes. A separate integration of the same base motion reproduced the complete force fields within 0.002\% in relative norm. Restricting the modes to 3.5~kHz changed the nine peak magnitudes by at most 1.09\%. The bonded end area idealizes the battery-to-nickel attachment. The model supplies a dynamic resultant over that area. Predicting a weld failure load requires the actual weld geometry and material response.
+
 \end{document}

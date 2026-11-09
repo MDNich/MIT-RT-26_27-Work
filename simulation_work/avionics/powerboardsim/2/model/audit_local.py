@@ -129,12 +129,8 @@ def audit(case, campaign):
     if 'RUN COMPLETED' not in listing or (folder/'REJECTED_LOAD_HISTORY.txt').exists():
         raise ValueError('Native run lacks a valid completion record')
     if spec['coupon']:
-        values=table(folder/'history.csv')
-        if np.any(np.diff(values['time'])<=0):
-            raise ValueError('Coupon load sequence reset')
-        data=dict(states=len(values),last_time=float(values['time'][-1]),
-                  last_ux_mm=float(values['ux_mm'][-1]),max_damage=float(np.max(values['damage'])))
-        reached=abs(data['last_time']-cfg['end_time'])<1e-7
+        from coupon_audit import fresh as check_coupon
+        data,reached=check_coupon(folder,spec,cfg,{f['name']:f['sha256'] for f in ledger['files']})
     else:
         data,reached=fixture(folder,spec,cfg,cfgdir,listing,ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv')
     if not spec['coupon'] and spec['source'].startswith('damage_') and 'damage_onset_bracket' in data:

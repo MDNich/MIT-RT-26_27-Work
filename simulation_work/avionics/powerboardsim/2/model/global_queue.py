@@ -250,6 +250,10 @@ def jobs():
                     for direction in 'XYZ':yield raised+'_motion_'+direction,raised+'_enforced'
                 for raised in ('stand3_nylon','stand3_aluminium'):
                     yield raised+'_damage_cont_nominal_pin1','bare_damage_cont_nominal'
+                # Repeat the three October material-law controls alongside the primary damage fixtures.
+                if (ROOT/'validation/coupon_reference/october.json').is_file():
+                    for control in ('nominal_v4','uniform','unsym'):
+                        yield 'bare_damage_coupon_'+control,''
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
                     if (ROOT/'validation/rocking_bearing_input.json').is_file():
