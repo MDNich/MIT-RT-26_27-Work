@@ -25,6 +25,8 @@ def make(reviews):
             name=r[g];mark=record.get(name)
             if not mark:titles.append('Pending');continue
             proof=decode(r,g)
+            if proof['sha256']!=mark['sha256'] and g=='without_case' and (ROOT/'.runtime/films/baseline_history'/mark['sha256']/'metadata.json').exists():
+                titles.append('New comparison scale awaiting visual review');continue
             assert proof['sha256']==mark['sha256'] and proof['sidecar_sha256']==mark['sidecar_sha256']
             assert proof['sheet_sha256']==mark['review_sheet_sha256'] and proof['reference_sha256']==mark['native_reference_sha256']
             path=Path(name).relative_to('output/videos');titles.append(f'[{label}]({path})')

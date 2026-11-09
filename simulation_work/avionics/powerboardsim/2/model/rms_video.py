@@ -3,7 +3,8 @@ import argparse, csv, hashlib, json, math, subprocess
 from pathlib import Path
 import imageio_ffmpeg, numpy as np, pyvista as pv
 from native_rst import read_rst
-from film_identity import verified,already_rendered
+from study_cases import native_case
+from film_identity import verified,already_rendered,publish_baseline
 ROOT=Path(__file__).resolve().parents[1]
 VARIANTS=['bare','flush_nylon','flush_aluminium','stand3_nylon','stand3_aluminium']
 LABELS=['Bare board','Flush / nylon screws','Flush / aluminium screws','3 mm / nylon screws','3 mm / aluminium screws']
@@ -60,7 +61,7 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
     temp.replace(target)
     target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);parser.add_argument('--bare-only',action='store_true');args=parser.parse_args()
     with (ROOT/'validation/video_pairs.csv').open() as stream:
         row=next(r for r in csv.DictReader(stream) if Path(r['file']).stem==args.name)
     assert row['kind']=='camera motion over fixed RMS'
@@ -70,14 +71,19 @@ def main():
         actors,peak=field(args.preview_rst,comp)
         draw([('Reference reader check',actors,peak)],title,axis,comp,view,peak,ROOT/'.runtime/qa/rms-reader-preview.png',True);return
     panels=[];sources=[]
-    for variant,name in zip(VARIANTS,LABELS):
-        key=f'{variant}_psd_{axis}'
+    count=1 if args.bare_only else len(VARIANTS)
+    for variant,name in zip(VARIANTS[:count],LABELS[:count],strict=True):
+        key=native_case(variant,'psd_'+axis)
         audit=json.loads((ROOT/f'validation/global/{key}.json').read_text());assert audit['case']==key and audit['campaign']==args.campaign
         rst=ROOT/f'.runtime/archive/{args.campaign}/{key}/file.rst'
         verified(rst,audit['rst_sha256']);sources.append(dict(variant=variant,rst_sha256=audit['rst_sha256']))
         actors,peak=field(rst,comp)
         panels.append((name,actors,peak))
     limit=max(i[2] for i in panels)
-    for group,sub in [('without_case',panels[:1]),('with_case',panels[1:])]:
-        draw(sub,title,axis,comp,view,limit,ROOT/f'output/videos/{group}/power_board_4k60/{args.name}.mp4',sources=sources[:1] if group=='without_case' else sources[1:])
+    dest=ROOT/f'output/videos/without_case/power_board_4k60/{args.name}.mp4'
+    generation=ROOT/'.runtime/films/baselines'/args.name/(float(limit).hex()+'.mp4')
+    draw(panels[:1],title,axis,comp,view,limit,generation,sources=sources[:1])
+    publish_baseline(generation,dest,('subject','base','response','view','sources'))
+    if not args.bare_only:
+        draw(panels[1:],title,axis,comp,view,limit,ROOT/f'output/videos/with_case/power_board_4k60/{args.name}.mp4',sources=sources[1:])
 if __name__=='__main__':main()

@@ -1,0 +1,244 @@
+{
+  "case": "bare_psd_X",
+  "campaign": "nov08_01",
+  "sets": 42,
+  "rst_sha256": "4fd4cba66b1c660d14e6d53abe36c63fef599a3d40847edc01372b5da49a0c2b",
+  "last_time_or_hz": 0.0,
+  "finite_displacement_nodes": 369590,
+  "warnings": 22,
+  "native_psd_fields": {
+    "sets": 42,
+    "displacement_load_step": 3,
+    "acceleration_load_step": 5,
+    "solid_elements_read": 112902,
+    "scopes": {
+      "assembly": {
+        "directional_rms_u_mm": [
+          0.061425346806921535,
+          0.0038971110706763484,
+          0.028947887097703007
+        ],
+        "absolute_acceleration_rms_g": [
+          103.51173268531414,
+          10.503510467226764,
+          52.29028098435933
+        ],
+        "nodes": 369584,
+        "equivalent_stress_rms_Pa": 1443164288.0,
+        "stress_element": 7017,
+        "stress_node": 29373
+      },
+      "pcb": {
+        "directional_rms_u_mm": [
+          0.0028059695945795975,
+          0.0006997177366564537,
+          0.02336603420526732
+        ],
+        "absolute_acceleration_rms_g": [
+          15.282645384116194,
+          1.913847908152169,
+          52.29028098435933
+        ],
+        "nodes": 217704,
+        "equivalent_stress_rms_Pa": 90324504.0,
+        "stress_element": 105927,
+        "stress_node": 173651,
+        "normal_elastic_strain_rms": [
+          0.002216146793216467,
+          0.0007716785185039043,
+          0.003044667188078165
+        ],
+        "normal_strain_peak_elements": [
+          107124,
+          105883,
+          110495
+        ],
+        "normal_strain_peak_nodes": [
+          206949,
+          173650,
+          208861
+        ]
+      },
+      "cells": {
+        "directional_rms_u_mm": [
+          0.061425346806921535,
+          0.0006221390542868151,
+          0.028947887097703007
+        ],
+        "absolute_acceleration_rms_g": [
+          103.51173268531414,
+          1.0909708640349602,
+          49.45830911673416
+        ],
+        "nodes": 3951,
+        "equivalent_stress_rms_Pa": 21024518.0,
+        "stress_element": 2542,
+        "stress_node": 11899
+      },
+      "nickel": {
+        "directional_rms_u_mm": [
+          0.05112770562649233,
+          0.003067264270723316,
+          0.020738795178342147
+        ],
+        "absolute_acceleration_rms_g": [
+          86.13194543276532,
+          6.607086991844926,
+          35.422413039643104
+        ],
+        "nodes": 7179,
+        "equivalent_stress_rms_Pa": 291898016.0,
+        "stress_element": 8733,
+        "stress_node": 41183
+      }
+    }
+  },
+  "october_native_comparison": {
+    "reference_sha256": "ba79ea42e90126f22e79b2c936ea8b46d377b0c35f07371e2871a0b9caecdc8b",
+    "metric_count": 17,
+    "worst_relative_error": 4.522474816859301e-08,
+    "comparisons": [
+      {
+        "metric": "RMS displacement X - base X",
+        "unit": "m",
+        "reference": 6.142534402897581e-05,
+        "rerun": 6.142534680692153e-05,
+        "relative_error": 4.522474816859301e-08
+      },
+      {
+        "metric": "RMS displacement Y - base X",
+        "unit": "m",
+        "reference": 3.897111128026154e-06,
+        "rerun": 3.897111070676348e-06,
+        "relative_error": 1.4715978990942347e-08
+      },
+      {
+        "metric": "RMS displacement Z - base X",
+        "unit": "m",
+        "reference": 2.8947886676178314e-05,
+        "rerun": 2.8947887097703006e-05,
+        "relative_error": 1.4561501338050675e-08
+      },
+      {
+        "metric": "RMS absolute acceleration X - base X",
+        "unit": "m sec^-1 sec^-1",
+        "reference": 1015.0360717773438,
+        "rerun": 1015.0360507121904,
+        "relative_error": 2.07531081208856e-08
+      },
+      {
+        "metric": "RMS absolute acceleration Y - base X",
+        "unit": "m sec^-1 sec^-1",
+        "reference": 102.99742126464844,
+        "rerun": 102.99742364162564,
+        "relative_error": 2.3078026378797745e-08
+      },
+      {
+        "metric": "RMS absolute acceleration Z - base X",
+        "unit": "m sec^-1 sec^-1",
+        "reference": 512.7584838867188,
+        "rerun": 512.7584953326275,
+        "relative_error": 2.2322222070769726e-08
+      },
+      {
+        "metric": "RMS equivalent stress - all bodies",
+        "unit": "Pa",
+        "reference": 1443164288.0,
+        "rerun": 1443164288.0,
+        "relative_error": 0.0
+      },
+      {
+        "metric": "RMS equivalent stress - PCB",
+        "unit": "Pa",
+        "reference": 90324504.0,
+        "rerun": 90324504.0,
+        "relative_error": 0.0
+      },
+      {
+        "metric": "RMS PCB normal strain X",
+        "unit": "m m^-1",
+        "reference": 0.002216146793216467,
+        "rerun": 0.002216146793216467,
+        "relative_error": 0.0
+      },
+      {
+        "metric": "RMS PCB normal strain Y",
+        "unit": "m m^-1",
+        "reference": 0.0007716785185039043,
+        "rerun": 0.0007716785185039043,
+        "relative_error": 0.0
+      },
+      {
+        "metric": "RMS PCB normal strain Z",
+        "unit": "m m^-1",
+        "reference": 0.003044667188078165,
+        "rerun": 0.003044667188078165,
+        "relative_error": 0.0
+      },
+      {
+        "metric": "PCB RMS displacement X - base X",
+        "unit": "m",
+        "reference": 2.8059696433047066e-06,
+        "rerun": 2.8059695945795975e-06,
+        "relative_error": 1.7364802595842832e-08
+      },
+      {
+        "metric": "PCB RMS absolute acceleration X - base X",
+        "unit": "m sec^-1 sec^-1",
+        "reference": 149.8616180419922,
+        "rerun": 149.86162063664338,
+        "relative_error": 1.7313647182604086e-08
+      },
+      {
+        "metric": "PCB RMS displacement Y - base X",
+        "unit": "m",
+        "reference": 6.997177592893422e-07,
+        "rerun": 6.997177366564537e-07,
+        "relative_error": 3.2345739642281046e-08
+      },
+      {
+        "metric": "PCB RMS absolute acceleration Y - base X",
+        "unit": "m sec^-1 sec^-1",
+        "reference": 18.767192840576172,
+        "rerun": 18.76719258734017,
+        "relative_error": 1.3493547168508258e-08
+      },
+      {
+        "metric": "PCB RMS displacement Z - base X",
+        "unit": "m",
+        "reference": 2.33660339290509e-05,
+        "rerun": 2.336603420526732e-05,
+        "relative_error": 1.1821279732870948e-08
+      },
+      {
+        "metric": "PCB RMS absolute acceleration Z - base X",
+        "unit": "m sec^-1 sec^-1",
+        "reference": 512.7584838867188,
+        "rerun": 512.7584953326275,
+        "relative_error": 2.2322222070769726e-08
+      }
+    ]
+  },
+  "independent_displacement_relative_errors": {
+    "assembly": [
+      1.4719796064044388e-05,
+      2.4953888836831695e-05,
+      1.4825312216082409e-05
+    ],
+    "pcb": [
+      1.777509357681062e-05,
+      2.7529123337144412e-05,
+      2.694917918899531e-05
+    ],
+    "cells": [
+      1.4719796064044388e-05,
+      1.5847607612640147e-05,
+      1.4825312216082409e-05
+    ],
+    "nickel": [
+      1.4715691845190726e-05,
+      1.4956133650212422e-05,
+      1.4856051132605685e-05
+    ]
+  }
+}

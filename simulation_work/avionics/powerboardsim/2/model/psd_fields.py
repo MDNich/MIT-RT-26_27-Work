@@ -46,6 +46,21 @@ def recover(path):
             if n in elems and val>results[scope]['equivalent_stress_rms_Pa']:
                 results[scope].update(equivalent_stress_rms_Pa=val,stress_element=int(n),stress_node=int(ids[i]))
     assert read==len(scope_mat['assembly'])
+    # October's PCB normal-strain results use unaveraged element-corner values.
+    enum,raw,nodes=rst.element_solution_data([3,1],'EEL')
+    selected=np.array(sorted(scope_mat['pcb']))
+    index=np.searchsorted(enum,selected);assert np.array_equal(enum[index],selected)
+    maxima=np.zeros(3);peak_elements=np.zeros(3,dtype=int);peak_nodes=np.zeros(3,dtype=int)
+    for number,i in zip(selected,index,strict=True):
+        ids=nodes[i];data=raw[i]
+        if data is None or len(data)!=7*len(ids):raise ValueError(f'Missing PCB strain record on element {number}')
+        components=data.reshape(-1,7)[:,:3]
+        assert np.isfinite(components).all() and np.min(components)>=0
+        best=np.argmax(components,axis=0);new=components[best,np.arange(3)];updated=new>maxima
+        maxima[updated]=new[updated];peak_elements[updated]=number;peak_nodes[updated]=ids[best[updated]]
+    results['pcb']['normal_elastic_strain_rms']=maxima.tolist()
+    results['pcb']['normal_strain_peak_elements']=peak_elements.tolist()
+    results['pcb']['normal_strain_peak_nodes']=peak_nodes.tolist()
     return dict(sets=len(ls),displacement_load_step=3,acceleration_load_step=5,solid_elements_read=read,scopes=results)
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('rst',type=Path);p.add_argument('output',type=Path)

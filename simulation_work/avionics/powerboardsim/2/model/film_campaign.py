@@ -16,6 +16,7 @@ import numpy as np
 from PIL import Image,ImageDraw
 from film_identity import ROOT,verified,write_json,digest
 from rms_video import VARIANTS,LABELS
+from study_cases import native_case
 
 CAMP='nov08_01'
 RT=ROOT/'.runtime/films'
@@ -46,13 +47,13 @@ def catalog():
     return rows
 
 
-def proof_path(r,v):return ROOT/'validation'/r['category']/(v+'_'+r['suffix']+'.json')
+def proof_path(r,v):return ROOT/'validation'/r['category']/(native_case(v,r['suffix'])+'.json')
 
 
 def identity(r,side,meta):
     kind=r['kind'];variants=VARIANTS[:1] if side==SLOTS[0] else VARIANTS[1:]
     proofs=[read(proof_path(r,v)) for v in variants]
-    assert all(t['campaign']==CAMP and t['case']==v+'_'+r['suffix'] for v,t in zip(variants,proofs,strict=True))
+    assert all(t['campaign']==CAMP and t['case']==native_case(v,r['suffix']) for v,t in zip(variants,proofs,strict=True))
     if kind==KINDS[0] and side==SLOTS[0]:
         assert meta['rank']==r['rank']
         if meta['source_rst_sha256']!=proofs[0]['rst_sha256']:
@@ -141,6 +142,8 @@ def cycle(render,refresh,lease):
                     p=read(proof_path(r,'bare'));key=p['case'];path=ROOT/'.runtime/archive'/CAMP/key/'file.rst'
                     verified(path,p['rst_sha256'])
                     command([models/'modal_video.py',path,r['rank'],'Bare board / '+('refined default contacts' if r['suffix']=='refined' else 'six locked bolts'),bare],lease)
+                if r['kind'] in KINDS[1:] and not bare.exists() and proof_path(r,'bare').is_file():
+                    command([models/r['script'],s,'--campaign',CAMP,'--bare-only'],lease)
                 if not all((ROOT/r[g]).exists() for g in SLOTS) and all(proof_path(r,v).is_file() for v in VARIANTS):
                     command([models/r['script'],s,'--campaign',CAMP],lease)
             for g in SLOTS:

@@ -34,7 +34,7 @@ try {
         $parents=@($manifest.files|Where-Object name -match $pattern)
         if ($parents.Count -lt 3) {throw 'Parent restart files missing'}
         $needed=($parents|Measure-Object bytes -Sum).Sum
-        if (!(Test-Path -LiteralPath "$work\remote_psd.json") -and (Get-PSDrive C).Free -lt $needed+14000000000){throw "Insufficient space for parent and solver scratch"}
+        if (!(Test-Path -LiteralPath "$work\remote_psd.json") -and !(Test-Path -LiteralPath "$work\private_psd.json") -and (Get-PSDrive C).Free -lt $needed+14000000000){throw "Insufficient space for parent and solver scratch"}
         if (Test-Path -LiteralPath "$work\remote_psd.json"){
             $remote=Get-Content -LiteralPath "$work\remote_psd.json" -Raw|ConvertFrom-Json
             if ($Case -notmatch '^((?:stand3|flush)_(?:nylon|aluminium)(?:_surf1)?)_psd_[XYZ]$'){throw 'Invalid remote PSD case'}
@@ -47,6 +47,22 @@ try {
             $parents=@($manifest.files|Where-Object name -eq 'file.db')
             if ($parents.Count -ne 1 -or $parents[0].sha256 -ne $remote.parent_db_sha256){throw 'Wrong local seed database'}
             $stage.remote_psd=$true
+        }
+        if (Test-Path -LiteralPath "$work\private_psd.json"){
+            $spec=Get-Content -LiteralPath "$work\private_psd.json" -Raw|ConvertFrom-Json
+            $pub=Get-Content -LiteralPath "$share\validation\private_psd_inputs\$Case.json" -Raw|ConvertFrom-Json
+            $lib=Join-Path $share ".runtime\private_modal\$Campaign\$Case"
+            if ($spec.case -ne $Case -or $spec.campaign -ne $Campaign -or $spec.parent -ne $Parent -or
+                $spec.modal_dir -ne $lib -or $stage.input_sha256 -ne $spec.input_sha256 -or
+                (Get-FileHash "$work\private_psd.json").Hash -ne $pub.spec_sha256 -or
+                (Get-FileHash "$share\.runtime\modal_library\$Campaign\$Parent.json").Hash -ne $spec.parent_manifest_sha256){
+                throw 'Private modal-directory identity failed'
+            }
+            $probe=[System.IO.File]::Open("$lib\file0.mode",[System.IO.FileMode]::Open,[System.IO.FileAccess]::ReadWrite,[System.IO.FileShare]::ReadWrite)
+            $probe.Dispose()
+            $parents=@($manifest.files|Where-Object name -eq 'file.db')
+            if ($parents.Count -ne 1 -or $parents[0].sha256 -ne $spec.parent_db_sha256){throw 'Wrong modal seed DB'}
+            $stage.private_psd=$true
         }
         $stage.parent=$Parent
         foreach($row in $parents){

@@ -32,6 +32,32 @@ def verified(path,expected):
     return actual
 
 
+def publish_baseline(source,destination,identity):
+    """Install the verified baseline generation. A later common colour scale may replace the standalone scale."""
+    import shutil
+    info=json.loads(source.with_suffix('.json').read_text())
+    verified(source,info['sha256'])
+    sidecar=destination.with_suffix('.json')
+    if sidecar.exists():
+        previous=json.loads(sidecar.read_text())
+        if any(previous.get(k)!=info.get(k) for k in identity):
+            raise ValueError(f'Existing baseline has different physical inputs: {destination}')
+        if previous['sha256']!=info['sha256'] and destination.is_file() and digest(destination)==previous['sha256']:
+            stored=ROOT/'.runtime/films/baseline_history'/previous['sha256']
+            stored.mkdir(parents=True,exist_ok=True)
+            backup=stored/destination.name
+            if not backup.exists():shutil.copy2(destination,backup)
+            verified(backup,previous['sha256']);write_json(stored/'metadata.json',previous)
+        elif destination.is_file() and digest(destination)!=info['sha256']:
+            raise ValueError(f'Baseline content disagrees with both generation records: {destination}')
+    elif destination.exists():
+        verified(destination,info['sha256'])
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    if not destination.exists() or digest(destination)!=info['sha256']:
+        temp=destination.with_suffix('.new.mp4')
+        shutil.copy2(source,temp);verified(temp,info['sha256']);temp.replace(destination)
+    write_json(sidecar,info)
+
 def already_rendered(dest,fields):
     meta=dest.with_suffix('.json')
     if not dest.exists() and not meta.exists():return False

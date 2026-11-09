@@ -6,7 +6,7 @@ from film_identity import verified,write_json,digest
 from stage_local_jobs import seal
 FILES=re.compile(r'^file\d*\.(db|mode|mlv|full|esav|emat|rst|dsp)$',re.I)
 
-def stage(branch,campaign):
+def stage_library(branch,campaign):
     assert re.fullmatch(r'(stand3|flush)_(nylon|aluminium)(?:_surf1)?',branch)
     case=branch+'_basis';r=ROOT/'.runtime/receipts'/campaign/case
     assert (r/'released.txt').is_file()
@@ -33,7 +33,12 @@ def stage(branch,campaign):
     manifest=lib.parent/(case+'.json');info=dict(case=case,campaign=campaign,bytes=total,files=files)
     if manifest.exists():assert read(manifest)==info
     else:write_json(manifest,info)
-    def win(p):return chr(92)*2+'Mac'+chr(92)+'Home'+chr(92)+str(p.relative_to('/Users/mdn')).replace('/',chr(92))
+    return case,proof,lib,manifest,files,total
+
+def win(p):return chr(92)*2+'Mac'+chr(92)+'Home'+chr(92)+str(p.relative_to('/Users/mdn')).replace('/',chr(92))
+
+def stage(branch,campaign):
+    case,proof,lib,manifest,files,total=stage_library(branch,campaign)
     assert len(win(lib))<248 and "'" not in win(lib)
     records={}
     for ax in 'XYZ':

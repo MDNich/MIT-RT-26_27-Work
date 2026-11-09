@@ -1,6 +1,7 @@
 """Supervise one native MAPDL job at a time, preserving uncertain or failed launches for inspection."""
 import datetime,fcntl,hashlib,json,os,re,shutil,subprocess,sys,time
 from pathlib import Path
+from study_cases import native_case
 ROOT=Path(__file__).resolve().parents[1]
 RT=ROOT/'.runtime'
 CAMPAIGN='nov08_01'
@@ -78,9 +79,15 @@ def jobs():
     # Establish the first complete reference and one cased comparison before the remaining variants.
     for branch in ['bare','stand3_nylon','flush_nylon','stand3_aluminium','flush_aluminium']:
         if branch.startswith('flush_'):
-            # These original decks start overclosed. A separately named successor with a
-            # verified installed restart must be mapped explicitly, never enabled by a flag.
-            log('Holding original overclosed global branch: '+branch);continue
+            # Only the installed, opposed-face static branch supplies the prestressed descendants.
+            state=native_case(branch,'static')
+            basis=native_case(branch,'basis')
+            yield basis,state
+            yield native_case(branch,'modal20'),state
+            for axis in 'XYZ':yield native_case(branch,'psd_'+axis),basis
+            enforced=native_case(branch,'enforced');yield enforced,basis
+            for axis in 'XYZ':yield native_case(branch,'motion_'+axis),enforced
+            continue
         if branch not in ('bare','stand3_nylon'):
             yield branch+'_static',''
         if branch not in ('bare','stand3_nylon'):yield branch+'_basis',branch+'_static'
@@ -101,12 +108,15 @@ def jobs():
             yield 'patch_stand3_nylon_span15_free_v1','stand3_nylon_basis'
             yield 'patch_stand3_nylon_span15_contact_eq1','patch_stand3_nylon_span15_free_v1'
         for axis in 'XYZ':
-            yield branch+'_psd_'+axis,branch+'_basis'
+            yield native_case(branch,'psd_'+axis),branch+'_basis'
             if branch=='bare' and axis=='X':
                 # Establish the first like-for-like native PSD before the broader history series.
-                yield 'stand3_nylon_psd_X','stand3_nylon_basis'
                 yield 'stand3_aluminium_static',''
+                yield native_case('stand3_nylon','psd_X'),'stand3_nylon_basis'
+                yield 'bare_psd_Y','bare_basis'
+                yield 'bare_psd_Z','bare_basis'
                 yield 'stand3_aluminium_basis','stand3_aluminium_static'
+                yield native_case('stand3_aluminium','psd_X'),'stand3_aluminium_basis'
                 if (ROOT/'validation/board_surface_jobs.json').exists():
                     yield 'flush_nylon_surf1_static',''
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
@@ -231,8 +241,9 @@ def run():
         state=receipt/'status.json'
         if not state.exists():
             if '_psd_' in case and not case.startswith('bare_') and not (receipt/'dispatch.json').exists():
-                from stage_remote_psd import stage as stage_psd
-                stage_psd(case.rsplit('_psd_',1)[0],CAMPAIGN)
+                from private_psd import stage as stage_psd
+                branch,axis=case.removesuffix('_private1').rsplit('_psd_',1)
+                stage_psd(branch,CAMPAIGN,axis)
             if motion:
                 from stage_motion import stage
                 branch=case.removesuffix('_enforced').split('_motion_')[0]

@@ -10,6 +10,7 @@ import numpy as np
 import pyvista as pv
 from PIL import Image
 from native_rst import read_rst
+from study_cases import native_case
 from modal_correspondence import checksum,compare
 from modal_video import render as render_bare
 from rms_video import ROOT,VARIANTS,LABELS
@@ -110,7 +111,7 @@ def main():
         draw(panels,rank,ROOT/'.runtime/qa/modal-panels.png',True);return
     refs={}
     for v in VARIANTS:
-        key=f'{v}_{kind}';audit=json.loads((ROOT/f'validation/global/{key}.json').read_text())
+        key=native_case(v,kind);audit=json.loads((ROOT/f'validation/global/{key}.json').read_text())
         f=base/key/'file.rst';assert audit['campaign']==args.campaign and audit['case']==key and verified(f,audit['rst_sha256'])==audit['rst_sha256']
         refs[v]=(f,audit['rst_sha256'])
     bare_out=ROOT/f'output/videos/without_case/power_board_4k60/{args.subject}.mp4'

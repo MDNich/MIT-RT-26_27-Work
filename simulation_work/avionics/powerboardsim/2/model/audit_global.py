@@ -50,11 +50,15 @@ def audit(case,campaign):
             result['contact_scope']='Engineering interpretation requires penetration, seating loads and PLA stress review.'
     elif '_psd_' in case:
         # Workbench writes the statistical result sets after the modal basis; select PSD labels in the field audit.
-        assert re.search(r'PSD ANALYSIS|POWER SPECTRAL DENSITY',lst,re.I)
+        assert re.search(r'(?im)^\s*SPECTRUM TYPE[ .]+PSD\s*$',lst)
+        assert re.search(r'(?im)^\s*MODE COMBINATION TYPE[ .]+PSD\s*$',lst)
         result.pop('max_vector_u')  # Orthogonal component RMS values are not a peak displacement magnitude.
         from psd_fields import recover
         result['native_psd_fields']=recover(d/'file.rst')
-        branch,axis=case.rsplit('_psd_',1)
+        branch,axis=case.removesuffix('_private1').rsplit('_psd_',1)
+        if branch=='bare':
+            from psd_comparison import check_october
+            result['october_native_comparison']=check_october(case,axis,result['native_psd_fields'])
         from independent_psd import run as independent_response
         check=ROOT/'validation/independent_psd'/f'{branch}_basis.json'
         if not check.exists():independent_response(branch,campaign)
@@ -67,6 +71,9 @@ def audit(case,campaign):
             assert np.max(err)<.05,(case,scope,actual,vals,err)
             errs[scope]=err.tolist()
         result['independent_displacement_relative_errors']=errs
+        if (d/'private_psd.json').exists():
+            from private_psd import verify
+            result['private_modal_directory']=verify(case,campaign)
         if (d/'remote_psd.json').exists():
             from stage_remote_psd import verify
             result['remote_modal_directory']=verify(case,campaign)

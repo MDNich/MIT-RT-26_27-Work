@@ -9,6 +9,8 @@ import numpy as np
 import pyvista as pv
 from PIL import Image
 from native_rst import read_rst
+from study_cases import branch_for,native_case
+from film_identity import publish_baseline
 
 from motion_surface import displacement_basis,pcb_skin
 from pcb_dynamic_stress import cache_modes,digest,equivalent,extrema
@@ -139,7 +141,7 @@ def render(items,target,ax,scope,comp,period,limit,preview):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('subject',choices=SUBJECTS)
-    p.add_argument('--historical-preview-rst',type=Path);p.add_argument('--campaign',default='nov08_01')
+    p.add_argument('--historical-preview-rst',type=Path);p.add_argument('--campaign',default='nov08_01');p.add_argument('--bare-only',action='store_true')
     args=p.parse_args();ax,scope,comp=SUBJECTS[args.subject]
     period=np.arange(480) if not args.historical_preview_rst else np.array([119])
     items=[]
@@ -149,18 +151,23 @@ def main():
         cache=ROOT/f'.runtime/qa/seeded_preview/{args.subject}'
         data=field_files(rst,clip,period,scope,comp,cache,ROOT/'.runtime/qa/october_pcb_stress')
         render([('October reference',cache,data)],cache/'preview.png',ax,scope,comp,period,data['peak'],True);return
-    for v,name in zip(VARIANTS,LABELS):
-        key=f'{v}_motion_{ax}'
+    count=1 if args.bare_only else len(VARIANTS)
+    for v,name in zip(VARIANTS[:count],LABELS[:count],strict=True):
+        key=native_case(v,'motion_'+ax);branch=branch_for(v,'basis')
         proof=json.loads((ROOT/f'validation/motion/{key}.json').read_text())
-        basis=json.loads((ROOT/f'validation/global/{v}_basis.json').read_text())
-        assert proof['case']==key and proof['branch']==v and proof['campaign']==basis['campaign']==args.campaign
-        rst=ROOT/f'.runtime/archive/{args.campaign}/{v}_basis/file.rst';src=verified(rst,basis['rst_sha256'])
+        basis=json.loads((ROOT/f'validation/global/{branch}_basis.json').read_text())
+        assert proof['case']==key and proof['branch']==branch and proof['campaign']==basis['campaign']==args.campaign
+        rst=ROOT/f'.runtime/archive/{args.campaign}/{branch}_basis/file.rst';src=verified(rst,basis['rst_sha256'])
         clip=ROOT/f'.runtime/post/{args.campaign}/{key}/coordinates.npz'
         assert proof['basis_rst_sha256']==basis['rst_sha256']==src and proof['clip_sha256']==verified(clip,proof['clip_sha256'])
         root=ROOT/f'.runtime/post/{args.campaign}/{v}_films';cache=root/args.subject
         data=field_files(rst,clip,period,scope,comp,cache,root/'pcb_stress',src);items.append((name,cache,data))
     limit=max(d['peak'] for _,_,d in items)
-    for group,panels in [('without_case',items[:1]),('with_case',items[1:])]:
-        dest=ROOT/f'output/videos/{group}/power_board_random_motion_4k60/{args.subject}.mp4'
-        render(panels,dest,ax,scope,comp,period,limit,False)
+    dest=ROOT/f'output/videos/without_case/power_board_random_motion_4k60/{args.subject}.mp4'
+    gen=ROOT/'.runtime/films/baselines'/args.subject/(float(limit).hex()+'.mp4')
+    render(items[:1],gen,ax,scope,comp,period,limit,False)
+    publish_baseline(gen,dest,('base','scope','response','panels','physical_interval_s'))
+    if not args.bare_only:
+        dest=ROOT/f'output/videos/with_case/power_board_random_motion_4k60/{args.subject}.mp4'
+        render(items[1:],dest,ax,scope,comp,period,limit,False)
 if __name__=='__main__':main()
