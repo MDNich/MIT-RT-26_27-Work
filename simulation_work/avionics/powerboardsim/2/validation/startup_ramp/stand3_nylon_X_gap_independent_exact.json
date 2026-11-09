@@ -1,0 +1,162 @@
+{
+  "variant": "stand3_nylon",
+  "campaign": "nov08_01",
+  "base_axis": "X",
+  "samples": 6555,
+  "sampling_Hz": 65536,
+  "through_s": 0.100006103515625,
+  "basis_rst_sha256": "b35872b8ce74f5f2244f6f49b186825a2bab903e27bc464197e60b5342a4fc34",
+  "native_motion_sha256": "f56752b0290d3d51cc1bd71f023e47d4767b30c664a3c83b733785d4c3b2e6e2",
+  "mcf_sha256": "3cb48b6742d4e8fe7b20af405a459b9e2b62c3df53d72d70ba123bdab2ccfc01",
+  "surface_control_sha256": "64cc3b203c6c1bdbe9460a27e35d7f7a931aebb804c143365f07736d39323c11",
+  "cells": {
+    "left": {
+      "material": 176,
+      "quadratic_faces": 328,
+      "candidate_face_pairs": 2524,
+      "crossing_intervals_samples": [
+        [
+          5596,
+          5617
+        ],
+        [
+          5841,
+          5883
+        ]
+      ],
+      "unresolved_intervals_samples": [],
+      "intersecting_samples": 65,
+      "midpoint_checks": [
+        {
+          "sample": 5606,
+          "time_s": 0.085540771484375,
+          "curved_skins": {
+            "2": {
+              "PLA_triangles": 128608,
+              "cell_triangles": 5248,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.009081441380459387
+            },
+            "3": {
+              "PLA_triangles": 514432,
+              "cell_triangles": 20992,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.008995178499904008
+            }
+          }
+        },
+        {
+          "sample": 5862,
+          "time_s": 0.089447021484375,
+          "curved_skins": {
+            "2": {
+              "PLA_triangles": 128608,
+              "cell_triangles": 5248,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.04398495778545202
+            },
+            "3": {
+              "PLA_triangles": 514432,
+              "cell_triangles": 20992,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.04486718373390306
+            }
+          }
+        }
+      ]
+    },
+    "centre": {
+      "material": 191,
+      "quadratic_faces": 308,
+      "candidate_face_pairs": 2235,
+      "crossing_intervals_samples": [
+        [
+          5593,
+          5616
+        ],
+        [
+          5839,
+          5883
+        ],
+        [
+          6091,
+          6099
+        ]
+      ],
+      "unresolved_intervals_samples": [],
+      "intersecting_samples": 78,
+      "midpoint_checks": [
+        {
+          "sample": 5604,
+          "time_s": 0.08551025390625,
+          "curved_skins": {
+            "2": {
+              "PLA_triangles": 128608,
+              "cell_triangles": 4928,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.008999416051347747
+            },
+            "3": {
+              "PLA_triangles": 514432,
+              "cell_triangles": 19712,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.00824962550735974
+            }
+          }
+        },
+        {
+          "sample": 5861,
+          "time_s": 0.0894317626953125,
+          "curved_skins": {
+            "2": {
+              "PLA_triangles": 128608,
+              "cell_triangles": 4928,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.04540234939721756
+            },
+            "3": {
+              "PLA_triangles": 514432,
+              "cell_triangles": 19712,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.04448883785876675
+            }
+          }
+        },
+        {
+          "sample": 6095,
+          "time_s": 0.0930023193359375,
+          "curved_skins": {
+            "2": {
+              "PLA_triangles": 128608,
+              "cell_triangles": 4928,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": 0.005052320664552206
+            },
+            "3": {
+              "PLA_triangles": 514432,
+              "cell_triangles": 19712,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": 0.0028672947899144674
+            }
+          }
+        }
+      ]
+    },
+    "right": {
+      "material": 187,
+      "quadratic_faces": 302,
+      "candidate_face_pairs": 2665,
+      "crossing_intervals_samples": [],
+      "unresolved_intervals_samples": [],
+      "intersecting_samples": 0,
+      "midpoint_checks": []
+    }
+  },
+  "scope": "Curved cell and casing surfaces in the tightened linear model. All native integration stations from rest to the first sample at or after full input amplitude are included. Intersections estimate closure of the open gap; subsequent contact forces require a contact solve.",
+  "coordinate_method": "independent_exact",
+  "method_checks": {
+    "integration": "Matrix exponential with piecewise-linear input",
+    "ramp_control_relative_max_error": 2.878386949524641e-13,
+    "input_sha256": "f04864b2974a882b110dbf0a9442317a992b1a2a0360617cf08f1f8d1f36de67"
+  }
+}

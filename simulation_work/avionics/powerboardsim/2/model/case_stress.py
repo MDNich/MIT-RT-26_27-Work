@@ -41,6 +41,17 @@ def corners(raw,k,field,elements,width):
     return node.ravel(),v.reshape(-1,width)
 
 
+def printed_compliance(deck):
+    def prop(key):
+        return float(re.search(r'(?im)^MP,'+key+r',850,([^\s!]+)',deck)[1])
+    e=np.array([prop('EX'),prop('EY'),prop('EZ')])
+    nu=np.array([prop('PRXY'),prop('PRYZ'),prop('PRXZ')])
+    compliance=np.diag(1/e)
+    for i,j,v in ((0,1,nu[0]),(1,2,nu[1]),(0,2,nu[2])):
+        compliance[i,j]=compliance[j,i]=-v/e[i]
+    return compliance,np.array([prop('GXY'),prop('GYZ'),prop('GXZ')])
+
+
 def static(variant,campaign):
     case=native_case(variant,'static')
     proof,folder,r=source(case,campaign)
@@ -51,14 +62,8 @@ def static(variant,campaign):
     assert np.array_equal(ids,sb) and np.array_equal(ids,sa)
     # Check the orthotropic law using the actual input card for each property.
     deck=(folder/'model.inp').read_text()
-    def prop(key):
-        return float(re.search(r'(?im)^MP,'+key+r',850,([^\s!]+)',deck)[1])
-    e=np.array([prop('EX'),prop('EY'),prop('EZ')])
-    nu=np.array([prop('PRXY'),prop('PRYZ'),prop('PRXZ')])
-    compliance=np.diag(1/e)
-    for i,j,v in ((0,1,nu[0]),(1,2,nu[1]),(0,2,nu[2])):
-        compliance[i,j]=compliance[j,i]=-v/e[i]
-    predicted=np.column_stack([stress[:,:3]@compliance,stress[:,3:]/[prop('GXY'),prop('GYZ'),prop('GXZ')]])
+    compliance,shear=printed_compliance(deck)
+    predicted=np.column_stack([stress[:,:3]@compliance,stress[:,3:]/shear])
     err=np.linalg.norm(eps[:,:6]-predicted)/np.linalg.norm(eps[:,:6])
     assert err<.005,err
     def peak(col):

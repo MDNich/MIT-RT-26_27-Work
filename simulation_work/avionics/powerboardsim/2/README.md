@@ -17,6 +17,8 @@ For the PCB stress time history, open the [bare-board movie](output/videos/witho
 
 In the nine-second X record, peak dynamic force at a single cell-to-nickel attachment fell from 69.39 N bare to 66.39 N with nylon and 68.23 N with aluminium. Under base Z, the peak rose from 30.22 N to 32.21 and 33.30 N respectively. The calculation holds the tightened contacts fixed and treats the bonded areas as intact. [Peak loads and their directions, page 23](output/pdf/battery-case-report.pdf#page=23)
 
+During the original X-axis startup ramp, the raised aluminium model reached the 40.5 MPa printed-layer tensile reference at 63.54 ms. The middle cell first intersected the case at 69.78 ms with aluminium screws and 85.34 ms with nylon. Neither printed-PLA tensile reference was crossed with nylon during that ramp. The nickel trial-yield reference had already been reached under X, and these elastic results give the modeled sequence of events. [Stress and clearance during startup, page 24](output/pdf/battery-case-report.pdf#page=24)
+
 ## Material references
 
 The printed-PLA baseline uses the directional coupon properties and print conditions in the [PolyLite PLA technical data sheet](https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla). The case bores are 5.000 and 5.090 mm, while the four PCB corner drills in the October ODB++ are 4.200 mm. The plastic scenario therefore uses an M4 × 0.7 × 12 mm nylon socket-head screw, McMaster-Carr 93640A145. The aluminium scenario uses the same nominal fastener geometry for comparison. Actual screw grade, fit, tightening, print orientation and infill are unmeasured. [McMaster-Carr metric screw table](https://www.mcmaster.com/products/nylon-allen-screws/)

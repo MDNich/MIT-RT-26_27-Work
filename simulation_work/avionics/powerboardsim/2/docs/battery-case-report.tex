@@ -501,4 +501,29 @@ The first 38.116~ms of base X precede the first sampled exceedance of the local 
 \heading{Numerical checks and physical scope}
 The main results use signed native MAPDL time histories and bonded-interface forces from the prestressed modes. A separate integration of the same base motion reproduced the complete force fields within 0.002\% in relative norm. Restricting the modes to 3.5~kHz changed the nine peak magnitudes by at most 1.09\%. The bonded end area idealizes the battery-to-nickel attachment. The model supplies a dynamic resultant over that area. Predicting a weld failure load requires the actual weld geometry and material response.
 
+\newpage
+\heading{During startup, screw material changes which limit appears first}
+In the raised aluminium mount under base X, tension across the assumed print layers reached the 40.5~MPa coupon mean at 63.54~ms. The first sampled cell-to-case intersection followed at 69.78~ms. With nylon screws the middle cell first intersected the case at 85.34~ms, while both PLA tensile stresses stayed below their respective coupon means throughout the 100~ms ramp. The nickel model had already exceeded its separate trial yield reference under X in all three assemblies (page~16).
+
+\begin{center}\includegraphics[width=.96\linewidth]{figures/startup-pla-stress.pdf}
+\captionof{figure}{Peak tensile stress over 6,555 samples of each native waveform, including the locked preload. Bars include all 64,432 PLA element corners. White markers give the maxima among corners at least 2~mm from any node tied to a screw bearing. Dashed lines mark the coupon means.}\end{center}
+
+\begin{center}\small
+\begin{tabular}{llrrrr}\toprule
+ & & \multicolumn{3}{c}{First sampled event [ms]} & Cell gap at layer\\
+Screws & Base & Layer tension & In-plane tension & Cell intersection & crossing [mm]\\\midrule
+Nylon & X & --- & --- & 85.34 & ---\\
+Nylon & Y & --- & --- & --- & ---\\
+Nylon & Z & --- & --- & --- & ---\\
+Aluminium & X & 63.54 & 85.21 & 69.78 & 0.035\\
+Aluminium & Y & 77.45 & --- & --- & 0.135\\
+Aluminium & Z & 81.39 & --- & --- & 0.132\\\bottomrule
+\end{tabular}
+\captionof{table}{Times identify the first integration station meeting each criterion. The previous station was 15.26~$\mu$s earlier. Dashes in the three event columns mean the criterion was absent through 100.006~ms. Gap is the minimum sampled cell-vertex distance from the case across all three cells at the layer crossing.}\end{center}
+
+The three aluminium layer crossings occurred within 0.54~mm of a node tied to a screw bearing. Outside the 2~mm band, both stresses remained below the coupon means for every input and screw material. On the aluminium X path, a cell surface was already inside the PLA when in-plane tension reached 52.3~MPa. The local bearing representation matters to the stress maximum. The comparison identifies where the fixed-contact, elastic calculation first reaches these particular screens. Failure of an actual printed tab depends on its print and bearing conditions.
+
+\heading{Checks on the order of events}
+Signed modal stresses were added to the locked stress tensor before evaluating layer-normal tension and the greatest in-plane principal stress. The search covered both screw mounts, all three base inputs and every stored station. The exact response of each modal oscillator to the piecewise-linear input reproduced the native tensile crossing brackets. Omitting modes above 3.5~kHz preserved those brackets and the first base-X cell crossing for both mounts. Independent integration shifted the first aluminium X intersection by one sample (15.26~$\mu$s) and reproduced the nylon onset. The cell check used the complete curved exterior surfaces. A separate intersection test at two surface refinements confirmed the cell states at the four aluminium tensile crossings.
+
 \end{document}

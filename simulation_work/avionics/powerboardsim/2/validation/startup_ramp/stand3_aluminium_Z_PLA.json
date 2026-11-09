@@ -1,0 +1,309 @@
+{
+  "variant": "stand3_aluminium",
+  "campaign": "nov08_01",
+  "base_axis": "Z",
+  "samples": 6555,
+  "through_s": 0.100006103515625,
+  "basis_rst_sha256": "870d1301bbc8c58d1e4d61274ba942a2bda440568134a01d1905dc9b1e998dcf",
+  "static_rst_sha256": "d74502da5aae13ea58583f36a2707924d87b87ddb52491cc99d1bf0e4d852116",
+  "maximum_modal_constitutive_relative_L2": 4.03992093838676e-08,
+  "native_motion_sha256": "2451b68eb8df49c01e7e7f2acf42851a8ac607d2113c2ca85d8105c6bdb22ae4",
+  "forcing_sha256": "f80650a5a0051703d9f1099f6257ddfb4a96180b5c2b73d388999c2d1efa1dbe",
+  "original_PLA_corner_check_sha256": "e48f7d8e47db9447a0c24174f67a3e07e7236867c7c75bcbfbe3722d45158e69",
+  "independent_check": {
+    "integration": "Matrix exponential with piecewise-linear input",
+    "ramp_control_relative_max_error": 2.878386949524641e-13
+  },
+  "scopes": {
+    "all": {
+      "in_plane_tension_MPa": {
+        "native": {
+          "limit_MPa": 52.3,
+          "corners": 64432,
+          "candidates": 50,
+          "maximum": {
+            "sample": 6235,
+            "time_s": 0.0951385498046875,
+            "MPa": 51.814580121759704,
+            "element": 1215078,
+            "node": 815495,
+            "distance_to_bearing_nodes_mm": 0.48819650933272046
+          },
+          "first_crossing": null,
+          "retained_modes": 48
+        },
+        "independent_exact": {
+          "limit_MPa": 52.3,
+          "corners": 64432,
+          "candidates": 50,
+          "maximum": {
+            "sample": 6235,
+            "time_s": 0.0951385498046875,
+            "MPa": 51.800501833405285,
+            "element": 1215078,
+            "node": 815495,
+            "distance_to_bearing_nodes_mm": 0.48819650933272046
+          },
+          "first_crossing": null,
+          "retained_modes": 48
+        },
+        "native_3500_Hz": {
+          "limit_MPa": 52.3,
+          "corners": 64432,
+          "candidates": 50,
+          "maximum": {
+            "sample": 6235,
+            "time_s": 0.0951385498046875,
+            "MPa": 51.81818991686643,
+            "element": 1215078,
+            "node": 815495,
+            "distance_to_bearing_nodes_mm": 0.48819650933272046
+          },
+          "first_crossing": null,
+          "retained_modes": 39
+        }
+      },
+      "layer_tension_MPa": {
+        "native": {
+          "limit_MPa": 40.5,
+          "corners": 64432,
+          "candidates": 54,
+          "maximum": {
+            "sample": 6235,
+            "time_s": 0.0951385498046875,
+            "MPa": 49.66999612713768,
+            "element": 1215215,
+            "node": 815500,
+            "distance_to_bearing_nodes_mm": 0.5346282853316918
+          },
+          "first_crossing": [
+            {
+              "sample": 5333,
+              "time_s": 0.0813751220703125,
+              "MPa": 40.40338256458121,
+              "element": 1215221,
+              "node": 815413,
+              "distance_to_bearing_nodes_mm": 0.5295247660256124
+            },
+            {
+              "sample": 5334,
+              "time_s": 0.081390380859375,
+              "MPa": 41.18023068371256,
+              "element": 1215221,
+              "node": 815413,
+              "distance_to_bearing_nodes_mm": 0.5295247660256124
+            }
+          ],
+          "retained_modes": 48
+        },
+        "independent_exact": {
+          "limit_MPa": 40.5,
+          "corners": 64432,
+          "candidates": 54,
+          "maximum": {
+            "sample": 6235,
+            "time_s": 0.0951385498046875,
+            "MPa": 49.64491045986365,
+            "element": 1215215,
+            "node": 815500,
+            "distance_to_bearing_nodes_mm": 0.5346282853316918
+          },
+          "first_crossing": [
+            {
+              "sample": 5333,
+              "time_s": 0.0813751220703125,
+              "MPa": 40.39231699762204,
+              "element": 1215221,
+              "node": 815413,
+              "distance_to_bearing_nodes_mm": 0.5295247660256124
+            },
+            {
+              "sample": 5334,
+              "time_s": 0.081390380859375,
+              "MPa": 41.16468538724634,
+              "element": 1215221,
+              "node": 815413,
+              "distance_to_bearing_nodes_mm": 0.5295247660256124
+            }
+          ],
+          "retained_modes": 48
+        },
+        "native_3500_Hz": {
+          "limit_MPa": 40.5,
+          "corners": 64432,
+          "candidates": 54,
+          "maximum": {
+            "sample": 6235,
+            "time_s": 0.0951385498046875,
+            "MPa": 49.67668273957679,
+            "element": 1215215,
+            "node": 815500,
+            "distance_to_bearing_nodes_mm": 0.5346282853316918
+          },
+          "first_crossing": [
+            {
+              "sample": 5333,
+              "time_s": 0.0813751220703125,
+              "MPa": 40.40488667258123,
+              "element": 1215221,
+              "node": 815413,
+              "distance_to_bearing_nodes_mm": 0.5295247660256124
+            },
+            {
+              "sample": 5334,
+              "time_s": 0.081390380859375,
+              "MPa": 41.17974824965548,
+              "element": 1215221,
+              "node": 815413,
+              "distance_to_bearing_nodes_mm": 0.5295247660256124
+            }
+          ],
+          "retained_modes": 39
+        }
+      }
+    },
+    "at_least_2mm_from_bearings": {
+      "in_plane_tension_MPa": {
+        "native": {
+          "limit_MPa": 52.3,
+          "corners": 61573,
+          "candidates": 52,
+          "maximum": {
+            "sample": 5257,
+            "time_s": 0.0802154541015625,
+            "MPa": 19.593401574452084,
+            "element": 1214304,
+            "node": 801360,
+            "distance_to_bearing_nodes_mm": 2.208530968404013
+          },
+          "first_crossing": null,
+          "retained_modes": 48
+        },
+        "independent_exact": {
+          "limit_MPa": 52.3,
+          "corners": 61573,
+          "candidates": 52,
+          "maximum": {
+            "sample": 5257,
+            "time_s": 0.0802154541015625,
+            "MPa": 19.599721523364977,
+            "element": 1214304,
+            "node": 801360,
+            "distance_to_bearing_nodes_mm": 2.208530968404013
+          },
+          "first_crossing": null,
+          "retained_modes": 48
+        },
+        "native_3500_Hz": {
+          "limit_MPa": 52.3,
+          "corners": 61573,
+          "candidates": 52,
+          "maximum": {
+            "sample": 5257,
+            "time_s": 0.0802154541015625,
+            "MPa": 19.597378696025274,
+            "element": 1214304,
+            "node": 801360,
+            "distance_to_bearing_nodes_mm": 2.208530968404013
+          },
+          "first_crossing": null,
+          "retained_modes": 39
+        }
+      },
+      "layer_tension_MPa": {
+        "native": {
+          "limit_MPa": 40.5,
+          "corners": 61573,
+          "candidates": 19,
+          "maximum": {
+            "sample": 5788,
+            "time_s": 0.08831787109375,
+            "MPa": 7.94754115698759,
+            "element": 1211801,
+            "node": 800031,
+            "distance_to_bearing_nodes_mm": 4.360257754681512
+          },
+          "first_crossing": null,
+          "retained_modes": 48
+        },
+        "independent_exact": {
+          "limit_MPa": 40.5,
+          "corners": 61573,
+          "candidates": 19,
+          "maximum": {
+            "sample": 5788,
+            "time_s": 0.08831787109375,
+            "MPa": 7.952951517673339,
+            "element": 1211801,
+            "node": 800031,
+            "distance_to_bearing_nodes_mm": 4.360257754681512
+          },
+          "first_crossing": null,
+          "retained_modes": 48
+        },
+        "native_3500_Hz": {
+          "limit_MPa": 40.5,
+          "corners": 61573,
+          "candidates": 19,
+          "maximum": {
+            "sample": 5788,
+            "time_s": 0.08831787109375,
+            "MPa": 7.949876573908812,
+            "element": 1211801,
+            "node": 800031,
+            "distance_to_bearing_nodes_mm": 4.360257754681512
+          },
+          "first_crossing": null,
+          "retained_modes": 39
+        }
+      }
+    }
+  },
+  "cells_at_first_native_stress_crossings": {
+    "5334": {
+      "left": {
+        "2": {
+          "PLA_triangles": 128608,
+          "cell_triangles": 5248,
+          "intersect": false,
+          "minimum_signed_vertex_gap_mm": 0.14950902397221133
+        },
+        "3": {
+          "PLA_triangles": 514432,
+          "cell_triangles": 20992,
+          "intersect": false,
+          "minimum_signed_vertex_gap_mm": 0.14950882203428126
+        }
+      },
+      "centre": {
+        "2": {
+          "PLA_triangles": 128608,
+          "cell_triangles": 4928,
+          "intersect": false,
+          "minimum_signed_vertex_gap_mm": 0.13366068709001358
+        },
+        "3": {
+          "PLA_triangles": 514432,
+          "cell_triangles": 19712,
+          "intersect": false,
+          "minimum_signed_vertex_gap_mm": 0.1320934756081232
+        }
+      },
+      "right": {
+        "2": {
+          "PLA_triangles": 128608,
+          "cell_triangles": 4832,
+          "intersect": false,
+          "minimum_signed_vertex_gap_mm": 0.14229346642691554
+        },
+        "3": {
+          "PLA_triangles": 514432,
+          "cell_triangles": 19328,
+          "intersect": false,
+          "minimum_signed_vertex_gap_mm": 0.14187179149454965
+        }
+      }
+    }
+  },
+  "scope": "Signed prestressed modal stresses added to the locked tightening stress at each unaveraged PLA element corner. The plane and layer directions are those of the printed material. Crossings are comparisons with uniaxial coupon stresses in a fixed-contact elastic model. Actual print failure or impact loads require separate evidence."
+}
