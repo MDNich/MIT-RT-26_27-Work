@@ -12,6 +12,10 @@ Three snug-fit movie pairs cover refined default-contact modes 1 and 20 and the 
 
 After bolt lock the lowest native frequencies were 485.96 Hz bare, 294.94 Hz with nylon and 415.42 Hz with aluminium. Under base-Z excitation, independent integration of the native modes gave 52.67, 139.49 and 75.86 µm RMS peak board-normal motion. At the same seeded base-Z instant the reconstructed cells reached additional pockets in both cases. The calculated vibration levels assume the contact state at bolt lock. [Vibration comparison, page 6](output/pdf/battery-case-report.pdf#page=6) · [Cell clearances, page 7](output/pdf/battery-case-report.pdf#page=7)
 
+In the three separate nine-second vibration histories, peak PLA through-layer tension reached 31.17 MPa with nylon and 84.20 MPa with aluminium, or 77% and 208% of the 40.5 MPa printed-coupon mean. Both peaks lay 0.60 mm from a constrained screw bearing. All three cell surfaces reached the case at those two instants under the fixed-contact model. Peak screw-shank tensions were 35.90 and 96.21 MPa. [Material comparison, page 9](output/pdf/battery-case-report.pdf#page=9)
+
+The native base-X spectrum lowered peak PCB equivalent stress from 90.32 MPa RMS bare to 82.68 and 79.35 MPa RMS, while raising board-normal displacement. Seven film pairs are published, including four camera orbits of the native base-X fields. [Native spectra and force transfer, page 8](output/pdf/battery-case-report.pdf#page=8)
+
 The [snug-fit movie catalogue](output/videos/snug125/README.md) tracks the 22 requested subjects. The three bare modal films retain their verified 6 mm display scale. Each new RMS or seeded pair will share a range determined from the bare board and both 1.25 mm mounts.
 
 ## Appendix A — previous fit study

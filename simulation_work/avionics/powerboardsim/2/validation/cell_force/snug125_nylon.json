@@ -1,0 +1,378 @@
+{
+  "branch": "snug125_nylon",
+  "campaign": "nov08_01",
+  "basis_rst_sha256": "b286ea6e68892ee9c4c91ed6314a9031ca0f8edec901e2a9fd4ab50d2844e799",
+  "static_rst_sha256": "e0588702debad2cbbc55d6b7eb73e2d19a9e71b127b555ed4b6b164f48a72e94",
+  "mean_shapes_sha256": "0fc26538e0a0dd630359afd91364033197bcb170b47932ab89b55650004d31cb",
+  "mass_weights_sha256": "70da5027c681e4c7d61c2afbb8d8e0f237aff6559e8b10ba94080ba85238ba56",
+  "modal_listing_sha256": "069ed9ee3c8510ce19aeced9eb0631b79914b96dc551056a146d700013dd9660",
+  "static_deck_sha256": "e2d4045c83fca1a1246759140ad6cda0588c64d53323d5a93b0d77b027b08c4c",
+  "geometry": {
+    "176": {
+      "mass_kg": 0.055378822214875174,
+      "volume_m3": 2.5172191915852353e-05,
+      "density_kg_m3": 2200.0,
+      "centroid_mm": [
+        10.80373811187844,
+        60.405926848314316,
+        -11.822632121586565
+      ],
+      "quadrature_relative_difference": 1.0567399851483255e-15,
+      "elements": 744
+    },
+    "187": {
+      "mass_kg": 0.055377200139133005,
+      "volume_m3": 2.517145460869682e-05,
+      "density_kg_m3": 2200.0,
+      "centroid_mm": [
+        58.55553760373587,
+        60.40598218513674,
+        -11.82268657167254
+      ],
+      "quadrature_relative_difference": 1.0328392049860837e-15,
+      "elements": 711
+    },
+    "191": {
+      "mass_kg": 0.05537838238230639,
+      "volume_m3": 2.517199199195745e-05,
+      "density_kg_m3": 2200.0,
+      "centroid_mm": [
+        34.697099371455046,
+        60.40783527946955,
+        -11.822630838611635
+      ],
+      "quadrature_relative_difference": 1.0710240429875056e-15,
+      "elements": 732
+    }
+  },
+  "base_cases": {
+    "X": {
+      "cell_order": [
+        176,
+        187,
+        191
+      ],
+      "modal_cutoff_Hz": {
+        "2000": {
+          "modes": 20,
+          "driven_axis_change_percent": [
+            0.011494221698282736,
+            -0.0030276617463131927,
+            0.028132958232629512
+          ]
+        },
+        "3000": {
+          "modes": 35,
+          "driven_axis_change_percent": [
+            0.011249374799748857,
+            -0.00295840059506558,
+            0.034595973687800985
+          ]
+        },
+        "3500": {
+          "modes": 39,
+          "driven_axis_change_percent": [
+            0.00041342825072288036,
+            -0.0024210564178672733,
+            0.017682463265855652
+          ]
+        },
+        "4000": {
+          "modes": 48,
+          "driven_axis_change_percent": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "nominal_half_quarter_step_max_relative_error_vs_analog_bins": [
+        0.027941014919006912,
+        0.00719202477928671,
+        0.0018101554795495467
+      ],
+      "largest_driven_axis_seed_vs_continuous_PSD_difference": 0.0005370059408936756,
+      "spectrum_sha256": "d3527df0c4e1fb81bbcc8212ba7b83d91604b0d33f9fe6d94cf4ed62e4aad80c",
+      "quadrature_max_relative_change": 1.7967037613253467e-07,
+      "largest_seeded_relative_difference": 0.028189011067045744,
+      "seeded_vs_discrete_Parseval_relative_error": 7.527312106958561e-14,
+      "analog_Fourier_bins_vs_continuous_PSD_relative_difference": 0.00024125523200546617,
+      "cells": {
+        "176": {
+          "mean_acceleration_XYZ_rms_g": [
+            40.475496301003,
+            0.36913450023446037,
+            0.878738999169275
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            21.98000498626068,
+            0.20045654524940876,
+            0.47719458310592133
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            40.45505213493894,
+            0.3715573093099326,
+            0.8799949425542948
+          ]
+        },
+        "187": {
+          "mean_acceleration_XYZ_rms_g": [
+            50.83288634257222,
+            0.7758902124780429,
+            1.8221618719130688
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            27.603722519819595,
+            0.42133075007292625,
+            0.989486419470908
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            50.80647034900952,
+            0.7783605873766285,
+            1.821745630252965
+          ]
+        },
+        "191": {
+          "mean_acceleration_XYZ_rms_g": [
+            35.117167113837624,
+            0.1278965790738565,
+            1.5341704371927805
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            19.070041095863537,
+            0.06945301171510897,
+            0.8331165549454842
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            35.09830898647014,
+            0.12843602974197985,
+            1.577417184625542
+          ]
+        }
+      },
+      "native_nodal_check": {
+        "native_case": "snug125_nylon_psd_X_private1",
+        "native_rst_sha256": "d99b32c59acf6d4e97c86b67e7946a263bc012f548cc2d7504a765c1d00197ba",
+        "matched_nodes": 3951,
+        "relative_L2_XYZ": [
+          8.244471171839032e-05,
+          7.693717207608576e-05,
+          7.580151816742642e-05
+        ]
+      }
+    },
+    "Y": {
+      "cell_order": [
+        176,
+        187,
+        191
+      ],
+      "modal_cutoff_Hz": {
+        "2000": {
+          "modes": 20,
+          "driven_axis_change_percent": [
+            -35.75390113741066,
+            -28.651261942698593,
+            -31.403025772992564
+          ]
+        },
+        "3000": {
+          "modes": 35,
+          "driven_axis_change_percent": [
+            0.029902363000244847,
+            0.08793781791138766,
+            0.07769298565787341
+          ]
+        },
+        "3500": {
+          "modes": 39,
+          "driven_axis_change_percent": [
+            0.011576649536237937,
+            0.013123572816020612,
+            0.01882630451406353
+          ]
+        },
+        "4000": {
+          "modes": 48,
+          "driven_axis_change_percent": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "nominal_half_quarter_step_max_relative_error_vs_analog_bins": [
+        0.04862112540463581,
+        0.012154210913123853,
+        0.003035680377060146
+      ],
+      "largest_driven_axis_seed_vs_continuous_PSD_difference": 0.008515807953185739,
+      "spectrum_sha256": "b06a915b11e462b565f21f5935027618262e629930137d4aadb906950a2b3cab",
+      "quadrature_max_relative_change": 3.059328019805463e-07,
+      "largest_seeded_relative_difference": 0.049086032641985744,
+      "seeded_vs_discrete_Parseval_relative_error": 7.027711745877241e-14,
+      "analog_Fourier_bins_vs_continuous_PSD_relative_difference": 0.0004433510122583417,
+      "cells": {
+        "176": {
+          "mean_acceleration_XYZ_rms_g": [
+            4.283714840415027,
+            21.893167882784454,
+            0.3017887021486003
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            2.3262487716477476,
+            11.888969455742531,
+            0.16388476446819997
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            4.28112685958666,
+            22.0796058959611,
+            0.30254360417094533
+          ]
+        },
+        "187": {
+          "mean_acceleration_XYZ_rms_g": [
+            14.637651972555219,
+            19.73545385922634,
+            2.890547006289892
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            7.948666945038527,
+            10.716920311419411,
+            1.5696503431735667
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            14.629730596317446,
+            19.837962704270463,
+            3.0324324909938314
+          ]
+        },
+        "191": {
+          "mean_acceleration_XYZ_rms_g": [
+            8.653055004446818,
+            20.55049348727971,
+            0.8264277610823376
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            4.698958603484449,
+            11.159748566058894,
+            0.44878367652818363
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            8.64929906654742,
+            20.677850364881273,
+            0.8443462882137015
+          ]
+        }
+      },
+      "native_nodal_check": null
+    },
+    "Z": {
+      "cell_order": [
+        176,
+        187,
+        191
+      ],
+      "modal_cutoff_Hz": {
+        "2000": {
+          "modes": 20,
+          "driven_axis_change_percent": [
+            -24.04605490218198,
+            -28.084955912406063,
+            -11.914494856316093
+          ]
+        },
+        "3000": {
+          "modes": 35,
+          "driven_axis_change_percent": [
+            0.008744935291615796,
+            -0.16296566962342718,
+            -0.12260444177177865
+          ]
+        },
+        "3500": {
+          "modes": 39,
+          "driven_axis_change_percent": [
+            -0.023751037227859317,
+            -0.13719727310071983,
+            -0.07056691542784987
+          ]
+        },
+        "4000": {
+          "modes": 48,
+          "driven_axis_change_percent": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "nominal_half_quarter_step_max_relative_error_vs_analog_bins": [
+        0.054896248629650035,
+        0.013889063479950448,
+        0.003481704567042776
+      ],
+      "largest_driven_axis_seed_vs_continuous_PSD_difference": 0.005716541809147824,
+      "spectrum_sha256": "578aafc9cb22afdb05f744660cf79e28df17fb12280eef7c88f610d34edd12f5",
+      "quadrature_max_relative_change": 3.024155168507292e-07,
+      "largest_seeded_relative_difference": 0.0554415667433279,
+      "seeded_vs_discrete_Parseval_relative_error": 6.084022174945858e-14,
+      "analog_Fourier_bins_vs_continuous_PSD_relative_difference": 0.000516940044522407,
+      "cells": {
+        "176": {
+          "mean_acceleration_XYZ_rms_g": [
+            1.9761054960455606,
+            0.6173723246692574,
+            19.119370671530422
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            1.0731136768144391,
+            0.3352607877540308,
+            10.382673496309696
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            1.9754693954978635,
+            0.6516004136128914,
+            19.17854207930162
+          ]
+        },
+        "187": {
+          "mean_acceleration_XYZ_rms_g": [
+            5.253446713532976,
+            1.490108340918201,
+            20.91134477766598
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            2.852772993761197,
+            0.8091717808423269,
+            11.35546297467557
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            5.251272126087134,
+            1.5545669113786722,
+            21.030885354373012
+          ]
+        },
+        "191": {
+          "mean_acceleration_XYZ_rms_g": [
+            10.325738136731761,
+            0.5003020993808159,
+            19.160737206064855
+          ],
+          "net_dynamic_force_XYZ_rms_N": [
+            5.607293150221348,
+            0.2716842609943756,
+            10.405054734688921
+          ],
+          "seed_mean_acceleration_XYZ_rms_g": [
+            10.371479654912338,
+            0.5229779472213847,
+            19.18653135626422
+          ]
+        }
+      },
+      "native_nodal_check": null
+    }
+  },
+  "scope": "Independent cross-spectral integration of absolute accelerations on the tightened native modes. Quadratic material-volume integration gives each cell\u2019s centre-of-mass acceleration and net dynamic force. The summed force on a cell includes all its attachments; no allocation to an individual weld is inferred."
+}

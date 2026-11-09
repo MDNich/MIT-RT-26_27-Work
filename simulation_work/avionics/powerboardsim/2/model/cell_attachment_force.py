@@ -70,7 +70,25 @@ def rms_force(shapes,cov):
     return np.sqrt(np.maximum(0,np.einsum('...m,mn,...n->...',shapes,cov,shapes,optimize=True)))
 
 
-def modal_transfer(r,geometry):
+def locked_pocket(r,faces):
+    """Find every case tetrahedron contributing a nodal force on an active PLA contact triangle."""
+    order=np.argsort(r.mesh.enum)
+    where=order[np.searchsorted(r.mesh.enum[order],faces)]
+    assert np.array_equal(r.mesh.enum[where],faces)
+    raw=r.mesh.elem
+    assert all(raw[i][1]==853 for i in where)
+    nodes=np.unique(np.stack([raw[i][10:18] for i in where]))
+    grid=r.grid.cell_data
+    elements=np.sort(grid['ansys_elem_num'][(grid['ansys_elem_type_num']==187)&(grid['ansys_material_type']==850)])
+    where=order[np.searchsorted(r.mesh.enum[order],elements)]
+    assert np.array_equal(r.mesh.enum[where],elements)
+    conn=np.stack([raw[i][10:20] for i in where]);use=np.isin(conn,nodes)
+    near=use.any(axis=1)
+    assert np.array_equal(nodes,np.unique(conn[use]))
+    return elements[near],use[near],nodes
+
+
+def modal_transfer(r,geometry,active_case_faces=None):
     bodies,pairs,positions=bodies_and_bonds(r,geometry)
     reals=list(pairs)
     modes=r.nsets
@@ -81,8 +99,18 @@ def modal_transfer(r,geometry):
     # Sampling the first ten actual tetrahedra of each body checks native PSD ENF
     # components separately from the resultant formed by summing signed forces.
     sample_ids=np.concatenate([es[:10] for es,_,_ in bodies.values()])
+    pocket=None
+    if active_case_faces is not None:
+        near,participates,nodes=locked_pocket(r,active_case_faces)
+        pocket=dict(cell=np.zeros((3,modes)),case=np.zeros((3,modes)),case_nodes=nodes.tolist(),
+                    active_contact_elements=list(active_case_faces))
     for k in range(modes):
         enum,values,_=r.element_solution_data(k,'ENF')
+        if pocket is not None:
+            ip=np.searchsorted(enum,near);assert np.array_equal(enum[ip],near)
+            pla=np.stack([values[i] for i in ip]).reshape(len(near),3,10,3)
+            assert np.isfinite(pla).all() and not np.any(pla[:,1])
+            pocket['case'][:,k]=pla.sum(axis=1,dtype=float)[participates].sum(axis=0)
         forces={}
         for mat,(elements,ids,conn) in bodies.items():
             ix=np.searchsorted(enum,elements);assert np.array_equal(enum[ix],elements)
@@ -102,12 +130,21 @@ def modal_transfer(r,geometry):
             attached=np.concatenate([p[0][1] for p in pairs.values() if p[0][0]==mat])
             interior=~np.isin(bodies[mat][1],attached)
             scale=np.linalg.norm(forces[mat])
-            off_patch.append(np.linalg.norm(forces[mat][interior])/scale)
+            if pocket is not None and mat==191:
+                pocket['cell'][:,k]=forces[mat][interior].sum(axis=0)
+            else:
+                off_patch.append(np.linalg.norm(forces[mat][interior])/scale)
             mass_result[ci,:,k]=forces[mat].sum(0)
     opposition=np.linalg.norm(transfer+opposite,axis=1)/np.linalg.norm(transfer,axis=1)
     assert max(off_patch)<1.e-4 and opposition.max()<1.e-4
+    if pocket is not None:
+        error=np.linalg.norm(pocket['cell']+pocket['case'],axis=0)
+        per_mode=np.linalg.norm(transfer,axis=(0,1))+np.linalg.norm(pocket['cell'],axis=0)
+        relative=float(np.max(error/per_mode))
+        assert relative<1e-4,relative
+        pocket['max_two_side_residual_relative_to_interface_forces']=relative
     field=np.moveaxis(np.stack(check_fields),0,-1)
-    return transfer,mass_result,pairs,positions,sample_ids,field,float(max(off_patch)),float(opposition.max())
+    return transfer,mass_result,pairs,positions,sample_ids,field,float(max(off_patch)),float(opposition.max()),pocket
 
 
 def recover(branch,campaign):
@@ -116,7 +153,14 @@ def recover(branch,campaign):
     assert cell['basis_rst_sha256']==basis['rst_sha256']
     geometry=cell['geometry']
     log=folder/'solve.out';verified(log,cell['modal_listing_sha256'])
-    transfer,mass_result,pairs,positions,sample_ids,field,free_error,side_error=modal_transfer(r,geometry)
+    active=None
+    if branch.startswith('snug125_'):
+        contact=read(ROOT/'validation/snug125'/(branch+'_static_contacts.json'))
+        assert contact['rst_sha256']==cell['static_rst_sha256'] and contact['campaign']==campaign
+        group,=contact['contact_history'][-1]['loaded_case_faces']
+        assert group['STEP_face']==17
+        active=group['element_ids']
+    transfer,mass_result,pairs,positions,sample_ids,field,free_error,side_error,pocket=modal_transfer(r,geometry,active)
     reals=list(pairs)
     modes=r.nsets
     cache=ROOT/'.runtime/post'/campaign/(branch+'_basis')/'cell_mass_mean.npz'
@@ -132,11 +176,13 @@ def recover(branch,campaign):
     shape_file=cache.with_name('attachment_modes.npz')
     if not shape_file.exists():
         tmp=shape_file.with_suffix('.new.npz')
-        np.savez_compressed(tmp,force=transfer,pairs=reals,frequency_Hz=r.time_values)
+        extra={} if pocket is None else {'middle_cell_pocket_force':pocket['cell']}
+        np.savez_compressed(tmp,force=transfer,pairs=reals,frequency_Hz=r.time_values,**extra)
         tmp.replace(shape_file)
     with np.load(shape_file) as saved:
         assert np.array_equal(saved['pairs'],reals) and np.array_equal(saved['frequency_Hz'],r.time_values)
         assert np.array_equal(saved['force'],transfer)
+        if pocket is not None:assert np.array_equal(saved['middle_cell_pocket_force'],pocket['cell'])
     records={}
     for axis in 'XYZ':
         path,fk,sk,damping=spectrum_input(axis)
@@ -187,12 +233,24 @@ def recover(branch,campaign):
                      absolute_cell_inertia_XYZ_N_rms=ref)
         records[axis]=dict(spectrum_sha256=digest(path),independent_clip_sha256=clip_record['clip_sha256'],cells=cells,cutoffs_Hz=convergence,native_element_PSD=native,
                  quadrature_change_relative=float(np.max(abs(result/rms_force(transfer,coarse)-1))))
+        if pocket is not None:
+            others=[j for j,pair in enumerate(pairs.values()) if pair[0][0]==191]
+            mid=list(map(int,geometry)).index(191)
+            closure=transfer[others].sum(axis=0)+pocket['cell']-mass_result[mid]
+            assert np.linalg.norm(closure)<1.e-10*np.linalg.norm(mass_result[mid])
+            records[axis]['middle_pocket_dynamic_XYZ_RMS_N']=rms_force(pocket['cell'],cov).tolist()
+            records[axis]['middle_bonds_plus_pocket_XYZ_RMS_N']=rms_force(mass_result[mid],cov).tolist()
+    extra={}
+    contact_state='with the cell-to-case gaps held open'
+    if pocket is not None:
+        extra['middle_pocket']={k:v for k,v in pocket.items() if k not in ('case','cell')}
+        contact_state='with the installed middle pocket in contact and the two outer pockets open'
     write_json(ROOT/'validation/cell_attachment'/f'{branch}.json',dict(branch=branch,campaign=campaign,
             modal_rst_sha256=basis['rst_sha256'],shape_force_sha256=digest(shape_file),cell_inertia_record_sha256=digest(ROOT/'validation/cell_force'/(branch+'.json')),
             largest_relative_unbalanced_free_node_norm=free_error,largest_two_side_modal_residual=side_error,
-            largest_whole_cell_modal_force_error=modal_check.max(),spectrum=records,
+            largest_whole_cell_modal_force_error=modal_check.max(),spectrum=records,**extra,
             scope='Independent modal combination of native bonded-interface eigenvector force resultants. Dynamic component '
-                  'only, with the cell-to-case gaps held open. The forces describe the two complete cell-to-nickel bonds on each cell. The seeded peaks use the 480 historical movie frames.'))
+                  f'only, {contact_state}. The bond forces describe the two complete cell-to-nickel bonds on each cell. The seeded peaks use the 480 historical movie frames.'))
 
 
 
@@ -229,7 +287,7 @@ def october(archive,campaign):
     record=read(ROOT/'validation/cell_attachment/bare.json')
     field=ROOT/'.runtime/post'/campaign/'bare_basis/attachment_modes.npz'
     verified(field,record['shape_force_sha256'])
-    force,_,pairs,_,_,_,free,side=modal_transfer(r,ref['geometry'])
+    force,_,pairs,_,_,_,free,side,_=modal_transfer(r,ref['geometry'])
     with np.load(field) as new:
         assert np.allclose(r.time_values,new['frequency_Hz'],atol=0,rtol=1e-5)
         assert list(pairs)==new['pairs'].tolist()
@@ -265,7 +323,7 @@ def october(archive,campaign):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('branch',choices=['bare','stand3_nylon','stand3_aluminium','october'])
+    p.add_argument('branch',choices=['bare','stand3_nylon','stand3_aluminium','snug125_nylon','snug125_aluminium','october'])
     p.add_argument('--october-archive',type=Path);p.add_argument('--campaign',default='nov08_01')
     a=p.parse_args()
     if a.branch=='october':

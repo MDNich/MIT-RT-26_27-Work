@@ -10,12 +10,12 @@ from curved_cell_contact import set_coordinates
 from film_identity import digest, verified, write_json
 from modal_correspondence import reference_geometry
 from motion_surface import displacement_basis
-from seeded_motion import FRAMES, FS, excitation
+from seeded_motion import FRAMES, FS, excitation, integrate, participation
 from snug_locked_contact import contact_parts, sampled_gaps
 from stage_snug_fit import AUDIT
 
 
-def run(variant, campaign):
+def geometry(variant, campaign):
     key = variant+'_basis'
     proof, _, rst = source(key,campaign)
     _, _, pose = reference_geometry(rst,include_case=True)
@@ -37,6 +37,11 @@ def run(variant, campaign):
 
     fields = field_files(key,campaign,proof['rst_sha256'],rst.nsets)
     shapes = displacement_basis(rst,ids,fields).reshape(rst.nsets,-1)
+    return proof,rst,pose,parts,targets,ids,xyz,initial,shapes
+
+
+def run(variant,campaign):
+    proof,rst,pose,parts,targets,ids,xyz,initial,shapes=geometry(variant,campaign)
     results = {}
     for axis in 'XYZ':
         name = variant+'_motion_'+axis
@@ -74,9 +79,71 @@ def run(variant, campaign):
               'The sampled states give neither extrema over the history nor contact forces.'))
 
 
+def stress_peaks(variant,campaign):
+    proof,rst,pose,parts,targets,ids,xyz,_,shapes=geometry(variant,campaign)
+    key=variant+'_basis'
+    listing=ROOT/'.runtime/archive'/campaign/key/'solve.out'
+    records={}
+    for axis in 'XYZ':
+        pla_path=AUDIT/f'{variant}_{axis}_PLA_independent.json'
+        screws_path=ROOT/'validation/screw_vibration'/f'{variant}_{axis}.json'
+        pla=read(pla_path);screws=read(screws_path)
+        assert pla['native_basis_sha256']==screws['native_basis_sha256']==proof['rst_sha256']
+        assert pla['coordinate_source_sha256']==screws['listing_sha256']
+        verified(listing,screws['listing_sha256'])
+        groups={name:peak['sample'] for name,peak in pla['scopes']['all'].items()}
+        groups['screw_fibre_tension_MPa']=max(screws['screws'],key=lambda s:s['tensile_MPa'])['sample']
+        samples=np.array(sorted(set(groups.values())))
+        times,q,_=integrate(rst.time_values,participation(listing.read_text(errors='replace'),axis),axis,samples)
+        rows=[]
+        for sample,time,coordinate in zip(samples,times,q,strict=True):
+            set_coordinates(parts,ids,xyz+(coordinate@shapes).reshape(-1,3))
+            measurements=sampled_gaps(parts,targets)
+            intersect={level:[r['body'] for r in measurements if r['subdivision']==level and r['intersects']] for level in (2,3)}
+            rows.append(dict(sample=int(sample),time_s=float(time),metrics=[k for k,v in groups.items() if sample==v],
+                             subdivision_agreement=intersect[2]==intersect[3],measurements=measurements))
+        records[axis]=dict(pla_peak_source_sha256=digest(pla_path),screw_peak_source_sha256=digest(screws_path),states=rows)
+        print(variant,axis,[(r['sample'],r['metrics'],r['subdivision_agreement']) for r in rows],flush=True)
+    write_json(AUDIT/(variant+'_stress_peak_contact.json'),dict(variant=variant,campaign=campaign,
+        native_basis_sha256=proof['rst_sha256'],pose_check=pose,axes=records,
+        scope='Reconstructed case, cell and washer geometry at the signed stress maxima of the independent '
+              'nine-second history. Sampling an instant cannot establish its earlier nonlinear contact history.'))
+
+
+def refine_peak_contacts(variant,campaign):
+    path=AUDIT/(variant+'_stress_peak_contact.json')
+    evidence=read(path)
+    proof,rst,_,parts,targets,ids,xyz,_,shapes=geometry(variant,campaign)
+    assert evidence['native_basis_sha256']==proof['rst_sha256'] and evidence['campaign']==campaign
+    listing=ROOT/'.runtime/archive'/campaign/(variant+'_basis')/'solve.out'
+    results=[]
+    for axis,history in evidence['axes'].items():
+        check=read(ROOT/'validation/independent_motion'/(variant+'_motion_'+axis+'.json'))
+        verified(listing,check['modal_listing_sha256'])
+        for state in history['states']:
+            if state['subdivision_agreement']:continue
+            sets={level:{r['body']:r['intersects'] for r in state['measurements'] if r['subdivision']==level} for level in (2,3)}
+            changed={b for b in sets[2] if sets[2][b]!=sets[3][b]}
+            t,q,_=integrate(rst.time_values,participation(listing.read_text(errors='replace'),axis),
+                            axis,np.array([state['sample']]))
+            assert t[0]==state['time_s']
+            set_coordinates(parts,ids,xyz+(q[0]@shapes).reshape(-1,3))
+            ix=[i for i,(b,m) in enumerate(targets) if b in changed]
+            rows=sampled_gaps([parts[0],*[parts[i+1] for i in ix]],[targets[i] for i in ix],levels=(4,))
+            results.append(dict(axis=axis,sample=state['sample'],metrics=state['metrics'],level4=rows,
+                     level3_and_4_agree=all(sets[3][r['body']]==r['intersects'] for r in rows)))
+    write_json(AUDIT/(variant+'_stress_peak_refinement.json'),dict(variant=variant,campaign=campaign,
+               source_sha256=digest(path),disagreements=results))
+
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('variant',choices=('snug125_nylon','snug125_aluminium'))
     parser.add_argument('--campaign',default='nov08_01')
+    action=parser.add_mutually_exclusive_group()
+    action.add_argument('--stress-peaks',action='store_true')
+    action.add_argument('--refine-peaks',action='store_true')
     args=parser.parse_args()
-    run(args.variant,args.campaign)
+    if args.refine_peaks:refine_peak_contacts(args.variant,args.campaign)
+    elif args.stress_peaks:stress_peaks(args.variant,args.campaign)
+    else:run(args.variant,args.campaign)

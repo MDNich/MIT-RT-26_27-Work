@@ -112,7 +112,7 @@ Mode~20 was 2247.6~Hz bare, 1809.5~Hz with nylon and 1847.7~Hz with aluminium. T
 The two coarse-board controls each recovered 20 frequencies with the Sturm check. Their 1.69~Hz mode is localized on the single solid element representing component L3. Every other solid reached less than 0.20\% of its peak amplitude, and its largest directional effective mass was 4.44 parts per million of assembly mass. The first bare-board shape at 62.805~Hz reappeared at rank~2 with either screw, at 62.807 and 62.809~Hz (MAC above 0.999999 on 95,215 shared solid nodes).
 
 \heading{Paired 4K movies}
-The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{snug-fit movie catalogue} links the bare and cased views for modes~1 and~20. Each 9~s film uses the same 6~mm peak display amplitude and the same camera pose. The nylon and aluminium panels identify the frequency, rank and shape match. The display amplitude is a visualization scale.
+The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{snug-fit movie catalogue} links the bare and cased views for modes~1 and~20. The catalogue also includes the twentieth bolt-locked mode. Dedicated 20-mode extractions reproduced the wide-basis rank-20 frequencies of 1982.33~Hz with nylon and 2011.37~Hz with aluminium. Within each mount, the two extractions gave MAC above 0.9999 on the full solid mesh. Each modal film uses the same 6~mm peak display amplitude and camera pose. The nylon and aluminium panels identify the frequency, rank and shape match. The display amplitude is a visualization scale.
 
 \newpage
 \pageheading{Vibration of the tightened board and case}
@@ -131,7 +131,7 @@ Bare & 23.37 & 19.45 & 52.67\\
 Snug, nylon screws & 86.31 & 104.58 & 139.49\\
 Snug, aluminium screws & 78.96 & 66.78 & 75.86\\\bottomrule
 \end{tabular}\end{center}
-Both mounts reduced PCB deflection during bolt tightening. Under base-Z vibration, the calculated RMS board motion increased to 2.65 times bare with nylon and 1.44 times bare with aluminium. The native bases retained 38 bare modes and 48 modes for each mount up to 4~kHz. Removing modes above 3.5~kHz changed all nine tabulated peaks by less than 0.003\%. The independent bare calculation reproduced the 18 archived native displacement peaks within 0.013\%. Native snug-fit spectrum checks follow.
+Both mounts reduced PCB deflection during bolt tightening. Under base-Z vibration, the calculated RMS board motion increased to 2.65 times bare with nylon and 1.44 times bare with aluminium. The native bases retained 38 bare modes and 48 modes for each mount up to 4~kHz. Removing modes above 3.5~kHz changed all nine tabulated peaks by less than 0.003\%. The independent bare calculation reproduced the 18 archived native displacement peaks within 0.013\%. Page~8 gives the native base-X check for both mounts.
 
 \heading{Case-mesh qualification}
 After tightening, MAPDL flagged the same PLA tetrahedron in both mounts at its 179.9$^\circ$ edge-angle limit. On each locked mesh, an independent polynomial bound confirmed a positive Jacobian determinant throughout all 45,549 case elements. The flagged element had the smallest lower bound, 0.01286~mm$^3$ in both cases. A 1.5~mm nylon mesh will test the sensitivity of the frequencies and board response.
@@ -157,6 +157,47 @@ Z & 451 & 1.02753 & Middle & None\\\bottomrule
 
 The extra supports can redirect load once an outer cell engages. The spectrum values on page~6 quantify the response with the installed contact state held fixed. To check load transfer at frame 353, paired local nonlinear models will drive the same region of each mount with the signed base-Z displacement. Each has a contact-enabled and a free control at two cut sizes. The six samples above establish neither the first contact time nor its duration.
 
+\newpage
+\pageheading{Native lateral vibration raises board travel while reducing peak stress}
+MAPDL applied the original 20--2000~Hz random acceleration along PCB X to the bare assembly and both installed cases. The three native runs used the same 2\% modal damping. The table gives the largest one-sigma response within each named part. Each maximum can occur at a different node.
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Base X, native MAPDL response & Bare & Nylon screws & Aluminium screws\\\midrule
+PCB Z displacement [$\mu$m RMS] & 23.37 & 86.31 & 78.96\\
+PCB absolute Z acceleration [$g$ RMS] & 52.29 & 95.37 & 78.87\\
+PCB equivalent stress [MPa RMS] & 90.32 & 82.68 & 79.35\\
+Cell-body equivalent stress [MPa RMS] & 21.02 & 18.03 & 20.50\\
+Nickel-strip equivalent stress [MPa RMS] & 291.90 & 267.55 & 259.29\\
+PLA through-layer normal stress [MPa RMS] & --- & 4.97 & 11.87\\
+Screw longitudinal stress [MPa RMS] & --- & 7.74 & 23.36\\\bottomrule
+\end{tabular}\end{center}
+
+Peak PCB equivalent stress fell by 8.5\% with nylon screws and 12.1\% with aluminium screws under this excitation. The independent calculation on page~6 reproduced all three native PCB Z displacement maxima within 0.001~$\mu$m. The equivalent board material gives a comparison of assembly response. A service margin for the populated PCB requires the laminate data and package-specific board-strain limits.
+
+\heading{How the middle cell transfers vibration load}
+At bolt lock the middle cell touches the case and remains attached to its two nickel strips. We summed the signed native modal element forces separately at the two strip bonds and at the loaded pocket. The case-side resultant opposed the force recovered on the middle cell outside the bond footprints. Including all three interfaces reproduced the independently integrated modal cell inertia within a relative error of $6\times10^{-6}$ across the modes. The other two cells continued to transmit load through the strip bonds in this linearization.
+
+With base-X excitation, independent spectrum integration gave middle-pocket force components of 17.53~N RMS along X and 7.75~N RMS along Z with nylon screws. Aluminium gave 15.83 and 6.07~N RMS. These dynamic components assume the middle contact stays engaged. The native base-X solid-element force records provided a separate check on the modal calculation. Page~7 shows where the fixed contact assumption breaks in the seeded motion.
+
+\heading{Nickel response and movie coverage}
+The global nickel strips are linear elastic. The archived local damage model uses an exploratory yield reference of 185~MPa. Including preload, the first base-X seeded stress crossing fell at 38.12--38.13~ms bare, 37.83--37.84~ms with nylon and 40.39--40.41~ms with aluminium. Establishing permanent strain or tearing requires the nonlinear strip model. The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{movie catalogue} includes the three mode pairs and four base-X RMS pairs. The RMS camera orbits show a fixed statistical field on a shared colour scale.
+
+\newpage
+\pageheading{Printed-tab tension peaks beside the screw bearing}
+During each nine-second excitation we combined the locked stress tensor and signed modal stresses at the same integration station and element corner. The search covered all 182,196 unaveraged PLA corners and all 589,825 time stations per base direction. Across the layers, the largest value reached 31.17~MPa under base Y with nylon and 84.20~MPa under base Z with aluminium. Both occurred 0.60~mm from the coupled bearing nodes of the tab near PCB $(X,Y)=(66,4)$~mm.
+
+\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-vibration-strength.pdf}
+\captionof{figure}{The first two panels divide the peak signed PLA tensile stress by the corresponding printed-coupon mean. The dashed line marks the coupon mean. Small horizontal marks on the bars show the highest result at least 2~mm from any tied bearing node. The right panel gives peak axial-plus-bending tensile stress at a modelled screw-section point. Each panel uses the same seeded input for a given base direction.}\end{center}
+
+\heading{What the percentages measure}
+The reference strengths are the reported means for uniaxial printed specimens, 40.5~MPa through layers and 52.3~MPa in plane. Nylon mounting reached 77\% through layers and 38\% in plane, both under base Y. Aluminium reached 208\% through layers and 115\% in plane under base Z. Across all three aluminium runs, excluding the 2~mm bearing band brought the highest layer-normal and in-plane results to 46\% and 74\% of their respective means. The rigid screw-bearing footprint and the actual print orientation matter to this local comparison. \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{PolyLite PLA reference data.}
+
+At both worst through-layer instants, the deformed surfaces of all three cells intersected the case in the linear reconstruction. The elastic continuation holds the initial contact tangent fixed even when a new pocket would engage. The aluminium peak is a demand beyond the coupon reference. Predicting cracking or a failure time would require changed contact and a calibrated print failure law.
+
+\heading{What the screw carries}
+The four circular M4 beam shanks were evaluated at 25 section points at each end. The highest tensile value was 35.90~MPa for nylon under base Y and 96.21~MPa for aluminium under base X. Bending contributed 35.00 and 91.73~MPa, respectively, at those exact instants. The nylon part has no verified tensile rating for this comparison, and the aluminium alloy and temper are unspecified. The native base-X one-sigma stresses agree with the independent spectrum integration over all 200 shank points to better than 0.004\% in relative field norm.
+
+An exact oscillator solution for the piecewise-linear acceleration changed the 24 PLA maxima across both screw materials, tensile directions, base axes and bearing-distance scopes by at most 0.43\% from the average-acceleration integration. Both methods use the same installed stiffness and material law.
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}

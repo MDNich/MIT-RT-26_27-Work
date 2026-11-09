@@ -95,9 +95,9 @@ def contact_parts(rst):
     return parts, [(body,mapping[body]) for body in target_ids]
 
 
-def sampled_gaps(parts, targets_by_body, *, include_locations=False):
+def sampled_gaps(parts, targets_by_body, *, include_locations=False, levels=(2,3)):
     rows=[]
-    for level in (2,3):
+    for level in levels:
         cap, *targets=curved_skins(parts,level)
         distance=vtkImplicitPolyDataDistance()
         distance.SetInput(cap)

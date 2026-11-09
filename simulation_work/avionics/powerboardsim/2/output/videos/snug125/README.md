@@ -1,6 +1,6 @@
 # Snug Balius comparison movies
 
-3 of 22 subjects have reviewed pairs for the bare board and both 1.250 mm mounts.
+7 of 22 subjects have reviewed pairs for the bare board and both 1.250 mm mounts.
 
 The links open 3840 × 2160 movies at 60 fps. Paired views use the same displacement or stress scale. The mode movies show normalized motion. In the one-sigma movies the camera moves around a fixed RMS field. The seeded movies show successive instants of the original acceleration record.
 
@@ -16,13 +16,13 @@ The links open 3840 × 2160 movies at 60 fps. Paired views use the same displace
 
 | October subject | Without case | With case |
 |---|---|---|
-| Whole assembly · base X · X displacement | Pending | Pending |
+| Whole assembly · base X · X displacement | [Bare](without_case/power_board_4k60/random_fig02_assembly.mp4) | [1.25 mm Balius · nylon and aluminium](with_case/power_board_4k60/random_fig02_assembly.mp4) |
 | Whole assembly · base Y · Z displacement | Pending | Pending |
 | Whole assembly · base Z · Z displacement | Pending | Pending |
 | Rear view · base Z · Z displacement | Pending | Pending |
-| Battery view · base X · X displacement | Pending | Pending |
-| Battery view · base X · Y displacement | Pending | Pending |
-| Battery view · base X · Z displacement | Pending | Pending |
+| Battery view · base X · X displacement | [Bare](without_case/power_board_4k60/random_fig06_baseX_responseX.mp4) | [1.25 mm Balius · nylon and aluminium](with_case/power_board_4k60/random_fig06_baseX_responseX.mp4) |
+| Battery view · base X · Y displacement | [Bare](without_case/power_board_4k60/random_fig07_baseX_responseY.mp4) | [1.25 mm Balius · nylon and aluminium](with_case/power_board_4k60/random_fig07_baseX_responseY.mp4) |
+| Battery view · base X · Z displacement | [Bare](without_case/power_board_4k60/random_fig08_baseX_responseZ.mp4) | [1.25 mm Balius · nylon and aluminium](with_case/power_board_4k60/random_fig08_baseX_responseZ.mp4) |
 | Battery view · base Y · X displacement | Pending | Pending |
 | Battery view · base Y · Y displacement | Pending | Pending |
 | Battery view · base Y · Z displacement | Pending | Pending |
