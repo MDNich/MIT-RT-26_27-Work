@@ -166,6 +166,19 @@ try {
     }
     Update 'solving'
     $argsList=@('-b','nolist','-s','noread','-dis','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    if ($Case.StartsWith('shell_snug125_')){
+        if ($Case -notmatch '^shell_(snug125_(?:nylon|aluminium))_(?:free|contact)_v2$'){throw 'Unknown whole-shell case'}
+        $branch=$Matches[1]
+        $pub=(Get-Content "$share\validation\snug125\${branch}_shell_inputs_v2.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        if ($pub.case -ne $Case -or $pub.campaign -ne $Campaign -or $pub.spacing_mm -ne 1.25 -or $Cores -ne 2 -or
+            $pub.step_sha256 -ne '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef'){
+            throw 'Whole-shell fixture provenance mismatch'
+        }
+        foreach ($entry in $pub.files.PSObject.Properties){
+            if ((Get-FileHash -LiteralPath (Join-Path $work $entry.Name)).Hash -ne $entry.Value){throw 'Whole-shell drive checksum failed'}
+        }
+        $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    }
     if ($Case.StartsWith('replay_')){
         $pub=(Get-Content "$share\validation\contact_replay_inputs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
         if ($pub.case -ne $Case -or $pub.campaign -ne $Campaign -or $Cores -ne 2){throw 'Wrong transient replay case'}

@@ -209,6 +209,12 @@ def jobs():
             if patch_series.is_file():
                 for case,spec in read(patch_series).items():
                     yield case,spec['free_reference'] if spec['contact'] else branch+'_basis'
+        for branch in branches:
+            registry=ROOT/'validation/snug125'/(branch+'_shell_inputs_v2.json')
+            if registry.is_file():
+                for name,spec in read(registry).items():
+                    parent=f'shell_{branch}_free_v2' if spec['contact'] else branch+'_basis'
+                    yield name,parent
         local_catalog=ROOT/'validation/snug125/local_inputs.json'
         if local_catalog.is_file():
             for case,meta in read(local_catalog).items():
@@ -394,6 +400,8 @@ def damage_reference_ready(spec):
 
 
 def result_path(case):
+    if case.startswith('shell_snug125_'):
+        return ROOT/'validation/shell_equilibrium'/(case+'.json')
     if case.startswith('replay_'):
         return ROOT/'validation/contact_replay'/(case+'.json')
     if case.startswith('patch_'):
@@ -496,6 +504,8 @@ def run():
         if final.exists() or partial.exists() or review.exists() or (ROOT/'validation/review_global'/(case+'.json')).exists():continue
         if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
             log('Parent unaccepted: '+case);continue
+        if case.startswith('shell_snug125_') and (ROOT/'validation/review_shell_equilibrium'/(case+'.json')).is_file():
+            continue
         if case.startswith('patch_snug125_') and (ROOT/'validation/review_contact_patch'/(case+'.json')).is_file():
             continue
         if case.startswith('snug125_') and parent.endswith('_static'):
@@ -554,7 +564,7 @@ def run():
                 branch=case.removesuffix('_enforced').split('_motion_')[0]
                 stage(branch,CAMPAIGN)
             flags=['-Case',case,'-Campaign',CAMPAIGN]
-            if case.startswith(('patch_','replay_')):
+            if case.startswith(('patch_','replay_','shell_snug125_')):
                 flags.extend(['-Cores','2'])
             elif parent and not local:
                 flags.extend(['-Parent',parent])
@@ -579,7 +589,9 @@ def run():
         audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith(('_approach1','_seatfaces1')) else ('audit_local.py' if local else 'audit_global.py'))
         if '_default_' in case and case.endswith('_static'):
             audit='audit_default_install.py'
-        if case.startswith('patch_'):
+        if case.startswith('shell_snug125_'):
+            audit='audit_snug_shell.py'
+        elif case.startswith('patch_'):
             audit='audit_contact_patch.py'
         elif case.startswith('replay_'):
             audit='audit_contact_replay.py'

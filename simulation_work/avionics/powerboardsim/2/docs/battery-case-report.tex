@@ -95,7 +95,7 @@ Peak through-layer PLA tension [MPa] & 0.299 & 0.344\\\bottomrule
 
 Both meshes located the largest PCB displacement at the same corner. Refinement changed that peak by 0.016\%, and both independent deformed-surface checks placed only the middle cell in contact. The location of engagement and the board-level response therefore agree across these two runs.
 
-The peak pressure during tightening rose by 5.4\% on refinement. At the end of bolt lock the peak rose by a factor of 2.03. Pressures on a handful of loaded faces cannot yet support a local cell or case bearing limit. A third 1.5~mm mesh contains 99,818 tetrahedra. It and a matched 2~mm repeat request the element contact-force vectors at every saved equilibrium so the total transmitted load can be checked separately from the pointwise pressure.
+The peak pressure during tightening rose by 5.4\% on refinement. At the end of bolt lock the peak rose by a factor of 2.03. Pressures on a handful of loaded faces cannot yet support a local cell or case bearing limit. A third 1.5~mm mesh contains 99,818 tetrahedra. The matched 2~mm repeat recovered the resultant force at all eight stations (page~10). The 1.5~mm run will test the sensitivity of that force to the case mesh.
 
 \newpage
 \pageheading{The first two default-contact shapes persist with either mount}
@@ -202,6 +202,22 @@ At both worst through-layer instants, the deformed surfaces of all three cells i
 The four circular M4 beam shanks were evaluated at 25 section points at each end. The highest tensile value was 35.90~MPa for nylon under base Y and 96.21~MPa for aluminium under base X. Bending contributed 35.00 and 91.73~MPa, respectively, at those exact instants. The nylon part has no verified tensile rating for this comparison, and the aluminium alloy and temper are unspecified. The native base-X one-sigma stresses agree with the independent spectrum integration over all 200 shank points to better than 0.004\% in relative field norm.
 
 An exact oscillator solution for the piecewise-linear acceleration changed the 24 PLA maxima across both screw materials, tensile directions, base axes and bearing-distance scopes by at most 0.43\% from the average-acceleration integration. Both methods use the same installed stiffness and material law.
+\newpage
+\pageheading{The nylon middle pocket carries 0.594 N at bolt lock}
+The six 750~N bolt targets specify the original battery fastener loads. Only a small part of that loading reaches the printed pocket. A repeat of the 2~mm nylon model stored native contact-force components at every equilibrium. The net force from all 16,596 case-side contact faces peaked at 8.323~N during tightening and fell to 0.594~N after locking. All five faces carrying force at lock belonged to the middle pocket. The locked vector was $(-0.5433,\;0.000003,\;0.2394)$~N in PCB axes.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-pocket-preload.pdf}
+\captionof{figure}{Left, direct MAPDL resultants, independently summed from element records. Right, times when the signed modal increment along the lock-force direction first passed $+0.594$ and $-0.594$~N during each separate base acceleration. The label gives the later crossing, which bounds how long the installed pressure pattern can remain consistent.}\end{center}
+
+\heading{Why the fixed-contact force becomes inconsistent}
+The five active frictionless faces point towards the same side of the middle cell. Over their full curved surfaces, the cosine between the case normals and the resultant direction exceeded 0.993. A compressive force on any of those faces contributes with the same sign along this direction. Once the signed vibration increment has exceeded the installed force in both directions, one excursion would require the pocket to pull on the cell.
+
+In the nominal 2~mm model that condition occurred by 18.41~ms for base X, 25.56~ms for base Y and 12.69~ms for base Z, taking the later bound from two time-integration methods. Reducing the modal cutoff from 4 to 3~kHz left the three Newmark bounds at the same integration stations. The 2~kHz cutoff changed the bounds by at most 0.046~ms. The 1.5~mm force refinement is still pending.
+
+At the six sampled crossing instants, tests of the complete quadratic surfaces found the outer cells clear and the middle cell still touching or overlapping the case. The force check detects a need to redistribute the installed pressure before those snapshots show an outer cell reaching its pocket. It cannot establish when the middle cell fully lifts off. The nonlinear controls include an intact shell with all three cells, six nickel strips and six washers so both outer pockets can engage.
+
+\heading{Numerical checks}
+The repeat reproduced the native contact history and all six bolt reactions at all eight stations. Across the complete matched nodal displacement fields, the largest difference from the primary run was $1.1\times10^{-16}$~m. The POST1 resultant and the independent sum of the stored element-force components agreed within $10^{-10}$~N at every station.
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}

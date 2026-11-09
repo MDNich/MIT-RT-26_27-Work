@@ -114,5 +114,12 @@ def audit(case,campaign):
     if case.startswith('snug125_') and case.endswith('_static'):
         from snug_installed import review
         review(case,campaign)
+        if case=='snug125_nylon_mesh15_static':
+            from snug_locked_contact import run as check_faces
+            from compare_static import compare as check_board
+            from snug_mesh_comparison import compare_forces
+            check_faces(case,campaign)
+            check_board(case,campaign)
+            compare_forces()
     print(case,'verified',flush=True)
 if __name__=='__main__':audit(*sys.argv[1:])

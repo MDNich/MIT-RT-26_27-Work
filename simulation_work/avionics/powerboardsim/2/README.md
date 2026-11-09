@@ -16,6 +16,8 @@ In the three separate nine-second vibration histories, peak PLA through-layer te
 
 The native base-X spectrum lowered peak PCB equivalent stress from 90.32 MPa RMS bare to 82.68 and 79.35 MPa RMS, while raising board-normal displacement. Seven film pairs are published, including four camera orbits of the native base-X fields. [Native spectra and force transfer, page 8](output/pdf/battery-case-report.pdf#page=8)
 
+The repeat nylon preload gave 8.323 N peak middle-pocket force during tightening and 0.594 N after locking. With that measured force, the independent base-Z vibration model requires a change in contact loading within about 12.7 ms. At the sampled crossing instants the two outer cells remained clear and the middle cell still touched the case. The 1.5 mm force-mesh control is running. [Pocket force and startup check, page 10](output/pdf/battery-case-report.pdf#page=10)
+
 The [snug-fit movie catalogue](output/videos/snug125/README.md) tracks the 22 requested subjects. The three bare modal films retain their verified 6 mm display scale. Each new RMS or seeded pair will share a range determined from the bare board and both 1.25 mm mounts.
 
 ## Appendix A — previous fit study
