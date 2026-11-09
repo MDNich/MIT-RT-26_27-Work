@@ -146,6 +146,9 @@ def audit(case,campaign):
     if np.any(np.linalg.norm(ff,axis=1)>.2+.001*drive) or np.any(np.linalg.norm(mm,axis=1)>1.+.002*42.5*drive):
         raise ValueError('Whole-fixture force or moment imbalance')
     write_csv(rows,dest/'whole_fixture_balance.csv')
+    if damage and np.any(inv['loadstep']>=4):
+        from nickel_pull_balance import native_check
+        native_check(folder,dest/'whole_fixture_balance.csv',campaign,seat)
     topology={int(float(p['pair'])):int(float(p['contact'])) for p in read(ROOT/'validation/flush_approach_preflight.json')['pairs']}
     if face_seats:
         topology.update({p['real']:p['tab_faces'] for p in read(ROOT/'validation/local_seat_preflight.json')['pairs']})

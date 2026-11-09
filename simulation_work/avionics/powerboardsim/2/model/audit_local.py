@@ -132,7 +132,11 @@ def audit(case, campaign):
         from coupon_audit import fresh as check_coupon
         data,reached=check_coupon(folder,spec,cfg,{f['name']:f['sha256'] for f in ledger['files']})
     else:
-        data,reached=fixture(folder,spec,cfg,cfgdir,listing,ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv')
+        balance_path=ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv'
+        data,reached=fixture(folder,spec,cfg,cfgdir,listing,balance_path)
+        if spec['job']=='tear':
+            from nickel_pull_balance import native_check
+            native_check(folder,balance_path,campaign,cfg['pull_start_time'])
     if not spec['coupon'] and spec['source'].startswith('damage_') and 'damage_onset_bracket' in data:
         from damage_footprint import run as damage_maps
         from film_identity import digest
