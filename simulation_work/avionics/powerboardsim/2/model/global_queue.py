@@ -123,6 +123,24 @@ def archive_closed_case(case,receipt):
         log('No guest archiver or solver in two consecutive checks for '+case)
     raise RuntimeError('Closed native result needs archive inspection: '+case)
 
+def capture_closed_installation(case, state, receipt):
+    if state['phase']!='failed' or not case.endswith('_surf1_static') or not state.get('shared_scratch') or state.get('exit') is None:
+        return
+    work=RT/'shared_native'/CAMPAIGN/case
+    if not (work/'file0.rst').is_file() or (work/'file.lock').exists():
+        return
+    saved=receipt/'terminal_partition_capture.json'
+    if saved.is_file():
+        return
+    try:
+        from partition_snapshot import capture
+        snapshot=capture(case,CAMPAIGN,terminal=True)
+        from film_identity import digest
+        save(saved,dict(checkpoint=str(snapshot.relative_to(ROOT)),manifest_sha256=digest(snapshot/'receipts.json')))
+    except (AssertionError,OSError,RuntimeError,ValueError) as exc:
+        log(f'Partial result capture needs inspection for {case}: {type(exc).__name__} {exc}')
+
+
 def jobs():
     yield 'bare_static',''
     yield 'bare_original',''
@@ -377,7 +395,10 @@ def run():
                     stop=receipt/('host_critical.json' if free<400_000_000_000 else 'host_stop.json')
                     if not stop.exists():save(stop,dict(case=case,free_bytes=free,utc=utc()))
             time.sleep(15)
-        if read(state)['phase']=='failed':log('Failed native '+case);continue
+        if current['phase']=='failed':
+            log('Failed native '+case)
+            capture_closed_installation(case,current,receipt)
+            continue
         if not (receipt/'released.txt').exists():
             log('Archive '+case)
             archive_closed_case(case,receipt)

@@ -18,18 +18,38 @@ def stamp(path):
     return s.st_size, s.st_mtime_ns, s.st_ctime_ns
 
 
-def capture(case, campaign):
+def converged_prefix(raw, steps, times, terminal):
+    header=raw._resultheader['ls_table'][:,:2]
+    count=len(steps)
+    assert np.array_equal(header[:count],steps)
+    tail=header[count:]
+    assert not len(tail) or (terminal and len(tail)==1 and tail[0,1]==999999)
+    assert np.all(np.diff(raw.time_values[:count])>0)
+    assert np.allclose(raw.time_values[:count],times,rtol=0,atol=5.1e-6)
+    return len(tail)
+
+
+def capture(case, campaign, terminal=False):
     rt = ROOT/'.runtime'
     source = rt/'shared_native'/campaign/case
     state = read(rt/'receipts'/campaign/case/'status.json')
-    assert state['case']==case and state['shared_scratch'] and state['phase']=='solving'
+    assert state['case']==case and state['shared_scratch']
+    if terminal:
+        assert state['phase'] in ('solver_complete','failed') and 'exit' in state
+        assert not (source/'file.lock').exists()
+    else:
+        assert state['phase']=='solving'
     spec = read(ROOT/'validation/board_surface_jobs.json')[case]
     deck = verified(source/'model.inp',spec['model_sha256'])
     listing = (source/'solve.out').read_bytes()
     pattern = rb'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED[^\r\n]*[\r\n]+\s*\*\*\* TIME\s*=\s*([\d.Ee+-]+)'
+    if terminal:
+        assert re.search(rb'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*\d+',listing)
     events = list(re.finditer(pattern,listing))
+    assert events
     ls, sb = map(int,events[-1].groups()[:2])
-    final = rt/'partition_snapshots'/campaign/case/f'step{ls}_substep{sb}'
+    generation=f'step{ls}_substep{sb}' + ('_terminal' if terminal else '')
+    final = rt/'partition_snapshots'/campaign/case/generation
     if (final/'receipts.json').is_file():
         assert read(final/'receipts.json')['model_sha256']==deck
         return final
@@ -48,16 +68,24 @@ def capture(case, campaign):
     steps = np.array([[int(m[1]),int(m[2])] for m in events])
     times = np.array([float(m[3]) for m in events])
     manifest = {}
+    excluded = []
     for p, state_before in zip(files,before,strict=True):
         dest = root/p.name
         assert dest.stat().st_size==state_before[0] and dest.stat().st_ino!=p.stat().st_ino
         raw = read_rst(dest,read_mesh=False)
-        assert np.array_equal(raw._resultheader['ls_table'][:,:2],steps)
-        assert np.allclose(raw.time_values,times,rtol=0,atol=5.1e-6)
+        excluded.append(converged_prefix(raw,steps,times,terminal))
         manifest[p.name] = dict(bytes=state_before[0], SHA256=digest(dest))
-    write_json(root/'receipts.json',dict(case=case,campaign=campaign,model_sha256=deck,cores=state['cores'],
+    assert len(set(excluded))==1
+    terminal_data={}
+    if terminal:
+        full=root/'terminal_listing.txt'
+        full.write_bytes(listing)
+        write_json(root/'terminal_status.json',state)
+        terminal_data=dict(native_exit=state['exit'],terminal_listing_sha256=digest(full),
+                           terminal_status_sha256=digest(root/'terminal_status.json'))
+    write_json(root/'receipts.json',dict(capture_phase=state['phase'],diagnostic_sets_excluded=excluded[0],**terminal_data,case=case,campaign=campaign,model_sha256=deck,cores=state['cores'],
         converged_listing_sha256=digest(saved),sets=len(steps),last_loadstep=ls,last_substep=sb,
-        last_time_s=float(raw.time_values[-1]),files=manifest))
+        last_time_s=float(raw.time_values[len(steps)-1]),files=manifest))
     root.rename(final)
     return final
 
@@ -66,5 +94,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('case',choices=['flush_nylon_surf1_static','flush_aluminium_surf1_static'])
     p.add_argument('--campaign',default='nov08_01')
+    p.add_argument('--terminal',action='store_true',help='Read a closed installation after recorded native exit.')
     a=p.parse_args()
-    print(capture(a.case,a.campaign))
+    print(capture(a.case,a.campaign,a.terminal))

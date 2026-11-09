@@ -172,7 +172,12 @@ def run(folder, campaign, control):
     times=parts[0].rst.time_values
     step=parts[0].rst._resultheader['ls_table']
     assert all(np.array_equal(q.rst.time_values,times) and np.array_equal(q.rst._resultheader['ls_table'],step) for q in parts)
-    if not control:assert np.all(step[:,1]!=999999) and len(times)==proof['sets']
+    if not control:
+        complete=proof['sets']
+        assert len(times)==complete+proof.get('diagnostic_sets_excluded',0)
+        assert np.all(step[:complete,1]!=999999) and np.all(step[complete:,1]==999999)
+        times=times[:complete]
+        step=step[:complete]
     bpath=root/'archive'/campaign/'stand3_nylon_static'/'bolt_preload_audit.csv'
     ref=read(root/'receipts'/campaign/'stand3_nylon_static'/'archived.json')
     verified(bpath,next(row['sha256'] for row in ref['files'] if row['name']==bpath.name))
