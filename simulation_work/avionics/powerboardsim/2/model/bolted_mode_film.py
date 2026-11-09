@@ -67,7 +67,8 @@ def run(campaign):
 def confirm_dedicated(branch,campaign,former,replacement,rank):
     """Check that the dedicated extraction preserves the displayed physical shape before replacement."""
     keys=[branch+'_basis',branch+'_modal20']
-    output=ROOT/'validation/modal_matches'/(branch+'_wide_to_dedicated.json')
+    suffix='_wide_to_dedicated' if rank==20 else f'_wide_to_dedicated_rank{rank}'
+    output=ROOT/'validation/modal_matches'/(branch+suffix+'.json')
     if output.is_file():
         saved=read(output)
         assert saved['rank']==rank and saved['wide_rst_sha256']==former and saved['dedicated_rst_sha256']==replacement
