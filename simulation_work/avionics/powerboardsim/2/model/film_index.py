@@ -31,6 +31,8 @@ def make(reviews):
             assert proof['sheet_sha256']==mark['review_sheet_sha256'] and proof['reference_sha256']==mark['native_reference_sha256']
             if g=='with_case' and proof.get('comparison_panels')==2:
                 label='3 mm stand-off · nylon and aluminium'
+            if proof.get('coordinate_method')=='native':
+                label+=' · native motion'
             if proof.get('coordinate_method')=='independent':
                 label+=' · independent motion'
             if proof.get('field_method')=='independent':
@@ -43,7 +45,7 @@ def make(reviews):
             else:pairs+=1
         lines.append((r,titles))
     out=['# Battery-board movies','',f'{len(ready)} reviewed movies. {pairs} of 22 subjects cover all four cased configurations. An additional {raised_pairs} subjects compare the bare board with both 3 mm stand-off variants.','',
-         'Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. Raised-only comparisons are identified in the table. “Independent motion” uses native mode shapes and independently integrated coordinates for the same October acceleration record. “Independent RMS” integrates the October base spectrum on the native modes. The matching bare RMS movie uses its native PSD result. Each pair uses matching colour limits for its displacement or stress field. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.','']
+         'Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. Raised-only comparisons are identified in the table. “Native motion” uses the rerun MAPDL modal-coordinate history. “Independent motion” uses native mode shapes and independently integrated coordinates for the same October acceleration record. “Independent RMS” integrates the October base spectrum on the native modes. The matching bare RMS movie uses its native PSD result. Each pair uses matching colour limits for its displacement or stress field. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.','']
     for kind,label in LABEL.items():
         out+=['## '+label,'','| October subject | Without case | With case |','|---|---|---|']
         for r,titles in lines:

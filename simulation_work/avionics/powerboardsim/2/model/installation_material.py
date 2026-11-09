@@ -15,15 +15,16 @@ TDS = 'https://wiki.polymaker.com/polymaker-products/more-about-our-products/doc
 BEAM_REF = 'https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_BEAM188.html'
 
 
-def run(case, campaign):
+def run(case, campaign, *, pull=False):
     root = ROOT/'.runtime'
     folder = root/'archive'/campaign/case
     receipts = root/'receipts'/campaign/case
     ledger = read(receipts/'archived.json')
     assert ledger['case']==case and ledger['campaign']==campaign and (receipts/'released.txt').is_file()
     hashes = {row['name']:row['sha256'] for row in ledger['files']}
-    local = '_lateral_' in case
-    job = 'pull' if local else 'file'
+    local = (folder/'local_job.json').is_file()
+    job = read(folder/'local_job.json')['job'] if local else 'file'
+    if pull and not local:raise ValueError('Pull material audit requires a local fixture')
     verified(folder/(job+'.rst'),hashes[job+'.rst'])
     verified(folder/'model.inp',hashes['model.inp'])
     deck = (folder/'model.inp').read_text()
@@ -31,15 +32,15 @@ def run(case, campaign):
     proofs = [ROOT/'validation'/k/(case+'.json') for k in scope]
     verdict = next(read(p) for p in proofs if p.is_file())
     assert verdict['rst_sha256']==hashes[job+'.rst']
-    rt = reader.read_binary(str(folder/'pull.rst')) if local else read_rst(folder/'file.rst')
+    rt = reader.read_binary(str(folder/(job+'.rst'))) if local else read_rst(folder/'file.rst')
     length = 1. if local else 1000.
     stress = 1. if local else 1e-6
     state = rt._resultheader['ls_table']
-    indices = np.flatnonzero((state[:, 1] != 999999) & (state[:, 0] <= 3))
+    indices = np.flatnonzero((state[:, 1] != 999999) & ((state[:, 0] <= 3) | pull))
     if local:
         fixed = table(root/'post'/campaign/case/'whole_fixture_balance.csv')
         ids = fixed['native_set'].astype(int)
-        travel = fixed['screw1_u_mm_z']
+        travel = fixed['ux_mm'] if pull else fixed['screw1_u_mm_z']
     elif case.startswith('flush_'):
         verified(folder/'board_drives.csv',hashes['board_drives.csv'])
         drive = table(folder/'board_drives.csv')
@@ -50,7 +51,7 @@ def run(case, campaign):
         ids = indices + 1
         travel = np.zeros(len(ids))
     assert np.array_equal(ids[:len(indices)],indices+1)
-    if 'flush_' in case:
+    if 'flush_' in case and not pull:
         assert np.allclose(travel[:len(indices)],3*np.clip(rt.time_values[indices]-2,0,1),rtol=0,atol=1e-6)
     grid = rt.grid.cell_data
     def elements(t):
@@ -110,6 +111,9 @@ def run(case, campaign):
         fields={'in_plane_tension_MPa':(x+y)*.5+np.hypot((x-y)*.5,txy),'layer_tension_MPa':z,
                 'layer_tensile_strain':strain[:,2]}
         row=dict(native_set=int(k)+1,loadstep=int(state[k,0]),time_s=float(rt.time_values[k]),travel_mm=float(travel[len(records)]))
+        if pull:
+            row['cell_force_N']=float(fixed['cell_fx_N'][len(records)])
+            assert np.isclose(fixed['time'][len(records)],rt.time_values[k],atol=1.e-9,rtol=0)
         for name,field in fields.items():
             full=field.reshape(-1,4)
             elem=int(np.argmax(full.min(axis=1)))
@@ -136,13 +140,17 @@ def run(case, campaign):
             assert err <.015,(k,err)
             axial_error=max(axial_error,float(err))
         records.append(row)
-    out=ROOT/'validation/installation_material'/(case+'.json')
+    if pull:
+        description='All converged states through local lateral loading. Travel is the signed X displacement of the battery pilot. '
+    else:
+        description='Converged static load states through drawdown. '
+    out=ROOT/'validation'/('pull_material' if pull else 'installation_material')/(case+'.json')
     write_json(out,dict(case=case,campaign=campaign,rst_sha256=hashes[job+'.rst'],input_sha256=hashes['model.inp'],
         contact_verdict_sha256=digest(next(p for p in proofs if p.is_file())),reference_properties=PLA,coupon_engineering_elongation_Z=.018,PLA_source=TDS,
         beam_section_reference=BEAM_REF,case_tets=len(solids),section_nodes_per_beam_end=25,constitutive_relative_errors=dict(
             PLA=float(solid_error),beam_axial=float(beam_error),**({'beam_direct_vs_native_force_area':axial_error} if local else {})),
         temperature_scope='Printed coupons under uniaxial tension. The material directions follow the layer orientation assumed for the case.',
-        first_reference_crossings=cross,history=records,scope='Converged static load states through drawdown. Stresses are material-frame '
+        first_reference_crossings=cross,history=records,scope=description+'Stresses are material-frame '
         'FE corner or beam-section values. A circular elastic shank represents the screws. The collar nodes enforce a plane bearing footprint. '
         'The minimum distance for away results is 2 mm from the original coupled PLA bearing nodes.'))
     print(case,len(records),'states',cross,records[-1]['four_screws'],flush=True)
@@ -153,5 +161,6 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('case')
     p.add_argument('campaign',nargs='?',default='nov08_01')
+    p.add_argument('--pull',action='store_true',help='Check the full local history against the battery pilot travel.')
     a=p.parse_args()
-    run(a.case,a.campaign)
+    run(a.case,a.campaign,pull=a.pull)

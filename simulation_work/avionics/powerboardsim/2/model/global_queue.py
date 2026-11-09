@@ -240,11 +240,12 @@ def jobs():
                     for raised in ('stand3_nylon','stand3_aluminium'):
                         yield native_case(raised,'psd_'+direction),raised+'_basis'
                 yield 'bare_damage_cont_nominal',''
+                # Compare the two whole-board flush installations before a second long local drawdown.
+                if (ROOT/'validation/board_surface_jobs.json').exists():
+                    yield 'flush_aluminium_surf1_static',''
                 yield 'stand3_nylon_damage_cont_nominal_pin1','bare_damage_cont_nominal'
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
-            if branch=='bare' and axis=='Z' and (ROOT/'validation/board_surface_jobs.json').exists():
-                yield 'flush_aluminium_surf1_static',''
         if (ROOT/'validation/contact_replay_inputs.json').is_file() and branch in ('bare','stand3_nylon'):
             if branch=='bare':
                 yield 'replay_stand3_nylon_span9_free_s4_v1','patch_stand3_nylon_span9_free_v1'

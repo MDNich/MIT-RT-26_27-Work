@@ -208,6 +208,10 @@ def audit(case,campaign):
     if damage:
         from nickel_damage import summarize
         out.update(summarize(inv,rows))
+        if np.any(inv['loadstep'] >= (2 if grip else 4)):
+            from damage_footprint import run as damage_maps
+            from film_identity import digest as file_sha
+            out['damage_footprint_sha256']=file_sha(damage_maps(case,campaign))
         if out['nickel_material_scope_exceeded'] and category=='local':
             category='review_local'
     out['classification']=category

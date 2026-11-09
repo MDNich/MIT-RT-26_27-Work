@@ -136,6 +136,10 @@ def audit(case, campaign):
         reached=abs(data['last_time']-cfg['end_time'])<1e-7
     else:
         data,reached=fixture(folder,spec,cfg,cfgdir,listing,ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv')
+    if not spec['coupon'] and spec['source'].startswith('damage_') and 'damage_onset_bracket' in data:
+        from damage_footprint import run as damage_maps
+        from film_identity import digest
+        data['damage_footprint_sha256']=digest(damage_maps(case,campaign))
     complete = bool(status['native_clean']) and reached
     data.update(case=case,source=spec['source'],campaign=campaign,full_requested_path=complete,
                 scope='Completed numerical fixture' if complete else 'Partial converged path; endpoint under review',
@@ -146,6 +150,9 @@ def audit(case, campaign):
     if case.startswith('bare_lateral_'):
         from pull_reference import compare
         compare(case,campaign)
+    if case.startswith('stand3_') and not spec['coupon']:
+        from installation_material import run as check_material
+        check_material(case,campaign,pull=True)
     print(data['scope'],case,flush=True)
 
 if __name__ == '__main__':

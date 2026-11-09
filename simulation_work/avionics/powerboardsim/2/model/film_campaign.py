@@ -142,7 +142,14 @@ def pair_check(r):
     else:
         fld='range_mm' if r['kind']==KINDS[1] else 'scale'
         assert a[fld]==b[fld] and np.ptp(a[fld])>0
-        if r['kind']==KINDS[2]:assert a['coordinate_method']==b['coordinate_method']
+        if r['kind']==KINDS[2] and a['coordinate_method']!=b['coordinate_method']:
+            assert a['coordinate_method']=='native' and b['coordinate_method']=='independent'
+            baseline=read(proof_path(r,'bare'))
+            assert baseline['independent_clip_check']['relative_L2']<.005
+            for panel in b['panels']:
+                variant=VARIANTS[LABELS.index(panel['name'])]
+                proof=read(ROOT/'validation/independent_motion'/(native_case(variant,r['suffix'])+'.json'))
+                assert proof['clip_sha256']==panel['coordinates_sha256'] and proof['input_sha256']==baseline['input_sha256']
     assert (a.get('sha256') or a['video_sha256'])!=b['sha256']
 
 
@@ -157,13 +164,15 @@ def seeded_command(row,bare,cased):
     a,b=sidecar(bare),sidecar(cased)
     raised=[VARIANTS[0],*VARIANTS[3:]]
     for variants,method in [(VARIANTS,'native'),(raised,'native'),(raised,'independent')]:
-        if method=='independent' and a.get('coordinate_method')=='native':continue
+        bare_method='native' if proof_path(row,'bare').is_file() else method
         parent='motion' if method=='native' else 'independent_motion'
         if not all((ROOT/'validation'/parent/(native_case(v,row['suffix'])+'.json')).is_file() for v in variants):
             continue
-        if len(b.get('panels',[]))==len(variants)-1 and b.get('coordinate_method')==method and a.get('coordinate_method')==method and a['scale']==b['scale']:
+        if len(b.get('panels',[]))==len(variants)-1 and b.get('coordinate_method')==method and a.get('coordinate_method')==bare_method and a['scale']==b['scale']:
             return None
-        return (['--raised-only'] if len(variants)==3 else [])+['--coordinates',method]
+        flags=(['--raised-only'] if len(variants)==3 else [])+['--coordinates',method]
+        if bare_method!=method:flags.append('--native-bare')
+        return flags
     if not a and proof_path(row,'bare').is_file():return ['--bare-only']
     return None
 
