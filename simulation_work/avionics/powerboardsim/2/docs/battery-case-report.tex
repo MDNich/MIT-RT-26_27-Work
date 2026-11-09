@@ -109,11 +109,11 @@ We recovered each cell pose from the motion of 784 nickel nodes rigidly attached
 Cell travel & STEP solids & Meshed contact faces & Native contact reaction\\\midrule
 0.1375~mm & 0.02583~mm gap & Disjoint & 0~N\\
 0.1875~mm & 0.1183~mm$^3$ overlap & Intersecting & 0~N\\
-0.211914~mm (nylon) & 0.4864~mm$^3$ overlap & Intersecting & 0~N\\\bottomrule
+0.211914~mm & 0.4864~mm$^3$ overlap & Intersecting & 0~N\\\bottomrule
 \end{tabular}
-\captionof*{table}{Both screw materials gave the first two rows. The last row is the final open state of the refined nylon pull. Independent intersection tests used the actual cell target facets and only the PLA faces selected for contact. Both surface refinements gave the same classification.}\end{center}
+\captionof*{table}{Both screw materials gave all three rows. The final row is the last open state of each refined pull. Independent intersection tests used the actual cell target facets and only the PLA faces selected for contact. Both surface refinements gave the same classification.}\end{center}
 
-At 0.1875~mm the cell was 23.4--23.6~$\mu$m past first STEP contact along X with its rotation and transverse translations held at their measured values. At the final open nylon station this excess travel reached 47.8--48.0~$\mu$m. Testing only the target vertices missed intersections between faces at 0.1875~mm. The finer load steps on page~25 resolve when this model carries force. Contact discretization also affects how that force relates to the physical assembly.
+At 0.1875~mm the cell was 23.4--23.6~$\mu$m past first STEP contact along X with its rotation and transverse translations held at their measured values. At the final open station for either screw material this excess travel reached 47.8--48.0~$\mu$m. Testing only the target vertices missed intersections between faces at 0.1875~mm. The finer load steps on page~25 resolve when this model carries force. Contact discretization also affects how that force relates to the physical assembly.
 
 \heading{Why the flush installation needs a separate check}
 The flush STEP has real interference. In the local model, a 2 mm search recovered the 1.178 mm crown overlap of the moving cell. A 1 mm search found only 1.000 mm, and a 0.6 mm search found only 0.598 mm. Tightening the search around the flush configuration can therefore hide real interference. Conversely, the default global search reported a peak overlap of 10.093 mm, versus 1.848 mm with a 2 mm search. These values identify a contact-model discrepancy. They do not establish an installation force. The flush comparison requires a verified path into contact, including the washers and strips, and force balance in the installed assembly before the vibration solve.
@@ -556,7 +556,7 @@ Nickel model & Bare travel at 8.54~N & Raised travel at 8.54~N & Force at 0.50~m
 Bilinear & 0.500~mm & 0.207~mm & 8.54 / 138.53~N\\
 Multilinear with damage & 0.20190~mm & 0.20190~mm & 11.33 / 141.82~N\\\bottomrule
 \end{tabular}
-\captionof{table}{Both refined multilinear histories bracketed 8.54205~N between 0.201660 and 0.202148~mm. The nylon case carried zero contact force at both stations. The original coarse interpolation had suggested 0.0125~mm less travel with the case. All four forces at 0.50~mm come from saved equilibria.}\end{center}
+\captionof{table}{At 8.54205~N the refined bare, nylon and aluminium multilinear fixtures all gave 0.201904~mm between the same two saved stations. Both cases carried zero contact force there. At 0.212402~mm the first loaded face carried 0.114~N with nylon and 0.210~N with aluminium. The forces at 0.50~mm are saved equilibria for bare and nylon.}\end{center}
 
 \heading{Printed-material scope and the last equilibrium}
 The fixed neighbour began sharing the load between 0.625 and 0.675~mm of cell travel. At 0.675~mm the applied pull was 389.45~N. The case screws carried 176.89~N, the fixed neighbour carried 147.66~N and the original clamps carried 64.90~N. Between 0.675 and 0.725~mm the peak in-plane tension first exceeded the 52.3~MPa printed-coupon mean. The crossing occurred 4.36~mm from the nearest coupled bearing node. The first through-layer stress crossing followed at 0.800--0.825~mm. These local results depend on the actual stiffness of the mounts and neighbouring cells.
@@ -648,5 +648,29 @@ At 1.25~mm all three cells sit close to the native pockets. The small clearances
 Zphr has six pockets of radius 11.000~mm and pitch 25.623~mm. The three 10.700~mm-radius cells have adjacent pitches of 23.893 and 23.859~mm. Centring the middle cell in a Zphr pocket puts the outer cell axes 1.729 and 1.764~mm off-centre in the neighbouring pockets. The available concentric radial clearance is only 0.300~mm.
 
 The 14 Zphr bores have 3.400~mm through diameter. Comparing inter-hole distances over every assignment of four bores to the board corners proves that at least one centre is displaced by at least 10.525~mm under any rigid planar alignment. A nominal M3 screw can accommodate only 0.800~mm of centre offset across the case and PCB bores. Changing stand-off alone cannot register this pattern.
+
+\newpage
+\pageheading{The raised case engages later when the pull reverses}
+We pulled the same outer cell in both directions along PCB X. For each mounting configuration, the two solved input decks had the same geometry, clamp preload, bilinear nickel law and load increments. The only numerical change was the sign of the prescribed cell travel. Each native result contains 33 converged equilibria.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/directional-pull.pdf}
+\captionof{figure}{Applied cell force at equal travel magnitudes for the bare board and the two 3~mm mounts. Dashed segments follow the linear PLA model beyond its first printed-material reference. All six curves use the October bilinear nickel law. The multilinear nickel results are on pages~25--26.}\end{center}
+
+\heading{Force at a common displacement}
+At 0.420625~mm, all six fixtures remained within the printed-material and contact-penetration screens where applicable. The bare forces in opposite directions differed by only 0.027~N. Reversing the pull reduced force by 70\% with nylon case screws and 76\% with aluminium screws.
+
+\begin{center}\small\begin{tabular}{lrrrr}\toprule
+ & \multicolumn{2}{c}{Applied cell force [N]} & \multicolumn{2}{c}{Via four case screws [N]}\\
+Mount & $+X$ & $-X$ & $+X$ & $-X$\\\midrule
+Bare & 8.26 & 8.24 & --- & ---\\
+Nylon & 100.99 & 30.17 & 80.00 & 18.91\\
+Aluminium & 209.96 & 49.42 & 174.54 & 35.58\\
+\bottomrule\end{tabular}
+\captionof*{table}{Force magnitudes at 0.420625~mm of cell travel. Each value comes from a saved native equilibrium. The original nickel clamps carry the remainder in these fixtures.}\end{center}
+
+\heading{Clearance and first load}
+Under a pure X translation of the undeformed STEP cell, the gap first closes after 0.163~mm toward positive X and 0.308~mm toward negative X. In the native fixtures the cell can also rotate. The moving-cell contact pair first registered closure between 0.196--0.221~mm in positive X and 0.346--0.371~mm in negative X for both screw materials. The later engagement leaves less reverse travel over which the case can take load.
+
+At 0.500~mm in negative X, the applied force was 8.51, 64.73 and 113.46~N for the bare board, nylon and aluminium respectively. The corresponding maximum nickel plastic strains were 1.252, 1.346 and 1.434\%. Peak in-plane PLA tension at that reverse endpoint reached 23.58~MPa with nylon and 43.07~MPa with aluminium (45\% and 82\% of the 52.3~MPa coupon mean). Both reverse paths stayed within the recorded contact and PLA screens. The fixed screw tops represent a local fixture. These loads describe a prescribed displacement and do not establish a rupture load.
 
 \end{document}
