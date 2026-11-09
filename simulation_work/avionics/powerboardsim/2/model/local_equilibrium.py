@@ -58,7 +58,7 @@ def movement_deck(source, job, *, moving_screw_tops=False):
     return '\n'.join([*lines, '*enddo','*cfclos','finish','/exit,nosave',''])
 
 
-def recover(path, source, movements, cased=False, *, moving_screw_tops=False):
+def recover(path, source, movements, cased=False, *, moving_screw_tops=False, seat_pilots=()):
     config = json.loads((source / 'config.json').read_text())
     pilot = json.loads((source / 'mesh.json').read_text())['pilot']
     model = (source / 'model.inp').read_text()
@@ -69,6 +69,7 @@ def recover(path, source, movements, cased=False, *, moving_screw_tops=False):
     if cased:
         restraints.update(SCREW_PILOTS)
         restraints.add(NEIGHBOR_PILOT)
+        restraints.update(seat_pilots)
     ids = np.array(sorted(restraints))
     result = reader.read_binary(str(path))
     geom_index = positions(result.mesh.nnum, ids)
@@ -113,6 +114,9 @@ def recover(path, source, movements, cased=False, *, moving_screw_tops=False):
                                     *((f'washer{i+1}',j) for i,j in enumerate(bottom))]:
                     for name,vector in [('u_mm',disp[index]), ('force_N',forces[index]), ('moment_Nmm',applied[index,3:])]:
                         row.update({f'{label}_{name}_{a}': float(v) for a,v in zip('xyz',vector)})
+            for j,n in enumerate(seat_pilots,1):
+                f=forces[positions(ids,[n])[0]]
+                row.update({f'seat{j}_support_N_{axis}':float(v) for axis,v in zip('xyz',f)})
             neighbor = forces[positions(ids, [NEIGHBOR_PILOT])][0]
             for axis, value in zip('xyz', screw_forces.sum(axis=0)):
                 row['screw_support_N_'+axis] = float(value)

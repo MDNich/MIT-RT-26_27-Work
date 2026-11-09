@@ -4,7 +4,7 @@ $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 $spec=Get-Content -LiteralPath "$Work\local_job.json" -Raw|ConvertFrom-Json
 if ($spec.case -ne $Case -or $spec.job -notin 'tear','pull' -or $spec.cores -notin 1,4){throw 'Invalid local fixture specification'}
-$catalog=if ($Case.EndsWith('_approach1')) {'local_install_jobs.json'} elseif ($Case.EndsWith('_pin1')) {'local_contact_retries.json'} else {'local_jobs.json'}
+$catalog=if ($Case.EndsWith('_seatfaces1')) {'local_seat_jobs.json'} elseif ($Case.EndsWith('_approach1')) {'local_install_jobs.json'} elseif ($Case.EndsWith('_pin1')) {'local_contact_retries.json'} else {'local_jobs.json'}
 $published=Get-Content -LiteralPath "$PSScriptRoot\..\validation\$catalog" -Raw|ConvertFrom-Json
 $record=$published.PSObject.Properties[$Case].Value
 if ((Get-FileHash -LiteralPath "$Work\local_job.json").Hash -ne $record.spec_sha256){throw 'Local specification identity failed'}

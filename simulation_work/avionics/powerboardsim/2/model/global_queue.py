@@ -87,8 +87,10 @@ def jobs():
         if branch in ('bare','stand3_nylon') and (ROOT/'validation/local_install_jobs.json').is_file():
             metal='nylon' if branch=='bare' else 'aluminium'
             name='flush_'+metal+'_lateral_friction_locked_approach1'
-            if name in read(ROOT/'validation/local_install_jobs.json'):
+            if metal=='nylon' and name in read(ROOT/'validation/local_install_jobs.json'):
                 yield name,'bare_lateral_friction_locked'
+            if metal=='aluminium' and (ROOT/'validation/local_seat_jobs.json').is_file():
+                yield name.replace('_approach1','_seatfaces1'),'bare_lateral_friction_locked'
         if branch=='bare' and (ROOT/'validation/contact_patch_inputs.json').is_file():
             # The matching free submodel checks the cut-boundary motion before imposing contact.
             yield 'patch_stand3_nylon_span9_free_v1','stand3_nylon_basis'
@@ -107,6 +109,8 @@ def jobs():
                 yield 'stand3_aluminium_basis','stand3_aluminium_static'
                 if (ROOT/'validation/board_surface_jobs.json').exists():
                     yield 'flush_nylon_surf1_static',''
+                if (ROOT/'validation/local_seat_jobs.json').is_file():
+                    yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
             if branch=='bare' and axis=='Z' and (ROOT/'validation/board_surface_jobs.json').exists():
                 yield 'flush_aluminium_surf1_static',''
         if (ROOT/'validation/contact_replay_inputs.json').is_file() and branch in ('bare','stand3_nylon'):
@@ -245,7 +249,7 @@ def run():
         if not (receipt/'released.txt').exists():
             log('Archive '+case)
             archive_closed_case(case,receipt)
-        audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith('_approach1') else ('audit_local.py' if local else 'audit_global.py'))
+        audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith(('_approach1','_seatfaces1')) else ('audit_local.py' if local else 'audit_global.py'))
         if case.startswith('patch_'):
             audit='audit_contact_patch.py'
         elif case.startswith('replay_'):

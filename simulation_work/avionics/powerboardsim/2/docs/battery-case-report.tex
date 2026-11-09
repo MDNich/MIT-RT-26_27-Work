@@ -184,4 +184,25 @@ Median sampled gap [mm] & 0.248 & 0.227 & 0.236 & 0.214\\\bottomrule
 \end{tabular}\end{center}
 
 In this local fixture the seating springs moved with the screw grips, allowing a tilted tab to cross the board plane. The peak computed PLA equivalent stress reached 233~MPa under the elastic print model. The physical installation force, failure sequence, and full-flush side-pull response remain unresolved. The whole-board installation model instead places contact directly between each tab and the flexible PCB surface, so the model can develop a normal reaction at the bearing land.
+\newpage
+\heading{Contact deflects the raised case along the middle cell}
+The fixed-open calculation on page~10 placed parts of all three cell surfaces inside the enclosure at the selected X-waveform sample. Along the middle cell, the affected PLA facets extended from 25.2 to 95.6~mm in board Y. We therefore retained the whole length of this contact region in two native submodels. Their outer boundaries lay 9 or 15~mm from the middle-cell contact line. Each retained the original quadratic elements and directional PLA properties.
+
+For each domain we imposed the tightened board displacements, then applied the signed motion at 2.9276~s to the two local cell bodies and the outer cut faces of the PLA. We increased the imposed motion from zero to its full value and unloaded in a series of static equilibria. With cell contact disabled, the free PLA nodes followed the parent solution to within 1~$\mu$m. With frictionless contact active, the largest change in their motion was 249~$\mu$m in the smaller domain and 244~$\mu$m in the larger one.
+
+\begin{center}\includegraphics[width=.86\linewidth]{figures/raised-nylon-contact-replay.pdf}
+\captionof{figure}{Each curve gives the force needed to impose this particular displacement path. The larger domain leaves a wider section of PLA free to flex. The peak reaction fell by 16.2\%. The local models hold the cell motion fixed as the case pushes back.}\end{center}
+
+\begin{center}\small\begin{tabular}{lrr}\toprule
+At the fully imposed displacement & 9~mm domain & 15~mm domain\\\midrule
+Resultant cell reaction [kN] & 3.079 & 2.581\\
+Active contact faces & 24 & 24\\
+Active faces touching the artificial cut & 0 & 0\\
+Maximum sampled skin overlap, contact disabled [mm] & 0.2165 & 0.2164\\
+Maximum sampled skin overlap, contact enabled [mm] & 0.0424 & 0.0445\\\bottomrule
+\end{tabular}\end{center}
+
+The independent geometry check measured signed distances on vertices and facet centres inside a common 8~mm band. Some tessellated surfaces still intersected even though the largest loaded-corner penetration recorded by ANSYS was below 0.5~$\mu$m at this state. Changing the cut size changed the force appreciably despite whole-model force imbalances below 0.004~N. These results establish local deflection under imposed motion. A flight impact load requires the cells and the surrounding board to respond to contact together.
+
+A separate search near the beginning of the same X waveform found a clear middle-cell state at 85.3424~ms and intersecting skins at 85.3577~ms. The search sampled at 8192~Hz and refined that interval at 65,536~Hz. Contacts between earlier survey samples or elsewhere on the assembly remain possible. This interval sets the time window for the transient contact comparison.
 \end{document}

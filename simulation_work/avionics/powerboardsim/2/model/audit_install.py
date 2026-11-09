@@ -15,11 +15,11 @@ def contact_history(raw, records, tab, topology):
     faces=raw.grid.cell_data
     groups={}
     for pid,count in topology.items():
-        ids=faces['ansys_elem_num'][(faces['ansys_real_constant']==pid)&(faces['ansys_etype']==(862 if pid<=862 else 864))]
+        ids=faces['ansys_elem_num'][(faces['ansys_real_constant']==pid)&(faces['ansys_etype']==(858 if pid>=880 else (862 if pid<=862 else 864)))]
         assert len(ids)==count,(pid,len(ids),count)
         groups[pid]=ids
     output=[];first={};worst={i:0. for i in groups}
-    case_error=neighbor_error=0.
+    case_error=neighbor_error=seat_error=0.
     for ii,rec in enumerate(records):
         k=rec['native_set']
         enum,vals,_=raw.element_solution_data(k-1,'EMN')
@@ -50,14 +50,22 @@ def contact_history(raw, records, tab, topology):
         # 861/862 contact elements sit on the case, 863/864 on the two nickel strips.
         screw=np.array([rec['screw_support_N_'+a] for a in 'xyz'])
         neighbor=np.array([rec['neighbor_support_N_'+a] for a in 'xyz'])
-        err=float(np.linalg.norm(screw-loads[861]-loads[862]+loads.get(863,0.)+loads.get(864,0.)))
+        seat_contact=np.zeros(3)
+        for j,pid in enumerate(range(880,884),1):
+            if pid in loads:
+                support=np.array([rec[f'seat{j}_support_N_'+a] for a in 'xyz'])
+                imbalance=np.linalg.norm(support+loads[pid]);seat_error=max(seat_error,float(imbalance))
+                assert imbalance<.03+.002*np.linalg.norm(support),(pid,k,imbalance)
+                seat_contact+=loads[pid]
+        err=float(np.linalg.norm(screw-loads[861]-loads[862]+loads.get(863,0.)+loads.get(864,0.)-seat_contact))
         nerr=float(np.linalg.norm(neighbor+loads[862]))
         if err>.03+.002*sum(np.linalg.norm(x) for x in loads.values()) or nerr>.03+.002*np.linalg.norm(neighbor):
             raise ValueError(f'Case or neighboring target contact does not balance its supports, set {k}: {err}, {nerr} N')
         case_error=max(case_error,err);neighbor_error=max(neighbor_error,nerr)
     assert len(tab)==len(output)
     return output,dict(contact_onset=first,peak_closed_corner_penetration_mm=worst,
-                worst_case_support_contact_residual_N=case_error,worst_neighbor_contact_residual_N=neighbor_error)
+                worst_case_support_contact_residual_N=case_error,worst_neighbor_contact_residual_N=neighbor_error,
+                worst_fixed_seat_contact_residual_N=seat_error)
 
 
 def indexed(tab,sets):
@@ -69,7 +77,9 @@ def audit(case,campaign):
     dest=ROOT/'.runtime/post'/campaign/case;dest.mkdir(exist_ok=True,parents=True)
     folder=ROOT/'.runtime/archive'/campaign/case;receipt=ROOT/'.runtime/receipts'/campaign/case
     status=read(receipt/'status.json');ledger=read(receipt/'archived.json');spec=read(folder/'local_job.json')
-    ref=read(ROOT/'validation/local_install_jobs.json')[case]
+    face_seats=case.endswith('_seatfaces1')
+    registry='local_seat_jobs.json' if face_seats else 'local_install_jobs.json'
+    ref=read(ROOT/'validation'/registry)[case]
     assert status['phase']=='solver_complete' and case==spec['case']==status['case']==ledger['case']
     assert spec['load_protocol']=='four_stage_install' and digest((folder/'local_job.json').read_bytes())==ref['spec_sha256']
     assert status['input_sha256'].lower()==ref['input_sha256']==spec['files']['model.inp']
@@ -79,7 +89,7 @@ def audit(case,campaign):
     listing=(folder/'solve.out').read_text(errors='replace')
     rst=folder/'pull.rst'
     movements=movement_table(folder/'moving_supports.csv')
-    rows=recover(rst,source,movements,True,moving_screw_tops=True)
+    rows=recover(rst,source,movements,True,moving_screw_tops=True,seat_pilots=spec.get('seat_pilots',()))
     done=[tuple(map(int,x)) for x in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)]
     assert done==[(r['loadstep'],r['substep']) for r in rows] and done[0]==(1,1)
     for (sa,ia),(sb,ib) in zip(done,done[1:]):
@@ -117,6 +127,8 @@ def audit(case,campaign):
         raise ValueError('Whole-fixture force or moment imbalance')
     write_csv(rows,dest/'whole_fixture_balance.csv')
     topology={int(float(p['pair'])):int(float(p['contact'])) for p in read(ROOT/'validation/flush_approach_preflight.json')['pairs']}
+    if face_seats:
+        topology.update({p['real']:p['tab_faces'] for p in read(ROOT/'validation/local_seat_preflight.json')['pairs']})
     raw=reader.read_binary(str(rst))
     pairs,checks=contact_history(raw,rows,table(folder/'case_pairs.csv'),topology)
     from tab_seating import trace
@@ -143,8 +155,9 @@ def audit(case,campaign):
     # Distinguish complete loading from acceptable contact resolution. A coarse shell-contact
     # penetration (>10% of thickness) or PLA/rigid penetration >0.05 mm requires a refined retry.
     limits={861:.05,862:.05,863:.015,864:.015}
+    if face_seats:limits.update({pid:.05 for pid in range(880,884)})
     unresolved=[pid for pid,val in checks['peak_closed_corner_penetration_mm'].items() if val>limits[pid]]
-    if len(seated) and not any(r['closed'] for r in pairs if r['native_set']==sets[seated[0]]):
+    if len(seated) and not any(r['closed'] for r in pairs if r['native_set']==sets[seated[0]] and r['pair'] in (861,862,863,864)):
         raise ValueError('Reached nominal flush position without contacting any cell, strip or washer')
     reached=bool(len(seated) and abs(times[-1]-end)<1e-9 and status['native_clean'])
     # A 3 mm prescribed screw-head travel need not produce flush PLA tabs. With no explicit
@@ -155,6 +168,11 @@ def audit(case,campaign):
         for i,p in enumerate(row['tabs'],1):
             if p['min_mm'] < -seat_screen_mm:tab_review.append('datum crossing: tab '+str(i))
             if row['time']>=seat-1e-9 and p['min_mm']>seat_screen_mm:tab_review.append('no near-bearing point: tab '+str(i))
+    if face_seats and len(seated):
+        stopped_at=sets[seated[0]]
+        for p in pairs:
+            if p['native_set']==stopped_at and p['pair']>=880 and not p['closed']:
+                tab_review.append(f"open bearing pair {p['pair']} at final drawdown")
     out=dict(case=case,campaign=campaign,states=len(rows),full_requested_path=reached,
         installed_tab_gaps_mm=tab_history[seated[0]]['tabs'] if len(seated) else None,
         tab_plane_review=sorted(set(tab_review)),tab_plane_review_screen_mm=seat_screen_mm,
