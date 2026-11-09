@@ -18,7 +18,7 @@ def prepare(archive):
         src=(base/rel).read_bytes()
         expected=json.loads((base/'MANIFEST.json').read_text())['files'][rel]['sha256']
         assert hashlib.sha256(src).hexdigest()==expected
-        raw=re.sub(rb"(?im)^(_wb_(?:ProjectScratch|SolverFiles|userfiles)_dir\(1\)\s*=\s*)'[^'\r\n]*'",lambda m:m[1]+b"'.\\'",src)
+        raw=re.sub(rb"(?im)^(_wb_(?:ProjectScratch|SolverFiles|userfiles)_dir(?:_PSD|_Modal)?\(1\)\s*=\s*)'[^'\r\n]*'",lambda m:m[1]+b"'.\\'",src)
         raw=re.sub(rb'(?im)^! File used for geometry attach:[^\r\n]+',b'! Geometry embedded in this Workbench input.',raw)
         folder=ROOT/'.runtime/inputs'/key
         folder.mkdir(exist_ok=True,parents=True)
