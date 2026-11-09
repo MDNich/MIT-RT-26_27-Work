@@ -12,7 +12,9 @@ def audit(case,campaign):
     assert (r/'released.txt').exists()
     if read(r/'status.json').get('native_clean') is False:
         from partial_board import audit as audit_partial
-        return audit_partial(case,campaign)
+        audit_partial(case,campaign)
+        from installed_tab_gap import run as audit_gaps
+        return audit_gaps(case,campaign,[])
     ledger=read(r/'archived.json');status=read(r/'status.json');job=read(d/'surface_job.json')
     pub=read(ROOT/'validation/board_surface_jobs.json')[case]
     assert case==ledger['case']==job['case']==status['case'] and ledger['campaign']==campaign and status['phase']=='solver_complete' and status['exit']==0
@@ -70,5 +72,7 @@ def audit(case,campaign):
              PLA_principal_elastic_strain_extrema=[min(m['e3min']),max(m['e1max'])],
              classification='Completed numerical installation, engineering review required. Check contact location, PLA material scope, fastener force and restart before releasing vibration.')
     write_json(ROOT/'validation/review_global'/f'{case}.json',rec)
+    from installed_tab_gap import run as audit_gaps
+    audit_gaps(case,campaign,[])
     print(case,len(times),'equilibria,',len(flag),'screen flags; no automatic modal release')
 if __name__=='__main__':audit(*sys.argv[1:])

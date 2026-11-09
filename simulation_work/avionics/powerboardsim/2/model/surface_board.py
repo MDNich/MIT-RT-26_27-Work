@@ -96,7 +96,7 @@ def verify_faces(d,preflight_sha256,tab_pairs):
             if typ==858:assert len(a)==s['native_contact_faces_expected']
             out[name+'_facets']=len(a)
         pairs[ir]=dict(**out,initial_gap_mm=seen[ir])
-    rec=dict(pairs=pairs,cell_interface_gap_mm=seen[853],input_sha256=digest(d/'pre.inp'),listing_sha256=digest(d/'pre.out'),
+    rec=dict(pairs=pairs,cell_interface_gap_mm=seen[853],input_sha256=digest(d/'pre.inp'),listing_sha256=digest(d/'pre.out'),faces_sha256=digest(d/'seat_faces.csv'),
              scope='Initial native geometry/contact only; all tab normals face the board, all four patch pairs start open. No installation result.')
     return rec
 

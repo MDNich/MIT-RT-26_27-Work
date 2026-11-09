@@ -9,7 +9,7 @@ Z_BOARD=-.55118
 FACES=(33,29,25,37)
 SIGNS=((-1,-1),(-1,1),(1,-1),(1,1))
 
-def point_fields(raw,sets,points):
+def point_fields(raw,sets,points,*,field_directory='tab_points_v1'):
     import fcntl,json,subprocess,sys
     from pathlib import Path
     from film_identity import verified,digest
@@ -23,7 +23,8 @@ def point_fields(raw,sets,points):
     native=movement_table(folder/'moving_supports.csv')
     points=sorted(set(map(int,points))|{int(n) for k,n in native});sets=list(map(int,sets))
     q=dict(nodes=points,sets=sets,source_sha256=sha)
-    out=ROOT/'.runtime/post'/campaign/case/'tab_points_v1';out.mkdir(parents=True,exist_ok=True)
+    assert field_directory in ('tab_points_v1','first_loaded_corners_v1')
+    out=ROOT/'.runtime/post'/campaign/case/field_directory;out.mkdir(parents=True,exist_ok=True)
     lock=(out/'request.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX)
     req=out/'request.json'
     if req.exists():assert json.loads(req.read_text())==q

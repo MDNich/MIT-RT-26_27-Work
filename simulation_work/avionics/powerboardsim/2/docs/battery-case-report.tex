@@ -11,7 +11,7 @@
 {\large Assembly fit, bolt tightening, side pull and vibration response}\par
 {\small 9 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02}
 \heading{The mounting height determines whether the cells are already loaded}
-Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. The raised case begins with an air gap. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
+Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. During rigid installation from the raised position, the four outer washers touch first while 2.397~mm of tab stand-off remains. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
 \begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.png}
 \captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
 \heading{What the raised case changes}
@@ -29,6 +29,9 @@ Tab stand-off [mm]&Cell overlap [mm$^3$/cell]&Washer bodies intersected&Other in
 2&0&4&None found\\
 3&0&0&None found\\\bottomrule\end{tabular}
 \captionof{table}{Solid intersections between the unstrained case and mechanical STEP bodies. The board's lower face defines the tab seating datum.}\end{center}
+Starting from 3~mm of tab stand-off, the four outer washers meet the descending case after 0.603~mm. The middle cell first touches after 1.760~mm and the two outer cells after 1.790~mm. Once a washer touches, actual motion depends on deformation of the case and fasteners. A rigid assembly at the nominal registration therefore needs more than 2.397~mm of stand-off for clearance. Manufacturing tolerances and assembly misalignment would change that value.
+\begin{center}\includegraphics[width=.96\linewidth]{figures/flush-drawdown-fit.pdf}
+\captionof{figure}{Left, downward travel from the 3~mm position. Solid intersections 0.05~mm beyond each onset independently confirm contact. Right, subdividing the same curved finite-element surfaces moves the middle-cell contact toward the STEP solution. The underlying case mesh and the physical geometry are fixed.}\end{center}
 \heading{Materials and mounting representation}
 The supplied single-solid STEP has volume 63.069~cm$^3$. At a printed-PLA reference density of 1.17~g/cm$^3$, a dense case weighs 73.79~g, about 29.3\% of the bare assembly mass. The material axes place the print layers parallel to the PCB for this scenario. PolyLite PLA coupon tensile moduli are 3.427~GPa in the print plane and 3.065~GPa through the layers. Shear moduli and Poisson ratios are engineering assumptions. Actual infill, orientation, print parameters and case mass require measurement. The published coupons used 100\% infill. \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{Polymaker technical data sheet.}
 
@@ -153,7 +156,7 @@ The independent calculation uses each native mode's signed displacement field an
 
 We repeated the independent integration with modal cutoffs of 2000, 3000, 3500 and 4000~Hz, keeping the input spectrum fixed. For the raised nylon case under base X, both the 20-mode and 49-mode calculations gave a peak PCB Z displacement of 145.55~$\mu$m RMS. Across all three inputs, increasing the cutoff from 3500 to 4000~Hz changed the nine PCB directional peaks by at most 0.22\% bare and 0.056\% cased. The bare PCB's Y response to base Y differed by 8.32\% with the 2000~Hz cutoff. These checks apply to displacement within the available basis.
 
-The two native base-X solutions independently gave 120.00~$\mu$m for the raised aluminium case and 145.55~$\mu$m for the raised PCB's peak Z displacement. All 30 directional displacement peaks across five part selections per cased model agreed with the independent integrals within 0.0017\%. Both calculations linearize about the tightened contact state.
+The two native base-X solutions independently gave 120.00~$\mu$m for the raised aluminium case and 145.55~$\mu$m for the raised nylon assembly's peak PCB Z displacement. All 30 directional displacement peaks across five part selections per cased model agreed with the independent integrals within 0.0017\%. Both calculations linearize about the tightened contact state.
 
 \newpage
 \heading{The 3 mm stand-off does not prevent dynamic cell contact in the model}
@@ -162,7 +165,7 @@ The tab stand-off is not the air gap at the cells. The smallest sampled cell cle
 \begin{center}\includegraphics[width=.98\linewidth]{figures/stand3_nylon-linear-clearance.pdf}
 \captionof{figure}{Raised case, nylon screws, October X-axis waveform. Left: first-order gap of the selected pair. A negative value indicates that the linear solution continues past projected contact. Right: actual-scale section of both triangulated surfaces displaced by the same signed modes. The curves are a diagnostic of the fixed-open model.}\end{center}
 
-We independently integrated the nine-second October acceleration history and reconstructed the two skins at the instant of greatest projected approach for this pair, 2.9276~s into the waveform. At the tightened rest position the cell and case meshes had no intersections. In the selected deformed state, 895 triangle pairs intersected, and a separate signed-distance calculation placed 24 cell vertices more than 1~$\mu$m inside the PLA skin. The deepest sampled vertex was 0.214~mm inside. This is an impossible overlap allowed by the linear vibration solution. It identifies the need for a contact calculation; it is not a physical indentation or the time of first impact.
+We independently integrated the nine-second October acceleration history and reconstructed the two skins at the instant of greatest projected approach for this pair, 2.9276~s into the waveform. At the tightened rest position the cell and case meshes had no intersections. In the selected deformed state, 895 triangle pairs intersected, and a separate signed-distance calculation placed 24 cell vertices more than 1~$\mu$m inside the PLA skin. The deepest sampled vertex lay 0.214~mm inside the PLA. Subdividing the curved elements twice more gave 0.215~mm at the same instant. Both surfaces had positive clearance before excitation. Their intersection shows where the fixed-open vibration assumption breaks down.
 
 \begin{center}\small\begin{tabular}{lrrr}\toprule
 Excitation & Cell pair gap [mm] & Relative RMS [mm] & Intersecting cell/PLA pairs\\\midrule
@@ -180,7 +183,12 @@ Four nylon screws drew the printed case toward a rigid board datum from an initi
 \begin{center}\includegraphics[width=.98\linewidth]{figures/flush-nylon-installation.pdf}
 \captionof{figure}{Left, the computed total screw reaction rose to 2.066~kN. The shaded interval marks the first exceedance of the 0.05~mm numerical penetration screen. Right, the tab surfaces tilted during drawdown. At the last equilibrium every tab crossed the nominal PCB plane at some points and remained clear at others.}\end{center}
 
-The first new contact was with the fixed surfaces representing the neighboring cells and washers at 0.59--0.63~mm screw travel. The moving edge cell and its two nickel strips remained clear of the PLA throughout this partial path. Loaded-corner penetration first exceeded 0.05~mm at 1.67--1.71~mm travel and reached 0.119~mm. The largest departure from force balance was 0.030~N. This force balance shows that the reported reactions support the forces in the numerical model. The penetration and tab geometry limit their physical interpretation.
+\begin{minipage}[c]{.48\linewidth}\includegraphics[width=\linewidth]{figures/washer-location.pdf}\end{minipage}\hfill
+\begin{minipage}[c]{.49\linewidth}
+The native fixture first loaded the four outer washers at 0.59--0.63~mm of screw travel. This brackets the independent STEP result of 0.603~mm (page~2). At 0.63~mm, two closed contact facets at each washer carried 4.89--4.92~N in board Z, totalling 19.63~N. Each loaded node lay within 0.8~$\mu$m of its assigned washer. The next nearest candidate was over 8.6~mm farther away. These local reactions apply to the fixture with fixed neighboring hardware.
+\end{minipage}
+
+The moving edge cell and its two nickel strips stayed clear throughout the partial path. Loaded-corner penetration first exceeded 0.05~mm at 1.67--1.71~mm travel and reached 0.119~mm. The largest departure from force balance was 0.030~N.
 
 \begin{center}\small\begin{tabular}{lrrrr}\toprule
 Final saved equilibrium & Tab 1 & Tab 2 & Tab 3 & Tab 4\\\midrule
@@ -260,6 +268,6 @@ The aluminium case had a peak layer-normal stress of 24.78~MPa RMS at a corner 0
 \begin{center}\includegraphics[width=.96\linewidth]{figures/stand3_aluminium-linear-clearance.pdf}
 \captionof{figure}{Raised aluminium-screw case, independent response to the October X waveform. Near the selected point, the tightened gap was 0.145~mm and the normal relative motion was 0.070~mm RMS, compared with 0.098~mm for nylon. The section is plotted at physical scale.}\end{center}
 
-At 8.098053~s, the aluminium model's cell and PLA skins intersected in 864 triangle pairs. Nineteen sampled cell vertices lay more than 1~$\mu$m inside the case, and the deepest vertex was 0.174~mm inside. At 8.098083~s the independent signed reconstruction reached 110.1~MPa in layer-normal tension at the critical tab corner. At this exact sample the skins intersect in 854 triangle pairs with a deepest sampled cell vertex of 0.174~mm. For both screw materials, the peak tension at the selected highest-RMS corner occurs while the cells overlap the PLA in the linear solution. The post-contact loads and behavior of the actual bearing remain unresolved.
+At 8.098053~s, the aluminium model's cell and PLA skins intersected in 864 triangle pairs. Nineteen sampled cell vertices lay more than 1~$\mu$m inside the case, and the deepest vertex was 0.174~mm inside. At 8.098083~s the independent signed reconstruction reached 110.1~MPa in layer-normal tension at the critical tab corner. At this exact sample the skins intersect in 854 triangle pairs with a deepest sampled cell vertex of 0.174~mm. For both screw materials, the peak tension at the selected highest-RMS corner occurs while the cells overlap the PLA in the linear solution. With two additional geometric subdivisions, the cell vertices reached 0.201~mm inside the PLA with nylon and 0.175~mm with aluminium at their respective peak-tension samples. The physical loads after contact and at the actual screw bearing remain unresolved.
 
 \end{document}
