@@ -68,7 +68,9 @@ def run(case, campaign, *, pull=False):
     for i,j,k in ((0,1,'PRXY'),(1,2,'PRYZ'),(0,2,'PRXZ')):
         comp[i,j]=comp[j,i]=-prop[k]/mod[i]
     shear = stress*np.array([prop[k] for k in ('GXY','GYZ','GXZ')])
-    bound = np.array(sorted({int(n) for n in re.findall(r'(?im)^CERIG,95000[1357],(\d+),UXYZ',deck)}))
+    bearing_pilots = read(folder/'local_job.json').get('bearing_pilots') if local else None
+    masters = '|'.join(map(str,bearing_pilots or (950001,950003,950005,950007)))
+    bound = np.array(sorted({int(n) for n in re.findall(r'(?im)^CERIG,(?:'+masters+r'),(\d+),UXYZ',deck)}))
     assert len(bound)>=12
     xyz = rt.mesh.nodes*length
     mount = cKDTree(xyz[np.searchsorted(rt.mesh.nnum,bound)])

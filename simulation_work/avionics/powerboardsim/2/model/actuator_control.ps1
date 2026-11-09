@@ -1,4 +1,4 @@
-param([Parameter(Mandatory)][ValidateSet('board_actuator_control_v1','seat_surface_control_v1','patch_table_control_v1')][string]$Trial)
+param([Parameter(Mandatory)][ValidateSet('board_actuator_control_v1','seat_surface_control_v1','patch_table_control_v1','spherical_bearing_control_v1')][string]$Trial)
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot
 $src="$root\.runtime\$Trial"
@@ -21,7 +21,7 @@ try {
         }
     }
     $p=Start-Process $exe -WorkingDirectory $work -Wait -PassThru -ArgumentList '-b nolist -s noread -p ansys -smp -np 1 -j file -i control.inp -o control.out'
-    foreach ($n in 'control.out','file.err','actuator_static.csv','actuator_modal.csv','seat_control.csv','control_response.csv'){
+    foreach ($n in 'control.out','file.err','actuator_static.csv','actuator_modal.csv','seat_control.csv','control_response.csv','bearing_control.csv'){
         if (Test-Path "$work\$n"){Copy-Item "$work\$n" -Destination $src}
     }
     $p.ExitCode|Set-Content "$src\exit.txt" -Encoding UTF8

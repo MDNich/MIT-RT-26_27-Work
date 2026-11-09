@@ -251,6 +251,8 @@ def jobs():
                 yield 'stand3_nylon_damage_cont_nominal_pin1','bare_damage_cont_nominal'
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
+                    if (ROOT/'validation/rocking_bearing_input.json').is_file():
+                        yield 'flush_nylon_lateral_friction_locked_rock1_seatfaces1','bare_lateral_friction_locked'
         if (ROOT/'validation/contact_replay_inputs.json').is_file() and branch in ('bare','stand3_nylon'):
             if branch=='bare':
                 yield 'replay_stand3_nylon_span9_free_s4_v1','patch_stand3_nylon_span9_free_v1'
@@ -354,6 +356,8 @@ def run():
             controls.append((f'default_{mesh}_initial_v1','pre.inp',f'default_{mesh}_initial','flush_install_check.ps1','default_install.py'))
         if case in ('stand3_aluminium_psd_X_private1','flush_nylon_surf1_static') and not (RECEIPTS/case/'dispatch.json').exists():
             controls.append(('shared_dmp_io_v1','control.inp','shared_dmp_control','shared_dmp_control.ps1','shared_dmp_control.py'))
+        if case=='stand3_nylon_enforced' and not (RECEIPTS/case/'dispatch.json').exists():
+            controls.append(('spherical_bearing_control_v1','control.inp','spherical_bearing_control','actuator_control.ps1','rocking_bearing.py'))
         if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.
@@ -385,6 +389,12 @@ def run():
             mesh=case.split('_default_',1)[1].split('_')[0]
             if not (ROOT/f'validation/default_{mesh}_initial.json').is_file():
                 log('Default-contact geometry check pending: '+case)
+                continue
+        if case.endswith('_rock1_seatfaces1'):
+            source=case.replace('_rock1_seatfaces1','_seatfaces1')
+            checked=[ROOT/'validation'/key/(source+'.json') for key in ('local','partial_local','review_local')]
+            if not any(p.is_file() for p in checked) or not (ROOT/'validation/spherical_bearing_control.json').is_file():
+                log('Bearing sensitivity awaits its matched rigid fixture and joint control: '+case)
                 continue
         if case.endswith('_minus_seatfaces1'):
             nominal=case.replace('_minus_seatfaces1','_seatfaces1')
