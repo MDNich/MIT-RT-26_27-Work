@@ -111,6 +111,18 @@ def audit(case,campaign):
         path=ROOT/'.runtime/post'/campaign/case/'coordinates.npz'
         path.parent.mkdir(parents=True,exist_ok=True)
         np.savez_compressed(path,time_s=FRAMES/FS,coordinates=data[FRAMES],frequencies_Hz=basis['frequencies_Hz'])
+        independent=ROOT/'validation/independent_motion'/(case+'.json')
+        if independent.is_file():
+            from film_identity import verified
+            check=json.loads(independent.read_text())
+            assert check['campaign']==campaign and check['basis_rst_sha256']==basis['rst_sha256']
+            clip=path.parent/'independent/coordinates.npz'
+            verified(clip,check['clip_sha256'])
+            with np.load(clip) as prior:
+                assert np.array_equal(prior['time_s'],FRAMES/FS)
+                error=float(np.linalg.norm(prior['coordinates']-data[FRAMES])/np.linalg.norm(data[FRAMES]))
+                assert error<.005
+            evidence['independent_clip_check']=dict(clip_sha256=check['clip_sha256'],relative_L2=error)
         evidence.update(metrics,clip_samples=len(FRAMES),clip_sha256=sha(path),input_sha256=spec['acc_sha256'],
                         mcf_sha256=next(r['sha256'] for r in ledger['files'] if r['name']=='file.mcf'))
     dest=ROOT/'validation/motion';dest.mkdir(exist_ok=True)

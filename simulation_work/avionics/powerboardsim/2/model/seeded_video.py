@@ -87,17 +87,17 @@ def field_files(rst,clip,period,scope,component,cache,stress_cache,source_sha=No
     return data
 
 
-def render(items,target,ax,scope,comp,period,limit,preview):
+def render(items,target,ax,scope,comp,period,limit,preview,method='native'):
     n=len(items);big=(3840,2160);px=(1280,720) if preview else big
     if not preview:
         field='Dynamic von Mises [MPa]' if comp=='stress' else f'Signed U{comp} [mm]'
-        fields=dict(base=ax,scope=scope,response=field,scale=[0 if comp=='stress' else -limit,limit],
+        fields=dict(coordinate_method=method,base=ax,scope=scope,response=field,scale=[0 if comp=='stress' else -limit,limit],
            panels=[dict(name=name,rst_sha256=d['identity']['rst_sha256'],coordinates_sha256=d['identity']['coordinates_sha256'],peak=d['peak']) for name,_,d in items],
            display_displacement_multiplier=50,physical_interval_s=(FRAMES[[0,-1]]/FS).tolist())
         if already_rendered(target,fields):return
-    plot=pv.Plotter(shape=(2,2) if n==4 else (1,1),window_size=px,off_screen=True,border=False)
+    plot=pv.Plotter(shape={1:(1,1),2:(1,2),4:(2,2)}[n],window_size=px,off_screen=True,border=False)
     field='Dynamic von Mises [MPa]' if comp=='stress' else f'Signed U{comp} [mm]'
-    series=[];clim=(0,limit) if comp=='stress' else (-limit,limit)
+    series=[];clocks=[];clim=(0,limit) if comp=='stress' else (-limit,limit)
     for i,(name,cache,data) in enumerate(items):
         plot.subplot(i//2,i%2);plot.set_background('#f8f9fc')
         dis=np.load(cache/'displacement.npy',mmap_mode='r')
@@ -108,11 +108,14 @@ def render(items,target,ax,scope,comp,period,limit,preview):
             plot.add_mesh(mesh,scalars=field,cmap='YlOrRd' if comp=='stress' else 'coolwarm',clim=clim,lighting=comp!='stress',
                           opacity=.42 if part['case_surface'] else 1.,show_scalar_bar=(i==0 and j==0),
                           scalar_bar_args=dict(title='MPa' if comp=='stress' else 'mm',vertical=True,position_x=.085,
-                          position_y=.20,width=.045,height=.48,n_labels=5,fmt='%.3g',label_font_size=16,title_font_size=16,color='#182e4c'))
+                          position_y=.20,width=.045,height=.48,n_labels=5,fmt='%.3g',label_font_size=21,title_font_size=23,color='#182e4c'))
             series.append((mesh,orig,ix,dis,stress))
         plot.add_text(f'{name}   /   Base {ax}   /   {field}',position='upper_left',font='arial',font_size=14 if preview else 21,color='#08357E')
-        plot.add_text(('PCB only' if scope=='pcb' else 'Assembly')+'   /   50x displacement   /   time slowed 273x'+('   /   fixed contact state' if n>1 else ''),position='lower_left',
+        integration='Independent modal integration' if method=='independent' else 'Native modal coordinates'
+        footer=('PCB' if scope=='pcb' else 'Assembly')+'   /   50x displacement   /   time slowed 273x'
+        plot.add_text(footer+'\n'+integration+'   /   fixed contact state',position='lower_left',
                       font='arial',font_size=11 if preview else 16,color='#183046')
+        clocks.append(plot.add_text('t = 0.000000 s',position='upper_right',font_size=10 if preview else 15,font='arial',color='#183046'))
         center=np.array([.0346,.0604,-.004])
         plot.camera_position=[center+(np.array([.14,.065,-.223]) if scope=='assembly' else np.array([.115,-.080,.220])),center,(0,1,0)]
         plot.enable_parallel_projection();plot.camera.parallel_scale=.083
@@ -121,10 +124,8 @@ def render(items,target,ax,scope,comp,period,limit,preview):
         for mesh,orig,ix,dis,stress in series:
             u=dis[k,ix];mesh.points=orig+50*u
             mesh.point_data[field]=stress[k] if comp=='stress' else u[:,'XYZ'.index(comp)]*1000
-        for i in range(n):
-            plot.subplot(i//2,i%2)
-            plot.add_text(f't = {FRAMES[period[k]]/FS:.6f} s',position='upper_right',name='physical_time',
-                          font_size=10 if preview else 15,font='arial',color='#183046')
+        for clock in clocks:
+            clock.SetText(3,f't = {FRAMES[period[k]]/FS:.6f} s')
         plot.render();return np.ascontiguousarray(plot.screenshot(return_img=True)[:,:,:3])
     if preview:
         Image.fromarray(one(0)).save(target);plot.close();return
@@ -140,14 +141,15 @@ def render(items,target,ax,scope,comp,period,limit,preview):
     reader_=imageio_ffmpeg.read_frames(str(tmp));meta=next(reader_);reader_.close()
     assert total==480 and abs(duration-8)<.03 and meta['fps']==60 and tuple(meta['size'])==big
     tmp.replace(target)
-    target.with_suffix('.json').write_text(json.dumps(dict(sha256=digest(target),frames=total,duration_s=duration,fps=60,resolution=big,base=ax,
+    target.with_suffix('.json').write_text(json.dumps(dict(sha256=digest(target),frames=total,duration_s=duration,fps=60,resolution=big,base=ax,coordinate_method=method,
         scope=scope,response=field,scale=clim,display_displacement_multiplier=50,physical_interval_s=(FRAMES[[0,-1]]/FS).tolist(),
         panels=[dict(name=name,rst_sha256=d['identity']['rst_sha256'],coordinates_sha256=d['identity']['coordinates_sha256'],peak=d['peak']) for name,_,d in items]),indent=2)+'\n')
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('subject',choices=SUBJECTS)
-    p.add_argument('--historical-preview-rst',type=Path);p.add_argument('--campaign',default='nov08_01');p.add_argument('--bare-only',action='store_true')
+    p.add_argument('--historical-preview-rst',type=Path);p.add_argument('--campaign',default='nov08_01');group=p.add_mutually_exclusive_group();group.add_argument('--bare-only',action='store_true');group.add_argument('--raised-only',action='store_true')
+    p.add_argument('--coordinates',choices=('native','independent'),default='native')
     args=p.parse_args();ax,scope,comp=SUBJECTS[args.subject]
     period=np.arange(480) if not args.historical_preview_rst else np.array([119])
     items=[]
@@ -157,23 +159,49 @@ def main():
         cache=ROOT/f'.runtime/qa/seeded_preview/{args.subject}'
         data=field_files(rst,clip,period,scope,comp,cache,ROOT/'.runtime/qa/october_pcb_stress')
         render([('October reference',cache,data)],cache/'preview.png',ax,scope,comp,period,data['peak'],True);return
-    count=1 if args.bare_only else len(VARIANTS)
-    for v,name in zip(VARIANTS[:count],LABELS[:count],strict=True):
+    variants=VARIANTS[:1] if args.bare_only else ([VARIANTS[0],*VARIANTS[3:]] if args.raised_only else VARIANTS)
+    method=args.coordinates
+    assert method=='native' or args.raised_only
+    category='motion' if method=='native' else 'independent_motion'
+    for v in variants:
+        name=LABELS[VARIANTS.index(v)]
         key=native_case(v,'motion_'+ax);branch=branch_for(v,'basis')
-        proof=json.loads((ROOT/f'validation/motion/{key}.json').read_text())
+        proof=json.loads((ROOT/f'validation/{category}/{key}.json').read_text())
         basis=json.loads((ROOT/f'validation/global/{branch}_basis.json').read_text())
         assert proof['case']==key and proof['branch']==branch and proof['campaign']==basis['campaign']==args.campaign
         rst=ROOT/f'.runtime/archive/{args.campaign}/{branch}_basis/file.rst';src=verified(rst,basis['rst_sha256'])
-        clip=ROOT/f'.runtime/post/{args.campaign}/{key}/coordinates.npz'
+        coord_root=ROOT/f'.runtime/post/{args.campaign}/{key}'
+        if method=='independent':coord_root=coord_root/'independent'
+        clip=coord_root/'coordinates.npz'
         assert proof['basis_rst_sha256']==basis['rst_sha256']==src and proof['clip_sha256']==verified(clip,proof['clip_sha256'])
-        root=ROOT/f'.runtime/post/{args.campaign}/{v}_films';cache=root/args.subject
+        root=ROOT/f'.runtime/post/{args.campaign}/{v}_films';cache=root/args.subject/proof['clip_sha256']
         data=field_files(rst,clip,period,scope,comp,cache,root/'pcb_stress',src);items.append((name,cache,data))
     limit=max(d['peak'] for _,_,d in items)
     dest=ROOT/f'output/videos/without_case/power_board_random_motion_4k60/{args.subject}.mp4'
-    gen=ROOT/'.runtime/films/baselines'/args.subject/(float(limit).hex()+'.mp4')
-    render(items[:1],gen,ax,scope,comp,period,limit,False)
-    publish_baseline(gen,dest,('base','scope','response','panels','physical_interval_s'))
+    group='raised' if args.raised_only else ('bare' if args.bare_only else 'all_four')
+    generations=ROOT/'.runtime/films/seeded'/args.subject/method/group/float(limit).hex()
+    targets=[(items[:1],dest,generations/'bare.mp4')]
     if not args.bare_only:
-        dest=ROOT/f'output/videos/with_case/power_board_random_motion_4k60/{args.subject}.mp4'
-        render(items[1:],dest,ax,scope,comp,period,limit,False)
+        cased=ROOT/f'output/videos/with_case/power_board_random_motion_4k60/{args.subject}.mp4'
+        targets.append((items[1:],cased,generations/'cased.mp4'))
+    for panels,out,take in targets:
+        render(panels,take,ax,scope,comp,period,limit,False,method)
+        old=out.with_suffix('.json')
+        if not old.is_file():continue
+        previous=json.loads(old.read_text())
+        by_name={name:d['identity'] for name,_,d in panels}
+        old_method=previous.get('coordinate_method','native')
+        if old_method=='native' and method!='native':raise ValueError('Cannot replace native history with independent integration')
+        for panel in previous['panels']:
+            current=by_name[panel['name']]
+            assert current['rst_sha256']==panel['rst_sha256']
+            if old_method==method:
+                assert current['coordinates_sha256']==panel['coordinates_sha256']
+            else:
+                branch=VARIANTS[LABELS.index(panel['name'])]
+                native=json.loads((ROOT/'validation/motion'/(native_case(branch,'motion_'+ax)+'.json')).read_text())
+                assert native['independent_clip_check']['clip_sha256']==panel['coordinates_sha256']
+                assert native['clip_sha256']==current['coordinates_sha256']
+    for _,out,take in reversed(targets):
+        publish_baseline(take,out,('base','scope','response','physical_interval_s','display_displacement_multiplier'))
 if __name__=='__main__':main()

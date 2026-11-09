@@ -1,8 +1,8 @@
 # Battery-board movies
 
-19 reviewed movies. 0 of 22 subjects cover all four cased configurations. An additional 4 subjects compare the bare board with both 3 mm stand-off variants.
+33 reviewed movies. 0 of 22 subjects cover all four cased configurations. An additional 11 subjects compare the bare board with both 3 mm stand-off variants.
 
-Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. Raised-only comparisons are identified in the table. Each pair uses matching colour limits for its displacement or stress field. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.
+Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. Raised-only comparisons are identified in the table. “Independent motion” uses native mode shapes and independently integrated coordinates for the same October acceleration record. Each pair uses matching colour limits for its displacement or stress field. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.
 
 ## Normalized modes
 
@@ -33,10 +33,10 @@ Each completed pair contains a bare-board movie and a four-panel comparison: flu
 
 | October subject | Without case | With case |
 |---|---|---|
-| random_fig06_baseX_responseX | Pending | Pending |
-| random_fig11_baseY_responseZ | Pending | Pending |
-| random_fig14_baseZ_responseZ | Pending | Pending |
-| random_fig15_pcb_baseX | Pending | Pending |
-| random_fig16_pcb_baseY | Pending | Pending |
-| random_fig17_pcb_baseZ | Pending | Pending |
-| random_fig18_pcb_stress | Pending | Pending |
+| random_fig06_baseX_responseX | [Bare · independent motion](without_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) |
+| random_fig11_baseY_responseZ | [Bare · independent motion](without_case/power_board_random_motion_4k60/random_fig11_baseY_responseZ.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig11_baseY_responseZ.mp4) |
+| random_fig14_baseZ_responseZ | [Bare · independent motion](without_case/power_board_random_motion_4k60/random_fig14_baseZ_responseZ.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig14_baseZ_responseZ.mp4) |
+| random_fig15_pcb_baseX | [Bare · independent motion](without_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) |
+| random_fig16_pcb_baseY | [Bare · independent motion](without_case/power_board_random_motion_4k60/random_fig16_pcb_baseY.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig16_pcb_baseY.mp4) |
+| random_fig17_pcb_baseZ | [Bare · independent motion](without_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) |
+| random_fig18_pcb_stress | [Bare · independent motion](without_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) |

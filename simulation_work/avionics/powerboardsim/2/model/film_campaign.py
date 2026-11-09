@@ -52,9 +52,13 @@ def proof_path(r,v):return ROOT/'validation'/r['category']/(native_case(v,r['suf
 
 def identity(r,side,meta):
     kind=r['kind'];variants=VARIANTS[:1] if side==SLOTS[0] else VARIANTS[1:]
-    if side=='with_case' and kind==KINDS[1] and len(meta['sources'])==2:
+    if side=='with_case' and kind in KINDS[1:] and len(meta['panels'])==2:
         variants=VARIANTS[3:]
-    proofs=[read(proof_path(r,v)) for v in variants]
+    if kind==KINDS[2] and meta['coordinate_method']=='independent':
+        proofs=[read(ROOT/'validation/independent_motion'/(native_case(v,r['suffix'])+'.json')) for v in variants]
+        assert all(p['coordinate_method']=='independent' and p['Newmark_relative_L2']<1e-9 for p in proofs)
+    else:
+        proofs=[read(proof_path(r,v)) for v in variants]
     assert all(t['campaign']==CAMP and t['case']==native_case(v,r['suffix']) for v,t in zip(variants,proofs,strict=True))
     if kind==KINDS[0] and side==SLOTS[0]:
         assert meta['rank']==r['rank']
@@ -74,7 +78,7 @@ def identity(r,side,meta):
         from seeded_motion import FRAMES,FS
         assert meta['base']==r['axis'] and meta['scope']==r['scope'] and meta['physical_interval_s']==(FRAMES[[0,-1]]/FS).tolist()
         assert meta['response']==('Dynamic von Mises [MPa]' if r['component']=='stress' else 'Signed U'+r['component']+' [mm]')
-        assert meta['display_displacement_multiplier']==50
+        assert meta['display_displacement_multiplier']==50 and meta['coordinate_method'] in ('independent','native')
         for p,v,t in zip(meta['panels'],variants,proofs,strict=True):
             assert p['name']==LABELS[VARIANTS.index(v)] and p['coordinates_sha256']==t['clip_sha256'] and p['rst_sha256']==t['basis_rst_sha256']
 
@@ -113,7 +117,7 @@ def decode(r,side,refresh=False):
     page.save(sheet,quality=90)
     proof=dict(sha256=sha,sidecar_sha256=digest(movie.with_suffix('.json')),sheet_sha256=digest(sheet),frames=frames,
                fps=fmt['fps'],width=3840,height=2160,duration_s=secs,bytes=movie.stat().st_size,check_frames=samples,
-               panel_average_pixel_changes=contrast,reference_sha256=r['sha256'],comparison_panels=panels)
+               panel_average_pixel_changes=contrast,reference_sha256=r['sha256'],comparison_panels=panels,coordinate_method=meta.get('coordinate_method'))
     write_json(receipt,proof);return proof
 
 
@@ -123,6 +127,7 @@ def pair_check(r):
     else:
         fld='range_mm' if r['kind']==KINDS[1] else 'scale'
         assert a[fld]==b[fld] and np.ptp(a[fld])>0
+        if r['kind']==KINDS[2]:assert a['coordinate_method']==b['coordinate_method']
     assert (a.get('sha256') or a['video_sha256'])!=b['sha256']
 
 
@@ -130,6 +135,22 @@ def command(args,lease):
     # The renderer inherits this lease so it still excludes another worker if its supervisor exits.
     p=subprocess.run([sys.executable,*map(str,args)],cwd=ROOT,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,pass_fds=(lease.fileno(),))
     if p.returncode:raise RuntimeError(p.stdout[-3000:])
+
+
+def seeded_command(row,bare,cased):
+    sidecar=lambda p:read(p.with_suffix('.json')) if p.is_file() else {}
+    a,b=sidecar(bare),sidecar(cased)
+    raised=[VARIANTS[0],*VARIANTS[3:]]
+    for variants,method in [(VARIANTS,'native'),(raised,'native'),(raised,'independent')]:
+        if method=='independent' and a.get('coordinate_method')=='native':continue
+        parent='motion' if method=='native' else 'independent_motion'
+        if not all((ROOT/'validation'/parent/(native_case(v,row['suffix'])+'.json')).is_file() for v in variants):
+            continue
+        if len(b.get('panels',[]))==len(variants)-1 and b.get('coordinate_method')==method and a.get('coordinate_method')==method and a['scale']==b['scale']:
+            return None
+        return (['--raised-only'] if len(variants)==3 else [])+['--coordinates',method]
+    if not a and proof_path(row,'bare').is_file():return ['--bare-only']
+    return None
 
 
 def cycle(render,refresh,lease):
@@ -145,7 +166,7 @@ def cycle(render,refresh,lease):
                     p=read(proof_path(r,'bare'));key=p['case'];path=ROOT/'.runtime/archive'/CAMP/key/'file.rst'
                     verified(path,p['rst_sha256'])
                     command([models/'modal_video.py',path,r['rank'],'Bare board / '+('refined default contacts' if r['suffix']=='refined' else 'six locked bolts'),bare],lease)
-                if r['kind'] in KINDS[1:] and not bare.exists() and proof_path(r,'bare').is_file():
+                if r['kind']==KINDS[1] and not bare.exists() and proof_path(r,'bare').is_file():
                     command([models/r['script'],s,'--campaign',CAMP,'--bare-only'],lease)
                 cased=ROOT/r['with_case']
                 complete_sources=all(proof_path(r,v).is_file() for v in VARIANTS)
@@ -155,7 +176,10 @@ def cycle(render,refresh,lease):
                     old_range=read(bare.with_suffix('.json'))['range_mm']
                     if displayed.get('layout_revision')!=2 or displayed['range_mm']!=old_range:
                         existing_panels=0
-                if complete_sources and existing_panels<4:
+                if r['kind']==KINDS[2]:
+                    options=seeded_command(r,bare,cased)
+                    if options is not None:command([models/r['script'],s,'--campaign',CAMP,*options],lease)
+                elif complete_sources and existing_panels<4:
                     command([models/r['script'],s,'--campaign',CAMP],lease)
                 elif not existing_panels and r['kind']==KINDS[1] and all(proof_path(r,v).is_file() for v in [VARIANTS[0],*VARIANTS[3:]]):
                     command([models/r['script'],s,'--campaign',CAMP,'--raised-only'],lease)
@@ -172,7 +196,7 @@ def cycle(render,refresh,lease):
             issues.append(r['file'])
     provisional=sum(p.get('comparison_panels')==2 for p in result)
     report=dict(total_requested=44,decoded=len(result),raised_comparisons=provisional,
-                paired_and_encoded=len(result)==44 and not issues and not provisional,issues=issues,films=result)
+                paired_and_encoded=len(result)==44 and not issues and not provisional and not any(p.get('coordinate_method')=='independent' for p in result),issues=issues,films=result)
     write_json(RT/'coverage.json',report)
     return report
 
