@@ -1,7 +1,7 @@
 """Reference-area normalization, matched state errors, component load differences, and NACA scores."""
 from pathlib import Path
 from collections import defaultdict
-import csv, gzip, math, json
+import csv, gzip, math
 import numpy as np
 
 ROOT=Path(__file__).resolve().parents[1]

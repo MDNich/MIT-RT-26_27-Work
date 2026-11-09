@@ -6,6 +6,12 @@ The 0.50-inch Iris first sustainer transition is the primary flight case. At sus
 
 The scalar was calibrated only on five atlas rockets. The subsequent blend uses USAF DATCOM fin and nose-cylinder charts, with independent fin/body weights (0.32, 0.40) constrained by two historical NASA tunnel datasets. On the three last blind geometries, zero-incidence CP RMSE is 0.438 D (full finite wing: 0.579 D); at four degrees it is worse, 0.54 vs 0.42 D. See the writeup for per-geometry errors, the difference between chart methods and a full DATCOM run, force/moment conventions, and the limitations of the Haack-to-ogive surrogate.
 
+## Handover and interference follow-up
+
+[Five-page experimental extension (Section 10)](docs/writeup/supersonic-cp-calibration.pdf#page=10) · [Iris handover plot](figures/handover-flight.pdf) · [TN 3795 measurements and original tables](inputs/tn3795) · [Analysis and fixture definitions](followup/README.md).
+
+The fin crossover trial reduced burn-wide Iris margin RMS from 0.563 to 0.439 cal, but predicted minimum margin at 15.53 s versus RASAero’s 20.60 s, and retained the high-Mach burnout discrepancy. At Mach 2.80 and 2° the additional finless airframe contributed +0.331 D to CP error, installed fins +0.134 D and bare forebody −0.146 D. On held-out NACA triangular wings the assembled lift and pitching moment improved while the interaction after subtracting the isolated body and wing worsened. The separately runnable trial and all pointwise scores are under `followup/` and `results/followup/`.
+
 ## Reproduce
 
 Check out [MIT OpenRocket 18bbfbd4](https://github.com/MDNich/ActiveControl_MIT_RktTeam/tree/18bbfbd4). Set `OR_REPO` to its absolute root and run `(cd "$OR_REPO/clone/openrocket" && ./gradlew shadowJar)`. Alternatively provide `OR_JAR` pointing at the matching fat JAR. Both the source checkout and JAR are needed to compile the research class overlays. The JAR used here had SHA-256 `7822ffaf207383318a616f366c721563b3f011c19d7789b996f3875fa4d1d7d2`. Rebuilt JARs may have different ZIP timestamps. Use JDK 17, Bash, Python 3 with NumPy and Matplotlib, and a TeX Live installation providing pdfLaTeX, latexmk, PGF, Latin Modern and Beamer. Our run used Java 17.0.21, Python 3.15.2, NumPy 2.5.4, Matplotlib 3.11.2 and TeX Live 2024. The public DATCOM source archive is pinned by SHA-256 `32c4a87fe5b1311b8136cccca33d17f692878503b1f42be116389cb3912a7042`.

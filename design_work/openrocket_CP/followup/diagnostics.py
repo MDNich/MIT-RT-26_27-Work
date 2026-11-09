@@ -72,5 +72,61 @@ def regression():
         replay.append(dict(time_s=u['time_s'],stage=u['stage'],mach=u['mach'],ras_cp_D=u['ras_cp_D'],old_cp_D=u['transfer_cp_D'],new_cp_D=v['x1_D'],error_D=float(v['x1_D'])-float(u['ras_cp_D'])))
     write('replay-comparison.csv',replay)
 
+def camera_control():
+    source=ROOT/'inputs/iris-components'
+    control=source/'no-protuberance'
+    summary=[]
+    for part in ('finless','finned'):
+        native=ET.parse(source/'models'/(part+'.CDX1'))
+        zero=ET.parse(control/'models'/(part+'.CDX1'))
+        def fields(doc):
+            return [(node.tag,(node.text or '').strip()) for node in doc.getroot().iter() if not len(node)]
+        differences=[(a,b) for a,b in zip(fields(native),fields(zero),strict=True) if a!=b]
+        assert len(differences)==1 and differences[0][0][0]=='StreamlinedNoBaseDrag'
+        assert float(differences[0][1][1])==0.
+        def grid(path):
+            return {(float(r['Mach']),int(r['Alpha'])):r for r in read(path)
+                    if 1.50<=float(r['Mach'])<=3 and int(r['Alpha']) in (0,2,4)}
+        first=grid(source/'rasaero'/(part+'.csv'));second=grid(control/'rasaero'/(part+'.csv'))
+        assert first.keys()==second.keys() and len(first)==453
+        for angle in (0,2,4):
+            keys=[k for k in first if k[1]==angle]
+            error={col:max(abs(float(first[k][col])-float(second[k][col])) for k in keys)
+                   for col in ('CP','CN','CN Potential')}
+            assert max(error.values())==0
+            summary.append(dict(geometry=part,alpha_deg=angle,count=len(keys),**error))
+    write('camera-control.csv',summary)
+
+def actual_camera():
+    rows=read(O/'transfer-loads.csv')
+    data={(r['family'],r['part'],float(r['mach']),int(float(r['alpha_deg']))):r for r in rows}
+    totals=[]
+    ras=read(ROOT/'inputs/iris-components/rasaero/finned.csv')
+    for native in ras:
+        mach=float(native['Mach']);alpha=int(native['Alpha'])
+        if not 1.5<=mach<=3 or alpha not in (0,2,4):continue
+        ref_cp=float(native['CP'])/D_COMMON
+        def loads(family,part):
+            r=data[family,part,mach,alpha];n=float(r['cna_per_rad']);return np.array([n,n*float(r['cp_in'])/D_COMMON])
+        finned=loads('ork','finned')
+        for part in ('finless','finned'):
+            n,j=loads('ork',part)-loads('ork-no-camera',part)
+            totals.append(dict(mach=mach,alpha_deg=alpha,part=part,added_N=n,added_J=j,
+                             additive_cp_D=(j-ref_cp*n)/finned[0]))
+    write('actual-camera.csv',totals)
+
+def fixed_incidence_scores():
+    raw=read(O/'increments.csv')
+    values={(r['model'],r['fixture'],float(r['mach']),float(r['alpha_deg'])):
+            np.array([float(r['N']),float(r['J'])]) for r in raw if r['term']=='installed fins'}
+    out=[]
+    for mod in ('transfer','handover'):
+        for alpha in (2,4):
+            delta=np.array([values[mod,'ork',i/100,alpha]-values['RAS','cdx',i/100,alpha] for i in range(150,221)])
+            out.append(dict(model=mod,alpha_deg=alpha,mach_min=1.5,mach_max=2.2,points=len(delta),
+                cn_rmse=rms(delta[:,0])*math.radians(alpha),cm_nose_rmse=rms(delta[:,1])*math.radians(alpha)))
+    write('fin-crossover-errors.csv',out)
+
+D_COMMON=4.20
 if __name__=='__main__':
-    zero_attribution();regression()
+    zero_attribution();regression();camera_control();actual_camera();fixed_incidence_scores()

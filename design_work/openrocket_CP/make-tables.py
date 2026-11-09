@@ -20,4 +20,7 @@ de=rows(R/'body-fin-audit.csv')
 tex('body-table',[(r['case'],lab.get(r['model'],r['model']),*[fmt(r[v]) for v in ('body_N','body_X','added_N','added_X')]) for r in de if r['mach']=='2.5' and r['case'] in ('Hsq','wide-unswept','short-span') and r['model'] in ('RAS','finite','fit')])
 for path in (W,S):
     (path/'figures').mkdir(exist_ok=True)
-    for f in (D/'figures').glob('*.pdf'):copyfile(f,path/'figures'/f.name)
+    for figure in (D/'figures').glob('*.pdf'):
+        if path == S and figure.stem in {'handover-loads','handover-components'}:
+            continue
+        copyfile(figure, path/'figures'/figure.name)

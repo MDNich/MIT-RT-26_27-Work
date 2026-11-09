@@ -139,6 +139,14 @@ public class Loads {
                 output(w,model,"cdx",part,0,cfg,4.20,irisGrid,new double[]{0,2,4},experimental,false);
                 var doc=new GeneralRocketLoader(Path.of(System.getenv().getOrDefault("CP_WORK",root.resolve("work").toString())).resolve("handover/"+part+".ork").toFile()).load();
                 output(w,model,"ork",part,0,doc.getRocket().getSelectedConfiguration(),4.20,irisGrid,new double[]{0,2,4},experimental,false);
+                if(!part.equals("forebody")){
+                    Path fixture=Path.of(System.getenv().getOrDefault("CP_WORK",root.resolve("work").toString()))
+                            .resolve("handover/"+part+"-nocamera.ork");
+                    var withoutPods=new GeneralRocketLoader(fixture.toFile()).load();
+                    output(w,model,"ork-no-camera",part,0,withoutPods.getRocket().getSelectedConfiguration(),
+                            4.20,irisGrid,new double[]{0,2,4},experimental,false);
+                }
+
             }
             for(String row:Files.readAllLines(root.resolve("followup/tn3795.csv")).subList(1,7)){
                 String[] v=row.split(",");int wing=Integer.parseInt(v[0]);

@@ -1,0 +1,72 @@
+\section{Fin handover, Iris component loads and measured interference}\label{sec:followup}
+\subsection*{Can the fin handover recover the time of minimum stability?}
+For Iris's sustainer fins, the normal leading-edge Mach number is $M_e=Ms/\sqrt{s^2+h^2}$ with span $s=3.5$ in and sweep $h=5$ in. The prior blend activates the finite-wing pressure solution over $1<M_e<1.15$, or $1.744<M<2.005$. On the native RASAero trajectory its CP error changes from $-0.81\,D$ at 18.00 s to $+0.81\,D$ at 18.60 s. The experiment changes only the fin force and its first moment. It keeps the previously selected forebody weight $b=0.40$.
+
+Let $P_{\mathrm{chart}}$ and $P_{\mathrm{old}}$ be the installed-fin load pairs $(N,J)$ from the chart fin and the prior blend at identical Mach and incidence. The new handover uses
+\[
+ t=\operatorname{clip}_{[0,1]}\!\left(\frac{M_e-1.15}{0.15}\right),\qquad
+ H(t)=6t^5-15t^4+10t^3,\qquad
+ P_{\mathrm{new}}=(1-H)P_{\mathrm{chart}}+HP_{\mathrm{old}} .
+\]
+The chart branch supplies the fin loading through $M=2.005$. By $M=2.267$ the previous prediction is recovered. The width was fixed before scoring. Because $H'(0)=H'(1)=0$, the joining curve matches the force and moment slopes of each branch. We evaluated OpenRocket directly on the half-inch geometry from Mach 1.500 to 3.000 every 0.005 at $0^\circ,2^\circ,4^\circ$, with extra evaluations on either side of both joins. One-sided second-order differences use $\Delta M=10^{-5}$. The check compares the installed load after subtracting the finless result. All 12 force/moment joins met tolerances of $2\times10^{-8}$ in value and $0.01$ per unit Mach in slope. The RASAero reference uses every native 0.01 Mach sample.
+\fig{.94}{handover-loads}{Normal force and nose-reference pitching moment of the installed fins at $2^\circ$ incidence. At each Mach subtract the complete finless sustainer from the finned vehicle after applying the same reference area, diameter and moment origin. Shading marks the original leading-edge handover. The dotted vertical line at Mach 2.267 marks the return to the prior blend.}
+On 71 fixed Mach points from 1.50 to 2.20 at $2^\circ$, installed-fin $C_N$ RMS error falls from 0.0292 to 0.0107. Nose-reference $C_m$ RMS error falls from 0.923 to 0.346. At $4^\circ$, the corresponding changes are 0.0506 to 0.0099 and 1.597 to 0.327. During the matched-state replay, the new CP errors at 18.00 and 18.60 s are $+0.30$ and $+0.34\,D$. Across the 59 powered native states with $1<M_e<1.15$, CP RMS decreases from 0.587 to 0.309 $D$. Across the entire burn it decreases from 0.541 to 0.451 $D$. At 20.77 s both predictions give $+0.57\,D$ on the same RASAero state. The two independent OpenRocket flight integrations differ slightly in burnout Mach, so their burnout margins differ by 0.0023 cal.
+\clearpage
+\subsection*{Iris flight and regression checks}
+\fig{.95}{handover-flight}{Static margin during sustainer thrust. Dots mark the minimum over the entire burn, including the ignition transient. RASAero reaches its minimum at 20.60 s, shortly before burnout.}
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+Model & Minimum (cal) & Time (s) & Burnout (cal) & Burn RMS (cal) & Bias (cal)\\\midrule
+RASAero II &2.581&20.600&2.650&\multicolumn{2}{c}{reference}\\
+Prior blend &2.767&18.000&3.240&.563&+.168\\
+New handover&2.990&15.530&3.243&.439&+.273\\
+Unblended fin and body charts&2.201&20.603&2.226&.344&$-$.260\\\bottomrule\end{tabular}\end{center}
+The new handover reduces RMS margin error by 22\%, but its minimum occurs 5.07 s early, near ignition. Accuracy at minimum margin, signed bias, and accuracy over the whole burn favor different choices. The local crossover contributes to the shape of the old prediction; smoothing it alone does not recover the timing or eliminate the high-Mach residual.
+
+For the existing seven reserved rockets at zero incidence and Mach 1.50--3.00 the CP RMS changes from 0.857 to 0.911 $D$. On the original three blind rockets it changes from 0.828 to 0.837 $D$, and on the final three from 0.438 to 0.434 $D$. Those geometries are regression cases in this pass. At the original ARCAS and Yuska B supersonic sample points the two models coincide to the precision of the stored output. Based on the flight timing, reserved geometries and interference results below, we retain the new handover as an experimental branch. The published research patch continues to represent the earlier blend.
+\clearpage
+\subsection*{Where the Iris burnout discrepancy originates}
+The linked simulation study ran five native static exports in RASAero II 1.0.2.0. Three correspond to the bare 32-in Haack nose and first 50-in tube, the entire 136.5-in finless sustainer, and that sustainer with its four fins. The two additional runs remove the equivalent camera protuberance from the finless and finned geometries. That change gives identical native $C_N$, potential $C_N$, and CP at all 906 matched states across both controls. In OpenRocket we repeated the experiment both on the actual half-inch ORK and on a fixture built from the literal CDX1 external dimensions. The ORK contains explicit camera pods and tapered steps; the CDX1 represents the camera by area and the two short transitions by equal diameter fields. Both sets of OpenRocket results are retained.
+
+Use the nose tip as the moment origin and $D=4.20$ in throughout. For the bare forebody, convert the native normal coefficient to the common area by multiplying by $(4.02/4.20)^2$. At positive incidence use the native angle-specific $N=C_N/\alpha$, $J=N x_{\rm CP}/D$. Compute successive differences in $(N,J)$ across the three fixtures. The installed-fin increment includes interaction. Each increment's exact contribution to whole-vehicle CP error is $(\Delta J_i-X_{\rm RAS}\Delta N_i)/N_{\rm OR}$, where the deltas are OR minus native RASAero, $X_{\rm RAS}$ is the finned vehicle's CP in diameters and $N_{\rm OR}$ its OpenRocket slope. Summing these terms recovers the total CP difference.
+
+\begin{center}\small\begin{tabular}{lrrrrr}\toprule
+At $M=2.80$, $2^\circ$ & $N_{\rm RAS}$ & $N_{\rm OR}$ & $J_{\rm RAS}$ & $J_{\rm OR}$ & CP contribution ($D$)\\\midrule
+Bare nose and tube &2.731&2.876&15.55&17.50&$-$.146\\
+Additional finless airframe &1.536&.809&33.65&20.12&+.331\\
+Installed fins &5.359&5.489&170.21&174.39&+.134\\\midrule
+Whole vehicle &9.627&9.174&219.41&212.01&+.319\\\bottomrule\end{tabular}\end{center}
+The largest positive term comes from adding the rest of the airframe. It includes the aft tubes, steps and camera representation. Removing the explicit OpenRocket camera pods in an extra matched pair changes the contribution by $-0.014\,D$ at $2^\circ$ (pods present minus absent). The aft tubes and steps therefore account for approximately $+0.345\,D$ of the error at this state. On the CDX1-dimension OpenRocket fixture the three terms are $-0.149,+0.377,+0.136\,D$, respectively. At $4^\circ$, the actual ORK gives $-0.995,+0.485,-0.097\,D$. The forebody then dominates the signed error.
+
+\fig{.91}{handover-components}{Native zero-incidence CP at each Mach. All three panels use the same 4.20-inch unit. At Mach 2.80 the native finless position is $9.09\,D$ aft of the nose versus $5.49\,D$ in the original OpenRocket geometry. Bare forebody CP differs by only $0.18\,D$.}
+\clearpage
+\subsection*{Load attribution at the flight's near-zero incidence}
+At the 20.77-s native burnout sample, $M=2.8081$ and $\alpha=0.000434^\circ$. The static CSV publishes $C_N=0$ at exactly zero incidence. Its column labeled 0--4-degree slope is a finite secant. To estimate the derivative relevant to this flight, pair the native zero-angle CP with the potential-force secant estimated at $2^\circ$ for each fixture. On 330 matched low-incidence supersonic burn samples the fully assembled proxy has a slope RMS difference of $0.105$/rad from the native flight value $(C_L\cos\alpha+C_D\sin\alpha)/\alpha$. At burnout this comparison gives 8.397 versus 8.416/rad.
+
+At Mach 2.80 on the actual ORK the resulting three contributions are $+0.036$ (forebody), $+0.391$ (additional airframe), and $+0.146\,D$ (installed fins). Using the potential value at $4^\circ$ reproduces all three to the shown precision. As a stress test, substituting the \emph{total} $2^\circ$ secant yields $+1.67,+1.04,-2.13\,D$ with the same total. The choice of force derivative matters for individual terms even though the zero-incidence CP positions themselves are directly exported.
+\input{small-incidence}
+
+\subsection*{Physical test definition}
+We transcribed the experimental entries of Tables I and II in \href{https://ntrs.nasa.gov/citations/19930084523}{Nielsen, Katzen and Tang, NACA TN 3795 (1956)}. The six complete triangular wings have aspect ratios 0.67, 1.34, 2.02, 2.69, 3.33 and 4.00. The split was recorded before inspecting Table II. W1/W3/W5 form the development set and W2/W4/W6 the reserved set, each at Mach 1.50 and 2.02. The candidate used the same coefficients on every test. Repetition of one shared body reading across wing sizes does not increase the sample count.
+
+The body has length 11 in, diameter 1.50 in and a 15-degree semiangle cone tangent to a circular fairing of radius 11.02 in. We represented the fairing as 24 successive frusta. All trailing edges lie 8 in aft of the nose. For the isolated wing the full triangle extends to the centerline on a negligible-radius carrier. For the assembled configuration each exposed semispan is $s_m-0.75$ in with a 3-in root chord. We evaluated two opposing fins in their lift plane and matched the tunnel Reynolds number of $5.5\times10^6$ based on body length. OpenRocket approximates the tested double-wedge section of 8\% local thickness with a constant-thickness rounded plate. This affects the axial-drag correction and limits the precision of the isolated-wing comparison. Doubling the fairing resolution and halving the carrier radius changed the predicted load station by at most 0.00053 in and the base-area normal-force slope by less than 0.00004/rad across all fixtures.
+
+Convert measured lift slope from per degree to per radian and compute $C_{m\alpha}=(dC_m/dC_L)C_{L\alpha}$. Use table area $S$ and mean chord $\bar c$ for wing and combination, the extended triangle centroid $x_r=8-c_r/3$ as their moment origin, and the body base area, length and nose for the body alone. With OpenRocket's common base-area slope $N$ and zero-incidence axial coefficient $C_{A0}$, the predictions on the published references are
+\[
+ C_{L\alpha}=(N-C_{A0})S_b/S,\qquad
+ C_{m\alpha}=N(S_b/S)(x_r-x_{\rm CP})/\bar c .
+\]
+We compare these directly to Table II before interpreting $x_r-\bar c C_{m\alpha}/C_{L\alpha}$ as an effective lift-center position.
+\clearpage
+\subsection*{Independent force and moment results}
+\fig{.96}{handover-tn3795}{Measured and predicted assembled-vehicle lift and centroid-reference pitching-moment slopes. Open and filled markers identify the preassigned development and reserved geometries. Each reserved score below uses six measurements over three geometries and two Mach numbers.}
+\begin{center}\small\begin{tabular}{lrrrr}\toprule
+&\multicolumn{2}{c}{Lift-slope RMS (/rad)}&\multicolumn{2}{c}{Moment-slope RMS (/rad)}\\
+Reserved cases & Prior & Handover & Prior & Handover\\\midrule
+Isolated full wing &.307&.229&.117&.105\\
+Assembled wing and body &.796&.555&.122&.109\\
+Interference increment &.435&.547&1.385&1.602\\\bottomrule\end{tabular}\end{center}
+The installed configuration and the isolated wing improve on both native observables. The assembled effective lift-center RMS improves from 0.330 to 0.255 body diameters. For the shared body alone the two models coincide. Measured lift slopes at Mach 1.50/2.02 are 1.95/2.64 per radian, while the predicted values are 1.56/1.65. The corresponding measured nose-reference moment slopes are $-0.390/-0.527$, versus $-0.379/-0.379$.
+
+For the interference row subtract body-alone and full-wing-alone dimensional loads from the combined loads, then normalize by the complete wing $S$ and $S\bar c$. Shift to a common lift-based nose datum using $S(\bar c\,C_{m\alpha}-x_r C_{L\alpha})$ for model and measurement. The derived row therefore uses the paper's lift-centroid convention; exact body-axis translation would also require each measured zero-incidence axial force. On the reserved wings the mean lift interference is $-0.264$/rad in the measurements and $-0.789$/rad in the new model. The corresponding mean common-datum moment increments are $+0.113$ and $+1.661$/rad. The model overstates the loss of lift and the change in moment when the delta wing is mounted. Better total CP can coexist with larger errors in the interaction itself.
+
+The frozen split and all per-configuration outcomes, including development failures, are in \path{followup/protocol.md} and \path{results/followup/}. The top-level reproduction driver reruns the Java flight, fixed-incidence sweeps, ablations, tunnel tests and figures; \path{inputs/tn3795/source-extract.pdf} preserves the source tables and drawing.

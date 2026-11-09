@@ -20,6 +20,11 @@ python3 literature/score.py
 python3 flight.py --extended
 python3 literature/plot.py
 python3 literature/export-patch.py
+./followup/run-engine.sh
+./followup/run-loads.sh
+python3 followup/analyze.py
+python3 followup/diagnostics.py
+python3 followup/figures.py
 python3 make-tables.py
 ./docs/build.sh
 python3 docs/package.py

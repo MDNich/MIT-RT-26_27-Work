@@ -1,6 +1,6 @@
 """Render the follow-up figures using the original study's Matplotlib PGF and pdfLaTeX setup."""
 from pathlib import Path
-import sys, importlib.util
+import sys
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from plots import plt, BLUE, RED, GREEN, LIGHT, ORANGE, save, Line2D, D, R
 import csv,gzip

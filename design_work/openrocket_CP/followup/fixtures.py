@@ -23,3 +23,8 @@ for part in ('forebody','finless','finned'):
         for parent in pieces.iter('subcomponents'):
             for fins in parent.findall('trapezoidfinset'):parent.remove(fins)
     with ZipFile(out/(part+'.ork'),'w',compression=ZIP_DEFLATED) as z:z.writestr('rocket.ork',ET.tostring(xml,encoding='utf-8'))
+    if part in ('finless','finned'):
+        for parent in pieces.iter('subcomponents'):
+            for pod in parent.findall('podset'):parent.remove(pod)
+        with ZipFile(out/(part+'-nocamera.ork'),'w',compression=ZIP_DEFLATED) as z:
+            z.writestr('rocket.ork',ET.tostring(xml,encoding='utf-8'))
