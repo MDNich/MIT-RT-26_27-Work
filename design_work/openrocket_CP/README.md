@@ -1,0 +1,33 @@
+# Supersonic center of pressure — OpenRocket MIT / RASAero II
+
+[Technical report (PDF)](docs/writeup/supersonic-cp-calibration.pdf) · [Executive briefing (Beamer PDF)](docs/slides/supersonic-cp-slides.pdf) · [Iris CP, CG and margin plot](figures/iris-flight.pdf) · [Patch](implementation/supersonic-cp-research.patch).
+
+The 0.50-inch Iris first sustainer transition is the primary flight case. At sustainer burnout RASAero gives 2.650 cal; legacy MIT OR gives 0.109, the original finite-wing option 3.905, the fitted scalar 2.259, the unblended chart model 2.226, and the recommended research blend **3.240 cal**. The blend still reads 0.590 cal high. It is not a flight-qualified replacement for the built-in option. No installed application was changed.
+
+The scalar was calibrated only on five atlas rockets. The subsequent blend uses USAF DATCOM fin and nose-cylinder charts, with independent fin/body weights (0.32, 0.40) constrained by two historical NASA tunnel datasets. On the three last blind geometries, zero-incidence CP RMSE is 0.438 D (full finite wing: 0.579 D); at four degrees it is worse, 0.54 vs 0.42 D. See the writeup for per-geometry errors, the difference between chart methods and a full DATCOM run, force/moment conventions, and the limitations of the Haack-to-ogive surrogate.
+
+## Reproduce
+
+Check out [MIT OpenRocket 18bbfbd4](https://github.com/MDNich/ActiveControl_MIT_RktTeam/tree/18bbfbd4). Set `OR_REPO` to its absolute root and run `(cd "$OR_REPO/clone/openrocket" && ./gradlew shadowJar)`. Alternatively provide `OR_JAR` pointing at the matching fat JAR. Both the source checkout and JAR are needed to compile the research class overlays. The JAR used here had SHA-256 `7822ffaf207383318a616f366c721563b3f011c19d7789b996f3875fa4d1d7d2`. Rebuilt JARs may have different ZIP timestamps. Use JDK 17, Bash, Python 3 with NumPy and Matplotlib, and a TeX Live installation providing pdfLaTeX, latexmk, PGF, Latin Modern and Beamer. Our run used Java 17.0.21, Python 3.15.2, NumPy 2.5.4, Matplotlib 3.11.2 and TeX Live 2024. The public DATCOM source archive is pinned by SHA-256 `32c4a87fe5b1311b8136cccca33d17f692878503b1f42be116389cb3912a7042`.
+
+* From this directory run `bash reproduce.sh`. The local computational scratch directory is `work/`, ignored by Git. Do not point this driver at an unrelated build or output folder. Inputs suffice for offline scoring and plotting once the JDK, dependencies and OR checkout are available.
+* To rebuild the documents alone: `bash docs/build.sh`. Or unpack the corresponding source ZIP, enter its writeup/slides folder and run `latexmk -pdf supersonic-cp-calibration.tex` or `latexmk -pdf supersonic-cp-slides.tex`. All figures inside them are PDFs produced by Matplotlib's PGF backend running pdfLaTeX. The underlying Python sources are here.
+* To exercise the delivered research JAR: after `./run-java.sh`, invoke a fresh JVM with the study JAR first, the harness classes second and the MIT fat JAR third; e.g. `java -Djava.awt.headless=true -cp "implementation/OpenRocket-MIT-6.6-cp-research-overlay.jar:work/classes:$OR_JAR" Sweep inputs/models work/check.csv.gz` on macOS/Linux. When this overlay is loaded, `BarrowmanCalculator(true)` uses the blend and `false` remains legacy. It is a research artifact, not a standalone OpenRocket distribution. The source patch gives the same behavior against 18bbfbd4; check with `git -C "$OR_REPO" apply --check /absolute/path/to/implementation/supersonic-cp-research.patch`. A separate installed or released 6.6 build is not required.
+* To reproduce the native RASAero calculations, use version 1.0.2.0 on Windows with the supplied CDX1s and motors. For static cases export from Aero Plots (0, 2, 4 deg) using File → Export → To CSV File. For Iris, select the supplied motor file, initialize the as-run CDX1 and run Flight → View Data → File → Export → To CSV. The subfolder READMEs preserve the exact settings, stage events, limitations and hashes. The Python/Java pipeline does not run RASAero itself.
+
+## Data and program map
+
+| Path | Contents |
+| --- | --- |
+| `inputs/atlas-native.zip` | As-run CDX1 and original native exports for the 24 selected [September atlas](../../simulation_work/generic/openrocket/ras_aero_controlled_study_2026-09-27/aerodynamic-investigation/extended) cases, from work-repo commit 7b492070. |
+| `inputs/native-blind`, `inputs/native-final` | Six freshly exported blinded geometries, split into two separate campaigns. The latter was not used in either fit. Each retains the original native exports. |
+| `inputs/iris`, `inputs/native-iris-half` | Input revisions, digest-matched motors, historical native flight, preferred ORK and matching fresh Windows native flight. The engine trajectories are under `results/`. |
+| `collect.py`, `design.json`, `Sweep.java` | Frozen first split, extraction of angle-specific native states, geometry mapping and direct OR evaluation. Full source hashes in `inputs/sources.csv`; the final native hashes are in their input folder. |
+| `reference/` | Original finite-wing commit patch, benchmark harness and graph readings, flight harness, [public US Air Force Digital DATCOM source distribution](https://www.pdas.com/datcomdownload.html). |
+| `analyze.py`, `checks.py`, `run-trial.sh` | Scalar fit, physical checks, paired fin-on/body-only diagnostics and direct model check. |
+| `literature/` | Locked second-pass protocol; chart extraction from original Fortran DATA statements, lookup code, isolated Java overlays, coefficient selection, scores, source patch export. |
+| `IrisState.java`, `flight.py` | Loaded stage mass/CG and same-Mach/incidence replay, paired-time comparison, flight tables and plots. Roll azimuth is zero for static replay. |
+| `results/` | Pointwise engines, per-case and group CP scores, physical checks, mass/margin and trajectory histories. CSVs with .gz extension are ordinary gzip CSV. |
+| `figures/`, `docs/` | TeX-rendered Matplotlib figures; local LaTeX report and editable Beamer source. |
+
+There are 491 Mach values × 3 angles × 30 static cases = 44,190 final states per model. Fit samples are deliberately a smaller subset (755). The NASA readings constrain the second-pass weights and cannot be counted as an independent blind test of that pass. Iris never enters either fit. A maximum or RMS disagreement with a simulator is not an uncertainty bound on the physical rocket.

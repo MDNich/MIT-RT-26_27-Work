@@ -1,0 +1,177 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=.85in]{geometry}
+\usepackage[T1]{fontenc}\usepackage{lmodern,microtype,amsmath,amssymb,booktabs,array,graphicx,xcolor,enumitem,caption,fancyhdr,hyperref,listings}
+\definecolor{cernblue}{HTML}{08357E}\definecolor{darkred}{HTML}{7A0101}\definecolor{deepgreen}{HTML}{38761D}\definecolor{navy}{HTML}{17334B}\definecolor{muted}{HTML}{5A6B78}
+\hypersetup{colorlinks=true,linkcolor=cernblue,urlcolor=cernblue,pdftitle={Supersonic center of pressure in OpenRocket MIT},pdfauthor={MIT Rocket Team simulation study}}
+\setlength{\emergencystretch}{2em}\setlength{\headheight}{14pt}\pagestyle{fancy}\fancyhf{}\lhead{\small\textsc{MIT Rocket Team \enspace|\enspace Simulations}}\rhead{\small OpenRocket MIT 6.6}\cfoot{\thepage}
+\captionsetup{font=small,labelfont={bf,color=cernblue}}\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\setlist{nosep,topsep=2pt}\setcounter{tocdepth}{1}
+\lstset{basicstyle=\ttfamily\small,columns=fullflexible,breaklines=true,frame=single,rulecolor=\color{muted}}
+\newcommand{\fig}[3]{\begin{figure}[htbp]\centering\includegraphics[width=#1\linewidth]{figures/#2.pdf}\caption{#3}\end{figure}}
+\newcommand{\sub}[1]{\smallskip\noindent{\bfseries\color{navy}#1}\quad}
+\makeatletter\let\tabinput\@@input\makeatother
+\begin{document}
+\begin{center}{\Large\bfseries\color{cernblue} Supersonic center of pressure in OpenRocket MIT}\\[4pt]
+{\large Implementation, RASAero II calibration, and the Iris stability discrepancy}\\[6pt]
+MIT Rocket Team Simulations \quad$\vert$\quad 8 November 2026\end{center}
+\section{Decision and principal result}
+The full experimental fin correction places Iris's center of pressure too far aft relative to RASAero II at sustainer burnout. For the preferred 0.50-inch transition, the two codes give the same CG to four decimal places. They put CP at 2.644 and 2.510 m aft of the nose, respectively. That 134 mm difference adds \textbf{1.26 calibers} to OpenRocket's predicted stability margin. The difference before rounding the two margins is 1.255 calibers; the two margins round to 3.91 and 2.65.
+ 
+A trial fitted on five other fin planforms uses 45.9\% of the available force and moment adjustment. It predicts 2.26 calibers at Iris burnout, 0.39 below RASAero, and moves the minimum to within 0.03 s of RASAero. Over the entire sustainer burn the RMS difference in margin falls from 0.95 to 0.44 calibers. Iris did not determine the coefficient.
+
+\textbf{Recommendation: compare with the DATCOM blend, not a global scalar.} A second Java implementation separates fin-loading and forebody corrections using USAF DATCOM tables. It cuts final blind-set CP RMS from 0.58 to 0.44 diameters at zero incidence while keeping two tunnel checks within predefined bounds. On Iris it cuts the burnout overprediction from 1.26 to 0.59 cal (3.24 vs 2.65), though the minimum still comes too early. Bare-body and higher-incidence counterexamples prevent recommending it as the default. The implementation is delivered as a separate research patch; the installed app is unchanged.
+\tableofcontents
+\clearpage
+\section{Quantities, model definitions and implementation}
+All axial stations increase aft from the nose. Let $D$ be the active-stage reference diameter, $S=\pi D^2/4$, $N$ the normal-force slope about zero incidence (or the effective $C_N/\alpha$ at finite incidence), and $J=Nx/D$ its dimensionless first moment about the nose. Then
+\[
+ X=x_{\rm CP}/D=J/N,\qquad {\rm SM}=(x_{\rm CP}-x_{\rm CG})/D.
+\]
+A positive CP error at fixed CG overpredicts margin. We report signed errors as OpenRocket minus reference. The moment convention $J$ is a load-position bookkeeping convention; for the tunnel comparison $C_{m_\alpha}=N(X_{\rm ref}-X)$.
+ 
+\sub{Legacy.} The production Barrowman path combines body and fin contributions. At small incidence the supersonic isolated-fin slope is based on $2/\beta$ times exposed one-panel area over $S$, with $\beta=\sqrt{M^2-1}$. The axial load station is computed separately using a Mach-dependent chordwise relation. Counts, instance orientations, interference and mounting station enter the vehicle sum. The legacy simulation option remains the default.
+ 
+\sub{Full finite wing.} Baseline implementation \href{https://github.com/MDNich/ActiveControl_MIT_RktTeam/commit/18bbfbd4}{18bbfbd4} adds a two-face thin-plate slope $4/\beta$ and integrates it over a trapezoid. For span $s$, root chord $c_r$, tip chord $c_t$, sweep distance $h$, span fraction $u$ and chord fraction $v$, the coordinate from the root leading edge is $x=hu+[c_r+(c_t-c_r)u]v$. Set $y=s(1-u)$, $a=x-h$. The downstream tip-relief factor is
+\[
+ f(x,y)=\begin{cases}1,&a\le\beta y,\\(2/\pi)\arcsin\sqrt{\beta y/a},&a>\beta y.\end{cases}
+ \quad
+ (N_f,J_{f,\mathrm{local}})=\frac{4}{\beta S}\iint f(x,y)(1,x/D)\,dA.
+\]
+The midpoint quadrature uses $48\times32$ cells. A per-geometry table interpolates force and first moment every 0.025 Mach from 1.1 to 5. The swept-tip treatment extends the rectangular-wing solution; there is no thickness or fully 3-D shock solution here. See \href{https://farside.ph.utexas.edu/teaching/336L/Fluidhtml/node220.html}{the rectangular-wing derivation} and \href{https://openrocket.sourceforge.net/techdoc.pdf}{OpenRocket technical documentation}, \S3.2.
+ 
+\sub{Where it can contribute.} Define $H(z)=t^2(3-2t)$, $t=\min(1,\max(0,z))$. The handover $w$ is the product of $H$ on the five arguments
+\[
+ \frac{M-1.1}{0.4},\quad \frac{M s/\sqrt{s^2+h^2}-1}{0.15},\quad
+ \frac{\beta-\max(c_t,c_r-h)/s}{0.15},\quad \frac{5-M}{0.35},\quad
+ \frac{8^\circ-|\alpha|}{5^\circ}.
+\]
+Outside $1.1<M<5$, or on non-trapezoidal fins, $w=0$. Legacy and integral loads and their moments are mixed before division. Existing body interference, fin count, azimuth and cant are applied after the single-panel calculation. Body modeling, mass, recovery and drag were unchanged by this trial.
+ 
+\sub{Study implementation.} Let $(N_0,X_0)$, $(N_1,X_1)$ be whole-vehicle outputs with option off and fully on at the \emph{same flight state}. The trial replaces $w$ by $kw$ inside \texttt{FinSetCalc}. Equivalently, because the unchanged terms add linearly,
+\[
+ N_k=(1-k)N_0+kN_1,\quad
+ X_k=\big[(1-k)N_0X_0+kN_1X_1\big]/N_k .
+\]
+It would be incorrect simply to interpolate the two CP locations. The Java trial class runs ahead of the unchanged JAR on a study-only classpath. A fresh sweep verified both expressions against direct Java outputs at all 39,771 static states to $2\times10^{-12}$ in $D$ and per radian. Integrated flight trajectories are reruns of the solver, not interpolations between two flights.
+\clearpage
+\section{Experimental design and scoring}
+\sub{Independent roles for the data.} The native September atlas contains 92 configurations. We selected 24 with distinct roles and reserved three additional November designs generated in a fresh Windows 11 RASAero II 1.0.2.0 session. We do not treat 92 related designs, or neighboring Mach samples, as independent experiments. The geometry inventory in Appendix A identifies every selected input.
+\begin{itemize}
+\item \textbf{Fit (5).} Four-inch H-family baseline, reduced sweep, increased span, narrow tip, and unswept. Only zero-incidence samples at $M=1.50,\dots,3.00$ enter training.
+\item \textbf{Reserved (7).} Reduced span, intermediate sweep, wider tip, three fins, longer body, and two smaller-diameter S-family rockets. These exercise interpolation and transfer to a different airframe.
+\item \textbf{Fresh blind (3).} Square-section fins on the same 4-inch body, with new normalized planforms: short span, wide unswept and highly swept. Geometries and split were specified before their reference exports were examined. The fit was frozen without these cases.
+\item \textbf{Controls (5) and sensitivities (7).} Bare bodies isolate residuals with no fin correction. Alternate section, scale and RASAero Rogers-mode variants are sensitivity tests, not additional calibration rockets. The two historical NASA datasets are physical regression checks, previously used to assess the full option; they are independent of the RASAero fit, not newly blinded experiments.
+\end{itemize}
+\sub{Matched states.} RASAero: open the as-run CDX1, select Aero Plots, File $\to$ Export $\to$ To CSV File. The original exports concatenate angles; select the row's \texttt{Alpha}, then join on Mach, rather than interpolating across angles. Use \texttt{CP} in inches from the nose at that angle, \emph{not} \texttt{CP (0 to 4 deg)}. Multiply by 0.0254 and divide by the CDX1 body diameter in metres. Default CP is \texttt{ModifiedBarrowman=False}; the two files named ``rogers'' deliberately switch it on. See the \href{https://www.rasaero.com/dloads/RASAero%20II%20Users%20Manual.pdf}{RASAero II manual, Aerodynamic Plots}.
+ 
+OpenRocket: construct the same nose, tube and trapezoids in SI units. The fixture supports conical, tangent ogive (parameter 1), von K\'arm\'an (Haack parameter 0) and ellipsoid. Set fin position from the tube bottom using $c_r-\texttt{Location}$; count, span, section, thickness, sweep and chord follow the CDX1. No cant or fillet. For hexagonal blunt-base sections use the MIT triangular leading edge and the CDX1 bevel distance; this is a section approximation. Evaluate both calculators with sea-level ISA, zero rates and zero roll azimuth. Surface drag and motor choice do not enter this static CP call. At $4^\circ$ verify the exported secant against $C_N(4^\circ)/(4\pi/180)$ for these zero-lift-at-zero fixtures.
+ 
+\sub{Fit and audit.} Search $k=0,0.001,\ldots,1$, minimizing the square root of the mean of $(X_k-X_{\rm RAS})^2$ over exactly $5\times151=755$ training states; equal grids assign each rocket equal weight. The grid resolution is numerical precision, not parameter uncertainty. Freeze that $k$ for every remaining comparison. Report bias, mean absolute error, RMS, maximum absolute error and count by geometry, angle and Mach band in the CSVs. Pooled RMS uses state errors, not the arithmetic mean of case RMS values. Audit $0.10$--$0.80$, $0.81$--$1.30$, $1.50$--$3.00$ and $3.01$--$5.00$ separately; $1.31$--$1.49$ is plotted, not scored. Source contains the full grid $0.10$--$5.00$ in 0.01 steps, at $0^\circ,2^\circ,4^\circ$.
+ 
+\sub{Adoption rule.} Require improvement on reserved RASAero CP over the full model, no more than 0.10 $D$ CP RMS deterioration and no more than 5\% slope RMS deterioration on \emph{either} tunnel vehicle. These preselected engineering tolerances are not NASA measurement uncertainties. Fresh holdouts and Iris are reported independently.
+\clearpage
+\section{Comparison against RASAero}
+\fig{.98}{calibration}{The minimum of the training error is interior to the allowed range. The same parameter helps on the reserved group but does not improve the fresh blind group. Each bar uses the same 151 Mach points per rocket.}
+\begin{center}\small\begin{tabular}{lrrrr}\toprule
+Group & $\alpha$ (deg) & Legacy & Full & Trial $k=0.459$\\\midrule
+\tabinput groups.tex \bottomrule\end{tabular}\end{center}
+\textbf{Table interpretation.} Numbers above are CP RMS in body diameters for $1.50\leq M\leq3.00$. At zero incidence the trial reduces reserved error from 1.199 to 0.927 $D$ (23\%), but the improvement does not persist at $4^\circ$ or across the three new fin shapes. The five leave-one-training-geometry-out optima are 0.469, 0.473, 0.440, 0.486 and 0.431 in the fit-list order; the narrow range does not imply comparable generalization.
+ 
+The unchanged body-only group is a negative control: all model outputs coincide. Its 0.737 $D$ RMS against RASAero at zero incidence cannot be ascribed to fins. Subsonic and transonic zero-incidence reserved RMS values are 0.13 and 0.91 $D$ for all three models. Above the fitted range ($3.01$--$5.00$), reserved RMS is 2.05 / 1.06 / 0.95 $D$ for legacy / full / trial. These are additional simulator comparisons, not measurements. See \texttt{group-metrics.csv} for every angle and band.
+\clearpage
+\section{Why a uniform fin multiplier fails}
+\fig{.87}{planforms}{Whole-vehicle CP vs Mach at zero incidence. A positive vertical displacement is farther aft. Top: an atlas calibration and two reserved configurations. Bottom: three fresh native exports on previously unseen planforms. Coincident lines are intentional.}
+On the blind short-span fin, $\max(c_t,c_r-h)/s=5.44$; $\beta$ reaches only 2.83 by Mach 3. The tip-cone condition never passes. On the highly swept design, $s/\sqrt{s^2+h^2}=0.333$ (approximately); the normal leading-edge Mach only reaches unity just above Mach 3. Both therefore retain legacy predictions throughout the scored band. The short-span result is optimistic by $+2.03\,D$ on average, with $2.18\,D$ RMS; no choice of $k$ can repair it. On the active wide-unswept case, RMS goes from 1.12 (legacy) to 0.24 (full) then back to 0.35 $D$ (trial).
+ 
+\sub{A load diagnostic independent of CG.} At $M=2.50$, $\alpha=4^\circ$, form $N=C_N/\alpha$ with $\alpha$ in radians, and $J=NX$. Subtract the corresponding unfinned H-body values. The increment $\Delta J/\Delta N$ is the axial center of the added load, including installation interference; it is not a direct measurement of an isolated fin.
+\begin{center}\small\begin{tabular}{llrrrr}\toprule
+Geometry & Source & $N_b$ (/rad) & $X_b$ & $\Delta N$ (/rad) & $\Delta J/\Delta N$\\\midrule
+\tabinput body-table.tex \bottomrule\end{tabular}\end{center}
+For Hsq, full and RASAero give essentially the same added-load slope and station; scaling the correction down worsens the fin agreement. On the short-span rocket the fin slope is too large; on the wide-unswept rocket it is too small. The body itself also differs. This is why a whole-vehicle CP fit can reward the wrong component change. All eight paired geometries and four Mach stations are in \texttt{body-fin-audit.csv}; the fresh H-body controls have a negligible 0.0001-inch tube-length difference from the archived bare body.
+\clearpage
+\section{A second model from supersonic aerodynamics literature}
+\sub{Why these methods.} Brown's \href{https://ntrs.nasa.gov/citations/19930090940}{NACA Report 839} derives a linearized solution for pointed triangular wings and identifies the leading-edge/Mach-cone ratio as a controlling parameter. It does not supply a general cropped-trapezoid or finite-thickness solution. \href{https://ntrs.nasa.gov/citations/19930082018}{NACA's finite-wing tip analysis} explains why tip relief is important; neither an infinite-wing $4/\beta$ load nor a single constant multiplier can cover all spans. The \href{https://www.pdas.com/datcomrefs.html}{USAF Stability and Control DATCOM} tabulates normal-force slopes for straight tapered wings and potential force and moment for ogive/cone cylinders. These charts offer a practical non-CFD alternative: lookups are cheap enough for an integration step. NASA's \href{https://ntrs.nasa.gov/citations/19780012225}{ODIN module library}, supersonic regime, also separates body potential loading from wing lift. NACA Report 1307, listed in the DATCOM references, addresses the next unresolved term: wing--body interference in lift and pitching moment.
+
+\sub{Isolated wing force.} We extracted the underlying numerical chart entries directly from the \href{https://www.pdas.com/datcomdownload.html}{public Digital DATCOM Fortran distribution}. Mirror the exposed fin about its root to define wing aspect ratio $A=4s/(c_r+c_t)$, taper $\lambda=c_t/c_r$ and $p=\tan\Lambda=h/s$. For positive sweep, Fig.\ 4.1.3.2-56A--F gives ordinate $Q$ at $(\beta/p,Ap,\lambda)$. Convert to panel-area slope as $Q/p$ on the subsonic-leading-edge side and $Q/\beta$ on the supersonic side. For rectangles, Fig.\ 56G supplies $C_{N\alpha}/A$ below $A\beta=1$; above it use $(4-2/(A\beta))/\beta$. For small $Ap$, smooth between the equivalent-rectangle solution at the same $A$ and the chart, attaining the tabulated solution at $Ap=0.25$. This continuation for tapered, nearly unswept fins is ours. The chart-only force uses the legacy fin load station to isolate the slope change. We retain the existing fin/body interference factors. Out-of-table axes saturate at the boundary; reversal of sweep and inverse taper are outside the candidate's supported set.
+
+\sub{Body force and moment.} Let $L_n,d,L_c$ denote nose length, nose base diameter and following cylindrical length. In Figs.\ 4.2.1.1-21A/B, interpolate slope in $(\beta d/L_n,L_c/L_n)$. In Figs.\ 4.2.2.1-23A/B, use the corresponding left or right axis (the reciprocal on the high-$\beta d/L_n$ side); multiply the returned CP fraction by $L_n+L_c$. Limit the represented cylinder to five nose lengths, the chart endpoint; do not multiply a clipped fraction by an unlimited length. Replace the nose potential load and its first moment, retaining the existing incidence-dependent crossflow contributions. Eligibility requires a forward pointed main-stage nose followed by a same-stage, same-radius tube. Cone and tangent-ogive use their charts. Iris's von K\'arm\'an nose uses the equal-length ogive as a \textbf{surrogate}; there is no Haack chart in this port. Power-series noses and ellipsoids retain the baseline body model. Small transitions, tail, pods and other cylinders are not independently replaced. The retained Mach and incidence handovers are engineering choices; the wing charts do not require the old tip-clearance or normal-Mach gates. The port does not implement all of DATCOM, thickness corrections, drag or DATCOM's complete body crossflow model.
+
+\sub{Two coefficients, chosen before the final comparison.} Write a vehicle load pair as $P=(N,J)$. At the same state evaluate $F$ (original full option), $W$ (chart wing with baseline body) and $B$ (chart wing plus chart body). The proposed blend is
+\[
+           P_* = F+a(W-F)+b(B-W),\qquad X_*=P_{*,J}/P_{*,N}.
+\]
+Search $a,b=0,0.02,\ldots,1$ on the original five training rockets, discarding pairs outside the two tunnel tolerances of Section 3. The selected pair is \textbf{$a=0.32,\ b=0.40$}; the unconstrained minimum $(1.00,0.44)$ fails the physical constraints. Because the NASA data now constrain the fit, they are no longer independent validation of this blend. These coefficients are empirical weights, not aerodynamic constants. Direct Java vs reconstructed load/moment agreement is better than $2\times10^{-12}$ over 44,190 states.
+\clearpage
+\section{Transfer results and physical cross-check}
+\fig{.98}{transfer-tests}{First five designs train both candidates. The first blind set is fresh for the scalar study, but informed the decision to try DATCOM. Only the final three constitute a new blind test for the literature-based model.}
+\begin{center}\small\begin{tabular}{lrrrrrr}\toprule
+$M=1.50$--$3.00$, $0^\circ$ & Legacy & Full & Scalar & Wing charts & Both charts & Blend\\\midrule
+Training (5) &1.046&.852&.430&.669&.720&.502\\
+Reserved (7)&1.557&1.199&.927&1.112&1.226&.857\\
+First blind (3)&1.442&1.297&1.305&1.069&.503&.828\\
+Final blind (3)&1.259&.579&.487&.426&.986&.438\\
+Bare bodies (5)&.737&.737&.737&.737&1.131&.884\\\bottomrule\end{tabular}\end{center}
+The blend is more transferable than the scalar on these three held-out groups at zero incidence. Its final-set improvement over full is 24\%. It is \emph{not} the best model on every rocket: at $0^\circ$ near-rectangular fins worsen from 0.35 to 0.62 $D$ while strongly tapered fins improve from 0.88 to 0.34 $D$. At $4^\circ$ the final-group RMS worsens from 0.42 to 0.54 $D$. Wing-only scores best overall on the final $0^\circ$ group, but fails the tunnel slope tolerance. Body-only controls regress at $0^\circ$. See \texttt{chart-cases.csv} and \texttt{chart-groups.csv} for all data, including angles 2 and 4 degrees.
+
+\sub{Physical scale of the tradeoff.} Five supersonic points per vehicle. Column pairs are CP RMS in $D$ and normal-force-slope RMS per radian:
+\begin{center}\small\begin{tabular}{lrr|rr}\toprule
+&\multicolumn{2}{c|}{ARCAS, $M=1.50$--3.96}&\multicolumn{2}{c}{Yuska B, $M=2.00$--3.47}\\
+& CP & $C_{N\alpha}$ & CP & $C_{N\alpha}$\\\midrule
+Legacy&2.665&5.671&1.023&4.682\\
+Full finite wing&.318&2.882&.126&2.235\\
+Scalar trial&1.047&4.373&.511&3.547\\
+Both charts, unblended&.859&2.317&.171&2.585\\
+DATCOM blend&.312&2.626&.136&2.343\\\bottomrule\end{tabular}\end{center}
+The blend meets the preset tolerances. Its reconstructed pitching-moment-slope RMS, which was not a fit constraint, rises from 2.65 to 4.94/rad for ARCAS and from 4.85 to 4.91/rad for Yuska B. A CP fit alone does not guarantee accurate control moments. \texttt{chart-tunnel-metrics.csv} gives both single-method ablations. Sample counts are too small and correlated to justify a flight uncertainty interval.
+\clearpage
+\section{Iris: the preferred half-inch transition}
+Make one change to the clean design used for the historical native export: the first sustainer transition at station 82.00 in is now 0.50 in long. The next transition remains 1.00 in. The updated CDX1 puts the booster at 136.50 in and the total length at 239.25 in. Both engines used digest-matched O6836 and N3366 motor curves. Loaded stack: 73.229153 kg, CG 4.142630 m; loaded sustainer: 26.076044 kg, CG 2.423703 m. The 6.17-inch booster envelope approximates the exposed 6.00-inch motor-case section. Camera shells are equivalent drag areas in RASAero; paired transition diameters are approximations retained from the stable export. Both nozzle exits are unspecified (zero). The original recovery components contribute mass only. Wind is steady at 2 m/s in RASAero; OpenRocket fixes solver and wind seeds separately to 20261108. The first RASAero sustainer sample is 10.53 s, ignition is 15.52 s, and burnout is 20.77 s. The new native export has 16,664 samples.
+
+\fig{.96}{iris-flight}{Preferred Iris: independent time integrations, plotted only after separation. Top: CP and CG measured aft from the nose; the two CG traces nearly coincide at burnout. Bottom: positive static margin in current-stage diameters. Shading marks sustainer thrust.}
+\begin{center}\small\begin{tabular}{lrrrrrr}\toprule
+&\multicolumn{4}{c}{At sustainer burnout}&\multicolumn{2}{c}{Minimum during burn}\\
+Model &$M$&CG (m)&CP (m)&SM (cal)&SM (cal)&Time (s)\\\midrule
+\tabinput events.tex \bottomrule\end{tabular}\end{center}
+The recommended research blend predicts 3.24 cal at burnout, still \textbf{0.59 cal too high} against RASAero's 2.65. Its burn-wide margin RMS is 0.56 cal, versus 0.95 for full, 0.44 for scalar, 0.34 for the unblended charts, and 1.57 for legacy. The blend also puts the minimum near 18.00 s rather than 20.60 s. A model selected for transfer to other rockets need not be closest on Iris.
+\clearpage
+\section{Isolating trajectory, geometry and measurement effects}
+\fig{.95}{iris-replay}{Static replay on the native RASAero trajectory: each sample sets the same Mach, incidence, and active stage in the OpenRocket aerodynamic API. Positive error means the OpenRocket CP lies farther aft. Axis shows only the sustainer interval.}
+The preferred flight comparison uses both clocks and airspeeds as each engine calculates them. For a second check we replay the first 30 s of RASAero states in OpenRocket, reset the active-stage geometry and reference area at separation, set roll azimuth to zero and disable rates. We verify the reference diameters are 6.17 and 4.20 inches; we do not use RASAero's CP to set any replay input. On 526 matched sustainer-burn states the full model has CP bias $+0.53\,D$ and RMS $0.94\,D$. The blend reduces these to $+0.24\,D$ and $0.54\,D$. For the 975 separated states at $M\geq2$ the bias remains $+0.68\,D$ (full: $+1.30\,D$). The residual is aerodynamic/model-form error relative to this native representation; it cannot be removed merely by synchronizing trajectories.
+ 
+CG explains part of the burn-wide margin difference, but not the burnout difference: average OR-minus-RAS CG during thrust is $+0.069\,D$, and at burnout the difference is less than $1\,\mu$m at export precision. In the time comparison we interpolate OpenRocket on the native timestamps within the same stage, never across separation. We check $\delta {\rm SM}=\delta x_{\rm CP}/D-\delta x_{\rm CG}/D$ to $5\times10^{-5}$ caliber. For this half-inch case, model apogees cluster around 25.94 km in OR vs 25.59 km in RASAero; altitude alone would conceal much of the CP error.
+ 
+\sub{Do not mix Iris revisions.} The historical RASAero export used a 0.25-inch transition; the user's saved-flight ORK uses 1.00 inch there. We compared the rocket XML, found that single geometry change and identical simulation conditions, and reran both files as sensitivity cases. For the historical run RASAero gives 2.33 cal at burnout. The corresponding full OR result is about 3.92; the 1.00-inch full OR result also rounds to 3.92. Neither old reference is substituted for the fresh 0.50-inch result. As captured in the native provenance, model translation retains the same simplified taper fields in both CDX1 files: the observed change between whole native runs is not a measurement of a physical transition derivative.
+ 
+\sub{Wind-tunnel provenance.} ARCAS configuration 1 is a half-scale 40.95-in vehicle of 2.25-in diameter. The geometry and aft CP use \href{https://ntrs.nasa.gov/citations/19670020031}{NASA TN D-4014}, Figs.\ 1, 7; experimental series in \href{https://openrocket.sourceforge.net/techdoc.pdf\#page=103}{OpenRocket Fig.\ 6.7} supply the remaining readings. The fixture uses a simplified conical boattail. Yuska B uses the four-fin, 61.7-in, 6-in-diameter model in \href{https://ntrs.nasa.gov/citations/19660004864}{NASA TN D-3182}, Figs.\ 1, 4(b); a three-quarter-power nose and 0.8-degree cant approximate the drawing. The five supersonic readings per vehicle are approximate digitizations, not high-precision coefficient tables. Reference moment stations are 25.95/2.25 and 61.7/6 diameters. Full graph readings, geometry, conventions and omissions are preserved in \texttt{reference/}.
+\clearpage
+\section{Engineering recommendation and reproducibility}
+Use the DATCOM blend as a separate research comparison in MIT 6.6. Preserve the original full option and legacy results alongside it. For an Iris decision near burnout, report the native half-inch result (2.65 cal) and the blend (3.24 cal) together; the remaining 0.59-cal difference is a discrepancy, not a statistical uncertainty allowance. Do not use a constant CP offset to enforce agreement. The strongest next test is an independent bare/winged pair with measured force \emph{and} moment, such as the Nielsen--Katzen--Tang wing/body experiments (NACA TN 3795). Establish Haack forebody loads and short-span interference before extending coverage. The current checks do not cover large incidence, high spin, multibody shock interactions, unusual sections or Mach numbers above the handover.
+
+\sub{Code map.} \texttt{FiniteWingPressure} integrates panels; \texttt{FinSetCalc} applies instance loading; the Barrowman calculator selects component calculators. The original option, XML load/save and Swing checkbox are in commit \texttt{18bbfbd4}. The study patch adds \texttt{ChartData}/\texttt{ChartModel}, blends the two fin load pairs in \texttt{FinSetCalc}, and replaces only the eligible nose potential part in \texttt{SymmetricComponentCalc}. The existing experimental flag activates the study variant in a patched process; flag-off remains legacy. No change is made to the installed application. The study source includes a patch and a Java overlay JAR; \texttt{git apply --check} passed against the pinned source. All reported variant flights run actual OpenRocket integration code.
+
+\sub{Run order.} From the \href{https://github.com/MDNich/MIT-RT-26_27-Work/tree/main/design_work/openrocket_CP}{complete team study directory}, use JDK 17, Python with NumPy and Matplotlib, and a TeX installation with pdfLaTeX, PGF, Beamer and Latin Modern. The run here used Java 17.0.21, Python 3.15.2, NumPy 2.5.4 and Matplotlib 3.11.2. The reference JAR SHA-256 and raw-input hashes are in the README, CSV manifest and native export notes.
+\begin{lstlisting}
+git clone https://github.com/MDNich/ActiveControl_MIT_RktTeam.git OR
+git -C OR checkout 18bbfbd4
+(cd OR/clone/openrocket && ./gradlew shadowJar)
+export OR_REPO="$(cd OR && pwd)"
+cd /path/to/openrocket_CP
+bash reproduce.sh
+\end{lstlisting}
+The driver reconstructs the archived atlas subset, compiles the Java sweeps, runs paired Iris flights, fits the scalar, checks it against direct Java, builds wing/body ablations, fits the constrained grid, scores the locked final set, replays the preferred trajectory, then regenerates all tables and figures and both PDFs. It does not rerun Windows software. To regenerate native references, use the CDX1 and motor files with RASAero II 1.0.2.0 and the exact GUI procedures and settings in each native folder. No proprietary binary is bundled. The exported native data suffice for independent scoring. The report-source and slide-source archives also rebuild their PDFs directly without rerunning a solver.
+
+\sub{What to inspect first.} \texttt{design.json} fixes the first split and scoring bands. \texttt{literature/protocol.md} records the second pass and final holdouts. \texttt{results/transfer-grid.csv} contains all 2,601 parameter candidates. \texttt{chart-groups.csv}, \texttt{chart-cases.csv} and \texttt{chart-tunnel-metrics.csv} give all scored outcomes. \texttt{iris-events.csv}, \texttt{iris-errors.csv} and \texttt{iris-common-state.csv} separate flight, sampling and aero effects. All plots use Matplotlib PGF with pdfLaTeX typesetting, using the supplied blue \#08357E, dark red \#7A0101 and green \#38761D palette.
+\clearpage
+\appendix\section{Geometry ledger and per-case results}
+Dimensions in inches. $D$ is body diameter, $L_n/L_b$ lists nose and tube length, $n_f$ is fin count, $c_r/c_t$ are root and tip chords, and $s/h$ are exposed span and axial sweep. The last three columns give $0^\circ$, $M=1.50$--3.00 CP RMS against RASAero. The two physical benchmark geometries and Iris are separate. Geometry is taken from each as-run CDX1, not inferred from the case name.
+\begin{center}\scriptsize\setlength{\tabcolsep}{3.5pt}\begin{tabular}{llrrrrrrrr}\toprule
+Case&Role&$D$&$L_n/L_b$&$n_f$&$c_r/c_t$&$s/h$&Legacy&Full&Scalar\\\midrule
+\tabinput matrix.tex \bottomrule\end{tabular}\end{center}
+\sub{Final confirmation designs.} Each has an ogive nose three diameters long, a tube twelve diameters long and a 0.5-inch trailing-edge setback. Hashes of the model files were frozen before native export. These last designs were not used to choose the coefficients.
+\begin{center}\small\begin{tabular}{lrrrrrr}\toprule
+Case & $D$ & $n_f$ & $c_r/c_t$ & $s/h$ & Full RMS & Blend RMS\\\midrule
+Moderate sweep &3.25&3&5.25/2.375&3.125/2.25&.33&.28\\
+Strong taper &4&4&7.50/.75&4.125/3.75&.88&.34\\
+Near rectangle &4&4&4.75/4.50&3.875/.125&.35&.62\\\bottomrule\end{tabular}\end{center}
+The native model files also retain thicknesses, nose shape, finish, bevels and locations. Half/double scale and alternate CP modes furnish sensitivity checks but do not count as independent geometry wins. The two tip-length variants also change sweep relative to Hsq; they are not clean one-variable taper experiments.
+\end{document}
