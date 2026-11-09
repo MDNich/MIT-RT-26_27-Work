@@ -15,7 +15,7 @@ Placing the four tabs directly against the board creates approximately 1.18~mm o
 \begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.png}
 \captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
 \heading{What the raised case changes}
-Under X-axis vibration, the 3~mm case increased peak board-normal motion from 23.37~$\mu$m RMS bare to 145.55 with nylon screws and 120.00 with aluminium. Nylon gave the lowest cell-body X acceleration. Aluminium reduced board movement relative to nylon and increased the local stress across the PLA layers at a screw bearing. The presently verified flush results cover fit and partial installation.
+Under X-axis vibration, the 3~mm case increased peak board-normal motion from 23.37~$\mu$m RMS bare to 145.55 with nylon screws and 120.00 with aluminium. Nylon gave the lowest cell-body X acceleration. Aluminium reduced board movement relative to nylon and increased the local stress across the PLA layers at a screw bearing. In the whole-board flush trial with nylon screws, all four tabs began touching the PCB at 2.60--2.675~mm of screw travel. At 2.75~mm, about 95\% of each tab footprint still had more than 0.05~mm clearance (page~19).
 
 \heading{Reference assembly}
 The October assembly has 208 bodies and a modeled mass of 251.82~g. Eight stand-off end faces carry the base motion. Two nickel strips attach each cell to the assembly. In the connected reference, six existing screws were loaded to 750~N apiece and locked. Its first mode was 485.964~Hz. Independent base excitation between 20 and 2000~Hz gave a maximum PCB directional displacement of 0.052674~mm RMS under Z excitation and a maximum PCB equivalent stress of 90.325~MPa RMS under X excitation. These archived quantities supply reference checks for the repeats.
@@ -333,5 +333,26 @@ At each mount's own peak dynamic PCB stress in the X clip, the smallest sampled 
 Independent modal coordinates displaced all 8,038 exterior quadratic PLA faces and all 938 cell faces. Each quadratic face lies inside the convex hull of six control points. We excluded pairs with disjoint hulls and subdivided overlapping hulls until they separated or successive triangular approximations intersected. In all 18 crossing frames the eight- and sixteen-segment edge refinements agreed. The remaining 2,862 frame/configuration combinations had disjoint curved surfaces.
 
 An independent check using the full closed skins gave a sampled overlap of 15.0~$\mu$m at four segments per edge and 14.6~$\mu$m at eight for frame 262. The geometry check also reproduced a prescribed planar crossing and the earlier open and intersecting whole-assembly states. Impact force and the motion between displayed samples require further analysis. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
+
+\newpage
+\heading{The four flush tabs touch at their edges while most of each face stays open}
+At 2.75~mm of the commanded 3~mm travel, all four nylon-screw tabs carried contact pressure against the flexible PCB. Only 4.4--5.1\% of each projected tab footprint lay within 0.05~mm of its opposing board face. The far side of each tab still had a 2.42~mm gap. All four outer washers intersected the computed PLA surface. The smallest sampled clearances at the three cells were 0.093, 0.112 and 0.077~mm. These figures describe the partial elastic installation. The required seating force for the printed assembly remains open.
+
+\begin{center}\includegraphics[width=.96\linewidth]{figures/flush_nylon_surf1_static_step3_substep20.pdf}
+\captionof{figure}{Left, the reactions at the four screw drives. Red brackets the first through-layer coupon crossing. Blue brackets first loaded tab-to-PCB contact. Right, the deformed footprint of the most heavily loaded tab at 2.75~mm. Dark blue denotes the largest gap. The uncoloured bore has no opposing faces.}\end{center}
+
+\begin{center}\small
+\begin{tabular}{lrrr}\toprule
+Tab position & Drive reaction [N] & Area with gap $\leq$0.05 mm [\%] & Largest gap [mm]\\\midrule
+Low X, low Y & 271 & 4.4 & 2.425\\
+Low X, high Y & 292 & 4.7 & 2.422\\
+High X, low Y & 365 & 5.1 & 2.417\\
+High X, high Y & 327 & 4.9 & 2.418\\\bottomrule
+\end{tabular}
+\captionof{table}{Values at 2.75~mm travel, after the printed-material reference was exceeded. The area comes from clipping the overlapping, deformed surface triangles at the specified gap.}\end{center}
+
+The first through-layer tensile stress crossed 40.5~MPa between 0.95 and 1.10~mm, at a node tied to the idealized screw bearing. In-plane tension crossed 52.3~MPa at 1.10--1.25~mm. When the search excluded points within 2~mm of tied bearing nodes, both references were first crossed at 1.25--1.40~mm. The latter interval follows the first crossing of the 15~$\mu$m hardware-penetration screen (1.10--1.25~mm). At 2.75~mm the contact field reached 71~$\mu$m penetration. The four drive reactions summed to 1.255~kN in this elastic continuation. Neither coupon response beyond its measured range nor the contact law supports an installation-load rating.
+
+The 12 native result partitions contained the same 28 converged equilibria. Against a completed raised assembly, the partition reader reproduced the combined result's material extrema, contact history, bolt reactions and fixed-support resultants. For the flush trial, DPF recovered the screw travel relative to each deformed PCB bearing. The 1,482 solid parents used to interpolate the eight opposing patches matched the checkpoint in connectivity and coordinates. Two surface refinements changed the gap extrema by less than 0.00017~mm. At four selected equilibria, the 9,466 hardware target facets also formed closed skins. The four outer washers were the only hardware surfaces intersecting the PLA at 0.65, 2.675 and 2.75~mm.
 
 \end{document}

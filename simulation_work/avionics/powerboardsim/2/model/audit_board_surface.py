@@ -21,6 +21,8 @@ def audit(case,campaign):
     audit_supports(case,campaign)
     from installation_material import run as audit_material
     audit_material(case,campaign)
+    from reconcile_installation import reconcile
+    reconcile(case,campaign)
 
 def audit_complete(case,campaign,d,r):
     ledger=read(r/'archived.json');status=read(r/'status.json');job=read(d/'surface_job.json')
