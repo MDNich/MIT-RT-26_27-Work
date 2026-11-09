@@ -9,8 +9,8 @@ public final class BodyPlan {
     public record Center(double length, double endDiameter) {}
     public record Part(Center center, boolean groupedStep, boolean terminal, boolean crossflow) {}
 
-    enum Mode { PREVIOUS, SEGMENTS, CENTER, TAIL, CROSSFLOW, COMBINED }
-    private static final Mode MODE = Mode.valueOf(System.getProperty("study.afterbody", "combined").toUpperCase(Locale.ROOT));
+    enum Mode { PREVIOUS, SEGMENTS, CENTER, TAIL, CROSSFLOW, COMBINED, NARROW }
+    private static final Mode MODE = Mode.valueOf(System.getProperty("study.afterbody", "narrow").toUpperCase(Locale.ROOT));
 
     private static boolean enabled(Mode method) { return MODE == Mode.COMBINED || MODE == method; }
     private static double start(SymmetricComponent component) { return component.getComponentLocations()[0].x; }
@@ -32,12 +32,13 @@ public final class BodyPlan {
         spine.sort(Comparator.comparingDouble(BodyPlan::start));
         for (int i=0;i<spine.size();i++) {
             SymmetricComponent c=spine.get(i);
-            boolean tail=enabled(Mode.TAIL) && i==spine.size()-1 && conical(c) && i>0 &&
+            boolean tail=(enabled(Mode.TAIL) || (MODE==Mode.NARROW && c.getAftRadius()<c.getForeRadius())) && i==spine.size()-1 && conical(c) && i>0 &&
                 spine.get(i-1) instanceof BodyTube && touches(spine.get(i-1),c) &&
                 Math.abs(spine.get(i-1).getAftRadius()-c.getForeRadius())<1e-6;
             map.put(c,new Part(null,false,tail,enabled(Mode.CROSSFLOW)));
         }
-        if(MODE!=Mode.SEGMENTS && !enabled(Mode.CENTER)) return map;
+        boolean equalTubesOnly=MODE==Mode.SEGMENTS || MODE==Mode.NARROW;
+        if(!equalTubesOnly && !enabled(Mode.CENTER)) return map;
         for (int i=0;i+1<spine.size();i++) {
             if (!(spine.get(i) instanceof NoseCone nose) || !ChartModel.supports(nose) ||
                 !(spine.get(i+1) instanceof BodyTube)) continue;
@@ -49,7 +50,7 @@ public final class BodyPlan {
                    (!(c instanceof BodyTube) && !conical(c))) break;
                 double end=2*c.getAftRadius(), fore=2*c.getForeRadius();
                 if(Math.abs(fore-previous)>2e-6) break;
-                if(MODE==Mode.SEGMENTS && (!(c instanceof BodyTube) || Math.abs(end-base)>2e-6)) break;
+                if(equalTubesOnly && (!(c instanceof BodyTube) || Math.abs(end-base)>2e-6)) break;
                 if(Math.max(Math.abs(end/base-1),Math.abs(fore/base-1))>.10+1e-10) break;
                 int next=end>previous+1e-7?1:(end<previous-1e-7?-1:0);
                 if(direction!=0 && next!=0 && direction!=next) break;

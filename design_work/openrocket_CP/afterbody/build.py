@@ -76,7 +76,7 @@ s=replace_once(s,'private void buildCalcMap(FlightConfiguration configuration) {
         if(stale)voidAerodynamicCache();
     }
     private void buildCalcMap(FlightConfiguration configuration) {
-        var bodyParts=info.openrocket.core.aerodynamics.barrowman.BodyPlan.identify(configuration);''')
+        var bodyParts=finiteWingFins ? info.openrocket.core.aerodynamics.barrowman.BodyPlan.identify(configuration) : java.util.Map.<RocketComponent,info.openrocket.core.aerodynamics.barrowman.BodyPlan.Part>of();''')
 s=replace_once(s,'} else if (finiteWingFins && comp instanceof info.openrocket.core.rocketcomponent.NoseCone n &&','''} else if(finiteWingFins && bodyParts.containsKey(comp)){
                 calcObj=new info.openrocket.core.aerodynamics.barrowman.SymmetricComponentCalc(comp,bodyParts.get(comp));
             } else if (finiteWingFins && comp instanceof info.openrocket.core.rocketcomponent.NoseCone n &&''')

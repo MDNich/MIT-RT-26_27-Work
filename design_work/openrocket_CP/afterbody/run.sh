@@ -8,7 +8,7 @@ javac -cp "$work/classes:$jar" -d "$work/classes" afterbody/AirframeSweep.java
 cl="$work/afterbody/classes:$work/classes:$jar"
 action="${1:-all}"
 case "$action" in all|sweep|replay) ;; *) exit 2;; esac
-for mode in previous segments center tail crossflow combined; do
+for mode in previous segments center tail crossflow combined narrow; do
     if [[ "$action" != replay ]]; then
         java -Djava.awt.headless=true "-Dstudy.afterbody=$mode" -cp "$cl" AirframeSweep "$root" "results/afterbody/$mode.csv"
     fi
@@ -18,7 +18,10 @@ for mode in previous segments center tail crossflow combined; do
     cp "$work/afterbody/$mode-replay.csv.out.csv" "results/afterbody/$mode-replay.csv"
 done
 if [[ "$action" == sweep ]]; then exit 0; fi
-java -Djava.awt.headless=true -cp "$cl" ChartTunnel reference/measurements.csv results/afterbody/earlier-tunnel.csv 2> "$work/afterbody/earlier-tunnel.log"
+java -Djava.awt.headless=true -Dstudy.afterbody=combined -cp "$cl" ChartTunnel reference/measurements.csv results/afterbody/earlier-tunnel.csv 2> "$work/afterbody/earlier-tunnel.log"
 if grep -Ei 'abrupt|invalid|exception' "$work/afterbody/earlier-tunnel.log"; then exit 1; fi
+java -Djava.awt.headless=true -Dstudy.afterbody=narrow -cp "$cl" ChartTunnel reference/measurements.csv results/afterbody/narrow-tunnel.csv 2> "$work/afterbody/narrow-tunnel.log"
+if grep -Ei 'abrupt|invalid|exception' "$work/afterbody/narrow-tunnel.log"; then exit 1; fi
 if [[ "$action" == replay ]]; then exit 0; fi
-OVERLAY="$work/afterbody/classes" ./run-iris.sh preferred afterbody
+JAVA_TOOL_OPTIONS="-Dstudy.afterbody=combined" OVERLAY="$work/afterbody/classes" ./run-iris.sh preferred afterbody
+JAVA_TOOL_OPTIONS="-Dstudy.afterbody=narrow" OVERLAY="$work/afterbody/classes" ./run-iris.sh preferred afterbody-narrow

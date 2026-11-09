@@ -1,6 +1,5 @@
 import com.google.inject.Guice;
 import info.openrocket.core.aerodynamics.*;
-import info.openrocket.core.file.GeneralRocketLoader;
 import info.openrocket.core.plugin.PluginModule;
 import info.openrocket.core.rocketcomponent.*;
 import info.openrocket.core.rocketcomponent.position.AxialMethod;
@@ -70,7 +69,7 @@ public final class AirframeSweep {
                     if(promisedTail>0 && Math.abs(promisedTail-num(e,"Length"))>1e-4)throw new IllegalArgumentException("Conflicting tail lengths "+p);
                     promisedTail=0;
                 }
-                double aft=num(e,"RearDiameter");taper(stage,num(e,"Length"),lastDia,aft);lastDia=aft;
+                double aft=num(e,e.getTagName().equals("BoatTail") ? "RearDiameter" : "Diameter");taper(stage,num(e,"Length"),lastDia,aft);lastDia=aft;
             }
             default -> {if(e.getElementsByTagName("Length").getLength()>0)throw new IllegalArgumentException("Unhandled "+e.getTagName());continue;}
             }
@@ -103,10 +102,38 @@ public final class AirframeSweep {
             }
         }
     }
+    static void checkNativeDiameters(Path models)throws Exception{
+        for(String field:List.of("Diameter","RearDiameter")){
+            var cfg=read(models.resolve("field-checks/field-check-"+field+".CDX1"));
+            var stage=cfg.getRocket().getChild(0);
+            var transition=(Transition)stage.getChild(2);
+            double expected=field.equals("Diameter") ? 4.30 : 4.20;
+            if(Math.abs(transition.getAftRadius()*2/IN-expected)>1e-8 ||
+               Math.abs(transition.getForeRadius()*2/IN-4)>1e-8)
+                throw new AssertionError("Native editor readback mismatch for "+field);
+        }
+    }
+    /** Detaching and reattaching the booster changes which taper is exposed. */
+    static void checkStageSwitch(){
+        var upper=stage();nose(upper,"Tangent Ogive",12,4);tube(upper,20,4);taper(upper,4,4,3);
+        var lower=new AxialStage();upper.getRocket().addChild(lower);tube(lower,12,3);
+        var cfg=finish(upper);
+        var cached=new BarrowmanCalculator(true);
+        for(boolean stack:new boolean[]{true,false,true}){
+            if(stack) cfg.setAllStages();else cfg.setOnlyStage(0);
+            var c=new FlightConditions(cfg);c.setAOA(Math.toRadians(2));c.setMach(2.4);
+            var reuse=cached.getCP(cfg,c,null);
+            var fresh=new BarrowmanCalculator(true).getCP(cfg,c,null);
+            if(Math.abs(reuse.x-fresh.x)>1e-10 || Math.abs(reuse.weight-fresh.weight)>1e-10)
+                throw new AssertionError("Active-stage body geometry cache mismatch");
+        }
+    }
     public static void main(String[] arg)throws Exception{
         System.setProperty("openrocket.bypass.presets","true");System.setProperty("openrocket.bypass.motors","true");
         var gui=new GuiModule();Application.setInjector(Guice.createInjector(gui,new PluginModule()));gui.startLoader();
-        Path root=Path.of(arg[0]);double[] grid=new double[151];
+        checkStageSwitch();
+        Path root=Path.of(arg[0]);checkNativeDiameters(root.resolve("inputs/native-afterbody/models"));
+        double[] grid=new double[151];
         for(int i=0;i<grid.length;i++)grid[i]=(150+i)/100.;
         try(var w=new PrintWriter(Files.newBufferedWriter(Path.of(arg[1])))){
             w.println("geometry,mach,alpha_deg,D_in,cp_in,n_rad");

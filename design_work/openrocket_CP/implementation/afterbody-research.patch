@@ -1,0 +1,357 @@
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/BarrowmanCalculator.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/BarrowmanCalculator.java
+@@ -96,7 +96,7 @@
+ 	@Override
+ 	public Coordinate getCP(FlightConfiguration configuration, FlightConditions conditions,
+ 			WarningSet warnings) {
+-		checkCache(configuration);
++		checkBodyConfiguration(configuration);
+ 		AerodynamicForces forces = calculateNonAxialForces(configuration, conditions, warnings);
+ 		return forces.getCP();
+ 	}
+@@ -224,7 +224,7 @@
+ 	@Override
+ 	public AerodynamicForces getAerodynamicForces(FlightConfiguration configuration,
+ 			FlightConditions conditions, WarningSet warnings) {
+-		checkCache(configuration);
++		checkBodyConfiguration(configuration);
+ 		
+ 		if (warnings == null)
+ 			warnings = ignoreWarningSet;
+@@ -288,7 +288,7 @@
+ 	private AerodynamicForces calculateNonAxialForces(FlightConfiguration configuration, FlightConditions conditions,
+ 			WarningSet warnings) {
+ 
+-		checkCache(configuration);
++		checkBodyConfiguration(configuration);
+ 
+ 		if (warnings == null)
+ 			warnings = ignoreWarningSet;
+@@ -1076,7 +1076,22 @@
+ 	}
+ 	
+ 	
+-	private void buildCalcMap(FlightConfiguration configuration) {
++	private boolean[] afterbodyActive;
++    private void checkBodyConfiguration(FlightConfiguration cfg) {
++        checkCache(cfg);
++        if(!finiteWingFins)return;
++        int count=cfg.getRocket().getStageCount();
++        boolean stale=afterbodyActive==null || afterbodyActive.length!=count;
++        if(stale)afterbodyActive=new boolean[count];
++        for(int i=0;i<count;i++){
++            boolean active=cfg.isStageActive(i);
++            if(active!=afterbodyActive[i])stale=true;
++            afterbodyActive[i]=active;
++        }
++        if(stale)voidAerodynamicCache();
++    }
++    private void buildCalcMap(FlightConfiguration configuration) {
++        var bodyParts=finiteWingFins ? info.openrocket.core.aerodynamics.barrowman.BodyPlan.identify(configuration) : java.util.Map.<RocketComponent,info.openrocket.core.aerodynamics.barrowman.BodyPlan.Part>of();
+ 		calcMap = new HashMap<>();
+ 
+ 		for (RocketComponent comp : configuration.getAllComponents()) {
+@@ -1087,6 +1102,11 @@
+ 			RocketComponentCalc calcObj;
+             if (finiteWingFins && comp instanceof TrapezoidFinSet fins) {
+                 calcObj = new FinSetCalc(fins, true);
++            } else if(finiteWingFins && bodyParts.containsKey(comp)){
++                calcObj=new info.openrocket.core.aerodynamics.barrowman.SymmetricComponentCalc(comp,bodyParts.get(comp));
++            } else if (finiteWingFins && comp instanceof info.openrocket.core.rocketcomponent.NoseCone n &&
++                !Boolean.getBoolean("study.wingOnly")) {
++                calcObj=new info.openrocket.core.aerodynamics.barrowman.SymmetricComponentCalc(n,true);
+             } else {
+                 calcObj = (RocketComponentCalc) Reflection.construct(BARROWMAN_PACKAGE, comp, BARROWMAN_SUFFIX, comp);
+             }
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FinSetCalc.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FinSetCalc.java
+@@ -139,6 +139,7 @@
+ 		// One fin without interference (both sub- and supersonic):
+ 		double cna1 = calculateFinCNa1(conditions);
+         double x = macLead + calculateCPPos(conditions) * macLength;
++        double legacyN=cna1, legacyX=x;
+         if (finiteWing != null) {
+             double weight = finiteWing.weight(conditions.getMach(), conditions.getAOA());
+             if (weight > 0) {
+@@ -153,7 +154,15 @@
+             }
+         }
+ 			
+-		// Multiple fins with fin-fin interference
++		if(finiteWing!=null && liveFinSet instanceof TrapezoidFinSet tr && tr.getSweep()>=0 && tr.getTipChord()<=tr.getRootChord()){
++             double m=conditions.getMach(), w=ChartModel.envelope(m,conditions.getAOA());
++             if(w>0){
++                 double chartN=(1-w)*legacyN+w*ChartModel.slope(m,tr.getRootChord(),tr.getTipChord(),tr.getSpan(),tr.getSweep())*finArea/conditions.getRefArea();
++                 double mix=0.32, n=(1-mix)*cna1+mix*chartN;
++                 x=((1-mix)*cna1*x+mix*chartN*legacyX)/n; cna1=n;
++             }
++         }
++         // Multiple fins with fin-fin interference
+ 		double cna;
+ 		double theta = conditions.getTheta();
+ 		double angle = transform.getXrotation();
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/SymmetricComponentCalc.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/SymmetricComponentCalc.java
+@@ -50,7 +50,17 @@
+ 	private final double wetArea;
+ 	private final double sinphi;
+ 
+-	public SymmetricComponentCalc(RocketComponent c) {
++	private info.openrocket.core.rocketcomponent.NoseCone chartNose;
++    private BodyPlan.Part bodyPart;
++    public SymmetricComponentCalc(RocketComponent c, BodyPlan.Part part) {
++        this(c,true);
++        this.bodyPart=part;
++    }
++    public SymmetricComponentCalc(RocketComponent c, boolean charts) {
++        this(c);
++        if(charts && c instanceof info.openrocket.core.rocketcomponent.NoseCone n && ChartModel.supports(n)) chartNose=n;
++    }
++    public SymmetricComponentCalc(RocketComponent c) {
+ 		super(c);
+ 		if (!(c instanceof SymmetricComponent)) {
+ 			throw new IllegalArgumentException("Illegal component type " + c);
+@@ -136,8 +146,29 @@
+ 		if (isTube) {
+ 			cp = getLiftCP(conditions, warnings);
+ 		} else {
+-			cp = new Coordinate(cpCache, 0, 0, cnaCache * conditions.getSincAOA() /
+-					conditions.getRefArea()).average(getLiftCP(conditions, warnings));
++			double N=cnaCache*conditions.getSincAOA()/conditions.getRefArea(), x=cpCache;
++            double w=0.4*ChartModel.envelope(conditions.getMach(),conditions.getAOA());
++            if(chartNose!=null && w>0){
++                var tab=ChartModel.nose(chartNose,conditions.getMach());
++                if(bodyPart!=null && bodyPart.center()!=null){
++                    var group=BodyPlan.center(chartNose,bodyPart.center(),conditions.getMach());
++                    tab=new double[]{group.slope(),group.station()};
++                }
++                double n=tab[0]*frontalArea*conditions.getSincAOA()/conditions.getRefArea();
++                x=((1-w)*N*x+w*n*tab[1])/((1-w)*N+w*n); N=(1-w)*N+w*n;
++            }
++            if(bodyPart!=null && bodyPart.groupedStep())N*=1-w;
++            if(bodyPart!=null && bodyPart.terminal() && w>0){
++                double weight=ChartModel.envelope(conditions.getMach(),conditions.getAOA());
++                var tail=BodyPlan.terminal(2*foreRadius,2*aftRadius,length,conditions.getMach());
++                if(tail!=null){
++                    weight*=BodyPlan.terminalWeight(2*foreRadius,2*aftRadius,length,conditions.getMach());
++                    double trial=tail.slope()*Math.PI*foreRadius*foreRadius*conditions.getSincAOA()/conditions.getRefArea();
++                    double sum=(1-weight)*N+weight*trial;
++                    x=((1-weight)*N*x+weight*trial*tail.station())/sum; N=sum;
++                }
++            }
++            cp=new Coordinate(x,0,0,N).average(getLiftCP(conditions,warnings));
+ 		}
+ 
+ 		forces.setCP(cp);
+@@ -175,7 +206,12 @@
+ 			mul = pow2(conditions.getMach() / 0.05);
+ 		}
+ 
+-		return new Coordinate(planformCenter, 0, 0, mul * BODY_LIFT_K * planformArea / conditions.getRefArea() *
++		double crossflow=BODY_LIFT_K;
++        if(bodyPart!=null && bodyPart.crossflow()){
++            double weight=ChartModel.envelope(conditions.getMach(),conditions.getAOA());
++            crossflow+=weight*(BodyPlan.crossflow(conditions.getMach(),conditions.getAOA())-BODY_LIFT_K);
++        }
++        return new Coordinate(planformCenter, 0, 0, mul * crossflow * planformArea / conditions.getRefArea() *
+ 				conditions.getSinAOA() * conditions.getSincAOA()); // sin(aoa)^2 / aoa
+ 	}
+ 
+--- /dev/null
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/ChartData.java
+@@ -0,0 +1,17 @@
++package info.openrocket.core.aerodynamics.barrowman;
++final class ChartData {
++static final double[][] WAX={{0.0,0.1,0.2,0.3,0.33,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.111,1.25,1.429,1.667,2.0,2.5,2.941,4.167,7.143,14.286,30.0},{0.25,0.5,1.0,2.0,3.0,4.0,5.0,6.0},{0.0,0.2,0.25,0.3333,0.5,1.0}};
++static final double[] W={0.39,0.39,0.39,0.39,0.39,0.39,0.39,0.39,0.39,0.39,0.39,0.41,0.44,0.5,0.58,0.65,0.8,1.0,1.15,1.55,2.4,3.92,4.0,0.77,0.77,0.78,0.78,0.79,0.79,0.8,0.8,0.8,0.81,0.82,0.84,0.92,1.0,1.18,1.32,1.6,1.9,2.18,2.8,3.84,3.92,4.0,1.55,1.56,1.57,1.57,1.59,1.59,1.6,1.63,1.66,1.68,1.7,1.75,1.88,2.09,2.3,2.6,2.94,3.35,3.7,3.8,3.98,3.98,4.0,3.15,3.15,3.15,3.15,3.15,3.15,3.17,3.19,3.23,3.27,3.33,3.4,3.46,3.54,3.6,3.7,3.75,3.8,3.86,3.91,4.0,4.0,4.0,4.71,4.74,4.83,5.09,5.25,5.05,4.8,4.55,4.3,4.09,3.9,3.72,3.78,3.8,3.83,3.88,3.9,3.94,3.92,3.96,4.0,4.0,4.0,6.29,6.2,5.99,5.72,5.61,5.42,5.18,4.9,4.64,4.42,4.2,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,6.3,6.34,6.39,6.08,5.97,5.78,5.5,5.2,4.95,4.7,4.48,4.25,4.2,4.18,4.14,4.11,4.07,4.05,4.04,4.02,4.0,4.0,4.0,6.32,6.4,6.4,6.34,6.32,6.13,5.82,5.51,5.25,4.99,4.73,4.5,4.4,4.32,4.27,4.2,4.13,4.11,4.07,4.04,4.0,4.0,4.0,0.41,0.41,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.41,0.41,0.48,0.56,0.67,0.84,1.08,1.29,1.83,2.8,3.8,4.0,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.83,0.85,0.98,1.09,1.27,1.48,1.8,2.25,2.53,3.22,3.79,3.92,4.0,1.57,1.59,1.6,1.6,1.6,1.61,1.63,1.65,1.69,1.73,1.77,1.8,2.0,2.26,2.57,2.9,3.27,3.53,3.65,3.8,3.91,3.97,4.0,3.17,3.17,3.22,3.4,3.5,3.6,3.7,3.67,3.58,3.49,3.37,3.23,3.38,3.52,3.62,3.71,3.8,3.88,3.9,3.95,3.97,3.99,4.0,4.72,5.0,5.1,5.02,4.97,4.84,4.64,4.45,4.24,4.05,3.89,3.7,3.84,3.91,3.97,3.99,4.0,4.0,4.0,4.0,3.99,4.0,4.0,5.57,5.6,5.62,5.61,5.6,5.42,5.15,4.91,4.7,4.48,4.25,4.08,4.13,4.18,4.16,4.11,4.09,4.05,4.02,4.01,4.0,4.0,4.0,5.73,5.77,5.79,5.79,5.77,5.75,5.6,5.33,5.08,4.83,4.59,4.4,4.42,4.4,4.32,4.23,4.17,4.08,4.05,4.03,4.01,4.0,4.0,5.83,5.88,5.91,5.93,5.93,5.91,5.88,5.68,5.4,5.14,4.9,4.7,4.68,4.59,4.46,4.33,4.23,4.13,4.1,4.06,4.02,4.01,4.0,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.42,0.43,0.5,0.6,0.71,0.9,1.12,1.35,1.97,2.95,3.8,4.0,0.8,0.8,0.8,0.8,0.8,0.8,0.8,0.81,0.82,0.83,0.83,0.88,0.95,1.06,1.23,1.46,1.83,2.3,2.65,3.32,3.76,3.92,4.0,1.59,1.59,1.59,1.59,1.59,1.6,1.62,1.65,1.68,1.72,1.78,1.82,2.0,2.29,2.65,3.0,3.27,3.5,3.6,3.78,3.9,3.98,4.0,3.14,3.2,3.41,3.62,3.68,3.75,3.7,3.62,3.51,3.42,3.3,3.18,3.34,3.5,3.6,3.7,3.8,3.85,3.88,3.93,3.98,4.0,4.0,4.7,4.85,5.02,4.98,4.91,4.8,4.6,4.4,4.2,4.0,3.82,3.68,3.8,3.9,3.98,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,5.4,5.44,5.45,5.45,5.42,5.35,5.12,4.9,4.69,4.48,4.22,4.02,4.12,4.18,4.17,4.15,4.1,4.05,4.04,4.01,4.0,4.0,4.0,5.61,5.63,5.64,5.62,5.61,5.6,5.54,5.3,5.02,4.8,4.6,4.39,4.42,4.44,4.38,4.26,4.16,4.1,4.07,4.03,4.01,4.0,4.0,5.72,5.75,5.76,5.78,5.77,5.76,5.72,5.69,5.4,5.15,4.9,4.68,4.68,4.6,4.49,4.33,4.22,4.15,4.1,4.06,4.02,4.01,4.0,0.41,0.41,0.41,0.41,0.41,0.41,0.41,0.41,0.41,0.41,0.41,0.41,0.43,0.5,0.6,0.71,0.89,1.11,1.35,2.0,3.0,3.72,4.0,0.82,0.82,0.81,0.8,0.8,0.81,0.82,0.83,0.84,0.85,0.87,0.89,0.98,1.1,1.3,1.5,1.82,2.23,2.68,3.3,3.7,3.91,4.0,1.6,1.59,1.58,1.58,1.58,1.59,1.6,1.62,1.66,1.73,1.81,1.92,2.2,2.45,2.7,2.98,3.22,3.45,3.59,3.75,3.7,3.91,4.0,3.13,3.18,3.32,3.6,3.64,3.72,3.7,3.64,3.54,3.45,3.3,3.14,3.32,3.48,3.6,3.7,3.79,3.87,3.9,3.95,3.99,4.0,4.0,4.71,4.76,4.8,4.83,4.84,4.7,4.53,4.34,4.18,4.0,3.82,3.63,3.78,3.9,3.98,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.0,5.2,5.22,5.22,5.2,5.2,5.15,5.1,4.88,4.63,4.42,4.21,4.0,4.15,4.21,4.21,4.17,4.14,4.07,4.05,4.03,4.01,4.0,4.0,5.45,5.47,5.47,5.45,5.45,5.41,5.36,5.3,5.02,4.81,4.58,4.36,4.45,4.47,4.41,4.3,4.19,4.12,4.08,4.02,4.0,4.0,4.0,5.58,5.59,5.59,5.59,5.59,5.58,5.57,5.53,5.41,5.14,4.91,4.65,4.7,4.65,4.53,4.4,4.27,4.16,4.12,4.05,4.02,4.01,4.0,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.44,0.52,0.63,0.78,0.98,1.21,1.4,2.07,3.07,3.6,4.0,0.8,0.8,0.79,0.79,0.79,0.79,0.8,0.81,0.83,0.85,0.88,0.9,1.01,1.17,1.38,1.62,2.0,2.5,2.74,3.22,3.66,3.87,4.0,1.58,1.59,1.62,1.71,1.76,1.77,1.8,1.85,1.88,1.91,1.92,1.93,2.13,2.4,2.6,2.88,3.12,3.39,3.51,3.71,3.87,3.99,4.0,3.15,3.21,3.38,3.61,3.7,3.67,3.59,3.5,3.4,3.29,3.17,3.03,3.18,3.37,3.51,3.67,3.78,3.85,3.88,3.93,3.98,4.0,4.0,4.42,4.42,4.41,4.4,4.39,4.38,4.35,4.25,4.08,3.9,3.72,3.57,3.7,3.86,3.93,3.99,4.0,4.0,4.0,4.0,4.0,4.0,4.0,4.88,4.85,4.81,4.8,4.79,4.77,4.73,4.68,4.53,4.35,4.15,3.99,4.08,4.2,4.23,4.19,4.1,4.07,4.05,4.01,4.0,4.0,4.0,5.08,5.09,5.08,5.08,5.07,5.06,5.03,4.99,4.92,4.74,4.53,4.3,4.43,4.48,4.43,4.32,4.2,4.12,4.08,4.03,4.01,4.0,4.0,5.19,5.21,5.22,5.23,5.23,5.23,5.23,5.21,5.19,5.09,4.88,4.6,4.72,4.69,4.58,4.41,4.28,4.18,4.12,4.07,4.02,4.01,4.0,0.4,0.4,0.4,0.4,0.4,0.41,0.44,0.49,0.51,0.54,0.59,0.61,0.69,0.75,0.81,0.9,1.01,1.26,1.53,2.1,2.9,3.42,4.0,0.81,0.81,0.81,0.83,0.84,0.86,0.88,0.91,0.99,1.02,1.1,1.19,1.3,1.42,1.58,1.75,2.0,2.34,2.6,3.0,3.46,3.71,4.0,1.6,1.58,1.59,1.6,1.6,1.61,1.67,1.7,1.79,1.86,1.92,2.0,2.13,2.32,2.51,2.75,2.97,3.2,3.35,3.58,3.8,3.9,4.0,3.13,3.1,3.08,3.05,3.04,3.03,3.01,2.99,2.95,2.93,2.91,2.89,3.02,3.2,3.37,3.52,3.67,3.77,3.82,3.88,3.92,3.97,4.0,3.79,3.84,3.86,3.8,3.79,3.72,3.63,3.58,3.5,3.47,3.43,3.41,3.57,3.75,3.89,3.98,4.0,3.98,3.94,3.93,3.92,3.99,4.0,4.12,4.2,4.19,4.09,4.06,4.03,3.99,3.95,3.92,3.9,3.88,3.87,4.01,4.1,4.21,4.21,4.12,4.05,4.0,3.96,3.99,4.0,4.0,4.39,4.45,4.44,4.39,4.35,4.31,4.27,4.25,4.25,4.25,4.25,4.25,4.37,4.5,4.49,4.39,4.23,4.1,4.03,3.99,4.0,4.0,4.0,4.6,4.68,4.65,4.59,4.57,4.54,4.5,4.45,4.48,4.53,4.59,4.61,4.71,4.75,4.69,4.5,4.31,4.18,4.08,4.01,4.0,4.0,4.0};
++static final double[] G13246={0.0,0.2,0.4,0.45,0.5,0.6,0.8,0.9,1.0};
++static final double[] DG3246={1.61,1.58,1.55,1.57,1.62,1.75,1.94,2.0,2.0};
++static final double[][] BNA={{0.0,0.4,0.6,0.8,1.0,1.1,1.25,1.43,1.667,2.0,10.0},{0.0,0.4,0.8,1.2,2.0,3.0,4.0,5.0}};
++static final double[][] BXA={{0.0,0.2,0.4,0.6,0.8,1.0},{0.0,0.4,0.8,1.2,1.6,2.0,3.0,4.0,5.0}};
++static final double[] D4221A={2.25,2.46,2.42,2.33,2.21,2.14,2.07,1.99,1.91,1.83,1.43,2.25,2.63,2.69,2.71,2.66,2.61,2.55,2.48,2.39,2.3,1.85,2.25,2.74,2.87,2.93,2.93,2.91,2.87,2.78,2.68,2.56,1.96,2.25,2.78,2.95,3.04,3.09,3.08,3.06,2.96,2.86,2.71,1.96,2.25,2.81,3.01,3.13,3.25,3.27,3.25,3.18,3.06,2.78,1.38,2.25,2.83,3.04,3.19,3.31,3.33,3.33,3.26,3.14,2.87,1.52,2.25,2.83,3.04,3.22,3.34,3.36,3.35,3.3,3.18,2.94,1.74,2.25,2.83,3.04,3.22,3.34,3.36,3.35,3.3,3.18,2.94,1.74};
++static final double[] DL218A={0.543,0.542,0.541,0.54,0.534,0.526,0.4,0.409,0.418,0.43,0.441,0.45,0.305,0.328,0.35,0.369,0.387,0.4,0.238,0.265,0.295,0.318,0.339,0.356,0.198,0.221,0.246,0.274,0.298,0.32,0.16,0.185,0.21,0.239,0.262,0.288,0.065,0.095,0.122,0.15,0.177,0.21,0.0,0.005,0.035,0.062,0.089,0.13,0.0,0.0,0.0,0.0,0.002,0.05};
++static final double[] DR218A={0.445,0.464,0.485,0.5,0.518,0.526,0.448,0.455,0.46,0.46,0.459,0.45,0.46,0.449,0.438,0.424,0.412,0.4,0.45,0.43,0.412,0.394,0.375,0.356,0.432,0.41,0.388,0.365,0.343,0.32,0.42,0.394,0.369,0.34,0.314,0.288,0.388,0.354,0.322,0.278,0.244,0.21,0.357,0.314,0.273,0.216,0.171,0.13,0.325,0.274,0.225,0.154,0.1,0.05};
++static final double[][] BNB={{0.0,0.4,0.6,0.678,0.8,0.9,1.0,1.25,2.0,10.0},{0.0,0.4,0.8,1.2,2.0,3.0,4.0,5.0}};
++static final double[][] BXB={{0.0,0.2,0.4,0.6,0.8,1.0},{0.0,0.5,1.0,2.0,3.0,4.0,5.0}};
++static final double[] D4221B={2.08,1.96,1.87,1.84,1.84,1.85,1.85,1.85,1.85,1.85,2.64,2.59,2.55,2.53,2.47,2.42,2.37,2.35,2.35,2.43,2.62,2.77,2.79,2.8,2.8,2.8,2.78,2.76,2.76,2.77,2.51,2.84,2.95,2.98,3.04,3.07,3.08,3.04,3.0,2.94,2.35,2.86,3.04,3.1,3.2,3.24,3.24,3.28,3.32,3.43,2.36,2.9,3.1,3.18,3.28,3.3,3.31,3.38,3.47,3.62,2.37,2.92,3.14,3.25,3.35,3.36,3.37,3.47,3.61,3.8,2.38,2.95,3.19,3.33,3.4,3.41,3.42,3.56,3.75,3.98};
++static final double[] DL218B={0.665,0.665,0.665,0.665,0.665,0.665,0.425,0.492,0.539,0.55,0.55,0.55,0.33,0.37,0.405,0.438,0.459,0.47,0.184,0.215,0.25,0.284,0.318,0.35,0.06,0.097,0.133,0.17,0.206,0.24,0.0,0.0,0.044,0.083,0.127,0.17,0.0,0.0,0.0,0.02,0.063,0.105};
++static final double[] DR218B={0.665,0.665,0.665,0.665,0.665,0.665,0.48,0.5,0.519,0.536,0.546,0.55,0.338,0.388,0.43,0.458,0.471,0.47,0.338,0.372,0.394,0.394,0.375,0.35,0.41,0.375,0.341,0.308,0.272,0.24,0.377,0.338,0.294,0.251,0.211,0.17,0.342,0.3,0.246,0.194,0.146,0.1};
++}
+--- /dev/null
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/ChartModel.java
+@@ -0,0 +1,41 @@
++package info.openrocket.core.aerodynamics.barrowman;
++import info.openrocket.core.rocketcomponent.*;
++/** Study-only port of selected thin-wing and body charts, not the full Digital DATCOM program. */
++final class ChartModel {
++    static double h(double x){x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);}
++    static double envelope(double m,double a){return h((m-1.1)/.4)*h((5-m)/.35)*h((8-Math.abs(Math.toDegrees(a)))/5);}
++    // Multilinear interpolant; each first axis is contiguous (Fortran order). Saturate to chart limits.
++    static double val(double[] tab,double[][] axes,double... coords){
++        int ix=0,stride=1; int[] steps=new int[axes.length];double[] f=new double[axes.length];
++        for(int k=0;k<axes.length;k++){
++            double[] ax=axes[k];double x=Math.max(ax[0],Math.min(ax[ax.length-1],coords[k]));int j=0;
++            while(j<ax.length-2&&ax[j+1]<x)j++;
++            ix+=j*stride; steps[k]=stride;stride*=ax.length;f[k]=(x-ax[j])/(ax[j+1]-ax[j]);
++        }
++        double sum=0;for(int mask=0;mask<(1<<axes.length);mask++){
++            int i=ix;double w=1;for(int k=0;k<axes.length;k++){if((mask&(1<<k))!=0){i+=steps[k];w*=f[k];}else w*=1-f[k];}
++            sum+=w*tab[i];
++        }return sum;
++    }
++    static double slope(double m,double cr,double ct,double s,double sweep){
++        double beta=Math.sqrt(m*m-1), ar=4*s/(cr+ct), b=ar*beta, tan=sweep/s, arTan=ar*tan;
++        double rect=b>1?(4-2/b)/beta:ar*val(ChartData.DG3246,new double[][]{ChartData.G13246},b);
++        if(tan<=0 || arTan<=0)return rect;
++        double ratio=beta/tan, z=val(ChartData.W,ChartData.WAX,ratio,arTan,ct/cr)/(ratio>=1?beta:tan);
++        // Below the first tabulated AR*tan(sweep), approach the rectangular solution at the same AR.
++        return rect+(z-rect)*h(arTan/.25);
++    }
++    static boolean supports(NoseCone n){return n.getParent() instanceof AxialStage && n.getForeRadius()<1e-8 &&
++        (n.getShapeType()==Transition.Shape.CONICAL || n.getShapeType()==Transition.Shape.OGIVE && Math.abs(n.getShapeParameter()-1)<1e-7 ||
++         n.getShapeType()==Transition.Shape.HAACK && Math.abs(n.getShapeParameter())<1e-7) &&
++         n.getNextSymmetricComponent() instanceof BodyTube b && b.getParent()==n.getParent() && Math.abs(b.getOuterRadius()-n.getAftRadius())<1e-5;}
++    // Return normal slope based on nose area and CP from the tip in metres for this pair.
++    static double[] nose(NoseCone n,double m){
++        double ln=n.getLength(), d=2*n.getAftRadius(), body=n.getNextSymmetricComponent().getLength();
++        double f=Math.min(5.,body/ln),u=Math.sqrt(m*m-1)*d/ln;boolean cone=n.getShapeType()==Transition.Shape.CONICAL;
++        double normal=val(cone?ChartData.D4221B:ChartData.D4221A,cone?ChartData.BNB:ChartData.BNA,u,f);
++        double[] tab=cone?(u<=1?ChartData.DL218B:ChartData.DR218B):(u<=1?ChartData.DL218A:ChartData.DR218A);
++        double pos=val(tab,cone?ChartData.BXB:ChartData.BXA,u<=1?u:1/u,f)*ln*(1+f);
++        return new double[]{normal,pos};
++    }
++}
+--- /dev/null
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/AfterTables.java
+@@ -0,0 +1,13 @@
++package info.openrocket.core.aerodynamics.barrowman;
++final class AfterTables {
++static final double[] T4222A={0.0,0.5,1.0,1.25,1.5,1.75,2.0,2.5};
++static final double[] D4222A={0.0,-0.88,-1.44,-1.64,-1.8,-1.9,-1.97,-2.0};
++static final double[] T4222B={1.0,1.4,1.8,2.2,2.6,3.0};
++static final double[] D4222B={0.0,2.0,4.5,7.7,11.6,16.0};
++static final double[] T4217B={0.0,0.25,0.3,0.35,0.4,0.5,0.6,0.7,0.75,0.8,0.85,1.0,1.111,1.25,1.666,2.5,3.33,10.0};
++static final double[] D4217B={1.2,1.2,1.215,1.235,1.265,1.36,1.5,1.67,1.735,1.77,1.79,1.785,1.74,1.65,1.47,1.355,1.315,1.255};
++static final double[] D42119={0.32,0.348,0.365,0.394,0.439,0.48,0.504,0.518,0.529,0.537,0.541,0.376,0.4,0.429,0.468,0.518,0.543,0.558,0.567,0.574,0.579,0.582,0.417,0.445,0.486,0.544,0.573,0.587,0.596,0.603,0.607,0.61,0.611,0.44,0.486,0.564,0.6,0.614,0.621,0.626,0.63,0.632,0.633,0.634,0.476,0.58,0.627,0.638,0.643,0.646,0.649,0.651,0.652,0.653,0.653,0.485,0.632,0.648,0.653,0.655,0.657,0.659,0.66,0.661,0.661,0.661,0.667,0.667,0.667,0.667,0.667,0.667,0.667,0.667,0.667,0.667,0.667};
++static final double[] FLARE_M={-4.03,-3.25,-2.48,-1.8,-1.4,-1.14,-0.95,-0.8,-0.67,-0.56,-0.47,-0.39,-0.32,-0.25,-0.2,-0.13,-0.07,0.0,-4.03,-3.02,-2.1,-1.6,-1.24,-1.01,-0.85,-0.72,-0.61,-0.52,-0.44,-0.37,-0.3,-0.24,-0.19,-0.12,-0.06,0.0,-4.03,-2.7,-1.8,-1.34,-1.08,-0.9,-0.77,-0.66,-0.57,-0.49,-0.42,-0.36,-0.29,-0.23,-0.18,-0.11,-0.06,0.0,-4.03,-2.1,-1.46,-1.1,-0.9,-0.76,-0.67,-0.59,-0.51,-0.46,-0.4,-0.34,-0.28,-0.22,-0.17,-0.1,-0.06,0.0,-4.03,-1.67,-1.15,-0.9,-0.73,-0.63,-0.57,-0.51,-0.46,-0.41,-0.36,-0.31,-0.26,-0.21,-0.16,-0.1,-0.05,0.0,-2.4,-1.24,-0.85,-0.68,-0.58,-0.52,-0.48,-0.43,-0.4,-0.36,-0.32,-0.29,-0.24,-0.2,-0.15,-0.1,-0.05,0.0,-1.6,-0.84,-0.61,-0.5,-0.44,-0.41,-0.38,-0.35,-0.33,-0.31,-0.28,-0.25,-0.22,-0.18,-0.14,-0.09,-0.04,0.0,-0.9,-0.52,-0.39,-0.33,-0.31,-0.3,-0.29,-0.28,-0.27,-0.25,-0.23,-0.2,-0.18,-0.14,-0.11,-0.08,-0.04,0.0,-0.4,-0.26,-0.22,-0.2,-0.2,-0.2,-0.19,-0.19,-0.18,-0.18,-0.17,-0.15,-0.13,-0.11,-0.08,-0.05,-0.03,0.0,-0.12,-0.09,-0.08,-0.09,-0.09,-0.1,-0.1,-0.1,-0.1,-0.1,-0.09,-0.08,-0.07,-0.06,-0.04,-0.03,-0.02,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0};
++static final double[][] TAIL_AXES={{0.0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5},{0.0,0.2,0.4,0.6,0.8,0.9,1.0}};
++static final double[][] FLARE_AXES={{5.0,10.0,15.0,20.0,25.0,30.0,35.0,40.0,45.0,50.0,55.0,60.0,65.0,70.0,75.0,80.0,85.0,90.0},{0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0}};
++}
+--- /dev/null
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/BodyPlan.java
+@@ -0,0 +1,115 @@
++package info.openrocket.core.aerodynamics.barrowman;
++
++import info.openrocket.core.rocketcomponent.*;
++import java.util.*;
++
++/** Geometry for the afterbody ablations of the MIT 6.6 research model. Dimensions are SI. */
++public final class BodyPlan {
++    public record Load(double slope, double station) {}
++    public record Center(double length, double endDiameter) {}
++    public record Part(Center center, boolean groupedStep, boolean terminal, boolean crossflow) {}
++
++    enum Mode { PREVIOUS, SEGMENTS, CENTER, TAIL, CROSSFLOW, COMBINED, NARROW }
++    private static final Mode MODE = Mode.valueOf(System.getProperty("study.afterbody", "narrow").toUpperCase(Locale.ROOT));
++
++    private static boolean enabled(Mode method) { return MODE == Mode.COMBINED || MODE == method; }
++    private static double start(SymmetricComponent component) { return component.getComponentLocations()[0].x; }
++    private static boolean conical(SymmetricComponent c) {
++        return c instanceof Transition t && !(t instanceof NoseCone) && t.getShapeType()==Transition.Shape.CONICAL && t.getLength()>0;
++    }
++
++    /** Only active, centerline, nonparallel stage components can receive these changes. */
++    public static Map<RocketComponent,Part> identify(FlightConfiguration configuration) {
++        Map<RocketComponent,Part> map = new IdentityHashMap<>();
++        if (MODE==Mode.PREVIOUS) return map;
++        List<SymmetricComponent> spine=new ArrayList<>();
++        for (AxialStage stage: configuration.getActiveStages()) {
++            if (!(stage.getParent() instanceof Rocket) || stage instanceof ParallelStage) continue;
++            for (int i=0;i<stage.getChildCount();i++) {
++                if(stage.getChild(i) instanceof SymmetricComponent c && c.getLength()>0) spine.add(c);
++            }
++        }
++        spine.sort(Comparator.comparingDouble(BodyPlan::start));
++        for (int i=0;i<spine.size();i++) {
++            SymmetricComponent c=spine.get(i);
++            boolean tail=(enabled(Mode.TAIL) || (MODE==Mode.NARROW && c.getAftRadius()<c.getForeRadius())) && i==spine.size()-1 && conical(c) && i>0 &&
++                spine.get(i-1) instanceof BodyTube && touches(spine.get(i-1),c) &&
++                Math.abs(spine.get(i-1).getAftRadius()-c.getForeRadius())<1e-6;
++            map.put(c,new Part(null,false,tail,enabled(Mode.CROSSFLOW)));
++        }
++        boolean equalTubesOnly=MODE==Mode.SEGMENTS || MODE==Mode.NARROW;
++        if(!equalTubesOnly && !enabled(Mode.CENTER)) return map;
++        for (int i=0;i+1<spine.size();i++) {
++            if (!(spine.get(i) instanceof NoseCone nose) || !ChartModel.supports(nose) ||
++                !(spine.get(i+1) instanceof BodyTube)) continue;
++            double base=2*nose.getAftRadius();
++            int lastTube=i; int direction=0; double previous=base;
++            for(int j=i+1;j<spine.size();j++){
++                var c=spine.get(j);
++                if(c.getParent()!=nose.getParent() || !touches(spine.get(j-1),c) ||
++                   (!(c instanceof BodyTube) && !conical(c))) break;
++                double end=2*c.getAftRadius(), fore=2*c.getForeRadius();
++                if(Math.abs(fore-previous)>2e-6) break;
++                if(equalTubesOnly && (!(c instanceof BodyTube) || Math.abs(end-base)>2e-6)) break;
++                if(Math.max(Math.abs(end/base-1),Math.abs(fore/base-1))>.10+1e-10) break;
++                int next=end>previous+1e-7?1:(end<previous-1e-7?-1:0);
++                if(direction!=0 && next!=0 && direction!=next) break;
++                if(next!=0)direction=next;
++                previous=end;
++                if(c instanceof BodyTube)lastTube=j;
++            }
++            if(lastTube<=i+1) continue; // ordinary one-tube fixture uses its original chart calculation
++            var end=spine.get(lastTube);
++            var center=new Center(start(end)+end.getLength()-start(nose)-nose.getLength(),2*end.getAftRadius());
++            map.put(nose,new Part(center,false,false,enabled(Mode.CROSSFLOW)));
++            for(int j=i+1;j<=lastTube;j++) if(conical(spine.get(j)))
++                map.put(spine.get(j),new Part(null,true,false,enabled(Mode.CROSSFLOW)));
++        }
++        return map;
++    }
++    private static boolean touches(SymmetricComponent a,SymmetricComponent b){
++        return Math.abs(start(a)+a.getLength()-start(b))<1e-6;
++    }
++    public static Load center(NoseCone nose,Center center,double mach){
++        double ln=nose.getLength(),dn=2*nose.getAftRadius(), d1=center.endDiameter();
++        double mean=(dn+d1)/2;
++        double f=Math.min(5,center.length()*dn/(ln*mean));
++        double u=Math.sqrt(mach*mach-1)*dn/ln;
++        boolean cone=nose.getShapeType()==Transition.Shape.CONICAL;
++        double n=ChartModel.val(cone?ChartData.D4221B:ChartData.D4221A,cone?ChartData.BNB:ChartData.BNA,u,f);
++        double[] table=cone?(u<=1?ChartData.DL218B:ChartData.DR218B):(u<=1?ChartData.DL218A:ChartData.DR218A);
++        double fraction=ChartModel.val(table,cone?ChartData.BXB:ChartData.BXA,Math.min(u,1/u),f);
++        return new Load(n*d1*d1/(dn*dn),fraction*ln*(1+f*mean/dn));
++    }
++    /** Local force coefficient on fore-diameter area and local CP measured from the taper start. */
++    public static Load terminal(double fore,double aft,double length,double mach) {
++        if(!(fore>0 && aft>0 && length>0) || Math.abs(aft/fore-1)<1e-8)return null;
++        double beta=Math.sqrt(mach*mach-1), ratio=aft/fore;
++        if(ratio<1){
++            double axis=beta*(fore-aft)/(2*length);
++            if(axis>.5 || length/(fore*beta)>2.5) return null;
++            double normal=(1-ratio*ratio)*one(AfterTables.T4222A,AfterTables.D4222A,length/(fore*beta));
++            double cp=ChartModel.val(AfterTables.D42119,AfterTables.TAIL_AXES,axis,ratio)*length;
++            return new Load(normal,cp);
++        }
++        double theta=Math.atan((aft-fore)/(2*length)), angle=Math.toDegrees(theta);
++        if(ratio>3 || angle<5 || angle>90)return null;
++        double normal=one(AfterTables.T4222B,AfterTables.D4222B,ratio)*Math.pow(Math.cos(theta),2);
++        double moment=ChartModel.val(AfterTables.FLARE_M,AfterTables.FLARE_AXES,angle,1/ratio);
++        return new Load(normal,-moment*fore*ratio*ratio*ratio/normal);
++    }
++    /** Approach the last boattail chart row continuously before reverting to the existing load. */
++    public static double terminalWeight(double fore,double aft,double length,double mach){
++        if(aft>=fore)return 1;
++        double beta=Math.sqrt(mach*mach-1);
++        double corner=beta*(fore-aft)/(2*length);
++        double fineness=length/(fore*beta);
++        return ChartModel.h((.5-corner)/.05)*ChartModel.h((2.5-fineness)/.25);
++    }
++    public static double crossflow(double mach,double angle){
++        return one(AfterTables.T4217B,AfterTables.D4217B,mach*Math.abs(Math.sin(angle)));
++    }
++    private static double one(double[] axis,double[] values,double arg){
++        return ChartModel.val(values,new double[][]{axis},arg);
++    }
++}
