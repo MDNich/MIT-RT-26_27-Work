@@ -1,5 +1,6 @@
 """Check the signed displacement and equivalent stress fields used in the seven seeded movies."""
 import argparse
+import shutil
 import numpy as np
 import pyvista as pv
 from audit_local import ROOT,read
@@ -104,9 +105,22 @@ def run(variant,campaign):
         'every stored scalar in the displayed fields. The stress colour scale includes all PCB element corners.'))
 
 
+def prepare_independent(variant,campaign):
+    """Prepare the comparison fields while the native history is still in the serial queue."""
+    for subject in SUBJECTS:
+        if shutil.disk_usage(ROOT).free<425_000_000_000:
+            raise RuntimeError('Host reserve for production film fields reached')
+        _,data,_=case_fields(variant,subject,campaign,'independent')
+        print(variant,subject,'independent scale peak',data['peak'],flush=True)
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('variant',choices=['bare','stand3_nylon','stand3_aluminium'])
+    p.add_argument('variant',choices=['bare','stand3_nylon','stand3_aluminium','snug125_nylon','snug125_aluminium'])
+    p.add_argument('--prepare-independent',action='store_true')
     p.add_argument('--campaign',default='nov08_01')
     a=p.parse_args()
-    run(a.variant,a.campaign)
+    if a.prepare_independent:
+        prepare_independent(a.variant,a.campaign)
+    else:
+        run(a.variant,a.campaign)

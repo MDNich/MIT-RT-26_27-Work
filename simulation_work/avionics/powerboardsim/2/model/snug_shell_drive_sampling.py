@@ -4,6 +4,7 @@ import argparse
 import numpy as np
 
 from audit_local import ROOT, read
+from audit_motion import selected_native_coordinates
 from basis_comparison import field_files
 from case_stress import source
 from film_identity import digest, verified, write_json
@@ -42,7 +43,19 @@ def scan(nodes, shapes, samples, delta, total_samples):
                 rms_vector_error_um=float(1e6*np.sqrt(sum_squared/(total_samples*len(nodes)))))
 
 
-def check(variant, campaign):
+def native_startup(motion,campaign,frequencies,samples):
+    path=ROOT/'validation/motion'/(motion['case']+'.json')
+    audit=read(path)
+    assert audit['campaign']==campaign==motion['campaign'] and audit['case']==motion['case']
+    assert audit['basis_rst_sha256']==motion['basis_rst_sha256'] and audit['input_sha256']==motion['input_sha256']
+    archive=ROOT/'.runtime/archive'/campaign/audit['case']/'file.mcf'
+    verified(archive,audit['mcf_sha256'])
+    coordinates=selected_native_coordinates(archive,frequencies,samples)
+    assert np.linalg.norm(coordinates[0])<1e-13 and samples[0]==0
+    return coordinates,dict(native_mcf_sha256=audit['mcf_sha256'],native_history_audit_sha256=digest(path))
+
+
+def check(variant, campaign, *, native=False):
     registry = AUDIT/(variant+'_shell_inputs_v2.json')
     spec = read(registry)['shell_'+variant+'_contact_v2']
     preflight=read(AUDIT/(variant+'_shell_preflight_v2.json'))
@@ -78,9 +91,15 @@ def check(variant, campaign):
     group_nodes['PLA bearing nodes']=bearings
     assert np.array_equal(np.sort(np.concatenate(list(group_nodes.values()))),nodes)
     records=[]
-    for stride in (4,2):
+    reference=q
+    extra={}
+    if native:
+        reference,extra=native_startup(m,campaign,rst.time_values,samples)
+    for stride in ((4,2,1) if native else (4,2)):
         coords=interpolation_error(q,stride)
-        kept=samples[samples%stride!=0]
+        if native:
+            coords+=q-reference
+        kept=samples if native else samples[samples%stride!=0]
         errors={}
         for name,ids in group_nodes.items():
             j=np.searchsorted(nodes,ids)
@@ -90,15 +109,20 @@ def check(variant, campaign):
         worst=max(errors,key=lambda k:errors[k]['peak_vector_error_um'])
         # Check the reported extreme using an independent scalar interpolation of the physical field.
         record=errors[worst]; node=record['node']; sample=record['sample']
-        exact=q@shapes[:,np.searchsorted(nodes,node),:]
+        field=shapes[:,np.searchsorted(nodes,node),:]
+        exact=q@field
+        at_sample=reference[sample]@field
         knot=samples[::stride]
-        residual=[np.interp(sample,knot,column[knot])-column[sample] for column in exact.T]
+        residual=[np.interp(sample,knot,column[knot])-value for column,value in zip(exact.T,at_sample,strict=True)]
         assert np.allclose(record['error_xyz_um'],1e6*np.array(residual),atol=1e-8,rtol=1e-8)
         records.append(dict(source_stride=stride,table_interval_us=1e6*stride/FS,knots=len(knot),
                             max_acceleration_error_g=float(abs(base[peak])/9.806),acceleration_peak_sample=peak,
                             rms_acceleration_error_g=float(np.sqrt(np.mean(base**2))/9.806),
                             maximum_group=worst,groups=errors))
-    write_json(AUDIT/(variant+'_shell_drive_sampling.json'),dict(variant=variant,campaign=campaign,
+    suffix='_shell_drive_native.json' if native else '_shell_drive_sampling.json'
+    if native:
+        extra['reference']='Archived MAPDL base-Z MCF evaluated at all original stations, including table knots.'
+    write_json(AUDIT/(variant+suffix),dict(variant=variant,campaign=campaign,**extra,
         registry_sha256=digest(registry),basis_rst_sha256=proof['rst_sha256'],drive_field_sha256=spec['drive_field_sha256'],
         signed_motion_audit_sha256=digest(motion),modal_listing_sha256=m['modal_listing_sha256'],
         nodes=len(nodes),modes=rst.nsets,sample_rate_Hz=FS,samples=len(samples),end_time_s=last/FS,
@@ -113,5 +137,6 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('variant',choices=['snug125_nylon','snug125_aluminium'])
     parser.add_argument('--campaign',default='nov08_01')
+    parser.add_argument('--native',action='store_true',help='Compare the independently generated table to the accepted native base-Z motion')
     args=parser.parse_args()
-    check(args.variant,args.campaign)
+    check(args.variant,args.campaign,native=args.native)
