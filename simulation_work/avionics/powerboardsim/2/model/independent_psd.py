@@ -19,6 +19,19 @@ def moments(mode_f,g,fk,sk,zeta,df):
         a*=np.sqrt(wt)[:,None];c+=(a.conj().T@a).real
     return .5*(c+c.T),float(power)
 
+def spectrum_input(axis):
+    path=ROOT/f'.runtime/inputs/bare_psd_{axis}/model.inp'
+    text=path.read_text()
+    def values(command):
+        match=re.search(r'^'+command+r',1,,?([^\n!]+)',text,re.I|re.M)
+        return np.array([float(x) for x in match[1].split(',')])
+    fk,sk=values('PSDFRQ'),values('PSDVAL')
+    zeta=float(re.search(r'^\s*dmprat,([\d.Ee+-]+)',text,re.M|re.I)[1])
+    assert np.array_equal(fk,[20,50,800,2000]) and np.all(sk>0) and zeta==.02
+    assert 'psdres,disp,rel' in text.lower()
+    return path,fk,sk,zeta
+
+
 def rms_field(phi,covariance):
     eig,v=np.linalg.eigh(covariance)
     assert eig.min()>=-1e-13*eig.max()
@@ -50,10 +63,7 @@ def run(branch,campaign,*,cutoffs=False):
     assert np.isfinite(phi).all()
     out={};diffs=[];truncation={};octbase=ROOT/'validation/october_psd_reference'
     for ax in 'XYZ':
-        path=ROOT/f'.runtime/inputs/bare_psd_{ax}/model.inp';src=path.read_text()
-        def numbers(card):return np.array([float(x) for x in re.search(r'^'+card+r',1,,?([^\n!]+)',src,re.I|re.M)[1].split(',')])
-        fk=numbers('PSDFRQ');sk=numbers('PSDVAL');zeta=float(re.search(r'^\s*dmprat,([\d.Ee+-]+)',src,re.M|re.I)[1])
-        assert np.array_equal(fk,[20,50,800,2000]) and np.all(sk>0) and zeta==.02 and 'psdres,disp,rel' in src.lower()
+        path,fk,sk,zeta=spectrum_input(ax)
         gamma=participation(listing,ax);c,power=moments(freq,gamma,fk,sk,zeta,.125);c2,_=moments(freq,gamma,fk,sk,zeta,.25)
         quaderr=float(np.linalg.norm(c2-c)/np.linalg.norm(c));assert quaderr<1e-5
         gvals=rms_field(phi,c)
