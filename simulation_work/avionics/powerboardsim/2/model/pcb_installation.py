@@ -21,6 +21,13 @@ def signed_corners(rst, elements, native_set, field, width):
     return np.repeat(elements, counts), corners, data
 
 
+def maximum_principal_strain(engineering):
+    tensor = np.zeros((len(engineering), 3, 3), dtype=float)
+    tensor[:, [0, 1, 2], [0, 1, 2]] = engineering[:, :3]
+    tensor[:, [1, 2, 2], [0, 1, 0]] = .5 * engineering[:, 3:6]
+    return np.linalg.eigvalsh(tensor, UPLO='L')[:, -1]
+
+
 def surface_strain(rst, elements, native_set, modulus, nu, zlimits):
     numbers, corners, stress = signed_corners(rst, elements, native_set, 'ENS', 6)
     en, cn, native = signed_corners(rst, elements, native_set, 'EEL', 7)
@@ -35,10 +42,7 @@ def surface_strain(rst, elements, native_set, modulus, nu, zlimits):
     for side, height in zip(('low_Z', 'high_Z'), zlimits, strict=True):
         rows = np.flatnonzero(np.isclose(xyz[:, 2], height, rtol=0, atol=1.e-9))
         strain = native[rows, :6]
-        tensor = np.zeros((len(rows), 3, 3), dtype=float)
-        tensor[:, [0, 1, 2], [0, 1, 2]] = strain[:, :3]
-        tensor[:, [1, 2, 2], [0, 1, 0]] = .5 * strain[:, 3:]
-        principal = np.linalg.eigvalsh(tensor, UPLO='L')[:, -1]
+        principal = maximum_principal_strain(strain)
         i = np.argmax(principal)
         j = rows[i]
         peaks[side] = dict(unaveraged_corners=len(rows), peak_principal_tensile_microstrain=float(principal[i] * 1.e6),
