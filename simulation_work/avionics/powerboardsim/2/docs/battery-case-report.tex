@@ -47,7 +47,7 @@ Bilinear nickel, force at $+0.500$ / $-0.500$ mm cell travel & $+8.54$ / $-8.51$
 \captionof*{table}{Static displacement, RMS response and prescribed-travel reactions describe different load cases.}\end{center}
 
 \heading{Resolving the initial contact}
-The 2~mm case mesh contains 45,549 quadratic tetrahedra and 77,166 nodes. Its integrated solid volume differs from CAD by 0.00089\%. A second mesh with a 3~mm size limit contains 18,051 tetrahedra. Both have positive minimum scaled Jacobians. With the finer mesh, all three undeformed cell skins remained clear at 1.250~mm at both surface sampling levels. At the higher sampling level the middle cell first reached the moving surface at 1.2412--1.2414~mm, compared with 1.2396--1.2400~mm in CAD. Coarser surface sampling on the 3~mm mesh gave an apparent initial intersection. The native contact search reported a minimum initial gap of 0.002969~mm, within 0.000037~mm of CAD. Its reported penetration tolerance was 0.196~mm. The actual penetration and force on loaded faces must be recovered at each converged bolt-tightening state.
+The nominal 2~mm case mesh has 45,549 quadratic tetrahedra and 77,166 nodes. Its integrated volume differs from CAD by 0.00089\%. The 3 and 1.5~mm meshes have 18,051 and 99,818 tetrahedra. All three have positive minimum scaled Jacobians. Both finer meshes cleared all three undeformed cells at both surface sampling levels. The 3~mm mesh showed an apparent middle-cell intersection at the coarser sampling level. At the higher level the middle cell first touched at 1.2412--1.2414~mm stand-off on the 2~mm mesh and 1.2406--1.2408~mm on the 1.5~mm mesh, compared with 1.2396--1.2400~mm in CAD. The native minimum initial gaps on the two finer meshes were 2.969 and 2.984~$\mu$m. Page~4 compares their actual loaded responses.
 
 \heading{Response quantities}
 The native comparisons will report mounting reactions, board deformation, cell and washer contact, matched natural modes, signed and RMS vibration quantities, tension along and across the printed layers, and edge-cell force and nickel damage for both pull directions where supported by the fixture. The 22 movie subjects use the bare board as the reference on shared physical or display scales. The following pages identify the native solver results and the independent reconstructions from those results. Appendix~A preserves the previous study with its original geometries and page numbering.
@@ -77,25 +77,26 @@ Each model converged at eight saved states. All six locked bolt forces were with
 
 \newpage
 \pageheading{Mesh sensitivity of board displacement and pocket pressure}
-We ran the same nylon assembly a second time with a 3~mm case-mesh size limit. Both runs retained the bare-board mesh, the printed geometry, the screw axes, the 7.60~mm screw grip, the same PCB bearing nodes and all eight tightening and locking stations. Refining the case also changes the contact triangles and the number of tab nodes inside each screw-bearing footprint.
+Three nylon-case meshes retained the same bare-board mesh, printed geometry, screw axes, 7.60~mm screw grip and PCB bearing nodes. All eight tightening and locking stations matched. The case mesh changes both the surface triangles and the nodes inside each tab's bearing footprint.
 
-\begin{center}\small\begin{tabular}{lrr}\toprule
-Nylon mount under bolt preload & 3~mm mesh & 2~mm mesh\\\midrule
-Quadratic case tetrahedra & 18,051 & 45,549\\
-Case-side bearing nodes per screw & 86--89 & 103--104\\
-Native minimum initial gap [$\mu$m] & 2.930 & 2.969\\
-Maximum PCB displacement at lock [$\mu$m] & 28.919 & 28.915\\
-First saved state carrying contact, step 1 & 0.70 & 0.70\\
-Active case faces at lock & 4 & 5\\
-Maximum contact pressure during tightening [MPa] & 1.025 & 1.080\\
-Maximum contact pressure at lock [MPa] & 0.170 & 0.345\\
-Peak in-plane PLA tension [MPa] & 0.392 & 0.334\\
-Peak through-layer PLA tension [MPa] & 0.299 & 0.344\\\bottomrule
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Nylon mount under bolt preload & 3~mm & 2~mm & 1.5~mm\\\midrule
+Quadratic case tetrahedra & 18,051 & 45,549 & 99,818\\
+Case-side bearing nodes per screw & 86--89 & 103--104 & 106--108\\
+Native minimum initial gap [$\mu$m] & 2.930 & 2.969 & 2.984\\
+Peak PCB displacement at lock [$\mu$m] & 28.919 & 28.915 & 28.970\\
+First saved state carrying contact, step 1 & 0.70 & 0.70 & 0.70\\
+Active case faces at lock & 4 & 5 & 7\\
+Peak contact pressure during tightening [MPa] & 1.025 & 1.080 & 1.178\\
+Peak contact pressure at lock [MPa] & 0.170 & 0.345 & 0.270\\
+Peak in-plane PLA tension [MPa] & 0.392 & 0.334 & 0.456\\
+Peak through-layer PLA tension [MPa] & 0.299 & 0.344 & 0.398\\\bottomrule
 \end{tabular}\end{center}
 
-Both meshes located the largest PCB displacement at the same corner. Refinement changed that peak by 0.016\%, and both independent deformed-surface checks placed only the middle cell in contact. The location of engagement and the board-level response therefore agree across these two runs.
+\heading{Board displacement and pocket loading}
+All three meshes place the maximum displacement at the same PCB corner and the locked contact on the middle cell. The full spread in peak PCB displacement is 0.055~$\mu$m, or 0.19\%. Each mesh predicts about 39\% less displacement than the 47.46~$\mu$m bare-board result.
 
-The peak pressure during tightening rose by 5.4\% on refinement. At the end of bolt lock the peak rose by a factor of 2.03. Pressures on a handful of loaded faces cannot yet support a local cell or case bearing limit. A third 1.5~mm mesh contains 99,818 tetrahedra. The matched 2~mm repeat recovered the resultant force at all eight stations (page~10). The 1.5~mm run will test the sensitivity of that force to the case mesh.
+The integrated pocket force at lock fell from 0.594 to 0.572~N on the two finer meshes. At the end of tightening it fell from 3.447 to 1.939~N, a 44\% change at the same applied load. The peak local pressure at lock also varies nonmonotonically across the three meshes. These data support the reduction in board deflection and identify the cell carrying the load. Local pressure and the intermediate force history require further convergence checks. Page~10 shows the force at each equilibrium.
 
 \newpage
 \pageheading{The first two default-contact shapes persist with either mount}
@@ -134,7 +135,7 @@ Snug, aluminium screws & 78.96 & 66.78 & 75.86\\\bottomrule
 Both mounts reduced PCB deflection during bolt tightening. Under base-Z vibration, the calculated RMS board motion increased to 2.65 times bare with nylon and 1.44 times bare with aluminium. The native bases retained 38 bare modes and 48 modes for each mount up to 4~kHz. Removing modes above 3.5~kHz changed all nine tabulated peaks by less than 0.003\%. The independent bare calculation reproduced the 18 archived native displacement peaks within 0.013\%. Page~8 gives the native base-X check for both mounts.
 
 \heading{Case-mesh qualification}
-After tightening, MAPDL flagged the same PLA tetrahedron in both mounts at its 179.9$^\circ$ edge-angle limit. On each locked mesh, an independent polynomial bound confirmed a positive Jacobian determinant throughout all 45,549 case elements. The flagged element had the smallest lower bound, 0.01286~mm$^3$ in both cases. A 1.5~mm nylon mesh will test the sensitivity of the frequencies and board response.
+After tightening, MAPDL flagged the same PLA tetrahedron in both mounts at its 179.9$^\circ$ edge-angle limit. On each locked mesh, an independent polynomial bound confirmed a positive Jacobian determinant throughout all 45,549 case elements. The flagged element had the smallest lower bound, 0.01286~mm$^3$ in both cases. The separate 1.5~mm nylon prestressed basis will test frequency and vibration-response sensitivity.
 
 \newpage
 \pageheading{Outer cells can reach the case during vibration}
@@ -203,21 +204,21 @@ The four circular M4 beam shanks were evaluated at 25 section points at each end
 
 An exact oscillator solution for the piecewise-linear acceleration changed the 24 PLA maxima across both screw materials, tensile directions, base axes and bearing-distance scopes by at most 0.43\% from the average-acceleration integration. Both methods use the same installed stiffness and material law.
 \newpage
-\pageheading{The nylon middle pocket carries 0.594 N at bolt lock}
-The six 750~N bolt targets specify the original battery fastener loads. Only a small part of that loading reaches the printed pocket. A repeat of the 2~mm nylon model stored native contact-force components at every equilibrium. The net force from all 16,596 case-side contact faces peaked at 8.323~N during tightening and fell to 0.594~N after locking. All five faces carrying force at lock belonged to the middle pocket. The locked vector was $(-0.5433,\;0.000003,\;0.2394)$~N in PCB axes.
+\pageheading{The nylon middle pocket carries about 0.6 N at bolt lock}
+The six original fasteners were each tightened to 750~N. The case carried a much smaller load at the middle cell. The 2~mm and 1.5~mm meshes gave peak resultants of 8.323 and 8.571~N during tightening. At bolt lock they gave 0.594 and 0.572~N across five and seven loaded case faces, respectively. All loaded faces belonged to the same middle pocket.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/snug-pocket-preload.pdf}
-\captionof{figure}{Left, direct MAPDL resultants, independently summed from element records. Right, times when the signed modal increment along the lock-force direction first passed $+0.594$ and $-0.594$~N during each separate base acceleration. The label gives the later crossing, which bounds how long the installed pressure pattern can remain consistent.}\end{center}
+\captionof{figure}{Left, forces summed over every case contact element on each mesh. Right, the 2~mm model gives the times when the signed modal increment along the lock-force direction first passed $+0.594$ and $-0.594$~N during each separate base acceleration. The label gives the later crossing, which bounds how long the installed pressure pattern can remain consistent.}\end{center}
 
 \heading{Why the fixed-contact force becomes inconsistent}
 The five active frictionless faces point towards the same side of the middle cell. Over their full curved surfaces, the cosine between the case normals and the resultant direction exceeded 0.993. A compressive force on any of those faces contributes with the same sign along this direction. Once the signed vibration increment has exceeded the installed force in both directions, one excursion would require the pocket to pull on the cell.
 
-In the nominal 2~mm model that condition occurred by 18.41~ms for base X, 25.56~ms for base Y and 12.69~ms for base Z, taking the later bound from two time-integration methods. Reducing the modal cutoff from 4 to 3~kHz left the three Newmark bounds at the same integration stations. The 2~kHz cutoff changed the bounds by at most 0.046~ms. The 1.5~mm force refinement is still pending.
+In the nominal 2~mm model that condition occurred by 18.41~ms for base X, 25.56~ms for base Y and 12.69~ms for base Z, taking the later bound from two time-integration methods. Reducing the modal cutoff from 4 to 3~kHz left the three Newmark bounds at the same integration stations. The 2~kHz cutoff changed the bounds by at most 0.046~ms. The corresponding 1.5~mm vibration bound requires its own prestressed modes.
 
 At the six sampled crossing instants, tests of the complete quadratic surfaces found the outer cells clear and the middle cell still touching or overlapping the case. The force check detects a need to redistribute the installed pressure before those snapshots show an outer cell reaching its pocket. It cannot establish when the middle cell fully lifts off. The nonlinear controls include an intact shell with all three cells, six nickel strips and six washers so both outer pockets can engage.
 
-\heading{Numerical checks}
-The repeat reproduced the native contact history and all six bolt reactions at all eight stations. Across the complete matched nodal displacement fields, the largest difference from the primary run was $1.1\times10^{-16}$~m. The POST1 resultant and the independent sum of the stored element-force components agreed within $10^{-10}$~N at every station.
+\heading{How closely did the installed models balance?}
+On the 2~mm mesh, the whole-model force residual was 3.01~N at peak pocket load and 0.028~N at lock. On the 1.5~mm mesh the corresponding values were 2.97 and 0.00071~N. A global residual measures imbalance across the assembly. It does not directly measure the error in one pocket force. A same-mesh repeat with a 0.01~N force criterion will check the sensitivity to nonlinear convergence. The two independent readbacks of contact force agreed within $10^{-10}$~N at every station on both meshes.
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}

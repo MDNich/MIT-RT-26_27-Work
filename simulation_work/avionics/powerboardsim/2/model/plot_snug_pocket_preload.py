@@ -13,12 +13,16 @@ def draw():
     t=[v['load_time'] for v in repeat['contact_history']]
     f=[v['resultant_N'] for v in history]
     fig,(loads,clock)=plt.subplots(1,2,figsize=(8.35,2.83),layout='constrained')
-    loads.plot([0,*t],[0,*f],'-o',color='#08357E',lw=1.4,ms=4.4)
-    loads.axvline(1,color='.55',ls='--',lw=.8)
-    loads.text(.48,.91,'Tightening',ha='center',color='#08357E',transform=loads.get_xaxis_transform(),fontsize=9)
-    loads.text(1.48,.91,'Bolts locked',ha='center',color='#08357E',transform=loads.get_xaxis_transform(),fontsize=9)
-    loads.annotate(f'{f[-1]:.3f} N',(t[-1],f[-1]),(-7,10),textcoords='offset points',ha='right',fontsize=9)
-    loads.set(xlabel='Native load-step parameter',ylabel='Middle-pocket resultant [N]',xlim=(-.07,2.10),ylim=(-.35,10.8))
+    mesh=read(ROOT/'validation/snug125/nylon_force_mesh_comparison.json')
+    nominal,fine=mesh['runs']
+    assert nominal['rst_sha256']==repeat['rst_sha256'] and nominal['times']==t
+    assert nominal['force_history']==history and fine['mesh_size_mm']==1.5
+    fine_force=[v['resultant_N'] for v in fine['force_history']]
+    loads.plot([0,*t],[0,*f],'-o',color='#08357E',lw=1.35,ms=3.7,label='2.0 mm')
+    loads.plot([0,*fine['times']],[0,*fine_force],'--s',color='#38761D',lw=1.35,ms=3.4,label='1.5 mm')
+    loads.axvline(1,color='.55',ls=':',lw=.8)
+    loads.legend(frameon=False,fontsize=8,loc='upper right')
+    loads.set(xlabel='Native load-step parameter',ylabel='Case contact resultant [N]',xlim=(-.07,2.10),ylim=(0,None))
     colors=['#08357E','#3C78D8','#38761D']
     for i,(axis,color) in enumerate(zip('XYZ',colors,strict=True)):
         records=data['axes'][axis]['integrations']

@@ -74,6 +74,8 @@ For the base-Z contact replay, `snug_shell_drive_sampling.py` compared linearly 
 
 Following the global spectra and native histories, the serial schedule brings the primary pull and damage fixtures and their bare references forward. The matched tolerance repeat and contact controls follow. Run `snug_modal_refinement.py` against the archived 1.5 mm prestressed basis when it is accepted. It matches signed modes on the original assembly nodes after undoing each preload displacement and compares independently integrated X/Y/Z responses on both meshes.
 
+The 1.5 mm nylon preload finished with 99,818 PLA tetrahedra, eight equilibria and no solver errors. Both deformed-surface sampling levels found only the middle cell in contact. All seven loaded faces at lock map to STEP face 17. Across 217,704 common PCB nodes the peak remained at node 207485, at 28.970 µm. The two finer meshes gave 8.323 and 8.571 N at peak tightening, 3.447 and 1.939 N at the switch to bolt lock, and 0.594 and 0.572 N at the end of lock. The full histories and force-balance audits are published. The 2 mm vibration timing continues to use the matching 2 mm equilibrium. [Mesh and force comparison](validation/snug125/nylon_force_mesh_comparison.json) · [Fine-mesh residuals](validation/snug125/snug125_nylon_mesh15_static_residuals.json)
+
 ## Previous geometry and run history
 
 Use this revision-2 directory for study work. The older project and the isolated revision-1 rerun supply reference inputs only. The source STEP arrived directly from the user. The separate SolidWorks file is preserved. Keep the existing dedicated Mac keep-awake job until this study closes.
