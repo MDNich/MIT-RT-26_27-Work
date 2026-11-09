@@ -3,6 +3,7 @@ import argparse
 import ctypes
 import os
 import re
+import struct
 import tempfile
 from pathlib import Path
 
@@ -29,6 +30,33 @@ def converged_prefix(raw, steps, times, terminal):
     return len(tail)
 
 
+class IncompletePartitionRecord(ValueError):
+    """The result-set header is present before its native data record is readable."""
+
+
+def check_element_tables(path, raw, count):
+    """Reject a named result set whose element offsets have not yet reached the partition file."""
+    size = path.stat().st_size
+    with path.open('rb') as stream:
+        def integer_record(pointer, expected_words):
+            start = 4 * int(pointer)
+            if start < 0 or start + 12 + 4 * expected_words > size:
+                raise IncompletePartitionRecord(f'{path.name} set {k+1}: record extends beyond the sealed partition')
+            stream.seek(start)
+            words, flags = struct.unpack('<II', stream.read(8))
+            stream.seek(start + 8 + 4 * expected_words)
+            trailer, = struct.unpack('<I', stream.read(4))
+            if (words, flags, trailer) != (expected_words, 0x80000000, expected_words):
+                raise IncompletePartitionRecord(f'{path.name} set {k+1}: incomplete or unsupported native integer record')
+
+        for k, pointer in enumerate(raw._resultheader['rpointers'][:count]):
+            integer_record(pointer, 200)
+            offset = raw._result_solution_header(k)['ptrESL']
+            if offset <= 0:
+                raise IncompletePartitionRecord(f'{path.name} set {k+1}: no stored element solution')
+            integer_record(int(pointer) + int(offset), 2 * len(raw._eeqv))
+
+
 def capture(case, campaign, terminal=False):
     rt = ROOT/'.runtime'
     source = rt/'shared_native'/campaign/case
@@ -49,10 +77,22 @@ def capture(case, campaign, terminal=False):
     assert events
     ls, sb = map(int,events[-1].groups()[:2])
     generation=f'step{ls}_substep{sb}' + ('_terminal' if terminal else '')
-    final = rt/'partition_snapshots'/campaign/case/generation
-    if (final/'receipts.json').is_file():
-        assert read(final/'receipts.json')['model_sha256']==deck
-        return final
+    directory = rt/'partition_snapshots'/campaign/case
+    final = directory/generation
+    revision = 0
+    while (final/'receipts.json').is_file():
+        prior = read(final/'receipts.json')
+        assert prior['model_sha256']==deck
+        try:
+            for name, record in prior['files'].items():
+                verified(final/name, record['SHA256'])
+                check_element_tables(final/name, read_rst(final/name,read_mesh=False), prior['sets'])
+        except IncompletePartitionRecord:
+            # Keep the original clone and its hashes. An updated on-disk table gets its own copy.
+            revision += 1
+            final = directory/(generation+f'_readback{revision}')
+        else:
+            return final
     final.parent.mkdir(parents=True,exist_ok=True)
     root = Path(tempfile.mkdtemp(prefix=final.name+'_capture_',dir=final.parent))
     files = [source/f'file{i}.rst' for i in range(state['cores'])]
@@ -74,6 +114,7 @@ def capture(case, campaign, terminal=False):
         assert dest.stat().st_size==state_before[0] and dest.stat().st_ino!=p.stat().st_ino
         raw = read_rst(dest,read_mesh=False)
         excluded.append(converged_prefix(raw,steps,times,terminal))
+        check_element_tables(dest,raw,len(steps))
         manifest[p.name] = dict(bytes=state_before[0], SHA256=digest(dest))
     assert len(set(excluded))==1
     terminal_data={}

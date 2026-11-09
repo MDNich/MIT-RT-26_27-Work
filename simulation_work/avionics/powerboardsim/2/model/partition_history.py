@@ -160,7 +160,10 @@ def run(folder, campaign, control):
         proof=read(folder/'receipts.json')
         assert case==proof['case'] and proof['campaign']==campaign
         names=[f'file{i}.rst' for i in range(proof['cores'])]
-        for name in names:verified(folder/name,proof['files'][name]['SHA256'])
+        from partition_snapshot import check_element_tables
+        for name in names:
+            verified(folder/name,proof['files'][name]['SHA256'])
+            check_element_tables(folder/name,read_rst(folder/name,read_mesh=False),proof['sets'])
         deck=root/'inputs'/case/'model.inp';verified(deck,proof['model_sha256'])
         manifest_sha=digest(folder/'receipts.json')
     types={'PLA':(850,None),'screws':(851,None),853:(853,853)}

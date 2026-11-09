@@ -9,7 +9,7 @@ The October power-board assembly carries three cells and six battery-attachment 
 | Bare board | All 22 movie subjects, the three native base spectra, three native seeded histories, the nominal side pull and a repeat of the partial nickel-damage history. |
 | 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, native X/Y/Z spectra and the positive-X side pull. Each movie identifies its numerical source. |
 | Flush, nylon | The full-board installation stopped at 2.75 mm screw travel. The PLA coupon reference was crossed at 0.95–1.10 mm. The four tabs touched along their edges while most of each face remained open. |
-| Flush, aluminium | The full-board seating trial started after the nominal bare damage repeat. Flush vibration comparisons require a supported installed state. |
+| Flush, aluminium | At 0.80 mm travel the four drives carried 115.6 N with aluminium screws, versus 80.0 N with nylon. The tabs were still clear of the PCB in both trials. Flush vibration comparisons require a supported installed state. |
 
 Under base-Z vibration, peak PCB stress reached 32.48 MPa RMS bare, 64.77 MPa with raised nylon screws and 84.19 MPa with raised aluminium screws. The twelve RMS movie pairs now show native MAPDL fields for all three assemblies. [Three-axis results, page 13](output/pdf/battery-case-report.pdf#page=13) · [Base-Z movie without case](output/videos/without_case/power_board_4k60/random_fig04_assembly.mp4) · [Base-Z movie with case](output/videos/with_case/power_board_4k60/random_fig04_assembly.mp4)
 
