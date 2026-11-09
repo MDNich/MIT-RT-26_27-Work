@@ -2,11 +2,11 @@
 import argparse, hashlib, json, math, subprocess
 from pathlib import Path
 import imageio_ffmpeg, numpy as np, pyvista as pv
-from ansys.mapdl import reader
+from native_rst import read_rst
 ROOT=Path(__file__).resolve().parents[1]
 
 def skin(rst,rank):
-    r=reader.read_binary(str(rst))
+    r=read_rst(str(rst))
     freq=float(r.time_values[rank-1])
     solid=r.grid.extract_cells(np.isin(r.grid.cell_data['ansys_elem_type_num'],[185,186,187,188]))
     mesh=solid.extract_surface(algorithm='dataset_surface',nonlinear_subdivision=0).triangulate()

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from ansys.mapdl import reader
+from native_rst import read_rst
 from scipy.optimize import linear_sum_assignment
 
 
@@ -45,7 +45,7 @@ def modes(result, ids):
 
 
 def compare(reference,candidate):
-    a,b=[reader.read_binary(str(p)) for p in (reference,candidate)]
+    a,b=[read_rst(str(p)) for p in (reference,candidate)]
     ids,xyz=native_points(a)
     other,loc=native_points(b)
     if not np.array_equal(ids,other) or np.max(np.abs(xyz-loc))>1.e-9:

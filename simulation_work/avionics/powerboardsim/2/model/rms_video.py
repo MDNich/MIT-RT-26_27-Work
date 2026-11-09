@@ -2,12 +2,13 @@
 import argparse, csv, hashlib, json, math, subprocess
 from pathlib import Path
 import imageio_ffmpeg, numpy as np, pyvista as pv
-from ansys.mapdl import reader
+from native_rst import read_rst
+from film_identity import verified,already_rendered
 ROOT=Path(__file__).resolve().parents[1]
 VARIANTS=['bare','flush_nylon','flush_aluminium','stand3_nylon','stand3_aluminium']
 LABELS=['Bare board','Flush / nylon screws','Flush / aluminium screws','3 mm / nylon screws','3 mm / aluminium screws']
 def field(path,component):
-    result=reader.read_binary(str(path));grid=result.grid
+    result=read_rst(str(path));grid=result.grid
     node,disp=result.nodal_solution([3,1]);order=np.argsort(node)
     solid=np.isin(grid.cell_data['ansys_elem_type_num'],[185,186,187,188])
     case=grid.cell_data['ansys_material_type']==850
@@ -29,14 +30,15 @@ def camera(plot,phase,view):
     center=np.array([.0346,.0604,-.004])
     plot.camera_position=[center+np.array([.24*math.sin(angle),.06,-.24*math.cos(angle)]),center,(0,1,0)]
     plot.enable_parallel_projection();plot.camera.parallel_scale=.088
-def draw(panels,title,axis,comp,view,limit,target,preview=False):
+def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
+    if not preview and already_rendered(target,dict(subject=title,base=axis,response=comp,view=view,range_mm=[0,limit],sources=sources)):return
     n=len(panels);width,height=(1280,720) if preview else (3840,2160)
     p=pv.Plotter(shape=(1,1) if n==1 else (2,2),window_size=(width,height),off_screen=True,border=False)
     for i,(label,actors,peak) in enumerate(panels):
         p.subplot(i//2,i%2);p.set_background('#f8f9fc')
         for j,(mesh,opaque) in enumerate(actors):
-            p.add_mesh(mesh,scalars='RMS displacement [mm]',clim=(0,limit),cmap='viridis',opacity=1. if opaque else .42,show_scalar_bar=j==0,
-                       scalar_bar_args=dict(title='RMS [mm]',vertical=True,position_x=.03,position_y=.19,width=.047,height=.46,n_labels=4,fmt='%.3g',title_font_size=18,label_font_size=16,color='#25334a'))
+            p.add_mesh(mesh,scalars='RMS displacement [mm]',clim=(0,limit),cmap='viridis',opacity=1. if opaque else .42,show_scalar_bar=(i==0 and j==0),
+                       scalar_bar_args=dict(title='RMS [mm]',vertical=True,position_x=.085,position_y=.19,width=.047,height=.46,n_labels=4,fmt='%.3g',title_font_size=16,label_font_size=14,color='#25334a'))
         p.add_text(label+'   /   '+f'base {axis}, response {comp}',position='upper_left',font_size=13 if n>1 else 17,color='#08357e')
         p.add_text('1-sigma displacement   |   camera orbit' + ('   |   translucent case' if len(actors)>1 else ''),position='lower_left',font_size=8,color='#183046')
         camera(p,0,view)
@@ -56,7 +58,7 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False):
     stream=imageio_ffmpeg.read_frames(str(temp));meta=next(stream);stream.close()
     assert tuple(meta['size'])==(3840,2160) and meta['fps']==60
     temp.replace(target)
-    target.with_suffix('.json').write_text(json.dumps(dict(subject=title,kind='Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
+    target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);args=parser.parse_args()
     source=ROOT.parent/'1/output/videos/power_board_4k60/index.csv'
@@ -66,13 +68,15 @@ def main():
     if args.preview_rst:
         actors,peak=field(args.preview_rst,comp)
         draw([('Reference reader check',actors,peak)],row['title'],axis,comp,view,peak,ROOT/'.runtime/qa/rms-reader-preview.png',True);return
-    panels=[]
+    panels=[];sources=[]
     for variant,name in zip(VARIANTS,LABELS):
         key=f'{variant}_psd_{axis}'
         audit=json.loads((ROOT/f'validation/global/{key}.json').read_text());assert audit['case']==key and audit['campaign']==args.campaign
-        actors,peak=field(ROOT/f'.runtime/archive/{args.campaign}/{key}/file.rst',comp)
+        rst=ROOT/f'.runtime/archive/{args.campaign}/{key}/file.rst'
+        verified(rst,audit['rst_sha256']);sources.append(dict(variant=variant,rst_sha256=audit['rst_sha256']))
+        actors,peak=field(rst,comp)
         panels.append((name,actors,peak))
     limit=max(i[2] for i in panels)
     for group,sub in [('without_case',panels[:1]),('with_case',panels[1:])]:
-        draw(sub,row['title'],axis,comp,view,limit,ROOT/f'output/videos/{group}/power_board_4k60/{args.name}.mp4')
+        draw(sub,row['title'],axis,comp,view,limit,ROOT/f'output/videos/{group}/power_board_4k60/{args.name}.mp4',sources=sources[:1] if group=='without_case' else sources[1:])
 if __name__=='__main__':main()

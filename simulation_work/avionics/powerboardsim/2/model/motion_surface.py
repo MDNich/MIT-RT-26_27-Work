@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pyvista as pv
-from ansys.mapdl import reader
+from native_rst import read_rst
 
 from pcb_dynamic_stress import digest, equivalent
 from seeded_motion import FRAMES,FS,ROOT
@@ -51,7 +51,7 @@ def pcb_skin(r,locations):
 
 def verify(rst,cache):
     source=ROOT.parent/'1/output/latex/random_vibration/reproduction/motion'
-    r=reader.read_binary(str(rst))
+    r=read_rst(str(rst))
     record=dict(rst_sha256=digest(rst),axes={})
     assert record['rst_sha256']==json.loads((cache/'basis.json').read_text())['rst_sha256']
     for axis in 'XYZ':

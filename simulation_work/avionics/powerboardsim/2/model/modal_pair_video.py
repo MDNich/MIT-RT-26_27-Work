@@ -9,17 +9,18 @@ import imageio_ffmpeg
 import numpy as np
 import pyvista as pv
 from PIL import Image
-from ansys.mapdl import reader
+from native_rst import read_rst
 from modal_correspondence import checksum,compare
 from modal_video import render as render_bare
 from rms_video import ROOT,VARIANTS,LABELS
+from film_identity import verified,already_rendered
 
 SUBJECTS = {'modal_fig01_default_mode01':('refined',1), 'modal_fig02_default_mode20':('refined',20),
             'modal_fig03_bolted_mode20':('modal20',20)}
 
 
 def surfaces(rst,rank):
-    r=reader.read_binary(str(rst)); g=r.grid
+    r=read_rst(str(rst)); g=r.grid
     numbers,disp=r.nodal_displacement(rank-1)
     order=np.argsort(numbers)
     solid=np.isin(g.cell_data['ansys_elem_type_num'],[185,186,187,188])
@@ -59,7 +60,7 @@ def draw(panels,rank,target,preview=False):
                    position='lower_left',font='arial',font_size=8 if preview else 13,color='#183046')
         center=np.array([.0346,.0604,-.004])
         p.camera_position=[center+np.array([.140,.065,-.223]),center,(0,1,0)]
-        p.enable_parallel_projection();p.camera.parallel_scale=.085
+        p.enable_parallel_projection();p.camera.parallel_scale=.083
     p.show(auto_close=False,interactive=False)
     def frame(a):
         for mesh,orig,v,norm in transforms:
@@ -110,7 +111,7 @@ def main():
     refs={}
     for v in VARIANTS:
         key=f'{v}_{kind}';audit=json.loads((ROOT/f'validation/global/{key}.json').read_text())
-        f=base/key/'file.rst';assert audit['campaign']==args.campaign and audit['case']==key and audit['rst_sha256']==checksum(f)
+        f=base/key/'file.rst';assert audit['campaign']==args.campaign and audit['case']==key and verified(f,audit['rst_sha256'])==audit['rst_sha256']
         refs[v]=(f,audit['rst_sha256'])
     bare_out=ROOT/f'output/videos/without_case/power_board_4k60/{args.subject}.mp4'
     if not bare_out.is_file():
@@ -133,6 +134,7 @@ def main():
         panels.append((label,parts,Hz,row['equal_rank_MAC'],sign))
         evidence.append(dict(variant=v,rst_sha256=sha,rank=rank,Hz=Hz,same_rank_MAC=row['equal_rank_MAC'],phase_sign=sign,closest_shape_rank=row['best_rank']))
     target=ROOT/f'output/videos/with_case/power_board_4k60/{args.subject}.mp4'
+    if already_rendered(target,dict(subject=args.subject,panels=evidence,baseline_film_sha256=film['video_sha256'],peak_display_displacement_mm=6)):return
     draw(panels,rank,target)
     target.with_suffix('.json').write_text(json.dumps(dict(subject=args.subject,panels=evidence,baseline_film_sha256=film['video_sha256'],
             sha256=checksum(target),frames=540,duration_s=9,fps=60,resolution=[3840,2160],peak_display_displacement_mm=6,

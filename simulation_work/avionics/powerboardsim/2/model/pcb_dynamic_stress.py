@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 import numpy as np
-from ansys.mapdl import reader
+from native_rst import read_rst
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -17,7 +17,7 @@ def digest(path):
 
 def cache_modes(rst_path, folder):
     """Keep the identity of each element-corner result even at a shared geometry node."""
-    result = reader.read_binary(str(rst_path))
+    result = read_rst(str(rst_path))
     freq = result.time_values
     if np.any(np.diff(freq) <= 0) or freq[0] <= 0:
         raise ValueError('Use an exclusively modal RST with increasing positive frequencies')

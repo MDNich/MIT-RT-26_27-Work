@@ -2,7 +2,7 @@
 from pathlib import Path
 import csv,hashlib,json,re,sys
 import numpy as np
-from ansys.mapdl import reader
+from native_rst import read_rst
 ROOT=Path(__file__).resolve().parents[1]
 def load(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def audit(case,campaign):
@@ -13,7 +13,7 @@ def audit(case,campaign):
     assert all((d/f['name']).stat().st_size==f['bytes'] for f in meta['files'])
     lst=(d/'solve.out').read_text(errors='replace')
     assert 'RUN COMPLETED' in lst and re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',lst)
-    rst=reader.read_binary(str(d/'file.rst'))
+    rst=read_rst(d/'file.rst')
     t=np.asarray(rst.time_values);g=rst.grid
     assert len(t)>0 and np.all(np.isfinite(t))
     nid,disp=rst.nodal_displacement(len(t)-1)
@@ -29,9 +29,23 @@ def audit(case,campaign):
                 rows=list(csv.DictReader(f))
             last={key:float(value) for key,value in rows[-1].items()}
             assert abs(last['time_s']-2)<1e-8 and last['n_contact']>0
-            assert last['n_contact']==sum(last[k] for k in ('far','near','sliding','sticking'))
-            assert np.all(np.isfinite(list(last.values())))
-            result['installed_contact_summary']=last
+            from global_contact import history
+            stored=history(rst,853,853)
+            assert len(rows)==len(stored)
+            for item,raw in zip(rows,stored,strict=True):
+                item={k:float(v) for k,v in item.items()}
+                assert np.isfinite(list(item.values())).all() and item['set']==raw['set'] and abs(item['time_s']-raw['time_s'])<1e-7
+                assert item['n_contact']==raw['n_contact']
+                # POST1 classifies entire faces with exactly integer ETABLE status. A face
+                # with both far and near corners can have a fractional ETABLE value.
+                bins=[int(item[x]) for x in ('far','near','sliding','sticking')]
+                highest=[raw[x] for x in ('far','near','sliding','sticking')]
+                uniform=raw['fully_uniform_face_bins']
+                assert bins==highest or bins==uniform,(bins,highest,uniform)
+                if raw['p_max']==0:assert item['p_max_Pa']==0
+            result['post1_integer_status_summary']=last
+            result['installed_contact_summary']=stored[-1]
+            result['contact_history_native_RST']=stored
             result['contact_scope']='Engineering interpretation requires penetration, seating loads and PLA stress review.'
     elif '_psd_' in case:
         # Workbench writes the statistical result sets after the modal basis; select PSD labels in the field audit.

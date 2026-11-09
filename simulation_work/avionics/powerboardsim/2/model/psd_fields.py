@@ -2,10 +2,10 @@
 import argparse,json
 from pathlib import Path
 import numpy as np
-from ansys.mapdl import reader
+from native_rst import read_rst
 
 def recover(path):
-    rst=reader.read_binary(str(path))
+    rst=read_rst(str(path))
     ls=rst._resultheader['ls_table']
     assert np.count_nonzero((ls[:,0]==3)&(ls[:,1]==1))==1
     assert np.count_nonzero((ls[:,0]==5)&(ls[:,1]==1))==1

@@ -8,12 +8,13 @@ import imageio_ffmpeg
 import numpy as np
 import pyvista as pv
 from PIL import Image
-from ansys.mapdl import reader
+from native_rst import read_rst
 
 from motion_surface import displacement_basis,pcb_skin
 from pcb_dynamic_stress import cache_modes,digest,equivalent,extrema
 from rms_video import ROOT,VARIANTS,LABELS
 from seeded_motion import FS,FRAMES
+from film_identity import verified,already_rendered
 
 # The original subjects specify the visible scope and response direction.
 SUBJECTS={
@@ -31,7 +32,7 @@ def field_files(rst,clip,period,scope,component,cache,stress_cache,source_sha=No
         saved=json.loads(seal.read_text())
         if saved['identity']!=identity:raise ValueError('Refusing to use fields from a different basis or clip')
         return saved
-    r=reader.read_binary(str(rst));g=r.grid
+    r=read_rst(str(rst));g=r.grid
     if clip.suffix=='.csv':
         q=np.loadtxt(clip,delimiter=',',skiprows=1)[:,1:]
     else:
@@ -80,6 +81,12 @@ def field_files(rst,clip,period,scope,component,cache,stress_cache,source_sha=No
 
 def render(items,target,ax,scope,comp,period,limit,preview):
     n=len(items);big=(3840,2160);px=(1280,720) if preview else big
+    if not preview:
+        field='Dynamic von Mises [MPa]' if comp=='stress' else f'Signed U{comp} [mm]'
+        fields=dict(base=ax,scope=scope,response=field,scale=[0 if comp=='stress' else -limit,limit],
+           panels=[dict(name=name,rst_sha256=d['identity']['rst_sha256'],coordinates_sha256=d['identity']['coordinates_sha256'],peak=d['peak']) for name,_,d in items],
+           display_displacement_multiplier=50,physical_interval_s=(FRAMES[[0,-1]]/FS).tolist())
+        if already_rendered(target,fields):return
     plot=pv.Plotter(shape=(2,2) if n==4 else (1,1),window_size=px,off_screen=True,border=False)
     field='Dynamic von Mises [MPa]' if comp=='stress' else f'Signed U{comp} [mm]'
     series=[];clim=(0,limit) if comp=='stress' else (-limit,limit)
@@ -147,9 +154,9 @@ def main():
         proof=json.loads((ROOT/f'validation/motion/{key}.json').read_text())
         basis=json.loads((ROOT/f'validation/global/{v}_basis.json').read_text())
         assert proof['case']==key and proof['branch']==v and proof['campaign']==basis['campaign']==args.campaign
-        rst=ROOT/f'.runtime/archive/{args.campaign}/{v}_basis/file.rst';src=digest(rst)
+        rst=ROOT/f'.runtime/archive/{args.campaign}/{v}_basis/file.rst';src=verified(rst,basis['rst_sha256'])
         clip=ROOT/f'.runtime/post/{args.campaign}/{key}/coordinates.npz'
-        assert proof['basis_rst_sha256']==basis['rst_sha256']==src and proof['clip_sha256']==digest(clip)
+        assert proof['basis_rst_sha256']==basis['rst_sha256']==src and proof['clip_sha256']==verified(clip,proof['clip_sha256'])
         root=ROOT/f'.runtime/post/{args.campaign}/{v}_films';cache=root/args.subject
         data=field_files(rst,clip,period,scope,comp,cache,root/'pcb_stress',src);items.append((name,cache,data))
     limit=max(d['peak'] for _,_,d in items)
