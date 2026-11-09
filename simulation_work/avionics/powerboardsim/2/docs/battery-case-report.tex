@@ -6,21 +6,23 @@
 \pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small\color{B}MIT Rocket Team\quad Power board}\fancyhead[R]{\small\color{B}Battery case study}\fancyfoot[L]{\footnotesize Battery case comparison, 9 November 2026}\fancyfoot[R]{\thepage}
 \setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
 \newcommand{\heading}[1]{\par\vspace{4pt}{\large\bfseries\color{B}#1}\par}
+\newcommand{\pageheading}[1]{\pdfbookmark[0]{#1}{study-page-\thepage}\heading{#1}}
 \begin{document}
+\pdfbookmark[0]{Power-board battery case comparison}{study-overview}
 {\LARGE\bfseries\color{B}Power-board battery case comparison}\par
 {\large Assembly fit, bolt tightening, side pull and vibration response}\par
-{\small 9 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02}
+{\small 9 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02\quad|\quad\href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{22 paired movies}}
 \heading{The mounting height determines whether the cells are already loaded}
 Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. During rigid installation from the raised position, the four outer washers touch first while 2.397~mm of tab stand-off remains. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
 \begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.png}
 \captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
 \heading{What the raised case changes}
-Under X-axis vibration, the 3~mm case increased peak board-normal motion from 23.37~$\mu$m RMS bare to 145.55 with nylon screws and 120.00 with aluminium. Under base Z the peak PCB stress rose from 32.5~MPa RMS bare to 64.8 with nylon and 84.2 with aluminium (page~13). With the bilinear nickel law, an 8.54~N pull moved the edge cell 0.50~mm bare and about 0.20~mm with either raised case. With the multilinear law, the bare and nylon-case histories bracketed the same load between the same two travel stations (page~25). Nylon also gave the lowest cell-body X acceleration. Aluminium reduced board movement relative to nylon and increased the local stress across the PLA layers at a screw bearing. In the flush mounting trials, the printed-PLA tensile reference was exceeded before the tabs touched. At the last nylon equilibrium, only 4--5\% of each tab lay within 0.05~mm of the board. With aluminium, that fraction was 18--19\% even at the full 3~mm screw travel (page~19).
+Under X-axis vibration, the 3~mm case increased peak board-normal motion from 23.37~$\mu$m RMS bare to 145.55 with nylon screws and 120.00 with aluminium. Under base Z the peak PCB stress rose from 32.5~MPa RMS bare to 64.8 with nylon and 84.2 with aluminium (page~13). With the bilinear nickel law, an 8.54~N pull moved the edge cell 0.50~mm bare and about 0.20~mm with either raised case. With the multilinear law, a fixed 0.3375~mm travel required 10.15~N bare, 63.82~N with nylon and 125.98~N with aluminium screws (page~26). Nylon also gave the lowest cell-body X acceleration. Aluminium reduced board movement relative to nylon and increased the local stress across the PLA layers at a screw bearing. In the flush mounting trials, the printed-PLA tensile reference was exceeded before the tabs touched. At the last nylon equilibrium, only 4--5\% of each tab lay within 0.05~mm of the board. With aluminium, that fraction was 18--19\% even at the full 3~mm screw travel (page~19).
 
 \heading{Reference assembly}
 The October assembly has 208 bodies and a modeled mass of 251.82~g. Eight stand-off end faces carry the base motion. Two nickel strips attach each cell to the assembly. In the connected reference, six existing screws were loaded to 750~N apiece and locked. Its first mode was 485.964~Hz. Independent base excitation between 20 and 2000~Hz gave a maximum PCB directional displacement of 0.052674~mm RMS under Z excitation and a maximum PCB equivalent stress of 90.325~MPa RMS under X excitation. These archived quantities supply reference checks for the repeats.
 \newpage
-\heading{Registration and fastener selection}
+\pageheading{Registration and fastener selection}
 The four nonplated corner holes in PCB1 ODB++ have finished diameter 4.200~mm. The hole pattern measures $62.865\times114.427$~mm. The case bores have two diameters, 5.000 and 5.090~mm, on a $62.855\times113.241$~mm pattern. Centring the two patterns leaves about 0.593~mm of offset at each end. The sum of the radial clearances of a nominal 4~mm shank in the smaller case bore and in the board is 0.600~mm. The approximately 0.007~mm difference is the available nominal alignment margin there. Printed hole size, fastener major diameter and drilling tolerances therefore matter for installation.
 \begin{center}\small\begin{tabular}{lrrr}\toprule
 Tab stand-off [mm]&Cell overlap [mm$^3$/cell]&Washer bodies intersected&Other intersections\\\midrule
@@ -37,9 +39,9 @@ The supplied single-solid STEP has volume 63.069~cm$^3$. At a printed-PLA refere
 
 The candidate model uses four M4 beam shanks with an effective tensile area of 8.78~mm$^2$. The comparison uses 69~GPa for aluminium and an exploratory 3.0~GPa for nylon. The nominal nylon hardware is McMaster-Carr 93640A145, M4 $\times$ 0.7 thread, 12~mm long. The represented bearing patches transfer loads between each end and its solid mesh. Compression-only members represent tab seating, with an assumed PLA annulus at the raised attachment points. The four case screws have no measured installation torque. The 750~N in the reference applies to the six original battery fasteners. \href{https://www.mcmaster.com/products/nylon-allen-screws/}{McMaster-Carr metric socket-head screws.}
 \heading{Numerical checks and remaining comparisons}
-The initial mesh has 16,108 curved quadratic tetrahedra. A 43,659-element refinement is available. Both have positive minimum scaled Jacobians. The native preparation check counted four screw beams, four compression seats and 8,038 candidate case contact faces. The contact calculation must establish residual penetration, support reactions, seated shape and stresses before modal or random-response comparisons can support a performance claim. The October bare-cell damage run and its repeat first registered damage around 43~N. A physical breaking load remains undetermined.
+The initial mesh has 16,108 curved quadratic tetrahedra. A 43,659-element refinement is available. Both have positive minimum scaled Jacobians. The native preparation check counted four screw beams, four compression seats and 8,038 candidate case contact faces. The raised cases passed the preload checks used for their vibration comparisons. In both flush cases the PLA exceeded its tensile reference before the tabs seated (page~19). The October bare-cell damage run and its repeat first registered damage around 43~N. A physical breaking load remains undetermined.
 \newpage
-\heading{The bare-board repeat reproduces the six locked bolt loads}
+\pageheading{The bare-board repeat reproduces the six locked bolt loads}
 The original battery attachment provides the initial stress field for the connected modal and vibration analyses. In the first nonlinear load step each of the six pretension elements receives 750~N. In the second step MAPDL holds the attained section adjustment fixed. The reaction at the pretension degree of freedom then measures how much load the locked joint retains. The four case screws are absent from this reference run.
 
 \begin{center}\begin{tabular}{rrr}\toprule
@@ -66,7 +68,7 @@ With the continuous nickel-damage law, the October run and its fresh repeat reac
 \captionof*{figure}{Native bare edge-cell pull through the last converged equilibrium. The right panel enlarges the onset interval. Damage is the largest reported shell-section value in the two strips.}\end{center}
 
 \newpage
-\heading{Both default-contact meshes reproduce the October modal spectra}
+\pageheading{Both default-contact meshes reproduce the October modal spectra}
 Each unpreloaded model used the archived mounting constraints and searched for 20 undamped natural frequencies between 1 and 10,000~Hz. The original mesh returned modes from 62.805 to 2205.547~Hz and the refined mesh from 66.611 to 2247.595~Hz. The maximum relative differences from the corresponding October exports were $1.78\times10^{-8}$ and $1.74\times10^{-9}$. Repeating a given discretization thus produced the same frequency spectrum to the stated precision.
 
 \begin{center}\includegraphics[width=.73\linewidth]{figures/bare-modal-frequencies.pdf}
@@ -83,7 +85,7 @@ The six signed dynamic stress components were summed at each of 312,112 PCB elem
 
 Over the same frames, native peak board-normal displacements for base X/Y/Z were 0.040/0.047/0.168~mm bare, 0.244/0.154/0.290~mm with nylon and 0.114/0.125/0.314~mm with aluminium. All 22 pairs use native fields. The seven time-history pairs display motion at $50\times$ scale and $273\times$ slow motion. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movies.}
 \newpage
-\heading{Does the contact model start with the gap measured in CAD?}
+\pageheading{Does the contact model start with the gap measured in CAD?}
 An enclosure that presses on the cells at the start of a raised-case calculation will appear to stiffen the assembly before the real parts would touch. We checked the undeformed contact pairs separately from the load solution. The local fixture uses one target for the moving edge cell and another for the fixed neighboring cells and washers. The global assembly uses deformable targets. The search radius tells MAPDL which nearby facets to examine; it does not set the physical clearance.
 
 \begin{center}\small
@@ -103,7 +105,7 @@ The finite-element gap is sampled at contact detection points on a curved mesh. 
 \heading{Why the flush installation needs a separate check}
 The flush STEP has real interference. In the local model, a 2 mm search recovered the 1.178 mm crown overlap of the moving cell. A 1 mm search found only 1.000 mm, and a 0.6 mm search found only 0.598 mm. Tightening the search around the flush configuration can therefore hide real interference. Conversely, the default global search reported a peak overlap of 10.093 mm, versus 1.848 mm with a 2 mm search. These values identify a contact-model discrepancy. They do not establish an installation force. The flush comparison requires a verified path into contact, including the washers and strips, and force balance in the installed assembly before the vibration solve.
 \newpage
-\heading{Both raised cases restrain the edge cell after contact}
+\pageheading{Both raised cases restrain the edge cell after contact}
 The local fixture pulls the outer cell in positive X. Its other translations and rotations are free. With the case on a 3~mm stand-off, the last open state was at 0.196~mm and the first closed state at 0.221~mm for either screw material. Under the 8.54~N load that moved the bare cell 0.50~mm, both cased cells travelled about 0.20~mm. The interpolated estimates were 0.207~mm with nylon and 0.202~mm with aluminium. Both lie in the same 0.025~mm interval between native states.
 
 \begin{center}\includegraphics[width=.94\linewidth]{figures/raised-pull-comparison.pdf}
@@ -127,7 +129,7 @@ With aluminium screws, peak in-plane PLA tension crossed 52.3~MPa between 0.421 
 All fixtures saved 33 converged states. Peak penetration at a loaded cell/case corner was 0.0116~mm with nylon and 0.0198~mm with aluminium. The native cell contact forces and case-support reactions balanced to within 0.0019~N. These pulls assume fixed screw tops and omit direct PLA-to-nickel contact. At 0.421~mm cell travel, the axial-load resultants at the four tab bearings acted 5.41--6.54~mm from the screw axes with nylon and 5.41--5.49~mm with aluminium. All eight offsets exceed the modeled 3.75~mm bearing radius. A one-sided axial pressure across that footprint cannot carry the same force and moment. The computed pull stiffness therefore depends on how the installed joints transmit a couple. Page~17 gives the force check.
 
 \newpage
-\heading{Both raised cases reduce board deflection during tightening}
+\pageheading{Both raised cases reduce board deflection during tightening}
 The bare board and both 3~mm stand-off assemblies completed eight equilibrium states under the same six-bolt tightening sequence. Each original bolt carried 750~N before its length was locked and retained 749.996--750.000~N afterward. The two cased models differ only in the properties assigned to the four case screws. The load in this comparison comes from the six original bolts.
 
 \begin{center}\includegraphics[width=.93\linewidth]{figures/raised-static-comparison.pdf}
@@ -146,7 +148,7 @@ The PCB moved less than 1~$\mu$m through 0.50~mm screw travel. At 0.80~mm, after
 At 0.80~mm, the largest increase in upper-face principal tensile strain from six-bolt lock was 0.601\% with nylon and 0.958\% with aluminium. We compared the same element corner before and after driving. Excluding points within 2~mm of a tied PCB bearing node gave 0.601\% and 0.670\%, respectively. These local elastic strains describe the board laminate model.
 
 \newpage
-\heading{The raised enclosure adds resonances below the first bare-board mode}
+\pageheading{The raised enclosure adds resonances below the first bare-board mode}
 We extracted undamped natural frequencies about the verified bolt-locked states, using the same mounting constraints and a 1--4000~Hz search. The assembled masses were 251.82~g bare, 325.82~g with the raised nylon-screw case and 326.10~g with aluminium screws. The models returned 38, 49 and 48 modes, respectively. The lowest three frequencies were 253, 289 and 339~Hz with nylon and 320, 372 and 378~Hz with aluminium. All six fall below the first bare-board mode at 486~Hz.
 
 \begin{center}\includegraphics[width=.96\linewidth]{figures/raised-prestressed-modes.pdf}
@@ -166,7 +168,7 @@ Both modal meshes contain their assembly's static deformation. Before comparing 
 
 The October bolted movie shows mode 20 at 2364.18~Hz. The two raised assemblies have mode 20 at 1836.45 and 1950.27~Hz. Its MAC with the bare mode is below 0.00023 in both. Searching the full native bases instead places the closest shape at mode 27, at 2365.06~Hz with nylon (MAC 0.717) and 2368.47~Hz with aluminium (MAC 0.640). The movie preserves the original rank and identifies this match on screen.
 \newpage
-\heading{The linear model predicts more PCB motion with the raised case}
+\pageheading{The linear model predicts more PCB motion with the raised case}
 We applied the October base acceleration spectrum separately along X, Y and Z to the three bolt-locked assemblies. For the 3~mm stand-off with nylon screws, the independent calculation predicts greater out-of-plane PCB motion for all three excitation directions. Under X excitation the peak PCB response in Z rises from 23.37 to 145.55~$\mu$m RMS, a factor of 6.23. In the same calculation the largest cell response in X falls from 61.43 to 53.79~$\mu$m RMS (12.4\%). With aluminium screws, the peak PCB Z responses were 120.00, 82.33 and 100.55~$\mu$m RMS for base X, Y and Z. Compared with nylon, these fall by 17.6\%, 5.0\% and 23.6\%. In particular, the 32\% reduction in static board deflection during tightening did not carry over to this vibration metric.
 
 \begin{center}\includegraphics[width=.97\linewidth]{figures/raised-independent-psd.pdf}
@@ -180,7 +182,7 @@ We repeated the independent integration with modal cutoffs of 2000, 3000, 3500 a
 The two native base-X solutions independently gave 120.00~$\mu$m for the raised aluminium case and 145.55~$\mu$m for the raised nylon assembly's peak PCB Z displacement. All 30 directional displacement peaks across five part selections per cased model agreed with the independent integrals within 0.0017\%. Both calculations linearize about the tightened contact state.
 
 \newpage
-\heading{The 3 mm stand-off does not prevent dynamic cell contact in the model}
+\pageheading{The 3 mm stand-off does not prevent dynamic cell contact in the model}
 The tab stand-off is not the air gap at the cells. The smallest sampled cell clearance on the tightened mesh was 0.143~mm. We paired nearby opposing surfaces and calculated their simultaneous relative motion along the local separation direction. Under base X the most exposed cell location had 0.145~mm clearance and 0.098~mm RMS relative motion. The gap there is only 1.47 times that RMS displacement. This ratio suggests contact is plausible, but it does not tell us when contact occurs.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/stand3_nylon-linear-clearance.pdf}
@@ -198,7 +200,7 @@ Base Z & 0.236 & 0.112 & 0\\\bottomrule
 
 The surface search used both centroids and vertices of facing triangles within 1.2~mm in both directions, including the midside nodes of curved elements. Under base Z the nearest-line projection became negative, but the cell and case skins did not intersect at the selected instant. Tangential motion matters: a negative projected gap alone is insufficient evidence. Under base X both independent geometric checks found overlap. Until a nonlinear transient calculation or vibration test measures the response after closure, use the preceding fixed-contact RMS results as a comparison of the two linear models, not an installed flight stress, impact load or clearance margin.
 \newpage
-\heading{The local flush installation stopped before the tabs seated}
+\pageheading{The local flush installation stopped before the tabs seated}
 Four nylon screws drew the printed case toward a rigid board datum from an initial 3~mm stand-off. The existing washer clamps were tightened first. ANSYS saved 88 converged equilibria before the third load step failed at the next increment. The final converged screw-head travel was 2.8685~mm, leaving 0.1315~mm of the commanded travel. The solver never reached the sideways pull.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/flush-nylon-installation.pdf}
@@ -220,7 +222,7 @@ Median sampled gap [mm] & 0.248 & 0.227 & 0.236 & 0.214\\\bottomrule
 
 In this local fixture the seating springs moved with the screw grips, allowing a tilted tab to cross the board plane. The peak computed PLA equivalent stress reached 233~MPa under the elastic print model. The physical installation force, failure sequence, and full-flush side-pull response remain unresolved. The whole-board installation model instead places contact directly between each tab and the flexible PCB surface, so the model can develop a normal reaction at the bearing land.
 \newpage
-\heading{Contact deflects the raised case along the middle cell}
+\pageheading{Contact deflects the raised case along the middle cell}
 The fixed-open calculation on page~10 placed parts of all three cell surfaces inside the enclosure at the selected X-waveform sample. Along the middle cell, the affected PLA facets extended from 25.2 to 95.6~mm in board Y. We therefore retained the whole length of this contact region in two native submodels. Their outer boundaries lay 9 or 15~mm from the middle-cell contact line. Each retained the original quadratic elements and directional PLA properties.
 
 For each domain we imposed the tightened board displacements, then applied the signed motion at 2.9276~s to the two local cell bodies and the outer cut faces of the PLA. We increased the imposed motion from zero to its full value and unloaded in a series of static equilibria. With cell contact disabled, the free PLA nodes followed the parent solution to within 1~$\mu$m. With frictionless contact active, the largest change in their motion was 249~$\mu$m in the smaller domain and 244~$\mu$m in the larger one.
@@ -245,7 +247,7 @@ Using the native X history from rest, we checked every integration sample throug
 At the prescribed time stations, the sealed transient inputs reproduced native translations at all driven nodes within 0.0022~$\mu$m. Between stations, linear interpolation in the 9~mm domain differed from the native motion by up to 1.04~$\mu$m with a 61.04~$\mu$s table interval and 0.26~$\mu$m with a 30.52~$\mu$s interval. These checks quantify the motion imposed on the submodels. The force curves above are from the static loading and unloading calculation.
 
 \newpage
-\heading{The raised case increases PCB stress under Y and Z excitation}
+\pageheading{The raised case increases PCB stress under Y and Z excitation}
 The native MAPDL comparison used the same X-axis base spectrum and 2\% damping on both assemblies. Each original board bolt had already been tightened and locked. With four nylon case screws at the 3~mm stand-off, the peak PCB equivalent stress fell by 1.6\%, from 90.325 to 88.847~MPa RMS. Its location moved about 54~mm across the board. The PCB's maximum normal strains in X and Y both increased.
 
 \begin{center}\includegraphics[width=.86\linewidth]{figures/stand3_nylon-native-x-pcb.pdf}
@@ -269,7 +271,7 @@ Under base Z, aluminium screws gave less board travel than nylon screws and high
 An independent sum of the signed modal stresses reproduced all nine native stress-peak locations across 312,112 PCB element corners. Reducing the modal cutoff from 4 to 3.5~kHz changed the nine peak values by at most 0.20\%. With only the modes below 2~kHz, the bare base-Y peak was 34.65\% lower. The excitation band remained 20--2000~Hz throughout.
 
 \newpage
-\heading{The printed tab carries a local load across its layers}
+\pageheading{The printed tab carries a local load across its layers}
 The printed case and PCB react differently to the choice of screw. At the 3~mm stand-off, changing nylon screws to aluminium reduced peak PCB movement during tightening (page~7), while the greatest tensile stress normal to the layers anywhere in the PLA rose from 0.688 to 1.515~MPa. The independent orthotropic elastic-law check reproduced the stored tightening strains to within $4.0\times10^{-8}$ relative field norm across all 64,432 element corners.
 
 For X-axis vibration with nylon screws, the native peak layer-normal stress was 17.16~MPa RMS, 0.53~mm from the nearest node tied to a screw bearing. Among corners at least 2~mm from those nodes it was 5.72~MPa RMS. The static tension at the corner of greatest RMS was 0.688~MPa. The six native component fields and stored equivalent-stress RMS agreed with integration of the signed modal stresses to within 0.001\% relative field norm.
@@ -292,7 +294,7 @@ Z & 56.2 & 7.76979 & 0.121 & 0.132 & 0.114\\\bottomrule
 Over 589,825 samples per axis, the native modal coordinates agreed with independent integration to within 0.0015\% in relative norm. The attachment-force histories agreed within 0.0005~N over the X movie clip. The material reference comes from the \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{PolyLite PLA coupon data}. Actual print orientation, infill, bearing compliance and impact response remain unmeasured, so the table cannot establish whether the physical tabs crack.
 
 \newpage
-\heading{Aluminium screws reduce board motion and concentrate load in the tab}
+\pageheading{Aluminium screws reduce board motion and concentrate load in the tab}
 The two raised models differ only in the properties of the four case screws. Both native base-X spectra used the same excitation, printed case and board mesh. Relative to nylon, aluminium reduced the peak PCB Z displacement by 17.6\% and the PCB Z acceleration by 18.6\%. The two PCB equivalent-stress peaks were within 0.22\% of each other. Changing to aluminium moved the peak back to the same node as the bare reference.
 
 \begin{center}\small\begin{tabular}{lrrr}\toprule
@@ -322,7 +324,7 @@ Z & 104.2 & 6.32817 & 0.160 & 0.143 & 0.140\\\bottomrule
 \end{tabular}
 \captionof*{table}{Raised aluminium mount under the original nine-second waveforms. The monitored corner maximizes layer-normal RMS for the given input axis. The signed distances and surface checks use the same definitions as on page~14.}\end{center}
 \newpage
-\heading{The raised case lowers the highest nickel-strip stress under base X}
+\pageheading{The raised case lowers the highest nickel-strip stress under base X}
 Each cell connects to the board through a nickel strip at each end. We compared the same 11,348 element corners across all three assemblies under the October X-axis vibration spectrum. With nylon case screws, peak equivalent stress fell in all six strips. The largest value occurred at the same corner on the high-Y strip of the right-hand cell in all three assemblies. It fell from 291.9~MPa RMS bare to 256.2~MPa with nylon (12.2\%) and 286.5~MPa with aluminium (1.9\%). Aluminium raised the middle cell's two strip peaks by 2.6\% and 2.7\% relative to bare.
 
 \begin{center}\includegraphics[width=.97\linewidth]{figures/raised-nickel-stress.pdf}
@@ -343,7 +345,7 @@ The clearance check covers every quadratic exterior face on all three cells and 
 With base Z excitation, only the raised aluminium model crossed 185~MPa during the first 100~ms. The first crossing occurred at 77.911--77.927~ms on the middle cell attachment (STEP body~17). The same moving-surface bound gave at least 0.0256~mm of cell-to-case clearance through that sample. With base Y, all three models stayed below the reference throughout the 100~ms window.
 
 \newpage
-\heading{The local flush fixture exceeds the printed-PLA tensile references early in tightening}
+\pageheading{The local flush fixture exceeds the printed-PLA tensile references early in tightening}
 The four outer washers first loaded the nylon-screw fixture at 0.59--0.63~mm of screw-head travel. Between 0.91 and 0.95~mm, the greatest tensile stress in the assumed print plane crossed 52.3~MPa. Through-layer tension crossed 40.5~MPa between 0.99 and 1.03~mm. These are typical tensile strengths for the 100\%-infill reference coupons. Comparing the native true stresses with these nominal coupon strengths gives an approximate check on the range of the elastic model. \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{Polymaker coupon data.}
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/flush-local-material.pdf}
@@ -365,7 +367,7 @@ At 0.91~mm of screw travel, before the first coupon crossing, the four local tab
 For comparison, tightening the six original bolts in the raised full-board models produced a maximum case-screw fibre tension of 1.15~MPa with nylon and 1.63~MPa with aluminium. Neither raised case reached a printed-PLA coupon reference during tightening. The local flush trial subsequently crossed the board datum (page~11). Resolving the force required for an actual flush seat depends on the full-board contact path and the as-built material and joint behaviour.
 
 \newpage
-\heading{The left and centre cells reach the raised nylon case in the X movie}
+\pageheading{The left and centre cells reach the raised nylon case in the X movie}
 The open-gap model puts the cell and PLA skins into intersection in frames 253--270 of the 480-frame X-axis movie. That is 4.20--4.48~s into playback, at 1.015442--1.016479~s in the load record. Checking all 1,917 integration samples in the clip identified two cells. The centre cell crossed first, then the left cell one sample later. The right cell stayed clear. All three stayed clear throughout the film interval for the other five mount and excitation combinations.
 
 \begin{center}\includegraphics[width=.96\linewidth]{figures/raised-film-contact.pdf}
@@ -388,7 +390,7 @@ Independent integration displaced all 8,038 exterior quadratic PLA faces and all
 For the nylon X history we halved and quartered the integration step, holding the piecewise-linear acceleration input fixed. Relative to the exact response of the modal oscillators to that input, the modal-coordinate differences fell from 0.401\% to 0.100\% and 0.025\%. All three time steps and the exact integration gave the same entry and exit brackets at the original sampling times. Retaining 35 modes through 2.95~kHz or 39 through 3.44~kHz gave the same brackets as the full 49-mode basis. Impact forces still require a contact-response calculation. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
 
 \newpage
-\heading{The flush tabs make edge contact while most of each face stays open}
+\pageheading{The flush tabs make edge contact while most of each face stays open}
 With nylon screws all four tabs first carried pressure between 2.60 and 2.675~mm travel. With aluminium all four were still clear at 2.90~mm and carried pressure at the final 3.00~mm equilibrium. Even there only 18.3--18.9\% of each aluminium-mounted tab lay within 0.05~mm of the board. The far sides retained 2.43--2.44~mm gaps. Both models exceeded the printed-PLA tensile references before tab contact. The resulting shapes describe an elastic continuation beyond the material data.
 
 \begin{center}\includegraphics[width=.94\linewidth]{figures/flush-tab-seating.pdf}
@@ -412,7 +414,7 @@ The combined nylon result reproduced all 28 equilibria. The hardware contact aud
 In the two whole-board trials the screw shank geometry was identical. Only modulus, Poisson ratio and density differed between the decks. The first loaded hardware contact fell between 0.50 and 0.65~mm of relative travel for both mounts. At 0.80~mm, the four drives together carried 80.0~N with nylon and 115.6~N with aluminium. Peak through-layer PLA tension was 18.2 and 37.2~MPa respectively, against the 40.5~MPa coupon reference. With aluminium, both the in-plane and through-layer tensile references were first exceeded between 0.80 and 0.95~mm, while all four tab contacts remained open. In the 0.80~mm aluminium snapshot only the four outer washers intersected the PLA. Refining the curved surfaces gave up to 24.0~$\mu$m of sampled washer overlap, compared with 7.9~$\mu$m at loaded native contact corners. The smallest sampled cell clearance was 0.066~mm. At 3.00~mm travel, only the four outer washers intersected the PLA. Maximum sampled washer overlap was 0.136~mm and loaded native contact penetration was 0.109~mm, above the 0.015~mm screen. The three cells remained clear. A physically supported flush vibration state remains unresolved.
 
 \newpage
-\heading{The raised nylon case lowers the transverse load on all three cells}
+\pageheading{The raised nylon case lowers the transverse load on all three cells}
 Under base-X vibration, the X component of the right-hand cell's net dynamic force fell from 30.51~N RMS bare to 26.67~N with nylon screws and 29.73~N with aluminium. These are reductions of 12.6\% and 2.6\%. Nylon also reduced this load on the left and centre cells. Aluminium raised the centre-cell load from 25.60 to 26.28~N RMS. The PSD calculation keeps the tightened cell-to-case gap open. The two nickel attachments on each cell therefore carry its net dynamic load until additional contact occurs.
 
 \begin{center}\includegraphics[width=.94\linewidth]{figures/raised-cell-inertial-force.pdf}
@@ -436,7 +438,7 @@ The four- and five-point-per-coordinate volume rules agreed within $10^{-9}$ in 
 For the eight stationary seconds of the historical forcing, the driven-axis RMS loads differed from the continuous-spectrum estimates by at most 0.88\%. The largest discrepancy over all components was 10.4\% and occurred in a smaller transverse component. Evaluating the same sampled waveform with the discrete Newmark transfer function reproduced the time integration. At one-quarter of the historical time step, its largest discrepancy from the continuous-frequency response at the same Fourier bins fell to 0.59\%.
 
 \newpage
-\heading{The raised case preserves the first unpreloaded mode}
+\pageheading{The raised case preserves the first unpreloaded mode}
 The first default-contact mode remained at 66.61~Hz for the bare board and both raised cases. The signed displacements of the 368,754 original solid nodes give a modal assurance criterion (MAC) above 0.999999 for both screw materials. The 20th modes tell a different story. Although each is the 20th frequency in its own assembly, the three shapes differ substantially.
 
 \begin{center}\includegraphics[width=.89\linewidth]{figures/default-mode-comparison.pdf}
@@ -454,7 +456,7 @@ The closest shape to bare mode 20 within either raised set was mode 19. Even tho
 Both default-contact movie pairs preserve the October mode ranks, a common colour range, and a 6~mm peak display amplitude. The raised panels identify the screw material, native frequency and shape correlation. These runs retain the original unpreloaded contacts. The tightened assembly has different equilibrium contact conditions and prestressed frequencies (page~8). Across the full catalogue, all 22 subjects now have a bare view and a comparison of both raised configurations. The flush assemblies still need an admissible installed state before their vibration fields can be shown.
 
 \newpage
-\heading{The two cell attachments carry opposing lengthwise forces}
+\pageheading{The two cell attachments carry opposing lengthwise forces}
 The raised nylon case reduced the X force at both ends of all three cells under X excitation. Under Z excitation, however, both raised cases increased the force along the cell axis (Y) at all six attachments. The largest change occurred on the right-hand cell. The two ends carried 2.07 and 1.54~N RMS bare, 4.14 and 3.91~N with nylon screws, and 3.55 and 3.33~N with aluminium screws.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/cell-attachment-force.pdf}
@@ -478,7 +480,7 @@ For 90 sampled cell and nickel elements, the independently combined stiffness-fo
 The bonds cover the areas joined in the model. Actual weld sizes, local separation and the response after cell-to-case impact remain unmeasured.
 
 \newpage
-\heading{Case support shifts the peak dynamic load at the nickel attachments}
+\pageheading{Case support shifts the peak dynamic load at the nickel attachments}
 For each of the three original nine-second acceleration records, we recovered all three force components at both nickel attachments on each cell. We took the vector magnitude at each of the 589,825 saved instants, then found the largest magnitude across the six ends. These forces describe the extra load from vibration above the locked preload in the linear model.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/attachment-native-history.pdf}
@@ -502,7 +504,7 @@ The first 38.116~ms of base X precede the first sampled exceedance of the local 
 The main results use signed native MAPDL time histories and bonded-interface forces from the prestressed modes. A separate integration of the same base motion reproduced the complete force fields within 0.002\% in relative norm. Restricting the modes to 3.5~kHz changed the nine peak magnitudes by at most 1.09\%. The bonded end area idealizes the battery-to-nickel attachment. The model supplies a dynamic resultant over that area. Predicting a weld failure load requires the actual weld geometry and material response.
 
 \newpage
-\heading{During startup, screw material changes which limit appears first}
+\pageheading{During startup, screw material changes which limit appears first}
 In the raised aluminium mount under base X, tension across the assumed print layers reached the 40.5~MPa coupon mean at 63.54~ms. The first sampled cell-to-case intersection followed at 69.78~ms. With nylon screws the middle cell first intersected the case at 85.34~ms, while both PLA tensile stresses stayed below their respective coupon means throughout the 100~ms ramp. The nickel model had already exceeded its separate trial yield reference under X in all three assemblies (page~16).
 
 \begin{center}\includegraphics[width=.96\linewidth]{figures/startup-pla-stress.pdf}
@@ -527,7 +529,7 @@ The three aluminium layer crossings occurred within 0.54~mm of a node tied to a 
 Signed modal stresses were added to the locked stress tensor before evaluating layer-normal tension and the greatest in-plane principal stress. The search covered both screw mounts, all three base inputs and every stored station. The exact response of each modal oscillator to the piecewise-linear input reproduced the native tensile crossing brackets. Omitting modes above 3.5~kHz preserved those brackets and the first base-X cell crossing for both mounts. Independent integration shifted the first aluminium X intersection by one sample (15.26~$\mu$s) and reproduced the nylon onset. The cell check used the complete curved exterior surfaces. A separate intersection test at two surface refinements confirmed the cell states at the four aluminium tensile crossings.
 
 \newpage
-\heading{With nylon screws, the raised PLA case carries most of the pull at 0.50 mm}
+\pageheading{With nylon screws, the raised PLA case carries most of the pull at 0.50 mm}
 The bare fixture and the raised fixture with nylon screws used the same nominal nickel damage law, 2,304 shell elements and two 750~N washer clamps. At a prescribed 0.500~mm of sideways travel, the bare edge cell required 11.33~N. The raised case required 141.82~N, of which the four case screws carried 112.62~N (79.4\%). At this displacement the neighbouring-cell support carried no net X load. The largest tensile stresses in the PLA were 28.75~MPa in the print plane and 23.60~MPa across the layers.
 
 Local sliding at the washer--nickel interfaces began in the same 0.0500--0.0875~mm travel interval in both fixtures, before the cell touched the case. At 0.500~mm the peak element-averaged frictional stress rose from 0.801~MPa bare to 1.144~MPa cased, and peak accumulated tangential motion rose from 1.29 to 1.77~$\mu$m. Ten bare and eleven cased contact corners registered sliding. Every face with a sliding corner also retained a sticking corner.
@@ -547,4 +549,32 @@ Multilinear with damage & 0.203~mm & 0.191~mm & 11.33 / 141.82~N\\\bottomrule
 The fixed neighbour began sharing the load between 0.625 and 0.675~mm of cell travel. At 0.675~mm the applied pull was 389.45~N. The case screws carried 176.89~N, the fixed neighbour carried 147.66~N and the original clamps carried 64.90~N. Between 0.675 and 0.725~mm the peak in-plane tension first exceeded the 52.3~MPa printed-coupon mean. The crossing occurred 4.36~mm from the nearest coupled bearing node. The first through-layer stress crossing followed at 0.800--0.825~mm. These local results depend on the actual stiffness of the mounts and neighbouring cells.
 
 ANSYS retained 59 converged states, including 50 pull states, through 0.923275~mm. It terminated when the next increment failed to converge after cutbacks. None of the three nickel section summaries reached the $10^{-4}$ damage reporting threshold at any converged state. The two strips retained a graph path from the modelled battery attachment to the clamp at every station under the original October 0.99 section-damage diagnostic. The later equilibria extend beyond the onset of the printed-material limit. The early force--travel response is supported within the stated fixture and material limits. The physical rupture load remains unresolved.
+
+\newpage
+\pageheading{How the raised case changes strain in the nickel strips}
+The three local fixtures used the same 2,304 nickel shell elements, multilinear plasticity and damage law, and 750~N washer preloads. In positive X, both raised cases first touched the moving edge cell between 0.1875 and 0.21875~mm. The last travel saved at exactly the same value in all three models before either raised fixture exceeded its material limits was 0.3375~mm.
+
+\begin{center}\small
+\begin{tabular}{lrrrr}\toprule
+Fixture & Cell pull [N] & Case screws [N] & Strip clamps [N] & Peak nickel plastic strain\\\midrule
+Bare & 10.15 & --- & 10.15 & 0.673\%\\
+3~mm, nylon & 63.82 & 46.30 & 17.52 & 0.727\%\\
+3~mm, aluminium & 125.98 & 100.18 & 25.81 & 0.783\%\\\bottomrule
+\end{tabular}
+\captionof{table}{Native reactions at 0.3375~mm. The fixed neighbour carried no lateral reaction at this travel. The maximum strain occurred in the same flat nickel shell element in all three models.}\end{center}
+
+\begin{center}\includegraphics[width=.96\linewidth]{figures/raised-nickel-damage-strain.pdf}
+\captionof{figure}{Each marker is a converged native state. The vertical line marks the 10.15~N reaction of the bare fixture at 0.3375~mm. Curves connect neighbouring states. Strain is the maximum element-averaged equivalent plastic strain across the three saved shell sections.}\end{center}
+
+At equal travel, the aluminium fixture took almost twice the force of the nylon fixture. Both cased cells also strained the nickel more than the bare cell. At equal force, the comparison reverses. The cased stations bracketing 10.15~N had peak strains of 0.260--0.349\% with nylon screws and 0.260--0.352\% with aluminium, compared with 0.673\% at the bare station. The load bracket spans first contact in both cased fixtures. The difference between the screw materials at that force remains unresolved.
+
+\heading{Where the aluminium result reaches its material limit}
+At 0.425~mm the aluminium fixture carried 218.57~N, including 179.80~N through its four case screws. At the next saved equilibrium, 0.475~mm, in-plane PLA tension reached 60.16~MPa and through-layer tension reached 44.10~MPa. Both exceeded the printed-coupon means (52.3 and 40.5~MPa), within 0.54~mm of a tied screw-bearing node. With nylon screws the first tensile crossing occurred later, between 0.675 and 0.725~mm.
+
+The aluminium solve retained 37 lateral equilibria through 0.87435~mm and stopped on the next increment. All 37 passed the original force-balance checks. The largest loaded-corner penetration was 0.0439~mm against the 0.05~mm local contact screen. Both nickel strips retained their modeled load paths and all three section damage summaries remained zero. The late equilibria exceed the PLA reference range, and the physical rupture load remains undetermined.
+
+
+\heading{Nickel material-law check}
+Three single-element tensile coupon reruns reproduced the October reaction, transverse displacement, axial stress, equivalent plastic strain and damage at all 1,074 shared stations. The peak reactions lay between 66.87 and 66.89~N. All three paths softened and stopped before the requested 1~mm extension. These numerical coupons verify the implemented material law. Predicting separation of the assembled strips also requires material and attachment measurements.
+
 \end{document}

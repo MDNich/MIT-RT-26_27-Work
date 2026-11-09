@@ -7,7 +7,7 @@ The October power-board assembly carries three cells and six battery-attachment 
 | Configuration | Published evidence |
 |---|---|
 | Bare board | All 22 movie subjects, the three native base spectra, three native seeded histories, the nominal side pull and a repeat of the partial nickel-damage history. |
-| 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, native X/Y/Z spectra and the positive-X side pull. All six native nine-second motion histories passed. The nylon-screw damage fixture has an audited partial pull through 0.9233 mm. |
+| 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, native X/Y/Z spectra and the positive-X side pull. All six native nine-second motion histories passed. The nominal damage fixtures have audited partial pulls through 0.9233 mm with nylon and 0.8744 mm with aluminium. Both reached the PLA reference range before their last equilibrium. |
 | Flush, nylon | The full-board installation stopped at 2.75 mm screw travel. The PLA coupon reference was crossed at 0.95–1.10 mm. The four tabs touched along their edges while most of each face remained open. |
 | Flush, aluminium | ANSYS reached the commanded 3.00 mm. Only 18–19% of each tab footprint lay within 0.05 mm of the board. The PLA tensile reference was exceeded before any tab touched, and washer penetration exceeded the contact screen. Flush vibration comparisons still lack a supported installed state. |
 
@@ -20,6 +20,8 @@ In the nine-second X record, peak dynamic force at a single cell-to-nickel attac
 During the original X-axis startup ramp, the raised aluminium model reached the 40.5 MPa printed-layer tensile reference at 63.54 ms. The middle cell first intersected the case at 69.78 ms with aluminium screws and 85.34 ms with nylon. Neither printed-PLA tensile reference was crossed with nylon during that ramp. The nickel trial-yield reference had already been reached under X, and these elastic results give the modeled sequence of events. [Stress and clearance during startup, page 24](output/pdf/battery-case-report.pdf#page=24)
 
 With the same multilinear nickel model, 0.500 mm of sideways travel required 11.33 N bare and 141.82 N with the raised nylon case. The four case screws carried 112.62 N. At a fixed 8.54 N, both travel estimates fall between the same saved stations (0.18750–0.21875 mm). The PLA first exceeded its in-plane tensile reference between 0.675 and 0.725 mm. The run stopped on nonconvergence before a nickel damage onset or rupture was established. [Matched pull and load paths, page 25](output/pdf/battery-case-report.pdf#page=25)
+
+At a shared 0.3375 mm travel, the matched nickel-damage fixtures carried 10.15 N bare, 63.82 N with nylon and 125.98 N with aluminium. Both raised cases increased peak nickel plastic strain at that travel. At the bare fixture’s 10.15 N load, both cased histories bracketed substantially lower strain. The aluminium fixture reached both printed-PLA tensile references between 0.425 and 0.475 mm. [Matched force and travel, page 26](output/pdf/battery-case-report.pdf#page=26) · [Slide 4](output/pdf/battery-case-slides.pdf#page=4)
 
 ## Material references
 

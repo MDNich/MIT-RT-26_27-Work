@@ -1,0 +1,52 @@
+{
+  "pull_states": 37,
+  "peak_force_state": {
+    "native_set": 43,
+    "time": 2.8738281,
+    "travel_mm": 0.87382812,
+    "force_N": 2091.6761,
+    "pull_step": 34,
+    "any_section_d99": 0,
+    "all_sections_d99": 0,
+    "connected_low_high_Y": [
+      true,
+      true
+    ]
+  },
+  "last_state": {
+    "native_set": 46,
+    "time": 2.8743516,
+    "travel_mm": 0.87435156,
+    "force_N": 2061.6887,
+    "pull_step": 37,
+    "any_section_d99": 0,
+    "all_sections_d99": 0,
+    "connected_low_high_Y": [
+      true,
+      true
+    ]
+  },
+  "peak_is_endpoint": false,
+  "end_drop_from_peak_fraction": 0.014336540920460883,
+  "state_changes": [
+    {
+      "native_set": 10,
+      "time": 2.025,
+      "travel_mm": 0.025,
+      "force_N": 1.3931672,
+      "pull_step": 1,
+      "any_section_d99": 0,
+      "all_sections_d99": 0,
+      "connected_low_high_Y": [
+        true,
+        true
+      ]
+    }
+  ],
+  "rule": "In a copy of the shell connectivity, remove each element whose top, middle and bottom section summaries all reach 0.99. Test each strip from its battery attachment to its clamp.",
+  "scope": "Discrete diagnostic over saved lateral pull states. The solver retains all elements. Section-average damage, model connectivity and a drop in total fixture reaction do not individually establish physical fracture.",
+  "case": "stand3_aluminium_damage_cont_nominal_pin1",
+  "campaign": "nov08_01",
+  "footprint_sha256": "bfac7f9c157605547b70bb7e31318e26b462031d51ba6e68c7cd51bb2fd6b745",
+  "rst_sha256": "e3fbd7148482ca5a34a3d0a288ed1d86b9a69e30d94823d6a598260d19ec5da7"
+}

@@ -25,16 +25,24 @@ def draw(branch):
     clamps=total-screws-neighbour-case['force_N_x']
     snapshots=[]
     for travel in [common['common_travel_mm'],x[-1]]:
-        i,=np.flatnonzero(np.isclose(x,travel,rtol=0,atol=1e-8))
-        snapshots.append(dict(native_set=int(case['native_set'][i]),travel_mm=float(x[i]),cell_reaction_N=float(total[i]),
-                              case_screws_N=float(screws[i]),fixed_neighbour_N=float(neighbour[i]),original_clamps_N=float(clamps[i]),
-                              residual_N=float(case['force_N_x'][i])))
+        # A different nickel law can end between this model's saved equilibria.
+        # Keep the actual lower station when resolving the load into support forces.
+        i=int(np.searchsorted(x,travel+1e-8,side='right')-1)
+        assert i>=0 and x[i]<=travel+1e-8
+        station=dict(native_set=int(case['native_set'][i]),travel_mm=float(x[i]),cell_reaction_N=float(total[i]),
+                     case_screws_N=float(screws[i]),fixed_neighbour_N=float(neighbour[i]),original_clamps_N=float(clamps[i]),
+                     residual_N=float(case['force_N_x'][i]))
+        if not np.isclose(x[i],travel,atol=1e-8,rtol=0):
+            assert i+1<len(x)
+            station.update(requested_travel_mm=float(travel),next_saved_travel_mm=float(x[i+1]))
+        snapshots.append(station)
     fig,axes=plt.subplots(1,2,figsize=(8.15,3.05),layout='constrained')
-    for rows,colour,label in [(bare,'#08357E','Bare'),(case,'#3C78D8','Raised case')]:
+    for rows,colour,label in [(bare,'#08357E','Bare'),(case,'#3C78D8',branch.split('_')[-1].capitalize()+' screws')]:
         keep=(rows['ux_mm']>=.135)&(rows['ux_mm']<=.251)
         axes[0].plot(rows['ux_mm'][keep],rows['cell_fx_N'][keep],'.-',ms=5,color=colour,label=label)
     axes[0].axhline(target,ls='--',lw=1,color='#7A0101',label=f'{target:.2f} N')
-    axes[0].set(title='Saved states near the reference load',xlim=(.14,.253),ylim=(5,24),ylabel='Lateral force [N]')
+    axes[0].set(title='Saved states near the reference load',xlim=(.134,.253),ylabel='Lateral force [N]')
+    axes[0].set_ylim(bottom=5)
     for values,colour,label,marker in [(total,'#08357E','Applied to cell','o'),(screws,'#3C78D8','Four case screws','s'),
                                       (neighbour,'#38761D','Fixed neighbour','^'),(clamps,'#5A43A0','Original clamps','D')]:
         axes[1].plot(x,values,color=colour,marker=marker,ms=3,lw=1.2,label=label)
