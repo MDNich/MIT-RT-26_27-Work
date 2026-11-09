@@ -167,4 +167,21 @@ Base Z & 0.236 & 0.112 & 0\\\bottomrule
 \captionof{table}{Each row selects the cell pair with the greatest RMS-to-gap ratio for that excitation, then checks the whole cell and case skins at one instant. A zero count at one instant does not establish separation throughout the record.}\end{center}
 
 The surface search used both centroids and vertices of facing triangles within 1.2~mm in both directions, including the midside nodes of curved elements. Under base Z the nearest-line projection became negative, but the cell and case skins did not intersect at the selected instant. Tangential motion matters: a negative projected gap alone is insufficient evidence. Under base X both independent geometric checks found overlap. Until a nonlinear transient calculation or vibration test measures the response after closure, use the preceding fixed-contact RMS results as a comparison of the two linear models, not an installed flight stress, impact load or clearance margin.
+\newpage
+\heading{The local flush installation stopped before the tabs seated}
+Four nylon screws drew the printed case toward a rigid board datum from an initial 3~mm stand-off. The existing washer clamps were tightened first. ANSYS saved 88 converged equilibria before the third load step failed at the next increment. The final converged screw-head travel was 2.8685~mm, leaving 0.1315~mm of the commanded travel. The solver never reached the sideways pull.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/flush-nylon-installation.pdf}
+\captionof{figure}{Left, the computed total screw reaction rose to 2.066~kN. The shaded interval marks the first exceedance of the 0.05~mm numerical penetration screen. Right, the tab surfaces tilted during drawdown. At the last equilibrium every tab crossed the nominal PCB plane at some points and remained clear at others.}\end{center}
+
+The first new contact was with the fixed surfaces representing the neighboring cells and washers at 0.59--0.63~mm screw travel. The moving edge cell and its two nickel strips remained clear of the PLA throughout this partial path. Loaded-corner penetration first exceeded 0.05~mm at 1.67--1.71~mm travel and reached 0.119~mm. The largest departure from force balance was 0.030~N. This force balance shows that the reported reactions support the forces in the numerical model. The penetration and tab geometry limit their physical interpretation.
+
+\begin{center}\small\begin{tabular}{lrrrr}\toprule
+Final saved equilibrium & Tab 1 & Tab 2 & Tab 3 & Tab 4\\\midrule
+Screw-head reaction [N] & 484 & 517 & 530 & 536\\
+Minimum gap to board datum [mm] & $-0.332$ & $-0.357$ & $-0.366$ & $-0.369$\\
+Median sampled gap [mm] & 0.248 & 0.227 & 0.236 & 0.214\\\bottomrule
+\end{tabular}\end{center}
+
+In this local fixture the seating springs moved with the screw grips, allowing a tilted tab to cross the board plane. The peak computed PLA equivalent stress reached 233~MPa under the elastic print model. The physical installation force, failure sequence, and full-flush side-pull response remain unresolved. The whole-board installation model instead places contact directly between each tab and the flexible PCB surface, so the model can develop a normal reaction at the bearing land.
 \end{document}
