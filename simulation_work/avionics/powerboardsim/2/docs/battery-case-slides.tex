@@ -1,0 +1,42 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usetheme{Madrid}\usecolortheme{default}
+\usepackage[T1]{fontenc}\usepackage{lmodern,booktabs,graphicx}
+\input{colors}
+\setbeamercolor{structure}{fg=B}\setbeamercolor{frametitle}{fg=white,bg=B}
+\setbeamercolor{block title}{fg=white,bg=B}\setbeamercolor{block body}{bg=b!7}
+\setbeamercolor{alerted text}{fg=r}\setbeamertemplate{navigation symbols}{}\setbeamertemplate{footline}[frame number]
+\title{Power-board battery case}\author{MIT Rocket Team Simulations}\date{8 November 2026}
+\begin{document}
+\begin{frame}{A flush case intersects all three cells before tightening}
+\begin{columns}[T,onlytextwidth]\column{.56\textwidth}
+\includegraphics[width=\linewidth]{figures/midspan-fit.png}
+\column{.41\textwidth}
+\textbf{Flush tabs}\par The printed case overlaps each cell by about 1.18 mm at its crown. The fit develops contact load during installation.
+\vspace{6mm}\par\textbf{3 mm stand-off}\par The unstrained STEP clears the cells and all existing mechanical hardware. The cells can move before reaching the case.
+\end{columns}
+\vfill{\footnotesize\color{B}Power-board geometry review\quad|\quad 8 November 2026}
+\end{frame}
+\begin{frame}{The hole pattern leaves little room for an M4 screw}
+\begin{columns}[T,onlytextwidth]\column{.55\textwidth}
+\begin{tabular}{lrr}\toprule & PCB & Case\\\midrule
+Bore diameter [mm] &4.200&5.000--5.090\\
+Hole pitch X [mm] &62.865&62.855\\
+Hole pitch Y [mm] &114.427&113.241\\\bottomrule
+\end{tabular}
+\vspace{5mm}\par Each end of the centred pattern is about 0.593 mm off-axis. The smaller bore pair allows 0.600 mm with a nominal M4 shank.
+\column{.41\textwidth}
+\textbf{Hardware under study}\par Four M4 case screws in aluminium or nylon. The nylon reference is McMaster-Carr 93640A145.
+\vspace{5mm}\par The dense PLA case adds about 74 g to a 252 g bare assembly. Print orientation and infill affect its installed stiffness and mass.
+\end{columns}
+\end{frame}
+\begin{frame}{The October reference gives three quantities to compare}
+\begin{tabular}{p{.51\textwidth}rp{.19\textwidth}}\toprule
+Bare-board quantity & Value & Loading\\\midrule
+First prestressed natural frequency & 485.964 Hz & Six bolts locked\\
+Maximum PCB directional displacement & 0.052674 mm RMS & Base Z\\
+Maximum PCB equivalent stress & 90.325 MPa RMS & Base X\\\bottomrule
+\end{tabular}
+\vspace{4mm}\par The enclosure comparisons will track the corresponding mode shapes, cell-to-case travel, nickel-strip load, PCB stress and the reactions carried by the four case screws.
+\vspace{3mm}\par\small Geometry and native model preparation are complete. Dynamic and pull results are under study.
+\end{frame}
+\end{document}

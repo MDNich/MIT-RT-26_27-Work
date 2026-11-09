@@ -1,0 +1,35 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=18mm,headheight=14pt,headsep=7mm,footskip=10mm]{geometry}
+\usepackage[T1]{fontenc}\usepackage{lmodern,amsmath,graphicx,booktabs,array,caption,xcolor,fancyhdr,hyperref}
+\input{colors}
+\hypersetup{colorlinks=true,urlcolor=b,linkcolor=B,pdftitle={Power-board battery case comparison}}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small\color{B}MIT Rocket Team\quad Power board}\fancyhead[R]{\small\color{B}Battery case study}\fancyfoot[L]{\footnotesize Geometry and model setup, 8 November 2026}\fancyfoot[R]{\thepage}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\newcommand{\heading}[1]{\par\vspace{4pt}{\large\bfseries\color{B}#1}\par}
+\begin{document}
+{\LARGE\bfseries\color{B}Power-board battery case comparison}\par
+{\large Geometry and model setup}\par
+{\small 8 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02}
+\heading{The mounting height determines whether the cells are already loaded}
+Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. The raised case begins with an air gap. Contact under vibration or side pull depends on the subsequent relative displacement.
+\begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.png}
+\captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
+\heading{Reference assembly}
+The October assembly has 208 bodies and a modeled mass of 251.82~g. Eight stand-off end faces carry the base motion. Two nickel strips attach each cell to the assembly. In the connected reference, six existing screws were loaded to 750~N apiece and locked. Its first mode was 485.964~Hz. Independent base excitation between 20 and 2000~Hz gave a maximum PCB directional displacement of 0.052674~mm RMS under Z excitation and a maximum PCB equivalent stress of 90.325~MPa RMS under X excitation. These archived quantities supply reference checks for the repeats.
+\newpage
+\heading{Registration and fastener selection}
+The four nonplated corner holes in PCB1 ODB++ have finished diameter 4.200~mm. The hole pattern measures $62.865\times114.427$~mm. The case bores have two diameters, 5.000 and 5.090~mm, on a $62.855\times113.241$~mm pattern. Centring the two patterns leaves about 0.593~mm of offset at each end. The sum of the radial clearances of a nominal 4~mm shank in the smaller case bore and in the board is 0.600~mm. The approximately 0.007~mm difference is the available nominal alignment margin there. Printed hole size, fastener major diameter and drilling tolerances therefore matter for installation.
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Tab stand-off [mm]&Cell overlap [mm$^3$/cell]&Washer bodies intersected&Other intersections\\\midrule
+0&1696--1698&4&6 nickel strips\\
+1.2715&0&4&None found\\
+2&0&4&None found\\
+3&0&0&None found\\\bottomrule\end{tabular}
+\captionof{table}{Solid intersections between the unstrained case and mechanical STEP bodies. The board's lower face defines the tab seating datum.}\end{center}
+\heading{Materials and mounting representation}
+The supplied single-solid STEP has volume 63.069~cm$^3$. At a printed-PLA reference density of 1.17~g/cm$^3$, a dense case weighs 73.79~g, about 29.3\% of the bare assembly mass. The material axes place the print layers parallel to the PCB for this scenario. PolyLite PLA coupon tensile moduli are 3.427~GPa in the print plane and 3.065~GPa through the layers. Shear moduli and Poisson ratios are engineering assumptions. Actual infill, orientation, print parameters and case mass require measurement. The published coupons used 100\% infill. \href{https://polymaker.com/wp-content/uploads/lana-downloads/PolyLite-PLA_TDS_EN_V5.4.pdf}{Polymaker technical data sheet.}
+
+The candidate model uses four M4 beam shanks with an effective tensile area of 8.78~mm$^2$. The comparison uses 69~GPa for aluminium and an exploratory 3.0~GPa for nylon. The nominal nylon hardware is McMaster-Carr 93640A145, M4 $\times$ 0.7 thread, 12~mm long. The represented bearing patches transfer loads between each end and its solid mesh. Compression-only members represent tab seating, with an assumed PLA annulus at the raised attachment points. The four case screws have no measured installation torque. The 750~N in the reference applies to the six original battery fasteners. \href{https://www.mcmaster.com/products/nylon-allen-screws/}{McMaster-Carr metric socket-head screws.}
+\heading{Numerical checks and remaining comparisons}
+The initial mesh has 16,108 curved quadratic tetrahedra. A 43,659-element refinement is available. Both have positive minimum scaled Jacobians. The native preparation check counted four screw beams, four compression seats and 8,038 candidate case contact faces. The contact calculation must establish residual penetration, support reactions, seated shape and stresses before modal or random-response comparisons can support a performance claim. In the October nickel-damage study an assumed material law first registered damage around 43~N during a partial pull. A physical breaking load remains undetermined.
+\end{document}
