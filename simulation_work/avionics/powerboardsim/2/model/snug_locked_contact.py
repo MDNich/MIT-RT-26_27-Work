@@ -81,7 +81,7 @@ def loaded_face_geometry(history):
         gmsh.finalize()
 
 
-def locked_geometry(rst, case, campaign):
+def contact_parts(rst):
     bodies = read(ROOT/'validation/rigid_case_drawdown.json')['records']
     mapping = {r['STEP_body']:r['native_material'] for r in bodies}
     target_ids = [4,19,15,1,6,9,10,11,20]
@@ -92,6 +92,28 @@ def locked_geometry(rst, case, campaign):
     faces=target_connectivity(rst)
     assert len(faces)==9466 and len(set(faces.values()))==len(faces)
     parts=[parts[0],*hardware_face_grids(rst,materials[1:],parts[1:],faces.values())]
+    return parts, [(body,mapping[body]) for body in target_ids]
+
+
+def sampled_gaps(parts, targets_by_body):
+    rows=[]
+    for level in (2,3):
+        cap, *targets=curved_skins(parts,level)
+        distance=vtkImplicitPolyDataDistance()
+        distance.SetInput(cap)
+        for (body,material),target in zip(targets_by_body,targets,strict=True):
+            _,n=cap.collision(target,contact_mode=1,box_tolerance=0.,cell_tolerance=0.)
+            output=vtkDoubleArray()
+            distance.FunctionValue(target.GetPoints().GetData(),output)
+            val=vtk_to_numpy(output)*1000
+            assert len(val)==target.n_points and np.isfinite(val).all()
+            rows.append(dict(subdivision=level,body=body,material=material,intersects=bool(n),
+                             minimum_signed_target_vertex_gap_mm=float(val.min())))
+    return rows
+
+
+def locked_geometry(rst, case, campaign):
+    parts, targets = contact_parts(rst)
     ids = np.unique(np.concatenate([p.point_data['ansys_node_num'] for p in parts]))
     k = rst.nsets
     suffix = export(case,campaign,[k])/f'set_{k:04d}'
@@ -102,19 +124,7 @@ def locked_geometry(rst, case, campaign):
     i=np.searchsorted(rst.mesh.nnum,ids)
     assert np.array_equal(numbers[j],ids) and np.array_equal(rst.mesh.nnum[i],ids)
     set_coordinates(parts,ids,rst.mesh.nodes[i]+disp[j])
-    rows=[]
-    for level in (2,3):
-        cap, *targets=curved_skins(parts,level)
-        distance=vtkImplicitPolyDataDistance()
-        distance.SetInput(cap)
-        for body,target in zip(target_ids,targets,strict=True):
-            _,n=cap.collision(target,contact_mode=1,box_tolerance=0.,cell_tolerance=0.)
-            output=vtkDoubleArray()
-            distance.FunctionValue(target.GetPoints().GetData(),output)
-            val=vtk_to_numpy(output)*1000
-            assert len(val)==target.n_points and np.isfinite(val).all()
-            rows.append(dict(subdivision=level,body=body,material=mapping[body],intersects=bool(n),
-                             minimum_signed_target_vertex_gap_mm=float(val.min())))
+    rows = sampled_gaps(parts, targets)
     return dict(displacement_sha256=digest(suffix.with_suffix('.u')),node_ids_sha256=digest(suffix.with_suffix('.ids')),
                 native_set=k,rows=rows)
 

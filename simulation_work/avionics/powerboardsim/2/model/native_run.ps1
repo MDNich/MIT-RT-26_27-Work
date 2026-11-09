@@ -18,7 +18,7 @@ if ($active.Count){throw "Another native job is running"}
 New-Item -ItemType Directory -Path $work -ErrorAction Stop|Out-Null
 $guard=$work
 $enforcedMotion = $Case -match '^(?:bare|(?:stand3|snug125)_(?:nylon|aluminium)|flush_(?:nylon|aluminium)_surf1)_enforced$'
-$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2|snug125_(?:nylon|aluminium))_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
+$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2|snug125_(?:nylon|aluminium)|snug125_nylon_mesh15)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
 if ($sharedWork) {
     $work=Join-Path $share ".runtime\shared_native\$Campaign\$Case"
     if (Test-Path -LiteralPath $work){throw 'Preserving the existing shared working directory'}
@@ -53,6 +53,16 @@ try {
         $core=Get-Content "$share\validation\snug125\global_inputs.json" -Raw | ConvertFrom-Json
         if ($entry.retry -ne $Case -or $entry.campaign -ne $Campaign -or $entry.retry_input_sha256 -ne $stage.input_sha256 -or
             $core.PSObject.Properties[$entry.source].Value.input_sha256 -ne $entry.original_input_sha256 -or $Parent) {throw 'Snug default-mesh retry lineage mismatch'}
+    }
+    if ($Case -eq 'snug125_nylon_mesh15_basis') {
+        $entry=Get-Content "$share\validation\snug125\modal_refinement_input.json" -Raw | ConvertFrom-Json
+        $series=Get-Content "$share\validation\snug125\contact_refinement_inputs.json" -Raw | ConvertFrom-Json
+        $fine=$series.PSObject.Properties[$Parent].Value
+        if ($entry.case -ne $Case -or $entry.parent -ne $Parent -or $entry.input_sha256 -ne $stage.input_sha256 -or
+            $entry.parent_input_sha256 -ne $fine.input_sha256 -or $entry.mesh_sha256 -ne $fine.mesh_sha256 -or
+            $entry.step_sha256 -ne $fine.step_sha256 -or $entry.size_mm -ne 1.5 -or $entry.tab_spacing_mm -ne 1.25) {
+            throw 'Fine prestressed basis or parent mesh identity mismatch'
+        }
     }
     $forceReadback = $Case -match '^snug125_nylon_(out2|mesh15)_static$'
     if ($forceReadback) {

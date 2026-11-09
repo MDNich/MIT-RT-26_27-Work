@@ -195,6 +195,10 @@ def jobs():
             follow=ROOT/'validation/snug125/contact_refinement_inputs.json'
             if axis=='X' and follow.is_file():
                 for name in read(follow):yield name,''
+        refined_basis=ROOT/'validation/snug125/modal_refinement_input.json'
+        if refined_basis.is_file():
+            control=read(refined_basis)
+            yield control['case'],control['parent']
         for branch in branches:
             yield branch+'_enforced',branch+'_basis'
         for axis in 'XYZ':

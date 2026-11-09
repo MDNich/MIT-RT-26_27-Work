@@ -61,4 +61,29 @@ def stage():
     write_json(AUDIT/'contact_refinement_inputs.json',dest)
 
 
-if __name__=='__main__':stage()
+def stage_modal_control():
+    """Repeat the nominal frequency extraction using the accepted fine preload restart."""
+    parent = 'snug125_nylon_mesh15_static'
+    case = 'snug125_nylon_mesh15_basis'
+    fine = read(AUDIT/'contact_refinement_inputs.json')[parent]
+    reference = read(AUDIT/'global_inputs.json')['snug125_nylon_basis']
+    assert fine['step_sha256']==reference['step_sha256']==STEP_HASH and fine['size_mm']==1.5
+    assert fine['tab_spacing_mm']==reference['tab_spacing_mm']==SPACING
+    verified(INPUTS/parent/'model.inp',fine['input_sha256'])
+    nominal = INPUTS/'snug125_nylon_basis/model.inp'
+    verified(nominal,reference['input_sha256'])
+    folder = INPUTS/case
+    folder.mkdir(exist_ok=True)
+    rec = dict(case=case,parent=parent,reference='snug125_nylon_basis',
+               input_sha256=seal(folder/'model.inp',nominal.read_bytes()),
+               parent_input_sha256=fine['input_sha256'],step_sha256=STEP_HASH,
+               mesh_sha256=fine['mesh_sha256'],tab_spacing_mm=SPACING,size_mm=1.5)
+    write_json(AUDIT/'modal_refinement_input.json',rec)
+
+
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--modal-only',action='store_true')
+    if not parser.parse_args().modal_only:stage()
+    stage_modal_control()

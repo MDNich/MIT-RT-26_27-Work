@@ -25,8 +25,15 @@ def source(case,campaign):
 def case_elements(raw,variant):
     data=raw.grid.cell_data
     elements=np.sort(data['ansys_elem_num'][(data['ansys_material_type']==850)&(data['ansys_elem_type_num']==187)])
-    size=2 if variant.endswith('_mesh2') else 3
-    count=read(ROOT/f'validation/mesh_{size}.json')['tetrahedra']
+    if variant.startswith('snug125_'):
+        from stage_snug_fit import AUDIT, input_record
+        installed = input_record(native_case(variant,'static'))
+        mesh = read(AUDIT/f"mesh_{installed['size_mm']}.json")
+        assert mesh['step_sha256']==installed['step_sha256']
+    else:
+        size=2 if variant.endswith('_mesh2') else 3
+        mesh=read(ROOT/f'validation/mesh_{size}.json')
+    count=mesh['tetrahedra']
     assert len(elements)==count and len(np.unique(elements))==count
     return elements
 
