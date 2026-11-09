@@ -26,6 +26,10 @@ python3 followup/analyze.py
 python3 followup/diagnostics.py
 python3 followup/probes.py
 python3 followup/figures.py
+./afterbody/run.sh all
+python3 afterbody/evaluate.py
+python3 afterbody/report.py
+python3 afterbody/package.py
 python3 make-tables.py
 ./docs/build.sh
 python3 docs/package.py
