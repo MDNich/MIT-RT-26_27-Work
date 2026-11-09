@@ -36,7 +36,7 @@ def overlap(original,repeat):
                 October_last_mm=float(original['ux_mm'][-1]),repeat_last_mm=float(repeat['ux_mm'][-1]),fields=values)
 
 
-def compare(case,campaign):
+def compare(case,campaign,plot=False):
     assert case=='bare_damage_cont_nominal'
     root=ROOT/'validation'
     ref=read(root/'october_damage_reference.json')
@@ -65,7 +65,12 @@ def compare(case,campaign):
     maps=root/'damage_footprint'/(case+'.json');verified(maps,proof['damage_footprint_sha256'])
     fresh=read(maps);orig=read(root/'damage_footprint/october_nominal.json')
     assert fresh['mesh_sha256']==orig['mesh_sha256'] and fresh['threshold']==orig['threshold']
+    assert fresh['inventory_sha256']==hashes['set_inventory.csv']
+    assert orig['rst_sha256']==ref['source_hashes']['tear.rst']
     report=overlap(old,new)
+    report['all_pull_section_exports_byte_identical']=(
+        fresh['per_state_field_hash_manifest_sha256']==orig['per_state_field_hash_manifest_sha256'])
+    report['original_damage_map_sha256']=digest(root/'damage_footprint/october_nominal.json')
     report.update(case=case,campaign=campaign,original_source_sha256=ref['source_hashes']['tear.rst'],repeat_rst_sha256=hashes['tear.rst'],
             original_inventory_sha256=ref['source_hashes']['set_inventory.csv'],repeat_inventory_sha256=hashes['set_inventory.csv'],
             repeat_audit_sha256=digest(accepted),damage_map_sha256=digest(maps),requested_path_completed=proof['full_requested_path'],
@@ -76,8 +81,47 @@ def compare(case,campaign):
                   'Differing saved increments use piecewise linear interpolation.')
     write_json(root/'pull_repeats'/(case+'.json'),report)
     print(case,report['common_travel_mm'],report['fields']['fx_N'],flush=True)
+    if plot:
+        plot_comparison(old,new,ref['damage_reporting_threshold'])
+
+
+def plot_comparison(original,repeat,threshold):
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    fig,(force,damage)=plt.subplots(1,2,figsize=(7.7,2.25),layout='constrained')
+    curves=[measured_curve(original),measured_curve(repeat)]
+    onset_windows=[]
+    for curve in curves:
+        hits=np.flatnonzero(curve['damage']>threshold)
+        if len(hits):
+            onset_windows.append(curve['ux_mm'][max(0,hits[0]-2)])
+    start=min(onset_windows)
+    for curve,label,color,repeat_run in zip(curves,['October','Repeat'],['#08357E','#38761D'],[False,True],strict=True):
+        travel=curve['ux_mm']
+        # Markers retain the saved equilibria when the two native curves coincide.
+        force.plot(travel,curve['fx_N'],color=color,label=label,linewidth=1.3,
+                   linestyle='none' if repeat_run else '-',marker='o' if repeat_run else None,
+                   markevery=5,markersize=3,markerfacecolor='none')
+        window=travel>=start
+        damage.plot(travel[window],curve['damage'][window],color=color,label=label,linewidth=1.3,
+                    linestyle='none' if repeat_run else '-',marker='o' if repeat_run else '.',
+                    markersize=4,markerfacecolor='none' if repeat_run else color)
+    force.set_ylabel('Pull reaction [N]')
+    damage.set_ylabel('Peak section damage')
+    damage.axhline(threshold,linestyle=':',color='#777777',linewidth=1,label='Reporting threshold')
+    force.set_ylim(bottom=0)
+    for ax in (force,damage):
+        ax.set_xlabel('Cell travel [mm]')
+        ax.spines[['top','right']].set_visible(False)
+        ax.grid(axis='y',alpha=.17)
+        ax.legend(frameon=False,fontsize=8,loc='upper left')
+    fig.savefig(ROOT/'docs/figures/bare-nominal-damage-repeat.pdf',metadata={'CreationDate':None,'ModDate':None})
+    plt.close(fig)
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('case');p.add_argument('--campaign',default='nov08_01')
-    a=p.parse_args();compare(a.case,a.campaign)
+    p.add_argument('--plot',action='store_true')
+    a=p.parse_args();compare(a.case,a.campaign,a.plot)

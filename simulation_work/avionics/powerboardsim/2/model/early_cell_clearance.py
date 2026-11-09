@@ -114,16 +114,18 @@ def clearance_at_rest(a,b,minimum):
     raise AssertionError('Missing clearance classification')
 
 
-def run(variant, campaign):
-    trial_path = ROOT / 'validation/nickel_vibration' / f'{variant}_X.json'
+def run(variant, campaign, axis="X"):
+    trial_path = ROOT / 'validation/nickel_vibration' / f'{variant}_{axis}.json'
     trial = read(trial_path)
     basis = variant+'_basis'
     proof, folder, rst = source(basis,campaign)
-    assert trial['campaign']==campaign and trial['modal_rst']==proof['rst_sha256']
+    assert trial['variant']==variant and trial['campaign']==campaign and trial['modal_rst']==proof['rst_sha256']
     log = folder/'solve.out'
     verified(log, trial['modal_listing'])
+    if trial['axis'] != axis or trial['first_sample_above_reference'] is None:
+        raise ValueError(f'No {axis} stress crossing is recorded for {variant}')
     last = trial['first_sample_above_reference']['sample']
-    t, q, _ = integrate(rst.time_values, participation(log.read_text(errors='replace'),'X'), 'X',np.arange(last+1))
+    t, q, _ = integrate(rst.time_values, participation(log.read_text(errors='replace'),axis), axis,np.arange(last+1))
     shapes = [outer_faces(rst,ms) for ms in ([850],[176,187,191])]
     ids = np.unique(np.concatenate([s.ravel() for s in shapes]))
     ix = np.searchsorted(rst.mesh.nnum,ids)
@@ -154,8 +156,8 @@ def run(variant, campaign):
         bound[name] = peak
     residual = minimum-sum(bound.values())
     assert residual > 1e-6, (minimum,bound)
-    out = ROOT/'validation/nickel_vibration'/f'{variant}_X_clearance.json'
-    write_json(out,dict(variant=variant, campaign=campaign, basis_rst=proof['rst_sha256'], trial_sha256=digest(trial_path),
+    out = ROOT/'validation/nickel_vibration'/f'{variant}_{axis}_clearance.json'
+    write_json(out,dict(variant=variant, axis=axis, campaign=campaign, basis_rst=proof['rst_sha256'], trial_sha256=digest(trial_path),
         last_sample=last,through_time_s=float(t[-1]),surface_face_counts=[len(s) for s in shapes],
         certified_initial_clearance_lower_mm=minimum,unresolved_hull_pairs_by_subdivision=separation,
         peak_control_motion_in_common_frame_mm=bound,certified_remaining_cell_clearance_lower_mm=residual,
@@ -169,5 +171,6 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('variant',choices=['stand3_nylon','stand3_aluminium'])
     p.add_argument('--campaign',default='nov08_01')
+    p.add_argument('--axis',choices=list('XYZ'),default='X')
     a = p.parse_args()
-    run(a.variant,a.campaign)
+    run(a.variant,a.campaign,a.axis)
