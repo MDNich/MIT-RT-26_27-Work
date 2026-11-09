@@ -15,7 +15,7 @@ TDS = 'https://wiki.polymaker.com/polymaker-products/more-about-our-products/doc
 BEAM_REF = 'https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_BEAM188.html'
 
 
-def run(case, campaign, *, pull=False):
+def run(case, campaign, *, pull=False, verdict_path=None):
     root = ROOT/'.runtime'
     folder = root/'archive'/campaign/case
     receipts = root/'receipts'/campaign/case
@@ -30,7 +30,10 @@ def run(case, campaign, *, pull=False):
     deck = (folder/'model.inp').read_text()
     scope = ('partial_local','local','review_local') if local else ('global','review_global')
     proofs = [ROOT/'validation'/k/(case+'.json') for k in scope]
-    verdict = next(read(p) for p in proofs if p.is_file())
+    if verdict_path is None:
+        verdict_path = next(p for p in proofs if p.is_file())
+    verdict = read(verdict_path)
+    assert verdict['case']==case and verdict['campaign']==campaign
     assert verdict['rst_sha256']==hashes[job+'.rst']
     rt = reader.read_binary(str(folder/(job+'.rst'))) if local else read_rst(folder/'file.rst')
     length = 1. if local else 1000.
@@ -148,7 +151,7 @@ def run(case, campaign, *, pull=False):
         description='Converged static load states through drawdown. '
     out=ROOT/'validation'/('pull_material' if pull else 'installation_material')/(case+'.json')
     write_json(out,dict(case=case,campaign=campaign,rst_sha256=hashes[job+'.rst'],input_sha256=hashes['model.inp'],
-        contact_verdict_sha256=digest(next(p for p in proofs if p.is_file())),reference_properties=PLA,coupon_engineering_elongation_Z=.018,PLA_source=TDS,
+        contact_verdict_sha256=digest(verdict_path),reference_properties=PLA,coupon_engineering_elongation_Z=.018,PLA_source=TDS,
         beam_section_reference=BEAM_REF,case_tets=len(solids),section_nodes_per_beam_end=25,constitutive_relative_errors=dict(
             PLA=float(solid_error),beam_axial=float(beam_error),**({'beam_direct_vs_native_force_area':axial_error} if local else {})),
         temperature_scope='Printed coupons under uniaxial tension. The material directions follow the layer orientation assumed for the case.',

@@ -146,14 +146,24 @@ def audit(case, campaign):
                 rst_sha256=next(f['sha256'] for f in ledger['files'] if f['name']==spec['job']+'.rst'))
     dest=ROOT/'validation'/('local' if complete else 'partial_local')
     dest.mkdir(exist_ok=True)
-    (dest/(case+'.json')).write_text(json.dumps(data,indent=2)+'\n')
+    # The damage fixture needs both the printed-material and contact checks before its verdict is available to callers.
+    from film_identity import write_json
+    raised_damage=case.startswith('stand3_') and spec['source']=='damage_cont_nominal'
+    if raised_damage:
+        from installation_material import run as check_material
+        from pull_contact_audit import verify as verify_hardware
+        draft=ROOT/'.runtime/post'/campaign/case/'fixture_verdict.json'
+        write_json(draft,data)
+        check_material(case,campaign,pull=True,verdict_path=draft)
+        verify_hardware(case,draft)
+    write_json(dest/(case+'.json'),data)
     if case=='bare_damage_cont_nominal':
         from damage_repeat import compare as compare_damage
         compare_damage(case,campaign)
     if case.startswith('bare_lateral_'):
         from pull_reference import compare
         compare(case,campaign)
-    if case.startswith('stand3_') and not spec['coupon']:
+    if case.startswith('stand3_') and not spec['coupon'] and not raised_damage:
         from installation_material import run as check_material
         check_material(case,campaign,pull=True)
     print(data['scope'],case,flush=True)
