@@ -52,7 +52,17 @@ def jobs():
             if name in read(ROOT/'validation/local_install_jobs.json'):
                 yield name,'bare_lateral_friction_locked'
         yield branch+'_modal20',branch+'_static'
-        for axis in 'XYZ':yield branch+'_psd_'+axis,branch+'_basis'
+        for axis in 'XYZ':
+            yield branch+'_psd_'+axis,branch+'_basis'
+            if branch=='bare' and axis=='X':
+                # Establish the first like-for-like native PSD before the broader history series.
+                yield 'stand3_nylon_psd_X','stand3_nylon_basis'
+                yield 'stand3_aluminium_static',''
+                yield 'stand3_aluminium_basis','stand3_aluminium_static'
+                if (ROOT/'validation/board_surface_jobs.json').exists():
+                    yield 'flush_nylon_surf1_static',''
+            if branch=='bare' and axis=='Z' and (ROOT/'validation/board_surface_jobs.json').exists():
+                yield 'flush_aluminium_surf1_static',''
         yield branch+'_enforced',branch+'_basis'
         for axis in 'XYZ':yield branch+'_motion_'+axis,branch+'_enforced'
         if branch!='bare':
@@ -111,7 +121,7 @@ def run():
         final=result_path(case)
         partial=ROOT/'validation/partial_local'/(case+'.json')
         review=ROOT/'validation/review_local'/(case+'.json')
-        if final.exists() or partial.exists() or review.exists():continue
+        if final.exists() or partial.exists() or review.exists() or (ROOT/'validation/review_global'/(case+'.json')).exists():continue
         if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
             log('Parent unaccepted: '+case);continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
@@ -124,6 +134,9 @@ def run():
         if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
         state=receipt/'status.json'
         if not state.exists():
+            if '_psd_' in case and not case.startswith('bare_') and not (receipt/'dispatch.json').exists():
+                from stage_remote_psd import stage as stage_psd
+                stage_psd(case.rsplit('_psd_',1)[0],CAMPAIGN)
             if motion:
                 from stage_motion import stage
                 branch=case.removesuffix('_enforced').split('_motion_')[0]
@@ -137,7 +150,7 @@ def run():
         if not (receipt/'released.txt').exists():
             log('Archive '+case);launch('archive_native.ps1',['-Case',case,'-Campaign',CAMPAIGN],receipt/'archive_request.json')
         while not (receipt/'released.txt').exists():time.sleep(20)
-        audit='audit_install.py' if case.endswith('_approach1') else ('audit_local.py' if local else 'audit_global.py')
+        audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith('_approach1') else ('audit_local.py' if local else 'audit_global.py'))
         args=['audit_motion.py','case',case,CAMPAIGN] if motion else [audit,case,CAMPAIGN]
         r=subprocess.run([sys.executable,str(ROOT/'model'/args[0]),*args[1:]],text=True,capture_output=True)
         log(r.stdout[-1000:])

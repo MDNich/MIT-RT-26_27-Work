@@ -1,0 +1,76 @@
+/batch
+resume,file,rdb
+/post1
+file,file,rst
+rsys,0
+allsel,all
+set,last
+*get,nsav,active,0,set,nset
+*cfopen,seat_material,csv
+*vwrite
+('set,time_s,pla_elements,s1max_Pa,s3min_Pa,e1max,e3min')
+*do,ii,1,nsav
+ allsel,all
+ set,,,,,,,ii
+ *get,tk,active,0,set,time
+ esel,s,type,,850
+ *get,ne,elem,0,count
+ etable,eras
+ etable,ss1,s,1,max
+ etable,ss3,s,3,min
+ etable,ee1,epel,1,max
+ etable,ee3,epel,3,min
+ esort,etab,ss1,0,0
+ *get,s1m,sort,0,max
+ esort,etab,ss3,0,0
+ *get,s3m,sort,0,min
+ esort,etab,ee1,0,0
+ *get,e1m,sort,0,max
+ esort,etab,ee3,0,0
+ *get,e3m,sort,0,min
+ *vwrite,ii,tk,ne,s1m,s3m,e1m,e3m
+ (F6.0,',',E16.9,',',F8.0,4(',',E16.8))
+*enddo
+*cfclos
+*cfopen,seat_contacts,csv
+*vwrite
+('set,time_s,pair,faces,far,near,sliding,sticking,p_max_Pa,pen_max_m')
+*do,ii,1,nsav
+ allsel,all
+ set,,,,,,,ii
+ *get,tk,active,0,set,time
+ *do,jj,0,4
+  pr=879+jj
+  ct=858
+  *if,jj,eq,0,then
+   pr=853
+   ct=853
+  *endif
+  allsel,all
+  esel,s,type,,ct
+  esel,r,real,,pr
+  *get,nc,elem,0,count
+  etable,eras
+  etable,cs,cont,stat,max
+  etable,cpres,cont,pres,max
+  etable,cpen,cont,pene,max
+  esort,etab,cpres,0,0
+  *get,pmax,sort,0,max
+  esort,etab,cpen,0,0
+  *get,penmax,sort,0,max
+  *do,jk,0,3
+   esel,s,type,,ct
+   esel,r,real,,pr
+   esel,r,etab,cs,jk,jk
+   *get,nj,elem,0,count
+   ct%jk%=nj
+  *enddo
+  *vwrite,ii,tk,pr,nc,ct0,ct1,ct2,ct3,pmax,penmax
+  (F6.0,',',E16.9,6(',',F8.0),2(',',E16.8))
+ *enddo
+*enddo
+*cfclos
+allsel,all
+/com,BOARD_FACE_POST_FINISHED
+finish
+/exit,nosave

@@ -34,7 +34,20 @@ try {
         $parents=@($manifest.files|Where-Object name -match $pattern)
         if ($parents.Count -lt 3) {throw 'Parent restart files missing'}
         $needed=($parents|Measure-Object bytes -Sum).Sum
-        if ((Get-PSDrive C).Free -lt $needed+12000000000){throw "Insufficient space for parent and solver scratch"}
+        if (!(Test-Path -LiteralPath "$work\remote_psd.json") -and (Get-PSDrive C).Free -lt $needed+14000000000){throw "Insufficient space for parent and solver scratch"}
+        if (Test-Path -LiteralPath "$work\remote_psd.json"){
+            $remote=Get-Content -LiteralPath "$work\remote_psd.json" -Raw|ConvertFrom-Json
+            if ($Case -notmatch '^((?:stand3|flush)_(?:nylon|aluminium)(?:_surf1)?)_psd_[XYZ]$'){throw 'Invalid remote PSD case'}
+            $branch=$Matches[1]
+            $pub=Get-Content -LiteralPath "$share\validation\remote_psd_inputs\$branch.json" -Raw|ConvertFrom-Json
+            $lib=Join-Path $share ".runtime\modal_library\$Campaign\$Parent"
+            if ($remote.case -ne $Case -or $remote.campaign -ne $Campaign -or $remote.parent -ne $Parent -or $remote.modal_dir -ne $lib -or
+                $stage.input_sha256 -ne $remote.input_sha256 -or (Get-FileHash "$work\remote_psd.json").Hash -ne $pub.cases.PSObject.Properties[$Case].Value.spec_sha256 -or
+                (Get-FileHash "$lib.json").Hash -ne $remote.library_manifest_sha256){throw 'Remote PSD request identity failed'}
+            $parents=@($manifest.files|Where-Object name -eq 'file.db')
+            if ($parents.Count -ne 1 -or $parents[0].sha256 -ne $remote.parent_db_sha256){throw 'Wrong local seed database'}
+            $stage.remote_psd=$true
+        }
         $stage.parent=$Parent
         foreach($row in $parents){
             $to=Join-Path $work $row.name
@@ -65,13 +78,41 @@ try {
         Update 'solver_complete'
         return
     }
+    $surfaceJob=$null
+    if ($Case -match '^flush_(nylon|aluminium)_surf1_(static|modal20|basis)$'){
+        $surfaceJob=Get-Content -LiteralPath "$work\surface_job.json" -Raw|ConvertFrom-Json
+        $pub=(Get-Content "$share\validation\board_surface_jobs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        if ($surfaceJob.case -ne $Case -or $stage.input_sha256 -ne $surfaceJob.model_sha256 -or
+            (Get-FileHash "$work\surface_job.json").Hash -ne $pub.spec_sha256 -or [string]$surfaceJob.parent -ne $Parent){throw 'Wrong surface-contact job or parent'}
+        if ($surfaceJob.kind -eq 'static' -and (Get-FileHash "$work\board_surface_post.inp").Hash -ne $surfaceJob.post_sha256){throw 'Wrong seating readback'}
+    }
     Update 'solving'
     $argsList=@('-b','nolist','-s','noread','-dis','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
-    $p=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -Wait -PassThru
+    $p=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -PassThru
+    while (!$p.WaitForExit(1500)){
+        $freeNow=(Get-PSDrive C).Free
+        if ($freeNow -lt 14000000000 -and (Test-Path -LiteralPath "$work\STORAGE_STOP.txt") -and !$p.HasExited){
+            # Stop only this job's process tree if it is in a linear phase that does not service file.abt.
+            & taskkill.exe /PID $p.Id /T /F | Out-Null
+            $p.WaitForExit()
+            throw 'Critical scratch reserve reached; stopped the launched process tree, preserving guest files'
+        }
+        if ($freeNow -lt 17000000000 -and !(Test-Path -LiteralPath "$work\STORAGE_STOP.txt")){
+            'nonlinear'|Set-Content -LiteralPath "$work\file.abt" -Encoding Ascii
+            "Controlled stop requested at $([DateTime]::UtcNow.ToString('o'))"|Set-Content -LiteralPath "$work\STORAGE_STOP.txt"
+        }
+    }
+    $p.Refresh()
     $stage.exit=$p.ExitCode
     Copy-Item "$work\solve.out" $out
     Get-ChildItem $work -Filter '*.err' | Copy-Item -Destination $out
     if ($p.ExitCode -ne 0 -or !(Select-String -Path "$work\solve.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native solve failed. Inspect solve.out.'}
+    if ($surfaceJob -and $surfaceJob.kind -eq 'static'){
+        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','seatpost','-i','board_surface_post.inp','-o','board_surface_post.out') -Wait -PassThru
+        Copy-Item "$work\board_surface_post.out" $out
+        if ($pp.ExitCode -ne 0 -or !(Test-Path "$work\seat_contacts.csv") -or !(Test-Path "$work\seat_material.csv") -or
+            !(Select-String -LiteralPath "$work\board_surface_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native tab/contact/material readback failed'}
+    }
     if ($Case -match '^(flush|stand3)_(nylon|aluminium)_static$') {
         Copy-Item -LiteralPath "$PSScriptRoot\contact_post.inp" -Destination $work
         $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','casepost','-i','contact_post.inp','-o','contact_post.out') -Wait -PassThru

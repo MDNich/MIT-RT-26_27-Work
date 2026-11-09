@@ -16,7 +16,8 @@ def audit(case,campaign):
     rst=read_rst(d/'file.rst')
     t=np.asarray(rst.time_values);g=rst.grid
     assert len(t)>0 and np.all(np.isfinite(t))
-    nid,disp=rst.nodal_displacement(len(t)-1)
+    # For PSD, the last result can be acceleration; only the labeled relative-displacement set is in metres.
+    nid,disp=rst.nodal_solution([3,1]) if '_psd_' in case else rst.nodal_displacement(len(t)-1)
     valid=np.all(np.isfinite(disp[:,:3]),axis=1)
     assert valid.sum()>1000
     result=dict(case=case,campaign=campaign,sets=len(t),rst_sha256=next(f['sha256'] for f in meta['files'] if f['name']=='file.rst'),last_time_or_hz=float(t[-1]),finite_displacement_nodes=int(valid.sum()),max_vector_u=float(np.max(np.linalg.norm(disp[valid,:3],axis=1))),warnings=int(re.search(r'NUMBER OF WARNING\s+MESSAGES ENCOUNTERED=\s*(\d+)',lst)[1]))
@@ -50,8 +51,25 @@ def audit(case,campaign):
     elif '_psd_' in case:
         # Workbench writes the statistical result sets after the modal basis; select PSD labels in the field audit.
         assert re.search(r'PSD ANALYSIS|POWER SPECTRAL DENSITY',lst,re.I)
+        result.pop('max_vector_u')  # Orthogonal component RMS values are not a peak displacement magnitude.
         from psd_fields import recover
         result['native_psd_fields']=recover(d/'file.rst')
+        branch,axis=case.rsplit('_psd_',1)
+        from independent_psd import run as independent_response
+        check=ROOT/'validation/independent_psd'/f'{branch}_basis.json'
+        if not check.exists():independent_response(branch,campaign)
+        expected=load(check);parent=load(ROOT/'validation/global'/f'{branch}_basis.json')
+        assert expected['campaign']==parent['campaign']==campaign and expected['rst_sha256']==parent['rst_sha256'] and expected['baseline_5pct_screen_passed']
+        errs={}
+        for scope,vals in expected['base_cases'][axis]['scopes'].items():
+            actual=result['native_psd_fields']['scopes']['pla' if scope=='case' else scope]['directional_rms_u_mm']
+            err=np.abs(np.asarray(actual)/np.array(vals['peak_directional_RMS_mm'])-1)
+            assert np.max(err)<.05,(case,scope,actual,vals,err)
+            errs[scope]=err.tolist()
+        result['independent_displacement_relative_errors']=errs
+        if (d/'remote_psd.json').exists():
+            from stage_remote_psd import verify
+            result['remote_modal_directory']=verify(case,campaign)
     else:
         assert np.all(np.diff(t)>0)
         if case.endswith('_basis'):assert len(t)>=20 and t[-1]<=4000.0001
