@@ -14,6 +14,6 @@ The PCB hole centres span 62.865 × 114.427 mm, compared with 62.855 × 113.241 
 
 ## 8 November setup release
 
-[Report preview](output/pdf/battery-case-report.pdf) and [Beamer preview](output/pdf/battery-case-slides.pdf) cover the two requested seating positions, case and screw materials, CAD interference and the accepted native model inventory. The global and local response campaign remains in progress. [Native preflight checks](validation/cased_preflight.json)
+[Report preview](output/pdf/battery-case-report.pdf) and [Beamer preview](output/pdf/battery-case-slides.pdf) cover the two mounting positions, CAD interference and the fresh bare-board preload, modal and side-pull checks. Both default meshes reproduced all 20 October frequencies. The nominal edge cell reached 0.500 mm lateral travel under 8.542 N in the bare fixture. The global and local response campaign remains in progress. [Native preflight checks](validation/cased_preflight.json)
 
 The first two bare-board modal movies were regenerated from the independently repeated refined-default RST. Both have 540 native-mode visualization frames at 3840 × 2160 and 60 fps. Their scalar field and visible deflection change with modal phase. The 6 mm peak motion is a display normalization. [Mode 1](output/videos/without_case/power_board_4k60/modal_fig01_default_mode01.mp4) · [Mode 20](output/videos/without_case/power_board_4k60/modal_fig02_default_mode20.mp4)

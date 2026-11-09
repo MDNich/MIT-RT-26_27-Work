@@ -26,9 +26,12 @@ def table(path):
 def fixture(folder, spec, config, source, listing, balance_path):
     history = table(folder/'history.csv')
     native = recover(folder/f"{spec['job']}.rst", source, movement_table(folder/'moving_supports.csv'), spec['cased'])
-    converged = {(int(a),int(b)) for a,b in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)}
-    if not all((r['loadstep'],r['substep']) in converged for r in native):
-        raise ValueError('RST contains an unconfirmed equilibrium state')
+    converged = [(int(a),int(b)) for a,b in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)]
+    if not converged or converged[0]!=(1,1) or any(right<=left or right[0]>left[0]+1 for left,right in zip(converged,converged[1:])):
+        raise ValueError('Native solver listing contains a reset or a skipped load step')
+    recorded=[(r['loadstep'],r['substep']) for r in native]
+    if recorded!=converged:
+        raise ValueError('Saved equilibrium states differ from the native completed step sequence')
     steps = np.array([r['loadstep'] for r in native])
     if not np.array_equal(np.unique(steps), np.arange(1,steps.max()+1)) or np.any(np.diff(steps)<0):
         raise ValueError('Load-step sequence resets or skips a stage')
