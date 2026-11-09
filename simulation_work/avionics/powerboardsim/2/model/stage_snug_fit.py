@@ -24,6 +24,10 @@ STEP_HASH = '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef'
 def input_record(case):
     main=json.loads((AUDIT/'global_inputs.json').read_text())
     if case in main:return main[case]
+    if case=='snug125_nylon_tol001_static':
+        entry=json.loads((AUDIT/'force_tolerance_input.json').read_text())
+        assert entry['case']==case
+        return entry
     return json.loads((AUDIT/'contact_refinement_inputs.json').read_text())[case]
 
 

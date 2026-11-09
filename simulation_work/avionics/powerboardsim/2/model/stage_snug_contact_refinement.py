@@ -81,9 +81,43 @@ def stage_modal_control():
     write_json(AUDIT/'modal_refinement_input.json',rec)
 
 
+def stage_force_tolerance():
+    """Keep both load steps and contact readback byte-identical except for the force criterion."""
+    source = 'snug125_nylon_out2_static'
+    case = 'snug125_nylon_tol001_static'
+    nominal = read(AUDIT/'contact_refinement_inputs.json')[source]
+    baseline = read(AUDIT/(source+'_residuals.json'))
+    assert baseline['input_sha256']==nominal['input_sha256']
+    source_dir = INPUTS/source
+    deck_path = source_dir/'model.inp'
+    post = source_dir/'snug_force_post.inp'
+    verified(deck_path, nominal['input_sha256'])
+    verified(post, nominal['post_sha256'])
+    original = deck_path.read_bytes()
+    solve = b'\r\nsolve\r\n'
+    command = b'CNVTOL,F,1,0.01,2\r\n'
+    assert original.count(solve)==2 and b'cnvtol,' not in original.lower()
+    updated = original.replace(solve,b'\r\n'+command+solve[2:])
+    assert updated.count(command)==2 and updated.replace(command,b'')==original
+    folder = INPUTS/case
+    folder.mkdir(exist_ok=True)
+    entry = dict(nominal,case=case,reference_case=source,reference_input_sha256=nominal['input_sha256'],
+                 input_sha256=seal(folder/'model.inp',updated),post_sha256=seal(folder/post.name,post.read_bytes()),
+                 reference_residual_audit_sha256=digest(AUDIT/(source+'_residuals.json')),
+                 absolute_force_criterion_N=0.01,force_reference_N=1.0,force_tolerance=0.01,
+                 force_norm='L2',load_steps=[1,2],
+                 command_reference='https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_cmd/Hlp_C_CNVTOL.html')
+    write_json(AUDIT/'force_tolerance_input.json',entry)
+
+
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--modal-only',action='store_true')
-    if not parser.parse_args().modal_only:stage()
-    stage_modal_control()
+    parser.add_argument('--force-tolerance-only',action='store_true')
+    args=parser.parse_args()
+    if args.force_tolerance_only:
+        stage_force_tolerance()
+    else:
+        if not args.modal_only:stage()
+        stage_modal_control()

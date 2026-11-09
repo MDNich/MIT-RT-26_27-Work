@@ -204,6 +204,15 @@ def jobs():
         for axis in 'XYZ':
             for branch in branches:
                 yield branch+'_motion_'+axis,branch+'_enforced'
+        local_catalog=ROOT/'validation/snug125/local_inputs.json'
+        if local_catalog.is_file():
+            for case,meta in read(local_catalog).items():
+                yield meta['bare_reference'],''
+                yield case,meta['bare_reference']
+        tolerance=ROOT/'validation/snug125/force_tolerance_input.json'
+        if tolerance.is_file():
+            control=read(tolerance)
+            yield control['case'],''
         for branch in branches:
             patch_series=ROOT/'validation/snug125'/(branch+'_patch_inputs.json')
             if patch_series.is_file():
@@ -215,10 +224,6 @@ def jobs():
                 for name,spec in read(registry).items():
                     parent=f'shell_{branch}_free_v2' if spec['contact'] else branch+'_basis'
                     yield name,parent
-        local_catalog=ROOT/'validation/snug125/local_inputs.json'
-        if local_catalog.is_file():
-            for case,meta in read(local_catalog).items():
-                yield case,meta['bare_reference']
         sensitivities=ROOT/'validation/snug125/local_sensitivity_inputs.json'
         if sensitivities.is_file():
             for case,meta in read(sensitivities).items():

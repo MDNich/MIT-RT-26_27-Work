@@ -64,10 +64,18 @@ try {
             throw 'Fine prestressed basis or parent mesh identity mismatch'
         }
     }
-    $forceReadback = $Case -match '^snug125_nylon_(out2|mesh15)_static$'
+    $forceReadback = $Case -match '^snug125_nylon_(out2|mesh15|tol001)_static$'
     if ($forceReadback) {
         $book=Get-Content "$share\validation\snug125\contact_refinement_inputs.json" -Raw | ConvertFrom-Json
-        $entry=$book.PSObject.Properties[$Case].Value
+        if ($Case -eq 'snug125_nylon_tol001_static') {
+            $entry=Get-Content "$share\validation\snug125\force_tolerance_input.json" -Raw | ConvertFrom-Json
+            $ref=$book.PSObject.Properties['snug125_nylon_out2_static'].Value
+            if ($entry.case -ne $Case -or $entry.reference_case -ne 'snug125_nylon_out2_static' -or
+                $entry.reference_input_sha256 -ne $ref.input_sha256 -or $entry.mesh_sha256 -ne $ref.mesh_sha256 -or
+                $entry.post_sha256 -ne $ref.post_sha256 -or $entry.absolute_force_criterion_N -ne 0.01) {throw 'Snug force tolerance lineage mismatch'}
+        } else {
+            $entry=$book.PSObject.Properties[$Case].Value
+        }
         if ($entry.input_sha256 -ne $stage.input_sha256 -or $entry.step_sha256 -ne '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef' -or
             $entry.post_sha256 -ne (Get-FileHash "$work\snug_force_post.inp").Hash -or $entry.tab_spacing_mm -ne 1.25 -or $Parent) {throw 'Snug contact refinement identity mismatch'}
     }

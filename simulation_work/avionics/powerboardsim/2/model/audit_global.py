@@ -111,15 +111,20 @@ def audit(case,campaign):
         for mat in (850,851):assert np.count_nonzero(g.cell_data['ansys_material_type']==mat)>0
     out=ROOT/'validation/global';out.mkdir(exist_ok=True);dest=out/(case+'.json')
     temp=dest.with_suffix('.tmp');temp.write_text(json.dumps(result,indent=2)+'\n');temp.replace(dest)
+    if case.startswith('snug125_') and '_psd_' in case:
+        from psd_comparison import summary
+        summary(branch,axis)
     if case.startswith('snug125_') and case.endswith('_static'):
         from snug_installed import review
         review(case,campaign)
-        if case=='snug125_nylon_mesh15_static':
+        if case in ('snug125_nylon_mesh15_static','snug125_nylon_tol001_static'):
             from snug_locked_contact import run as check_faces
             from compare_static import compare as check_board
             from snug_mesh_comparison import compare_forces
             check_faces(case,campaign)
             check_board(case,campaign)
-            compare_forces()
+            from snug_equilibrium_residual import audit as check_residuals
+            check_residuals(case,campaign)
+            compare_forces(case)
     print(case,'verified',flush=True)
 if __name__=='__main__':audit(*sys.argv[1:])
