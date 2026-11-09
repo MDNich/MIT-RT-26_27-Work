@@ -3,15 +3,15 @@
 \usepackage[T1]{fontenc}\usepackage{lmodern,amsmath,graphicx,booktabs,array,caption,xcolor,fancyhdr,hyperref}
 \input{colors}
 \hypersetup{colorlinks=true,urlcolor=b,linkcolor=B,pdftitle={Power-board battery case comparison}}
-\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small\color{B}MIT Rocket Team\quad Power board}\fancyhead[R]{\small\color{B}Battery case study}\fancyfoot[L]{\footnotesize Geometry and model setup, 8 November 2026}\fancyfoot[R]{\thepage}
+\pagestyle{fancy}\fancyhf{}\fancyhead[L]{\small\color{B}MIT Rocket Team\quad Power board}\fancyhead[R]{\small\color{B}Battery case study}\fancyfoot[L]{\footnotesize Setup and bare-board verification, 8 November 2026}\fancyfoot[R]{\thepage}
 \setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
 \newcommand{\heading}[1]{\par\vspace{4pt}{\large\bfseries\color{B}#1}\par}
 \begin{document}
 {\LARGE\bfseries\color{B}Power-board battery case comparison}\par
-{\large Geometry and model setup}\par
+{\large Geometry, mounting assumptions and bare-board preload verification}\par
 {\small 8 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02}
 \heading{The mounting height determines whether the cells are already loaded}
-Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. The raised case begins with an air gap. Contact under vibration or side pull depends on the subsequent relative displacement.
+Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. The raised case begins with an air gap. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
 \begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.png}
 \captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
 \heading{Reference assembly}
@@ -32,4 +32,25 @@ The supplied single-solid STEP has volume 63.069~cm$^3$. At a printed-PLA refere
 The candidate model uses four M4 beam shanks with an effective tensile area of 8.78~mm$^2$. The comparison uses 69~GPa for aluminium and an exploratory 3.0~GPa for nylon. The nominal nylon hardware is McMaster-Carr 93640A145, M4 $\times$ 0.7 thread, 12~mm long. The represented bearing patches transfer loads between each end and its solid mesh. Compression-only members represent tab seating, with an assumed PLA annulus at the raised attachment points. The four case screws have no measured installation torque. The 750~N in the reference applies to the six original battery fasteners. \href{https://www.mcmaster.com/products/nylon-allen-screws/}{McMaster-Carr metric socket-head screws.}
 \heading{Numerical checks and remaining comparisons}
 The initial mesh has 16,108 curved quadratic tetrahedra. A 43,659-element refinement is available. Both have positive minimum scaled Jacobians. The native preparation check counted four screw beams, four compression seats and 8,038 candidate case contact faces. The contact calculation must establish residual penetration, support reactions, seated shape and stresses before modal or random-response comparisons can support a performance claim. In the October nickel-damage study an assumed material law first registered damage around 43~N during a partial pull. A physical breaking load remains undetermined.
+\newpage
+\heading{The bare-board repeat reproduces the six locked bolt loads}
+The original battery attachment provides the initial stress field for the connected modal and vibration analyses. In the first nonlinear load step each of the six pretension elements receives 750~N. In the second step MAPDL holds the attained section adjustment fixed. The reaction at the pretension degree of freedom then measures how much load the locked joint retains. The four case screws are absent from this reference run.
+
+\begin{center}\begin{tabular}{rrr}\toprule
+Existing bolt & Locked adjustment [$\mu$m] & Locked reaction [N]\\\midrule
+1 & 28.297 & 749.99935\\
+2 & 22.205 & 749.99945\\
+3 & 18.597 & 749.99908\\
+4 & 30.457 & 749.99680\\
+5 & 20.686 & 749.99942\\
+6 & 18.772 & 749.99868\\\bottomrule
+\end{tabular}
+\captionof{table}{Fresh MAPDL extraction after length locking. Every row agrees with the October export at its stored precision. The largest departure from the applied 750~N is 0.00321~N.}\end{center}
+
+The solver stored eight equilibrium states and completed the two load steps in approximately 59 minutes on 12 distributed processes. The largest total displacement at lock was 0.0474595~mm. The repeated result differs from the October Mechanical export by $3.4\times10^{-8}$ in relative terms. The model produced 45 warnings, including overlapping contacts, automatically removed redundant constraints and the fixed orientation of pretension elements during large-displacement analysis. The warning text printed in the main solver listing matched the reference run. This comparison establishes repeatability for the existing attachment. The effect of a case on preload, mode frequencies, cell motion and board stress requires the corresponding cased results.
+
+\heading{How the side-pull comparison measures load transfer}
+The local model drives the outer cell sideways through its rigid pilot while the two nickel strips bend. In the washer-clamped fixture, each strip is compressed with 750~N and the clamp height is then locked. During the pull, the cell can translate in the other two directions and rotate. The cased fixture adds a deformable printed enclosure, four screw shanks and compression-only tab seats. The neighboring cells and screw tops are fixed in this local approximation. The native model check counted 9,502 potential PLA contact faces. A face transmits load only when its unilateral contact closes.
+
+For each converged load increment the audit sums external forces and moments about the displaced cell centre. It includes the case screw supports and the neighboring-cell support when present. This makes it possible to test whether enclosure contact relieves the nickel strips at the cost of increased screw or board load. The check excluded unconverged diagnostic result sets. On historical friction fixtures it recovered the native force and moment sums across nominal, refined and reverse-direction pulls. Cased pull forces and damage thresholds await the loaded comparisons.
 \end{document}

@@ -12,7 +12,7 @@
 \includegraphics[width=\linewidth]{figures/midspan-fit.png}
 \column{.41\textwidth}
 \textbf{Flush tabs}\par The printed case overlaps each cell by about 1.18 mm at its crown. The fit develops contact load during installation.
-\vspace{6mm}\par\textbf{3 mm stand-off}\par The unstrained STEP clears the cells and all existing mechanical hardware. The cells can move before reaching the case.
+\vspace{6mm}\par\textbf{3 mm stand-off}\par The unstrained STEP clears the cells and all existing mechanical hardware. Rigid sideways travel of 0.15--0.33 mm closes the first cell gap.
 \end{columns}
 \vfill{\footnotesize\color{B}Power-board geometry review\quad|\quad 8 November 2026}
 \end{frame}
@@ -29,14 +29,14 @@ Hole pitch Y [mm] &114.427&113.241\\\bottomrule
 \vspace{5mm}\par The dense PLA case adds about 74 g to a 252 g bare assembly. Print orientation and infill affect its installed stiffness and mass.
 \end{columns}
 \end{frame}
-\begin{frame}{The October reference gives three quantities to compare}
+\begin{frame}{The bare-board preload repeats the October baseline}
 \begin{tabular}{p{.51\textwidth}rp{.19\textwidth}}\toprule
 Bare-board quantity & Value & Loading\\\midrule
 First prestressed natural frequency & 485.964 Hz & Six bolts locked\\
 Maximum PCB directional displacement & 0.052674 mm RMS & Base Z\\
 Maximum PCB equivalent stress & 90.325 MPa RMS & Base X\\\bottomrule
 \end{tabular}
-\vspace{4mm}\par The enclosure comparisons will track the corresponding mode shapes, cell-to-case travel, nickel-strip load, PCB stress and the reactions carried by the four case screws.
-\vspace{3mm}\par\small Geometry and native model preparation are complete. Dynamic and pull results are under study.
+\vspace{4mm}\par The fresh six-bolt solve held 749.997--749.999 N at each locked fastener and reproduced the October peak static displacement of 0.04746~mm. The quantities in the table are the October dynamic reference.
+\vspace{3mm}\par\small Cased frequencies, vibration and pull forces are under study.
 \end{frame}
 \end{document}
