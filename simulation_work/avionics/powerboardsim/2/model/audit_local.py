@@ -147,6 +147,9 @@ def audit(case, campaign):
     dest=ROOT/'validation'/('local' if complete else 'partial_local')
     dest.mkdir(exist_ok=True)
     (dest/(case+'.json')).write_text(json.dumps(data,indent=2)+'\n')
+    if case=='bare_damage_cont_nominal':
+        from damage_repeat import compare as compare_damage
+        compare_damage(case,campaign)
     if case.startswith('bare_lateral_'):
         from pull_reference import compare
         compare(case,campaign)

@@ -53,9 +53,9 @@ Hole pitch Y [mm] &114.427&113.241\\\bottomrule
 \vspace{2mm}\par The closest match to bare mode 20 (2364 Hz) is mode 27 in both raised assemblies, at 2365 Hz with nylon and 2368 Hz with aluminium. With the original unpreloaded contacts, mode 1 stayed at 66.61 Hz in all three assemblies.
 \vfill{\footnotesize\color{B}Bolt-locked flexible assemblies at 3 mm stand-off. Undamped mode shapes about the tightened state.}
 \end{frame}
-\begin{frame}{The open-gap vibration model predicts more PCB motion}
-\includegraphics[width=.79\linewidth]{figures/raised-independent-psd.pdf}
-\par With base X excitation, peak PCB Z motion was \textbf{23.37}~$\mu$m RMS bare, \textbf{145.55} with nylon and \textbf{120.00} with aluminium. The figure uses independent modal integration.
-\vspace{2mm}\par\small Native MAPDL confirms both base-X results. Aluminium reduced board motion relative to nylon, but raised peak stress across the PLA layers near a screw bearing from 17.16 to 24.78 MPa RMS. Both models reached cell contact during the full X history. In the 480-frame clip, only the nylon model crossed the gap (frames 253--270, counting from 1).
+\begin{frame}{Both raised mounts increase board-normal motion under each base input}
+\includegraphics[width=.88\linewidth]{figures/raised-native-spectra.pdf}
+\par With base Z excitation, peak PCB stress rose from \textbf{32.5 MPa RMS} bare to \textbf{64.8} with nylon screws and \textbf{84.2} with aluminium. Aluminium reduced board travel relative to nylon in all three tests.
+\vspace{2mm}\par\small Under base X, peak PCB stress fell by less than 2\% for both mounts. The spectra use the locked, open-gap contact state. The seeded X record predicts cell contact for both mounts during the full nine seconds.
 \end{frame}
 \end{document}

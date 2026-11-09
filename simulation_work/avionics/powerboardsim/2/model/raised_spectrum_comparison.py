@@ -40,7 +40,8 @@ def draw(data):
         for ax,metric in zip(axes,['pcb_Z_displacement_um','pcb_equivalent_stress_MPa'],strict=True):
             values=[data[a][key][metric] for a in 'XYZ']
             ax.scatter(np.arange(3)+(j-1)*.14,values,color=col,marker=mk,s=35,label=label,zorder=3)
-    for ax,ylabel in zip(axes,['Peak PCB Z displacement [µm RMS]','Peak PCB equivalent stress [MPa RMS]'],strict=True):
+    for ax,title,ylabel in zip(axes,['Peak PCB Z displacement','Peak PCB equivalent stress'],['µm RMS','MPa RMS'],strict=True):
+        ax.set_title(title,fontsize=11)
         ax.set(xticks=[0,1,2],xticklabels=['Base X','Base Y','Base Z'],xlim=(-.4,2.4),ylabel=ylabel)
         ax.set_ylim(bottom=0);ax.spines[['top','right']].set_visible(False);ax.grid(axis='y',alpha=.2)
     h,l=axes[0].get_legend_handles_labels()

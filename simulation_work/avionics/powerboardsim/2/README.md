@@ -7,9 +7,11 @@ The October power-board assembly carries three cells and six battery-attachment 
 | Configuration | Published evidence |
 |---|---|
 | Bare board | All 22 movie subjects, the three native base spectra, three native seeded histories and the nominal side pull. |
-| 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, vibration and the positive-X side pull. Each movie identifies its numerical source. |
+| 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, native X/Y/Z spectra and the positive-X side pull. Each movie identifies its numerical source. |
 | Flush, nylon | The full-board installation stopped at 2.75 mm screw travel. The PLA coupon reference was crossed at 0.95–1.10 mm. The four tabs touched along their edges while most of each face remained open. |
 | Flush, aluminium | The full-board seating trial is queued. Flush vibration comparisons require a supported installed state. |
+
+Under base-Z vibration, peak PCB stress reached 32.48 MPa RMS bare, 64.77 MPa with raised nylon screws and 84.19 MPa with raised aluminium screws. The twelve RMS movie pairs now show native MAPDL fields for all three assemblies. [Three-axis results, page 13](output/pdf/battery-case-report.pdf#page=13) · [Base-Z movie without case](output/videos/without_case/power_board_4k60/random_fig04_assembly.mp4) · [Base-Z movie with case](output/videos/with_case/power_board_4k60/random_fig04_assembly.mp4)
 
 For the PCB stress time history, open the [bare-board movie](output/videos/without_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) or [both raised mounts](output/videos/with_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4). The [October baseline notes](case-study-preparation.md) locate the original inputs. The [delivery matrix](validation/video_pairs.csv) records the source identity of every film. Native decks and scratch files are held under the isolated `.runtime/` directory.
 
