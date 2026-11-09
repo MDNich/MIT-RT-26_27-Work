@@ -137,11 +137,12 @@ The peak PCB displacement occurred at node 207485 in all three models. It fell f
 
 ANSYS DPF recovered translations on 217,704 common PCB nodes. On the bare control the two displacement readers agreed on every component. The six pretension adjustments agreed with native MAPDL readback within $10^{-11}$~m in all three assemblies.
 
-\heading{The PCB moves toward the cells as the flush nylon case is drawn down}
-After the original six bolts locked, the PCB moved less than 1~$\mu$m through 0.50~mm of additional screw travel. At 0.65~mm the outer washers were in contact and the board corner at $(0,0)$ had moved 0.065~mm toward the cells. At 0.95~mm its movement reached 0.328~mm. At the four case screws the board moved 0.176--0.240~mm toward the cells while the driven nodes moved 0.710--0.774~mm in the opposite direction. Both motions contribute to the imposed 0.95~mm of relative travel.
+\heading{The PCB bends toward the cells in both flush installations}
+With either screw material the board moved less than 1~$\mu$m from its locked state through 0.50~mm of screw travel. At 0.80~mm, after the outer washers contacted the case, the same PCB corner at $(0,0)$ had moved 0.197~mm toward the cells with nylon and 0.216~mm with aluminium. The aluminium screws increased the total drive force by 44\% (page~19) and the peak board movement by 9.6\%. The four PCB screw bearings moved 0.104--0.145~mm with nylon and 0.125--0.163~mm with aluminium. At 0.95~mm, the nylon model's corner movement reached 0.328~mm.
 
-\begin{center}\includegraphics[width=.96\linewidth]{figures/flush_nylon_surf1_static-pcb-installation.pdf}
-\captionof*{figure}{Displacement from the locked state, positive toward the cells. The map shows the upper PCB face at 0.95~mm travel. Native combined and partitioned displacement fields agreed on all 10,949 shared check nodes. The plot ends at the saved state before the first printed-PLA reference crossing (page~19).}\end{center}
+\begin{center}\includegraphics[width=.96\linewidth]{figures/flush-pcb-screw-comparison.pdf}
+\captionof*{figure}{Upper PCB face at 0.80~mm screw travel, with one displacement scale for both maps. Positive movement is toward the cells. The curves show the maximum across all 217,704 board nodes relative to six-bolt lock. The two native meshes have identical PCB nodes and element connectivity.}\end{center}
+
 \newpage
 \heading{The raised enclosure adds resonances below the first bare-board mode}
 We extracted undamped natural frequencies about the verified bolt-locked states, using the same mounting constraints and a 1--4000~Hz search. The assembled masses were 251.82~g bare, 325.82~g with the raised nylon-screw case and 326.10~g with aluminium screws. The models returned 38, 49 and 48 modes, respectively. The lowest three frequencies were 253, 289 and 339~Hz with nylon and 320, 372 and 378~Hz with aluminium. All six fall below the first bare-board mode at 486~Hz.
