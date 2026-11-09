@@ -1,0 +1,225 @@
+{
+  "cases": {
+    "continuous_proof": {
+      "pull_states": 14,
+      "limits": {
+        "relative_x": 0.001,
+        "abs_y_N": 0.01,
+        "abs_z_N": 0.1
+      },
+      "maximum": {
+        "relative_x": 0.0002816017263828524,
+        "abs_y_N": 1.0294829e-07,
+        "abs_z_N": 0.012550836
+      },
+      "failing_counts": {
+        "relative_x": 0,
+        "abs_y_N": 0,
+        "abs_z_N": 0
+      },
+      "all_states_within_limits": true,
+      "consecutive_passes_before_failure": 14,
+      "last_consecutive_pass": {
+        "native_set": 23,
+        "pull_row": 14,
+        "travel_mm": 0.5,
+        "cell_fx_N": 11.333001,
+        "signed_residual_xyz_N": [
+          -4.3938398e-06,
+          -3.24851e-08,
+          0.00027319827
+        ]
+      },
+      "first_failed_station": null,
+      "source_sha256": {
+        "set_inventory.csv": "82f31545c57e67f5eeca26a34e21c39ea72139c714e76842c7d3a976f0964fd6",
+        "balance.csv": "32914d4af52bbebe9f8fe7682412be8251aef5fc0feef5c4a21f6ba207193107",
+        "history.csv": "15b8f2daa14a159e03e87252f66b8405da8d52199930e30ac3de13eb204b5fe9",
+        "ACCEPTED.json": "6521aa60c61cde8e82966407363cc2a4d133267a724976e854dbf534f8c06e8e"
+      }
+    },
+    "cont_nominal": {
+      "pull_states": 101,
+      "limits": {
+        "relative_x": 0.001,
+        "abs_y_N": 0.01,
+        "abs_z_N": 0.1
+      },
+      "maximum": {
+        "relative_x": 0.00028160319097012465,
+        "abs_y_N": 6.0088578e-06,
+        "abs_z_N": 0.012683776
+      },
+      "failing_counts": {
+        "relative_x": 0,
+        "abs_y_N": 0,
+        "abs_z_N": 0
+      },
+      "all_states_within_limits": true,
+      "consecutive_passes_before_failure": 101,
+      "last_consecutive_pass": {
+        "native_set": 110,
+        "pull_row": 101,
+        "travel_mm": 3.347375,
+        "cell_fx_N": 44.856535,
+        "signed_residual_xyz_N": [
+          0.00028931633,
+          5.4413974e-08,
+          4.1069577e-05
+        ]
+      },
+      "first_failed_station": null,
+      "source_sha256": {
+        "set_inventory.csv": "8e53e445b02d0dcb7849fcd7d4dd484581e88375b05e566a431e60b9c4659662",
+        "balance.csv": "b46c18a2ab8fcc0437010a663cdf6522cbed0bc18600b576ce865e3d15036ac4",
+        "history.csv": "172419319941b09b37fb958c37012b92b3383d11ed0a0ab84ef788b3529e7391",
+        "CONVERGED_STATES_AUDIT.json": "a5b578917d84c9791b29e5c8abb3409d9c15fc5c29434d60d51185645e60c4d8"
+      }
+    },
+    "cont_force5em5": {
+      "pull_states": 785,
+      "limits": {
+        "relative_x": 0.001,
+        "abs_y_N": 0.01,
+        "abs_z_N": 0.1
+      },
+      "maximum": {
+        "relative_x": 0.00028160375985939574,
+        "abs_y_N": 0.001131485,
+        "abs_z_N": 0.80115412
+      },
+      "failing_counts": {
+        "relative_x": 0,
+        "abs_y_N": 0,
+        "abs_z_N": 339
+      },
+      "all_states_within_limits": false,
+      "consecutive_passes_before_failure": 217,
+      "last_consecutive_pass": {
+        "native_set": 226,
+        "pull_row": 217,
+        "travel_mm": 3.4009979,
+        "cell_fx_N": 45.994247,
+        "signed_residual_xyz_N": [
+          0.00037446935,
+          -7.2104683e-08,
+          0.049685884
+        ]
+      },
+      "first_failed_station": {
+        "native_set": 227,
+        "pull_row": 218,
+        "travel_mm": 3.4013281,
+        "cell_fx_N": 45.997585,
+        "signed_residual_xyz_N": [
+          -0.000421683,
+          2.996363e-08,
+          0.30205978
+        ]
+      },
+      "source_sha256": {
+        "set_inventory.csv": "13e0f08a7055475928e14cc1b8ab26a423e32309fbe3a2c6b1ed2c7ddc83df6a",
+        "balance.csv": "9c2086e436dd439b4c45906772e9ab677a00605f084dcfde5334a2c85613e0e4",
+        "history.csv": "b7943177cf7084ac9d971e42c748f8eb84ad0b7bf6a18521552f791f05e4076a",
+        "REJECTED_BALANCE_AUDIT.json": "0616b14b31b17c3cf105f6ea55baeca882bdddd0f700641fc81122906566f1f3"
+      }
+    },
+    "cont_force5em5_snapshot04": {
+      "pull_states": 250,
+      "limits": {
+        "relative_x": 0.001,
+        "abs_y_N": 0.01,
+        "abs_z_N": 0.1
+      },
+      "maximum": {
+        "relative_x": 0.00028160375985939574,
+        "abs_y_N": 1.4922464e-05,
+        "abs_z_N": 0.36827911
+      },
+      "failing_counts": {
+        "relative_x": 0,
+        "abs_y_N": 0,
+        "abs_z_N": 19
+      },
+      "all_states_within_limits": false,
+      "consecutive_passes_before_failure": 217,
+      "last_consecutive_pass": {
+        "native_set": 226,
+        "pull_row": 217,
+        "travel_mm": 3.4009979,
+        "cell_fx_N": 45.994247,
+        "signed_residual_xyz_N": [
+          0.00037446935,
+          -7.2104683e-08,
+          0.049685884
+        ]
+      },
+      "first_failed_station": {
+        "native_set": 227,
+        "pull_row": 218,
+        "travel_mm": 3.4013281,
+        "cell_fx_N": 45.997585,
+        "signed_residual_xyz_N": [
+          -0.000421683,
+          2.996363e-08,
+          0.30205978
+        ]
+      },
+      "source_sha256": {
+        "set_inventory.csv": "ba2b4763f31187105ca458121a54a985a8c6e56f5f78d86b0d2513c5bbb3d6bd",
+        "balance.csv": "6b445048947f0d41ac7e9edf86582345a4ae3e96563e40bb0edae7572da96f2e",
+        "history.csv": "0aa3bebba6f687aba25a5abeba43641bdd6cea61f044c6245bbf6ee78601d8eb",
+        "REJECTED_BALANCE_AUDIT.json": "5308809a629de6817a4628306986cd4450fdfdc4eff3926804d17f60774f0d40"
+      }
+    },
+    "cont_fine_snapshot02": {
+      "pull_states": 85,
+      "limits": {
+        "relative_x": 0.001,
+        "abs_y_N": 0.01,
+        "abs_z_N": 0.1
+      },
+      "maximum": {
+        "relative_x": 3.683428788568618e-05,
+        "abs_y_N": 4.4899688e-06,
+        "abs_z_N": 0.20628919
+      },
+      "failing_counts": {
+        "relative_x": 0,
+        "abs_y_N": 0,
+        "abs_z_N": 3
+      },
+      "all_states_within_limits": false,
+      "consecutive_passes_before_failure": 65,
+      "last_consecutive_pass": {
+        "native_set": 74,
+        "pull_row": 65,
+        "travel_mm": 2.3,
+        "cell_fx_N": 28.607993,
+        "signed_residual_xyz_N": [
+          -0.00031475058,
+          3.6291949e-07,
+          -0.00027348912
+        ]
+      },
+      "first_failed_station": {
+        "native_set": 75,
+        "pull_row": 66,
+        "travel_mm": 2.3375,
+        "cell_fx_N": 29.140835,
+        "signed_residual_xyz_N": [
+          0.00049287508,
+          -2.2791369e-10,
+          -0.20628919
+        ]
+      },
+      "source_sha256": {
+        "set_inventory.csv": "af827a5b1edacbcec7b86b6f6037b018260cb63578db188ad91bcfdf96091df6",
+        "balance.csv": "c4d492b68dfa25addb46c97f43e5c6af6fe872d55af5b94bfc7e30972f482644",
+        "history.csv": "4b04da85e6ce000701a3e1323bd6f9a455eef9b178373f85b48415a74d576918",
+        "REJECTED_BALANCE_AUDIT.json": "faf57d4a4997732470fdc9a62e8eb766148e7136a58b61657d863f69aa620465"
+      }
+    }
+  },
+  "scope": "Independent replay of archived pull-balance classifications. Rejected endpoints and snapshots are retained as negative controls. A row passing force balance alone is not a qualified damage result."
+}
