@@ -117,7 +117,11 @@ def audit(case,campaign):
         raise ValueError('Whole-fixture force or moment imbalance')
     write_csv(rows,dest/'whole_fixture_balance.csv')
     topology={int(float(p['pair'])):int(float(p['contact'])) for p in read(ROOT/'validation/flush_approach_preflight.json')['pairs']}
-    pairs,checks=contact_history(reader.read_binary(str(rst)),rows,table(folder/'case_pairs.csv'),topology)
+    raw=reader.read_binary(str(rst))
+    pairs,checks=contact_history(raw,rows,table(folder/'case_pairs.csv'),topology)
+    from tab_seating import trace
+    tab_history=trace(raw,sets)
+    (dest/'tab_plane_history.json').write_text(json.dumps(tab_history,indent=2)+'\n')
     write_csv(pairs,dest/'closed_contacts.csv')
     # Mechanical work of the four driven tops, prescribed cell UX and the two washer loads.
     # Rotation at each screw is held at zero and released cell DOFs carry no imposed moment.
@@ -143,14 +147,25 @@ def audit(case,campaign):
     if len(seated) and not any(r['closed'] for r in pairs if r['native_set']==sets[seated[0]]):
         raise ValueError('Reached nominal flush position without contacting any cell, strip or washer')
     reached=bool(len(seated) and abs(times[-1]-end)<1e-9 and status['native_clean'])
+    # A 3 mm prescribed screw-head travel need not produce flush PLA tabs. With no explicit
+    # contact to the PCB face in this local model, reject substantial crossing or all-open feet.
+    seat_screen_mm=.05
+    tab_review=[]
+    for row in tab_history:
+        for i,p in enumerate(row['tabs'],1):
+            if p['min_mm'] < -seat_screen_mm:tab_review.append('datum crossing: tab '+str(i))
+            if row['time']>=seat-1e-9 and p['min_mm']>seat_screen_mm:tab_review.append('no near-bearing point: tab '+str(i))
     out=dict(case=case,campaign=campaign,states=len(rows),full_requested_path=reached,
+        installed_tab_gaps_mm=tab_history[seated[0]]['tabs'] if len(seated) else None,
+        tab_plane_review=sorted(set(tab_review)),tab_plane_review_screen_mm=seat_screen_mm,
+        tab_plane_scope='Deformed near-hole PLA sample clearance versus a rigid board datum; not a PCB contact pressure or screw preload.',
         installed_state=state(seated[0]) if len(seated) else None,last_converged_state=state(-1),
         force_residual_peak_N=float(np.linalg.norm(ff,axis=1).max()),moment_residual_peak_Nmm=float(np.linalg.norm(mm,axis=1).max()),
         integrated_external_work_Nmm=work,contact_resolution_limits_mm=limits,contact_resolution_flagged_pairs=unresolved,
         peak_abs_total_drawdown_force_N=max(abs(r['screw_support_N_z']) for r in rows),**checks,
         rst_sha256=next(r['sha256'] for r in ledger['files'] if r['name']=='pull.rst'),
         scope='Local fixture only; linear printed PLA and surrogate screw beams, fixed neighbors. A forced seat is not a demonstrated assembly.')
-    category='local' if reached and not unresolved else ('review_local' if reached else 'partial_local')
+    category='local' if reached and not unresolved and not tab_review else ('review_local' if reached else 'partial_local')
     out['classification']=category
     pub=ROOT/'validation'/category;pub.mkdir(exist_ok=True)
     tmp=pub/(case+'.tmp');tmp.write_text(json.dumps(out,indent=2)+'\n');tmp.replace(pub/(case+'.json'))
