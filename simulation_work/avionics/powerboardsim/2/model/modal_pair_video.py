@@ -156,6 +156,15 @@ def main():
             assert data['reference_rst_sha256']==refs['bare'][1] and data['candidate_rst_sha256']==sha
             row=data['modes'][rank-1]
             mac,sign,best=row['equal_rank_MAC'],row['equal_rank_sign'],row['best_rank']
+            wide_path=ROOT/'validation/bolted_mode_film.json'
+            if kind=='modal20' and v in VARIANTS[3:] and wide_path.is_file():
+                from bolted_mode_film import confirm_dedicated
+                wide=json.loads(wide_path.read_text())
+                assert wide['campaign']==args.campaign and wide['reference_rst_sha256']==refs['bare'][1]
+                record=wide['cases'][v]
+                confirm_dedicated(v,args.campaign,record['rst_sha256'],sha,rank)
+                best=record['closest_shape_rank']
+                note=f'Closest shape to bare mode {rank}: mode {best} (MAC {record["closest_MAC"]:.2f})'
         parts,Hz=surfaces(f,rank,exported)
         sign=sign*baseline_sign or 1
         panels.append((label,parts,Hz,mac,sign,note))

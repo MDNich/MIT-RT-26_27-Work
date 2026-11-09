@@ -67,6 +67,12 @@ def run(campaign):
 def confirm_dedicated(branch,campaign,former,replacement,rank):
     """Check that the dedicated extraction preserves the displayed physical shape before replacement."""
     keys=[branch+'_basis',branch+'_modal20']
+    output=ROOT/'validation/modal_matches'/(branch+'_wide_to_dedicated.json')
+    if output.is_file():
+        saved=read(output)
+        assert saved['rank']==rank and saved['wide_rst_sha256']==former and saved['dedicated_rst_sha256']==replacement
+        assert saved['MAC']>.999
+        return
     modes=[]
     for key,expected in zip(keys,[former,replacement],strict=True):
         source=ROOT/'.runtime/archive'/campaign/key/'file.rst'
@@ -80,8 +86,7 @@ def confirm_dedicated(branch,campaign,former,replacement,rank):
     mac=float(np.clip(x@y,-1,1)**2)
     freq=[float(r.time_values[rank-1]) for r in modes]
     assert mac>.999 and abs(freq[1]/freq[0]-1)<1e-5
-    write_json(ROOT/'validation/modal_matches'/(branch+'_wide_to_dedicated.json'),
-               dict(rank=rank,wide_rst_sha256=former,dedicated_rst_sha256=replacement,
+    write_json(output,dict(rank=rank,wide_rst_sha256=former,dedicated_rst_sha256=replacement,
                     case_and_original_solid_nodes=len(ids),frequencies_Hz=freq,MAC=mac))
 
 
