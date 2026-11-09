@@ -114,7 +114,7 @@ def draw():
     right.annotate(f'{depth:.1f} µm overlap',xy=(0,-depth*.5),xytext=(9,-49),
                    arrowprops=dict(arrowstyle='-',color='#7A0101'),color='#7A0101',fontsize=9)
     right.set(xlim=(-150,150),ylim=(-80,80),aspect='equal',xlabel='Along surface tangent [µm]',ylabel='Along surface normal [µm]')
-    right.set_title(f'X / nylon at frame {frame}',fontsize=11)
+    right.set_title(f'X / nylon at frame {frame+1}',fontsize=11)
     right.legend(loc='upper right',frameon=False,ncol=2,fontsize=8)
     for ax in (left,right):
         ax.spines[['top','right']].set_visible(False)

@@ -155,6 +155,8 @@ def run(variant, campaign):
     stress_path = ROOT/'validation/seeded_pcb_stress_comparison.json'
     stress = read(stress_path)['cases'][variant]
     assert stress['basis_sha256']==proof['rst_sha256'] and stress['coordinate_method']=='Independent integration'
+    stress_index = int(stress['peak_frame'])-1  # October counts its frames from one.
+    assert FRAMES[stress_index]/FS == stress['peak_time_s']
     results = {}
     for axis in 'XYZ':
         case = variant+'_motion_'+axis
@@ -172,7 +174,7 @@ def run(variant, campaign):
         assert sum(map(len,groups.values()))==480
         sample = {0}
         if axis=='X':
-            sample.add(stress['peak_frame'])
+            sample.add(stress_index)
         if groups['intersecting']:
             crossings = np.asarray(groups['intersecting'])
             runs = np.split(crossings, np.flatnonzero(np.diff(crossings)>1)+1)
@@ -193,7 +195,7 @@ def run(variant, campaign):
         variant=variant, campaign=campaign, basis_sha256=proof['rst_sha256'], control_sha256=digest(control_path),
         control_states=dict(zip(names,expected,strict=True)), quadratic_faces=[len(s) for s in shapes],
         time_s=(FRAMES[[0,-1]]/FS).tolist(), frame_spacing_s=float((FRAMES[1]-FRAMES[0])/FS),
-        stress_audit_sha256=digest(stress_path), peak_PCB_stress_X_frame=stress['peak_frame'],
+        stress_audit_sha256=digest(stress_path), frame_index_base=0, peak_PCB_stress_X_frame_index=stress_index,
         geometry_tolerance_mm=TOL_MM, axes=results,
         scope='All exterior cell and PLA quadratic faces in physical scale at the 480 displayed instants. '
               'Separated means their Bezier convex hulls were separated, with subdivision as needed. '

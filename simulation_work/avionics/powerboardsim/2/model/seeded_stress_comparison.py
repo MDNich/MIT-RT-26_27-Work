@@ -12,7 +12,7 @@ from pcb_dynamic_stress import cache_modes,equivalent,extrema
 from seeded_motion import FS,FRAMES,integrate,participation
 
 
-def run(campaign):
+def run(campaign, coordinates='independent'):
     cases=['bare','stand3_nylon','stand3_aluminium']
     curves={}
     reference=None
@@ -41,7 +41,7 @@ def run(campaign):
         tensor=np.load(cache/'tensors.npy',mmap_mode='r')
         dest=ROOT/'validation/motion'/f'{variant}_motion_X.json'
         native_reference=None
-        if dest.is_file():
+        if coordinates=='native':
             proof=read(dest)
             assert proof['campaign']==campaign and proof['basis_rst_sha256']==basis['rst_sha256']
             clip=ROOT/f'.runtime/post/{campaign}/{variant}_motion_X/coordinates.npz'
@@ -76,7 +76,8 @@ def run(campaign):
             record.update(October_DPF_sha256=digest(old),maximum_frame_peak_relative_error=err)
         curves[variant]=record
         print(variant,record['clip_peak_MPa'],peak+1,record['peak_node'],flush=True)
-    write_json(ROOT/'validation/seeded_pcb_stress_comparison.json',dict(campaign=campaign,frames=len(time),
+    suffix = '_native' if coordinates=='native' else ''
+    write_json(ROOT/'validation'/f'seeded_pcb_stress_comparison{suffix}.json',dict(campaign=campaign,frames=len(time),
         physical_time_s=[float(time[0]),float(time[-1])],frame_spacing_s=float(4/FS),cases=curves,
         scope='Maximum over unaveraged PCB element corners at each stored movie frame. Native signed modal stress '
               'components are summed before evaluating von Mises. The film shows the dynamic increment about bolt preload.'))
@@ -91,11 +92,13 @@ def run(campaign):
     ax.set(xlim=(0,ms[-1]),ylim=(0,None),xlabel='Time from the first movie frame [ms]',ylabel='Peak PCB stress [MPa]')
     ax.spines[['top','right']].set_visible(False)
     ax.grid(axis='y',alpha=.17)
-    fig.savefig(ROOT/'docs/figures/raised-seeded-pcb-stress.pdf',metadata={'CreationDate':None,'ModDate':None})
+    fig.savefig(ROOT/'docs/figures'/f'raised-seeded-pcb-stress{suffix}.pdf',metadata={'CreationDate':None,'ModDate':None})
     plt.close(fig)
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('campaign',nargs='?',default='nov08_01')
-    run(parser.parse_args().campaign)
+    parser.add_argument('--coordinates',choices=('independent','native'),default='independent')
+    args = parser.parse_args()
+    run(args.campaign,args.coordinates)

@@ -314,10 +314,10 @@ For comparison, tightening the six original bolts in the raised full-board model
 
 \newpage
 \heading{Does the cell touch the case during the motion shown in the movies?}
-The case with nylon screws lost its modeled cell clearance in 18 consecutive frames under X-axis excitation. They are frames 252--269 of the 480-frame film, about 4.20--4.48~s into playback and 1.015442--1.016479~s into the physical load history. At their midpoint, a cell surface vertex lay 14.6~$\mu$m inside the modeled PLA. The movie magnifies displacements 50 times. The section below uses the physical deformations.
+The case with nylon screws lost its modeled cell clearance in 18 consecutive frames under X-axis excitation. Using the October numbering (first frame 1), these are frames 253--270 of the 480-frame film, about 4.20--4.48~s into playback and 1.015442--1.016479~s into the physical load history. At their midpoint, a cell surface vertex lay 14.6~$\mu$m inside the modeled PLA. The movie magnifies displacements 50 times. The section below uses the physical deformations.
 
 \begin{center}\includegraphics[width=.96\linewidth]{figures/raised-film-contact.pdf}
-\captionof{figure}{Left, the cell and PLA surface check repeated at every displayed instant for each 3~mm mount and input axis. Right, the exterior surfaces at frame 261, cut in a plane through the closest PLA point and the most deeply embedded sampled cell vertex. Both section axes use the same scale.}\end{center}
+\captionof{figure}{Left, the cell and PLA surface check repeated at every displayed instant for each 3~mm mount and input axis. Right, the exterior surfaces at frame 262, cut in a plane through the closest PLA point and the most deeply embedded sampled cell vertex. Both section axes use the same scale.}\end{center}
 
 \begin{center}\small
 \begin{tabular}{lrrr}\toprule
@@ -327,11 +327,11 @@ Aluminium screws & 0/480 & 0/480 & 0/480\\\bottomrule
 \end{tabular}
 \captionof{table}{Frames with intersecting surfaces under separate base excitations. In the longer nine-second X history both screw variants showed interference at other sampled instants (pages~10 and~15).}\end{center}
 
-At each mount's own peak dynamic PCB stress in the X clip, the smallest sampled cell-vertex gap was 0.151~mm at frame 228 for nylon and 0.141~mm at frame 290 for aluminium. The fixed-contact motion calculation omits any change in stress or trajectory caused by earlier contact.
+At each mount's own peak dynamic PCB stress in the X clip, the smallest sampled cell-vertex gap was 0.149~mm at frame 228 for nylon and 0.146~mm at frame 290 for aluminium. The fixed-contact motion calculation omits any change in stress or trajectory caused by earlier contact.
 
 \heading{How the surface check was verified}
 Independent modal coordinates displaced all 8,038 exterior quadratic PLA faces and all 938 cell faces. Each quadratic face lies inside the convex hull of six control points. We excluded pairs with disjoint hulls and subdivided overlapping hulls until they separated or successive triangular approximations intersected. In all 18 crossing frames the eight- and sixteen-segment edge refinements agreed. The remaining 2,862 frame/configuration combinations had disjoint curved surfaces.
 
-An independent check using the full closed skins gave a sampled overlap of 15.0~$\mu$m at four segments per edge and 14.6~$\mu$m at eight for frame 261. The geometry check also reproduced a prescribed planar crossing and the earlier open and intersecting whole-assembly states. Impact force and the motion between displayed samples require further analysis. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
+An independent check using the full closed skins gave a sampled overlap of 15.0~$\mu$m at four segments per edge and 14.6~$\mu$m at eight for frame 262. The geometry check also reproduced a prescribed planar crossing and the earlier open and intersecting whole-assembly states. Impact force and the motion between displayed samples require further analysis. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
 
 \end{document}
