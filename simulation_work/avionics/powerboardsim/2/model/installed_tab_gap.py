@@ -189,7 +189,7 @@ def run(case, campaign, requested):
             feet = {}
             for p in range(880, 884):
                 facets = [triangles(v[p], rst, z, ndiv, field) for v, z in zip(domains, (-3.55118, -.55118), strict=True)]
-                feet[p] = gap_on_overlap(*facets)
+                feet[p] = gap_on_overlap(*facets, seating_area=True)
                 if k == 0:
                     assert np.allclose([feet[p]['minimum_gap_mm'], feet[p]['maximum_gap_mm']], 3., rtol=0., atol=2e-6), (p, ndiv, feet[p])
             levels[ndiv] = feet

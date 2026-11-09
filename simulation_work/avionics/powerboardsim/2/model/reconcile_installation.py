@@ -34,6 +34,7 @@ def reconcile(case,campaign):
         indices=[r['native_set']-1 for r in saved['history']]
         contact=histories(rst,pairs,indices)
         max_drive=max_gap=max_stress=0.
+        max_area=0.
         for j,r in enumerate(saved['history']):
             k=r['native_set']
             assert abs(r['time']-rst.time_values[k-1])<1e-10
@@ -61,11 +62,16 @@ def reconcile(case,campaign):
                 for pair,rec in feet.items():
                     for key in ('minimum_gap_mm','maximum_gap_mm'):
                         max_gap=max(max_gap,abs(rec[key]-combined[level][pair][key]))
+                    for key in ('projected_overlap_mm2','area_gap_le_50um_mm2','area_gap_le_zero_mm2'):
+                        if key in rec:
+                            max_area=max(max_area,abs(rec[key]-combined[level][pair][key]))
+            assert max_area<1e-4
             assert max_gap<1e-5
         write_json(root/(name+'_combined_comparison.json'),dict(case=case,campaign=campaign,
             checkpoint_sha256=digest(sources),combined_rst_sha256=files['file.rst'],matched_sets=len(indices),
             max_drive_difference_N=max_drive,max_material_stress_difference_MPa=max_stress,
-            max_extreme_gap_difference_mm=max_gap if shape.is_file() else None))
+            max_extreme_gap_difference_mm=max_gap if shape.is_file() else None,
+            max_footprint_area_difference_mm2=max_area if shape.is_file() else None))
 
 
 if __name__=='__main__':

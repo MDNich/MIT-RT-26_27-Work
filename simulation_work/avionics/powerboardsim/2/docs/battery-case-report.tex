@@ -360,25 +360,25 @@ Independent modal coordinates displaced all 8,038 exterior quadratic PLA faces a
 An independent check using the full closed skins gave a sampled overlap of 15.0~$\mu$m at four segments per edge and 14.6~$\mu$m at eight for frame 262. The geometry check also reproduced a prescribed planar crossing and the earlier open and intersecting whole-assembly states. Impact force and the motion between displayed samples require further analysis. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
 
 \newpage
-\heading{Flush nylon tabs touch first at their edges}
-At 2.75~mm of the commanded 3~mm travel, all four nylon-screw tabs carried contact pressure against the flexible PCB. Only 4.4--5.1\% of each projected tab footprint lay within 0.05~mm of its opposing board face. The far side of each tab still had a 2.42~mm gap. All four outer washers intersected the computed PLA surface. The smallest sampled clearances at the three cells were 0.093, 0.112 and 0.077~mm. These figures describe the partial elastic installation. We stopped the trial at this equilibrium after three cutbacks. The printed assembly's full seating force remains unresolved.
+\heading{At 2.75 mm only the nylon-mounted tabs touch the PCB}
+At equal screw travel, the native contact field showed edge contact on all four nylon-mounted tabs and zero contact pressure on the aluminium-mounted tabs. The surface reconstruction put the closest aluminium tab 0.204~mm from the board. In both models the four outer washers intersected the PLA, and all three cells remained clear. The smallest sampled cell gaps were 0.077~mm with nylon and 0.076~mm with aluminium. Both trials had already exceeded the printed-PLA tensile references and the hardware penetration limit. These late states describe the elastic models only.
 
 \begin{center}\includegraphics[width=.87\linewidth]{figures/flush_nylon_surf1_static_step3_substep20.pdf}
-\captionof{figure}{Left, the reactions at the four screw drives. Red brackets the first through-layer coupon crossing. Blue brackets first loaded tab-to-PCB contact. Right, the deformed footprint of the most heavily loaded tab at 2.75~mm. Dark blue denotes the largest gap. The uncoloured bore has no opposing faces.}\end{center}
+\captionof{figure}{Nylon mount. Left, the four screw reactions. Red brackets the first through-layer coupon crossing. Blue brackets first loaded tab-to-PCB contact. Right, the deformed footprint of the most heavily loaded tab at 2.75~mm. Dark blue denotes the largest gap. The uncoloured bore has no opposing faces.}\end{center}
 
 \begin{center}\small
 \begin{tabular}{lrrr}\toprule
-Tab position & Drive reaction [N] & Area with gap $\leq$0.05 mm [\%] & Largest gap [mm]\\\midrule
-Low X, low Y & 271 & 4.4 & 2.425\\
-Low X, high Y & 292 & 4.7 & 2.422\\
-High X, low Y & 365 & 5.1 & 2.417\\
-High X, high Y & 327 & 4.9 & 2.418\\\bottomrule
+Tab position & Nylon near-seat area [\%] & Nylon largest gap [mm] & Al smallest gap [mm]\\\midrule
+Low X, low Y & 4.4 & 2.425 & 0.218\\
+Low X, high Y & 4.7 & 2.422 & 0.217\\
+High X, low Y & 5.1 & 2.417 & 0.204\\
+High X, high Y & 4.9 & 2.418 & 0.210\\\bottomrule
 \end{tabular}
-\captionof{table}{Values at 2.75~mm travel, after the printed-material reference was exceeded. The area comes from clipping the overlapping, deformed surface triangles at the specified gap.}\end{center}
+\captionof{table}{Near-seat area is the fraction of each overlapping tab footprint within 0.05~mm of the board. It was zero at every aluminium-mounted tab. All quantities are at 2.75~mm screw travel.}\end{center}
 
-The first through-layer tensile stress crossed 40.5~MPa between 0.95 and 1.10~mm, at a node tied to the idealized screw bearing. In-plane tension crossed 52.3~MPa at 1.10--1.25~mm. When the search excluded points within 2~mm of tied bearing nodes, both references were first crossed at 1.25--1.40~mm. The latter interval follows the first crossing of the 15~$\mu$m hardware-penetration screen (1.10--1.25~mm). At 2.75~mm the contact field reached 71~$\mu$m penetration. The four drive reactions summed to 1.255~kN in this elastic continuation. Neither coupon response beyond its measured range nor the contact law supports an installation-load rating.
+With nylon, the first through-layer tensile stress crossed 40.5~MPa between 0.95 and 1.10~mm, at a node tied to the idealized screw bearing. In-plane tension crossed 52.3~MPa at 1.10--1.25~mm. When the search excluded points within 2~mm of tied bearing nodes, both references were first crossed at 1.25--1.40~mm. The latter interval follows the first crossing of the 15~$\mu$m hardware-penetration screen (1.10--1.25~mm). At 2.75~mm the contact field reached 71~$\mu$m penetration. The nylon trial stopped at this equilibrium after three cutbacks. An installation-load rating requires measured print and contact behaviour.
 
-The combined result reproduced all 28 equilibria and the contact audit included all 8,038 hardware faces. At 0.95~mm travel, before the first coupon crossing, the four original outer battery bolts gained 10.3--14.0~N above their 750~N locked preload. The two centre bolts changed by $-0.9$ and $+1.4$~N. At 0.95~mm the four drives supplied 25.59~mJ of work (28.41~mJ using alternate saved states). The PCB gained 8.81~mJ of stiffness energy, the PLA 8.01~mJ and the four screws 6.59~mJ. All element groups together accounted for 24.59~mJ.
+The combined nylon result reproduced all 28 equilibria. The hardware contact audit included all 8,038 PLA contact faces. At 0.95~mm travel, before the first coupon crossing, the four original outer battery bolts gained 10.3--14.0~N above their 750~N locked preload. The two centre bolts changed by $-0.9$ and $+1.4$~N. At 0.95~mm the four drives supplied 25.59~mJ of work (28.41~mJ using alternate saved states). The PCB gained 8.81~mJ of stiffness energy, the PLA 8.01~mJ and the four screws 6.59~mJ. All element groups together accounted for 24.59~mJ.
 
 \heading{Aluminium screws increase the load at the same drawdown}
 In the two whole-board trials the screw shank geometry was identical. Only modulus, Poisson ratio and density differed between the decks. The first loaded hardware contact fell between 0.50 and 0.65~mm of relative travel for both mounts. At 0.80~mm, the four drives together carried 80.0~N with nylon and 115.6~N with aluminium. Peak through-layer PLA tension was 18.2 and 37.2~MPa respectively, against the 40.5~MPa coupon reference. With aluminium, both the in-plane and through-layer tensile references were first exceeded between 0.80 and 0.95~mm, while all four tab contacts remained open. In the 0.80~mm aluminium snapshot only the four outer washers intersected the PLA. Refining the curved surfaces gave up to 24.0~$\mu$m of sampled washer overlap, compared with 7.9~$\mu$m at loaded native contact corners. The smallest sampled cell clearance was 0.066~mm. These early reactions depend on how the washer contact is represented.
