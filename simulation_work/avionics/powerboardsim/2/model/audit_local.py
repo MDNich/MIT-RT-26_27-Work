@@ -89,6 +89,22 @@ def fixture(folder, spec, config, source, listing, balance_path):
             raise ValueError('Reported peak damage decreased during continuous loading')
     elif 'max_eppl' in matching.dtype.names:
         data['max_reported_equivalent_plastic_strain']=float(np.max(matching['max_eppl']))
+    if 'absolute_search_mm' in spec:
+        pairs=table(folder/'case_pairs.csv')
+        for pid in (861,862):
+            a=pairs[pairs['pair']==pid]
+            if not np.array_equal(a['set'],[r['native_set'] for r in native]) or not np.allclose(a['time'],[r['time'] for r in native]):
+                raise ValueError(f'Missing contact history on case pair {pid}')
+            if not np.all(a['elements']==a['elements'][0]) or a['elements'][0]<=0 or np.any((a['closed']<0)|(a['closed']>a['elements'])):
+                raise ValueError(f'Invalid surface inventory on case pair {pid}')
+            if np.any(a['closed'][a['time']<=start]>0):
+                raise ValueError(f'Raised fixture closed an initial gap during the held-cell preload: {pid}')
+            engaged=np.flatnonzero(a['closed']>0)
+            data[f'pair_{pid}']=dict(closed_at_end=int(a['closed'][-1]),peak_centroid_pressure_MPa=float(max(a['p_MPa'])),
+                peak_reported_penetration_mm=float(max(a['pen_mm'])),
+                contact_travel_bracket_mm=None if not len(engaged) else [native[max(0,engaged[0]-1)]['ux_mm'],native[engaged[0]]['ux_mm']])
+        data['screw_support_fx_N']=native[-1]['screw_support_N_x']
+        data['neighbour_support_fx_N']=native[-1]['neighbor_support_N_x']
     return data,reached
 
 
@@ -98,7 +114,8 @@ def audit(case, campaign):
     status = read(receipts/'status.json')
     ledger = read(receipts/'archived.json')
     spec = read(folder/'local_job.json')
-    manifest = read(ROOT/'validation/local_jobs.json')[case]
+    catalog='local_contact_retries.json' if case.endswith('_pin1') else 'local_jobs.json'
+    manifest = read(ROOT/'validation'/catalog)[case]
     assert hashlib.sha256((folder/'local_job.json').read_bytes()).hexdigest()==manifest['spec_sha256']
     assert spec['case']==ledger['case']==status['case']==case and status['phase']=='solver_complete'
     assert all((folder/f['name']).stat().st_size==f['bytes'] for f in ledger['files'])

@@ -66,4 +66,24 @@ The first original-mesh run returned only four modes and exited normally. The re
 The three accelerations are separate deterministic realizations of the October 20--2000~Hz base spectrum. Each contains 589,825 samples over 9~s at 65,536~Hz. The input rises over 0.1~s. During the final eight seconds the periodic waveform has 14.136~g RMS. The native transient integration uses the retained prestressed modes, 2\% modal damping and motion relative to the common support. Each clip uses 480 signed states from 1.000061 to 1.029297~s, displayed at 60 frames per second.
 
 The PCB stress movie combines the six signed stress components of every mode with the corresponding time-dependent modal coordinate. It calculates von Mises stress separately at every element corner. At an interface, two neighboring elements can return different values. The stress field contains the dynamic fluctuation about the preloaded equilibrium. On the October reference, the independent reconstruction reproduced all 480 native frame maxima within $1.1\times10^{-7}$~Pa across 39,014 PCB elements. The peak for that specific historical X-axis realization was 154.41~MPa. Each new comparison requires its own modal basis, coordinate history and stress recovery.
+\newpage
+\heading{Does the contact model start with the gap measured in CAD?}
+An enclosure that presses on the cells at the start of a raised-case calculation will appear to stiffen the assembly before the real parts would touch. We checked the undeformed contact pairs separately from the load solution. The local fixture uses one target for the moving edge cell and another for the fixed neighboring cells and washers. The global assembly uses deformable targets. The search radius tells MAPDL which nearby facets to examine; it does not set the physical clearance.
+
+\begin{center}\small
+\begin{tabular}{p{.39\linewidth}rrr}\toprule
+At 3 mm tab stand-off & Default search & 0.6 mm search & 2 mm search\\\midrule
+Local: moving edge cell & $+0.212$ & $+0.212$ & $+0.212$\\
+Local: fixed cells and washers & $-7.685$ & $+0.200$ & $+0.200$\\
+Global: enclosure to assembly & $+0.199$ & $+0.199$ & $+0.199$\\\bottomrule
+\end{tabular}
+\captionof{table}{Initial native contact check in millimetres. Positive values are gaps; negative values are overlaps. Default search radii ranged from 10.6 to 11.1 mm. The 1 mm search reproduced the 0.6 and 2 mm columns.}
+\end{center}
+
+The CAD solids do not intersect at this stand-off. We rejected the first raised local calculation because its 7.685 mm overlap contradicted that independent check. It did not reach a converged load increment. The replacement uses a 1 mm search radius for the two added contact pairs and leaves the nickel clamp contacts unchanged. The comparison calls for the cell travel at first closure, contact pressure, penetration, and load transferred to the case mounts.
+
+The finite-element gap is sampled at contact detection points on a curved mesh. The closest point on each exact cell surface is 0.144--0.161 mm from the case. The sideways travel to first rigid contact at the edge cell is 0.163 mm in positive X and 0.308 mm in negative X. Those are different measurements: the shortest distance can be oblique, and a loaded cell can rotate. Agreement among search radii checks the search procedure; it does not establish mesh convergence of contact onset or case stiffness.
+
+\heading{Why the flush installation needs a separate check}
+The flush STEP has real interference. In the local model, a 2 mm search recovered the 1.178 mm crown overlap of the moving cell. A 1 mm search found only 1.000 mm, and a 0.6 mm search found only 0.598 mm. Tightening the search around the flush configuration can therefore hide real interference. Conversely, the default global search reported a peak overlap of 10.093 mm, versus 1.848 mm with a 2 mm search. These values identify a contact-model discrepancy. They do not establish an installation force. The flush comparison requires a verified path into contact, including the washers and strips, and force balance in the installed assembly before the vibration solve.
 \end{document}

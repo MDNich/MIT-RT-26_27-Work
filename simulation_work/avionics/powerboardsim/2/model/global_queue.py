@@ -32,10 +32,12 @@ def jobs():
         if (ROOT/f'validation/{name}_input.json').is_file():yield name,''
     # Run a paired edge-cell fixture early while the full global series is still pending.
     yield 'bare_lateral_friction_locked',''
-    yield 'stand3_nylon_lateral_friction_locked','bare_lateral_friction_locked'
+    yield 'stand3_nylon_lateral_friction_locked_pin1','bare_lateral_friction_locked'
     yield 'stand3_nylon_static',''
     # Establish the first complete reference and one cased comparison before the remaining variants.
     for branch in ['bare','stand3_nylon','flush_nylon','stand3_aluminium','flush_aluminium']:
+        if branch.startswith('flush_') and not (ROOT/'validation/flush_global_installation_release.json').exists():
+            log('Holding flush branch pending verified installation: '+branch);continue
         if branch not in ('bare','stand3_nylon'):
             yield branch+'_static',''
         yield branch+'_basis',branch+'_static'
@@ -46,9 +48,13 @@ def jobs():
         if branch!='bare':
             for case in ('original','refined'):yield branch+'_'+case,''
     local_cases=read(ROOT/'validation/local_jobs.json')
-    for case,meta in local_cases.items():
-        if case in ('bare_lateral_friction_locked','stand3_nylon_lateral_friction_locked'):continue
-        yield case,'' if case.startswith('bare_') else 'bare_'+meta['source']
+    # The original local contact search failed the CAD check. Release only separately
+    # sealed raised successors; flush still needs a verified nickel contact surface.
+    for case in local_cases:
+        if case.startswith('bare_') and case!='bare_lateral_friction_locked':yield case,''
+    for case,meta in read(ROOT/'validation/local_contact_retries.json').items():
+        if case!='stand3_nylon_lateral_friction_locked_pin1':
+            yield case,'bare_'+meta['source']
 
 def result_path(case):
     local='_lateral_' in case or '_damage_' in case

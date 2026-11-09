@@ -13,7 +13,7 @@ $exe='C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe'
 $env:ANSYSLMD_LICENSE_FILE='1055@localhost'
 if (!(Test-Path -LiteralPath $exe)){throw "Missing solver $exe"}
 if (Test-Path -LiteralPath $work){throw "Preserving existing job $work"}
-$active=@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(ANSYS\d+|mapdl|mpiexec|hydra_pmi_proxy)$' })
+$active=@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(ANSYS|ANSYS\d+|mapdl|mpiexec|hydra_pmi_proxy)$' })
 if ($active.Count){throw "Another native job is running"}
 New-Item -ItemType Directory -Path $work -Force|Out-Null
 New-Item -ItemType Directory -Path $out -Force|Out-Null
@@ -34,7 +34,7 @@ try {
         $parents=@($manifest.files|Where-Object name -match $pattern)
         if ($parents.Count -lt 3) {throw 'Parent restart files missing'}
         $needed=($parents|Measure-Object bytes -Sum).Sum
-        if ((Get-PSDrive C).Free -lt $needed+9000000000){throw "Insufficient space for parent and solver scratch"}
+        if ((Get-PSDrive C).Free -lt $needed+12000000000){throw "Insufficient space for parent and solver scratch"}
         $stage.parent=$Parent
         foreach($row in $parents){
             $to=Join-Path $work $row.name
