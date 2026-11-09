@@ -1,12 +1,14 @@
 """Integrate actuator work and compare measured states bracketing a common force on two verified native paths."""
+import argparse
 import json
 import numpy as np
 from compare_pull import ROOT,series
 from audit_local import table
 
 
-def audit():
-    keys=('bare_lateral_friction_locked','stand3_nylon_lateral_friction_locked_pin1')
+def audit(material='nylon'):
+    assert material in ('nylon','aluminium')
+    keys=('bare_lateral_friction_locked','stand3_'+material+'_lateral_friction_locked_pin1')
     paths=[];out={}
     for key in keys:
         proof,records=series(key)
@@ -30,8 +32,10 @@ def audit():
        cased_native_neighboring_states=[dict(force_N=float(ff),travel_mm=float(xx),peak_nickel_plastic_strain=float(pp)) for xx,ff,pp in zip(x[br],f[br],p[br])],
        cased_interpolant=dict(travel_mm=float(np.interp(goal,f[br],x[br])),peak_nickel_plastic_strain=float(np.interp(goal,f[br],p[br]))),
        interpretation='Work is external sideways actuator work after washer lock, not energy dissipation. Adjacent converged states span first contact; the force-matched cased values are interpolated, not a native force-controlled endpoint.')
-    (ROOT/'validation/pulls/raised_nylon_work.json').write_text(json.dumps(result,indent=2)+'\n')
+    (ROOT/'validation/pulls'/('raised_'+material+'_work.json')).write_text(json.dumps(result,indent=2)+'\n')
     return result
 
 
-if __name__=='__main__':print(json.dumps(audit(),indent=2))
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('material',nargs='?',choices=['nylon','aluminium'],default='nylon')
+    print(json.dumps(audit(p.parse_args().material),indent=2))

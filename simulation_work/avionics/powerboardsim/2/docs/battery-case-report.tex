@@ -97,25 +97,28 @@ The finite-element gap is sampled at contact detection points on a curved mesh. 
 \heading{Why the flush installation needs a separate check}
 The flush STEP has real interference. In the local model, a 2 mm search recovered the 1.178 mm crown overlap of the moving cell. A 1 mm search found only 1.000 mm, and a 0.6 mm search found only 0.598 mm. Tightening the search around the flush configuration can therefore hide real interference. Conversely, the default global search reported a peak overlap of 10.093 mm, versus 1.848 mm with a 2 mm search. These values identify a contact-model discrepancy. They do not establish an installation force. The flush comparison requires a verified path into contact, including the washers and strips, and force balance in the installed assembly before the vibration solve.
 \newpage
-\heading{The raised case restrains the edge cell once its air gap closes}
-In the first completed cased comparison, the four nylon screws held the printed case at a 3~mm stand-off. As before, a pilot moved the outer cell in positive X while leaving its other translations and rotations free. The two force curves follow one another until the moving cell engages the enclosure. The last open state was at 0.1956~mm and the first closed state at 0.2206~mm. The rigid CAD translation of 0.1634~mm provides a reference for the geometry; compliance, rotation and contact-surface discretization affect the native onset.
+\heading{Both raised cases restrain the edge cell after contact}
+The local fixture pulls the outer cell in positive X. Its other translations and rotations are free. With the case on a 3~mm stand-off, the last open state was at 0.196~mm and the first closed state at 0.221~mm for either screw material. Under the 8.54~N load that moved the bare cell 0.50~mm, both cased cells travelled about 0.20~mm. The interpolated estimates were 0.207~mm with nylon and 0.202~mm with aluminium. Both lie in the same 0.025~mm interval between native states.
 
-\begin{center}\includegraphics[width=.97\linewidth]{figures/stand3_nylon_lateral_friction_locked_pin1.pdf}
-\captionof{figure}{Native converged states in the bare and raised/nylon fixtures. Shading brackets the onset of cell-to-case contact. The dashed line is the force transmitted through the case supports. The right panel shows the largest reported equivalent plastic strain in the two active nickel strips.}\end{center}
+\begin{center}\includegraphics[width=.94\linewidth]{figures/raised-pull-comparison.pdf}
+\captionof{figure}{All three native pull histories. The blue band brackets first contact. The dashed aluminium segment extends from the last state below both PLA tensile references to states above at least one reference.}\end{center}
 
-\begin{center}\small\begin{tabular}{lrr}\toprule
-At 0.500 mm prescribed cell travel & Bare fixture & Raised case, nylon\\\midrule
-Cell reaction in X [N]&8.54&138.53\\
-Load reaching the four case screw supports in X [N]&---&112.15\\
-Load reaching the original clamp supports in X [N]&8.54&26.38\\
-Sideways work applied to the cell [mJ]&3.30&21.41\\
-Peak equivalent plastic strain in nickel [\%]&1.254&1.509\\\bottomrule
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+At 0.420625 mm prescribed cell travel & Bare & Raised nylon & Raised aluminium\\\midrule
+Cell reaction in X [N] &8.26&100.99&209.96\\
+Load on four case supports in X [N] &---&80.00&174.54\\
+Peak equivalent plastic strain in nickel [\%] &1.013&1.176&1.370\\
+External work applied to cell [mJ] &2.63&11.91&22.56\\
+Energy stored in printed case [mJ] &---&5.41&12.93\\
+Energy stored in four screw shanks [mJ] &---&2.05&2.61\\\bottomrule
 \end{tabular}\end{center}
 
-At the same travel the cell required 16.2 times as much force with the case. About 81\% of that force reached the four screw supports and none reached the fixed neighboring-cell/washer support. At the same \emph{force} as the bare endpoint (8.54~N), the raised fixture instead traveled between 0.196 and 0.221~mm; linear interpolation gives 0.207~mm. At the two cased states bracketing 8.54~N (7.13 and 10.32~N), peak nickel plastic strain was 0.355\% and 0.435\%, compared with 1.254\% at the bare endpoint. Interpolation gives about 0.39\%; the solver did not impose 8.54~N on the cased fixture. Forcing both systems to 0.50~mm instead increased the cased peak strain by 20\%. Integrating reaction over travel gives 3.30~mJ bare and 21.41~mJ cased. This is external work at the cell; it includes elastic storage and does not measure energy dissipated in the case.
+At a fixed travel the stiffer aluminium attachment increased both the case load and the strain in the nickel. At a fixed 8.54~N, the native states bracketing that force instead gave 0.36--0.44\% peak nickel plastic strain for the two cased curves, versus 1.25\% bare. Integrating native nodal forces and moments over the displacements of the PLA and shanks independently reproduced their stored energies within 0.009\% of each component's maximum change.
 
-\heading{How much confidence to place in the comparison}
-Both fixtures completed 33 consecutive equilibrium states. At the cased endpoint, 15 active-cell contact faces were closed. Across the full path, the largest penetration at a closed corner was 0.0116~mm. Independently summing the native contact forces agreed with the case-support resultant to within 0.00086~N. The two nickel strips have no direct contact with the raised enclosure in this local model. The fixed screw tops represent a stiffer support than a flexible PCB can provide. At 0.50~mm the printed case reached 28.6~MPa in-plane and 23.5~MPa through the layers, below the respective 52.3 and 40.5~MPa coupon references throughout the pull. The most tensile nylon screw fibre reached 30.5~MPa, with 29.3~MPa from bending. The screw grade and strength remain unverified. Nickel rupture requires a separate damage model. Reverse and refined pulls, flexible-board response and the other screw/seating variants remain open.
+\heading{Where the aluminium comparison leaves the coupon range}
+With aluminium screws, peak in-plane PLA tension crossed 52.3~MPa between 0.421 and 0.446~mm. Through-layer tension crossed 40.5~MPa between 0.446 and 0.471~mm. Both peaks were within 0.54~mm of the idealized screw bearing. At 0.50~mm the elastic continuation returned 291.5~N with aluminium, versus 138.5~N with nylon and 8.54~N bare. The nylon case stayed below both references, reaching 28.6 and 23.5~MPa. Its most tensile shank fibre reached 30.5~MPa, including 29.3~MPa from bending.
+
+All fixtures saved 33 converged states. Peak penetration at a loaded cell/case corner was 0.0116~mm with nylon and 0.0198~mm with aluminium. The native cell contact forces and case-support reactions balanced to within 0.0019~N. These pulls assume fixed screw tops and omit direct PLA-to-nickel contact. Installed joint compliance and the printed part's measured strength determine how well the calculated forces transfer to the assembly.
 \newpage
 \heading{Both raised cases reduce board deflection during tightening}
 The bare board and both 3~mm stand-off assemblies completed eight equilibrium states under the same six-bolt tightening sequence. Each original bolt carried 750~N before its length was locked and retained 749.996--750.000~N afterward. The two cased models differ only in the properties assigned to the four case screws. The load in this comparison comes from the six original bolts.
@@ -355,7 +358,7 @@ High X, high Y & 327 & 4.9 & 2.418\\\bottomrule
 
 The first through-layer tensile stress crossed 40.5~MPa between 0.95 and 1.10~mm, at a node tied to the idealized screw bearing. In-plane tension crossed 52.3~MPa at 1.10--1.25~mm. When the search excluded points within 2~mm of tied bearing nodes, both references were first crossed at 1.25--1.40~mm. The latter interval follows the first crossing of the 15~$\mu$m hardware-penetration screen (1.10--1.25~mm). At 2.75~mm the contact field reached 71~$\mu$m penetration. The four drive reactions summed to 1.255~kN in this elastic continuation. Neither coupon response beyond its measured range nor the contact law supports an installation-load rating.
 
-The combined result reproduced all 28 saved equilibria from the 12 partitions. A second native contact readback included all 8,038 hardware faces across three solver-generated groups. At 0.95~mm travel, before the first coupon crossing, the four original outer battery bolts gained 10.3--14.0~N above their 750~N locked preload. The two centre bolts changed by $-0.9$ and $+1.4$~N. The four outer washers were the only hardware surfaces intersecting the PLA at 0.65, 2.675 and 2.75~mm.
+The combined result reproduced all 28 saved equilibria from the 12 partitions. A second native contact readback included all 8,038 hardware faces across three solver-generated groups. At 0.95~mm travel, before the first coupon crossing, the four original outer battery bolts gained 10.3--14.0~N above their 750~N locked preload. The two centre bolts changed by $-0.9$ and $+1.4$~N. The four outer washers were the only hardware surfaces intersecting the PLA at 0.65, 2.675 and 2.75~mm. At 0.95~mm the four drives had supplied 25.59~mJ of work. Relative to the locked state, the PCB stored 8.81~mJ, the PLA 8.01~mJ and the four screws 6.59~mJ. The difference between drive work and the sum over all element stiffness energies was 1.00~mJ. Integrating every other saved state gave 28.41~mJ of drive work.
 
 \newpage
 \heading{The raised nylon case lowers the transverse load on all three cells}
