@@ -12,6 +12,32 @@ from audit_local import ROOT,read,table
 from film_identity import digest,verified,write_json
 
 
+def shell_components(corners,node_count):
+    edges=np.stack((corners.ravel(),np.roll(corners,-1,axis=1).ravel()))
+    graph=coo_matrix((np.ones(edges.shape[1]),edges),shape=(node_count,node_count))
+    return connected_components(graph,directed=False)
+
+
+def strip_terminals(ids,node_strip,strips,mesh):
+    terminals=[]
+    for strip in strips:
+        groups=[]
+        for key in ('attachment','clamp'):
+            picked=np.searchsorted(ids,mesh[key])
+            assert np.array_equal(ids[picked],mesh[key])
+            group=picked[node_strip[picked]==strip]
+            assert len(group)
+            groups.append(group)
+        assert not np.intersect1d(*groups).size
+        terminals.append(groups)
+    return terminals
+
+
+def surviving_paths(corners,node_count,terminals,removed):
+    _,labels=shell_components(corners[~removed],node_count)
+    return [bool(np.intersect1d(labels[attachment],labels[clamp]).size) for attachment,clamp in terminals]
+
+
 def check(folder,mesh_file,rst_sha):
     verified(folder/'tear.rst',rst_sha)
     mesh=read(mesh_file)
@@ -35,15 +61,18 @@ def check(folder,mesh_file,rst_sha):
     assert np.allclose(area,reverse,rtol=1e-5,atol=1e-8)
     assert np.isclose(area.sum(),mesh['area'],rtol=1e-6) and area.min()>0
     # Identify the two strips by mesh connectivity, independent of shell numbering.
-    edges=np.stack([corners.ravel(),np.roll(corners,-1,axis=1).ravel()])
-    compact=np.searchsorted(ids,edges)
-    graph=coo_matrix((np.ones(compact.shape[1]),compact),shape=(len(ids),len(ids)))
-    count,components=connected_components(graph,directed=False)
+    compact=inv.reshape(corners.shape)
+    count,node_strip=shell_components(compact,len(ids))
     assert count==2
-    components=components[inv.reshape(corners.shape)]
-    assert np.all(components==components[:,:1])
-    component=components[:,0]
+    per_corner_strip=node_strip[compact]
+    assert np.all(per_corner_strip==per_corner_strip[:,:1])
+    component=per_corner_strip[:,0]
     strips=sorted(range(count),key=lambda i:centres[component==i,1].mean())
+    terminals=strip_terminals(ids,node_strip,strips,mesh)
+    previous_removal=np.zeros(len(elements),dtype=bool)
+    connected=surviving_paths(compact,len(ids),terminals,previous_removal)
+    assert connected==[True,True]
+    connectivity=[]
     inventory=table(folder/'set_inventory.csv');history=table(folder/'history.csv')
     ls=rst._resultheader['ls_table']
     valid=np.flatnonzero(ls[:,1]!=999999)
@@ -68,6 +97,13 @@ def check(folder,mesh_file,rst_sha):
         hits=fields>threshold
         active=hits.any(1)
         state=dict(native_set=int(match['set']),time=float(row['time']),travel_mm=float(row['ux_mm']),force_N=float(row['fx_N']))
+        degraded=fields>=.99
+        removed=degraded.all(axis=1)
+        if not np.array_equal(removed,previous_removal):
+            connected=surviving_paths(compact,len(ids),terminals,removed)
+            previous_removal=removed
+        connectivity.append(dict(**state,pull_step=jj,any_section_d99=int(degraded.any(axis=1).sum()),
+                                 all_sections_d99=int(removed.sum()),connected_low_high_Y=connected))
         if not active.any():
             previous=state
             continue
@@ -87,7 +123,7 @@ def check(folder,mesh_file,rst_sha):
         paths.append(dict(native_set=state['native_set'],elements=int(active.sum()),
                           reference_shell_area_mm2=float(area[active].sum()),peak_value=details['peak_value']))
         previous=state
-    return dict(rst_sha256=rst_sha,mesh_sha256=digest(mesh_file),history_sha256=digest(folder/'history.csv'),
+    footprint=dict(rst_sha256=rst_sha,mesh_sha256=digest(mesh_file),history_sha256=digest(folder/'history.csv'),
         inventory_sha256=digest(folder/'set_inventory.csv'),per_state_field_hash_manifest_sha256=hashes.hexdigest(),
         pull_states=len(history),native_sets=len(valid),excluded_diagnostic_sets=len(ls)-len(valid),threshold=threshold,
         reference_area_both_strips_mm2=float(area.sum()),first_mapped_crossing=onset,last_mapped_state=last,
@@ -95,6 +131,25 @@ def check(folder,mesh_file,rst_sha):
         scope='Reference midsurface area of elements whose top, middle or bottom section summary exceeds the threshold. '
               'The maps cover saved lateral-pull states; installation is covered by the separate set inventory. '
               'Local corner damage, crack area and separation require separate evidence.')
+    return footprint,connectivity
+
+
+def path_summary(history):
+    force=np.abs([r['force_N'] for r in history])
+    peak=int(np.argmax(force))
+    assert force[peak]>0
+    changes=[]
+    for row in history:
+        if not changes or any(changes[-1][k]!=row[k] for k in ('any_section_d99','all_sections_d99','connected_low_high_Y')):
+            changes.append(row)
+    return dict(pull_states=len(history),peak_force_state=history[peak],last_state=history[-1],
+                peak_is_endpoint=peak==len(history)-1,end_drop_from_peak_fraction=float(1-force[-1]/force[peak]),
+                state_changes=changes,
+                rule='In a copy of the shell connectivity, remove each element whose top, middle and bottom '
+                     'section summaries all reach 0.99. Test each strip from its battery attachment to its clamp.',
+                scope='Discrete diagnostic over saved lateral pull states. The solver retains all elements. '
+                      'Section-average damage, model connectivity and a drop in total fixture reaction do not '
+                      'individually establish physical fracture.')
 
 
 def run(case,campaign,october=None):
@@ -123,11 +178,26 @@ def run(case,campaign,october=None):
         required={f'damage_{int(i)}.csv' for i in table(folder/'history.csv')['step']}
         assert required.issubset(hashes)
         sha=hashes['tear.rst']
-    data=check(folder,mesh,sha)
+    data,history=check(folder,mesh,sha)
     data.update(case=case,campaign=campaign if october is None else 'October source')
-    write_json(ROOT/'validation/damage_footprint'/(case+'.json'),data)
+    output=ROOT/'validation/damage_footprint'/(case+'.json')
+    shape=path_summary(history)
+    if october is not None:
+        prior_file=folder/'path_assessment.json'
+        prior=read(prior_file)
+        assert prior['case']=='cont_nominal'
+        for old,new in zip(prior['states'],history,strict=True):
+            assert old['step']==new['pull_step'] and np.isclose(old['ux_mm'],new['travel_mm'])
+            assert np.isclose(old['force_N'],abs(new['force_N']))
+            assert old['elements_any_sample_d99']==new['any_section_d99']
+            assert old['elements_all_three_samples_d99']==new['all_sections_d99']
+            assert old['path_from_battery_to_clamp_after_virtual_removal']==new['connected_low_high_Y']
+        shape['october_path_assessment_sha256']=digest(prior_file)
+    write_json(output,data)
+    shape.update(case=case,campaign=data['campaign'],footprint_sha256=digest(output),rst_sha256=sha)
+    write_json(ROOT/'validation/damage_paths'/(case+'.json'),shape)
     print(case,data['pull_states'],data['last_mapped_state'],flush=True)
-    return ROOT/'validation/damage_footprint'/(case+'.json')
+    return output
 
 
 if __name__=='__main__':

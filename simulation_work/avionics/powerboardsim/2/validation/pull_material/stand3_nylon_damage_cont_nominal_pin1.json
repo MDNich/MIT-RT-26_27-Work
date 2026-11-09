@@ -1,0 +1,2419 @@
+{
+  "case": "stand3_nylon_damage_cont_nominal_pin1",
+  "campaign": "nov08_01",
+  "rst_sha256": "e4bd0d018d03b40d4a1781e5b6c2236f74f7ea04b69d218e29445c9c84f53fc5",
+  "input_sha256": "e742e338439737afde123bc0f86c89acee69e8503753aa58c93abda472734c8f",
+  "contact_verdict_sha256": "be758dc42a10840d80f7f2f2d54d7cd2115f2126ee8a10b1198088557ba485f9",
+  "reference_properties": {
+    "in_plane_tension_MPa": 52.3,
+    "layer_tension_MPa": 40.5,
+    "layer_tensile_strain": 0.017839918128331
+  },
+  "coupon_engineering_elongation_Z": 0.018,
+  "PLA_source": "https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla",
+  "beam_section_reference": "https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_BEAM188.html",
+  "case_tets": 16108,
+  "section_nodes_per_beam_end": 25,
+  "constitutive_relative_errors": {
+    "PLA": 8.385182488842232e-08,
+    "beam_axial": 8.343449808940581e-08,
+    "beam_direct_vs_native_force_area": 0.008228554957750772
+  },
+  "temperature_scope": "Printed coupons under uniaxial tension. The material directions follow the layer orientation assumed for the case.",
+  "first_reference_crossings": {
+    "all_in_plane_tension_MPa": {
+      "last_below_mm": 0.675,
+      "first_above_mm": 0.725,
+      "native_set": 29,
+      "value": 61.05468401680476,
+      "limit": 52.3,
+      "element": 1213808,
+      "node": 800021,
+      "xyz_mm": [
+        6.359999999999999,
+        10.3885,
+        -5.629435558099998
+      ],
+      "distance_to_bearing_nodes_mm": 4.358028368557638
+    },
+    "away_in_plane_tension_MPa": {
+      "last_below_mm": 0.675,
+      "first_above_mm": 0.725,
+      "native_set": 29,
+      "value": 61.05468401680476,
+      "limit": 52.3,
+      "element": 1213808,
+      "node": 800021,
+      "xyz_mm": [
+        6.359999999999999,
+        10.3885,
+        -5.629435558099998
+      ],
+      "distance_to_bearing_nodes_mm": 4.358028368557638
+    },
+    "all_layer_tension_MPa": {
+      "last_below_mm": 0.8,
+      "first_above_mm": 0.825,
+      "native_set": 33,
+      "value": 41.05055618286133,
+      "limit": 40.5,
+      "element": 1215221,
+      "node": 801646,
+      "xyz_mm": [
+        4.979601147300001,
+        115.20953984,
+        -5.629435558099998
+      ],
+      "distance_to_bearing_nodes_mm": 0.0
+    },
+    "away_layer_tension_MPa": {
+      "last_below_mm": 0.825,
+      "first_above_mm": 0.838125,
+      "native_set": 34,
+      "value": 41.49837112426758,
+      "limit": 40.5,
+      "element": 1211455,
+      "node": 800021,
+      "xyz_mm": [
+        6.359999999999999,
+        10.3885,
+        -5.629435558099998
+      ],
+      "distance_to_bearing_nodes_mm": 4.358028368557638
+    },
+    "all_layer_tensile_strain": {
+      "last_below_mm": 0.890625,
+      "first_above_mm": 0.90046875,
+      "native_set": 39,
+      "value": 0.017879551276564598,
+      "limit": 0.017839918128331,
+      "element": 1214267,
+      "node": 801152,
+      "xyz_mm": [
+        21.5265,
+        27.791833333,
+        -13.55118
+      ],
+      "distance_to_bearing_nodes_mm": 28.361873884224963
+    },
+    "away_layer_tensile_strain": {
+      "last_below_mm": 0.890625,
+      "first_above_mm": 0.90046875,
+      "native_set": 39,
+      "value": 0.017879551276564598,
+      "limit": 0.017839918128331,
+      "element": 1214267,
+      "node": 801152,
+      "xyz_mm": [
+        21.5265,
+        27.791833333,
+        -13.55118
+      ],
+      "distance_to_bearing_nodes_mm": 28.361873884224963
+    }
+  },
+  "history": [
+    {
+      "native_set": 1,
+      "loadstep": 1,
+      "time_s": 0.05,
+      "travel_mm": 0.0,
+      "cell_force_N": -2.4810868667145862e-05,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 1.0094034290140169e-11,
+      "away_in_plane_tension_MPa": 1.0094034290140169e-11,
+      "all_four_in_plane_tension_MPa": 3.1299350882263222e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 2.0328955532833426e-11,
+      "away_layer_tension_MPa": 7.977300243988683e-12,
+      "all_four_layer_tension_MPa": 2.0202663326973624e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.863637246377677e-15,
+      "away_layer_tensile_strain": 2.167673779054002e-15,
+      "all_four_layer_tensile_strain": 6.768442287557693e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          2.003575083620035e-11,
+          1.2275414192075562e-11,
+          1.087789320425303e-11,
+          1.5724373192416152e-11
+        ],
+        "maximum_direct_MPa": [
+          1.0538161527217857e-12,
+          1.4291882933191446e-12,
+          2.2891632675808153e-12,
+          1.2924697071141058e-28
+        ],
+        "peak_abs_bending_MPa": [
+          1.8981935211485023e-11,
+          1.0846225898756417e-11,
+          8.58873003858722e-12,
+          1.5724373192416152e-11
+        ]
+      }
+    },
+    {
+      "native_set": 2,
+      "loadstep": 1,
+      "time_s": 0.1,
+      "travel_mm": 0.0,
+      "cell_force_N": -4.9622024085588653e-05,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 9.027528036205777e-12,
+      "away_in_plane_tension_MPa": 8.080353776109746e-12,
+      "all_four_in_plane_tension_MPa": 2.5905133054955633e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.9544654089598268e-11,
+      "away_layer_tension_MPa": 7.643947974589338e-12,
+      "all_four_layer_tension_MPa": 1.8400565359594223e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.714513707881768e-15,
+      "away_layer_tensile_strain": 2.219866890472628e-15,
+      "all_four_layer_tensile_strain": 6.867230681404778e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.9801518064133106e-11,
+          7.913631555611644e-12,
+          7.861207344805887e-12,
+          1.1932235581546546e-11
+        ],
+        "maximum_direct_MPa": [
+          7.630543836763606e-13,
+          6.462348535570529e-29,
+          0.0,
+          1.4538085687555713e-13
+        ],
+        "peak_abs_bending_MPa": [
+          1.9038463680456745e-11,
+          7.913631555611644e-12,
+          7.861207344805887e-12,
+          1.3076817586676198e-11
+        ]
+      }
+    },
+    {
+      "native_set": 3,
+      "loadstep": 1,
+      "time_s": 0.17500000000000002,
+      "travel_mm": 0.0,
+      "cell_force_N": -8.683880383840281e-05,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.623820145513403e-12,
+      "away_in_plane_tension_MPa": 8.59083691371579e-12,
+      "all_four_in_plane_tension_MPa": 2.879780303136379e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.9009373936063056e-11,
+      "away_layer_tension_MPa": 6.943133134401647e-12,
+      "all_four_layer_tension_MPa": 1.5839916184257063e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.429286374322197e-15,
+      "away_layer_tensile_strain": 2.0103535027275136e-15,
+      "all_four_layer_tensile_strain": 5.866006503410265e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.9038935358817177e-11,
+          1.0203131742270166e-11,
+          8.84873077588999e-12,
+          1.2117711348236249e-11
+        ],
+        "maximum_direct_MPa": [
+          1.526108934319856e-12,
+          6.661338120645885e-13,
+          1.4538090024364402e-13,
+          1.0053559915991494e-12
+        ],
+        "peak_abs_bending_MPa": [
+          1.751282642449732e-11,
+          9.536997930205578e-12,
+          8.703349875646347e-12,
+          1.1112355430362847e-11
+        ]
+      }
+    },
+    {
+      "native_set": 4,
+      "loadstep": 1,
+      "time_s": 0.28750000000000003,
+      "travel_mm": 0.0,
+      "cell_force_N": -0.00014266429762522067,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.852943582736356e-12,
+      "away_in_plane_tension_MPa": 8.852943582736356e-12,
+      "all_four_in_plane_tension_MPa": 2.9976375968517203e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.8674596591328196e-11,
+      "away_layer_tension_MPa": 7.587136648112836e-12,
+      "all_four_layer_tension_MPa": 1.6334824118335867e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.289627158462434e-15,
+      "away_layer_tensile_strain": 1.993543075098068e-15,
+      "all_four_layer_tensile_strain": 5.352075086015231e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.480910706563865e-11,
+          1.2315891362302267e-11,
+          9.346915602614914e-12,
+          1.062722652933612e-11
+        ],
+        "maximum_direct_MPa": [
+          2.42301502213077e-13,
+          1.429188282477123e-12,
+          1.4538088289640927e-13,
+          1.2924697071141058e-28
+        ],
+        "peak_abs_bending_MPa": [
+          1.6716743790276284e-11,
+          1.0886703079825145e-11,
+          9.20153514689416e-12,
+          1.062722652933612e-11
+        ]
+      }
+    },
+    {
+      "native_set": 5,
+      "loadstep": 1,
+      "time_s": 0.45625000000000004,
+      "travel_mm": 0.0,
+      "cell_force_N": -0.00022818995960487108,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.723497587379495e-12,
+      "away_in_plane_tension_MPa": 8.361124182102744e-12,
+      "all_four_in_plane_tension_MPa": 3.358801781543166e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.93806186377099e-11,
+      "away_layer_tension_MPa": 7.1535494541863365e-12,
+      "all_four_layer_tension_MPa": 1.5668896301973545e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.4612152812689475e-15,
+      "away_layer_tensile_strain": 2.068981946962904e-15,
+      "all_four_layer_tensile_strain": 5.7839898913144075e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.795830845141566e-11,
+          8.701122287957386e-12,
+          9.490615758556142e-12,
+          9.294729916287103e-12
+        ],
+        "maximum_direct_MPa": [
+          3.2311742677852645e-28,
+          6.661338473011591e-13,
+          0.0,
+          1.2924697071141058e-28
+        ],
+        "peak_abs_bending_MPa": [
+          1.795830845141566e-11,
+          8.034988491613729e-12,
+          9.490615758556142e-12,
+          9.294729916287103e-12
+        ]
+      }
+    },
+    {
+      "native_set": 6,
+      "loadstep": 1,
+      "time_s": 0.65625,
+      "travel_mm": 0.0,
+      "cell_force_N": -0.00033054465796472404,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.661055038786848e-12,
+      "away_in_plane_tension_MPa": 8.586365211905888e-12,
+      "all_four_in_plane_tension_MPa": 2.961607006302866e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.8979042296085602e-11,
+      "away_layer_tension_MPa": 7.071436318450974e-12,
+      "all_four_layer_tension_MPa": 1.5582606819469769e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.430832209450936e-15,
+      "away_layer_tensile_strain": 1.975677667932817e-15,
+      "all_four_layer_tensile_strain": 5.766664891169505e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.7255369008650767e-11,
+          9.712139079076643e-12,
+          9.442042633867054e-12,
+          1.0949309167673782e-11
+        ],
+        "maximum_direct_MPa": [
+          2.5849394142282115e-28,
+          -4.722925701786465e-13,
+          0.0,
+          1.4538087205438756e-13
+        ],
+        "peak_abs_bending_MPa": [
+          1.7255369008650767e-11,
+          1.0184431649255288e-11,
+          9.442042633867054e-12,
+          1.2093891161419312e-11
+        ]
+      }
+    },
+    {
+      "native_set": 7,
+      "loadstep": 1,
+      "time_s": 0.85625,
+      "travel_mm": 0.0,
+      "cell_force_N": -0.00043318472597366777,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.711377076880442e-12,
+      "away_in_plane_tension_MPa": 8.288784842450716e-12,
+      "all_four_in_plane_tension_MPa": 3.028738745942708e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.9268251924553503e-11,
+      "away_layer_tension_MPa": 6.980181189997214e-12,
+      "all_four_layer_tension_MPa": 1.5760116735957785e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.485420941802634e-15,
+      "away_layer_tensile_strain": 2.0201701910697173e-15,
+      "all_four_layer_tensile_strain": 5.79788705500089e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.7628612111741937e-11,
+          9.857753502373612e-12,
+          9.142150578234087e-12,
+          1.1446692552152804e-11
+        ],
+        "maximum_direct_MPa": [
+          2.5849394142282115e-28,
+          2.423015039749055e-13,
+          1.453809089172614e-13,
+          1.2924697071141058e-28
+        ],
+        "peak_abs_bending_MPa": [
+          1.7628612111741937e-11,
+          9.615452197078755e-12,
+          8.996769669316827e-12,
+          1.1446692552152804e-11
+        ]
+      }
+    },
+    {
+      "native_set": 8,
+      "loadstep": 1,
+      "time_s": 1.0,
+      "travel_mm": 0.0,
+      "cell_force_N": -0.0005069821270031744,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 1.0448815873516733e-11,
+      "away_in_plane_tension_MPa": 1.0448815873516733e-11,
+      "all_four_in_plane_tension_MPa": 3.432476891201606e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.9613487917125028e-11,
+      "away_layer_tension_MPa": 8.665938626417624e-12,
+      "all_four_layer_tension_MPa": 2.145851855581138e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.6982062060647546e-15,
+      "away_layer_tensile_strain": 2.275405146758198e-15,
+      "all_four_layer_tensile_strain": 7.181456082034482e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.8691539635518062e-11,
+          1.2245257759169181e-11,
+          7.356068011665773e-12,
+          1.675486138719151e-11
+        ],
+        "maximum_direct_MPa": [
+          7.630545107990654e-13,
+          6.462348535570529e-29,
+          -4.722926191032695e-13,
+          1.2924697071141058e-28
+        ],
+        "peak_abs_bending_MPa": [
+          1.7928485124718998e-11,
+          1.2245257759169181e-11,
+          9.548311191188985e-12,
+          1.675486138719151e-11
+        ]
+      }
+    },
+    {
+      "native_set": 9,
+      "loadstep": 2,
+      "time_s": 2.0,
+      "travel_mm": 0.0,
+      "cell_force_N": -0.0005069821168051965,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.55155963669467e-12,
+      "away_in_plane_tension_MPa": 8.266478231835927e-12,
+      "all_four_in_plane_tension_MPa": 2.9735152556766705e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.8876351870478203e-11,
+      "away_layer_tension_MPa": 6.908863238452856e-12,
+      "all_four_layer_tension_MPa": 1.577713979426798e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.388995134603678e-15,
+      "away_layer_tensile_strain": 2.0006098709770105e-15,
+      "all_four_layer_tensile_strain": 5.849990169168871e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.816582821667634e-11,
+          9.80773275094382e-12,
+          8.485351310483225e-12,
+          1.126709489596145e-11
+        ],
+        "maximum_direct_MPa": [
+          7.630544373443682e-13,
+          6.661338234487113e-13,
+          2.907617831400533e-13,
+          2.2891632351902756e-12
+        ],
+        "peak_abs_bending_MPa": [
+          1.740277377933197e-11,
+          9.14159893833713e-12,
+          8.77908728678066e-12,
+          1.0779806190481384e-11
+        ]
+      }
+    },
+    {
+      "native_set": 10,
+      "loadstep": 3,
+      "time_s": 2.025,
+      "travel_mm": 0.025,
+      "cell_force_N": 1.3931671852122438,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 1.0565106895626975e-11,
+      "away_in_plane_tension_MPa": 1.0565106895626975e-11,
+      "all_four_in_plane_tension_MPa": 3.5321790955384094e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 2.0389499116868492e-11,
+      "away_layer_tension_MPa": 9.015457651251335e-12,
+      "all_four_layer_tension_MPa": 2.1730603427805306e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.859399964059037e-15,
+      "away_layer_tensile_strain": 2.3700161858676615e-15,
+      "all_four_layer_tensile_strain": 7.272230485409357e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.9494171901723867e-11,
+          1.3711060065091374e-11,
+          1.187111433459398e-11,
+          1.795430817908006e-11
+        ],
+        "maximum_direct_MPa": [
+          1.0538162280738368e-12,
+          2.28916328235307e-12,
+          2.289163264328209e-12,
+          1.0053559915991494e-12
+        ],
+        "peak_abs_bending_MPa": [
+          1.844035567365003e-11,
+          1.2875983727042399e-11,
+          9.581951165675562e-12,
+          1.694895218748091e-11
+        ]
+      }
+    },
+    {
+      "native_set": 11,
+      "loadstep": 3,
+      "time_s": 2.05,
+      "travel_mm": 0.05,
+      "cell_force_N": 2.7870905309395226,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.430953308518866e-12,
+      "away_in_plane_tension_MPa": 7.508576038811927e-12,
+      "all_four_in_plane_tension_MPa": 3.191500325548832e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.8711889676614746e-11,
+      "away_layer_tension_MPa": 7.069313016916379e-12,
+      "all_four_layer_tension_MPa": 1.65087908621242e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.3680632564111295e-15,
+      "away_layer_tensile_strain": 2.0498904596065026e-15,
+      "all_four_layer_tensile_strain": 6.176884006315947e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.5688960547377562e-11,
+          7.634452098281841e-12,
+          9.093685873762247e-12,
+          8.987525133841157e-12
+        ],
+        "maximum_direct_MPa": [
+          2.4230152281291826e-13,
+          3.2311742677852644e-29,
+          -4.722926455306975e-13,
+          9.692058923005744e-14
+        ],
+        "peak_abs_bending_MPa": [
+          1.7596597195849996e-11,
+          7.634452098281841e-12,
+          9.565978783838275e-12,
+          9.750579803204789e-12
+        ]
+      }
+    },
+    {
+      "native_set": 12,
+      "loadstep": 3,
+      "time_s": 2.0875,
+      "travel_mm": 0.0875,
+      "cell_force_N": 4.841044685246957,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.85666991207308e-12,
+      "away_in_plane_tension_MPa": 8.85666991207308e-12,
+      "all_four_in_plane_tension_MPa": 2.848094006909443e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.7904582330641183e-11,
+      "away_layer_tension_MPa": 6.915314675060014e-12,
+      "all_four_layer_tension_MPa": 1.547934740456225e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.1853154745245406e-15,
+      "away_layer_tensile_strain": 1.885191679276482e-15,
+      "all_four_layer_tensile_strain": 5.790454870284326e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.44201603782812e-11,
+          1.108503740188116e-11,
+          9.52926799968612e-12,
+          1.1692147250386142e-11
+        ],
+        "maximum_direct_MPa": [
+          2.423015222708172e-13,
+          1.4291881914041405e-12,
+          0.0,
+          1.2924697071141058e-28
+        ],
+        "peak_abs_bending_MPa": [
+          1.6327796484652547e-11,
+          9.655849730894062e-12,
+          9.52926799968612e-12,
+          1.1692147250386142e-11
+        ]
+      }
+    },
+    {
+      "native_set": 13,
+      "loadstep": 3,
+      "time_s": 2.1374999999999997,
+      "travel_mm": 0.1375,
+      "cell_force_N": 6.9690658541614,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.517701340303278e-12,
+      "away_in_plane_tension_MPa": 8.517701340303278e-12,
+      "all_four_in_plane_tension_MPa": 2.7312407609792624e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.7549210348799527e-11,
+      "away_layer_tension_MPa": 6.570582619658261e-12,
+      "all_four_layer_tension_MPa": 1.5242586923550072e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.08634136870377e-15,
+      "away_layer_tensile_strain": 1.8654875753409787e-15,
+      "all_four_layer_tensile_strain": 5.702601671786294e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.787334516500927e-11,
+          1.0522165604098799e-11,
+          9.44577836087257e-12,
+          1.0318401515163611e-11
+        ],
+        "maximum_direct_MPa": [
+          1.7684103573861743e-12,
+          1.4291882477826534e-12,
+          1.4538090823963506e-13,
+          1.2924697071141058e-28
+        ],
+        "peak_abs_bending_MPa": [
+          1.6104934807623096e-11,
+          9.092977356316145e-12,
+          9.337655846024944e-12,
+          1.0318401515163611e-11
+        ]
+      }
+    },
+    {
+      "native_set": 14,
+      "loadstep": 3,
+      "time_s": 2.1874999999999996,
+      "travel_mm": 0.1875,
+      "cell_force_N": 8.261713236997169,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 8.48520201825263e-12,
+      "away_in_plane_tension_MPa": 8.348401010306903e-12,
+      "all_four_in_plane_tension_MPa": 3.0430277488409153e-12,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 1.8802799595096786e-11,
+      "away_layer_tension_MPa": 6.925816257302708e-12,
+      "all_four_layer_tension_MPa": 1.4906449555610046e-12,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 5.337948270520924e-15,
+      "away_layer_tensile_strain": 1.9468501721224378e-15,
+      "all_four_layer_tensile_strain": 5.500003566901682e-16,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          1.807209763782236e-11,
+          9.918002183417762e-12,
+          9.060990673048774e-12,
+          9.585555439672877e-12
+        ],
+        "maximum_direct_MPa": [
+          1.0538162161476127e-12,
+          6.462348535570529e-29,
+          0.0,
+          1.453808698859832e-13
+        ],
+        "peak_abs_bending_MPa": [
+          1.7018281421674746e-11,
+          9.918002183417762e-12,
+          9.060990673048774e-12,
+          1.073013741986588e-11
+        ]
+      }
+    },
+    {
+      "native_set": 15,
+      "loadstep": 3,
+      "time_s": 2.21875,
+      "travel_mm": 0.21875,
+      "cell_force_N": 11.159842606620431,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 0.8652270396437449,
+      "away_in_plane_tension_MPa": 0.8652270396437449,
+      "all_four_in_plane_tension_MPa": 0.14312979338517617,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 0.7211132049560547,
+      "away_layer_tension_MPa": 0.4056183695793152,
+      "all_four_layer_tension_MPa": 0.11030549556016922,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.00021252076840028167,
+      "away_layer_tensile_strain": 0.00018571365217212588,
+      "all_four_layer_tensile_strain": 9.278902143705636e-05,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          0.6956161260604858,
+          0.4135359227657318,
+          0.6608363389968872,
+          0.36762672662734985
+        ],
+        "maximum_direct_MPa": [
+          0.008052647151052951,
+          0.031189221963286398,
+          -0.0005497290403582156,
+          -0.005820136535912752
+        ],
+        "peak_abs_bending_MPa": [
+          0.6875818485766649,
+          0.3823469749069773,
+          0.6614029159815982,
+          0.3734473100118339
+        ]
+      }
+    },
+    {
+      "native_set": 16,
+      "loadstep": 3,
+      "time_s": 2.25,
+      "travel_mm": 0.25,
+      "cell_force_N": 22.641291139777444,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 4.7800430489115815,
+      "away_in_plane_tension_MPa": 4.7800430489115815,
+      "all_four_in_plane_tension_MPa": 0.8260806138784867,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 3.9570090770721436,
+      "away_layer_tension_MPa": 2.259023666381836,
+      "all_four_layer_tension_MPa": 0.6205546259880066,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.0011724327923730016,
+      "away_layer_tensile_strain": 0.0010240463307127357,
+      "all_four_layer_tensile_strain": 0.0005120879504829645,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          3.905991792678833,
+          2.3974967002868652,
+          3.723536729812622,
+          2.133040428161621
+        ],
+        "maximum_direct_MPa": [
+          0.053218165040016176,
+          0.17476899355649947,
+          -0.003608914650976658,
+          -0.032078095972537995
+        ],
+        "peak_abs_bending_MPa": [
+          3.853350683301687,
+          2.22275281816721,
+          3.7276768685504793,
+          2.165150441378355
+        ]
+      }
+    },
+    {
+      "native_set": 17,
+      "loadstep": 4,
+      "time_s": 2.275,
+      "travel_mm": 0.275,
+      "cell_force_N": 34.440627027562215,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 6.9037174880306456,
+      "away_in_plane_tension_MPa": 6.9037174880306456,
+      "all_four_in_plane_tension_MPa": 1.3999304710054925,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 5.381156921386719,
+      "away_layer_tension_MPa": 3.4513299465179443,
+      "all_four_layer_tension_MPa": 0.8794069886207581,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.0016585950506851077,
+      "away_layer_tensile_strain": 0.0014569760533049703,
+      "all_four_layer_tensile_strain": 0.00072958052624017,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          6.522222995758057,
+          4.910551071166992,
+          6.157481670379639,
+          4.500072956085205
+        ],
+        "maximum_direct_MPa": [
+          0.15602515235543252,
+          0.27404248237609863,
+          -0.01858901984989643,
+          -0.046367464661598204
+        ],
+        "peak_abs_bending_MPa": [
+          6.367652576565742,
+          4.636962579488754,
+          6.1774500186741355,
+          4.546926360428333
+        ]
+      }
+    },
+    {
+      "native_set": 18,
+      "loadstep": 4,
+      "time_s": 2.3,
+      "travel_mm": 0.3,
+      "cell_force_N": 46.21016198953396,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 9.023386215914527,
+      "away_in_plane_tension_MPa": 9.023386215914527,
+      "all_four_in_plane_tension_MPa": 2.087413237300708,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 6.803920745849609,
+      "away_layer_tension_MPa": 4.645455360412598,
+      "all_four_layer_tension_MPa": 1.1374428272247314,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.0021452687215059996,
+      "away_layer_tensile_strain": 0.0018886723555624485,
+      "all_four_layer_tensile_strain": 0.0009466423070989549,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          9.142845153808594,
+          7.589354991912842,
+          8.594623565673828,
+          6.999675750732422
+        ],
+        "maximum_direct_MPa": [
+          0.26037617728114126,
+          0.3745318666100502,
+          -0.032976600229740145,
+          -0.05996606707572937
+        ],
+        "peak_abs_bending_MPa": [
+          8.8851782143116,
+          7.216111487448216,
+          8.630206133127212,
+          7.060994927585125
+        ]
+      }
+    },
+    {
+      "native_set": 19,
+      "loadstep": 4,
+      "time_s": 2.3375,
+      "travel_mm": 0.3375,
+      "cell_force_N": 63.81795389999106,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 12.208317771180909,
+      "away_in_plane_tension_MPa": 12.208317771180909,
+      "all_four_in_plane_tension_MPa": 2.8176779317968554,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 9.38377857208252,
+      "away_layer_tension_MPa": 6.442948341369629,
+      "all_four_layer_tension_MPa": 1.5779080390930176,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.002878847299143672,
+      "away_layer_tensile_strain": 0.0025368446949869394,
+      "all_four_layer_tensile_strain": 0.0012728982837870717,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          13.082239151000977,
+          11.612776756286621,
+          12.257072448730469,
+          10.752803802490234
+        ],
+        "maximum_direct_MPa": [
+          0.4192192959785461,
+          0.5277397844195366,
+          -0.053319212682545185,
+          -0.07912983864545822
+        ],
+        "peak_abs_bending_MPa": [
+          12.668317002058028,
+          11.088333064988255,
+          12.315556393265725,
+          10.8353658670187
+        ]
+      }
+    },
+    {
+      "native_set": 20,
+      "loadstep": 4,
+      "time_s": 2.375,
+      "travel_mm": 0.375,
+      "cell_force_N": 81.76317859769162,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 15.709254233052562,
+      "away_in_plane_tension_MPa": 15.709254233052562,
+      "all_four_in_plane_tension_MPa": 3.796986340584551,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 12.64827823638916,
+      "away_layer_tension_MPa": 8.440909385681152,
+      "all_four_layer_tension_MPa": 2.0415120124816895,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.003787814639508724,
+      "away_layer_tensile_strain": 0.0031206486746668816,
+      "all_four_layer_tensile_strain": 0.001567450468428433,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          17.07305145263672,
+          15.757623672485352,
+          15.960899353027344,
+          14.61838436126709
+        ],
+        "maximum_direct_MPa": [
+          0.5867274117469787,
+          0.683919837474823,
+          -0.07331896275281906,
+          -0.09646772205829621
+        ],
+        "peak_abs_bending_MPa": [
+          16.495068594813347,
+          15.080044748783111,
+          16.042827790379523,
+          14.721429962515831
+        ]
+      }
+    },
+    {
+      "native_set": 21,
+      "loadstep": 4,
+      "time_s": 2.425,
+      "travel_mm": 0.425,
+      "cell_force_N": 105.91832482691973,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 20.932787098314236,
+      "away_in_plane_tension_MPa": 20.932787098314236,
+      "all_four_in_plane_tension_MPa": 5.166248137439031,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 17.066932678222656,
+      "away_layer_tension_MPa": 11.259448051452637,
+      "all_four_layer_tension_MPa": 2.6888952255249023,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.005079849623143673,
+      "away_layer_tensile_strain": 0.0038484283722937107,
+      "all_four_layer_tensile_strain": 0.0019354030955582857,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          22.450302124023438,
+          21.34545135498047,
+          20.948354721069336,
+          19.82806396484375
+        ],
+        "maximum_direct_MPa": [
+          0.8161652398109436,
+          0.8973237848281861,
+          -0.09801089406013488,
+          -0.11728841841220855
+        ],
+        "peak_abs_bending_MPa": [
+          21.64884765893221,
+          20.46011219739914,
+          21.060998967289926,
+          19.957770394086836
+        ]
+      }
+    },
+    {
+      "native_set": 22,
+      "loadstep": 4,
+      "time_s": 2.4749999999999996,
+      "travel_mm": 0.475,
+      "cell_force_N": 129.80948867598755,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 26.131986207987325,
+      "away_in_plane_tension_MPa": 26.131986207987325,
+      "all_four_in_plane_tension_MPa": 6.527012679547269,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 21.419355392456055,
+      "away_layer_tension_MPa": 14.060075759887695,
+      "all_four_layer_tension_MPa": 3.394667387008667,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.006355929188430309,
+      "away_layer_tensile_strain": 0.004595906473696232,
+      "all_four_layer_tensile_strain": 0.0023137477692216635,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          27.853055953979492,
+          26.796743392944336,
+          25.96599769592285,
+          24.9019718170166
+        ],
+        "maximum_direct_MPa": [
+          1.041747155189514,
+          1.1172222423553466,
+          -0.1182117772102356,
+          -0.13665528416633607
+        ],
+        "peak_abs_bending_MPa": [
+          26.83363843679428,
+          25.69857712268829,
+          26.10659039735794,
+          25.058430533111096
+        ]
+      }
+    },
+    {
+      "native_set": 23,
+      "loadstep": 4,
+      "time_s": 2.5,
+      "travel_mm": 0.5,
+      "cell_force_N": 141.82469970167148,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 28.75220718530663,
+      "away_in_plane_tension_MPa": 28.75220718530663,
+      "all_four_in_plane_tension_MPa": 7.212327203401992,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 23.599340438842773,
+      "away_layer_tension_MPa": 15.468730926513672,
+      "all_four_layer_tension_MPa": 3.7434637546539307,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.006995855830609798,
+      "away_layer_tensile_strain": 0.004939638078212738,
+      "all_four_layer_tensile_strain": 0.00248806644231081,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          30.58782196044922,
+          29.51665687561035,
+          28.506755828857422,
+          27.431127548217773
+        ],
+        "maximum_direct_MPa": [
+          1.1550621461868287,
+          1.2301496648788453,
+          -0.12696060717105864,
+          -0.14579828023910524
+        ],
+        "peak_abs_bending_MPa": [
+          29.459571330547334,
+          28.309662971496582,
+          28.660673694014548,
+          27.601032592356205
+        ]
+      }
+    },
+    {
+      "native_set": 24,
+      "loadstep": 5,
+      "time_s": 2.525,
+      "travel_mm": 0.525,
+      "cell_force_N": 153.83551908190753,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 31.368384646987153,
+      "away_in_plane_tension_MPa": 31.368384646987153,
+      "all_four_in_plane_tension_MPa": 7.903857160314274,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 25.787830352783203,
+      "away_layer_tension_MPa": 16.877243041992188,
+      "all_four_layer_tension_MPa": 4.094569683074951,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.007636637426912785,
+      "away_layer_tensile_strain": 0.005267770495265722,
+      "all_four_layer_tensile_strain": 0.002653237199410796,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          33.306739807128906,
+          32.24659729003906,
+          31.031042098999023,
+          29.9708251953125
+        ],
+        "maximum_direct_MPa": [
+          1.2699750423431397,
+          1.342866475582123,
+          -0.13528838098049165,
+          -0.1540045541524887
+        ],
+        "peak_abs_bending_MPa": [
+          32.06840719997883,
+          30.931417965888976,
+          31.19824609339237,
+          30.153705062866212
+        ]
+      }
+    },
+    {
+      "native_set": 25,
+      "loadstep": 5,
+      "time_s": 2.55,
+      "travel_mm": 0.55,
+      "cell_force_N": 165.803058252833,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 33.96159640039308,
+      "away_in_plane_tension_MPa": 33.96159640039308,
+      "all_four_in_plane_tension_MPa": 8.599091919677996,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 27.98029136657715,
+      "away_layer_tension_MPa": 18.27634048461914,
+      "all_four_layer_tension_MPa": 4.449971675872803,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.008275783620774746,
+      "away_layer_tensile_strain": 0.005523831117898226,
+      "all_four_layer_tensile_strain": 0.0027836309745907784,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          35.97856903076172,
+          34.99214553833008,
+          33.507652282714844,
+          32.52812576293945
+        ],
+        "maximum_direct_MPa": [
+          1.3867549991607666,
+          1.4536170864105225,
+          -0.1436004000902176,
+          -0.1608839339017868
+        ],
+        "peak_abs_bending_MPa": [
+          34.6285312974453,
+          33.57123581409454,
+          33.68840841829777,
+          32.72316213786602
+        ]
+      }
+    },
+    {
+      "native_set": 26,
+      "loadstep": 5,
+      "time_s": 2.5875,
+      "travel_mm": 0.5875,
+      "cell_force_N": 183.89992076028813,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 37.88150684048844,
+      "away_in_plane_tension_MPa": 37.88150684048844,
+      "all_four_in_plane_tension_MPa": 9.654110179545253,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 31.29135513305664,
+      "away_layer_tension_MPa": 20.393003463745117,
+      "all_four_layer_tension_MPa": 4.984234809875488,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.009240941144526005,
+      "away_layer_tensile_strain": 0.00587270874530077,
+      "all_four_layer_tensile_strain": 0.002961668884381652,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          40.02760314941406,
+          39.12497329711914,
+          37.261932373046875,
+          36.37638854980469
+        ],
+        "maximum_direct_MPa": [
+          1.5634023666381835,
+          1.6232478713989258,
+          -0.15465709507465364,
+          -0.17030989289283752
+        ],
+        "peak_abs_bending_MPa": [
+          38.50934259966016,
+          37.54273150205612,
+          37.46247551679611,
+          36.589611520767214
+        ]
+      }
+    },
+    {
+      "native_set": 27,
+      "loadstep": 5,
+      "time_s": 2.625,
+      "travel_mm": 0.625,
+      "cell_force_N": 202.11863322807454,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 41.823753855619486,
+      "away_in_plane_tension_MPa": 41.823753855619486,
+      "all_four_in_plane_tension_MPa": 10.726321644862674,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 34.63375473022461,
+      "away_layer_tension_MPa": 22.526626586914062,
+      "all_four_layer_tension_MPa": 5.521872043609619,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.010213501751422882,
+      "away_layer_tensile_strain": 0.0062216888181865215,
+      "all_four_layer_tensile_strain": 0.0031398888677358627,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          44.097557067871094,
+          43.281124114990234,
+          41.03534698486328,
+          40.24669647216797
+        ],
+        "maximum_direct_MPa": [
+          1.742793002128601,
+          1.7954553508758544,
+          -0.16431235730648042,
+          -0.17821219742298125
+        ],
+        "peak_abs_bending_MPa": [
+          42.40922125637531,
+          41.535938918590546,
+          41.255254940390586,
+          40.477649785876274
+        ]
+      }
+    },
+    {
+      "native_set": 28,
+      "loadstep": 5,
+      "time_s": 2.675,
+      "travel_mm": 0.675,
+      "cell_force_N": 389.4472283502123,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 48.789341974031004,
+      "away_in_plane_tension_MPa": 48.789341974031004,
+      "all_four_in_plane_tension_MPa": 12.66668711878275,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 34.82162857055664,
+      "away_layer_tension_MPa": 24.671539306640625,
+      "all_four_layer_tension_MPa": 5.955519199371338,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.010426397435367107,
+      "away_layer_tensile_strain": 0.008966448716819286,
+      "all_four_layer_tensile_strain": 0.0039235251024365425,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          48.241085052490234,
+          47.70454788208008,
+          43.903343200683594,
+          43.51984405517578
+        ],
+        "maximum_direct_MPa": [
+          2.3406467974185943,
+          2.397172244787216,
+          -0.12915322482585906,
+          -0.13572260856628418
+        ],
+        "peak_abs_bending_MPa": [
+          45.9570717561245,
+          45.36043202400207,
+          44.09841035783291,
+          43.720178735852244
+        ]
+      }
+    },
+    {
+      "native_set": 29,
+      "loadstep": 5,
+      "time_s": 2.7249999999999996,
+      "travel_mm": 0.725,
+      "cell_force_N": 889.9756491630626,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 61.05468401680476,
+      "away_in_plane_tension_MPa": 61.05468401680476,
+      "all_four_in_plane_tension_MPa": 16.566651158508677,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 32.48988342285156,
+      "away_layer_tension_MPa": 29.1776065826416,
+      "all_four_layer_tension_MPa": 6.05845308303833,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.012070154771208763,
+      "away_layer_tensile_strain": 0.012070154771208763,
+      "all_four_layer_tensile_strain": 0.004603122361004353,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          51.66645812988281,
+          51.19798278808594,
+          45.04109191894531,
+          44.70408630371094
+        ],
+        "maximum_direct_MPa": [
+          3.7994042253494262,
+          3.8333842277526857,
+          -0.0025851206667721273,
+          -0.011456238180398941
+        ],
+        "peak_abs_bending_MPa": [
+          47.89440738677978,
+          47.38849265098572,
+          45.11758448421955,
+          44.788344429433344
+        ]
+      }
+    },
+    {
+      "native_set": 30,
+      "loadstep": 5,
+      "time_s": 2.75,
+      "travel_mm": 0.75,
+      "cell_force_N": 1124.5948834519559,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 66.76605411412602,
+      "away_in_plane_tension_MPa": 66.76605411412602,
+      "all_four_in_plane_tension_MPa": 18.389581763110527,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 34.94184875488281,
+      "away_layer_tension_MPa": 32.33826446533203,
+      "all_four_layer_tension_MPa": 6.096238136291504,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01294058095663786,
+      "away_layer_tensile_strain": 0.01294058095663786,
+      "all_four_layer_tensile_strain": 0.004742220044136047,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          53.25118637084961,
+          52.795772552490234,
+          45.55588912963867,
+          45.20338821411133
+        ],
+        "maximum_direct_MPa": [
+          4.480672087669372,
+          4.5206699419021605,
+          0.05707672640681267,
+          0.04829694002866745
+        ],
+        "peak_abs_bending_MPa": [
+          48.77782564163208,
+          48.27853414535522,
+          45.575229906216265,
+          45.230379246324304
+        ]
+      }
+    },
+    {
+      "native_set": 31,
+      "loadstep": 6,
+      "time_s": 2.775,
+      "travel_mm": 0.775,
+      "cell_force_N": 1346.9002593487405,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 72.21628132739883,
+      "away_in_plane_tension_MPa": 72.21628132739883,
+      "all_four_in_plane_tension_MPa": 19.664345763647685,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 37.26853942871094,
+      "away_layer_tension_MPa": 35.36090850830078,
+      "all_four_layer_tension_MPa": 6.134013652801514,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.013801042921841145,
+      "away_layer_tensile_strain": 0.013801042921841145,
+      "all_four_layer_tensile_strain": 0.004877789877355099,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          57.24407196044922,
+          57.77213668823242,
+          46.071495056152344,
+          45.68498611450195
+        ],
+        "maximum_direct_MPa": [
+          5.14613618850708,
+          5.197372455596923,
+          0.13014546513557435,
+          0.1055360671877861
+        ],
+        "peak_abs_bending_MPa": [
+          52.113491735458375,
+          52.59471321105957,
+          46.01945895805955,
+          45.65639688767493
+        ]
+      }
+    },
+    {
+      "native_set": 32,
+      "loadstep": 6,
+      "time_s": 2.8,
+      "travel_mm": 0.8,
+      "cell_force_N": 1532.0774668383187,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 76.91829931950353,
+      "away_in_plane_tension_MPa": 76.91829931950353,
+      "all_four_in_plane_tension_MPa": 20.762061894671056,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 39.25729751586914,
+      "away_layer_tension_MPa": 37.97308349609375,
+      "all_four_layer_tension_MPa": 6.167396068572998,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.015077698975801468,
+      "away_layer_tensile_strain": 0.015077698975801468,
+      "all_four_layer_tensile_strain": 0.005167592316865921,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          62.739688873291016,
+          63.31002426147461,
+          46.736427307128906,
+          46.3110237121582
+        ],
+        "maximum_direct_MPa": [
+          5.724299812316895,
+          5.78139820098877,
+          0.37748754739761353,
+          0.33762286067008973
+        ],
+        "peak_abs_bending_MPa": [
+          57.053150672912594,
+          57.57134855270386,
+          46.43806533932686,
+          46.05131420731544
+        ]
+      }
+    },
+    {
+      "native_set": 33,
+      "loadstep": 6,
+      "time_s": 2.8249999999999997,
+      "travel_mm": 0.825,
+      "cell_force_N": 1700.342107568268,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 81.2189199986484,
+      "away_in_plane_tension_MPa": 81.2189199986484,
+      "all_four_in_plane_tension_MPa": 21.755166882312547,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 41.05055618286133,
+      "away_layer_tension_MPa": 40.36905288696289,
+      "all_four_layer_tension_MPa": 6.444746017456055,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.016232658177614212,
+      "away_layer_tensile_strain": 0.016232658177614212,
+      "all_four_layer_tensile_strain": 0.005461675114929676,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          67.73684692382812,
+          68.2823486328125,
+          47.36772918701172,
+          46.837703704833984
+        ],
+        "maximum_direct_MPa": [
+          6.253786334991455,
+          6.30539234161377,
+          0.609711867570877,
+          0.5520702505111694
+        ],
+        "peak_abs_bending_MPa": [
+          61.543187370300295,
+          62.04272298812866,
+          46.83764077425003,
+          46.36386499762535
+        ]
+      }
+    },
+    {
+      "native_set": 34,
+      "loadstep": 6,
+      "time_s": 2.838125,
+      "travel_mm": 0.838125,
+      "cell_force_N": 1781.885896817644,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 83.24286423736265,
+      "away_in_plane_tension_MPa": 83.24286423736265,
+      "all_four_in_plane_tension_MPa": 22.226375613577343,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 41.89767074584961,
+      "away_layer_tension_MPa": 41.49837112426758,
+      "all_four_layer_tension_MPa": 6.617333889007568,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.016596972942352295,
+      "away_layer_tensile_strain": 0.016596972942352295,
+      "all_four_layer_tensile_strain": 0.005530118010938168,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          70.21344757080078,
+          70.8275146484375,
+          47.645877838134766,
+          47.101585388183594
+        ],
+        "maximum_direct_MPa": [
+          6.5062463760375975,
+          6.554025020599365,
+          0.717595751285553,
+          0.65573520809412
+        ],
+        "peak_abs_bending_MPa": [
+          63.77888256072998,
+          64.3508511352539,
+          47.00792806386948,
+          46.5241224360466
+        ]
+      }
+    },
+    {
+      "native_set": 35,
+      "loadstep": 6,
+      "time_s": 2.85125,
+      "travel_mm": 0.85125,
+      "cell_force_N": 1855.2807101801568,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 85.03655768125415,
+      "away_in_plane_tension_MPa": 85.03655768125415,
+      "all_four_in_plane_tension_MPa": 22.644309134916824,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 42.64761734008789,
+      "away_layer_tension_MPa": 42.50011444091797,
+      "all_four_layer_tension_MPa": 6.770247459411621,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.016888953745365143,
+      "away_layer_tensile_strain": 0.016888953745365143,
+      "all_four_layer_tensile_strain": 0.005578467156738043,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          72.59529113769531,
+          73.18681335449219,
+          47.89130401611328,
+          47.33583068847656
+        ],
+        "maximum_direct_MPa": [
+          6.730633754730224,
+          6.7748370933532716,
+          0.8132073813676834,
+          0.7477808368206024
+        ],
+        "peak_abs_bending_MPa": [
+          65.9470196723938,
+          66.50003639221191,
+          47.15767485380173,
+          46.6662791800499
+        ]
+      }
+    },
+    {
+      "native_set": 36,
+      "loadstep": 6,
+      "time_s": 2.8709374999999997,
+      "travel_mm": 0.8709375,
+      "cell_force_N": 1939.0985646385452,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.02478637255001,
+      "away_in_plane_tension_MPa": 87.02478637255001,
+      "all_four_in_plane_tension_MPa": 23.106758846195344,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.611534118652344,
+      "away_layer_tension_MPa": 43.611534118652344,
+      "all_four_layer_tension_MPa": 6.938231945037842,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.017286378890275955,
+      "away_layer_tensile_strain": 0.017286378890275955,
+      "all_four_layer_tensile_strain": 0.005656684748828411,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.22650146484375,
+          75.7878646850586,
+          48.167633056640625,
+          47.596763610839844
+        ],
+        "maximum_direct_MPa": [
+          6.979208641052246,
+          7.018524551391602,
+          0.9195126909017562,
+          0.8489371044933796
+        ],
+        "peak_abs_bending_MPa": [
+          68.34188661575317,
+          68.86962781906128,
+          47.327541761398315,
+          46.825936675071716
+        ]
+      }
+    },
+    {
+      "native_set": 37,
+      "loadstep": 6,
+      "time_s": 2.8807812499999996,
+      "travel_mm": 0.88078125,
+      "cell_force_N": 1966.0640547258188,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.62143513438265,
+      "away_in_plane_tension_MPa": 87.62143513438265,
+      "all_four_in_plane_tension_MPa": 23.244728020780883,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.94529342651367,
+      "away_layer_tension_MPa": 43.94529342651367,
+      "all_four_layer_tension_MPa": 6.987672805786133,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.0174688883125782,
+      "away_layer_tensile_strain": 0.0174688883125782,
+      "all_four_layer_tensile_strain": 0.005701208487153053,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          76.00785827636719,
+          76.5575180053711,
+          48.254154205322266,
+          47.676475524902344
+        ],
+        "maximum_direct_MPa": [
+          7.0533356285095214,
+          7.090633068084717,
+          0.9515602028369904,
+          0.878598148226738
+        ],
+        "peak_abs_bending_MPa": [
+          69.05281839370727,
+          69.57087076187133,
+          47.38196105003357,
+          46.87594474315643
+        ]
+      }
+    },
+    {
+      "native_set": 38,
+      "loadstep": 6,
+      "time_s": 2.8906249999999996,
+      "travel_mm": 0.890625,
+      "cell_force_N": 1981.9227459169908,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.93295346426518,
+      "away_in_plane_tension_MPa": 87.93295346426518,
+      "all_four_in_plane_tension_MPa": 23.3148868000391,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 44.11970901489258,
+      "away_layer_tension_MPa": 44.11970901489258,
+      "all_four_layer_tension_MPa": 7.011503219604492,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01766073703765869,
+      "away_layer_tensile_strain": 0.01766073703765869,
+      "all_four_layer_tensile_strain": 0.0057564047165215015,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          76.40007781982422,
+          76.94213104248047,
+          48.30646514892578,
+          47.71550750732422
+        ],
+        "maximum_direct_MPa": [
+          7.091028461456299,
+          7.12650619506836,
+          0.9688643276691437,
+          0.8928503412008285
+        ],
+        "peak_abs_bending_MPa": [
+          69.40917604446412,
+          69.92147750854492,
+          47.41695533514023,
+          46.90070610761642
+        ]
+      }
+    },
+    {
+      "native_set": 39,
+      "loadstep": 6,
+      "time_s": 2.9004687499999995,
+      "travel_mm": 0.90046875,
+      "cell_force_N": 1992.3749271575698,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 88.11148872542631,
+      "away_in_plane_tension_MPa": 88.11148872542631,
+      "all_four_in_plane_tension_MPa": 23.353380971480554,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 44.219730377197266,
+      "away_layer_tension_MPa": 44.219730377197266,
+      "all_four_layer_tension_MPa": 7.023617267608643,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.017879551276564598,
+      "away_layer_tensile_strain": 0.017879551276564598,
+      "all_four_layer_tensile_strain": 0.005824137479066849,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          76.6083755493164,
+          77.14701080322266,
+          48.34404754638672,
+          47.73612594604492
+        ],
+        "maximum_direct_MPa": [
+          7.111522083282471,
+          7.145495624542236,
+          0.9793151593208314,
+          0.8999342548847199
+        ],
+        "peak_abs_bending_MPa": [
+          69.59790830612182,
+          70.10835847854614,
+          47.44410256385803,
+          46.91423431158066
+        ]
+      }
+    },
+    {
+      "native_set": 40,
+      "loadstep": 6,
+      "time_s": 2.9103124999999994,
+      "travel_mm": 0.9103125,
+      "cell_force_N": 2007.2372300043617,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 88.41437496526277,
+      "away_in_plane_tension_MPa": 88.41437496526277,
+      "all_four_in_plane_tension_MPa": 23.421198581686117,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 44.389244079589844,
+      "away_layer_tension_MPa": 44.389244079589844,
+      "all_four_layer_tension_MPa": 7.047041416168213,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018137939274311066,
+      "away_layer_tensile_strain": 0.018137939274311066,
+      "all_four_layer_tensile_strain": 0.00590165751054883,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          76.98111724853516,
+          77.51803588867188,
+          48.39919662475586,
+          47.774837493896484
+        ],
+        "maximum_direct_MPa": [
+          7.147532520294189,
+          7.180188255310059,
+          0.9963201594352722,
+          0.9136559915542602
+        ],
+        "peak_abs_bending_MPa": [
+          69.93636600494385,
+          70.44649742126465,
+          47.48224184513092,
+          46.93920835971832
+        ]
+      }
+    },
+    {
+      "native_set": 41,
+      "loadstep": 6,
+      "time_s": 2.913757812499999,
+      "travel_mm": 0.9137578125,
+      "cell_force_N": 2008.5948709532186,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 88.42432627294112,
+      "away_in_plane_tension_MPa": 88.42432627294112,
+      "all_four_in_plane_tension_MPa": 23.42172185445373,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 44.39492416381836,
+      "away_layer_tension_MPa": 44.39492416381836,
+      "all_four_layer_tension_MPa": 7.046050548553467,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018232818692922592,
+      "away_layer_tensile_strain": 0.018232818692922592,
+      "all_four_layer_tensile_strain": 0.00593271991237998,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          76.97929382324219,
+          77.51464080810547,
+          48.407325744628906,
+          47.77391815185547
+        ],
+        "maximum_direct_MPa": [
+          7.147799282073975,
+          7.179713497161865,
+          0.997374575138092,
+          0.9130011510848999
+        ],
+        "peak_abs_bending_MPa": [
+          69.93422548294068,
+          70.44356086730957,
+          47.48933413743973,
+          46.93895016908645
+        ]
+      }
+    },
+    {
+      "native_set": 42,
+      "loadstep": 6,
+      "time_s": 2.9154804687499993,
+      "travel_mm": 0.91548046875,
+      "cell_force_N": 1988.9422500116093,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.89768709995118,
+      "away_in_plane_tension_MPa": 87.89768709995118,
+      "all_four_in_plane_tension_MPa": 23.29603442944299,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 44.1004753112793,
+      "away_layer_tension_MPa": 44.1004753112793,
+      "all_four_layer_tension_MPa": 6.998120307922363,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01826353371143341,
+      "away_layer_tensile_strain": 0.01826353371143341,
+      "all_four_layer_tensile_strain": 0.005957094021141529,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          76.2578353881836,
+          76.7987289428711,
+          48.34516143798828,
+          47.698299407958984
+        ],
+        "maximum_direct_MPa": [
+          7.0802630424499515,
+          7.1122056579589845,
+          0.9702098178863525,
+          0.8841886067390442
+        ],
+        "peak_abs_bending_MPa": [
+          69.27674928665161,
+          69.79166221618652,
+          47.454431586265564,
+          46.89220149993896
+        ]
+      }
+    },
+    {
+      "native_set": 43,
+      "loadstep": 6,
+      "time_s": 2.9163417968749994,
+      "travel_mm": 0.916341796875,
+      "cell_force_N": 1979.4865776570261,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.65343983102957,
+      "away_in_plane_tension_MPa": 87.65343983102957,
+      "all_four_in_plane_tension_MPa": 23.237442173196232,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.963993072509766,
+      "away_layer_tension_MPa": 43.963993072509766,
+      "all_four_layer_tension_MPa": 6.975398063659668,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01827971450984478,
+      "away_layer_tensile_strain": 0.01827971450984478,
+      "all_four_layer_tensile_strain": 0.005968975834548473,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.92214965820312,
+          76.4637222290039,
+          48.31673049926758,
+          47.662506103515625
+        ],
+        "maximum_direct_MPa": [
+          7.048906726837158,
+          7.080571842193604,
+          0.9576879715919495,
+          0.8705987155437469
+        ],
+        "peak_abs_bending_MPa": [
+          68.97077711105347,
+          69.48667249679565,
+          47.43856580972672,
+          46.87002031326294
+        ]
+      }
+    },
+    {
+      "native_set": 44,
+      "loadstep": 6,
+      "time_s": 2.9172031249999995,
+      "travel_mm": 0.917203125,
+      "cell_force_N": 1980.6679532292692,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.68181577797351,
+      "away_in_plane_tension_MPa": 87.68181577797351,
+      "all_four_in_plane_tension_MPa": 23.242928509649666,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.98002624511719,
+      "away_layer_tension_MPa": 43.98002624511719,
+      "all_four_layer_tension_MPa": 6.976273059844971,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018310675397515297,
+      "away_layer_tensile_strain": 0.018310675397515297,
+      "all_four_layer_tensile_strain": 0.005978237837553024,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.95382690429688,
+          76.49020385742188,
+          48.323036193847656,
+          47.66419219970703
+        ],
+        "maximum_direct_MPa": [
+          7.052135372161866,
+          7.08289514541626,
+          0.95948202252388,
+          0.8712578263878822
+        ],
+        "peak_abs_bending_MPa": [
+          68.99935947418213,
+          69.51096294403077,
+          47.44308194160462,
+          46.87104658365249
+        ]
+      }
+    },
+    {
+      "native_set": 45,
+      "loadstep": 6,
+      "time_s": 2.9180644531249995,
+      "travel_mm": 0.918064453125,
+      "cell_force_N": 1977.807195569985,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.61901284965862,
+      "away_in_plane_tension_MPa": 87.61901284965862,
+      "all_four_in_plane_tension_MPa": 23.2246422527232,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.94551467895508,
+      "away_layer_tension_MPa": 43.94551467895508,
+      "all_four_layer_tension_MPa": 6.9655375480651855,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018342388793826103,
+      "away_layer_tensile_strain": 0.018342388793826103,
+      "all_four_layer_tensile_strain": 0.005989590659737587,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.85519409179688,
+          76.37332153320312,
+          48.32014083862305,
+          47.64780807495117
+        ],
+        "maximum_direct_MPa": [
+          7.043521938323974,
+          7.071327362060547,
+          0.957017959356308,
+          0.8654345425963402
+        ],
+        "peak_abs_bending_MPa": [
+          68.90883199691773,
+          69.40509798049926,
+          47.44266780853272,
+          46.86049109697342
+        ]
+      }
+    },
+    {
+      "native_set": 46,
+      "loadstep": 6,
+      "time_s": 2.9189257812499996,
+      "travel_mm": 0.91892578125,
+      "cell_force_N": 1972.0496004926579,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.43952758983664,
+      "away_in_plane_tension_MPa": 87.43952758983664,
+      "all_four_in_plane_tension_MPa": 23.18684920837064,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.844215393066406,
+      "away_layer_tension_MPa": 43.844215393066406,
+      "all_four_layer_tension_MPa": 6.95705509185791,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018313568085432053,
+      "away_layer_tensile_strain": 0.018313568085432053,
+      "all_four_layer_tensile_strain": 0.005985395051538944,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.6262435913086,
+          76.17867279052734,
+          48.29332733154297,
+          47.63386535644531
+        ],
+        "maximum_direct_MPa": [
+          7.0211898231506344,
+          7.053840885162353,
+          0.9465347135066986,
+          0.859333217293024
+        ],
+        "peak_abs_bending_MPa": [
+          68.70113248825074,
+          69.22697095870971,
+          47.42636169672012,
+          46.85266720771789
+        ]
+      }
+    },
+    {
+      "native_set": 47,
+      "loadstep": 6,
+      "time_s": 2.9195717773437497,
+      "travel_mm": 0.919571777344,
+      "cell_force_N": 1974.2680847057177,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.4900077897768,
+      "away_in_plane_tension_MPa": 87.4900077897768,
+      "all_four_in_plane_tension_MPa": 23.198403622752622,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.87250900268555,
+      "away_layer_tension_MPa": 43.87250900268555,
+      "all_four_layer_tension_MPa": 6.96112585067749,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018323281779885292,
+      "away_layer_tensile_strain": 0.018323281779885292,
+      "all_four_layer_tensile_strain": 0.005986458621919155,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.69278717041016,
+          76.24243927001953,
+          48.30022430419922,
+          47.640625
+        ],
+        "maximum_direct_MPa": [
+          7.027514343261719,
+          7.059807415008545,
+          0.9492305111885071,
+          0.8617902234196663
+        ],
+        "peak_abs_bending_MPa": [
+          68.76166957855224,
+          69.28507915496826,
+          47.430555696487424,
+          46.85696647405624
+        ]
+      }
+    },
+    {
+      "native_set": 48,
+      "loadstep": 6,
+      "time_s": 2.9202177734375,
+      "travel_mm": 0.920217773437,
+      "cell_force_N": 1975.7115145502999,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.52229631476146,
+      "away_in_plane_tension_MPa": 87.52229631476146,
+      "all_four_in_plane_tension_MPa": 23.20508500053279,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.89075469970703,
+      "away_layer_tension_MPa": 43.89075469970703,
+      "all_four_layer_tension_MPa": 6.962677955627441,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018330087885260582,
+      "away_layer_tensile_strain": 0.018330087885260582,
+      "all_four_layer_tensile_strain": 0.005986649543046951,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.73336029052734,
+          76.27629089355469,
+          48.305171966552734,
+          47.64353942871094
+        ],
+        "maximum_direct_MPa": [
+          7.03149673461914,
+          7.06285623550415,
+          0.9510922646522522,
+          0.8628665903210639
+        ],
+        "peak_abs_bending_MPa": [
+          68.79845098495484,
+          69.31604650497437,
+          47.43364067554474,
+          46.85880346775055
+        ]
+      }
+    },
+    {
+      "native_set": 49,
+      "loadstep": 6,
+      "time_s": 2.92086376953125,
+      "travel_mm": 0.920863769531,
+      "cell_force_N": 1976.240421673081,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.52037537836426,
+      "away_in_plane_tension_MPa": 87.52037537836426,
+      "all_four_in_plane_tension_MPa": 23.20557954775367,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.88951110839844,
+      "away_layer_tension_MPa": 43.88951110839844,
+      "all_four_layer_tension_MPa": 6.964213848114014,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01832563243806362,
+      "away_layer_tensile_strain": 0.01832563243806362,
+      "all_four_layer_tensile_strain": 0.005984240211546421,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.73433685302734,
+          76.28242492675781,
+          48.30348587036133,
+          47.646217346191406
+        ],
+        "maximum_direct_MPa": [
+          7.0314096832275395,
+          7.063639354705811,
+          0.9507166802883148,
+          0.8635233649611473
+        ],
+        "peak_abs_bending_MPa": [
+          68.79952695846558,
+          69.32142124176025,
+          47.43232850790024,
+          46.860826597213745
+        ]
+      }
+    },
+    {
+      "native_set": 50,
+      "loadstep": 6,
+      "time_s": 2.921509765625,
+      "travel_mm": 0.921509765625,
+      "cell_force_N": 1972.4941371592652,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.4403438377087,
+      "away_in_plane_tension_MPa": 87.4403438377087,
+      "all_four_in_plane_tension_MPa": 23.181763868340987,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.845741271972656,
+      "away_layer_tension_MPa": 43.845741271972656,
+      "all_four_layer_tension_MPa": 6.949476718902588,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018333284184336662,
+      "away_layer_tensile_strain": 0.018333284184336662,
+      "all_four_layer_tensile_strain": 0.005986690986901522,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.61077117919922,
+          76.12799835205078,
+          48.29823303222656,
+          47.62386703491211
+        ],
+        "maximum_direct_MPa": [
+          7.020683403015137,
+          7.0482525062561034,
+          0.9476091551780701,
+          0.8557110758125782
+        ],
+        "peak_abs_bending_MPa": [
+          68.68606056213379,
+          69.18165971755981,
+          47.43019987344742,
+          46.84629729986191
+        ]
+      }
+    },
+    {
+      "native_set": 51,
+      "loadstep": 6,
+      "time_s": 2.9216347656250004,
+      "travel_mm": 0.921634765625,
+      "cell_force_N": 1972.938892443971,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.45012571702411,
+      "away_in_plane_tension_MPa": 87.45012571702411,
+      "all_four_in_plane_tension_MPa": 23.18408430466973,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.8512077331543,
+      "away_layer_tension_MPa": 43.8512077331543,
+      "all_four_layer_tension_MPa": 6.950395107269287,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01833498291671276,
+      "away_layer_tensile_strain": 0.01833498291671276,
+      "all_four_layer_tensile_strain": 0.005986860487610102,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.6239242553711,
+          76.1411361694336,
+          48.29948806762695,
+          47.625370025634766
+        ],
+        "maximum_direct_MPa": [
+          7.021918888092041,
+          7.049497203826904,
+          0.9481132531166077,
+          0.8562470497190953
+        ],
+        "peak_abs_bending_MPa": [
+          68.69804195404053,
+          69.19361799240113,
+          47.43094711065292,
+          46.847261435985565
+        ]
+      }
+    },
+    {
+      "native_set": 52,
+      "loadstep": 6,
+      "time_s": 2.9217597656250005,
+      "travel_mm": 0.921759765625,
+      "cell_force_N": 1966.7467814557995,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.25922447149134,
+      "away_in_plane_tension_MPa": 87.25922447149134,
+      "all_four_in_plane_tension_MPa": 23.14396791212227,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.74360656738281,
+      "away_layer_tension_MPa": 43.74360656738281,
+      "all_four_layer_tension_MPa": 6.941328525543213,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018279416486620903,
+      "away_layer_tensile_strain": 0.018279416486620903,
+      "all_four_layer_tensile_strain": 0.005973136518150568,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.38587188720703,
+          75.93264770507812,
+          48.267879486083984,
+          47.61065673828125
+        ],
+        "maximum_direct_MPa": [
+          6.998607158660889,
+          7.03077018737793,
+          0.9368915331363677,
+          0.8497836092207581
+        ],
+        "peak_abs_bending_MPa": [
+          68.48219915390014,
+          69.00282577514649,
+          47.410574924945834,
+          46.83902990341186
+        ]
+      }
+    },
+    {
+      "native_set": 53,
+      "loadstep": 6,
+      "time_s": 2.9218847656250007,
+      "travel_mm": 0.921884765625,
+      "cell_force_N": 1967.3538996076206,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.27446215245988,
+      "away_in_plane_tension_MPa": 87.27446215245988,
+      "all_four_in_plane_tension_MPa": 23.147339004781667,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.75217056274414,
+      "away_layer_tension_MPa": 43.75217056274414,
+      "all_four_layer_tension_MPa": 6.942351818084717,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01828274503350258,
+      "away_layer_tensile_strain": 0.01828274503350258,
+      "all_four_layer_tensile_strain": 0.005973678547888994,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.40553283691406,
+          75.95081329345703,
+          48.270118713378906,
+          47.61235046386719
+        ],
+        "maximum_direct_MPa": [
+          7.0004981422424315,
+          7.0324438858032225,
+          0.9377369093894958,
+          0.8504333507444244
+        ],
+        "peak_abs_bending_MPa": [
+          68.50006746292114,
+          69.019403591156,
+          47.41196699380875,
+          46.84007333517074
+        ]
+      }
+    },
+    {
+      "native_set": 54,
+      "loadstep": 6,
+      "time_s": 2.922009765625001,
+      "travel_mm": 0.922009765625,
+      "cell_force_N": 1967.8542532079218,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.28621786440351,
+      "away_in_plane_tension_MPa": 87.28621786440351,
+      "all_four_in_plane_tension_MPa": 23.150010675537814,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.75876235961914,
+      "away_layer_tension_MPa": 43.75876235961914,
+      "all_four_layer_tension_MPa": 6.943260669708252,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.018285151571035385,
+      "away_layer_tensile_strain": 0.018285151571035385,
+      "all_four_layer_tensile_strain": 0.005974015686661005,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.42095947265625,
+          75.96549224853516,
+          48.271766662597656,
+          47.613853454589844
+        ],
+        "maximum_direct_MPa": [
+          7.001967716217041,
+          7.033812217712402,
+          0.9383721101284027,
+          0.8509888281114399
+        ],
+        "peak_abs_bending_MPa": [
+          68.51409265518188,
+          69.0327862739563,
+          47.41297963619232,
+          46.84101906061173
+        ]
+      }
+    },
+    {
+      "native_set": 55,
+      "loadstep": 6,
+      "time_s": 2.922197265625001,
+      "travel_mm": 0.922197265625,
+      "cell_force_N": 1968.5457257915343,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.30205679466586,
+      "away_in_plane_tension_MPa": 87.30205679466586,
+      "all_four_in_plane_tension_MPa": 23.153638798733223,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.767635345458984,
+      "away_layer_tension_MPa": 43.767635345458984,
+      "all_four_layer_tension_MPa": 6.944543361663818,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01828821562230587,
+      "away_layer_tensile_strain": 0.01828821562230587,
+      "all_four_layer_tensile_strain": 0.0059743826277554035,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.44184112548828,
+          75.98556518554688,
+          48.27393341064453,
+          47.61597442626953
+        ],
+        "maximum_direct_MPa": [
+          7.003951168060302,
+          7.035690193176269,
+          0.9392178142070771,
+          0.8517626451700926
+        ],
+        "peak_abs_bending_MPa": [
+          68.53309198379516,
+          69.05107522964478,
+          47.414300222396854,
+          46.84236536741257
+        ]
+      }
+    },
+    {
+      "native_set": 56,
+      "loadstep": 6,
+      "time_s": 2.922384765625001,
+      "travel_mm": 0.922384765625,
+      "cell_force_N": 1968.549161279754,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.2951574047234,
+      "away_in_plane_tension_MPa": 87.2951574047234,
+      "all_four_in_plane_tension_MPa": 23.152732287991622,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.76364517211914,
+      "away_layer_tension_MPa": 43.76364517211914,
+      "all_four_layer_tension_MPa": 6.945136070251465,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01828467659652233,
+      "away_layer_tensile_strain": 0.01828467659652233,
+      "all_four_layer_tensile_strain": 0.0059731886722147465,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.4350814819336,
+          75.9831314086914,
+          48.272125244140625,
+          47.61692810058594
+        ],
+        "maximum_direct_MPa": [
+          7.003182525634766,
+          7.035601177215576,
+          0.9386734521389007,
+          0.8519449651613832
+        ],
+        "peak_abs_bending_MPa": [
+          68.52707424163819,
+          69.04871379852295,
+          47.413034806251524,
+          46.84313774585724
+        ]
+      }
+    },
+    {
+      "native_set": 57,
+      "loadstep": 6,
+      "time_s": 2.922572265625001,
+      "travel_mm": 0.922572265625,
+      "cell_force_N": 1969.2425571655594,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.31149167893722,
+      "away_in_plane_tension_MPa": 87.31149167893722,
+      "all_four_in_plane_tension_MPa": 23.156460128213535,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.77280044555664,
+      "away_layer_tension_MPa": 43.77280044555664,
+      "all_four_layer_tension_MPa": 6.946434020996094,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01828790083527565,
+      "away_layer_tensile_strain": 0.01828790083527565,
+      "all_four_layer_tensile_strain": 0.005973597057163715,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.45657348632812,
+          76.00370025634766,
+          48.27437973022461,
+          47.619075775146484
+        ],
+        "maximum_direct_MPa": [
+          7.005226211547852,
+          7.037522716522217,
+          0.9395494318008423,
+          0.8527321356907487
+        ],
+        "peak_abs_bending_MPa": [
+          68.54662220001221,
+          69.06745998382569,
+          47.41441249370575,
+          46.84449788093567
+        ]
+      }
+    },
+    {
+      "native_set": 58,
+      "loadstep": 6,
+      "time_s": 2.922853515625001,
+      "travel_mm": 0.922853515625,
+      "cell_force_N": 1970.188280475118,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.33190883184511,
+      "away_in_plane_tension_MPa": 87.33190883184511,
+      "all_four_in_plane_tension_MPa": 23.161230151925942,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.78422546386719,
+      "away_layer_tension_MPa": 43.78422546386719,
+      "all_four_layer_tension_MPa": 6.948243141174316,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01829158514738083,
+      "away_layer_tensile_strain": 0.01829158514738083,
+      "all_four_layer_tensile_strain": 0.005973938852548599,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.48382568359375,
+          76.03043365478516,
+          48.277061462402344,
+          47.62206268310547
+        ],
+        "maximum_direct_MPa": [
+          7.007797336578369,
+          7.040042819976807,
+          0.9406165218353272,
+          0.8538001250475645
+        ],
+        "peak_abs_bending_MPa": [
+          68.57143337249755,
+          69.09180023193359,
+          47.41602246761322,
+          46.84641756057739
+        ]
+      }
+    },
+    {
+      "native_set": 59,
+      "loadstep": 6,
+      "time_s": 2.9232753906250006,
+      "travel_mm": 0.923275390625,
+      "cell_force_N": 1971.5304724140965,
+      "in_plane_tension_MPa_elements_all_four_above": 0,
+      "all_in_plane_tension_MPa": 87.36088868225926,
+      "away_in_plane_tension_MPa": 87.36088868225926,
+      "all_four_in_plane_tension_MPa": 23.168030622508972,
+      "layer_tension_MPa_elements_all_four_above": 0,
+      "all_layer_tension_MPa": 43.80043029785156,
+      "away_layer_tension_MPa": 43.80043029785156,
+      "all_four_layer_tension_MPa": 6.950864791870117,
+      "layer_tensile_strain_elements_all_four_above": 0,
+      "all_layer_tensile_strain": 0.01829669065773487,
+      "away_layer_tensile_strain": 0.01829669065773487,
+      "all_four_layer_tensile_strain": 0.005974351894110441,
+      "four_screws": {
+        "peak_fiber_tension_MPa": [
+          75.52259826660156,
+          76.06864166259766,
+          48.280818939208984,
+          47.626399993896484
+        ],
+        "maximum_direct_MPa": [
+          7.0114503097534175,
+          7.043651561737061,
+          0.9421216487884522,
+          0.8553400641679764
+        ],
+        "peak_abs_bending_MPa": [
+          68.60673929214478,
+          69.12658126831055,
+          47.41827242612839,
+          46.84921131372452
+        ]
+      }
+    }
+  ],
+  "scope": "All converged states through local lateral loading. Travel is the signed X displacement of the battery pilot. Stresses are material-frame FE corner or beam-section values. A circular elastic shank represents the screws. The collar nodes enforce a plane bearing footprint. The minimum distance for away results is 2 mm from the original coupled PLA bearing nodes."
+}

@@ -254,6 +254,10 @@ def jobs():
                 if (ROOT/'validation/coupon_reference/october.json').is_file():
                     for control in ('nominal_v4','uniform','unsym'):
                         yield 'bare_damage_coupon_'+control,''
+                resolution=ROOT/'validation/common_pull_resolution.json'
+                if resolution.is_file():
+                    for name,control in read(resolution).items():
+                        yield name,control['parent']
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
                     if (ROOT/'validation/rocking_bearing_input.json').is_file():

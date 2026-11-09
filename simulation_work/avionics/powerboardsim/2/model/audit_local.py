@@ -119,12 +119,15 @@ def audit(case, campaign):
     if spec.get('case_template') and spec['source'].startswith('lateral_grip_'):
         catalog='perfect_grip_cases.json'
     if spec.get('sensitivity_reference'):catalog='damage_variant_inputs.json'
+    if spec.get('common_load_parent'):catalog='common_pull_resolution.json'
     manifest = read(ROOT/'validation'/catalog)[case]
     assert hashlib.sha256((folder/'local_job.json').read_bytes()).hexdigest()==manifest['spec_sha256']
     assert spec['case']==ledger['case']==status['case']==case and status['phase']=='solver_complete'
     assert all((folder/f['name']).stat().st_size==f['bytes'] for f in ledger['files'])
     cfgdir = ROOT/'.runtime/local_inputs'/spec['source']
     cfg = read(cfgdir/'config.json')
+    if spec.get('common_load_parent'):
+        cfg.update(end_time=spec['end_time'],displacement_mm=spec['displacement_mm'])
     listing = (folder/'solve.out').read_text(errors='replace')
     if 'RUN COMPLETED' not in listing or (folder/'REJECTED_LOAD_HISTORY.txt').exists():
         raise ValueError('Native run lacks a valid completion record')
@@ -157,6 +160,9 @@ def audit(case, campaign):
         write_json(draft,data)
         check_material(case,campaign,pull=True,verdict_path=draft)
         verify_hardware(case,draft)
+    if spec.get('common_load_parent') and complete:
+        from common_pull_resolution import check as check_resolution
+        check_resolution(case,campaign)
     write_json(dest/(case+'.json'),data)
     if case=='bare_damage_cont_nominal':
         from damage_repeat import compare as compare_damage

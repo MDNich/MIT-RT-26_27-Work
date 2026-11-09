@@ -9,6 +9,7 @@ if ($Case.EndsWith('_seatfaces1') -and $spec.nominal_geometry_source) { $catalog
 if ($Case -eq 'flush_nylon_lateral_friction_locked_rock1_seatfaces1') { $catalog='rocking_bearing_input.json' }
 if ($spec.case_template -and $spec.source -like 'lateral_grip_*') { $catalog='perfect_grip_cases.json' }
 if ($spec.sensitivity_reference) { $catalog='damage_variant_inputs.json' }
+if ($spec.common_load_parent) { $catalog='common_pull_resolution.json' }
 $published=Get-Content -LiteralPath "$PSScriptRoot\..\validation\$catalog" -Raw|ConvertFrom-Json
 $record=$published.PSObject.Properties[$Case].Value
 if ((Get-FileHash -LiteralPath "$Work\local_job.json").Hash -ne $record.spec_sha256){throw 'Local specification identity failed'}
