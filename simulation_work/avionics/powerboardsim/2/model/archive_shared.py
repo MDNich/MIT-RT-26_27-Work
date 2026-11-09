@@ -39,7 +39,8 @@ def archive(case,campaign):
         fcntl.flock(lock,fcntl.LOCK_EX)
         records=copy_family(source,rt/'archive'/campaign/case)
         hashes={r['name']:r['sha256'] for r in records}
-        assert hashes['model.inp']==state['input_sha256'].lower() and 'file.rst' in hashes and 'solve.out' in hashes
+        required='file.full' if state.get('motion_kind')=='enforced' else 'file.rst'
+        assert hashes['model.inp']==state['input_sha256'].lower() and required in hashes and 'solve.out' in hashes
         if (receipt/'archived.json').exists():assert read(receipt/'archived.json')['files']==records
         else:
             write_json(receipt/'archived.json',dict(case=case,campaign=campaign,source=state['work'],

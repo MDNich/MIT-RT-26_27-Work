@@ -32,16 +32,18 @@ def camera(plot,phase,view):
     plot.camera_position=[center+np.array([.24*math.sin(angle),.06,-.24*math.cos(angle)]),center,(0,1,0)]
     plot.enable_parallel_projection();plot.camera.parallel_scale=.088
 def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
-    if not preview and already_rendered(target,dict(subject=title,base=axis,response=comp,view=view,range_mm=[0,limit],sources=sources)):return
+    layout_record={'layout_revision':2} if len(panels)>1 else {}
+    if not preview and already_rendered(target,dict(subject=title,base=axis,response=comp,view=view,range_mm=[0,limit],sources=sources,**layout_record)):return
     n=len(panels);width,height=(1280,720) if preview else (3840,2160)
-    p=pv.Plotter(shape=(1,1) if n==1 else (2,2),window_size=(width,height),off_screen=True,border=False)
+    layout={1:(1,1),2:(1,2),4:(2,2)}[n]
+    p=pv.Plotter(shape=layout,window_size=(width,height),off_screen=True,border=False)
     for i,(label,actors,peak) in enumerate(panels):
         p.subplot(i//2,i%2);p.set_background('#f8f9fc')
         for j,(mesh,opaque) in enumerate(actors):
             p.add_mesh(mesh,scalars='RMS displacement [mm]',clim=(0,limit),cmap='viridis',opacity=1. if opaque else .42,show_scalar_bar=(i==0 and j==0),
-                       scalar_bar_args=dict(title='RMS [mm]',vertical=True,position_x=.085,position_y=.19,width=.047,height=.46,n_labels=4,fmt='%.3g',title_font_size=16,label_font_size=14,color='#25334a'))
-        p.add_text(label+'   /   '+f'base {axis}, response {comp}',position='upper_left',font_size=13 if n>1 else 17,color='#08357e')
-        p.add_text('1-sigma displacement   |   camera orbit' + ('   |   fixed contact state' if len(actors)>1 else ''),position='lower_left',font_size=8,color='#183046')
+                       scalar_bar_args=dict(title='RMS [mm]',vertical=True,position_x=.085,position_y=.19,width=.047,height=.46,n_labels=4,fmt='%.3g',title_font_size=26 if n>1 else 16,label_font_size=22 if n>1 else 14,color='#25334a'))
+        p.add_text(label+'   /   '+f'base {axis}, response {comp}',position='upper_left',font_size=27 if n>1 else 17,color='#08357e')
+        p.add_text('1-sigma displacement   |   camera orbit' + ('   |   fixed contact state' if len(actors)>1 else ''),position='lower_left',font_size=16 if n>1 else 8,color='#183046')
         camera(p,0,view)
     p.show(auto_close=False,interactive=False)
     if preview:
@@ -59,9 +61,9 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
     stream=imageio_ffmpeg.read_frames(str(temp));meta=next(stream);stream.close()
     assert tuple(meta['size'])==(3840,2160) and meta['fps']==60
     temp.replace(target)
-    target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
+    target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],**layout_record,panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);parser.add_argument('--bare-only',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);mode=parser.add_mutually_exclusive_group();mode.add_argument('--bare-only',action='store_true');mode.add_argument('--raised-only',action='store_true');args=parser.parse_args()
     with (ROOT/'validation/video_pairs.csv').open() as stream:
         row=next(r for r in csv.DictReader(stream) if Path(r['file']).stem==args.name)
     assert row['kind']=='camera motion over fixed RMS'
@@ -71,8 +73,9 @@ def main():
         actors,peak=field(args.preview_rst,comp)
         draw([('Reference reader check',actors,peak)],title,axis,comp,view,peak,ROOT/'.runtime/qa/rms-reader-preview.png',True);return
     panels=[];sources=[]
-    count=1 if args.bare_only else len(VARIANTS)
-    for variant,name in zip(VARIANTS[:count],LABELS[:count],strict=True):
+    variants=VARIANTS[:1] if args.bare_only else ([VARIANTS[0],*VARIANTS[3:]] if args.raised_only else VARIANTS)
+    for variant in variants:
+        name=LABELS[VARIANTS.index(variant)]
         key=native_case(variant,'psd_'+axis)
         audit=json.loads((ROOT/f'validation/global/{key}.json').read_text());assert audit['case']==key and audit['campaign']==args.campaign
         rst=ROOT/f'.runtime/archive/{args.campaign}/{key}/file.rst'
@@ -83,7 +86,17 @@ def main():
     dest=ROOT/f'output/videos/without_case/power_board_4k60/{args.name}.mp4'
     generation=ROOT/'.runtime/films/baselines'/args.name/(float(limit).hex()+'.mp4')
     draw(panels[:1],title,axis,comp,view,limit,generation,sources=sources[:1])
-    publish_baseline(generation,dest,('subject','base','response','view','sources'))
     if not args.bare_only:
-        draw(panels[1:],title,axis,comp,view,limit,ROOT/f'output/videos/with_case/power_board_4k60/{args.name}.mp4',sources=sources[1:])
+        cased=ROOT/f'output/videos/with_case/power_board_4k60/{args.name}.mp4'
+        group='raised' if args.raised_only else 'all_four'
+        take=ROOT/'.runtime/films/comparisons'/args.name/(group+'_v2')/(float(limit).hex()+'.mp4')
+        draw(panels[1:],title,axis,comp,view,limit,take,sources=sources[1:])
+        sidecar=cased.with_suffix('.json')
+        if sidecar.exists():
+            previous=json.loads(sidecar.read_text())['sources']
+            if not all(s in sources[1:] for s in previous):
+                raise ValueError('Previously published case has changed or is missing from this comparison')
+        # Finish both encodes and source checks before replacing either publication.
+        publish_baseline(take,cased,('subject','base','response','view'))
+    publish_baseline(generation,dest,('subject','base','response','view','sources'))
 if __name__=='__main__':main()

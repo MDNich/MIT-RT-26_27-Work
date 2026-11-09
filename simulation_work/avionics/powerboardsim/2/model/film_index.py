@@ -18,30 +18,35 @@ def make(reviews):
         record[path]=dict(sha256=sha,sidecar_sha256=proof['sidecar_sha256'],review_sheet_sha256=proof['sheet_sha256'],
                           native_reference_sha256=r['sha256'],frames_reviewed=proof['check_frames'])
     if reviews:write_json(REVIEW,record)
-    ready={};pairs=0;lines=[]
+    ready={};pairs=0;raised_pairs=0;lines=[]
     for r in rows:
         titles=[]
         for g,label in zip(SLOTS,['Bare','Four cases'],strict=True):
             name=r[g];mark=record.get(name)
             if not mark:titles.append('Pending');continue
             proof=decode(r,g)
-            if proof['sha256']!=mark['sha256'] and g=='without_case' and (ROOT/'.runtime/films/baseline_history'/mark['sha256']/'metadata.json').exists():
-                titles.append('New comparison scale awaiting visual review');continue
+            if proof['sha256']!=mark['sha256'] and (ROOT/'.runtime/films/baseline_history'/mark['sha256']/'metadata.json').exists():
+                titles.append('Updated comparison awaiting visual review');continue
             assert proof['sha256']==mark['sha256'] and proof['sidecar_sha256']==mark['sidecar_sha256']
             assert proof['sheet_sha256']==mark['review_sheet_sha256'] and proof['reference_sha256']==mark['native_reference_sha256']
+            if g=='with_case' and proof.get('comparison_panels')==2:
+                label='3 mm stand-off · nylon and aluminium'
             path=Path(name).relative_to('output/videos');titles.append(f'[{label}]({path})')
             ready[name]=proof['sha256']
-        if all(r[g] in ready for g in SLOTS):pair_check(r);pairs+=1
+        if all(r[g] in ready for g in SLOTS):
+            pair_check(r)
+            if decode(r,'with_case').get('comparison_panels')==2:raised_pairs+=1
+            else:pairs+=1
         lines.append((r,titles))
-    out=['# Battery-board movies','',f'{len(ready)} of 44 movies have passed decoding and visual review; {pairs} of 22 subjects have both versions.','',
-         'Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.','']
+    out=['# Battery-board movies','',f'{len(ready)} reviewed movies. {pairs} of 22 subjects cover all four cased configurations. An additional {raised_pairs} subjects compare the bare board with both 3 mm stand-off variants.','',
+         'Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. Raised-only comparisons are identified in the table. Each pair uses matching colour limits for its displacement or stress field. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.','']
     for kind,label in LABEL.items():
         out+=['## '+label,'','| October subject | Without case | With case |','|---|---|---|']
         for r,titles in lines:
             if r['kind']==kind:out+=['| '+Path(r['file']).stem+' | '+' | '.join(titles)+' |']
         out+=['']
     (ROOT/'output/videos/README.md').write_text('\n'.join(out))
-    print(len(ready),'reviewed movies;',pairs,'complete pairs')
+    print(len(ready),'reviewed movies;',pairs,'complete pairs;',raised_pairs,'raised-only pairs')
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--review',action='append',default=[],metavar='PATH=SHA256',

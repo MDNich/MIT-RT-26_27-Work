@@ -52,6 +52,8 @@ def proof_path(r,v):return ROOT/'validation'/r['category']/(native_case(v,r['suf
 
 def identity(r,side,meta):
     kind=r['kind'];variants=VARIANTS[:1] if side==SLOTS[0] else VARIANTS[1:]
+    if side=='with_case' and kind==KINDS[1] and len(meta['sources'])==2:
+        variants=VARIANTS[3:]
     proofs=[read(proof_path(r,v)) for v in variants]
     assert all(t['campaign']==CAMP and t['case']==native_case(v,r['suffix']) for v,t in zip(variants,proofs,strict=True))
     if kind==KINDS[0] and side==SLOTS[0]:
@@ -96,11 +98,12 @@ def decode(r,side,refresh=False):
                         '-frames:v','3','-pix_fmt','rgb24','-f','rawvideo','pipe:1'],capture_output=True,check=True)
     ims=np.frombuffer(f.stdout,np.uint8).reshape(3,432,768,3)
     # Compare interior pixels, excluding time labels, captions and legends.
-    tiles=2 if side=='with_case' else 1
+    panels=len(meta['panels']) if side=='with_case' else 1
+    rows,cols={1:(1,1),2:(1,2),4:(2,2)}[panels]
     contrast=[]
-    for i in range(tiles):
-        for j in range(tiles):
-            a=ims[:,int((i+.18)*432/tiles):int((i+.80)*432/tiles),int((j+.23)*768/tiles):int((j+.85)*768/tiles)].astype(float)
+    for i in range(rows):
+        for j in range(cols):
+            a=ims[:,int((i+.18)*432/rows):int((i+.80)*432/rows),int((j+.23)*768/cols):int((j+.85)*768/cols)].astype(float)
             delta=float(np.abs(a[1:]-a[0]).mean())
             if delta<.10:raise ValueError(f'No visible field or geometry change in {movie.name} panel {i},{j}: {delta}')
             contrast.append(delta)
@@ -110,7 +113,7 @@ def decode(r,side,refresh=False):
     page.save(sheet,quality=90)
     proof=dict(sha256=sha,sidecar_sha256=digest(movie.with_suffix('.json')),sheet_sha256=digest(sheet),frames=frames,
                fps=fmt['fps'],width=3840,height=2160,duration_s=secs,bytes=movie.stat().st_size,check_frames=samples,
-               panel_average_pixel_changes=contrast,reference_sha256=r['sha256'])
+               panel_average_pixel_changes=contrast,reference_sha256=r['sha256'],comparison_panels=panels)
     write_json(receipt,proof);return proof
 
 
@@ -144,8 +147,18 @@ def cycle(render,refresh,lease):
                     command([models/'modal_video.py',path,r['rank'],'Bare board / '+('refined default contacts' if r['suffix']=='refined' else 'six locked bolts'),bare],lease)
                 if r['kind'] in KINDS[1:] and not bare.exists() and proof_path(r,'bare').is_file():
                     command([models/r['script'],s,'--campaign',CAMP,'--bare-only'],lease)
-                if not all((ROOT/r[g]).exists() for g in SLOTS) and all(proof_path(r,v).is_file() for v in VARIANTS):
+                cased=ROOT/r['with_case']
+                complete_sources=all(proof_path(r,v).is_file() for v in VARIANTS)
+                displayed=read(cased.with_suffix('.json')) if cased.is_file() else {}
+                existing_panels=len(displayed.get('panels',[]))
+                if r['kind']==KINDS[1] and displayed:
+                    old_range=read(bare.with_suffix('.json'))['range_mm']
+                    if displayed.get('layout_revision')!=2 or displayed['range_mm']!=old_range:
+                        existing_panels=0
+                if complete_sources and existing_panels<4:
                     command([models/r['script'],s,'--campaign',CAMP],lease)
+                elif not existing_panels and r['kind']==KINDS[1] and all(proof_path(r,v).is_file() for v in [VARIANTS[0],*VARIANTS[3:]]):
+                    command([models/r['script'],s,'--campaign',CAMP,'--raised-only'],lease)
             for g in SLOTS:
                 movie=ROOT/r[g]
                 if movie.is_file():
@@ -157,7 +170,9 @@ def cycle(render,refresh,lease):
         except Exception as exc:
             write_json(issue,dict(time=now(),subject=r['file'],error=str(exc),type=type(exc).__name__))
             issues.append(r['file'])
-    report=dict(total_requested=44,decoded=len(result),paired_and_encoded=len(result)==44 and not issues,issues=issues,films=result)
+    provisional=sum(p.get('comparison_panels')==2 for p in result)
+    report=dict(total_requested=44,decoded=len(result),raised_comparisons=provisional,
+                paired_and_encoded=len(result)==44 and not issues and not provisional,issues=issues,films=result)
     write_json(RT/'coverage.json',report)
     return report
 

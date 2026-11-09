@@ -17,7 +17,8 @@ $active=@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessN
 if ($active.Count){throw "Another native job is running"}
 New-Item -ItemType Directory -Path $work -ErrorAction Stop|Out-Null
 $guard=$work
-$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$'
+$enforcedMotion = $Case -match '^(?:bare|stand3_(?:nylon|aluminium)|flush_(?:nylon|aluminium)_surf1)_enforced$'
+$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
 if ($sharedWork) {
     $work=Join-Path $share ".runtime\shared_native\$Campaign\$Case"
     if (Test-Path -LiteralPath $work){throw 'Preserving the existing shared working directory'}
@@ -26,6 +27,7 @@ New-Item -ItemType Directory -Path $out -Force|Out-Null
 $stage=[ordered]@{case=$Case;work=$work;utc=[DateTime]::UtcNow.ToString('o');phase='staging';cores=$Cores}
 function Update([string]$Phase){$stage.phase=$Phase;$stage.updated=[DateTime]::UtcNow.ToString('o');$stage|ConvertTo-Json|Set-Content -LiteralPath "$out\status.tmp" -Encoding UTF8;Move-Item "$out\status.tmp" "$out\status.json" -Force}
 try {
+    . "$PSScriptRoot\wait_native.ps1"
     Update 'staging'
     if ($sharedWork) {
         $control=Get-Content "$share\validation\shared_dmp_control.json" -Raw|ConvertFrom-Json
@@ -99,7 +101,7 @@ try {
         $stage.motion_kind=$spec.kind
         $stage.cores=if ($spec.kind -eq 'transient') {1} else {12}
         Update 'solving'
-        & "$PSScriptRoot\motion_solve.ps1" -Work $work -Case $Case -Campaign $Campaign -Exe $exe
+        & "$PSScriptRoot\motion_solve.ps1" -Work $work -Case $Case -Campaign $Campaign -Exe $exe -SharedWork $sharedWork
         $stage.exit=0
         Copy-Item -LiteralPath "$work\solve.out" $out
         Update 'solver_complete'
@@ -148,22 +150,7 @@ try {
     }
     if ($sharedWork){$argsList+=@('-dir',('"'+$work+'"'))}
     $p=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -PassThru
-    while (!$p.WaitForExit(1500)){
-        $freeNow=(Get-PSDrive C).Free
-        $hostHard=$sharedWork -and (Test-Path -LiteralPath "$out\host_critical.json")
-        $hostSoft=$sharedWork -and (Test-Path -LiteralPath "$out\host_stop.json")
-        if (($freeNow -lt 14000000000 -or $hostHard) -and (Test-Path -LiteralPath "$work\STORAGE_STOP.txt") -and !$p.HasExited){
-            # Stop only this job's process tree if it is in a linear phase that does not service file.abt.
-            & taskkill.exe /PID $p.Id /T /F | Out-Null
-            $p.WaitForExit()
-            throw 'Critical scratch reserve reached; stopped the launched process tree, preserving guest files'
-        }
-        if (($freeNow -lt 17000000000 -or $hostSoft -or $hostHard) -and !(Test-Path -LiteralPath "$work\STORAGE_STOP.txt")){
-            'nonlinear'|Set-Content -LiteralPath "$work\file.abt" -Encoding Ascii
-            "Controlled stop requested at $([DateTime]::UtcNow.ToString('o'))"|Set-Content -LiteralPath "$work\STORAGE_STOP.txt"
-        }
-    }
-    $p.Refresh()
+    Wait-NativeProcess $p $work 'file' $out $sharedWork
     $stage.exit=$p.ExitCode
     Copy-Item "$work\solve.out" $out
     Get-ChildItem $work -Filter '*.err' | Copy-Item -Destination $out

@@ -64,6 +64,30 @@ def audit(case,campaign):
         assert sha(folder/'acc.txt')==spec['acc_sha256']
         parent=(ROOT/f'.runtime/archive/{campaign}/{branch}_basis/solve.out').read_text(errors='replace')
         data,metrics=full_history(folder/'file.mcf',basis['frequencies_Hz'],parent,axis)
+        nickel_path=ROOT/'validation/nickel_vibration'/f'{branch}_{axis}.json'
+        if nickel_path.is_file():
+            from nickel_vibration import early_crossing
+            from film_identity import verified
+            nickel=json.loads(nickel_path.read_text())
+            assert nickel['modal_rst']==basis['rst_sha256'] and nickel['campaign']==campaign
+            cache=ROOT/'.runtime/post'/campaign/(branch+'_basis')/'nickel'
+            verified(cache/'sources.json',nickel['signed_tensor_cache_sha256'])
+            saved=json.loads((cache/'sources.json').read_text())
+            assert saved['static_rst']==nickel['static_rst'] and saved['basis_rst']==nickel['modal_rst']
+            for name,key in [('modes','modal_stresses_sha256'),('static','static_stresses_sha256')]:
+                verified(cache/(name+'.npy'),saved[key])
+            count=round(nickel['independently_evaluated_window_s'][1]*FS)+1
+            _,cross=early_crossing(np.load(cache/'modes.npy',mmap_mode='r'),np.load(cache/'static.npy'),
+                                   data[:count],nickel['trial_reference_yield_MPa']*1e6)
+            reference=nickel['first_sample_above_reference']
+            assert (cross is None)==(reference is None)
+            if cross is not None:
+                delta=cross['sample']-reference['sample']
+                if abs(delta)>1:
+                    raise ValueError('Native nickel stress screen differs from the independent history by more than one sample')
+                evidence['nickel_trial_crossing']=dict(time_bracket_s=cross['time_bracket_s'],
+                    native_minus_independent_samples=delta,trial_MPa=cross['trial_MPa'],
+                    scope='Stored signed native stress tensors and native modal coordinates, including locked preload.')
         spectrum=branch+'_psd_'+axis+'_private1'
         layer=ROOT/'validation/pla_stress'/f'{spectrum}.json'
         if layer.is_file():

@@ -1,5 +1,5 @@
 param([Parameter(Mandatory)][string]$Work,[Parameter(Mandatory)][string]$Case,
-      [Parameter(Mandatory)][string]$Campaign,[Parameter(Mandatory)][string]$Exe)
+      [Parameter(Mandatory)][string]$Campaign,[Parameter(Mandatory)][string]$Exe,[bool]$SharedWork=$false)
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 $spec=Get-Content -LiteralPath "$Work\motion_job.json" -Raw|ConvertFrom-Json
@@ -11,7 +11,11 @@ foreach ($row in $spec.files.PSObject.Properties) {
     if ((Get-FileHash -LiteralPath "$Work\$($row.Name)").Hash -ne $row.Value){throw "Motion deck hash mismatch: $($row.Name)"}
 }
 function Run-Deck([string]$Mode,[string]$Cores,[string]$Deck,[string]$Listing) {
-    $p=Start-Process -FilePath $Exe -WorkingDirectory $Work -ArgumentList @('-b','nolist','-s','noread',$Mode,'-np',$Cores,'-p','ansys','-j','file','-i',$Deck,'-o',$Listing) -Wait -PassThru
+    $arguments=@('-b','nolist','-s','noread',$Mode,'-np',$Cores,'-p','ansys','-j','file','-i',$Deck,'-o',$Listing)
+    if ($SharedWork) { $arguments+=@('-dir',('"'+$Work+'"')) }
+    $p=Start-Process -FilePath $Exe -WorkingDirectory $Work -ArgumentList $arguments -PassThru
+    Wait-NativeProcess $p $Work 'file' (Join-Path $root ".runtime\receipts\$Campaign\$Case") $SharedWork
+    if (Test-Path -LiteralPath "$Work\STORAGE_STOP.txt") {throw 'Motion calculation reached scratch reserve'}
     if ($p.ExitCode -ne 0 -or !(Select-String -LiteralPath "$Work\$Listing" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)) {throw "$Deck failed"}
 }
 if ($spec.kind -eq 'enforced') {
