@@ -1,0 +1,30 @@
+from pathlib import Path
+import sys
+ROOT=Path(__file__).resolve().parents[1]
+root=ROOT/'.runtime/inputs/flush_nylon_static'
+s=(root/'model.inp').read_bytes()
+pos=s.lower().index(b'/gst,on,on')
+data=s[:pos]+b'''
+ALLSEL,ALL
+*GET,NN,NODE,0,COUNT
+*GET,NE,ELEM,0,COUNT
+ESEL,S,TYPE,,850
+*GET,NP,ELEM,0,COUNT
+ESEL,S,TYPE,,851
+*GET,NB,ELEM,0,COUNT
+ESEL,S,TYPE,,852
+*GET,NT,ELEM,0,COUNT
+ESEL,S,TYPE,,853
+*GET,NC,ELEM,0,COUNT
+ESEL,S,TYPE,,854
+*GET,NS,ELEM,0,COUNT
+ALLSEL,ALL
+/GOPR
+*CFOPEN,case_inventory,txt
+*VWRITE,NN,NE,NP,NB,NT,NC,NS
+(7(F12.0,1X))
+*CFCLOS
+FINISH
+/EXIT,NOSAVE
+'''
+d=ROOT/'.runtime'/sys.argv[1];d.mkdir(exist_ok=True);(d/'pre.inp').write_bytes(data)
