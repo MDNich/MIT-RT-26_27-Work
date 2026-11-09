@@ -1,6 +1,6 @@
 # Battery-board movies
 
-2 of 44 movies have passed decoding and visual review; 0 of 22 subjects have both versions.
+3 of 44 movies have passed decoding and visual review; 0 of 22 subjects have both versions.
 
 Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.
 
@@ -10,7 +10,7 @@ Each completed pair contains a bare-board movie and a four-panel comparison: flu
 |---|---|---|
 | modal_fig01_default_mode01 | [Bare](without_case/power_board_4k60/modal_fig01_default_mode01.mp4) | Pending |
 | modal_fig02_default_mode20 | [Bare](without_case/power_board_4k60/modal_fig02_default_mode20.mp4) | Pending |
-| modal_fig03_bolted_mode20 | Pending | Pending |
+| modal_fig03_bolted_mode20 | [Bare](without_case/power_board_4k60/modal_fig03_bolted_mode20.mp4) | Pending |
 
 ## One-sigma displacement (camera orbit)
 

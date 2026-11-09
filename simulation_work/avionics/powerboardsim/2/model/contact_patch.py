@@ -188,6 +188,19 @@ def stage(campaign):
                         material_sets=sets,nodes=len(state['nodes']),driven_nodes=len(state['driven']),
                         units='m, N, Pa',loading='Static cut-boundary path from the tightened state to the X waveform sample and back. Cell nodes follow the global field.')
             catalog[case]=info
+    # Retain the first native inputs and history. Add a separate equilibrium-tolerance check.
+    for radius in (9,15):
+        source=f'patch_{BRANCH}_span{radius}_contact_v1'
+        case=source.replace('_contact_v1','_contact_eq1')
+        previous=rt/'inputs'/source/'model.inp'
+        assert digest(previous)==catalog[source]['input_sha256']
+        deck=previous.read_bytes()
+        marker=b'neqit,60\n'
+        assert deck.count(marker)==1
+        deck=deck.replace(marker,marker+b'cnvtol,f,,1e-5,2,.01\n')
+        dest=rt/'inputs'/case;dest.mkdir(exist_ok=True)
+        catalog[case]=dict(catalog[source],case=case,input_sha256=seal(dest/'model.inp',deck),
+            force_tolerance=1e-5,minimum_force_reference_N=.01,source_input_sha256=catalog[source]['input_sha256'])
     write_json(ROOT/'validation/contact_patch_inputs.json',catalog)
     print({n:(s['nodes'],s['driven_nodes']) for n,s in catalog.items()})
 

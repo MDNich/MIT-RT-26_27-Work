@@ -119,7 +119,19 @@ try {
     $stage.exit=$p.ExitCode
     Copy-Item "$work\solve.out" $out
     Get-ChildItem $work -Filter '*.err' | Copy-Item -Destination $out
-    if ($p.ExitCode -ne 0 -or !(Select-String -Path "$work\solve.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native solve failed. Inspect solve.out.'}
+    $stage.native_clean=($p.ExitCode -eq 0) -and (Select-String -Path "$work\solve.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)
+    if (!$stage.native_clean){
+        if (!($surfaceJob -and $surfaceJob.kind -eq 'static' -and (Test-Path -LiteralPath "$work\file.rst") -and
+            (Select-String -LiteralPath "$work\solve.out" -Pattern 'LOAD STEP\s+\d+\s+SUBSTEP\s+\d+\s+COMPLETED' -Quiet))){throw 'Native solve failed. Inspect solve.out.'}
+        $proof=(Get-Content "$share\validation\partial_board_readbacks.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        Copy-Item -LiteralPath "$share\.runtime\surface_partial_readbacks\$Case\partial_post.inp" -Destination $work
+        if ((Get-FileHash "$work\partial_post.inp").Hash -ne $proof.input_sha256 -or $stage.input_sha256 -ne $proof.original_model_sha256){throw 'Partial readback input mismatch'}
+        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','partialpost','-i','partial_post.inp','-o','partial_post.out') -Wait -PassThru
+        Copy-Item -LiteralPath "$work\partial_post.out" $out
+        if ($pp.ExitCode -ne 0 -or !(Select-String -LiteralPath "$work\partial_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Partial whole-board readback failed'}
+        Update 'solver_complete'
+        return
+    }
     if ($surfaceJob -and $surfaceJob.kind -eq 'static'){
         $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','seatpost','-i','board_surface_post.inp','-o','board_surface_post.out') -Wait -PassThru
         Copy-Item "$work\board_surface_post.out" $out

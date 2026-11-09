@@ -23,6 +23,44 @@ def launch(script,flags,dest):
     out=json.loads(run.stdout.lstrip('\ufeff'))
     if out['ReturnValue']!=0:raise RuntimeError(str(out))
     save(dest,dict(request_utc=utc(),script=script,arguments=flags,**out))
+def archive_closed_case(case,receipt):
+    """Reconcile a dropped archive acknowledgement without repeating a structural solve."""
+    if (receipt/'released.txt').is_file():
+        return
+    if read(receipt/'status.json')['phase']!='solver_complete':
+        raise RuntimeError('Native completion required before archive')
+    for attempt in range(3):
+        path=receipt/('archive_request.json' if attempt==0 else f'archive_retry_{attempt}.json')
+        if not path.exists():
+            try:
+                launch('archive_native.ps1',['-Case',case,'-Campaign',CAMPAIGN],path)
+            except (ValueError, RuntimeError, subprocess.TimeoutExpired) as exc:
+                log(f'Archive acknowledgement uncertain for {case}: {exc}')
+        absent=0
+        while absent<2:
+            if (receipt/'released.txt').is_file():
+                return
+            if (receipt/'archive_error.txt').exists():
+                raise RuntimeError((receipt/'archive_error.txt').read_text(errors='replace')[:350])
+            time.sleep(8)
+            if (receipt/'released.txt').is_file():
+                return
+            # Only an explicit, successful guest process inquiry can establish absence.
+            ps=("$p=Get-CimInstance Win32_Process -ErrorAction Stop; "
+                "$a=@($p|Where-Object { $_.Name -eq 'powershell.exe' -and "
+                f"$_.CommandLine -like '*\\archive_native.ps1 -Case {case} -Campaign {CAMPAIGN}*' }}); "
+                "$s=@($p|Where-Object { $_.Name -match '^ANSYS(261)?\\.exe$' }); "
+                "@{archiver=$a.Count;solver=$s.Count}|ConvertTo-Json -Compress")
+            check=subprocess.run([sys.executable,str(ROOT/'model/guest_command.py'),'--timeout','20'],
+                                 input=ps,text=True,capture_output=True)
+            try:
+                guest=json.loads(check.stdout.lstrip('\ufeff')) if check.returncode==0 else None
+            except ValueError:
+                guest=None
+            absent=absent+1 if guest=={'archiver':0,'solver':0} else 0
+        log('No guest archiver or solver in two consecutive checks for '+case)
+    raise RuntimeError('Closed native result needs archive inspection: '+case)
+
 def jobs():
     yield 'bare_static',''
     yield 'bare_original',''
@@ -57,8 +95,9 @@ def jobs():
             yield 'patch_stand3_nylon_span9_contact_v1','patch_stand3_nylon_span9_free_v1'
         yield branch+'_modal20',branch+'_static'
         if branch=='bare' and (ROOT/'validation/contact_patch_inputs.json').is_file():
+            yield 'patch_stand3_nylon_span9_contact_eq1','patch_stand3_nylon_span9_free_v1'
             yield 'patch_stand3_nylon_span15_free_v1','stand3_nylon_basis'
-            yield 'patch_stand3_nylon_span15_contact_v1','patch_stand3_nylon_span15_free_v1'
+            yield 'patch_stand3_nylon_span15_contact_eq1','patch_stand3_nylon_span15_free_v1'
         for axis in 'XYZ':
             yield branch+'_psd_'+axis,branch+'_basis'
             if branch=='bare' and axis=='X':
@@ -76,7 +115,7 @@ def jobs():
                 yield 'replay_stand3_nylon_span9_contact_s4_v1','replay_stand3_nylon_span9_free_s4_v1'
             else:
                 yield 'replay_stand3_nylon_span9_contact_s2_v1','replay_stand3_nylon_span9_contact_s4_v1'
-                yield 'replay_stand3_nylon_span15_contact_s4_v1','patch_stand3_nylon_span15_contact_v1'
+                yield 'replay_stand3_nylon_span15_contact_s4_v1','patch_stand3_nylon_span15_contact_eq1'
         yield branch+'_enforced',branch+'_basis'
         for axis in 'XYZ':yield branch+'_motion_'+axis,branch+'_enforced'
         if branch!='bare':
@@ -146,6 +185,8 @@ def run():
                       ('board_surface_initial_v1','pre.inp','board_surface_initial','flush_install_check.ps1','surface_board.py')]
         if case in ('patch_stand3_nylon_span9_free_v1','bare_modal20') and not (RECEIPTS/case/'dispatch.json').exists():
             controls.append(('patch_table_control_v1','control.inp','patch_table_control','actuator_control.ps1','contact_transient.py'))
+        if case in ('patch_stand3_nylon_span9_contact_eq1','bare_psd_X') and not (RECEIPTS/case/'dispatch.json').exists():
+            controls.append(('local_seat_faces_v1','pre.inp','local_seat_preflight','flush_install_check.ps1','local_board_seats.py'))
         if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.
@@ -171,6 +212,9 @@ def run():
             log('Parent unaccepted: '+case);continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
             raise RuntimeError('Cased preflight review pending')
+        if case.startswith('replay_') and '_span9_contact_' in case and not result_path('patch_stand3_nylon_span9_contact_eq1').exists():
+            log('Static contact check pending: '+case)
+            continue
         if case.startswith('replay_') and not (ROOT/'validation/patch_table_control.json').is_file():
             log('Motion-table validation pending: '+case)
             continue
@@ -199,8 +243,8 @@ def run():
         while read(state)['phase'] not in ('solver_complete','failed'):time.sleep(20)
         if read(state)['phase']=='failed':log('Failed native '+case);continue
         if not (receipt/'released.txt').exists():
-            log('Archive '+case);launch('archive_native.ps1',['-Case',case,'-Campaign',CAMPAIGN],receipt/'archive_request.json')
-        while not (receipt/'released.txt').exists():time.sleep(20)
+            log('Archive '+case)
+            archive_closed_case(case,receipt)
         audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith('_approach1') else ('audit_local.py' if local else 'audit_global.py'))
         if case.startswith('patch_'):
             audit='audit_contact_patch.py'

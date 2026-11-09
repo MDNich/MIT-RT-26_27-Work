@@ -4,12 +4,13 @@ import numpy as np
 from ansys.mapdl import reader
 
 
-def history(raw,etype,real):
+def history(raw,etype,real,indices=None):
     g=raw.grid.cell_data
     ids=g['ansys_elem_num'][(g['ansys_etype']==etype)&(g['ansys_real_constant']==real)]
     if len(ids)==0:raise ValueError('No contact elements in expected pair')
     out=[]
-    for k,t in enumerate(raw.time_values):
+    for k in (range(raw.nsets) if indices is None else indices):
+        k=int(k);t=raw.time_values[k]
         enum,data,nodes=raw.element_solution_data(k,'ECT');loc=np.searchsorted(enum,ids)
         assert np.array_equal(enum[loc],ids)
         groups=[];missing=0

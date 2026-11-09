@@ -77,6 +77,7 @@ def audit(case,campaign):
             contact_edges.add(int(elem[8]))
     series=[]
     checks={}
+    flags=[]
     for k,t in enumerate(times):
         values,ids,components=result.nodal_reaction_forces(k)
         assert np.all(np.isin(components,[1,2,3]))
@@ -86,7 +87,8 @@ def audit(case,campaign):
             np.add.at(total[i],components[take]-1,values[take])
         assert np.abs(values[~np.isin(ids,state['driven'])]).sum()<1e-8
         residual=np.linalg.norm(total.sum(axis=0))
-        assert residual < .03 + .003*np.linalg.norm(total[0]),(k,residual,total)
+        if residual >= .03 + .003*np.linalg.norm(total[0]):
+            flags.append(dict(set=k+1,time=float(t),check='net external force',residual_N=float(residual)))
         row=dict(time=float(t),cells_reaction_N=total[0].tolist(),PLA_cut_reaction_N=total[1].tolist(),imbalance_N=float(residual))
         if spec['contact']:
             enum,records,_=result.element_solution_data(k,'EMN')
@@ -102,7 +104,9 @@ def audit(case,campaign):
                     loaded.append((int(eid),val))
             forces=np.array([r[42:45] for _,r in loaded]).reshape(-1,3)
             contact=forces.sum(axis=0)
-            assert np.linalg.norm(total[1]-contact)<.04+.004*np.linalg.norm(contact),(k,contact,total)
+            mismatch=float(np.linalg.norm(total[1]-contact))
+            if mismatch>=.04+.004*np.linalg.norm(contact):
+                flags.append(dict(set=k+1,time=float(t),check='cut reactions versus contact resultant',residual_N=mismatch))
             pen=max((float(v[8:12][np.isin(v[:4],[2,3])].max(initial=0)) for _,v in loaded),default=0.)
             row.update(closed_faces=len(loaded),loaded_cut_edge_faces=sum(e in contact_edges for e,_ in loaded),
                        maximum_loaded_corner_penetration_mm=1000*pen,contact_sum_N=contact.tolist())
@@ -124,6 +128,12 @@ def audit(case,campaign):
         assert max(np.linalg.norm(r['cells_reaction_N']) for r in series)<.02
     rec=dict(**spec,rst_sha256=files['file.rst'],equilibria=len(series),endpoint_checks=checks,force_history=series,
              scope='Nonlinear quasistatic response conditional on the prescribed boundary and cell motion at the selected waveform sample. Compare both domain sizes, contact state at the artificial cut, and free displacement recovery before using the force.')
+    if flags:
+        rec['classification']='Reaction checks failed. Result retained for numerical diagnosis.'
+        rec['failed_checks']=flags
+        write_json(ROOT/'validation/review_contact_patch'/f'{case}.json',rec)
+        print(case,len(flags),'reaction checks failed')
+        return
     write_json(ROOT/'validation/contact_patch'/f'{case}.json',rec)
     print(case,len(series),'native equilibria verified')
 if __name__=='__main__':

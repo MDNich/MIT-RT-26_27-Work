@@ -10,6 +10,9 @@ def audit(case,campaign):
     assert re.fullmatch(r'flush_(nylon|aluminium)_surf1_static',case)
     rt=ROOT/'.runtime';d=rt/'archive'/campaign/case;r=rt/'receipts'/campaign/case
     assert (r/'released.txt').exists()
+    if read(r/'status.json').get('native_clean') is False:
+        from partial_board import audit as audit_partial
+        return audit_partial(case,campaign)
     ledger=read(r/'archived.json');status=read(r/'status.json');job=read(d/'surface_job.json')
     pub=read(ROOT/'validation/board_surface_jobs.json')[case]
     assert case==ledger['case']==job['case']==status['case'] and ledger['campaign']==campaign and status['phase']=='solver_complete' and status['exit']==0

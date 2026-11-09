@@ -10,6 +10,7 @@ $status=Get-Content "$receipt\status.json" -Raw|ConvertFrom-Json
 if ($status.phase -ne 'solver_complete') {throw 'Solver completion record required'}
 New-Item -ItemType Directory -Path $dst -Force|Out-Null
 $finish="$receipt\archived.json"
+$lease=[System.IO.File]::Open("$receipt\archive.lock",[System.IO.FileMode]::OpenOrCreate,[System.IO.FileAccess]::ReadWrite,[System.IO.FileShare]::None)
 try {
 if (Test-Path $finish) {
     $ledger=@((Get-Content $finish -Raw|ConvertFrom-Json).files)
@@ -46,4 +47,4 @@ foreach ($row in $ledger | Where-Object bytes -gt 5000000) {
 } catch {
     $_.Exception.Message|Set-Content "$receipt\archive_error.txt"
     throw
-}
+} finally {$lease.Dispose()}
