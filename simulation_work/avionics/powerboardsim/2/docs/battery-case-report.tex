@@ -69,13 +69,13 @@ Each unpreloaded model used the archived mounting constraints and searched for 2
 The first original-mesh run returned only four modes and exited normally. The repeat kept the same input geometry, material properties, supports and search range. It changed the Block Lanczos algorithm to its alternate formulation and requested the Sturm sequence check. This recovered the complete spectrum. The default models retain the detached nine-body group in the earlier connection diagnosis. The bearing, locking and contact states of the six-bolt model provide the starting point for the connected vibration comparison.
 
 \heading{PCB stress over the 480 frames of the seeded motion movie}
-The three accelerations are separate deterministic realizations of the October 20--2000~Hz base spectrum. Each contains 589,825 samples over 9~s at 65,536~Hz. The input rises over 0.1~s. During the final eight seconds the periodic waveform has 14.136~g RMS. The native transient integration uses the retained prestressed modes, 2\% modal damping and motion relative to the common support. Each clip uses 480 signed states from 1.000061 to 1.029297~s, displayed at 60 frames per second.
+The three accelerations are separate deterministic realizations of the October 20--2000~Hz base spectrum. Each contains 589,825 samples over 9~s at 65,536~Hz. The input rises over 0.1~s. During the final eight seconds the periodic waveform has 14.136~g RMS. The movies use independent time integration on the retained native prestressed modes with 2\% damping and motion relative to the common support. Each clip uses 480 signed states from 1.000061 to 1.029297~s, displayed at 60 frames per second.
 
 The six signed dynamic stress components were summed at each of 312,112 PCB element corners before calculating von Mises stress. Independent integration of the fresh native modes reproduced the 480 October bare-board frame maxima within 0.00182\%. The largest value in this particular clip was 154.41~MPa bare, 169.94~MPa with raised nylon screws and 151.03~MPa with raised aluminium screws. The nylon peak occurred about 3.85~ms earlier and at a different board node from the bare peak.
 \begin{center}\includegraphics[width=.82\linewidth]{figures/raised-seeded-pcb-stress.pdf}
 \captionof{figure}{Maximum dynamic PCB stress at each of the original 480 movie times. The three curves use independent coordinates on each tightened modal basis. Each dot marks a clip maximum.}\end{center}
 
-Four base-X camera orbits now compare the bare assembly with the 3~mm nylon- and aluminium-screw cases. Corresponding bare and cased movies use the same displacement scale, camera path, 4K resolution and 60~fps playback. The camera moves across a fixed one-sigma RMS field. The separate seeded movies follow physical time. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
+The seven seeded movie subjects each show the bare board and both 3~mm screw variants. Playback slows time by a factor of 273 and magnifies displacements 50 times. Each pair shares an absolute colour scale. Four further pairs show camera orbits over fixed base-X one-sigma RMS fields. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
 \newpage
 \heading{Does the contact model start with the gap measured in CAD?}
 An enclosure that presses on the cells at the start of a raised-case calculation will appear to stiffen the assembly before the real parts would touch. We checked the undeformed contact pairs separately from the load solution. The local fixture uses one target for the moving edge cell and another for the fixed neighboring cells and washers. The global assembly uses deformable targets. The search radius tells MAPDL which nearby facets to examine; it does not set the physical clearance.
@@ -311,5 +311,27 @@ Through-layer elongation, 1.8\% & 1.23--1.27 & No sampled element\\\bottomrule
 At 0.95~mm travel each prescribed screw head carried 64.0--64.5~N along board Z. The largest direct axial screw stress was 7.37~MPa. Including bending, the most tensile modelled screw fibre reached 85.34~MPa. A rigid connection between the screw rotation and its bearing footprint strongly influences that value. The McMaster-Carr listing for the representative nylon screw (93640A145) gives its dimensions and lists tensile strength as unrated. Its installed strength, head rocking and thread engagement therefore remain unverified. \href{https://www.mcmaster.com/products/nylon-allen-screws/}{McMaster-Carr screw data.}
 
 For comparison, tightening the six original bolts in the raised full-board models produced a maximum case-screw fibre tension of 1.15~MPa with nylon and 1.63~MPa with aluminium. Neither raised case reached a printed-PLA coupon reference during tightening. The local flush trial subsequently crossed the board datum (page~11). Resolving the force required for an actual flush seat depends on the full-board contact path and the as-built material and joint behaviour.
+
+\newpage
+\heading{Does the cell touch the case during the motion shown in the movies?}
+The case with nylon screws lost its modeled cell clearance in 18 consecutive frames under X-axis excitation. They are frames 252--269 of the 480-frame film, about 4.20--4.48~s into playback and 1.015442--1.016479~s into the physical load history. At their midpoint, a cell surface vertex lay 14.6~$\mu$m inside the modeled PLA. The movie magnifies displacements 50 times. The section below uses the physical deformations.
+
+\begin{center}\includegraphics[width=.96\linewidth]{figures/raised-film-contact.pdf}
+\captionof{figure}{Left, the cell and PLA surface check repeated at every displayed instant for each 3~mm mount and input axis. Right, the exterior surfaces at frame 261, cut in a plane through the closest PLA point and the most deeply embedded sampled cell vertex. Both section axes use the same scale.}\end{center}
+
+\begin{center}\small
+\begin{tabular}{lrrr}\toprule
+Raised mount & X & Y & Z\\\midrule
+Nylon screws & 18/480 & 0/480 & 0/480\\
+Aluminium screws & 0/480 & 0/480 & 0/480\\\bottomrule
+\end{tabular}
+\captionof{table}{Frames with intersecting surfaces under separate base excitations. In the longer nine-second X history both screw variants showed interference at other sampled instants (pages~10 and~15).}\end{center}
+
+At each mount's own peak dynamic PCB stress in the X clip, the smallest sampled cell-vertex gap was 0.151~mm at frame 228 for nylon and 0.141~mm at frame 290 for aluminium. The fixed-contact motion calculation omits any change in stress or trajectory caused by earlier contact.
+
+\heading{How the surface check was verified}
+Independent modal coordinates displaced all 8,038 exterior quadratic PLA faces and all 938 cell faces. Each quadratic face lies inside the convex hull of six control points. We excluded pairs with disjoint hulls and subdivided overlapping hulls until they separated or successive triangular approximations intersected. In all 18 crossing frames the eight- and sixteen-segment edge refinements agreed. The remaining 2,862 frame/configuration combinations had disjoint curved surfaces.
+
+An independent check using the full closed skins gave a sampled overlap of 15.0~$\mu$m at four segments per edge and 14.6~$\mu$m at eight for frame 261. The geometry check also reproduced a prescribed planar crossing and the earlier open and intersecting whole-assembly states. Impact force and the motion between displayed samples require further analysis. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
 
 \end{document}

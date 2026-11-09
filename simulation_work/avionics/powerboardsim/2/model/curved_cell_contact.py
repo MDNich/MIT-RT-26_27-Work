@@ -10,6 +10,44 @@ from native_rst import read_rst
 from seeded_motion import FS, integrate, participation
 
 
+def contact_solids(rst):
+    g = rst.quadgrid
+    solid = np.isin(g.cell_data['ansys_elem_type_num'], [185, 186, 187])
+    return [g.extract_cells(solid & np.isin(g.cell_data['ansys_material_type'], mats))
+              for mats in ([850], [176, 187, 191])]
+
+
+def set_coordinates(groups, ids, coordinates_m):
+    for group in groups:
+        nodes = group.point_data['ansys_node_num']
+        select = np.searchsorted(ids, nodes)
+        assert np.array_equal(ids[select], nodes)
+        group.points = coordinates_m[select]
+        group.point_data['coordinates'] = group.points.astype(np.float64)
+
+
+def curved_skins(groups, level):
+    skins = [group.extract_surface(nonlinear_subdivision=level, algorithm='dataset_surface').triangulate()
+             for group in groups]
+    for surface in skins:
+        surface.points = surface.point_data['coordinates']
+        assert surface.n_open_edges == 0
+    return skins
+
+
+def sampled_clearance(groups, ids, coordinates_m, levels):
+    set_coordinates(groups, ids, coordinates_m)
+    records = {}
+    for level in levels:
+        cap, cells = curved_skins(groups, level)
+        _, count = cap.collision(cells, contact_mode=1, box_tolerance=0., cell_tolerance=0.)
+        sd = cells.compute_implicit_distance(cap).point_data['implicit_distance'] * 1000
+        assert np.isfinite(sd).all()
+        records[level] = dict(PLA_triangles=cap.n_cells, cell_triangles=cells.n_cells,
+                              intersect=bool(count), minimum_signed_vertex_gap_mm=float(sd.min()))
+    return records
+
+
 def run(variant, campaign):
     basis = variant + '_basis'
     vault = ROOT / '.runtime/archive' / campaign / basis
@@ -29,10 +67,7 @@ def run(variant, campaign):
     log = (vault / 'solve.out').read_text(errors='replace')
     actual, q, _ = integrate(rst.time_values, participation(log, 'X'), 'X', indices)
     assert np.array_equal(actual, times)
-    g = rst.quadgrid
-    solid = np.isin(g.cell_data['ansys_elem_type_num'], [185, 186, 187])
-    groups = [g.extract_cells(solid & np.isin(g.cell_data['ansys_material_type'], mats))
-              for mats in ([850], [176, 187, 191])]
+    groups = contact_solids(rst)
     ids = np.unique(np.concatenate([group.point_data['ansys_node_num'] for group in groups]))
     xyz = rst.mesh.nodes[np.searchsorted(rst.mesh.nnum, ids)]
     assert np.array_equal(rst.mesh.nnum[np.searchsorted(rst.mesh.nnum, ids)], ids)
@@ -48,23 +83,7 @@ def run(variant, campaign):
     records = {}
     for name, move in zip(('tightened', 'largest_approach', 'peak_layer_tension'),
                           (np.zeros_like(displacement[0]), *displacement), strict=True):
-        for group in groups:
-            nodes = group.point_data['ansys_node_num']
-            select = np.searchsorted(ids, nodes)
-            group.points = xyz[select] + move[select]
-            group.point_data['coordinates'] = group.points.astype(np.float64)
-        records[name] = {}
-        for level in (1, 2, 3):
-            cap, cells = [group.extract_surface(nonlinear_subdivision=level, algorithm='dataset_surface').triangulate()
-                          for group in groups]
-            for surf in (cap, cells):
-                surf.points = surf.point_data['coordinates']
-                assert surf.n_open_edges == 0
-            _, count = cap.collision(cells, contact_mode=1, box_tolerance=0., cell_tolerance=0.)
-            sd = cells.compute_implicit_distance(cap).point_data['implicit_distance'] * 1000
-            assert np.isfinite(sd).all()
-            records[name][level] = dict(PLA_triangles=cap.n_cells, cell_triangles=cells.n_cells,
-                                         intersect=bool(count), minimum_signed_vertex_gap_mm=float(sd.min()))
+        records[name] = sampled_clearance(groups, ids, xyz+move, (1,2,3))
         print(variant, name, records[name], flush=True)
     assert not any(r['intersect'] for r in records['tightened'].values())
     for name, old in [('largest_approach', approach['maximum_target_vertex_depth_in_PLA_mm']),
