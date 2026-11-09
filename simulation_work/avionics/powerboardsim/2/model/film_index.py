@@ -30,6 +30,7 @@ def make(reviews):
                           native_reference_sha256=r['sha256'],frames_reviewed=proof['check_frames'])
     if reviews:write_json(REVIEW,record)
     ready={};pairs=0;raised_pairs=0;lines=[]
+    motion_methods=set();rms_methods=set();native_seeded=0
     for r in rows:
         titles=[]
         for g,label in zip(SLOTS,['Bare','Four cases'],strict=True):
@@ -49,10 +50,16 @@ def make(reviews):
             if proof.get('field_method')=='independent':
                 label+=' · independent RMS'
             path=Path(name).relative_to('output/videos');titles.append(f'[{label}]({path})')
-            ready[name]=proof['sha256']
+            ready[name]=proof
+            if r['kind']=='seeded random motion':
+                motion_methods.add(proof['coordinate_method'])
+            elif r['kind']=='camera motion over fixed RMS':
+                rms_methods.add(proof.get('field_method') or 'native')
         if all(r[g] in ready for g in SLOTS):
             pair_check(r)
-            if decode(r,'with_case').get('comparison_panels')==2:raised_pairs+=1
+            if r['kind']=='seeded random motion' and all(ready[r[side]]['coordinate_method']=='native' for side in SLOTS):
+                native_seeded+=1
+            if ready[r['with_case']].get('comparison_panels')==2:raised_pairs+=1
             else:pairs+=1
         lines.append((r,titles))
     out=['# Battery-board movies','',
@@ -60,9 +67,15 @@ def make(reviews):
          f'{pairs} of 22 subjects include both flush mounts as well.','',
          'The links open 3840 × 2160 movies at 60 fps. Paired views use the same displacement or stress scale. '
          'The mode movies show normalized motion. In the one-sigma movies the camera moves around a fixed RMS field. '
-         'The seeded movies show successive instants of the original acceleration record.','',
-         'Native motion uses coordinates from the MAPDL transient. Independent motion uses the same excitation and native mode shapes '
-         'with independently integrated coordinates. Independent RMS uses frequency integration on the native modes.','']
+         'The seeded movies show successive instants of the original acceleration record.','']
+    if motion_methods:
+        count='All seven' if native_seeded==7 else f'{native_seeded} of seven'
+        detail=[f'{count} seeded movie pairs use native MAPDL time histories for every displayed panel.']
+        if 'independent' in motion_methods:
+            detail.append('Panels labelled independent use the same excitation and native mode shapes with independently integrated coordinates.')
+        out+=[' '.join(detail),'']
+    if 'independent' in rms_methods:
+        out+=['RMS panels labelled independent use frequency integration on the native modes.','']
     endpoints=ROOT/'validation/installation_comparisons/flush_endpoints.json'
     if raised_pairs and endpoints.is_file():
         checked=read(endpoints)['cases']

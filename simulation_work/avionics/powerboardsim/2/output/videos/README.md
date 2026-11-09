@@ -4,7 +4,7 @@
 
 The links open 3840 × 2160 movies at 60 fps. Paired views use the same displacement or stress scale. The mode movies show normalized motion. In the one-sigma movies the camera moves around a fixed RMS field. The seeded movies show successive instants of the original acceleration record.
 
-Native motion uses coordinates from the MAPDL transient. Independent motion uses the same excitation and native mode shapes with independently integrated coordinates. Independent RMS uses frequency integration on the native modes.
+All seven seeded movie pairs use native MAPDL time histories for every displayed panel.
 
 In both flush installation trials the printed PLA exceeded its tensile reference before the tabs touched the board. The raised mounts supply the cased vibration fields. [Flush mounting results, page 19](../pdf/battery-case-report.pdf#page=19)
 
@@ -37,10 +37,10 @@ In both flush installation trials the printed PLA exceeded its tensile reference
 
 | October subject | Without case | With case |
 |---|---|---|
-| Whole assembly · base X · X displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) |
-| Whole assembly · base Y · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig11_baseY_responseZ.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig11_baseY_responseZ.mp4) |
-| Whole assembly · base Z · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig14_baseZ_responseZ.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig14_baseZ_responseZ.mp4) |
-| PCB · base X · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) |
-| PCB · base Y · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig16_pcb_baseY.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig16_pcb_baseY.mp4) |
-| PCB · base Z · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) |
-| PCB · base X · von Mises stress | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) | [3 mm stand-off · nylon and aluminium · independent motion](with_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) |
+| Whole assembly · base X · X displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) | [3 mm stand-off · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) |
+| Whole assembly · base Y · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig11_baseY_responseZ.mp4) | [3 mm stand-off · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig11_baseY_responseZ.mp4) |
+| Whole assembly · base Z · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig14_baseZ_responseZ.mp4) | [3 mm stand-off · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig14_baseZ_responseZ.mp4) |
+| PCB · base X · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) | [3 mm stand-off · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) |
+| PCB · base Y · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig16_pcb_baseY.mp4) | [3 mm stand-off · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig16_pcb_baseY.mp4) |
+| PCB · base Z · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) | [3 mm stand-off · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) |
+| PCB · base X · von Mises stress | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) | [3 mm stand-off · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) |

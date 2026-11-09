@@ -7,7 +7,7 @@ The October power-board assembly carries three cells and six battery-attachment 
 | Configuration | Published evidence |
 |---|---|
 | Bare board | All 22 movie subjects, the three native base spectra, three native seeded histories, the nominal side pull and a repeat of the partial nickel-damage history. |
-| 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, native X/Y/Z spectra and the positive-X side pull. The nylon native motion rerun passed all three axes. Each movie identifies its numerical source. |
+| 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, native X/Y/Z spectra and the positive-X side pull. All six native nine-second motion histories passed. Every movie now uses native ANSYS fields for the displayed mounts. |
 | Flush, nylon | The full-board installation stopped at 2.75 mm screw travel. The PLA coupon reference was crossed at 0.95–1.10 mm. The four tabs touched along their edges while most of each face remained open. |
 | Flush, aluminium | ANSYS reached the commanded 3.00 mm. Only 18–19% of each tab footprint lay within 0.05 mm of the board. The PLA tensile reference was exceeded before any tab touched, and washer penetration exceeded the contact screen. Flush vibration comparisons still lack a supported installed state. |
 
