@@ -14,6 +14,9 @@
 Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. The raised case begins with an air gap. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
 \begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.png}
 \captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
+\heading{What the raised case changes}
+Under X-axis vibration, the 3~mm case increased peak board-normal motion from 23.37~$\mu$m RMS bare to 145.55 with nylon screws and 120.00 with aluminium. Nylon gave the lowest cell-body X acceleration. Aluminium reduced board movement relative to nylon and increased the local stress across the PLA layers at a screw bearing. The presently verified flush results cover fit and partial installation.
+
 \heading{Reference assembly}
 The October assembly has 208 bodies and a modeled mass of 251.82~g. Eight stand-off end faces carry the base motion. Two nickel strips attach each cell to the assembly. In the connected reference, six existing screws were loaded to 750~N apiece and locked. Its first mode was 485.964~Hz. Independent base excitation between 20 and 2000~Hz gave a maximum PCB directional displacement of 0.052674~mm RMS under Z excitation and a maximum PCB equivalent stress of 90.325~MPa RMS under X excitation. These archived quantities supply reference checks for the repeats.
 \newpage
@@ -122,34 +125,35 @@ The archived cased result uses a compressed displacement record that the legacy 
 These displacement reductions apply to bolt tightening at the 3~mm stand-off. Vibration stress, cell motion and nickel damage require their respective load cases. The candidate flush model now starts from a checked open position and drives the screw heads towards the board relative to its flexible mounting points. A separate spring-and-mass verification reproduced the expected installation force and prestressed frequency; a converged flush installation and its stress and penetration limits still require verification.
 \newpage
 \heading{The raised enclosure adds resonances below the first bare-board mode}
-We extracted undamped natural frequencies about the verified bolt-locked states, using the same mounting constraints and a 1--4000~Hz search. The assembled mass rose from 251.82 to 325.82~g. The calculation found 38 modes without the case and 49 with the raised nylon-screw case. In the 20--2000~Hz excitation band the counts were 13 and 20, respectively. The lowest three cased frequencies were 253, 289 and 339~Hz, all below the lowest bare frequency of 486~Hz.
+We extracted undamped natural frequencies about the verified bolt-locked states, using the same mounting constraints and a 1--4000~Hz search. The assembled masses were 251.82~g bare, 325.82~g with the raised nylon-screw case and 326.10~g with aluminium screws. The models returned 38, 49 and 48 modes, respectively. The lowest three frequencies were 253, 289 and 339~Hz with nylon and 320, 372 and 378~Hz with aluminium. All six fall below the first bare-board mode at 486~Hz.
 
 \begin{center}\includegraphics[width=.96\linewidth]{figures/raised-prestressed-modes.pdf}
-\captionof{figure}{Each tick marks one native frequency in the excitation band. Lines connect five modes with a clear shape match (correlation above 0.94). Equal rank does not identify equal motion after adding the case.}\end{center}
+\captionof{figure}{Each tick marks one native frequency in the excitation band. Lines connect five bare-to-nylon matches above MAC 0.94, and nylon-to-aluminium matches above MAC 0.97 where the assigned match is also the best available match.}\end{center}
 
 The 253~Hz mode carried 17.9\% of the assembled mass in X translation. In this shape the largest cell displacement was 2.8\% of the peak on the PCB, while the peak on the case was 126\% of the PCB peak. Those are amplitude ratios \emph{within a mode}; the actual vibration displacement requires a forcing spectrum and damping. The 253~Hz mode had no close counterpart in the bare set: its highest shape correlation was 0.56. Conversely, the bare 781.35~Hz mode matched cased mode 9 at 782.88~Hz (correlation 0.943). This battery-motion mode shifted by only 0.20\% even though its rank changed from fourth to ninth.
 
 \begin{center}\small\begin{tabular}{lrrr}\toprule
 Effective translational mass, fraction of whole assembly & X & Y & Z\\\midrule
 Bare, all 38 retained modes & 87.2\% & 89.0\% & 89.6\%\\
-Raised nylon, all 49 retained modes & 90.1\% & 91.5\% & 90.8\%\\\bottomrule
+Raised nylon, all 49 retained modes & 90.1\% & 91.5\% & 90.8\%\\
+Raised aluminium, all 48 retained modes & 90.1\% & 91.4\% & 90.3\%\\\bottomrule
 \end{tabular}\end{center}
 
 \heading{How the shape comparison was made}
-Both modal meshes contain their assembly's static deformation. Before comparing vectors, we checked every original solid node against its own preload displacement and matched the 369,584 node IDs and their undeformed coordinates. The modal assurance criterion (MAC) is the squared, unweighted correlation of the global X, Y and Z eigenvector components at these nodes. It ranges from zero to one and is independent of the sign and normalization of a mode. It excludes the new case nodes so that both vectors describe the same structure. Modes with weak or competing matches remain ambiguous. Independently, all 38 bare frequencies and each printed per-mode translational mass fraction reproduced October. The new low frequencies establish additional ways the assembly can move. The next page examines forced displacement. The modal results alone give no stress amplitude.
+Both modal meshes contain their assembly's static deformation. Before comparing vectors, we checked every original solid node against its own preload displacement and matched the 369,584 node IDs and their undeformed coordinates. The modal assurance criterion (MAC) is the squared, unweighted correlation of the global X, Y and Z eigenvector components at these nodes. It ranges from zero to one and is independent of the sign and normalization of a mode. It excludes the new case nodes so that both vectors describe the same structure. Modes with weak or competing matches remain ambiguous. For the two screw materials we also matched all 399,194 solid nodes, including 29,610 PLA nodes. The first mode rose by 26.5\% from 253.16 to 320.17~Hz with full-solid MAC 0.989 and PLA-only MAC 0.994. It is a closely corresponding shape. The next two matches had full-solid MACs of 0.739 and 0.785.
 \newpage
 \heading{The linear model predicts more PCB motion with the raised case}
-We applied the October base acceleration spectrum separately along X, Y and Z to the two bolt-locked assemblies. For the 3~mm stand-off with nylon screws, the independent calculation predicts greater out-of-plane PCB motion for all three excitation directions. Under X excitation the peak PCB response in Z rises from 23.37 to 145.55~$\mu$m RMS, a factor of 6.23. In the same calculation the largest cell response in X falls from 61.43 to 53.79~$\mu$m RMS (12.4\%). The cell and board can respond differently to the same load. In particular, the 32\% reduction in static board deflection during tightening did not carry over to this vibration metric.
+We applied the October base acceleration spectrum separately along X, Y and Z to the three bolt-locked assemblies. For the 3~mm stand-off with nylon screws, the independent calculation predicts greater out-of-plane PCB motion for all three excitation directions. Under X excitation the peak PCB response in Z rises from 23.37 to 145.55~$\mu$m RMS, a factor of 6.23. In the same calculation the largest cell response in X falls from 61.43 to 53.79~$\mu$m RMS (12.4\%). With aluminium screws, the peak PCB Z responses were 120.00, 82.33 and 100.55~$\mu$m RMS for base X, Y and Z. Compared with nylon, these fall by 17.6\%, 5.0\% and 23.6\%. In particular, the 32\% reduction in static board deflection during tightening did not carry over to this vibration metric.
 
 \begin{center}\includegraphics[width=.97\linewidth]{figures/raised-independent-psd.pdf}
-\captionof{figure}{Each pair compares the largest board-normal RMS displacement anywhere on the PCB under the same single-axis base spectrum. Peaks can occur at different nodes. Values describe motion relative to the supports.}\end{center}
+\captionof{figure}{Each group compares the largest board-normal RMS displacement anywhere on the PCB under the same single-axis base spectrum. Peaks can occur at different nodes. Values describe motion relative to the supports.}\end{center}
 
 \heading{How we checked the response}
 The independent calculation uses each native mode's signed displacement field and directional participation factor. We integrate the modal frequency responses against the one-sided acceleration spectrum (20--2000~Hz, 14.14~g RMS, 2\% modal damping), including cross terms between modes driven by the same base input. This preserves cancellation and reinforcement. Halving the quadrature spacing from 0.25 to 0.125~Hz changed the modal covariance by less than $6\times10^{-8}$ in relative norm. For the bare assembly we compared all 18 peak directional displacements: three base directions, three response components, and both whole-assembly and PCB scopes. The worst difference from October's native ANSYS random-response output was 0.013\%. The three native MAPDL repeats reproduced all 51 October Mechanical maxima within $4.75\times10^{-8}$ relative, including displacement, absolute acceleration, equivalent stress and the three normal elastic strains on the PCB. Peak PCB equivalent stresses under base X, Y and Z were 90.325, 17.850 and 32.482~MPa RMS.
 
 We repeated the independent integration with modal cutoffs of 2000, 3000, 3500 and 4000~Hz, keeping the input spectrum fixed. For the raised nylon case under base X, both the 20-mode and 49-mode calculations gave a peak PCB Z displacement of 145.55~$\mu$m RMS. Across all three inputs, increasing the cutoff from 3500 to 4000~Hz changed the nine PCB directional peaks by at most 0.22\% bare and 0.056\% cased. The bare PCB's Y response to base Y differed by 8.32\% with the 2000~Hz cutoff. These checks apply to displacement within the available basis.
 
-The native base-X solution independently gave 145.55~$\mu$m for the raised PCB's peak Z displacement. All 15 directional displacement peaks across five part selections agreed with the independent integral within 0.0017\%. Both calculations linearize about the tightened contact state.
+The two native base-X solutions independently gave 120.00~$\mu$m for the raised aluminium case and 145.55~$\mu$m for the raised PCB's peak Z displacement. All 30 directional displacement peaks across five part selections per cased model agreed with the independent integrals within 0.0017\%. Both calculations linearize about the tightened contact state.
 
 \newpage
 \heading{The 3 mm stand-off does not prevent dynamic cell contact in the model}
@@ -235,6 +239,27 @@ For X-axis vibration with nylon screws, the native peak layer-normal stress was 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/raised-nylon-layer-stress.pdf}
 \captionof{figure}{Left, independent reconstruction at element 1215221, node 815413, with the static tension included. The band preserves sample maxima and minima in 20~ms windows. Right, maximum stored through-layer RMS over locations at or beyond each distance from a coupled screw-bearing node.}\end{center}
 
-At that corner the nine-second October X waveform gave a conditional maximum of 64.3~MPa in tension at 5.741~s. Its last eight seconds had a dynamic RMS of 17.15~MPa. For scale, the \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{PolyLite PLA data sheet} reports mean layer-normal tensile strength of 40.5~MPa on printed coupons. The assembly filament, print orientation, infill and screw seating have yet to be measured. The stress peak is close to an idealized rigid bearing, and the seeded linear response predicts cell contact earlier in the waveform. A conclusion about tab cracking therefore requires the bearing and post-contact response to be resolved, with strength data for the actual print.
+At that corner the nine-second October X waveform gave a conditional maximum of 64.3~MPa in tension at 5.741~s. Its last eight seconds had a dynamic RMS of 17.15~MPa. For scale, the \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{PolyLite PLA data sheet} reports mean layer-normal tensile strength of 40.5~MPa on printed coupons. The assembly filament, print orientation, infill and screw seating have yet to be measured. The stress peak is close to an idealized rigid bearing. At that very sample, the cell and PLA surfaces intersect in 944 triangle pairs, with a maximum sampled depth of 0.190~mm. A conclusion about tab cracking therefore requires the bearing and post-contact response to be resolved, with strength data for the actual print.
+
+\newpage
+\heading{Aluminium screws reduce board motion and concentrate load in the tab}
+The two raised models differ only in the properties of the four case screws. Both native base-X spectra used the same excitation, printed case and board mesh. Relative to nylon, aluminium reduced the peak PCB Z displacement by 17.6\% and the PCB Z acceleration by 18.6\%. The two PCB equivalent-stress peaks were within 0.22\% of each other. Changing to aluminium moved the peak back to the same node as the bare reference.
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Native base-X response, RMS & Bare & Raised nylon & Raised aluminium\\\midrule
+PCB Z displacement [$\mu$m] &23.37 &145.55 &120.00\\
+PCB Z acceleration [$g$] &52.29 &67.45 &54.92\\
+Cell-body X acceleration [$g$] &103.51 &91.81 &100.90\\
+PCB equivalent stress [MPa] &90.325 &88.847 &88.655\\
+PLA layer-normal stress [MPa] &--- &17.16 &24.78\\
+PLA layer-normal stress, at least 2 mm from bearings [MPa] &--- &5.72 &5.41\\\bottomrule
+\end{tabular}\end{center}
+
+The aluminium case had a peak layer-normal stress of 24.78~MPa RMS at a corner 0.50~mm from a coupled bearing node. That is 44.4\% above the nylon peak. Among corners at least 2~mm away, aluminium gave a slightly lower peak. This dependence on the bearing region motivates the finer case mesh and inspection of how the actual screw head bears on the print.
+
+\begin{center}\includegraphics[width=.96\linewidth]{figures/stand3_aluminium-linear-clearance.pdf}
+\captionof{figure}{Raised aluminium-screw case, independent response to the October X waveform. Near the selected point, the tightened gap was 0.145~mm and the normal relative motion was 0.070~mm RMS, compared with 0.098~mm for nylon. The section is plotted at physical scale.}\end{center}
+
+At 8.098053~s, the aluminium model's cell and PLA skins intersected in 864 triangle pairs. Nineteen sampled cell vertices lay more than 1~$\mu$m inside the case, and the deepest vertex was 0.174~mm inside. At 8.098083~s the independent signed reconstruction reached 110.1~MPa in layer-normal tension at the critical tab corner. At this exact sample the skins intersect in 854 triangle pairs with a deepest sampled cell vertex of 0.174~mm. For both screw materials, the peak tension at the selected highest-RMS corner occurs while the cells overlap the PLA in the linear solution. The post-contact loads and behavior of the actual bearing remain unresolved.
 
 \end{document}

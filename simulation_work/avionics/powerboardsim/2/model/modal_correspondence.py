@@ -14,11 +14,11 @@ def checksum(path):
         return hashlib.file_digest(f,'sha256').hexdigest()
 
 
-def native_points(result):
+def native_points(result,include_case=False):
     grid=result.grid
     typ=grid.cell_data['ansys_elem_type_num']
     material=grid.cell_data['ansys_material_type']
-    common=np.isin(typ,[185,186,187]) & (material<850)
+    common=np.isin(typ,[185,186,187]) & (material<=850 if include_case else material<850)
     sub=grid.extract_cells(common)
     ids=sub.point_data['ansys_node_num']
     ix=np.argsort(ids)
@@ -26,9 +26,9 @@ def native_points(result):
     return ids[ix],sub.points[ix]
 
 
-def reference_geometry(result):
+def reference_geometry(result,include_case=False):
     """Undo only the verified static restart displacement on prestressed native modes."""
-    ids,xyz=native_points(result);path=Path(result.filename).resolve()
+    ids,xyz=native_points(result,include_case);path=Path(result.filename).resolve()
     if not path.parent.name.endswith(('_basis','_modal20')) or path.parent.parent.parent.name!='archive':
         return ids,xyz,None
     from audit_local import ROOT,read
@@ -38,7 +38,7 @@ def reference_geometry(result):
     assert static.endswith('_static')
     proof=read(ROOT/'validation/global'/f'{static}.json')
     file=path.parent.parent/static/'file.rst';verified(file,proof['rst_sha256'])
-    base=read_rst(file);b,ref=native_points(base);assert np.array_equal(b,ids)
+    base=read_rst(file);b,ref=native_points(base,include_case);assert np.array_equal(b,ids)
     n,u=base.nodal_displacement(base.nsets-1);i=np.searchsorted(n,ids)
     assert np.array_equal(n[i],ids)
     err=float(np.max(abs((xyz-ref)-u[i,:3])))

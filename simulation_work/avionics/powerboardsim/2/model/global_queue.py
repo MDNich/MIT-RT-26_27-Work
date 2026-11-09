@@ -185,6 +185,11 @@ def jobs():
                 yield native_case('stand3_aluminium','psd_X'),'stand3_aluminium_basis'
                 if (ROOT/'validation/board_surface_jobs.json').exists():
                     yield 'flush_nylon_surf1_static',''
+                # Interleave the original signed-motion comparison with the two long installations.
+                yield 'bare_enforced','bare_basis'
+                for direction in 'XYZ':yield 'bare_motion_'+direction,'bare_enforced'
+                yield 'stand3_aluminium_lateral_friction_locked_pin1','bare_lateral_friction_locked'
+                for direction in 'YZ':yield native_case('stand3_nylon','psd_'+direction),'stand3_nylon_basis'
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
             if branch=='bare' and axis=='Z' and (ROOT/'validation/board_surface_jobs.json').exists():
@@ -229,8 +234,12 @@ def result_path(case):
     return ROOT/'validation'/category/(case+'.json')
 
 def ordered_jobs():
-    sequence=list(jobs())
-    parents=dict(sequence)
+    # Repeated priorities must refer to the same physical case and prerequisite.
+    parents={}
+    for name,parent in jobs():
+        if name in parents and parents[name]!=parent:raise ValueError('Conflicting parent for '+name)
+        parents[name]=parent
+    sequence=list(parents.items())
     pending=[]
     for folder in RECEIPTS.iterdir():
         state=folder/'status.json'
@@ -349,7 +358,15 @@ def run():
                 flags.extend(['-Parent',parent])
             log('Dispatch '+case);dispatch_solver('native_run.ps1',flags,receipt)
         while not state.is_file():time.sleep(15)
-        while read(state)['phase'] not in ('solver_complete','failed'):time.sleep(20)
+        while True:
+            current=read(state)
+            if current['phase'] in ('solver_complete','failed'):break
+            if current.get('shared_scratch'):
+                free=shutil.disk_usage(ROOT).free
+                if free<425_000_000_000:
+                    stop=receipt/('host_critical.json' if free<400_000_000_000 else 'host_stop.json')
+                    if not stop.exists():save(stop,dict(case=case,free_bytes=free,utc=utc()))
+            time.sleep(15)
         if read(state)['phase']=='failed':log('Failed native '+case);continue
         if not (receipt/'released.txt').exists():
             log('Archive '+case)

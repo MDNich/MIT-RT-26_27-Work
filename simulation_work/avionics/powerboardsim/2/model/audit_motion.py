@@ -64,6 +64,26 @@ def audit(case,campaign):
         assert sha(folder/'acc.txt')==spec['acc_sha256']
         parent=(ROOT/f'.runtime/archive/{campaign}/{branch}_basis/solve.out').read_text(errors='replace')
         data,metrics=full_history(folder/'file.mcf',basis['frequencies_Hz'],parent,axis)
+        spectrum=branch+'_psd_'+axis+'_private1'
+        layer=ROOT/'validation/pla_stress'/f'{spectrum}.json'
+        if layer.is_file():
+            from film_identity import verified
+            record=json.loads(layer.read_text())
+            assert record['basis_sha256']==basis['rst_sha256'] and record['campaign']==campaign
+            modal_trace=ROOT/'.runtime/post'/campaign/spectrum/'PLA_critical_history.npz'
+            verified(modal_trace,record['independent_signed_waveform']['cache_sha256'])
+            with np.load(modal_trace) as trace:
+                sigma=data@trace['modal_Z_Pa']*1e-6+float(trace['mean_MPa'])
+                estimated=trace['signed_stress_MPa']
+            assert sigma.shape==estimated.shape and np.isfinite(sigma).all()
+            rel=float(np.linalg.norm(sigma-estimated)/np.linalg.norm(estimated))
+            assert rel<.005,rel
+            evidence['native_seeded_PLA_layer_stress']=dict(
+                corner_node=record['fields']['ZZ']['node'],element=record['fields']['ZZ']['element'],
+                peak_tension_MPa=float(sigma.max()),peak_time_s=float(np.argmax(sigma)/FS),
+                peak_compression_MPa=float(sigma.min()),stationary_dynamic_RMS_MPa=float(np.std(sigma[FS:-1])),
+                relative_difference_from_independent_time_history=rel,
+                scope='Native modal coordinates times signed stresses at the corner of highest PSD response. Includes local tightening stress. Linearized contact.')
         path=ROOT/'.runtime/post'/campaign/case/'coordinates.npz'
         path.parent.mkdir(parents=True,exist_ok=True)
         np.savez_compressed(path,time_s=FRAMES/FS,coordinates=data[FRAMES],frequencies_Hz=basis['frequencies_Hz'])

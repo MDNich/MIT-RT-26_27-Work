@@ -150,13 +150,15 @@ try {
     $p=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -PassThru
     while (!$p.WaitForExit(1500)){
         $freeNow=(Get-PSDrive C).Free
-        if ($freeNow -lt 14000000000 -and (Test-Path -LiteralPath "$work\STORAGE_STOP.txt") -and !$p.HasExited){
+        $hostHard=$sharedWork -and (Test-Path -LiteralPath "$out\host_critical.json")
+        $hostSoft=$sharedWork -and (Test-Path -LiteralPath "$out\host_stop.json")
+        if (($freeNow -lt 14000000000 -or $hostHard) -and (Test-Path -LiteralPath "$work\STORAGE_STOP.txt") -and !$p.HasExited){
             # Stop only this job's process tree if it is in a linear phase that does not service file.abt.
             & taskkill.exe /PID $p.Id /T /F | Out-Null
             $p.WaitForExit()
             throw 'Critical scratch reserve reached; stopped the launched process tree, preserving guest files'
         }
-        if ($freeNow -lt 17000000000 -and !(Test-Path -LiteralPath "$work\STORAGE_STOP.txt")){
+        if (($freeNow -lt 17000000000 -or $hostSoft -or $hostHard) -and !(Test-Path -LiteralPath "$work\STORAGE_STOP.txt")){
             'nonlinear'|Set-Content -LiteralPath "$work\file.abt" -Encoding Ascii
             "Controlled stop requested at $([DateTime]::UtcNow.ToString('o'))"|Set-Content -LiteralPath "$work\STORAGE_STOP.txt"
         }
