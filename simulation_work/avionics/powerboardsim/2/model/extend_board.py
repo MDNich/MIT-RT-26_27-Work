@@ -37,7 +37,7 @@ def board_feet(deck):
     return np.asarray(nodes),np.asarray(pts)
 
 
-def build(mesh_path,board,material,offset,*,retreat_mm=0., bearing_faces=(42,38,40,44), tab_thickness_mm=2.0828):
+def build(mesh_path,board,material,offset,*,retreat_mm=0., bearing_faces=(42,38,40,44), tab_thickness_mm=2.0828, case_node_start=NODE):
     mesh=np.load(mesh_path)
     local=mesh['points'];pts=np.column_stack((34.6075+local[:,0],60.3885+local[:,2],-.55118-10-offset-local[:,1]))
     if retreat_mm:
@@ -46,9 +46,9 @@ def build(mesh_path,board,material,offset,*,retreat_mm=0., bearing_faces=(42,38,
     pcb_ids,pcb_pts=board
     e,nu,rho=SCREWS[material]
     ln=['! Power-board case. Geometry in m; elastic modulus Pa; density kg/m3.','FINISH','/PREP7','ALLSEL,ALL','CSYS,0','ESYS,0','ET,850,SOLID187','MP,EX,850,3.4269E9','MP,EY,850,3.4269E9','MP,EZ,850,3.0649E9','MP,PRXY,850,.35','MP,PRYZ,850,.35','MP,PRXZ,850,.35','MP,GXY,850,1.26922E9','MP,GYZ,850,1.20154E9','MP,GXZ,850,1.20154E9','MP,DENS,850,1170','TYPE,850','MAT,850','REAL,1']
-    ln.extend(f'N,{NODE+i},{x*.001:.12g},{y*.001:.12g},{z*.001:.12g}' for i,(x,y,z) in enumerate(pts))
+    ln.extend(f'N,{case_node_start+i},{x*.001:.12g},{y*.001:.12g},{z*.001:.12g}' for i,(x,y,z) in enumerate(pts))
     # 10-node tetrahedra; Gmsh edges J-K-L etc have the last two edge nodes reversed relative to SOLID187.
-    tet=mesh['tets'][:,[0,1,2,3,4,5,6,7,9,8]]+NODE
+    tet=mesh['tets'][:,[0,1,2,3,4,5,6,7,9,8]]+case_node_start
     for i,row in enumerate(tet):
         ln.append('EN,'+str(1200001+i)+','+','.join(map(str,row[:8])))
         ln.append('EMORE,'+','.join(map(str,row[8:])))
@@ -91,7 +91,7 @@ def build(mesh_path,board,material,offset,*,retreat_mm=0., bearing_faces=(42,38,
             for dof in ('UX','UY','UZ','ROTX','ROTY','ROTZ'):
                 ce=f'CE,NEXT,0,{upper},{dof},1,{board_pilot},{dof},-1'
                 ln.append(ce+(f',{act},UZ,-1' if dof=='UZ' else ''))
-        for pilot,name,slaves in [(board_pilot,'PCBSEAT',patch),(lower,'TABSEAT',rail+NODE)]:
+        for pilot,name,slaves in [(board_pilot,'PCBSEAT',patch),(lower,'TABSEAT',rail+case_node_start)]:
             component(ln,name,slaves)
             ln.append('ALLSEL,ALL')
             ln.extend(f'CERIG,{pilot},{int(slave)},UXYZ' for slave in slaves)

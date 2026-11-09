@@ -6,6 +6,10 @@ The first native-fit models use 6.35 mm tabs and 7.60 mm modeled screw grip. At 
 
 After the six original bolts were tightened and locked, peak PCB displacement fell from 47.46 µm bare to 28.91 µm with the snug nylon mount and 23.09 µm with aluminium (39.1% and 51.4% lower). Native contact appeared at the middle pocket during tightening. At lock all six washers and both outer cells cleared the deformed case. [Preload comparison, page 3](output/pdf/battery-case-report.pdf#page=3)
 
+The 3 and 2 mm nylon meshes gave 28.919 and 28.915 µm peak PCB displacement and both placed only the middle pocket in contact. Peak local pressure after bolt lock changed from 0.170 to 0.345 MPa. [Mesh check, page 4](output/pdf/battery-case-report.pdf#page=4)
+
+The first two snug-fit movie pairs cover refined default-contact modes 1 and 20. Mode 1 stayed near 66.61 Hz for all three assemblies. Mode 20 changed shape substantially across the assemblies. [Modes and shape matching, page 5](output/pdf/battery-case-report.pdf#page=5)
+
 The [snug-fit movie catalogue](output/videos/snug125/README.md) tracks the 22 requested subjects. The three bare modal films retain their verified 6 mm display scale. Each new RMS or seeded pair will share a range determined from the bare board and both 1.25 mm mounts.
 
 ## Appendix A — previous fit study

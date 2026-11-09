@@ -5,11 +5,11 @@ import numpy as np
 from audit_local import ROOT, read
 from film_identity import digest, verified, write_json
 from installation_material import run as audit_material
-from stage_snug_fit import AUDIT
+from stage_snug_fit import AUDIT,input_record
 
 
 def review(case, campaign):
-    entry=read(AUDIT/'global_inputs.json')[case]
+    entry=input_record(case)
     proof_path=ROOT/'validation/global'/f'{case}.json'
     proof=read(proof_path)
     assert case.endswith('_static') and proof['campaign']==campaign and proof['case']==case
@@ -26,7 +26,7 @@ def review(case, campaign):
     assert np.isfinite(peak_pen_mm) and peak_pen_mm>=0
     bolts=proof['locked_bolt_reactions_N']
     assert len(bolts)==6 and max(abs(x-750) for x in bolts)<1
-    surface=read(AUDIT/'cell_surface_closure.json')
+    surface=read(AUDIT/entry.get('surface_closure_file','cell_surface_closure.json'))
     init=[r for r in surface['rows'] if r['mesh_mm']==entry['size_mm'] and r['subdivision']==3]
     assert len(init)==3
     # Same local hardware-penetration and printed-material screens used for the installation study.

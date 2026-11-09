@@ -41,7 +41,7 @@ def first_hit(moving,target):
     return dict(intersects_at_1p25=initial,first_touch_standoff_bracket_mm=[lo,hi])
 
 
-def run():
+def run(sizes=(2,3), audit_file='cell_surface_closure.json'):
     proof=read(ROOT/'validation/global/bare_static.json')
     path=ROOT/'.runtime/archive'/proof['campaign']/'bare_static/file.rst';verified(path,proof['rst_sha256'])
     grid=read_rst(path).quadgrid
@@ -56,7 +56,7 @@ def run():
             target=cell.extract_surface(algorithm='dataset_surface',nonlinear_subdivision=sub).triangulate()
             target.points=target.point_data['xyz64'];targets[body,sub]=target
     rows=[]
-    for mesh_size in (2,3):
+    for mesh_size in sizes:
         file=MESH/f'case_{mesh_size}.npz'
         with np.load(file) as mesh:
             for sub in (2,3):
@@ -65,7 +65,7 @@ def run():
                     if level==sub:
                         row=dict(mesh_mm=mesh_size,subdivision=sub,cell_STEP_body=body,**first_hit(case,target))
                         rows.append(row);print(row,flush=True)
-    write_json(AUDIT/'cell_surface_closure.json',dict(bare_rst_sha256=proof['rst_sha256'],mesh_sha256={k:digest(MESH/f'case_{k}.npz') for k in (2,3)},rows=rows,
+    write_json(AUDIT/audit_file,dict(bare_rst_sha256=proof['rst_sha256'],mesh_sha256={k:digest(MESH/f'case_{k}.npz') for k in sizes},rows=rows,
                scope='Undeformed quadratic skins, rigid translation only. Contact formulation, preload and cell rotation affect native reactions.'))
 
 

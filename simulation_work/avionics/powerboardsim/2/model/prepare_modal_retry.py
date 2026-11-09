@@ -16,6 +16,12 @@ def prepare(source, campaign):
     name = source+'_sturm'
     path = ROOT/'.runtime/inputs'/source/'model.inp'
     deck = path.read_bytes()
+    if source.startswith('snug125_'):
+        from stage_snug_fit import AUDIT
+        expected=json.loads((AUDIT/'global_inputs.json').read_text())[source]
+        state=json.loads((run/'status.json').read_text(encoding='utf-8-sig'))
+        assert state['phase']=='solver_complete' and state['native_clean']
+        assert expected['input_sha256']==state['input_sha256'].lower()==hashlib.sha256(deck).hexdigest()
     retry, number = re.subn(rb'(?im)^(modopt,lanb,20,1\.,10000\.)(\r?\n)',rb'\1\2lanboption,on,,alt1\2',deck)
     if number != 1:
         raise ValueError('Unexpected original eigenanalysis settings')
@@ -23,7 +29,7 @@ def prepare(source, campaign):
     target.parent.mkdir(exist_ok=True)
     if target.exists() and target.read_bytes()!=retry:
         raise ValueError('Existing sealed retry has a different input')
-    target.write_bytes(retry)
+    if not target.exists():target.write_bytes(retry)
     audit = dict(source=source, campaign=campaign, retry=name, requested_modes=int(counts[1]),
                  produced_modes=int(counts[2]), first_listing_sha256=hashlib.sha256((run/'solve.out').read_bytes()).hexdigest(),
                  original_input_sha256=hashlib.sha256(deck).hexdigest(), retry_input_sha256=hashlib.sha256(retry).hexdigest(),

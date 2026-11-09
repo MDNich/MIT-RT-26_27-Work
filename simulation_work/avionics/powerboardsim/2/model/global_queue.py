@@ -179,6 +179,9 @@ def jobs():
                 yield case,inputs[case]['parent']
             if subject == 'static':
                 yield 'snug125_nylon_mesh3_static',''
+            if subject == 'original':
+                for material in ('nylon','aluminium'):
+                    yield f'snug125_{material}_original_sturm',''
         # Release matched film subjects early so the host can encode while the longer local pulls solve.
         branches=('snug125_nylon','snug125_aluminium')
         for subject in ('basis','modal20'):
@@ -189,6 +192,9 @@ def jobs():
         for axis in 'XYZ':
             for branch in branches:
                 yield native_case(branch,'psd_'+axis),branch+'_basis'
+            follow=ROOT/'validation/snug125/contact_refinement_inputs.json'
+            if axis=='X' and follow.is_file():
+                for name in read(follow):yield name,''
         for branch in branches:
             yield branch+'_enforced',branch+'_basis'
         for axis in 'XYZ':
@@ -466,6 +472,15 @@ def run():
                     r=subprocess.run(args,capture_output=True,text=True)
                     if r.returncode:(probe/'audit_failed.txt').write_text(r.stderr);log('Rejected '+name+'; bare jobs independent')
         receipt=RECEIPTS/case;receipt.mkdir(parents=True,exist_ok=True)
+        if case.startswith('snug125_') and case.endswith('_original_sturm') and not (receipt/'dispatch.json').exists():
+            source=case.removesuffix('_sturm')
+            if result_path(source).is_file() or not (RECEIPTS/source/'audit_failed.txt').is_file():continue
+            from prepare_modal_retry import prepare
+            try:
+                prepare(source,CAMPAIGN)
+            except ValueError as exc:
+                log(f'Default-mesh control requires inspection for {source}: {exc}')
+                continue
         final=result_path(case)
         partial=ROOT/'validation/partial_local'/(case+'.json')
         review=ROOT/'validation/review_local'/(case+'.json')

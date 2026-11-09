@@ -48,6 +48,19 @@ try {
             $stage.previous_storage_attempt_sha256=$old.Value.original_manifest_sha256
         }
     }
+    if ($Case -match '^snug125_(nylon|aluminium)_original_sturm$') {
+        $entry=Get-Content "$share\validation\${Case}_input.json" -Raw | ConvertFrom-Json
+        $core=Get-Content "$share\validation\snug125\global_inputs.json" -Raw | ConvertFrom-Json
+        if ($entry.retry -ne $Case -or $entry.campaign -ne $Campaign -or $entry.retry_input_sha256 -ne $stage.input_sha256 -or
+            $core.PSObject.Properties[$entry.source].Value.input_sha256 -ne $entry.original_input_sha256 -or $Parent) {throw 'Snug default-mesh retry lineage mismatch'}
+    }
+    $forceReadback = $Case -match '^snug125_nylon_(out2|mesh15)_static$'
+    if ($forceReadback) {
+        $book=Get-Content "$share\validation\snug125\contact_refinement_inputs.json" -Raw | ConvertFrom-Json
+        $entry=$book.PSObject.Properties[$Case].Value
+        if ($entry.input_sha256 -ne $stage.input_sha256 -or $entry.step_sha256 -ne '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef' -or
+            $entry.post_sha256 -ne (Get-FileHash "$work\snug_force_post.inp").Hash -or $entry.tab_spacing_mm -ne 1.25 -or $Parent) {throw 'Snug contact refinement identity mismatch'}
+    }
     if ($Case -match '^snug125_(nylon|aluminium)(_mesh3)?_(static|original|refined|modal20|basis)$') {
         $manifest=Get-Content "$share\validation\snug125\global_inputs.json" -Raw | ConvertFrom-Json
         $entry=$manifest.PSObject.Properties[$Case].Value
@@ -183,10 +196,15 @@ try {
         if ($pp.ExitCode -ne 0 -or !(Test-Path "$work\seat_contacts.csv") -or !(Test-Path "$work\seat_material.csv") -or
             !(Select-String -LiteralPath "$work\board_surface_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native tab/contact/material readback failed'}
     }
-    if ($Case -match '^(flush|stand3|snug125)_(nylon|aluminium)_static$' -or $Case -in @('stand3_nylon_mesh2_static','snug125_nylon_mesh3_static')) {
-        Copy-Item -LiteralPath "$PSScriptRoot\contact_post.inp" -Destination $work
+    if ($forceReadback -or $Case -match '^(flush|stand3|snug125)_(nylon|aluminium)_static$' -or $Case -in @('stand3_nylon_mesh2_static','snug125_nylon_mesh3_static')) {
+        if ($forceReadback) {
+            Copy-Item -LiteralPath "$work\snug_force_post.inp" -Destination "$work\contact_post.inp"
+        } else {
+            Copy-Item -LiteralPath "$PSScriptRoot\contact_post.inp" -Destination $work
+        }
         $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-dir',('"'+$work+'"'),'-j','casepost','-i','contact_post.inp','-o','contact_post.out') -Wait -PassThru
         Copy-Item "$work\contact_post.out" $out
+        if ($forceReadback -and !(Test-Path "$work\snug_contact_force.csv")){throw 'Missing resultant readback'}
         if ($pp.ExitCode -ne 0 -or !(Test-Path "$work\case_contact.csv") -or !(Select-String -Path "$work\contact_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native contact readback failed'}
     }
     Update 'solver_complete'

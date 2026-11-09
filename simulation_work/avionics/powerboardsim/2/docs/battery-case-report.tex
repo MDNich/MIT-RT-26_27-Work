@@ -73,7 +73,43 @@ Peak PLA tension in-plane / across layers [MPa] & 0.334 / 0.344 & 1.052 / 0.760\
 Peak screw extreme-fibre tension after lock [MPa] & 1.25 & 2.40\\\bottomrule
 \end{tabular}\end{center}
 
-Each model converged at eight saved states. All six locked bolt forces were within 0.015~N of the 750~N target. The highest through-layer PLA tension reached 0.85\% of the printed-coupon mean with nylon and 1.88\% with aluminium. The contact pressures come from a small patch on the 2~mm case mesh. Its size and pressure still require the mesh comparison. Vibration and side pull are separate load cases.
+Each model converged at eight saved states. All six locked bolt forces were within 0.015~N of the 750~N target. The highest through-layer PLA tension reached 0.85\% of the printed-coupon mean with nylon and 1.88\% with aluminium. The contact pressures come from a small patch on the 2~mm case mesh. The mesh check on page~4 quantifies their sensitivity. Vibration and side pull are separate load cases.
+
+\newpage
+\pageheading{Mesh sensitivity of board displacement and pocket pressure}
+We ran the same nylon assembly a second time with a 3~mm case-mesh size limit. Both runs retained the bare-board mesh, the printed geometry, the screw axes, the 7.60~mm screw grip, the same PCB bearing nodes and all eight tightening and locking stations. Refining the case also changes the contact triangles and the number of tab nodes inside each screw-bearing footprint.
+
+\begin{center}\small\begin{tabular}{lrr}\toprule
+Nylon mount under bolt preload & 3~mm mesh & 2~mm mesh\\\midrule
+Quadratic case tetrahedra & 18,051 & 45,549\\
+Case-side bearing nodes per screw & 86--89 & 103--104\\
+Native minimum initial gap [$\mu$m] & 2.930 & 2.969\\
+Maximum PCB displacement at lock [$\mu$m] & 28.919 & 28.915\\
+First saved state carrying contact, step 1 & 0.70 & 0.70\\
+Active case faces at lock & 4 & 5\\
+Maximum contact pressure during tightening [MPa] & 1.025 & 1.080\\
+Maximum contact pressure at lock [MPa] & 0.170 & 0.345\\
+Peak in-plane PLA tension [MPa] & 0.392 & 0.334\\
+Peak through-layer PLA tension [MPa] & 0.299 & 0.344\\\bottomrule
+\end{tabular}\end{center}
+
+Both meshes located the largest PCB displacement at the same corner. Refinement changed that peak by 0.016\%, and both independent deformed-surface checks placed only the middle cell in contact. The location of engagement and the board-level response therefore agree across these two runs.
+
+The peak pressure during tightening rose by 5.4\% on refinement. At the end of bolt lock the peak rose by a factor of 2.03. Pressures on a handful of loaded faces cannot yet support a local cell or case bearing limit. A third 1.5~mm mesh contains 99,818 tetrahedra. It and a matched 2~mm repeat request the element contact-force vectors at every saved equilibrium so the total transmitted load can be checked separately from the pointwise pressure.
+
+\newpage
+\pageheading{The first two default-contact shapes persist with either mount}
+We repeated the October default-contact eigenanalysis on the refined board mesh before bolt tightening. The solver returned 20 positive frequencies for the bare board and for each snug mount. These controls reproduce the original mounting constraints and contact definitions. The operating-state modes require a separate extraction about the tightened assembly.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-default-modes.pdf}
+\captionof{figure}{Left, the 20 lowest extracted frequencies for each assembly. Right, the modal assurance criterion (MAC) compares displacement vectors at equal rank on the 368,754 common structural nodes. A value of one indicates proportional shapes on those nodes.}\end{center}
+
+Mode~1 was 66.611~Hz bare, 66.614~Hz with nylon and 66.615~Hz with aluminium. Both case-to-bare MAC values exceeded 0.99999. Mode~2 was also closely matched at about 154.8~Hz. At rank~3 the frequencies were 468.8, 263.9 and 357.2~Hz and the equal-rank shapes differed. The closest of the first 20 cased shapes to bare mode~3 occurred at rank~7 with nylon (MAC~0.714) and rank~4 with aluminium (MAC~0.823).
+
+Mode~20 was 2247.6~Hz bare, 1809.5~Hz with nylon and 1847.7~Hz with aluminium. The same-rank MAC values were 0.012 and below 0.001, respectively. Even the closest shapes among the first 20 cased modes had MAC below 0.15 against bare mode~20. A frequency shift of a single physical mode cannot be inferred from these three rank-20 frequencies.
+
+\heading{Paired 4K movies}
+The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{snug-fit movie catalogue} links the bare and cased views for modes~1 and~20. Each 9~s film uses the same 6~mm peak display amplitude and the same camera pose. The nylon and aluminium panels identify the frequency, rank and shape match. The display amplitude is a visualization scale.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

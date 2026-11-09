@@ -8,7 +8,7 @@ from vtkmodules.vtkCommonCore import vtkDoubleArray
 from vtkmodules.vtkFiltersCore import vtkImplicitPolyDataDistance
 from vtkmodules.util.numpy_support import vtk_to_numpy
 
-from audit_local import ROOT, read
+from audit_local import ROOT, read, table
 from curved_cell_contact import set_coordinates, curved_skins
 from dpf_readback import export
 from extend_board import NODE
@@ -16,12 +16,12 @@ from film_identity import digest, verified, write_json
 from global_contact import pair_summary
 from installed_cell_gap import target_connectivity, hardware_face_grids
 from native_rst import read_rst
-from stage_snug_fit import AUDIT, MESH, STEP
+from stage_snug_fit import AUDIT, MESH, STEP, input_record
 
 
-def surface_owners(rst, mesh_file):
+def surface_owners(rst, mesh_file, node_start=NODE):
     with np.load(mesh_file) as mesh:
-        face_by_nodes = {tuple(sorted(tri+NODE)): int(key)
+        face_by_nodes = {tuple(sorted(tri+node_start)): int(key)
                          for key in mesh if key.isdigit() for tri in mesh[key]}
         expected = sum(len(mesh[k]) for k in mesh if k.isdigit())
     rows = [e for e in rst.mesh.elem if e[1]==853]
@@ -119,20 +119,51 @@ def locked_geometry(rst, case, campaign):
                 native_set=k,rows=rows)
 
 
+def check_resultant(rst,owners,archive,history):
+    native=table(archive/'snug_contact_force.csv')
+    assert len(native)==rst.nsets and np.array_equal(native['native_set'],np.arange(rst.nsets)+1)
+    assert np.allclose(native['load_time'],rst.time_values,rtol=0,atol=1e-8)
+    faces=np.array(sorted(owners))
+    rows=[]
+    for k,(station,state) in enumerate(zip(native,history,strict=True)):
+        assert station['faces']==len(faces)
+        ids,records,_=rst.element_solution_data(k,'EMN')
+        inds=np.searchsorted(ids,faces);assert np.array_equal(ids[inds],faces)
+        result=np.zeros((len(faces),3))
+        for j,ind in enumerate(inds):
+            values=records[ind]
+            if values is not None and len(values):
+                assert len(values)>=45
+                result[j]=values[42:45]
+        total=result.sum(axis=0)
+        post=np.array([station[n] for n in ('fx_N','fy_N','fz_N')])
+        assert np.isfinite(result).all() and np.allclose(total,post,rtol=2e-5,atol=1e-5)
+        # Preserve cancellations when opposite surface normals are present.
+        norms=np.linalg.norm(result,axis=1)
+        if state['loaded_case_faces']:assert norms.max()>0
+        rows.append(dict(native_set=k+1,force_xyz_N=post.tolist(),resultant_N=float(np.linalg.norm(total)),
+                         sum_of_element_force_magnitudes_N=float(norms.sum()),
+                         maximum_POST1_difference_N=float(np.max(np.abs(total-post)))))
+    return rows
+
+
 def run(case,campaign):
-    registered=read(AUDIT/'global_inputs.json')[case]
+    registered=input_record(case)
     verified(STEP,registered['step_sha256'])
     mesh=MESH/f"case_{registered['size_mm']}.npz";verified(mesh,registered['mesh_sha256'])
     parent=read(AUDIT/f'{case}_installed.json')
     assert parent['case']==case and parent['campaign']==campaign
     path=ROOT/'.runtime/archive'/campaign/case/'file.rst';verified(path,parent['rst_sha256'])
     rst=read_rst(path)
-    owners=surface_owners(rst,mesh)
+    owners=surface_owners(rst,mesh,registered.get('case_node_start',NODE))
     history=contact_by_face(rst,owners,parent['contact_history'])
     results=dict(case=case,campaign=campaign,rst_sha256=parent['rst_sha256'],step_sha256=registered['step_sha256'],
                  case_mesh_sha256=registered['mesh_sha256'],number_of_contact_faces_by_STEP_face=dict(Counter(owners.values())),
                  loaded_STEP_face_geometry=loaded_face_geometry(history),contact_history=history,locked_geometry=locked_geometry(rst,case,campaign),
                  scope='Stored native contact corners grouped by exact case-mesh connectivity. Triangle intersection and signed target-vertex distances use the deformed quadratic case exterior and native hardware target faces at two subdivisions; vertex samples can miss face-to-face contact.')
+    if registered.get('extra_output'):
+        results['resultant_force_check']=check_resultant(rst,owners,path.parent,history)
+        results['native_force_csv_sha256']=digest(path.parent/'snug_contact_force.csv')
     write_json(AUDIT/f'{case}_contacts.json',results)
 
 

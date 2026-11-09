@@ -21,6 +21,10 @@
 \end{frame}
 \begin{frame}{Both snug mounts reduce PCB movement during tightening}
 \centering\includegraphics[width=.89\linewidth]{figures/snug-preload.pdf}
-\par\raggedright At bolt lock, peak PCB displacement fell from \textbf{47.46 $\mu$m bare} to \textbf{28.91 with nylon screws} and \textbf{23.09 with aluminium screws}. Only the middle cell contacted the case. Both outer cells and all six washers stayed clear.
+\par\raggedright At bolt lock, peak PCB displacement fell from \textbf{47.46 $\mu$m bare} to \textbf{28.91 with nylon screws} and \textbf{23.09 with aluminium screws}. Only the middle cell contacted the case. A second nylon mesh reproduced PCB deflection within 0.016\%. Its peak pocket pressure at lock differed by a factor of two.
+\end{frame}
+\begin{frame}{The first unpreloaded mode stays at 66.61 Hz}
+\centering\includegraphics[width=.90\linewidth]{figures/snug-default-modes.pdf}
+\par\raggedright The first two mode shapes closely match the bare board. At mode 20 the shapes differ, so comparing frequencies by rank alone would give a misleading shift. These are the refined default-contact controls before bolt tightening. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{Paired movies.}
 \end{frame}
 \end{document}

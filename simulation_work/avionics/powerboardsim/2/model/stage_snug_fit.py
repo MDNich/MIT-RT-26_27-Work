@@ -21,6 +21,12 @@ THICKNESS = 6.35
 STEP_HASH = '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef'
 
 
+def input_record(case):
+    main=json.loads((AUDIT/'global_inputs.json').read_text())
+    if case in main:return main[case]
+    return json.loads((AUDIT/'contact_refinement_inputs.json').read_text())[case]
+
+
 def stage():
     verified(STEP,STEP_HASH)
     identity=json.loads((ROOT/'validation/alternate_case_fit.json').read_text())

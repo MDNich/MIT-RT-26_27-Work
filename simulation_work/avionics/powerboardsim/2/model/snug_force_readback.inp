@@ -1,0 +1,27 @@
+! Resultant contact force from the case-side CONTA174 elements in global coordinates.
+ALLSEL,ALL
+RSYS,0
+SET,LAST
+*GET,NSAV,ACTIVE,0,SET,NSET
+*CFOPEN,snug_contact_force,csv
+*VWRITE
+('native_set,load_time,faces,fx_N,fy_N,fz_N')
+*DO,IK,1,NSAV
+  ALLSEL,ALL
+  SET,,,,,,,IK
+  *GET,IKTIME,ACTIVE,0,SET,TIME
+  ESEL,S,TYPE,,853
+  *GET,NFACE,ELEM,0,COUNT
+  ETABLE,ERAS
+  ETABLE,GFX,NMISC,43
+  ETABLE,GFY,NMISC,44
+  ETABLE,GFZ,NMISC,45
+  SSUM
+  *GET,SFX,SSUM,0,ITEM,GFX
+  *GET,SFY,SSUM,0,ITEM,GFY
+  *GET,SFZ,SSUM,0,ITEM,GFZ
+  *VWRITE,IK,IKTIME,NFACE,SFX,SFY,SFZ
+  (F6.0,',',E16.8,',',F10.0,3(',',E21.12))
+*ENDDO
+*CFCLOS
+ALLSEL,ALL
