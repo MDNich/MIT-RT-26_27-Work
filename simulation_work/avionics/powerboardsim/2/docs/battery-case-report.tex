@@ -75,13 +75,13 @@ Each unpreloaded model used the archived mounting constraints and searched for 2
 The first original-mesh run returned only four modes and exited normally. The repeat kept the same input geometry, material properties, supports and search range. It changed the Block Lanczos algorithm to its alternate formulation and requested the Sturm sequence check. This recovered the complete spectrum. The default models retain the detached nine-body group in the earlier connection diagnosis. The bearing, locking and contact states of the six-bolt model provide the starting point for the connected vibration comparison.
 
 \heading{PCB stress over the 480 frames of the seeded motion movie}
-Each of the three 9~s October base records has 589,825 samples at 65,536~Hz. After a 0.1~s ramp, the periodic 20--2000~Hz input reaches 14.136~g RMS. The bare-board native runs used 38 prestressed modes. The raised clips use independent integration on their native modes. All use 2\% damping. Each clip shows 480 signed states from 1.000061 to 1.029297~s at 60 frames per second.
+Each of the three 9~s October base records has 589,825 samples at 65,536~Hz. After a 0.1~s ramp, the periodic 20--2000~Hz input reaches 14.136~g RMS. The bare-board native runs used 38 prestressed modes and the raised nylon runs used 49. The paired raised movies here use independent integration on the native bases. All use 2\% damping. Each clip shows 480 signed states from 1.000061 to 1.029297~s at 60 frames per second.
 
 The six signed dynamic stress components were summed at each of 312,112 PCB element corners before calculating von Mises stress. The fresh native X history reproduced all 480 October bare-board frame maxima within 0.000028\%; the independent integration agreed within 0.00182\%. The largest value in this particular clip was 154.41~MPa bare, 169.94~MPa with raised nylon screws and 151.03~MPa with raised aluminium screws. The nylon peak occurred about 3.85~ms earlier and at a different board node from the bare peak.
 \begin{center}\includegraphics[width=.82\linewidth]{figures/raised-seeded-pcb-stress.pdf}
 \captionof{figure}{Maximum dynamic PCB stress at each of the original 480 movie times. The three curves use independent coordinates on each tightened modal basis. Each dot marks a clip maximum.}\end{center}
 
-Seven seeded pairs share colour scales, 50-fold displacement magnification and 273-fold slow motion. All twelve camera orbits show native MAPDL one-sigma displacement fields for the bare board and both raised mounts. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
+Over the same 480 frames, the native peak board-normal displacement on the displayed PCB surface was 0.040, 0.047 and 0.168~mm for the bare X/Y/Z inputs, versus 0.244, 0.154 and 0.290~mm with nylon screws. The seven movie pairs use common scales, 50-fold displacement magnification and 273-fold slow motion. All twelve camera orbits show native MAPDL one-sigma displacement fields for the bare board and both raised mounts. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
 \newpage
 \heading{Does the contact model start with the gap measured in CAD?}
 An enclosure that presses on the cells at the start of a raised-case calculation will appear to stiffen the assembly before the real parts would touch. We checked the undeformed contact pairs separately from the load solution. The local fixture uses one target for the moving edge cell and another for the fixed neighboring cells and washers. The global assembly uses deformable targets. The search radius tells MAPDL which nearby facets to examine; it does not set the physical clearance.
@@ -273,7 +273,19 @@ For X-axis vibration with nylon screws, the native peak layer-normal stress was 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/raised-nylon-layer-stress.pdf}
 \captionof{figure}{Left, independent reconstruction at element 1215221, node 815413, with the static tension included. The band preserves sample maxima and minima in 20~ms windows. Right, maximum stored through-layer RMS over locations at or beyond each distance from a coupled screw-bearing node.}\end{center}
 
-At that corner the native nine-second X history reached 64.3~MPa in tension at 5.741455~s. Its last eight seconds had a dynamic RMS of 17.16~MPa. Across all 589,825 samples and 49 modes, the native coordinates differed from the independent integration by 0.00079\% in relative norm. For scale, the \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{PolyLite PLA data sheet} reports mean layer-normal tensile strength of 40.5~MPa on printed coupons. The assembly filament, print orientation, infill and screw seating have yet to be measured. The stress peak is close to an idealized rigid bearing. At the native stress peak, the left, centre and right cell skins all crossed the PLA surface. The sampled depths at eight segments per curved edge were 0.201, 0.186 and 0.123~mm respectively. A conclusion about tab cracking therefore requires the bearing and post-contact response to be resolved, with strength data for the actual print.
+\heading{Cell clearance at the peak printed-layer stress}
+The native nine-second histories gave peak layer-normal tension above the printed-coupon mean of 40.5~MPa under all three base inputs. The table uses the corner of highest layer-normal RMS for each input and includes the locked preload. All three cell skins intersected the case at the X stress peak. At the Y and Z stress peaks, the curved skins were disjoint. These selected instants describe a linear model with fixed contact.
+
+\begin{center}\small
+\begin{tabular}{lrrrrr}\toprule
+Base & Peak tension [MPa] & Time [s] & Left gap [mm] & Centre gap [mm] & Right gap [mm]\\\midrule
+X & 64.3 & 5.74146 & $-0.201$ & $-0.186$ & $-0.123$\\
+Y & 44.0 & 5.18582 & 0.128 & 0.111 & 0.133\\
+Z & 56.2 & 7.76979 & 0.121 & 0.132 & 0.114\\\bottomrule
+\end{tabular}
+\captionof*{table}{Raised nylon mount. Each gap is the minimum signed distance sampled on that cell's skin at the stress peak, with eight segments per quadratic edge. Negative gaps indicate overlap. The surface-intersection check agreed at two refinements.}\end{center}
+
+Over 589,825 samples per axis, the native modal coordinates agreed with independent integration to within 0.0015\% in relative norm. The attachment-force histories agreed within 0.0005~N over the X movie clip. The material reference comes from the \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{PolyLite PLA coupon data}. Actual print orientation, infill, bearing compliance and impact response remain unmeasured, so the table cannot establish whether the physical tabs crack.
 
 \newpage
 \heading{Aluminium screws reduce board motion and concentrate load in the tab}

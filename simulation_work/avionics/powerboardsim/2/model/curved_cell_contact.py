@@ -98,23 +98,30 @@ def run(variant, campaign):
               'surface. Negative values and a triangle intersection indicate loss of the open-gap assumption.'))
 
 
-def native_peak(variant,campaign):
-    """Check the three cell skins at the maximum native layer stress in the nine-second X history."""
+def native_peak(variant,campaign,axis):
+    """Check the three cell skins at the maximum native layer stress in a nine-second base history."""
     from audit_motion import selected_native_coordinates
     from case_stress import source
     from motion_surface import displacement_basis
     key=variant+'_basis'
     modal,_,rst=source(key,campaign)
-    case=variant+'_motion_X'
+    case=variant+'_motion_'+axis
     proof_path=ROOT/'validation/motion'/f'{case}.json'
     proof=read(proof_path)
     assert proof['case']==case and proof['campaign']==campaign and proof['basis_rst_sha256']==modal['rst_sha256']
     stress=proof['native_seeded_PLA_layer_stress']
-    controls_path=ROOT/'validation/curved_contact'/f'{variant}.json'
-    controls=read(controls_path)
-    assert controls['basis_RST_sha256']==modal['rst_sha256'] and controls['campaign']==campaign
-    requested={'independent_approach_sample':controls['times_s']['largest_approach'],
-               'independent_stress_peak_sample':controls['times_s']['peak_layer_tension'],
+    search_path=ROOT/'validation/clearance_rms'/f'{key}.json'
+    search=read(search_path)
+    assert search['rst_sha256']==modal['rst_sha256'] and search['campaign']==campaign
+    approach=search['scopes']['cells']['directions'][axis]['seed_screen']
+    spectrum=variant+f'_psd_{axis}_private1'
+    stress_path=ROOT/'validation/pla_stress'/f'{spectrum}.json'
+    stress_proof=read(stress_path)
+    assert stress_proof['basis_sha256']==modal['rst_sha256'] and stress_proof['campaign']==campaign
+    expected=stress_proof['independent_signed_waveform']
+    assert (expected['critical_corner_node'],expected['critical_element'])==(stress['corner_node'],stress['element'])
+    requested={'independent_approach_sample':approach['most_approached_sample_s'],
+               'independent_stress_peak_sample':expected['maximum']['time_s'],
                'native_stress_peak_sample':stress['peak_time_s']}
     times=np.unique(list(requested.values()))
     samples=np.rint(times*FS).astype(int)
@@ -122,9 +129,6 @@ def native_peak(variant,campaign):
     mcf=ROOT/'.runtime/archive'/campaign/case/'file.mcf'
     verified(mcf,proof['mcf_sha256'])
     q=selected_native_coordinates(mcf,rst.time_values,samples)
-    spectrum=variant+'_psd_X_private1'
-    stress_proof=read(ROOT/'validation/pla_stress'/f'{spectrum}.json')
-    assert stress_proof['basis_sha256']==modal['rst_sha256'] and stress_proof['campaign']==campaign
     trace=ROOT/'.runtime/post'/campaign/spectrum/'PLA_critical_history.npz'
     verified(trace,stress_proof['independent_signed_waveform']['cache_sha256'])
     with np.load(trace) as fields:
@@ -146,10 +150,10 @@ def native_peak(variant,campaign):
                   zip(('left','centre','right'),solids[1:],strict=True)}
         assert all(row[2]['intersect']==row[3]['intersect'] for row in measures.values())
         states[int(sample)]=dict(time_s=float(times[i]),layer_tension_MPa=float(recovered[i]),cells=measures)
-    out=ROOT/'validation/curved_contact'/f'{variant}_native_X.json'
-    write_json(out,dict(variant=variant,campaign=campaign,native_motion_sha256=digest(proof_path),
+    out=ROOT/'validation/curved_contact'/f'{variant}_native_{axis}.json'
+    write_json(out,dict(variant=variant,base_axis=axis,campaign=campaign,native_motion_sha256=digest(proof_path),
         native_MCF_sha256=proof['mcf_sha256'],basis_rst_sha256=modal['rst_sha256'],
-        independent_geometry_sha256=digest(controls_path),stress_field_sha256=digest(trace),
+        independent_approach_sha256=digest(search_path),independent_stress_sha256=digest(stress_path),stress_field_sha256=digest(trace),
         sampling_Hz=FS,sample_times_s=requested,stress_node=stress['corner_node'],stress_element=stress['element'],
         peak_native_layer_tension_MPa=stress['peak_tension_MPa'],states=states,
         scope='Closed cell and case skins at selected native MCF stations. Peak refers to the monitored printed-layer '
@@ -163,8 +167,11 @@ if __name__ == '__main__':
     parser.add_argument('variant',choices=['stand3_nylon','stand3_aluminium'])
     parser.add_argument('campaign')
     parser.add_argument('--native',action='store_true')
+    parser.add_argument('--axis',choices=list('XYZ'),default='X')
     args=parser.parse_args()
     if args.native:
-        native_peak(args.variant,args.campaign)
+        native_peak(args.variant,args.campaign,args.axis)
+    elif args.axis!='X':
+        parser.error('The original independent curved-skin controls use base X.')
     else:
         run(args.variant,args.campaign)

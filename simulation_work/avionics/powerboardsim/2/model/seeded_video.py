@@ -1,5 +1,6 @@
 """Export paired 4K60 signed-motion clips, including discontinuous dynamic PCB stress."""
 import argparse
+import fcntl
 import json
 import subprocess
 from pathlib import Path
@@ -16,7 +17,7 @@ from motion_surface import displacement_basis,pcb_skin
 from pcb_dynamic_stress import cache_modes,digest,equivalent,extrema
 from rms_video import ROOT,VARIANTS,LABELS
 from seeded_motion import FS,FRAMES
-from film_identity import verified,already_rendered
+from film_identity import verified,already_rendered,write_json
 
 # The original subjects specify the visible scope and response direction.
 SUBJECTS={
@@ -28,6 +29,12 @@ SUBJECTS={
 
 def field_files(rst,clip,period,scope,component,cache,stress_cache,source_sha=None):
     cache.mkdir(parents=True,exist_ok=True)
+    with (cache/'fields.lock').open('a') as lease:
+        fcntl.flock(lease,fcntl.LOCK_EX)
+        return cached_fields(rst,clip,period,scope,component,cache,stress_cache,source_sha)
+
+
+def cached_fields(rst,clip,period,scope,component,cache,stress_cache,source_sha):
     seal=cache/'fields.json'
     identity=dict(rst_sha256=source_sha or digest(rst),coordinates_sha256=digest(clip),frames=period.tolist(),scope=scope,component=component)
     if seal.exists():
@@ -83,7 +90,7 @@ def field_files(rst,clip,period,scope,component,cache,stress_cache,source_sha=No
         geometries.append({'file':f'mesh{j}.vtp','case_surface':case})
     if not np.isfinite(limit) or limit<=0:raise ValueError('Invalid common scale')
     data=dict(identity=identity,geometries=geometries,peak=limit)
-    seal.write_text(json.dumps(data,indent=2)+'\n')
+    write_json(seal,data)
     return data
 
 
