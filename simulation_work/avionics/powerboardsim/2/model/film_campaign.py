@@ -15,7 +15,7 @@ import imageio_ffmpeg
 import numpy as np
 from PIL import Image,ImageDraw
 from film_identity import ROOT,verified,write_json,digest
-from rms_video import VARIANTS,LABELS
+from rms_video import VARIANTS,LABELS,SNUG_VARIANTS,VARIANT_LABELS,video_directory
 from study_cases import native_case
 
 CAMP='nov08_01'
@@ -27,7 +27,7 @@ def read(path):return json.loads(path.read_text())
 def now():return dt.datetime.now(dt.timezone.utc).isoformat()
 
 
-def catalog():
+def catalog(*,snug_fit=False):
     with (ROOT/'validation/video_pairs.csv').open() as f:rows=list(csv.DictReader(f))
     from seeded_video import SUBJECTS as seeded
     from modal_pair_video import SUBJECTS as modal
@@ -43,6 +43,12 @@ def catalog():
         else:
             ax,scope,comp=seeded[name]
             r.update(suffix='motion_'+ax,axis=ax,scope=scope,component=comp,category='motion',script='seeded_video.py')
+        if snug_fit:
+            r['fit']='snug125'
+            for side in SLOTS:
+                # Modal display uses the same 6 mm peak normalization, so the reviewed bare movie is reusable.
+                if side!='without_case' or kind!=KINDS[0]:
+                    r[side]=str((video_directory(True)/side/p).relative_to(ROOT))
     assert len({r[s] for s in SLOTS for r in rows})==44
     return rows
 
@@ -54,6 +60,11 @@ def identity(r,side,meta):
     kind=r['kind'];variants=VARIANTS[:1] if side==SLOTS[0] else VARIANTS[1:]
     if side=='with_case' and len(meta['panels'])==2:
         variants=VARIANTS[3:]
+    if r.get('fit')=='snug125':
+        variants=SNUG_VARIANTS[:1] if side=='without_case' else SNUG_VARIANTS[1:]
+        if side=='with_case':
+            assert len(meta['panels'])==2 and meta.get('modal_source')!='wide native basis'
+            assert meta.get('field_method','native')=='native' and meta.get('coordinate_method','native')=='native'
     if kind==KINDS[0] and meta.get('modal_source')=='wide native basis':
         assert side=='with_case' and r['suffix']=='modal20' and variants==VARIANTS[3:]
         sources=read(ROOT/'validation/bolted_mode_film.json')
@@ -88,20 +99,20 @@ def identity(r,side,meta):
                 assert proof['axis']==r['axis'] and proof['method']=='Independent PSD integration'
                 src['surface_field_sha256']=proof['surface_field_sha256']
         assert meta['sources']==expected
-        assert [p['label'] for p in meta['panels']]==[LABELS[VARIANTS.index(v)] for v in variants]
+        assert [p['label'] for p in meta['panels']]==[VARIANT_LABELS[v] for v in variants]
     else:
         from seeded_motion import FRAMES,FS
         assert meta['base']==r['axis'] and meta['scope']==r['scope'] and meta['physical_interval_s']==(FRAMES[[0,-1]]/FS).tolist()
         assert meta['response']==('Dynamic von Mises [MPa]' if r['component']=='stress' else 'Signed U'+r['component']+' [mm]')
         assert meta['display_displacement_multiplier']==50 and meta['coordinate_method'] in ('independent','native')
         for p,v,t in zip(meta['panels'],variants,proofs,strict=True):
-            assert p['name']==LABELS[VARIANTS.index(v)] and p['coordinates_sha256']==t['clip_sha256'] and p['rst_sha256']==t['basis_rst_sha256']
+            assert p['name']==VARIANT_LABELS[v] and p['coordinates_sha256']==t['clip_sha256'] and p['rst_sha256']==t['basis_rst_sha256']
 
 
 def decode(r,side,refresh=False):
     movie=ROOT/r[side];meta=read(movie.with_suffix('.json'));identity(r,side,meta)
     sha=verified(movie,meta.get('sha256') or meta['video_sha256'])
-    stem=RT/'audit'/side/Path(r['file']).with_suffix('')
+    stem=RT/r.get('fit','')/'audit'/side/Path(r['file']).with_suffix('')
     receipt=stem.with_suffix('.json');sheet=stem.with_suffix('.jpg')
     if not refresh and receipt.is_file() and sheet.is_file():
         proof=read(receipt)
@@ -191,12 +202,26 @@ def raised_rms_method(row):
     return None
 
 
-def cycle(render,refresh,lease):
+def render_snug(row,lease):
+    variants=SNUG_VARIANTS
+    if not all(proof_path(row,v).is_file() for v in variants):
+        return
+    targets=[ROOT/row[side] for side in SLOTS]
+    if all(p.is_file() and p.with_suffix('.json').is_file() for p in targets):
+        return
+    if shutil.disk_usage(ROOT).free<425000000000:
+        raise RuntimeError('Host reserve for production film fields reached')
+    command([ROOT/'model'/row['script'],Path(row['file']).stem,'--campaign',CAMP,'--snug-fit'],lease)
+
+
+def cycle(render,refresh,lease,*,snug_fit=False):
     result=[];issues=[];models=ROOT/'model'
-    for r in catalog():
-        s=Path(r['file']).stem;issue=RT/'issues'/Path(r['file']).with_suffix('.json')
+    runtime=RT/'snug125' if snug_fit else RT
+    for r in catalog(snug_fit=snug_fit):
+        s=Path(r['file']).stem;issue=runtime/'issues'/Path(r['file']).with_suffix('.json')
         try:
-            if render and not issue.exists():
+            if render and snug_fit and not issue.exists():render_snug(r,lease)
+            if render and not snug_fit and not issue.exists():
                 if shutil.disk_usage(ROOT).free<425000000000:raise RuntimeError('Host reserve for production film fields reached')
                 bare=ROOT/r['without_case']
                 if r['kind']==KINDS[0] and not bare.exists() and proof_path(r,'bare').is_file():
@@ -245,19 +270,25 @@ def cycle(render,refresh,lease):
     provisional=sum(p.get('comparison_panels')==2 for p in result)
     report=dict(total_requested=44,decoded=len(result),raised_comparisons=provisional,
                 paired_and_encoded=len(result)==44 and not issues and not provisional and not any('independent' in (p.get('coordinate_method'),p.get('field_method')) for p in result),issues=issues,films=result)
-    write_json(RT/'coverage.json',report)
+    if snug_fit:
+        report.pop('raised_comparisons')
+        report.update(fit='snug125',snug_comparisons=provisional,paired_and_encoded=len(result)==44 and not issues and provisional==22)
+    write_json(runtime/'coverage.json',report)
     return report
 
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--watch',action='store_true');p.add_argument('--render',action='store_true')
-    p.add_argument('--refresh',action='store_true');a=p.parse_args()
+    p.add_argument('--refresh',action='store_true')
+    p.add_argument('--fit',choices=('prior','snug125'),help='Default to the active study for a watcher, or the previous catalogue for a single audit')
+    a=p.parse_args()
+    snug_fit=(a.fit=='snug125' if a.fit else a.watch and (ROOT/'validation/snug125/global_inputs.json').is_file())
     RT.mkdir(parents=True,exist_ok=True);lease=(RT/'worker.lock').open('a');fcntl.flock(lease,fcntl.LOCK_EX|fcntl.LOCK_NB)
     source=Path(__file__).resolve()
     generation=digest(source)
-    write_json(RT/'worker.json',dict(pid=os.getpid(),started=now(),render=a.render,watch=a.watch,source_sha256=generation))
+    write_json(RT/'worker.json',dict(pid=os.getpid(),started=now(),render=a.render,watch=a.watch,fit='snug125' if snug_fit else 'prior',source_sha256=generation))
     while True:
-        data=cycle(a.render,a.refresh,lease)
+        data=cycle(a.render,a.refresh,lease,snug_fit=snug_fit)
         if not a.watch or data['paired_and_encoded']:break
         time.sleep(60)
         if digest(source)!=generation:

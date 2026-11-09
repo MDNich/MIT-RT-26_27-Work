@@ -15,7 +15,7 @@ from film_identity import publish_baseline
 
 from motion_surface import displacement_basis,pcb_skin
 from pcb_dynamic_stress import cache_modes,digest,equivalent,extrema
-from rms_video import ROOT,VARIANTS,LABELS
+from rms_video import ROOT,VARIANTS,LABELS,SNUG_VARIANTS,VARIANT_LABELS,video_directory
 from seeded_motion import FS,FRAMES
 from film_identity import verified,already_rendered,write_json
 
@@ -156,6 +156,7 @@ def render(items,target,ax,scope,comp,period,limit,preview,method='native'):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('subject',choices=SUBJECTS)
     p.add_argument('--historical-preview-rst',type=Path);p.add_argument('--campaign',default='nov08_01');group=p.add_mutually_exclusive_group();group.add_argument('--bare-only',action='store_true');group.add_argument('--raised-only',action='store_true')
+    group.add_argument('--snug-fit',action='store_true')
     p.add_argument('--coordinates',choices=('native','independent'),default='native')
     p.add_argument('--native-bare',action='store_true',help='Use verified native bare coordinates with independent raised panels.')
     args=p.parse_args();ax,scope,comp=SUBJECTS[args.subject]
@@ -168,13 +169,14 @@ def main():
         data=field_files(rst,clip,period,scope,comp,cache,ROOT/'.runtime/qa/october_pcb_stress')
         render([('October reference',cache,data)],cache/'preview.png',ax,scope,comp,period,data['peak'],True);return
     variants=VARIANTS[:1] if args.bare_only else ([VARIANTS[0],*VARIANTS[3:]] if args.raised_only else VARIANTS)
+    if args.snug_fit:variants=SNUG_VARIANTS
     assert args.coordinates=='native' or args.raised_only
     assert not args.native_bare or (args.raised_only and args.coordinates=='independent')
     bare_method='native' if args.native_bare else args.coordinates
     for v in variants:
         method=bare_method if v=='bare' else args.coordinates
         category='motion' if method=='native' else 'independent_motion'
-        name=LABELS[VARIANTS.index(v)]
+        name=VARIANT_LABELS[v]
         key=native_case(v,'motion_'+ax);branch=branch_for(v,'basis')
         proof=json.loads((ROOT/f'validation/{category}/{key}.json').read_text())
         basis=json.loads((ROOT/f'validation/global/{branch}_basis.json').read_text())
@@ -187,13 +189,14 @@ def main():
         root=ROOT/f'.runtime/post/{args.campaign}/{v}_films';cache=root/args.subject/proof['clip_sha256']
         data=field_files(rst,clip,period,scope,comp,cache,root/'pcb_stress',src);items.append((name,cache,data))
     limit=max(d['peak'] for _,_,d in items)
-    dest=ROOT/f'output/videos/without_case/power_board_random_motion_4k60/{args.subject}.mp4'
+    dest=video_directory(args.snug_fit)/f'without_case/power_board_random_motion_4k60/{args.subject}.mp4'
     group='raised' if args.raised_only else ('bare' if args.bare_only else 'all_four')
+    if args.snug_fit:group='snug125'
     def generation(method,side):
         return ROOT/'.runtime/films/seeded'/args.subject/method/group/float(limit).hex()/(side+'.mp4')
     targets=[(items[:1],dest,generation(bare_method,'bare'),bare_method)]
     if not args.bare_only:
-        cased=ROOT/f'output/videos/with_case/power_board_random_motion_4k60/{args.subject}.mp4'
+        cased=video_directory(args.snug_fit)/f'with_case/power_board_random_motion_4k60/{args.subject}.mp4'
         targets.append((items[1:],cased,generation(args.coordinates,'cased'),args.coordinates))
     for panels,out,take,method in targets:
         render(panels,take,ax,scope,comp,period,limit,False,method)

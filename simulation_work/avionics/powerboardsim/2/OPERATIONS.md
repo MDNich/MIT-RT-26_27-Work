@@ -10,6 +10,12 @@ Run `snug_installed.py` on completed static archives through the native audit pa
 
 Complete both directions of local pull, the mesh and grip controls and supported nickel-damage variations against the matched original references. Compare prestressed and default modes, all three base spectra and nine-second seeded histories for both screws. Audit contact changes in the waveform and show matched subject, time, view and physical scale for all 22 film subjects. Publish the new comparisons separately from the old `output/videos/with_case` movies. As results pass, expand the main report and briefing and keep their plots in PGF/pdfLaTeX. The bare-only and old-case media remain evidence for their own configurations. The skill update and release of the keep-awake job follow final publication.
 
+### Matched sensitivity inputs and snug-fit movies
+
+The 33 main snug cases have priority. After them, the same serial controller schedules 12 perfect-grip controls and 22 conditional damage variations across the two screw materials, with their matching bare references. The damage series also requires the snug nominal damage and material/contact-scope audit. Run `model/stage_snug_local.py --sensitivities` to verify the [separate input registry](validation/snug125/local_sensitivity_inputs.json). All 34 comparisons preserved the original nickel model and loading commands upstream and downstream of the case insertion, as well as both native readback decks. Each new fixture has 8,856 moving-cell target triangles and the registered 7.60 mm screw grip.
+
+The film watcher selected the snug catalogue at a cycle boundary using its existing process and lock. The new RMS, seeded and with-case modal outputs go under `output/videos/snug125`. The unchanged 6 mm normalization permits use of the three reviewed bare modal movies at their existing paths. The worker checks native sources for both new panels and requires shared absolute scales for the RMS and seeded pairs. New decode receipts and review sheets are in `.runtime/films/snug125/audit`. Visually review the matching sheets before publishing the links with `model/film_index.py --snug-fit --review PATH=SHA256`. The previous catalogue and its published films keep their own hashes.
+
 ## Previous geometry and run history
 
 Use this revision-2 directory for study work. The older project and the isolated revision-1 rerun supply reference inputs only. The source STEP arrived directly from the user. The separate SolidWorks file is preserved. Keep the existing dedicated Mac keep-awake job until this study closes.

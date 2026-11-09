@@ -8,6 +8,16 @@ from film_identity import verified,already_rendered,publish_baseline
 ROOT=Path(__file__).resolve().parents[1]
 VARIANTS=['bare','flush_nylon','flush_aluminium','stand3_nylon','stand3_aluminium']
 LABELS=['Bare board','Flush / nylon screws','Flush / aluminium screws','3 mm / nylon screws','3 mm / aluminium screws']
+SNUG_VARIANTS=['bare','snug125_nylon','snug125_aluminium']
+VARIANT_LABELS={**dict(zip(VARIANTS,LABELS,strict=True)), 'snug125_nylon':'1.25 mm Balius / nylon screws',
+                'snug125_aluminium':'1.25 mm Balius / aluminium screws'}
+
+
+def video_directory(snug_fit):
+    base=ROOT/'output/videos'
+    return base/'snug125' if snug_fit else base
+
+
 def surfaces(result):
     grid=result.grid
     solid=np.isin(grid.cell_data['ansys_elem_type_num'],[185,186,187,188])
@@ -86,6 +96,7 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
     target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of independently integrated fixed RMS' if integrated else 'Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],**layout_record,panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);mode=parser.add_mutually_exclusive_group();mode.add_argument('--bare-only',action='store_true');mode.add_argument('--raised-only',action='store_true')
+    mode.add_argument('--snug-fit',action='store_true')
     parser.add_argument('--independent-raised',action='store_true')
     args=parser.parse_args()
     assert not args.independent_raised or args.raised_only
@@ -99,8 +110,9 @@ def main():
         draw([('Reference reader check',actors,peak)],title,axis,comp,view,peak,ROOT/'.runtime/qa/rms-reader-preview.png',True);return
     panels=[];sources=[]
     variants=VARIANTS[:1] if args.bare_only else ([VARIANTS[0],*VARIANTS[3:]] if args.raised_only else VARIANTS)
+    if args.snug_fit:variants=SNUG_VARIANTS
     for variant in variants:
-        name=LABELS[VARIANTS.index(variant)]
+        name=VARIANT_LABELS[variant]
         key=native_case(variant,'psd_'+axis)
         if args.independent_raised and variant!='bare':
             from rms_film_fields import film_field
@@ -113,12 +125,12 @@ def main():
         sources.append(source)
         panels.append((name,actors,peak))
     limit=max(i[2] for i in panels)
-    dest=ROOT/f'output/videos/without_case/power_board_4k60/{args.name}.mp4'
+    dest=video_directory(args.snug_fit)/f'without_case/power_board_4k60/{args.name}.mp4'
     generation=ROOT/'.runtime/films/baselines'/args.name/(float(limit).hex()+'.mp4')
     draw(panels[:1],title,axis,comp,view,limit,generation,sources=sources[:1])
     if not args.bare_only:
-        cased=ROOT/f'output/videos/with_case/power_board_4k60/{args.name}.mp4'
-        group='raised' if args.raised_only else 'all_four'
+        cased=video_directory(args.snug_fit)/f'with_case/power_board_4k60/{args.name}.mp4'
+        group='snug125' if args.snug_fit else ('raised' if args.raised_only else 'all_four')
         if args.independent_raised:group+='-independent'
         take=ROOT/'.runtime/films/comparisons'/args.name/(group+'_v2')/(float(limit).hex()+'.mp4')
         draw(panels[1:],title,axis,comp,view,limit,take,sources=sources[1:])

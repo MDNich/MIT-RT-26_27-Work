@@ -4,6 +4,8 @@ The main study compares the original no-case board with the three-pocket Balius 
 
 The first native-fit models use 6.35 mm tabs and 7.60 mm modeled screw grip. At the nominal registration the closest rigid cell gaps are 0.020, 0.003 and 0.020 mm, with 0.328 mm at the closest outer washer. The two case meshes, reconstructed cell-surface checks and sealed fixture inputs are recorded with SHA-256 identities. [Snug-fit checks](validation/snug125/)
 
+The [snug-fit movie catalogue](output/videos/snug125/README.md) tracks the 22 requested subjects. The three bare modal films retain their verified 6 mm display scale. Each new RMS or seeded pair will share a range determined from the bare board and both 1.25 mm mounts.
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.

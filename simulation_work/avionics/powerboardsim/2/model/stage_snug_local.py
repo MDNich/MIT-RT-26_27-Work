@@ -1,4 +1,5 @@
 """Build new local fixtures with the native Balius mesh, its four bearing faces and resolved cell targets."""
+import argparse
 import json
 import numpy as np
 
@@ -9,9 +10,15 @@ from stage_local_jobs import seal
 from stage_snug_fit import AUDIT,BEARINGS,INPUTS,MESH,ROOT,SPACING,STEP_HASH,THICKNESS
 
 
-def stage():
+def stage(sensitivities=False):
     fixtures=('lateral_friction_locked','lateral_friction_locked_minus','lateral_friction_locked_fine','damage_cont_nominal')
     controls=read(ROOT/'validation/local_contact_retries.json')
+    if sensitivities:
+        controls={case:entry for catalog in ('perfect_grip_cases','damage_variant_inputs')
+                  for case,entry in read(ROOT/'validation'/f'{catalog}.json').items() if case.startswith('stand3_')}
+        fixtures=sorted({entry['source'] for entry in controls.values()})
+        assert len(controls)==2*len(fixtures)==34
+    attachment_cache={}
     target=MESH/'fixture_targets_0005.npz'
     if not target.exists():
         target_skin(out=target,cell_resolution=(.0005,.016))
@@ -38,16 +45,30 @@ def stage():
                     before,block=binary.split(left)
                     previous,after=block.split(right)
                     assert previous.rstrip().endswith(b'FINISH\n/PREP7')
-                    attachment=make(mesh,skin,material,SPACING,pilot,bearing_faces=BEARINGS,tab_thickness_mm=THICKNESS,
-                                    fixed_faces=[*range(5,46),50,51,52,53])
-                    binary=before+attachment.encode()+right+after
+                    key=(material,pilot)
+                    if key not in attachment_cache:
+                        attachment_cache[key]=make(mesh,skin,material,SPACING,pilot,bearing_faces=BEARINGS,
+                            tab_thickness_mm=THICKNESS,fixed_faces=[*range(5,46),50,51,52,53]).encode()
+                    attachment=attachment_cache[key]
+                    assert f'TSHAP,PILO\nE,{pilot}\n'.encode() in attachment
+                    binary=before+attachment+right+after
                 files[name]=seal(dest/name,binary)
             spec=dict(case=fresh,source=source,cased=True,coupon=False,job=data['job'],cores=data['cores'],
                       files=files,tab_standoff_mm=SPACING,step_sha256=STEP_HASH,absolute_search_mm=1.)
+            if sensitivities:
+                spec['snug_sensitivity']=True
+                if 'sensitivity_reference' in data:
+                    spec.update(sensitivity_reference=data['sensitivity_reference'].replace('stand3_','snug125_',1),
+                                original_run_sha256=data['original_run_sha256'])
             specs[fresh]=dict(spec_sha256=seal(dest/'local_job.json',(json.dumps(spec,indent=2)+'\n').encode()),
                         input_sha256=files['model.inp'],bare_reference='bare_'+source,template=old,
                         source=source,mesh_sha256=digest(mesh_path),target_sha256=digest(target),moving_target_faces=len(skin['4']))
-    write_json(AUDIT/'local_inputs.json',specs)
+            if sensitivities and 'sensitivity_reference' in spec:
+                specs[fresh]['nominal']=spec['sensitivity_reference']
+    write_json(AUDIT/('local_sensitivity_inputs.json' if sensitivities else 'local_inputs.json'),specs)
 
 
-if __name__=='__main__':stage()
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--sensitivities',action='store_true')
+    stage(parser.parse_args().sensitivities)

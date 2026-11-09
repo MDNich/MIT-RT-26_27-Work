@@ -194,6 +194,11 @@ def jobs():
             yield branch+'_enforced',branch+'_basis'
             for axis in 'XYZ':
                 yield branch+'_motion_'+axis,branch+'_enforced'
+        sensitivities=ROOT/'validation/snug125/local_sensitivity_inputs.json'
+        if sensitivities.is_file():
+            for case,meta in read(sensitivities).items():
+                yield meta['bare_reference'],''
+                yield case,meta['bare_reference']
     yield 'bare_static',''
     yield 'bare_original',''
     yield 'bare_refined',''
@@ -342,7 +347,7 @@ def jobs():
 def damage_reference_ready(spec):
     """Use the nominal case's audited local loading path before dispatching its conditional variations."""
     case=spec['nominal']
-    if case.startswith('stand3_'):
+    if case.startswith(('stand3_','snug125_')):
         scope=ROOT/'validation/pulls'/(case+'_damage_scope.json')
         return scope.is_file() and read(scope)['case']==case
     from audit_local import table
@@ -476,6 +481,8 @@ def run():
                 log('Default-contact geometry check pending: '+case)
                 continue
         damage_catalog=ROOT/'validation/damage_variant_inputs.json'
+        if case.startswith('snug125_'):
+            damage_catalog=ROOT/'validation/snug125/local_sensitivity_inputs.json'
         if '_damage_cont' in case and not case.startswith('bare_') and damage_catalog.is_file():
             variation=read(damage_catalog).get(case)
             if variation and not damage_reference_ready(variation):

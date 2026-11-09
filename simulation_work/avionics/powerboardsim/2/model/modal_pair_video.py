@@ -13,7 +13,7 @@ from native_rst import read_rst
 from study_cases import native_case
 from modal_correspondence import checksum,compare,exported_modes
 from modal_video import render as render_bare
-from rms_video import ROOT,VARIANTS,LABELS
+from rms_video import ROOT,VARIANTS,SNUG_VARIANTS,VARIANT_LABELS,video_directory
 from film_identity import verified,already_rendered,publish_baseline
 
 SUBJECTS = {'modal_fig01_default_mode01':('refined',1), 'modal_fig02_default_mode20':('refined',20),
@@ -109,6 +109,7 @@ def main():
     p.add_argument('subject',choices=SUBJECTS);p.add_argument('--campaign',default='nov08_01')
     p.add_argument('--preview',action='store_true',help='Historical repeat rendered in all four panels to check layout only')
     mode=p.add_mutually_exclusive_group()
+    mode.add_argument('--snug-fit',action='store_true')
     mode.add_argument('--raised-only',action='store_true')
     mode.add_argument('--raised-basis',action='store_true',help='Use rank 20 of the accepted wider native prestressed extractions.')
     args=p.parse_args();kind,rank=SUBJECTS[args.subject]
@@ -116,6 +117,7 @@ def main():
     bare=base/('bare_'+kind)/'file.rst'
     if args.raised_basis:assert kind=='modal20'
     variants=[*VARIANTS[:1],*VARIANTS[3:]] if args.raised_only or args.raised_basis else VARIANTS
+    if args.snug_fit:variants=SNUG_VARIANTS
     if args.preview:
         panels=[]
         for i in range(4):
@@ -129,6 +131,7 @@ def main():
         refs[v]=(f,audit['rst_sha256'])
     bare_out=ROOT/f'output/videos/without_case/power_board_4k60/{args.subject}.mp4'
     if not bare_out.is_file():
+        if args.snug_fit:raise FileNotFoundError(f'Verified bare reference movie missing: {bare_out}')
         render_bare(bare,rank,'Bare board / '+('refined default contacts' if kind=='refined' else 'six locked bolts'),bare_out)
     film=json.loads(bare_out.with_suffix('.json').read_text())
     assert film['rank']==rank and film['video_sha256']==checksum(bare_out)
@@ -140,7 +143,7 @@ def main():
     panels=[];evidence=[]
     for v in variants[1:]:
         f,sha=refs[v]
-        label=LABELS[VARIANTS.index(v)];note='';exported=None
+        label=VARIANT_LABELS[v];note='';exported=None
         if args.raised_basis:
             from basis_comparison import field_files
             data=json.loads((ROOT/'validation/bolted_mode_film.json').read_text())
@@ -173,7 +176,7 @@ def main():
         sign=sign*baseline_sign or 1
         panels.append((label,parts,Hz,mac,sign,note))
         evidence.append(dict(variant=v,rst_sha256=sha,rank=rank,Hz=Hz,same_rank_MAC=mac,phase_sign=sign,closest_shape_rank=best))
-    target=ROOT/f'output/videos/with_case/power_board_4k60/{args.subject}.mp4'
+    target=video_directory(args.snug_fit)/f'with_case/power_board_4k60/{args.subject}.mp4'
     method='wide native basis' if args.raised_basis else 'dedicated native extraction'
     identity=dict(subject=args.subject,panels=evidence,baseline_film_sha256=film['video_sha256'],
                   peak_display_displacement_mm=6,modal_source=method)

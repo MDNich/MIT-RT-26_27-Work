@@ -11,7 +11,9 @@ if ($spec.case_template -and $spec.source -like 'lateral_grip_*') { $catalog='pe
 if ($spec.sensitivity_reference) { $catalog='damage_variant_inputs.json' }
 if ($spec.common_load_parent) { $catalog='common_pull_resolution.json' }
 if ($spec.detection_parent) { $catalog='pull_detection_control.json' }
-if ($Case.StartsWith('snug125_')) { $catalog='snug125/local_inputs.json' }
+if ($Case.StartsWith('snug125_')) {
+    $catalog=if ($spec.snug_sensitivity) { 'snug125/local_sensitivity_inputs.json' } else { 'snug125/local_inputs.json' }
+}
 $published=Get-Content -LiteralPath "$PSScriptRoot\..\validation\$catalog" -Raw|ConvertFrom-Json
 $record=$published.PSObject.Properties[$Case].Value
 if ((Get-FileHash -LiteralPath "$Work\local_job.json").Hash -ne $record.spec_sha256){throw 'Local specification identity failed'}
