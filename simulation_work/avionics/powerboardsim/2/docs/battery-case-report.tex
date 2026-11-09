@@ -239,7 +239,11 @@ Maximum sampled skin overlap, contact enabled [mm] & 0.0424 & 0.0445\\\bottomrul
 
 The independent geometry check measured signed distances on vertices and facet centres inside a common 8~mm band. Some tessellated surfaces still intersected even though the largest loaded-corner penetration recorded by ANSYS was below 0.5~$\mu$m at this state. Changing the cut size changed the force appreciably despite whole-model force imbalances below 0.004~N. These results establish local deflection under imposed motion. A flight impact load requires the cells and the surrounding board to respond to contact together.
 
-A separate search near the beginning of the same X waveform found a clear middle-cell state at 85.3424~ms and intersecting skins at 85.3577~ms. The search sampled at 8192~Hz and refined that interval at 65,536~Hz. Contacts between earlier survey samples or elsewhere on the assembly remain possible. This interval sets the time window for the transient contact comparison.
+\heading{Which cell first reaches the case in the transient window?}
+Using the native X history from rest, we checked every integration sample through 89.478~ms on all three curved cell skins. The centre cell was clear at 85.327~ms and intersected the case at 85.342~ms. The left cell first intersected at 85.388~ms. The right cell remained clear through the window. Both local domains captured the two intervals of centre-cell overlap. The left cell lies outside both domains, so the local reactions describe only part of the assembly load path.
+
+At the prescribed time stations, the sealed transient inputs reproduced native translations at all driven nodes within 0.0022~$\mu$m. Between stations, linear interpolation in the 9~mm domain differed from the native motion by up to 1.04~$\mu$m with a 61.04~$\mu$s table interval and 0.26~$\mu$m with a 30.52~$\mu$s interval. These checks quantify the motion imposed on the submodels. The force curves above are from the static loading and unloading calculation.
+
 \newpage
 \heading{The raised case increases PCB stress under Y and Z excitation}
 The native MAPDL comparison used the same X-axis base spectrum and 2\% damping on both assemblies. Each original board bolt had already been tightened and locked. With four nylon case screws at the 3~mm stand-off, the peak PCB equivalent stress fell by 1.6\%, from 90.325 to 88.847~MPa RMS. Its location moved about 54~mm across the board. The PCB's maximum normal strains in X and Y both increased.

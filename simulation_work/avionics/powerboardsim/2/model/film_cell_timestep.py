@@ -121,21 +121,9 @@ def intervals(indices):
     return [(int(v[0]),int(v[-1])) for v in np.split(indices,breaks)]
 
 
-def run(variant, axis, campaign, method, cutoff=None):
-    key = variant+'_basis'
-    modal, folder, rst = source(key,campaign)
-    samples = np.arange(FRAMES[0],FRAMES[-1]+1)
-    q, evidence = clip_history(variant,axis,campaign,method,modal,folder,samples)
-    frequencies = np.asarray(modal['frequencies_Hz'])
-    assert np.array_equal(frequencies,rst.time_values)
-    keep = np.ones(rst.nsets,dtype=bool) if cutoff is None else frequencies<=cutoff
-    if cutoff is not None:
-        evidence.update(cutoff_Hz=cutoff,retained_modes=int(keep.sum()),highest_retained_frequency_Hz=float(frequencies[keep][-1]))
-        assert method=='independent' and 2000 <= cutoff < frequencies[-1] and np.any(keep)
-        q = q[:,keep]
-    baseline_path = ROOT/'validation/film_cell_contact'/f'{variant}.json'
-    baseline = read(baseline_path)
-    assert baseline['variant']==variant and baseline['basis_sha256']==modal['rst_sha256'] and baseline['campaign']==campaign
+def resolve_cells(variant,campaign,rst,modal,q,samples,face_counts,keep=None):
+    assert np.array_equal(samples,np.arange(samples[0],samples[-1]+1)) and len(q)==len(samples)
+    key=variant+'_basis'
     force = read(ROOT/'validation/cell_force'/f'{variant}.json')
     assert force['basis_rst_sha256']==modal['rst_sha256']
     materials = sorted(force['geometry'],key=lambda k:force['geometry'][k]['centroid_mm'][0])
@@ -143,11 +131,12 @@ def run(variant, axis, campaign, method, cutoff=None):
     cover, cells = contact_solids(rst)
     solids = [cover]+[cells.extract_cells(cells.cell_data['ansys_material_type']==int(k)) for k in materials]
     shapes = [outer_faces(rst,[k]) for k in [850,*map(int,materials)]]
-    assert [len(shapes[0]),sum(map(len,shapes[1:]))]==baseline['quadratic_faces']
+    assert [len(shapes[0]),sum(map(len,shapes[1:]))]==face_counts
     field = field_files(key,campaign,modal['rst_sha256'],rst.nsets)
     ids, xyz, phi, rest, modes = surface_fields(rst,shapes,solids,field)
-    phi = phi[keep]
-    modes = [m[keep] for m in modes]
+    if keep is not None:
+        phi = phi[keep]
+        modes = [m[keep] for m in modes]
     weights = subdivision_weights()
     plane_control(weights)
     results = {}
@@ -169,7 +158,26 @@ def run(variant, axis, campaign, method, cutoff=None):
         results[cell] = dict(material=int(material),quadratic_faces=len(shapes[i]),candidate_face_pairs=count,
                              crossing_intervals_samples=events,unresolved_intervals_samples=intervals(samples[states=='unresolved']),
                              intersecting_samples=len(depths),midpoint_checks=checks)
-        print(variant,axis,method,cell,events,flush=True)
+        print(variant,cell,events,flush=True)
+    return results,combined
+
+
+def run(variant, axis, campaign, method, cutoff=None):
+    key = variant+'_basis'
+    modal, folder, rst = source(key,campaign)
+    samples = np.arange(FRAMES[0],FRAMES[-1]+1)
+    q, evidence = clip_history(variant,axis,campaign,method,modal,folder,samples)
+    frequencies = np.asarray(modal['frequencies_Hz'])
+    assert np.array_equal(frequencies,rst.time_values)
+    keep = np.ones(rst.nsets,dtype=bool) if cutoff is None else frequencies<=cutoff
+    if cutoff is not None:
+        evidence.update(cutoff_Hz=cutoff,retained_modes=int(keep.sum()),highest_retained_frequency_Hz=float(frequencies[keep][-1]))
+        assert method=='independent' and 2000 <= cutoff < frequencies[-1] and np.any(keep)
+        q = q[:,keep]
+    baseline_path = ROOT/'validation/film_cell_contact'/f'{variant}.json'
+    baseline = read(baseline_path)
+    assert baseline['variant']==variant and baseline['basis_sha256']==modal['rst_sha256'] and baseline['campaign']==campaign
+    results,combined=resolve_cells(variant,campaign,rst,modal,q,samples,baseline['quadratic_faces'],keep)
     displayed = combined[FRAMES-samples[0]]
     reference = np.empty(len(FRAMES),dtype=displayed.dtype)
     group = baseline['axes'][axis]['frames']

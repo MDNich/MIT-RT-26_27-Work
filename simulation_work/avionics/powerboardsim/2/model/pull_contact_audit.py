@@ -79,7 +79,7 @@ def verify(case,proof_path=None):
     with (out/(case+'_contact.csv')).open('w',newline='') as f:
         w=csv.DictWriter(f,fieldnames=rows[0],lineterminator='\n');w.writeheader();w.writerows(rows)
     print(final)
-    if spec['source']=='damage_cont_nominal':
+    if spec['source'].startswith('damage_cont'):
         damage_scope(case,camp,proof,proof_path,rows)
 
 

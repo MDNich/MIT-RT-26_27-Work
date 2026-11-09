@@ -80,6 +80,7 @@ def audit(case,campaign):
     face_seats=case.endswith('_seatfaces1')
     grip=spec.get('load_protocol')=='grip_install'
     registry='perfect_grip_cases.json' if grip else ('local_seat_jobs.json' if face_seats else 'local_install_jobs.json')
+    if spec.get('sensitivity_reference'):registry='damage_variant_inputs.json'
     if spec.get('bearing_pilots'):registry='rocking_bearing_input.json'
     catalog=read(ROOT/'validation'/registry)
     if face_seats and case not in catalog:catalog=read(ROOT/'validation/flush_pull_variants.json')
@@ -221,10 +222,15 @@ def audit(case,campaign):
         out['joint_check_sha256']=file_digest(audit_joint(case,campaign))
     out['classification']=category
     pub=ROOT/'validation'/category;pub.mkdir(exist_ok=True)
-    tmp=pub/(case+'.tmp');tmp.write_text(json.dumps(out,indent=2)+'\n');tmp.replace(pub/(case+'.json'))
-    if spec.get('bearing_pilots'):
+    from film_identity import write_json
+    if spec.get('bearing_pilots') or damage:
         from installation_material import run as audit_material
-        audit_material(case,campaign)
+        draft=dest/'fixture_verdict.json'
+        write_json(draft,out)
+        audit_material(case,campaign,verdict_path=draft)
+        if damage and np.any(inv['loadstep']>=4):
+            audit_material(case,campaign,pull=True,verdict_path=draft)
+    write_json(pub/(case+'.json'),out)
     print(category,case,len(rows),'native equilibria')
 
 

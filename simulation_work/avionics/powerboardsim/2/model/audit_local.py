@@ -118,6 +118,7 @@ def audit(case, campaign):
     catalog='local_contact_retries.json' if case.endswith('_pin1') else 'local_jobs.json'
     if spec.get('case_template') and spec['source'].startswith('lateral_grip_'):
         catalog='perfect_grip_cases.json'
+    if spec.get('sensitivity_reference'):catalog='damage_variant_inputs.json'
     manifest = read(ROOT/'validation'/catalog)[case]
     assert hashlib.sha256((folder/'local_job.json').read_bytes()).hexdigest()==manifest['spec_sha256']
     assert spec['case']==ledger['case']==status['case']==case and status['phase']=='solver_complete'
@@ -148,7 +149,7 @@ def audit(case, campaign):
     dest.mkdir(exist_ok=True)
     # The damage fixture needs both the printed-material and contact checks before its verdict is available to callers.
     from film_identity import write_json
-    raised_damage=case.startswith('stand3_') and spec['source']=='damage_cont_nominal'
+    raised_damage=case.startswith('stand3_') and spec['source'].startswith('damage_cont')
     if raised_damage:
         from installation_material import run as check_material
         from pull_contact_audit import verify as verify_hardware

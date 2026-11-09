@@ -290,6 +290,42 @@ def jobs():
             yield case,'bare_'+spec['source']
 
 
+    variants=ROOT/'validation/damage_variant_inputs.json'
+    if variants.is_file():
+        for case,spec in read(variants).items():
+            yield case,'bare_'+spec['source']
+
+
+def damage_reference_ready(spec):
+    """Use the nominal case's audited local loading path before dispatching its conditional variations."""
+    case=spec['nominal']
+    if case.startswith('stand3_'):
+        scope=ROOT/'validation/pulls'/(case+'_damage_scope.json')
+        return scope.is_file() and read(scope)['case']==case
+    from audit_local import table
+    material_path=ROOT/'validation/installation_material'/(case+'.json')
+    verdicts=[ROOT/'validation'/k/(case+'.json') for k in ('local','partial_local','review_local')]
+    available=[p for p in verdicts if p.is_file()]
+    if len(available)!=1 or not material_path.is_file():
+        return False
+    result=read(available[0])
+    material=read(material_path)
+    assert result['case']==material['case']==case and result['rst_sha256']==material['rst_sha256']
+    if not result['installed_state'] or any(k.startswith('all_') for k in material['first_reference_crossings']):
+        return False
+    # Only the clamping and installation stages govern this check. Later pull events have their own scope.
+    records=table(RT/'post'/result['campaign']/case/'closed_contacts.csv')
+    install=records[records['stage']<=3]
+    limits=result['contact_resolution_limits_mm']
+    if any(row['max_closed_penetration_mm']>limits[str(int(row['pair']))] for row in install):
+        return False
+    final=install[install['native_set']==install['native_set'].max()]
+    seats=final[final['pair']>=880]
+    gaps=result['installed_tab_gaps_mm']
+    return (len(seats)==len(gaps)==4 and all(seats['closed']>0)
+            and all(abs(row['min_mm'])<=result['tab_plane_review_screen_mm'] for row in gaps))
+
+
 def result_path(case):
     if case.startswith('replay_'):
         return ROOT/'validation/contact_replay'/(case+'.json')
@@ -390,6 +426,12 @@ def run():
             mesh=case.split('_default_',1)[1].split('_')[0]
             if not (ROOT/f'validation/default_{mesh}_initial.json').is_file():
                 log('Default-contact geometry check pending: '+case)
+                continue
+        damage_catalog=ROOT/'validation/damage_variant_inputs.json'
+        if '_damage_cont' in case and not case.startswith('bare_') and damage_catalog.is_file():
+            variation=read(damage_catalog).get(case)
+            if variation and not damage_reference_ready(variation):
+                log('Nominal damage fixture has no supported starting path for this variation: '+case)
                 continue
         if case.endswith('_rock1_seatfaces1'):
             source=case.replace('_rock1_seatfaces1','_seatfaces1')
