@@ -168,6 +168,32 @@ def recover_split_readbacks():
 
 
 def jobs():
+    # Honour the new geometry at the next case boundary. Each listed input is independently sealed.
+    snug = ROOT/'validation/snug125/global_inputs.json'
+    if snug.is_file():
+        inputs = read(snug)
+        for subject in ('static','refined','original'):
+            for material in ('nylon','aluminium'):
+                case = f'snug125_{material}_{subject}'
+                assert case in inputs
+                yield case,inputs[case]['parent']
+            if subject == 'static':
+                yield 'snug125_nylon_mesh3_static',''
+        local_catalog=ROOT/'validation/snug125/local_inputs.json'
+        if local_catalog.is_file():
+            for case,meta in read(local_catalog).items():
+                yield case,meta['bare_reference']
+        for material in ('nylon','aluminium'):
+            branch='snug125_'+material
+            for subject in ('basis','modal20'):
+                case=branch+'_'+subject
+                if case in inputs:
+                    yield case,inputs[case]['parent']
+            for axis in 'XYZ':
+                yield native_case(branch,'psd_'+axis),branch+'_basis'
+            yield branch+'_enforced',branch+'_basis'
+            for axis in 'XYZ':
+                yield branch+'_motion_'+axis,branch+'_enforced'
     yield 'bare_static',''
     yield 'bare_original',''
     yield 'bare_refined',''
@@ -437,6 +463,11 @@ def run():
         if final.exists() or partial.exists() or review.exists() or (ROOT/'validation/review_global'/(case+'.json')).exists():continue
         if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
             log('Parent unaccepted: '+case);continue
+        if case.startswith('snug125_') and parent.endswith('_static'):
+            review=ROOT/'validation/snug125'/f'{parent}_installed.json'
+            if not review.is_file() or not read(review)['linearization_review_passed']:
+                log('Snug prestressed comparison awaits its installed-state review: '+case)
+                continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
             raise RuntimeError('Cased preflight review pending')
         if '_default_' in case and case.startswith('flush_'):

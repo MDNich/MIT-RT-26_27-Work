@@ -37,7 +37,7 @@ def board_feet(deck):
     return np.asarray(nodes),np.asarray(pts)
 
 
-def build(mesh_path,board,material,offset,*,retreat_mm=0.):
+def build(mesh_path,board,material,offset,*,retreat_mm=0., bearing_faces=(42,38,40,44), tab_thickness_mm=2.0828):
     mesh=np.load(mesh_path)
     local=mesh['points'];pts=np.column_stack((34.6075+local[:,0],60.3885+local[:,2],-.55118-10-offset-local[:,1]))
     if retreat_mm:
@@ -68,9 +68,9 @@ def build(mesh_path,board,material,offset,*,retreat_mm=0.):
         zboard=pcb_pts[:,2].min()
         rxy=np.linalg.norm(pcb_pts[:,:2]-axis,axis=1)
         patch=pcb_ids[(rxy<=3.75)&(np.abs(pcb_pts[:,2]-zboard)<0.001)]
-        ztab=-.55118-offset-2.0828
+        ztab=-.55118-offset-tab_thickness_mm
         # Apply washer footprint at the outer tab face; these four slightly oblique planes are read from supplied CAD.
-        tag=[42,38,40,44][i]
+        tag=bearing_faces[i]
         tab=np.unique(mesh[str(tag)]);tabrad=np.linalg.norm(pts[tab,:2]-axis,axis=1)
         rail=tab[tabrad<3.75]
         if min(len(rail),len(patch))<3:raise ValueError((i,len(rail),len(patch)))
@@ -96,7 +96,7 @@ def build(mesh_path,board,material,offset,*,retreat_mm=0.):
             ln.append('ALLSEL,ALL')
             ln.extend(f'CERIG,{pilot},{int(slave)},UXYZ' for slave in slaves)
         area=np.pi*(4.0**2-2.15**2)*1e-6
-        kseat=3.0649e9*area/((offset+2.0828)*1e-3)
+        kseat=3.0649e9*area/((offset+tab_thickness_mm)*1e-3)
         real=870+i
         # Beyond the tab thickness the 3 mm variant has an assumed PLA annulus.
         ln.extend([f'R,{real},-.004,{-kseat*.004:.12g},0,0,.004,0','TYPE,854',f'REAL,{real}',f'E,{lower},{upper}'])

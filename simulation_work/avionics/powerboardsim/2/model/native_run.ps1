@@ -17,8 +17,8 @@ $active=@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessN
 if ($active.Count){throw "Another native job is running"}
 New-Item -ItemType Directory -Path $work -ErrorAction Stop|Out-Null
 $guard=$work
-$enforcedMotion = $Case -match '^(?:bare|stand3_(?:nylon|aluminium)|flush_(?:nylon|aluminium)_surf1)_enforced$'
-$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
+$enforcedMotion = $Case -match '^(?:bare|(?:stand3|snug125)_(?:nylon|aluminium)|flush_(?:nylon|aluminium)_surf1)_enforced$'
+$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2|snug125_(?:nylon|aluminium))_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
 if ($sharedWork) {
     $work=Join-Path $share ".runtime\shared_native\$Campaign\$Case"
     if (Test-Path -LiteralPath $work){throw 'Preserving the existing shared working directory'}
@@ -46,6 +46,14 @@ try {
             if ((Get-FileHash -LiteralPath $previous).Hash -ne $old.Value.original_manifest_sha256 -or
                 $stage.input_sha256 -ne $old.Value.sealed_input_sha256){throw 'Recovered case input or original evidence mismatch'}
             $stage.previous_storage_attempt_sha256=$old.Value.original_manifest_sha256
+        }
+    }
+    if ($Case -match '^snug125_(nylon|aluminium)(_mesh3)?_(static|original|refined|modal20|basis)$') {
+        $manifest=Get-Content "$share\validation\snug125\global_inputs.json" -Raw | ConvertFrom-Json
+        $entry=$manifest.PSObject.Properties[$Case].Value
+        if ($entry.step_sha256 -ne '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef' -or
+            $entry.tab_spacing_mm -ne 1.25 -or $entry.input_sha256 -ne $stage.input_sha256 -or [string]$entry.parent -ne $Parent) {
+            throw 'Snug Balius input identity or mounting position mismatch'
         }
     }
     if ($stage.input_sha256 -ne (Get-FileHash "$inputDir\model.inp").Hash){throw 'Staging checksum failed'}
@@ -175,7 +183,7 @@ try {
         if ($pp.ExitCode -ne 0 -or !(Test-Path "$work\seat_contacts.csv") -or !(Test-Path "$work\seat_material.csv") -or
             !(Select-String -LiteralPath "$work\board_surface_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native tab/contact/material readback failed'}
     }
-    if ($Case -match '^(flush|stand3)_(nylon|aluminium)_static$' -or $Case -eq 'stand3_nylon_mesh2_static') {
+    if ($Case -match '^(flush|stand3|snug125)_(nylon|aluminium)_static$' -or $Case -in @('stand3_nylon_mesh2_static','snug125_nylon_mesh3_static')) {
         Copy-Item -LiteralPath "$PSScriptRoot\contact_post.inp" -Destination $work
         $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-dir',('"'+$work+'"'),'-j','casepost','-i','contact_post.inp','-o','contact_post.out') -Wait -PassThru
         Copy-Item "$work\contact_post.out" $out

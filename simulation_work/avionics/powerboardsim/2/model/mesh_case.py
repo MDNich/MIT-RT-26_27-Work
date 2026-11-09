@@ -5,8 +5,10 @@ import numpy as np
 import gmsh
 ROOT=Path(__file__).resolve().parents[1]
 
-def make(size):
-    step=next((ROOT/'geometry').glob('*.STEP'))
+def make(size, *, step=None, mesh_dir=None, audit_dir=None):
+    step=step or next((ROOT/'geometry').glob('*.STEP'))
+    audit_dir=audit_dir or ROOT/'validation'
+    audit_dir.mkdir(parents=True,exist_ok=True)
     gmsh.initialize()
     gmsh.option.setNumber('General.Terminal',0)
     model=gmsh.model
@@ -36,10 +38,10 @@ def make(size):
         assert et2.tolist()==[9]
         surf[str(tag)]=np.searchsorted(ids,ns[0].reshape(-1,6))
     vol=model.occ.getMass(*solid)
-    folder=ROOT/'.runtime/mesh';folder.mkdir(exist_ok=True,parents=True)
+    folder=mesh_dir or ROOT/'.runtime/mesh';folder.mkdir(exist_ok=True,parents=True)
     np.savez_compressed(folder/f'case_{size:g}.npz',points=pts,tets=tets,**surf)
     j=dict(size_max_mm=size,nodes=len(ids),tetrahedra=len(tets),minimum_scaled_jacobian=float(det.min()),cad_volume_mm3=vol,step_sha256=hashlib.sha256(step.read_bytes()).hexdigest())
-    (ROOT/f'validation/mesh_{size:g}.json').write_text(json.dumps(j,indent=2)+'\n')
+    (audit_dir/f'mesh_{size:g}.json').write_text(json.dumps(j,indent=2)+'\n')
     print(j,flush=True);gmsh.finalize()
 if __name__=='__main__':
     import sys

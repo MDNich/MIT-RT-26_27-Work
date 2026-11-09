@@ -12,8 +12,11 @@ GRAPHIC = re.compile(r"\\includegraphics\*?(?:\s*\[[^\]]*\])?\s*\{([^}]+)\}")
 
 def audit(publication, pdf):
     source = ROOT/'docs'/f'battery-case-{publication}.tex'
-    names = GRAPHIC.findall(source.read_text())
-    assert names and len(names) == source.read_text().count(r'\includegraphics')
+    src = source.read_text()
+    for relative in re.findall(r"\\input\{(appendices/[^{}]+)\}", src):
+        src += (source.parent/relative).with_suffix('.tex').read_text()
+    names = GRAPHIC.findall(src)
+    assert names and len(names) == src.count(r'\includegraphics')
     seen = set()
     for name in names:
         path = source.parent/name

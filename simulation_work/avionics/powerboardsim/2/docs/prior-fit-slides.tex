@@ -1,0 +1,62 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+\usetheme{Madrid}\usecolortheme{default}
+\usepackage[T1]{fontenc}\usepackage{lmodern,booktabs,graphicx}
+\input{colors}
+\setbeamercolor{structure}{fg=B}\setbeamercolor{frametitle}{fg=white,bg=B}
+\setbeamercolor{block title}{fg=white,bg=B}\setbeamercolor{block body}{bg=b!7}
+\setbeamercolor{alerted text}{fg=r}\setbeamertemplate{navigation symbols}{}\setbeamertemplate{footline}[frame number]
+\title{Power-board battery case}\author{MIT Rocket Team Simulations}\date{9 November 2026}
+\begin{document}
+\begin{frame}{On the supplied STEP, washers touch before cells}
+\begin{columns}[T,onlytextwidth]\column{.56\textwidth}
+\includegraphics[width=\linewidth]{figures/washer-location.pdf}
+\par\centering\scriptsize Plan view through the cover. Red marks the first four loaded washers.
+\column{.41\textwidth}
+\textbf{Lowering the case from 3 mm}\par The four outer washers touch after 0.603~mm of travel. The rigid tabs are still 2.397~mm from the PCB. The first cell touches after 1.760~mm.
+\vspace{4mm}\par\textbf{Flush installation}\par At 0.80~mm travel, the four screw drives carried \textbf{80~N with nylon} and \textbf{116~N with aluminium}. Both models exceeded the PLA tensile reference before seating. Only 4--5\% of each nylon-mounted tab was within 0.05~mm of the PCB at 2.75~mm travel. With aluminium, 18--19\% was that close at the full 3~mm travel.
+\end{columns}
+\vfill{\footnotesize\color{B}Rigid STEP geometry and native whole-board installation\quad|\quad 9 November 2026}
+\end{frame}
+\begin{frame}{The hole pattern leaves little room for an M4 screw}
+\begin{columns}[T,onlytextwidth]\column{.55\textwidth}
+\begin{tabular}{lrr}\toprule & PCB & Case\\\midrule
+Bore diameter [mm] &4.200&5.000--5.090\\
+Hole pitch X [mm] &62.865&62.855\\
+Hole pitch Y [mm] &114.427&113.241\\\bottomrule
+\end{tabular}
+\vspace{5mm}\par Each end of the centred pattern is 0.593 mm off-axis. The smaller bore pair allows 0.600 mm with an M4 shank.\par\vspace{2mm}\small The Balius native part clears the washers at 1.25 mm stand-off and leaves 0.003--0.020 mm at the cells. The six-pocket Zphr part misses the board mounting pattern (report, page~29).
+\column{.41\textwidth}
+\textbf{Hardware under study}\par Four M4 case screws in aluminium or nylon. The nylon reference is McMaster-Carr 93640A145.
+\vspace{2mm}\par\includegraphics[width=\linewidth]{figures/midspan-fit-2p5mm.pdf}
+\par\scriptsize At 2.5 mm stand-off the closest cell gaps are 0.076--0.093 mm. The middle pocket has a 1.32 mm floor gap.
+\end{columns}
+\end{frame}
+\begin{frame}{The raised nylon case lowers vibration stress in all six nickel strips}
+\includegraphics[width=.82\linewidth]{figures/raised-nickel-stress.pdf}
+\par With base X excitation, the highest strip stress was \textbf{291.9 MPa RMS} bare, \textbf{256.2} with nylon screws and \textbf{286.5} with aluminium. All three maxima occurred at the same corner of the right-hand cell attachment.
+\vspace{2mm}\par\small In the seeded history, all three elastic models crossed the local pull study's assumed 185 MPa yield stress within 39 ms. Both raised cases still had clearance at the cells. In the nine-second base-Z record, peak force at one cell end rose from 30.2~N bare to 32.2~N with nylon and 33.3~N with aluminium in the linear model.
+\end{frame}
+\begin{frame}{Both raised models reduce nickel strain under a 10.15 N pull}
+\includegraphics[width=.81\linewidth]{figures/raised-nickel-damage-strain.pdf}
+\par At \textbf{0.3375 mm travel}, the pull rose from \textbf{10.15 N bare} to \textbf{63.82 N with nylon} and \textbf{125.98 N with aluminium}. Peak nickel plastic strain also rose, from 0.673\% to 0.727\% and 0.783\%.
+\vspace{2mm}\par At \textbf{10.15 N applied force}, the cased models moved less. Both saved states bracketing that force were below 0.36\% peak nickel plastic strain.
+\vfill{\footnotesize\color{B}At 0.421 mm in the bilinear fixture, reversing the pull reduced force from 101 to 30 N with nylon and from 210 to 49 N with aluminium.}
+\end{frame}
+\begin{frame}{Mounting height changes how the screws bend the PCB}
+\includegraphics[width=.76\linewidth]{figures/raised-static-comparison.pdf}
+\vspace{1mm}\par The same PCB node moved 47.46~$\mu$m bare, 32.13~$\mu$m with nylon screws and \textbf{27.13~$\mu$m} with aluminium screws. The reductions from bare were 32\% and 43\%, respectively.
+\vspace{2mm}\par With the raised mounts, all cell, strip and washer gaps stayed open. At 0.80~mm of flush screw travel, peak corner movement toward the cells was \textbf{0.197~mm with nylon} and \textbf{0.216~mm with aluminium}.
+\vfill{\footnotesize\color{B}Bars show the six original bolts locked after tightening to 750 N each. Both cased bars use 3 mm stand-offs.}
+\end{frame}
+\begin{frame}{Both raised cases introduce modes below 486 Hz}
+\includegraphics[width=.83\linewidth]{figures/raised-prestressed-modes.pdf}
+\par The first cased mode rises from \textbf{253 Hz with nylon} to \textbf{320 Hz with aluminium}. Its shape remains closely matched across 399,194 solid nodes (MAC 0.989).
+\vspace{2mm}\par The closest match to bare mode 20 (2364 Hz) is mode 27 in both raised assemblies, at 2365 Hz with nylon and 2368 Hz with aluminium. With the original unpreloaded contacts, mode 1 stayed at 66.61 Hz in all three assemblies.
+\vfill{\footnotesize\color{B}Bolt-locked flexible assemblies at 3 mm stand-off. Undamped mode shapes about the tightened state.}
+\end{frame}
+\begin{frame}{Both raised mounts increase board-normal motion under each base input}
+\includegraphics[width=.88\linewidth]{figures/raised-native-spectra.pdf}
+\par With base Z excitation, peak PCB stress rose from \textbf{32.5 MPa RMS} bare to \textbf{64.8} with nylon screws and \textbf{84.2} with aluminium. In the nine-second Z run, peak tension across the PLA tab layers reached \textbf{139\%} of coupon strength with nylon screws and \textbf{257\%} with aluminium.
+\vspace{2mm}\par\small During base-X startup, the aluminium mount reached the 40.5~MPa printed-layer reference at 63.5~ms. The first modeled cell-to-case intersection followed at 69.8~ms with aluminium and 85.3~ms with nylon. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movies.}
+\end{frame}
+\end{document}

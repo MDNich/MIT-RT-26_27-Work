@@ -23,9 +23,9 @@ HANDLES = [Patch(color='#8AAEE8',label='Printed case'),
            Patch(facecolor='#c8dbbc',edgecolor='#28511a',label='Cells'), Patch(color='#34343d',label='PCB')]
 
 
-def midspan():
+def midspan(step=case):
     reader = STEPControl_Reader()
-    assert reader.ReadFile(str(case)) == IFSelect_RetDone and reader.TransferRoots()
+    assert reader.ReadFile(str(step)) == IFSelect_RetDone and reader.TransferRoots()
     cut = BRepAlgoAPI_Section(reader.OneShape(),gp_Pln(gp_Pnt(0,0,0),gp_Dir(0,0,1)),True)
     assert cut.IsDone()
     edges = TopExp_Explorer(cut.Shape(),TopAbs_EDGE)

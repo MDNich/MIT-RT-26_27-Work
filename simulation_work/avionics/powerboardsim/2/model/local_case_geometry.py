@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 from extend_board import ROOT,SCREWS,NODE,component
 
-def target_skin():
+def target_skin(*, out=None, cell_resolution=(.005,.07)):
     """Tessellate the actual B-reps and orient triangles outward using their volume boundary."""
     from case_fit import old as board_step
     from OCP.BRep import BRep_Tool
@@ -36,7 +36,7 @@ def target_skin():
     items+=list(zip([1,6,9,10,11,20],sorted(groups['washer'],key=lambda s:(s[0][1],s[0][0]))))
     points=[];data={}
     for body,(_,vol,solid) in items:
-        deflection,angle=(.005,.07) if body in (4,19,15) else (.02,.25)
+        deflection,angle=cell_resolution if body in (4,19,15) else (.02,.25)
         mesher=BRepMesh_IncrementalMesh(solid,deflection,False,angle,False);assert mesher.IsDone()
         faces=TopExp_Explorer(solid,TopAbs_FACE);tris=[];vertex={}
         while faces.More():
@@ -55,7 +55,7 @@ def target_skin():
         check=np.einsum('ij,ij->i',xyz[:,0],np.cross(xyz[:,1],xyz[:,2])).sum()/6
         assert abs(check/vol-1)<.01,(body,check,vol)
         data[str(body)]=t
-    data['points']=np.asarray(points);out=ROOT/'.runtime/mesh/fixture_targets.npz'
+    data['points']=np.asarray(points);out=out or ROOT/'.runtime/mesh/fixture_targets.npz'
     np.savez_compressed(out,**data)
     return out
 
@@ -73,7 +73,7 @@ def rigid_surface(lines,skin,bodies,pilot,real,tags,mesh):
     component(lines,'CASE_PATCH',NODE+faces)
     lines.extend(['CMSEL,S,CASE_PATCH,NODE','TYPE,862',f'REAL,{real}','MAT,862','ESURF','ALLSEL,ALL'])
 
-def make(mesh,skin,variant,offset,pilot,initial_retreat_mm=0.):
+def make(mesh,skin,variant,offset,pilot,initial_retreat_mm=0., *, bearing_faces=(42,38,40,44), tab_thickness_mm=2.0828, fixed_faces=range(5,46)):
     local=mesh['points']
     pts=np.column_stack((34.6075+local[:,0],60.3885+local[:,2],-.55118-10-offset-initial_retreat_mm-local[:,1]))
     e,nu,rho=SCREWS[variant]
@@ -86,18 +86,18 @@ def make(mesh,skin,variant,offset,pilot,initial_retreat_mm=0.):
         case_xy=np.array([34.6075+sx*31.4275,60.3885+sy*56.62058])
         pcb_xy=np.array([34.6075+sx*31.4325,60.3885+sy*57.2135])
         axis=pcb_xy+.095*(case_xy-pcb_xy)/np.linalg.norm(case_xy-pcb_xy)
-        ids=np.unique(mesh[str([42,38,40,44][i])])
+        ids=np.unique(mesh[str(bearing_faces[i])])
         ring=ids[np.linalg.norm(pts[ids,:2]-axis,axis=1)<3.75]
         lo=950001+2*i;up=lo+1
         for node,z in [(lo,pts[ring,2].mean()),(up,-.55118-initial_retreat_mm)]:lines.append(f'N,{node},{axis[0]:.11g},{axis[1]:.11g},{z:.11g}')
         lines.extend(['TYPE,851','MAT,851','SECNUM,851',f'E,{lo},{up}',f'D,{up},ALL,0'])
         lines.extend(f'CERIG,{lo},{n},UXYZ' for n in (ring+NODE))
-        k=3064.9*np.pi*(4**2-2.15**2)/(offset+2.0828)
+        k=3064.9*np.pi*(4**2-2.15**2)/(offset+tab_thickness_mm)
         lines.extend([f'R,{870+i},-4,{-4*k:.11g},0,0,4,0','TYPE,854',f'REAL,{870+i}',f'E,{lo},{up}'])
     lines.extend(['ET,861,TARGE170','KEYOPT,861,2,1','ET,862,CONTA174','KEYOPT,862,9,2','MP,MU,862,0','R,861','R,862'])
     rigid_surface(lines,skin,[4],pilot,861,[10,11,12,13],mesh)
     fixed=959001;lines.extend([f'N,{fixed},34.6075,60.3885,-11.822674',f'D,{fixed},ALL,0'])
-    rigid_surface(lines,skin,[15,19,1,6,9,10,11,20],fixed,862,list(range(5,46)),mesh)
+    rigid_surface(lines,skin,[15,19,1,6,9,10,11,20],fixed,862,fixed_faces,mesh)
     lines.extend(['ALLSEL,ALL','FINISH','/PREP7'])
     return '\n'.join(lines)+'\n'
 

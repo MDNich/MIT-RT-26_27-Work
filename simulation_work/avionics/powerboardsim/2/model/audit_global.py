@@ -31,7 +31,14 @@ def audit(case,campaign):
             last={key:float(value) for key,value in rows[-1].items()}
             assert abs(last['time_s']-2)<1e-8 and last['n_contact']>0
             from global_contact import history
-            stored=history(rst,853,853)
+            if case.startswith('snug125_'):
+                from global_contact import pair_summary
+                grid=rst.grid.cell_data
+                ids=np.sort(grid['ansys_elem_num'][grid['ansys_etype']==853])
+                # The native readback selects TYPE 853, including DMP real-constant children.
+                stored=[pair_summary(k,t[k],ids,*rst.element_solution_data(k,'ECT')) for k in range(rst.nsets)]
+            else:
+                stored=history(rst,853,853)
             assert len(rows)==len(stored)
             for item,raw in zip(rows,stored,strict=True):
                 item={k:float(v) for k,v in item.items()}
@@ -104,5 +111,8 @@ def audit(case,campaign):
         for mat in (850,851):assert np.count_nonzero(g.cell_data['ansys_material_type']==mat)>0
     out=ROOT/'validation/global';out.mkdir(exist_ok=True);dest=out/(case+'.json')
     temp=dest.with_suffix('.tmp');temp.write_text(json.dumps(result,indent=2)+'\n');temp.replace(dest)
+    if case.startswith('snug125_') and case.endswith('_static'):
+        from snug_installed import review
+        review(case,campaign)
     print(case,'verified',flush=True)
 if __name__=='__main__':audit(*sys.argv[1:])

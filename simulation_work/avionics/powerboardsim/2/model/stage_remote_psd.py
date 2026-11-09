@@ -7,7 +7,7 @@ from stage_local_jobs import seal
 FILES=re.compile(r'^file\d*\.(db|mode|mlv|full|esav|emat|rst|dsp)$',re.I)
 
 def stage_library(branch,campaign):
-    assert branch=='stand3_nylon_mesh2' or re.fullmatch(r'(stand3|flush)_(nylon|aluminium)(?:_surf1)?',branch)
+    assert branch=='stand3_nylon_mesh2' or re.fullmatch(r'(stand3|flush)_(nylon|aluminium)(?:_surf1)?|snug125_(nylon|aluminium)',branch)
     case=branch+'_basis';r=ROOT/'.runtime/receipts'/campaign/case
     assert (r/'released.txt').is_file()
     ledger=read(r/'archived.json');proof=read(ROOT/'validation/global'/f'{case}.json')

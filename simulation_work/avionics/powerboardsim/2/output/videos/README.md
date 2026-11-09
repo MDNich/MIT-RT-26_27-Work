@@ -6,7 +6,7 @@ The links open 3840 × 2160 movies at 60 fps. Paired views use the same displace
 
 All seven seeded movie pairs use native MAPDL time histories for every displayed panel.
 
-In both flush installation trials the printed PLA exceeded its tensile reference before the tabs touched the board. The raised mounts supply the cased vibration fields. [Flush mounting results, page 19](../pdf/battery-case-report.pdf#page=19)
+In both flush installation trials the printed PLA exceeded its tensile reference before the tabs touched the board. The raised mounts supply the cased vibration fields. [Flush mounting results, page 19](../pdf/prior-fit-report.pdf#page=19)
 
 ## Normalized modes
 
