@@ -31,14 +31,20 @@ def native_target_faces(ref, solids, folder, manifest):
         assert not set(combined).intersection(target)
         combined.update(target)
     assert len(combined)==len(rows)==9466 and sorted(rows.values())==sorted(combined.values())
+    return hardware_face_grids(ref,FACE_MATERIALS,solids,combined.values())
+
+
+def hardware_face_grids(ref,materials,solids,connectivity):
+    """Rebuild the closed MAPDL target skins, including the complete washer surfaces."""
     owner={}
-    for m,solid in zip(FACE_MATERIALS,solids,strict=True):
+    for m,solid in zip(materials,solids,strict=True):
         n=solid.point_data['ansys_node_num']
         assert not any(v in owner for v in n)
         owner.update((int(v),m) for v in n)
-    faces={m:[] for m in FACE_MATERIALS}
-    for face in combined.values():
+    faces={m:[] for m in materials}
+    for face in connectivity:
         assert len(face)==8
+        if face[0] not in owner:continue
         mat=owner[face[0]]
         assert all(owner[n]==mat for n in face)
         # MAPDL repeats the third corner in the fourth corner slot and the seventh
@@ -50,6 +56,7 @@ def native_target_faces(ref, solids, folder, manifest):
         faces[mat].append(face)
     output=[]
     for m,group in faces.items():
+        assert group
         nodes=np.unique(np.concatenate(group))
         conn=np.concatenate([np.r_[len(face),np.searchsorted(nodes,face)] for face in group])
         types=np.array([pv.CellType.QUADRATIC_TRIANGLE if len(face)==6 else pv.CellType.QUADRATIC_QUAD for face in group])

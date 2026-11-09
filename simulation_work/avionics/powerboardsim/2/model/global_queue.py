@@ -179,21 +179,25 @@ def jobs():
                 yield case,inputs[case]['parent']
             if subject == 'static':
                 yield 'snug125_nylon_mesh3_static',''
+        # Release matched film subjects early so the host can encode while the longer local pulls solve.
+        branches=('snug125_nylon','snug125_aluminium')
+        for subject in ('basis','modal20'):
+            for branch in branches:
+                case=branch+'_'+subject
+                if case in inputs:
+                    yield case,inputs[case]['parent']
+        for axis in 'XYZ':
+            for branch in branches:
+                yield native_case(branch,'psd_'+axis),branch+'_basis'
+        for branch in branches:
+            yield branch+'_enforced',branch+'_basis'
+        for axis in 'XYZ':
+            for branch in branches:
+                yield branch+'_motion_'+axis,branch+'_enforced'
         local_catalog=ROOT/'validation/snug125/local_inputs.json'
         if local_catalog.is_file():
             for case,meta in read(local_catalog).items():
                 yield case,meta['bare_reference']
-        for material in ('nylon','aluminium'):
-            branch='snug125_'+material
-            for subject in ('basis','modal20'):
-                case=branch+'_'+subject
-                if case in inputs:
-                    yield case,inputs[case]['parent']
-            for axis in 'XYZ':
-                yield native_case(branch,'psd_'+axis),branch+'_basis'
-            yield branch+'_enforced',branch+'_basis'
-            for axis in 'XYZ':
-                yield branch+'_motion_'+axis,branch+'_enforced'
         sensitivities=ROOT/'validation/snug125/local_sensitivity_inputs.json'
         if sensitivities.is_file():
             for case,meta in read(sensitivities).items():

@@ -52,6 +52,29 @@ The 2~mm case mesh contains 45,549 quadratic tetrahedra and 77,166 nodes. Its in
 \heading{Response quantities}
 The native comparisons will report mounting reactions, board deformation, cell and washer contact, matched natural modes, signed and RMS vibration quantities, tension along and across the printed layers, and edge-cell force and nickel damage for both pull directions where supported by the fixture. The 22 movie subjects use the bare board as the reference on shared physical or display scales. The snug-fit response values will be filled from audited native outputs. Appendix~A preserves the previous study with its original geometries and page numbering.
 
+
+\newpage
+\pageheading{Both snug mounts reduce PCB deflection during tightening}
+We tightened the six original battery fasteners to 750~N each, then locked their adjustments. The largest PCB displacement fell from 47.46~$\mu$m bare to 28.91~$\mu$m with nylon case screws and 23.09~$\mu$m with aluminium, reductions of 39.1\% and 51.4\%. The bare and nylon peaks occurred at the same board corner. With aluminium, the maximum moved 9.77~mm along the same edge. The comparison used the same 217,704 PCB nodes in all three assemblies.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-preload.pdf}
+\captionof{figure}{Left, native displacements after bolt lock. Cell-body peaks were 9.83, 9.80 and 9.81~$\mu$m for bare, nylon and aluminium. Right, the maximum recorded case contact pressure at each equilibrium. The dashed line marks the change from prescribed bolt force to locked adjustment.}\end{center}
+
+\heading{The middle pocket carries load before vibration begins}
+All loaded case faces belonged to the cylindrical wall of the middle pocket. The first active state occurred between 0.40 and 0.70 of the tightening step with nylon and between 0.70 and 1.00 with aluminium. Reconstructing the deformed case, three cells and six washers independently at two surface sampling levels also identified contact with the middle cell alone at lock. The closest sampled washer gaps were 0.321~mm with nylon and 0.324~mm with aluminium at the finer level.
+
+\begin{center}\small\begin{tabular}{lrr}\toprule
+Snug case quantity & Nylon screws & Aluminium screws\\\midrule
+Active contact faces after bolt lock & 5 & 1\\
+Highest contact pressure during tightening [MPa] & 1.080 & 0.163\\
+Highest contact pressure after lock [MPa] & 0.345 & 0.041\\
+Largest loaded-corner penetration over both steps [$\mu$m] & 0.222 & 0.034\\
+Peak PLA tension in-plane / across layers [MPa] & 0.334 / 0.344 & 1.052 / 0.760\\
+Peak screw extreme-fibre tension after lock [MPa] & 1.25 & 2.40\\\bottomrule
+\end{tabular}\end{center}
+
+Each model converged at eight saved states. All six locked bolt forces were within 0.015~N of the 750~N target. The highest through-layer PLA tension reached 0.85\% of the printed-coupon mean with nylon and 1.88\% with aluminium. The contact pressures come from a small patch on the 2~mm case mesh. Its size and pressure still require the mesh comparison. Vibration and side pull are separate load cases.
+
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}
