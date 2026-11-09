@@ -72,9 +72,9 @@ def rigid_surface(lines,skin,bodies,pilot,real,tags,mesh):
     component(lines,'CASE_PATCH',NODE+faces)
     lines.extend(['CMSEL,S,CASE_PATCH,NODE','TYPE,862',f'REAL,{real}','MAT,862','ESURF','ALLSEL,ALL'])
 
-def make(mesh,skin,variant,offset,pilot):
+def make(mesh,skin,variant,offset,pilot,initial_retreat_mm=0.):
     local=mesh['points']
-    pts=np.column_stack((34.6075+local[:,0],60.3885+local[:,2],-.55118-10-offset-local[:,1]))
+    pts=np.column_stack((34.6075+local[:,0],60.3885+local[:,2],-.55118-10-offset-initial_retreat_mm-local[:,1]))
     e,nu,rho=SCREWS[variant]
     lines=['FINISH','/PREP7','ALLSEL,ALL','CSYS,0','ESYS,0','ET,850,SOLID187','MP,EX,850,3426.9','MP,EY,850,3426.9','MP,EZ,850,3064.9','MP,GXY,850,1269.22','MP,GXZ,850,1201.54','MP,GYZ,850,1201.54','MP,PRXY,850,.35','MP,PRXZ,850,.35','MP,PRYZ,850,.35','MP,DENS,850,1.17E-9','TYPE,850','MAT,850','REAL,1']
     for i,xyz in enumerate(pts):lines.append('N,'+str(NODE+i)+','+','.join(f'{v:.11g}' for v in xyz))
@@ -88,7 +88,7 @@ def make(mesh,skin,variant,offset,pilot):
         ids=np.unique(mesh[str([42,38,40,44][i])])
         ring=ids[np.linalg.norm(pts[ids,:2]-axis,axis=1)<3.75]
         lo=950001+2*i;up=lo+1
-        for node,z in [(lo,pts[ring,2].mean()),(up,-.55118)]:lines.append(f'N,{node},{axis[0]:.11g},{axis[1]:.11g},{z:.11g}')
+        for node,z in [(lo,pts[ring,2].mean()),(up,-.55118-initial_retreat_mm)]:lines.append(f'N,{node},{axis[0]:.11g},{axis[1]:.11g},{z:.11g}')
         lines.extend(['TYPE,851','MAT,851','SECNUM,851',f'E,{lo},{up}',f'D,{up},ALL,0'])
         lines.extend(f'CERIG,{lo},{n},UXYZ' for n in (ring+NODE))
         k=3064.9*np.pi*(4**2-2.15**2)/(offset+2.0828)

@@ -8,7 +8,7 @@
 \newcommand{\heading}[1]{\par\vspace{4pt}{\large\bfseries\color{B}#1}\par}
 \begin{document}
 {\LARGE\bfseries\color{B}Power-board battery case comparison}\par
-{\large Geometry, mounting assumptions and bare-board verification}\par
+{\large Assembly fit, bare-board verification and first side-pull comparison}\par
 {\small 8 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02}
 \heading{The mounting height determines whether the cells are already loaded}
 Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. The raised case begins with an air gap. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
@@ -52,7 +52,7 @@ The solver stored eight equilibrium states and completed the two load steps in a
 \heading{How the side-pull comparison measures load transfer}
 The local model drives the outer cell sideways through its rigid pilot while the two nickel strips bend. In the washer-clamped fixture, each strip is compressed with 750~N and the clamp height is then locked. During the pull, the cell can translate in the other two directions and rotate. The cased fixture adds a deformable printed enclosure, four screw shanks and compression-only tab seats. The neighboring cells and screw tops are fixed in this local approximation. The native model check counted 9,502 potential PLA contact faces. These contacts carry compression between PLA and the cell or washer surfaces. Direct PLA-to-nickel contact is omitted from this local fixture. That omission matters most in the flush geometry, where the CAD also intersects the strips.
 
-For each converged load increment the audit sums external forces and moments about the displaced cell centre. It includes the case screw supports and the neighboring-cell support when present. This makes it possible to test whether enclosure contact relieves the nickel strips at the cost of increased screw or board load. The check excluded unconverged diagnostic result sets. On historical friction fixtures it recovered the native force and moment sums across nominal, refined and reverse-direction pulls. The fresh bare nominal fixture completed all 33 substeps in sequence. At 0.500~mm displacement its lateral reaction was 8.542~N and the reported maximum equivalent plastic strain was 0.01254, matching the October fixture. The maximum lateral force imbalance was $2.34\times10^{-5}$~N. This endpoint describes the stiffness of the bilinear nickel fixture under the specified pull. A rupture load requires a failure model and evidence of separation; the cased pull comparison is in progress.
+For each converged load increment the audit sums external forces and moments about the displaced cell centre. It includes the case screw supports and the neighboring-cell support when present. This makes it possible to test whether enclosure contact relieves the nickel strips at the cost of increased screw or board load. The check excluded unconverged diagnostic result sets. On historical friction fixtures it recovered the native force and moment sums across nominal, refined and reverse-direction pulls. The fresh bare nominal fixture completed all 33 substeps in sequence. At 0.500~mm displacement its lateral reaction was 8.542~N and the reported maximum equivalent plastic strain was 0.01254, matching the October fixture. The maximum lateral force imbalance was $2.34\times10^{-5}$~N. This endpoint describes the stiffness of the bilinear nickel fixture under the specified pull. A rupture load requires a failure model and evidence of separation; the raised/nylon result is presented on the last page.
 \newpage
 \heading{Both default-contact meshes reproduce the October modal spectra}
 Each unpreloaded model used the archived mounting constraints and searched for 20 undamped natural frequencies between 1 and 10,000~Hz. The original mesh returned modes from 62.805 to 2205.547~Hz and the refined mesh from 66.611 to 2247.595~Hz. The maximum relative differences from the corresponding October exports were $1.78\times10^{-8}$ and $1.74\times10^{-9}$. Repeating a given discretization thus produced the same frequency spectrum to the stated precision.
@@ -86,4 +86,23 @@ The finite-element gap is sampled at contact detection points on a curved mesh. 
 
 \heading{Why the flush installation needs a separate check}
 The flush STEP has real interference. In the local model, a 2 mm search recovered the 1.178 mm crown overlap of the moving cell. A 1 mm search found only 1.000 mm, and a 0.6 mm search found only 0.598 mm. Tightening the search around the flush configuration can therefore hide real interference. Conversely, the default global search reported a peak overlap of 10.093 mm, versus 1.848 mm with a 2 mm search. These values identify a contact-model discrepancy. They do not establish an installation force. The flush comparison requires a verified path into contact, including the washers and strips, and force balance in the installed assembly before the vibration solve.
+\newpage
+\heading{The raised case restrains the edge cell once its air gap closes}
+In the first completed cased comparison, the four nylon screws held the printed case at a 3~mm stand-off. As before, a pilot moved the outer cell in positive X while leaving its other translations and rotations free. The two force curves follow one another until the moving cell engages the enclosure. The last open state was at 0.1956~mm and the first closed state at 0.2206~mm. The rigid CAD translation of 0.1634~mm provides a reference for the geometry; compliance, rotation and contact-surface discretization affect the native onset.
+
+\begin{center}\includegraphics[width=.97\linewidth]{figures/stand3_nylon_lateral_friction_locked_pin1.pdf}
+\captionof{figure}{Native converged states in the bare and raised/nylon fixtures. Shading brackets the onset of cell-to-case contact. The dashed line is the force transmitted through the case supports. The right panel shows the largest reported equivalent plastic strain in the two active nickel strips.}\end{center}
+
+\begin{center}\small\begin{tabular}{lrr}\toprule
+At 0.500 mm prescribed cell travel & Bare fixture & Raised case, nylon\\\midrule
+Cell reaction in X [N]&8.54&138.53\\
+Load reaching the four case screw supports in X [N]&---&112.15\\
+Load reaching the original clamp supports in X [N]&8.54&26.38\\
+Peak equivalent plastic strain in nickel [\%]&1.254&1.509\\\bottomrule
+\end{tabular}\end{center}
+
+At the same travel the cell required 16.2 times as much force with the case. About 81\% of that force reached the four screw supports and none reached the fixed neighboring-cell/washer support. At the same \emph{force} as the bare endpoint (8.54~N), the raised fixture instead traveled between 0.196 and 0.221~mm; linear interpolation gives 0.207~mm. These comparisons answer different questions. Restricting cell travel under a given force can help retention, but forcing both systems to the same 0.5~mm increased the modeled peak nickel plastic strain by 20\%.
+
+\heading{How much confidence to place in the comparison}
+Both fixtures completed 33 consecutive equilibrium states. At the cased endpoint, 15 active-cell contact faces were closed. Across the full path, the largest penetration at a closed corner was 0.0116~mm. Independently summing the native contact forces agreed with the case-support resultant to within 0.00086~N. The two nickel strips have no direct contact with the raised enclosure in this local model. The fixed screw tops represent a stiffer support than a flexible PCB can provide. These numbers describe one mesh, one pull direction and one mounting assumption. They neither measure nickel rupture nor establish vibration protection. Reverse and refined pulls, flexible-board response and the other screw/seating variants remain open.
 \end{document}

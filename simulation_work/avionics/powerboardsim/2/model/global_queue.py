@@ -63,6 +63,16 @@ def result_path(case):
 
 def run():
     for case,parent in jobs():
+        # A sealed geometry-only check runs between jobs; its results cannot
+        # release a flush load case without a separate installed-state audit.
+        if case=='stand3_nylon_static':
+            probe=RT/'flush_approach_v1'
+            if (probe/'pre.inp').exists() and not (probe/'exit.txt').exists():
+                if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
+                launch('flush_install_check.ps1',['-Trial',probe.name],probe/'dispatch.json')
+                while not (probe/'exit.txt').is_file():
+                    if (probe/'failed.txt').exists():raise RuntimeError('Unexpected preflight state; inspect guest before dispatch')
+                    time.sleep(10)
         receipt=RECEIPTS/case;receipt.mkdir(parents=True,exist_ok=True)
         final=result_path(case)
         partial=ROOT/'validation/partial_local'/(case+'.json')

@@ -101,7 +101,7 @@ def fixture(folder, spec, config, source, listing, balance_path):
                 raise ValueError(f'Raised fixture closed an initial gap during the held-cell preload: {pid}')
             engaged=np.flatnonzero(a['closed']>0)
             data[f'pair_{pid}']=dict(closed_at_end=int(a['closed'][-1]),peak_centroid_pressure_MPa=float(max(a['p_MPa'])),
-                peak_reported_penetration_mm=float(max(a['pen_mm'])),
+                peak_unfiltered_corner_value_mm=float(max(a['pen_mm'])),
                 contact_travel_bracket_mm=None if not len(engaged) else [native[max(0,engaged[0]-1)]['ux_mm'],native[engaged[0]]['ux_mm']])
         data['screw_support_fx_N']=native[-1]['screw_support_N_x']
         data['neighbour_support_fx_N']=native[-1]['neighbor_support_N_x']
