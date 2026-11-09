@@ -11,11 +11,17 @@ from pcb_dynamic_stress import digest, equivalent
 from seeded_motion import FRAMES,FS,ROOT
 
 
-def displacement_basis(r,ids):
+def displacement_basis(r,ids,fields=None):
     ids=np.asarray(ids)
     out=np.empty((len(r.time_values),len(ids),3))
     for k in range(len(out)):
-        node,u=r.nodal_displacement(k);order=np.argsort(node);ix=np.searchsorted(node[order],ids)
+        if fields is None:
+            node,u=r.nodal_displacement(k)
+        else:
+            stem=fields[k+1]
+            node=np.fromfile(stem.with_suffix('.ids'),'<i4')
+            u=np.fromfile(stem.with_suffix('.u'),'<f8').reshape(-1,3)
+        order=np.argsort(node);ix=np.searchsorted(node[order],ids)
         if np.any(ix==len(node)) or not np.array_equal(node[order[ix]],ids):
             raise ValueError('Missing result node')
         out[k]=u[order[ix],:3]

@@ -63,7 +63,13 @@ def field_files(rst,clip,period,scope,component,cache,stress_cache,source_sha=No
             ids=mesh.point_data['ansys_node_num'].copy()
             parts.append((mesh,ids,case))
     ids=np.unique(np.concatenate([entry[1] for entry in parts]))
-    basis=displacement_basis(r,ids)
+    fields=None
+    if source_sha is not None and rst.parent.name!='bare_basis':
+        from basis_comparison import field_files as native_mode_files
+        campaign=rst.parent.parent.name
+        assert rst==ROOT/'.runtime/archive'/campaign/rst.parent.name/'file.rst'
+        fields=native_mode_files(rst.parent.name,campaign,source_sha,r.nsets)
+    basis=displacement_basis(r,ids,fields)
     writer=np.lib.format.open_memmap(cache/'displacement.npy',mode='w+',dtype=np.float32,shape=(len(q),len(ids),3))
     for j in range(0,len(ids),4096):
         val=(q@np.ascontiguousarray(basis[:,j:j+4096]).reshape(len(basis),-1)).reshape(len(q),-1,3)
