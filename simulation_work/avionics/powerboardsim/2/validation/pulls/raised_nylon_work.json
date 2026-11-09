@@ -1,0 +1,40 @@
+{
+  "work": {
+    "bare_lateral_friction_locked": {
+      "rst_sha256": "f8b439c1021724faf8762ce186d2f16029d62f5f290de6867b4ec23fbf84bcc3",
+      "native_travel_states": 25,
+      "cell_X_work_to_half_mm_mJ": 3.301818925562701,
+      "alternate_state_integration_mJ": 3.2935376537466587,
+      "native_POST1_work_mJ": 3.301818925565545
+    },
+    "stand3_nylon_lateral_friction_locked_pin1": {
+      "rst_sha256": "e23e825bcebc5b7e6d89864352c1342dc138a869885f0f9b7865c22ff2b271ae",
+      "native_travel_states": 25,
+      "cell_X_work_to_half_mm_mJ": 21.412968069517735,
+      "alternate_state_integration_mJ": 21.476986160698843,
+      "native_POST1_work_mJ": 21.412968069508597
+    }
+  },
+  "target_cell_force_N": 8.542048658016569,
+  "bare_at_target": {
+    "travel_mm": 0.5,
+    "peak_nickel_plastic_strain": 0.012536232825
+  },
+  "cased_native_neighboring_states": [
+    {
+      "force_N": 7.131300035576131,
+      "travel_mm": 0.195625,
+      "peak_nickel_plastic_strain": 0.0035541051766
+    },
+    {
+      "force_N": 10.317582325849873,
+      "travel_mm": 0.220625,
+      "peak_nickel_plastic_strain": 0.0043490075041
+    }
+  ],
+  "cased_interpolant": {
+    "travel_mm": 0.2066939237010387,
+    "peak_nickel_plastic_strain": 0.0039060537051150233
+  },
+  "interpretation": "Work is external sideways actuator work after washer lock, not energy dissipation. Adjacent converged states span first contact; the force-matched cased values are interpolated, not a native force-controlled endpoint."
+}

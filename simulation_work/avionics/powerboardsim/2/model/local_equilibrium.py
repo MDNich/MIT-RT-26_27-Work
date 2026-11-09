@@ -42,10 +42,12 @@ def reference_movements(folder, source):
     return movements
 
 
-def movement_deck(source, job):
+def movement_deck(source, job, *, moving_screw_tops=False):
     config = json.loads((source / 'config.json').read_text())
     pilot = json.loads((source / 'mesh.json').read_text())['pilot']
     moving = [pilot, *config.get('bottom_pilots', [])]
+    if moving_screw_tops:
+        moving.extend(SCREW_PILOTS)
     lines = ['/batch','resume,model,db','/post1',f'file,{job},rst','/nopr','allsel,all','rsys,0',
              'set,last','*get,nsets,active,0,set,nset','*cfopen,moving_supports,csv','*vwrite',
              "('set,node,ux_mm,uy_mm,uz_mm')", '*do,kk,1,nsets','set,,,,,,,kk',
@@ -56,7 +58,7 @@ def movement_deck(source, job):
     return '\n'.join([*lines, '*enddo','*cfclos','finish','/exit,nosave',''])
 
 
-def recover(path, source, movements, cased=False):
+def recover(path, source, movements, cased=False, *, moving_screw_tops=False):
     config = json.loads((source / 'config.json').read_text())
     pilot = json.loads((source / 'mesh.json').read_text())['pilot']
     model = (source / 'model.inp').read_text()
@@ -73,6 +75,9 @@ def recover(path, source, movements, cased=False):
     initial = result.mesh.nodes[geom_index]
     cell = positions(ids, np.array([pilot]))[0]
     bottom = positions(ids, np.array(config.get('bottom_pilots', []), dtype=int))
+    if moving_screw_tops and not cased:
+        raise ValueError('Moving case supports require the case geometry')
+    screw = positions(ids, SCREW_PILOTS) if cased else []
     records = []
     for k, ((step, substep, _), time) in enumerate(zip(result._resultheader['ls_table'], result.time_values, strict=True)):
         if substep == 999999:
@@ -80,7 +85,7 @@ def recover(path, source, movements, cased=False):
         if result.result_dof(k) != DOFS:
             raise ValueError(f'Unexpected fixture DOF layout at set {k+1}')
         disp = np.zeros((len(ids),3))
-        for index in [cell,*bottom]:
+        for index in [cell,*bottom,*(screw if moving_screw_tops else [])]:
             disp[index] = movements[k+1,int(ids[index])]
         if not np.isfinite(disp).all():
             raise ValueError(f'Missing support motion at set {k+1}')
@@ -102,7 +107,12 @@ def recover(path, source, movements, cased=False):
         for stem, vector in [('force_N', total_force), ('moment_origin_Nmm',moment), ('moment_cell_Nmm',moment_cell)]:
             row.update({f'{stem}_{axis}': float(v) for axis, v in zip('xyz', vector)})
         if cased:
-            screw_forces = forces[positions(ids, SCREW_PILOTS)]
+            screw_forces = forces[screw]
+            if moving_screw_tops:
+                for label,index in [('cell',cell), *((f'screw{i+1}',j) for i,j in enumerate(screw)),
+                                    *((f'washer{i+1}',j) for i,j in enumerate(bottom))]:
+                    for name,vector in [('u_mm',disp[index]), ('force_N',forces[index]), ('moment_Nmm',applied[index,3:])]:
+                        row.update({f'{label}_{name}_{a}': float(v) for a,v in zip('xyz',vector)})
             neighbor = forces[positions(ids, [NEIGHBOR_PILOT])][0]
             for axis, value in zip('xyz', screw_forces.sum(axis=0)):
                 row['screw_support_N_'+axis] = float(value)

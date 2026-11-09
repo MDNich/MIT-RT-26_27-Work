@@ -34,13 +34,23 @@ def jobs():
     yield 'bare_lateral_friction_locked',''
     yield 'stand3_nylon_lateral_friction_locked_pin1','bare_lateral_friction_locked'
     yield 'stand3_nylon_static',''
+    # Compare the first two prestressed modal bases before assigning the longer histories.
+    yield 'bare_basis','bare_static'
+    yield 'stand3_nylon_basis','stand3_nylon_static'
     # Establish the first complete reference and one cased comparison before the remaining variants.
     for branch in ['bare','stand3_nylon','flush_nylon','stand3_aluminium','flush_aluminium']:
-        if branch.startswith('flush_') and not (ROOT/'validation/flush_global_installation_release.json').exists():
-            log('Holding flush branch pending verified installation: '+branch);continue
+        if branch.startswith('flush_'):
+            # These original decks start overclosed. A separately named successor with a
+            # verified installed restart must be mapped explicitly, never enabled by a flag.
+            log('Holding original overclosed global branch: '+branch);continue
         if branch not in ('bare','stand3_nylon'):
             yield branch+'_static',''
-        yield branch+'_basis',branch+'_static'
+        if branch not in ('bare','stand3_nylon'):yield branch+'_basis',branch+'_static'
+        if branch in ('bare','stand3_nylon') and (ROOT/'validation/local_install_jobs.json').is_file():
+            metal='nylon' if branch=='bare' else 'aluminium'
+            name='flush_'+metal+'_lateral_friction_locked_approach1'
+            if name in read(ROOT/'validation/local_install_jobs.json'):
+                yield name,'bare_lateral_friction_locked'
         yield branch+'_modal20',branch+'_static'
         for axis in 'XYZ':yield branch+'_psd_'+axis,branch+'_basis'
         yield branch+'_enforced',branch+'_basis'
@@ -73,10 +83,29 @@ def run():
                 while not (probe/'exit.txt').is_file():
                     if (probe/'failed.txt').exists():raise RuntimeError('Unexpected preflight state; inspect guest before dispatch')
                     time.sleep(10)
+        if case=='bare_basis':
+            # These short checks are serial native jobs; a known numerical rejection only
+            # holds the installation branch. An ambiguous live job blocks further dispatch.
+            for name,inp,publication,runner,auditor in [
+                    ('board_actuator_control_v1','control.inp','board_actuator_control','actuator_control.ps1','actuator_control.py'),
+                    ('board_initial_v1','pre.inp','board_initial_approach','flush_install_check.ps1','board_initial_check.py')]:
+                probe=RT/name
+                if not (probe/inp).is_file() or (ROOT/f'validation/{publication}.json').exists():continue
+                if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
+                if not (probe/'exit.txt').exists() and not (probe/'failed.txt').exists():
+                    launch(runner,['-Trial',name],probe/'dispatch.json')
+                    while not (probe/'exit.txt').exists():
+                        if (probe/'failed.txt').exists():raise RuntimeError('Uncertain native control: '+name)
+                        time.sleep(5)
+                if (probe/'failed.txt').exists():raise RuntimeError('Uncertain native control: '+name)
+                if not (probe/'audit_failed.txt').exists():
+                    r=subprocess.run([sys.executable,str(ROOT/'model'/auditor),'audit'],capture_output=True,text=True)
+                    if r.returncode:(probe/'audit_failed.txt').write_text(r.stderr);log('Rejected '+name+'; bare jobs independent')
         receipt=RECEIPTS/case;receipt.mkdir(parents=True,exist_ok=True)
         final=result_path(case)
         partial=ROOT/'validation/partial_local'/(case+'.json')
-        if final.exists() or partial.exists():continue
+        review=ROOT/'validation/review_local'/(case+'.json')
+        if final.exists() or partial.exists() or review.exists():continue
         if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
             log('Parent unaccepted: '+case);continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
@@ -102,7 +131,7 @@ def run():
         if not (receipt/'released.txt').exists():
             log('Archive '+case);launch('archive_native.ps1',['-Case',case,'-Campaign',CAMPAIGN],receipt/'archive_request.json')
         while not (receipt/'released.txt').exists():time.sleep(20)
-        audit='audit_local.py' if local else 'audit_global.py'
+        audit='audit_install.py' if case.endswith('_approach1') else ('audit_local.py' if local else 'audit_global.py')
         args=['audit_motion.py','case',case,CAMPAIGN] if motion else [audit,case,CAMPAIGN]
         r=subprocess.run([sys.executable,str(ROOT/'model'/args[0]),*args[1:]],text=True,capture_output=True)
         log(r.stdout[-1000:])

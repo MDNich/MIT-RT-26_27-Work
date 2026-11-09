@@ -37,9 +37,12 @@ def board_feet(deck):
     return np.asarray(nodes),np.asarray(pts)
 
 
-def build(mesh_path,board,material,offset):
+def build(mesh_path,board,material,offset,*,retreat_mm=0.):
     mesh=np.load(mesh_path)
     local=mesh['points'];pts=np.column_stack((34.6075+local[:,0],60.3885+local[:,2],-.55118-10-offset-local[:,1]))
+    if retreat_mm:
+        assert offset==0 and retreat_mm==3.
+        pts[:,2]-=retreat_mm
     pcb_ids,pcb_pts=board
     e,nu,rho=SCREWS[material]
     ln=['! Power-board case. Geometry in m; elastic modulus Pa; density kg/m3.','FINISH','/PREP7','ALLSEL,ALL','CSYS,0','ESYS,0','ET,850,SOLID187','MP,EX,850,3.4269E9','MP,EY,850,3.4269E9','MP,EZ,850,3.0649E9','MP,PRXY,850,.35','MP,PRYZ,850,.35','MP,PRXZ,850,.35','MP,GXY,850,1.26922E9','MP,GYZ,850,1.20154E9','MP,GXZ,850,1.20154E9','MP,DENS,850,1170','TYPE,850','MAT,850','REAL,1']
@@ -53,6 +56,10 @@ def build(mesh_path,board,material,offset):
     # Compression-only seat for the tab or printed spacer. COMBIN39 uses relative axial
     # displacement along its 3D node line. The screw-material-independent pad carries clamp compression.
     ln.extend(['ET,854,COMBIN39','KEYOPT,854,4,1'])
+    if retreat_mm:
+        # The PCB feet stay on the real board. The short upper screw heads follow their
+        # flexible board pilot plus an imposed relative-Z seating displacement.
+        ln.extend(['ET,856,MASS21','KEYOPT,856,3,0','R,856,1e-10,1e-10,1e-10,1e-18,1e-18,1e-18'])
     mounts=[]
     for i,(sx,sy) in enumerate([(-1,-1),(-1,1),(1,-1),(1,1)]):
         hole=np.array([34.6075+sx*31.4275,60.3885+sy*56.62058])
@@ -69,10 +76,22 @@ def build(mesh_path,board,material,offset):
         if min(len(rail),len(patch))<3:raise ValueError((i,len(rail),len(patch)))
         ztab=pts[rail,2].mean()
         lower,upper=950001+2*i,950002+2*i
-        for n,z in ((lower,ztab),(upper,zboard)):
+        for n,z in ((lower,ztab),(upper,zboard-retreat_mm)):
             ln.append(f'N,{n},{axis[0]*.001:.12g},{axis[1]*.001:.12g},{z*.001:.12g}')
         ln.extend(['TYPE,851','MAT,851','SECNUM,851',f'E,{lower},{upper}'])
-        for pilot,name,slaves in [(upper,'PCBSEAT',patch),(lower,'TABSEAT',rail+NODE)]:
+        board_pilot=upper
+        if retreat_mm:
+            board_pilot,act=960101+i,960111+i
+            # Only the head DOFs are eliminated. Each board pilot is a retained master
+            # for one non-overlapping PCB footprint. The extra nodes have negligible inertia.
+            for n in (board_pilot,act):
+                ln.extend([f'N,{n},{axis[0]*.001:.12g},{axis[1]*.001:.12g},{zboard*.001:.12g}',
+                           'TYPE,856','REAL,856',f'E,{n}'])
+            ln.append(f'D,{act},ALL,0')
+            for dof in ('UX','UY','UZ','ROTX','ROTY','ROTZ'):
+                ce=f'CE,NEXT,0,{upper},{dof},1,{board_pilot},{dof},-1'
+                ln.append(ce+(f',{act},UZ,-1' if dof=='UZ' else ''))
+        for pilot,name,slaves in [(board_pilot,'PCBSEAT',patch),(lower,'TABSEAT',rail+NODE)]:
             component(ln,name,slaves)
             ln.append('ALLSEL,ALL')
             ln.extend(f'CERIG,{pilot},{int(slave)},UXYZ' for slave in slaves)
@@ -81,7 +100,7 @@ def build(mesh_path,board,material,offset):
         real=870+i
         # Beyond the tab thickness the 3 mm variant has an assumed PLA annulus.
         ln.extend([f'R,{real},-.004,{-kseat*.004:.12g},0,0,.004,0','TYPE,854',f'REAL,{real}',f'E,{lower},{upper}'])
-        mounts.append(dict(case_center_mm=hole.tolist(),board_center_mm=board.tolist(),screw_axis_mm=axis.tolist(),bearing_nodes=[len(patch),len(rail)],grip_mm=float(zboard-ztab)))
+        mounts.append(dict(case_center_mm=hole.tolist(),board_center_mm=board.tolist(),screw_axis_mm=axis.tolist(),bearing_nodes=[len(patch),len(rail)],grip_mm=float(zboard-retreat_mm-ztab)))
     # Both sides use deformable solids. ESURF generates the surface topology and outward normals.
     ln.extend(['ET,852,TARGE170','ET,853,CONTA174','KEYOPT,853,9,2','KEYOPT,853,12,0','MP,MU,853,0','R,853','REAL,853','TYPE,852'])
     for i,body in enumerate(FACE_MATERIALS):
@@ -89,6 +108,8 @@ def build(mesh_path,board,material,offset):
     ln.extend(['ESEL,R,ENAME,,185,187','NSLE,S','ESURF','ALLSEL,ALL','ESEL,S,TYPE,,850','TYPE,853','REAL,853','MAT,853'])
     # All exterior faces can meet the cell, strips or washers as the tab seating load builds.
     ln.extend(['NSLE,S','ESURF','ALLSEL,ALL','ESEL,S,TYPE,,853','CM,CASECONTACT,ELEM','ALLSEL,ALL','FINISH','/SOLU'])
+    if retreat_mm:
+        ln[-2:-2]=['RMODIF,853,6,-0.0006']
     return '\r\n'.join(ln)+'\r\n',mounts
 
 def main():

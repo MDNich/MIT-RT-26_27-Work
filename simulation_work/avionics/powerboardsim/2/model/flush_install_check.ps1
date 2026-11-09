@@ -1,4 +1,4 @@
-param([Parameter(Mandatory)][ValidateSet('flush_approach_v1')] [string]$Trial)
+param([Parameter(Mandatory)][ValidateSet('flush_approach_v1','board_initial_v1')] [string]$Trial)
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot
 $env:ANSYSLMD_LICENSE_FILE='1055@localhost'
@@ -13,7 +13,7 @@ try {
     Copy-Item -LiteralPath "$src\pre.inp" -Destination $d
     if ((Get-FileHash "$src\pre.inp").Hash -ne (Get-FileHash "$d\pre.inp").Hash){throw 'Staging mismatch'}
     $p=Start-Process $exe -WorkingDirectory $d -Wait -PassThru -ArgumentList '-b nolist -s noread -p ansys -smp -np 1 -j pre -i pre.inp -o pre.out'
-    foreach($n in 'pre.out','pre.err','inventory.csv'){if(Test-Path "$d\$n"){Copy-Item "$d\$n" -Destination $src}}
+    foreach($n in 'pre.out','pre.err','inventory.csv','board_inventory.csv'){if(Test-Path "$d\$n"){Copy-Item "$d\$n" -Destination $src}}
     $p.ExitCode|Out-File "$src\exit.txt"
 } catch {
     $_.Exception.Message|Out-File "$src\failed.txt"

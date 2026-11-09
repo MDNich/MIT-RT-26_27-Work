@@ -1,0 +1,160 @@
+"""Audit converged installation states separately from the subsequent pull (local N–mm model)."""
+import json
+import re
+import sys
+
+import numpy as np
+from ansys.mapdl import reader
+from audit_local import ROOT, read, table
+from local_equilibrium import movement_table, recover, write_csv
+from stage_local_jobs import digest
+
+
+def contact_history(raw, records, tab, topology):
+    """Independently decode binary corner statuses/penetration and the native force on each oriented pair."""
+    faces=raw.grid.cell_data
+    groups={}
+    for pid,count in topology.items():
+        ids=faces['ansys_elem_num'][(faces['ansys_real_constant']==pid)&(faces['ansys_etype']==(862 if pid<=862 else 864))]
+        assert len(ids)==count,(pid,len(ids),count)
+        groups[pid]=ids
+    output=[];first={};worst={i:0. for i in groups}
+    case_error=neighbor_error=0.
+    for ii,rec in enumerate(records):
+        k=rec['native_set']
+        enum,vals,_=raw.element_solution_data(k-1,'EMN')
+        loads={};contacts={}
+        for pid,ids in groups.items():
+            loc=np.searchsorted(enum,ids)
+            assert np.array_equal(enum[loc],ids)
+            available=[vals[j] for j in loc if vals[j] is not None and len(vals[j])]
+            a=np.stack(available) if available else np.empty((0,45))
+            assert a.shape[1]>=45
+            closed=(a[:,40]==2)|(a[:,40]==3)
+            loaded=((a[:,:4]==2)|(a[:,:4]==3))&closed[:,None]
+            p=float(a[:,8:12][loaded].max(initial=0.))
+            contact=tab[(tab['set']==k)&(tab['pair']==pid)]
+            assert len(contact)==1 and int(contact['elements'][0])==len(ids) and int(contact['closed'][0])==closed.sum()
+            assert abs(contact['time'][0]-rec['time'])<1e-7
+            f=a[:,42:45].sum(axis=0,dtype=float)
+            assert np.allclose(f,[contact[f'{x}_N'][0] for x in ('fx','fy','fz')],rtol=3e-6,atol=2e-5)
+            loads[pid]=f;contacts[pid]=int(closed.sum())
+            if contacts[pid] and pid not in first:
+                first[pid]=dict(native_set=k,stage=rec['loadstep'],top_travel_bracket_mm=[
+                    records[max(0,ii-1)]['screw1_u_mm_z'],rec['screw1_u_mm_z']])
+            if rec['loadstep']<=2 and (closed.any() or np.linalg.norm(f)>.005):
+                raise ValueError(f'Case already engaged during washer clamping at set {k}, pair {pid}')
+            worst[pid]=max(worst[pid],p)
+            output.append(dict(native_set=k,stage=rec['loadstep'],pair=pid,closed=int(closed.sum()),
+                loaded_corners=int(loaded.sum()),max_closed_penetration_mm=p,fx_N=f[0],fy_N=f[1],fz_N=f[2]))
+        # 861/862 contact elements sit on the case, 863/864 on the two nickel strips.
+        screw=np.array([rec['screw_support_N_'+a] for a in 'xyz'])
+        neighbor=np.array([rec['neighbor_support_N_'+a] for a in 'xyz'])
+        err=float(np.linalg.norm(screw-loads[861]-loads[862]+loads.get(863,0.)+loads.get(864,0.)))
+        nerr=float(np.linalg.norm(neighbor+loads[862]))
+        if err>.03+.002*sum(np.linalg.norm(x) for x in loads.values()) or nerr>.03+.002*np.linalg.norm(neighbor):
+            raise ValueError(f'Case or neighboring target contact does not balance its supports, set {k}: {err}, {nerr} N')
+        case_error=max(case_error,err);neighbor_error=max(neighbor_error,nerr)
+    assert len(tab)==len(output)
+    return output,dict(contact_onset=first,peak_closed_corner_penetration_mm=worst,
+                worst_case_support_contact_residual_N=case_error,worst_neighbor_contact_residual_N=neighbor_error)
+
+
+def indexed(tab,sets):
+    assert np.array_equal(tab['set'],sets), 'Missing or diagnostic set in native POST1 readback'
+    return tab
+
+
+def audit(case,campaign):
+    dest=ROOT/'.runtime/post'/campaign/case;dest.mkdir(exist_ok=True,parents=True)
+    folder=ROOT/'.runtime/archive'/campaign/case;receipt=ROOT/'.runtime/receipts'/campaign/case
+    status=read(receipt/'status.json');ledger=read(receipt/'archived.json');spec=read(folder/'local_job.json')
+    ref=read(ROOT/'validation/local_install_jobs.json')[case]
+    assert status['phase']=='solver_complete' and case==spec['case']==status['case']==ledger['case']
+    assert spec['load_protocol']=='four_stage_install' and digest((folder/'local_job.json').read_bytes())==ref['spec_sha256']
+    assert status['input_sha256'].lower()==ref['input_sha256']==spec['files']['model.inp']
+    for name,sha in spec['files'].items():assert digest((folder/name).read_bytes())==sha
+    assert all((folder/r['name']).stat().st_size==r['bytes'] for r in ledger['files'])
+    source=ROOT/'.runtime/local_inputs'/spec['source']
+    listing=(folder/'solve.out').read_text(errors='replace')
+    rst=folder/'pull.rst'
+    movements=movement_table(folder/'moving_supports.csv')
+    rows=recover(rst,source,movements,True,moving_screw_tops=True)
+    done=[tuple(map(int,x)) for x in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)]
+    assert done==[(r['loadstep'],r['substep']) for r in rows] and done[0]==(1,1)
+    for (sa,ia),(sb,ib) in zip(done,done[1:]):
+        assert (sb==sa and ib==ia+1) or (sb==sa+1 and ib==1)
+    sets=[r['native_set'] for r in rows]
+    h=indexed(table(folder/'history.csv'),sets)
+    clamp=indexed(table(folder/'contact_history.csv'),sets)
+    solid=indexed(table(folder/'case_solid.csv'),sets)
+    assert np.all(solid['solids']==16108) and np.all(solid['seqv_MPa']>=0)
+    times=np.array([r['time'] for r in rows])
+    assert np.allclose(times,h['time'],atol=5e-9,rtol=0) and np.allclose(times,clamp['time'],atol=5e-9,rtol=0)
+    assert np.allclose([r['cell_fx_N'] for r in rows],h['fx_N'],atol=1e-5,rtol=1e-6)
+    lock,seat,end=spec['washer_lock_time'],spec['installed_time'],spec['end_time']
+    assert (lock,seat,end)==(2.,3.,4.) and times[-1]<=end+1e-8
+    # Check the complete displacement path, not just whether the last actuator happened to reach 3 mm.
+    uz=spec['top_travel_mm']*np.clip((times-lock)/(seat-lock),0,1)
+    ux=spec['cell_pull_mm']*np.clip((times-seat)/(end-seat),0,1)
+    assert np.allclose(h['ux_mm'],ux,rtol=0,atol=2e-6)
+    assert all(np.max(abs(h[k][times<=lock]),initial=0)<1e-7 for k in ('uy_mm','uz_mm','rotx','roty','rotz'))
+    for i in range(1,5):
+        for axis in 'xyz':
+            assert np.allclose([r[f'screw{i}_u_mm_{axis}'] for r in rows],uz if axis=='z' else 0.,atol=2e-6,rtol=0)
+    for t in (1.,lock,seat,end):
+        if times[-1]>=t-1e-9:assert np.count_nonzero(np.isclose(times,t,rtol=0,atol=1e-9))==1
+    if times[-1]>=lock-1e-9:
+        for i in (1,2):
+            at=np.flatnonzero(np.isclose(times,lock,rtol=0,atol=1e-9))[0]
+            assert abs(clamp[f'washer{i}_RFz'][at]-750)<.2
+            assert np.ptp(clamp[f'washer{i}_uz'][at:])<1e-7
+    # Reactions use current physical support locations, including the advancing screw heads.
+    ff=np.array([[r[f'force_N_{a}'] for a in 'xyz'] for r in rows])
+    mm=np.array([[r[f'moment_cell_Nmm_{a}'] for a in 'xyz'] for r in rows])
+    drive=np.array([abs(r['cell_fx_N'])+sum(abs(r[f'screw{i}_force_N_z']) for i in range(1,5)) for r in rows])
+    if np.any(np.linalg.norm(ff,axis=1)>.2+.001*drive) or np.any(np.linalg.norm(mm,axis=1)>1.+.002*42.5*drive):
+        raise ValueError('Whole-fixture force or moment imbalance')
+    write_csv(rows,dest/'whole_fixture_balance.csv')
+    topology={int(float(p['pair'])):int(float(p['contact'])) for p in read(ROOT/'validation/flush_approach_preflight.json')['pairs']}
+    pairs,checks=contact_history(reader.read_binary(str(rst)),rows,table(folder/'case_pairs.csv'),topology)
+    write_csv(pairs,dest/'closed_contacts.csv')
+    # Mechanical work of the four driven tops, prescribed cell UX and the two washer loads.
+    # Rotation at each screw is held at zero and released cell DOFs carry no imposed moment.
+    work={};groups={'drawdown':[(f'screw{i}_u_mm_z',f'screw{i}_force_N_z') for i in range(1,5)],
+        'side_pull':[('ux_mm','cell_fx_N')], 'washer_preload':[(f'washer{i}_u_mm_z',f'washer{i}_force_N_z') for i in (1,2)]}
+    for name,signals in groups.items():
+        w=0.
+        for u,f in signals:
+            travel=np.r_[0.,[r[u] for r in rows]];force=np.r_[0.,[r[f] for r in rows]]
+            w+=float(np.sum(.5*(force[1:]+force[:-1])*np.diff(travel)))
+        work[name]=w
+    def state(i):
+        r=rows[i]
+        return dict(time=r['time'],cell_xyz_mm=[r['cell_u_mm_'+a] for a in 'xyz'],cell_fx_N=r['cell_fx_N'],
+                    top_travel_mm=r['screw1_u_mm_z'],individual_top_Fz_N=[r[f'screw{j}_force_N_z'] for j in range(1,5)],
+                    max_nickel_plastic_strain=float(h['max_eppl'][i]),max_PLA_centroid_von_Mises_MPa=float(solid['seqv_MPa'][i]),
+                    PLA_extreme_centroid_principal_elastic_strains=[float(solid['e3_min'][i]),float(solid['e1_max'][i])])
+    seated=np.flatnonzero(np.isclose(times,seat,rtol=0,atol=1e-9))
+    # Distinguish complete loading from acceptable contact resolution. A coarse shell-contact
+    # penetration (>10% of thickness) or PLA/rigid penetration >0.05 mm requires a refined retry.
+    limits={861:.05,862:.05,863:.015,864:.015}
+    unresolved=[pid for pid,val in checks['peak_closed_corner_penetration_mm'].items() if val>limits[pid]]
+    if len(seated) and not any(r['closed'] for r in pairs if r['native_set']==sets[seated[0]]):
+        raise ValueError('Reached nominal flush position without contacting any cell, strip or washer')
+    reached=bool(len(seated) and abs(times[-1]-end)<1e-9 and status['native_clean'])
+    out=dict(case=case,campaign=campaign,states=len(rows),full_requested_path=reached,
+        installed_state=state(seated[0]) if len(seated) else None,last_converged_state=state(-1),
+        force_residual_peak_N=float(np.linalg.norm(ff,axis=1).max()),moment_residual_peak_Nmm=float(np.linalg.norm(mm,axis=1).max()),
+        integrated_external_work_Nmm=work,contact_resolution_limits_mm=limits,contact_resolution_flagged_pairs=unresolved,
+        peak_abs_total_drawdown_force_N=max(abs(r['screw_support_N_z']) for r in rows),**checks,
+        rst_sha256=next(r['sha256'] for r in ledger['files'] if r['name']=='pull.rst'),
+        scope='Local fixture only; linear printed PLA and surrogate screw beams, fixed neighbors. A forced seat is not a demonstrated assembly.')
+    category='local' if reached and not unresolved else ('review_local' if reached else 'partial_local')
+    out['classification']=category
+    pub=ROOT/'validation'/category;pub.mkdir(exist_ok=True)
+    tmp=pub/(case+'.tmp');tmp.write_text(json.dumps(out,indent=2)+'\n');tmp.replace(pub/(case+'.json'))
+    print(category,case,len(rows),'native equilibria')
+
+
+if __name__=='__main__':audit(*sys.argv[1:])
