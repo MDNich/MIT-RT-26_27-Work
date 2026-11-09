@@ -8,7 +8,7 @@ After the six original bolts were tightened and locked, peak PCB displacement fe
 
 The 3 and 2 mm nylon meshes gave 28.919 and 28.915 µm peak PCB displacement and both placed only the middle pocket in contact. Peak local pressure after bolt lock changed from 0.170 to 0.345 MPa. [Mesh check, page 4](output/pdf/battery-case-report.pdf#page=4)
 
-The first two snug-fit movie pairs cover refined default-contact modes 1 and 20. Mode 1 stayed near 66.61 Hz for all three assemblies. Mode 20 changed shape substantially across the assemblies. [Modes and shape matching, page 5](output/pdf/battery-case-report.pdf#page=5)
+Three snug-fit movie pairs cover refined default-contact modes 1 and 20 and the twentieth mode after bolt lock. Mode 1 stayed near 66.61 Hz for all three assemblies. Mode 20 changed shape substantially across the assemblies. [Modes and shape matching, page 5](output/pdf/battery-case-report.pdf#page=5)
 
 After bolt lock the lowest native frequencies were 485.96 Hz bare, 294.94 Hz with nylon and 415.42 Hz with aluminium. Under base-Z excitation, independent integration of the native modes gave 52.67, 139.49 and 75.86 µm RMS peak board-normal motion. At the same seeded base-Z instant the reconstructed cells reached additional pockets in both cases. The calculated vibration levels assume the contact state at bolt lock. [Vibration comparison, page 6](output/pdf/battery-case-report.pdf#page=6) · [Cell clearances, page 7](output/pdf/battery-case-report.pdf#page=7)
 
