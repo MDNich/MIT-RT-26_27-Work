@@ -50,7 +50,7 @@ Bilinear nickel, force at $+0.500$ / $-0.500$ mm cell travel & $+8.54$ / $-8.51$
 The 2~mm case mesh contains 45,549 quadratic tetrahedra and 77,166 nodes. Its integrated solid volume differs from CAD by 0.00089\%. A second mesh with a 3~mm size limit contains 18,051 tetrahedra. Both have positive minimum scaled Jacobians. With the finer mesh, all three undeformed cell skins remained clear at 1.250~mm at both surface sampling levels. At the higher sampling level the middle cell first reached the moving surface at 1.2412--1.2414~mm, compared with 1.2396--1.2400~mm in CAD. Coarser surface sampling on the 3~mm mesh gave an apparent initial intersection. The native contact search reported a minimum initial gap of 0.002969~mm, within 0.000037~mm of CAD. Its reported penetration tolerance was 0.196~mm. The actual penetration and force on loaded faces must be recovered at each converged bolt-tightening state.
 
 \heading{Response quantities}
-The native comparisons will report mounting reactions, board deformation, cell and washer contact, matched natural modes, signed and RMS vibration quantities, tension along and across the printed layers, and edge-cell force and nickel damage for both pull directions where supported by the fixture. The 22 movie subjects use the bare board as the reference on shared physical or display scales. The snug-fit response values will be filled from audited native outputs. Appendix~A preserves the previous study with its original geometries and page numbering.
+The native comparisons will report mounting reactions, board deformation, cell and washer contact, matched natural modes, signed and RMS vibration quantities, tension along and across the printed layers, and edge-cell force and nickel damage for both pull directions where supported by the fixture. The 22 movie subjects use the bare board as the reference on shared physical or display scales. The following pages identify the native solver results and the independent reconstructions from those results. Appendix~A preserves the previous study with its original geometries and page numbering.
 
 
 \newpage
@@ -108,8 +108,54 @@ Mode~1 was 66.611~Hz bare, 66.614~Hz with nylon and 66.615~Hz with aluminium. Bo
 
 Mode~20 was 2247.6~Hz bare, 1809.5~Hz with nylon and 1847.7~Hz with aluminium. The same-rank MAC values were 0.012 and below 0.001, respectively. Even the closest shapes among the first 20 cased modes had MAC below 0.15 against bare mode~20. A frequency shift of a single physical mode cannot be inferred from these three rank-20 frequencies.
 
+\heading{Why the original mesh also lists a 1.69 Hz mode}
+The two coarse-board controls each recovered 20 frequencies with the Sturm check. Their 1.69~Hz mode is localized on the single solid element representing component L3. Every other solid reached less than 0.20\% of its peak amplitude, and its largest directional effective mass was 4.44 parts per million of assembly mass. The first bare-board shape at 62.805~Hz reappeared at rank~2 with either screw, at 62.807 and 62.809~Hz (MAC above 0.999999 on 95,215 shared solid nodes).
+
 \heading{Paired 4K movies}
 The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{snug-fit movie catalogue} links the bare and cased views for modes~1 and~20. Each 9~s film uses the same 6~mm peak display amplitude and the same camera pose. The nylon and aluminium panels identify the frequency, rank and shape match. The display amplitude is a visualization scale.
+
+\newpage
+\pageheading{Vibration of the tightened board and case}
+We restarted each assembly from its last converged bolt-locked equilibrium. The lowest frequency was 485.96~Hz bare, 294.94~Hz with nylon and 415.42~Hz with aluminium. Both mounts introduced shapes below the first bare frequency. Comparing the two screw materials, their lowest shapes had a full-solid MAC of 0.921 and a case-only MAC of 0.929. Aluminium raised the frequency of this matched shape by 40.8\%. The cells' peak amplitudes were only 3.8\% and 8.6\% of the PCB peaks in the nylon and aluminium first modes, respectively.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-locked-vibration.pdf}
+\captionof{figure}{Left, each tick marks a native natural frequency through 1.3~kHz. Right, the maximum board-normal RMS displacement anywhere on the PCB, relative to the base. Each axis was excited separately with the October 20--2000~Hz spectrum and 2\% modal damping. The independent calculation integrates the signed native modes and their participation factors.}\end{center}
+
+\heading{Which modes correspond to the bare board?}
+On the common original assembly, the best matches to the first bare shape occurred at 633.99~Hz with nylon (MAC 0.697) and 426.84~Hz with aluminium (0.694). The first bare mode therefore cannot be tracked reliably by its rank. The 826.30~Hz bare shape persisted at 825.20 and 825.21~Hz, with MAC values above 0.995 for both screws.
+
+\heading{Board response to the original base spectrum}
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Peak PCB Z displacement [$\mu$m RMS] & Base X & Base Y & Base Z\\\midrule
+Bare & 23.37 & 19.45 & 52.67\\
+Snug, nylon screws & 86.31 & 104.58 & 139.49\\
+Snug, aluminium screws & 78.96 & 66.78 & 75.86\\\bottomrule
+\end{tabular}\end{center}
+Both mounts reduced PCB deflection during bolt tightening. Under base-Z vibration, the calculated RMS board motion increased to 2.65 times bare with nylon and 1.44 times bare with aluminium. The native bases retained 38 bare modes and 48 modes for each mount up to 4~kHz. Removing modes above 3.5~kHz changed all nine tabulated peaks by less than 0.003\%. The independent bare calculation reproduced the 18 archived native displacement peaks within 0.013\%. Native snug-fit spectrum checks follow.
+
+\heading{Case-mesh qualification}
+After tightening, MAPDL flagged the same PLA tetrahedron in both mounts at its 179.9$^\circ$ edge-angle limit. On each locked mesh, an independent polynomial bound confirmed a positive Jacobian determinant throughout all 45,549 case elements. The flagged element had the smallest lower bound, 0.01286~mm$^3$ in both cases. A 1.5~mm nylon mesh will test the sensitivity of the frequencies and board response.
+
+\newpage
+\pageheading{Outer cells can reach the case during vibration}
+The modal model holds the contact conditions present at bolt lock. To test this assumption, we applied the signed modal displacement at physical scale to the case, three cells and six washers. For each base direction we selected the frames with the lowest and highest input acceleration in the original 480-frame film interval. This gives six samples at identical excitation times for each screw material. We reconstructed the quadratic contact surfaces at two subdivision levels and first checked that the zero-motion geometry reproduced the native tightening result.
+
+\begin{center}\includegraphics[width=.94\linewidth]{figures/snug-seeded-gaps.pdf}
+\captionof{figure}{Closest sampled signed distance from each cell to the PLA at bolt lock and at the two selected base-Z frames. A negative distance places a sampled cell-surface vertex inside the case. Triangle-intersection tests also checked each complete surface. Left and right follow increasing PCB X.}\end{center}
+
+At bolt lock the middle pocket carried load with both screw materials. At base-Z frame 353 (1.02155~s), all three cell surfaces intersected the nylon-mounted case. With aluminium screws, the left and middle cells intersected. At frame 451 (1.02753~s), both outer cells cleared both cases. The aluminium model also opened a 0.0046~mm sampled gap at the middle cell. Both spatial refinements agreed on every classification, and all six washers cleared at every sampled instant.
+
+\begin{center}\small\begin{tabular}{lrrll}\toprule
+Base axis & Film frame & Time [s] & Intersecting cells, nylon & Intersecting cells, aluminium\\\midrule
+X & 75 & 1.00458 & Left, middle & Middle, right\\
+X & 183 & 1.01117 & Middle & Middle\\
+Y & 85 & 1.00519 & Left, middle & All three\\
+Y & 28 & 1.00171 & Middle & Middle\\
+Z & 353 & 1.02155 & All three & Left, middle\\
+Z & 451 & 1.02753 & Middle & None\\\bottomrule
+\end{tabular}\end{center}
+
+The extra supports can redirect load once an outer cell engages. The spectrum values on page~6 quantify the response with the installed contact state held fixed. To check load transfer at frame 353, paired local nonlinear models will drive the same region of each mount with the signed base-Z displacement. Each has a contact-enabled and a free control at two cut sizes. The six samples above establish neither the first contact time nor its duration.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

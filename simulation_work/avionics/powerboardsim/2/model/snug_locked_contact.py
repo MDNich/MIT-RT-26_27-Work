@@ -95,7 +95,7 @@ def contact_parts(rst):
     return parts, [(body,mapping[body]) for body in target_ids]
 
 
-def sampled_gaps(parts, targets_by_body):
+def sampled_gaps(parts, targets_by_body, *, include_locations=False):
     rows=[]
     for level in (2,3):
         cap, *targets=curved_skins(parts,level)
@@ -109,6 +109,8 @@ def sampled_gaps(parts, targets_by_body):
             assert len(val)==target.n_points and np.isfinite(val).all()
             rows.append(dict(subdivision=level,body=body,material=material,intersects=bool(n),
                              minimum_signed_target_vertex_gap_mm=float(val.min())))
+            if include_locations:
+                rows[-1]['target_vertex_xyz_mm']=(1000*target.points[val.argmin()]).tolist()
     return rows
 
 

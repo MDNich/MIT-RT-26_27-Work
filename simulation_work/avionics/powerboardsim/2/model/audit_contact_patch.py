@@ -35,7 +35,12 @@ def exterior(state,materials,displacement):
 
 
 def audit(case,campaign):
-    spec=read(ROOT/'validation/contact_patch_inputs.json')[case]
+    snug = case.startswith('patch_snug125_')
+    if snug:
+        variant=case.removeprefix('patch_').split('_Z_span')[0]
+        spec=read(ROOT/'validation/snug125'/(variant+'_patch_inputs.json'))[case]
+    else:
+        spec=read(ROOT/'validation/contact_patch_inputs.json')[case]
     assert spec['case']==case and spec['campaign']==campaign
     rt=ROOT/'.runtime'
     d=rt/'archive'/campaign/case
@@ -50,7 +55,12 @@ def audit(case,campaign):
     listing=(d/'solve.out').read_text(errors='replace')
     assert 'LOCAL_CUT_PATH_COMPLETED' in listing and re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',listing)
     assert not re.search(r'(ESURF|constraint).{0,80}(ignored|skipped)',listing,re.I)
-    state=local_fields(campaign,spec['radius_mm'])
+    if snug:
+        verified(ROOT/'validation/snug125'/(variant+'_seeded_contact.json'),spec['parent_sample_audit_sha256'])
+        from snug_contact_patch import fields
+        state=fields(variant,campaign,spec['radius_mm'])
+    else:
+        state=local_fields(campaign,spec['radius_mm'])
     assert state['native_static']==spec['parent_static_sha256'] and state['native_basis']==spec['parent_modal_sha256']
     result=read_rst(d/'file.rst')
     steps=result._resultheader['ls_table'][:,:2]
@@ -63,13 +73,14 @@ def audit(case,campaign):
     cut=state['bodies'][850][2]
     pla=state['groups'][850]
     free_pla=np.setdiff1d(pla,cut)
-    cells=np.union1d(state['groups'][187],state['groups'][191])
+    cell_materials=sorted(m for m in state['groups'] if m!=850)
+    cells=np.unique(np.concatenate([state['groups'][m] for m in cell_materials]))
     header=result.grid.cell_data
     contacts=header['ansys_elem_num'][header['ansys_etype']==3]
     targets=header['ansys_elem_num'][header['ansys_etype']==2]
     expected_faces=len(state['bodies'][850][1]) if spec['contact'] else 0
     assert len(contacts)==expected_faces
-    assert len(targets)==(sum(len(state['bodies'][m][1]) for m in [187,191]) if spec['contact'] else 0)
+    assert len(targets)==(sum(len(state['bodies'][m][1]) for m in cell_materials) if spec['contact'] else 0)
     edges=set(cut.tolist())
     contact_edges=set()
     for elem in result.mesh.elem:
@@ -90,6 +101,15 @@ def audit(case,campaign):
         if residual >= .03 + .003*np.linalg.norm(total[0]):
             flags.append(dict(set=k+1,time=float(t),check='net external force',residual_N=float(residual)))
         row=dict(time=float(t),cells_reaction_N=total[0].tolist(),PLA_cut_reaction_N=total[1].tolist(),imbalance_N=float(residual))
+        if snug:
+            per_cell={}
+            for material in cell_materials:
+                take=np.isin(ids,state['groups'][material])
+                reaction=np.zeros(3)
+                np.add.at(reaction,components[take]-1,values[take])
+                per_cell[str(material)]=reaction.tolist()
+            assert np.allclose(np.sum(list(per_cell.values()),axis=0),total[0],rtol=1e-6,atol=1e-5)
+            row['prescribed_cell_reactions_N']=per_cell
         if spec['contact']:
             enum,records,_=result.element_solution_data(k,'EMN')
             loc=np.searchsorted(enum,contacts)
@@ -116,14 +136,23 @@ def audit(case,campaign):
             expected=state['locked']+scale*state['amplitude']
             diff=np.linalg.norm(u-expected,axis=1)
             assert max(diff[driven])<2e-8
-            surfaces=[exterior(state,group,u) for group in [[850],[187,191]]]
+            surfaces=[exterior(state,group,u) for group in [[850],cell_materials]]
             _,count=surfaces[0].collision(surfaces[1],box_tolerance=0.,cell_tolerance=0.)
             checks[str(round(t))]=dict(max_free_PLA_departure_from_parent_um=float(1e6*max(diff[np.searchsorted(nodes,free_pla)])),
                                       max_drive_difference_um=float(1e6*max(diff[driven])),intersecting_triangle_pairs=int(count))
         series.append(row)
     if spec['contact']:
-        assert series[0]['closed_faces']==series[-1]['closed_faces']==0
-        assert any(r['closed_faces']>0 for r in series if r['time']>1)
+        if snug:
+            # The neighbouring middle pocket carries load at global lock. Check cyclic return at the same load.
+            ends=[next(r for r in series if abs(r['time']-t)<1e-8) for t in (1.,3.)]
+            repeat=float(np.linalg.norm(np.subtract(ends[0]['contact_sum_N'],ends[1]['contact_sum_N'])))
+            if repeat>.04+.004*np.linalg.norm(ends[0]['contact_sum_N']):
+                flags.append(dict(check='locked return resultant',residual_N=repeat))
+            if any(r['loaded_cut_edge_faces'] for r in series):
+                flags.append(dict(check='active contact reaches the artificial cut'))
+        else:
+            assert series[0]['closed_faces']==series[-1]['closed_faces']==0
+            assert any(r['closed_faces']>0 for r in series if r['time']>1)
     else:
         assert max(np.linalg.norm(r['cells_reaction_N']) for r in series)<.02
     rec=dict(**spec,rst_sha256=files['file.rst'],equilibria=len(series),endpoint_checks=checks,force_history=series,

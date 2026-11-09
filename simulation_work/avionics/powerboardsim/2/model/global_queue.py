@@ -204,6 +204,11 @@ def jobs():
         for axis in 'XYZ':
             for branch in branches:
                 yield branch+'_motion_'+axis,branch+'_enforced'
+        for branch in branches:
+            patch_series=ROOT/'validation/snug125'/(branch+'_patch_inputs.json')
+            if patch_series.is_file():
+                for case,spec in read(patch_series).items():
+                    yield case,spec['free_reference'] if spec['contact'] else branch+'_basis'
         local_catalog=ROOT/'validation/snug125/local_inputs.json'
         if local_catalog.is_file():
             for case,meta in read(local_catalog).items():
@@ -491,6 +496,8 @@ def run():
         if final.exists() or partial.exists() or review.exists() or (ROOT/'validation/review_global'/(case+'.json')).exists():continue
         if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
             log('Parent unaccepted: '+case);continue
+        if case.startswith('patch_snug125_') and (ROOT/'validation/review_contact_patch'/(case+'.json')).is_file():
+            continue
         if case.startswith('snug125_') and parent.endswith('_static'):
             review=ROOT/'validation/snug125'/f'{parent}_installed.json'
             if not review.is_file() or not read(review)['linearization_review_passed']:

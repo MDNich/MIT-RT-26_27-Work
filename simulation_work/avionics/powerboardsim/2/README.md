@@ -10,6 +10,8 @@ The 3 and 2 mm nylon meshes gave 28.919 and 28.915 µm peak PCB displacement and
 
 The first two snug-fit movie pairs cover refined default-contact modes 1 and 20. Mode 1 stayed near 66.61 Hz for all three assemblies. Mode 20 changed shape substantially across the assemblies. [Modes and shape matching, page 5](output/pdf/battery-case-report.pdf#page=5)
 
+After bolt lock the lowest native frequencies were 485.96 Hz bare, 294.94 Hz with nylon and 415.42 Hz with aluminium. Under base-Z excitation, independent integration of the native modes gave 52.67, 139.49 and 75.86 µm RMS peak board-normal motion. At the same seeded base-Z instant the reconstructed cells reached additional pockets in both cases. The calculated vibration levels assume the contact state at bolt lock. [Vibration comparison, page 6](output/pdf/battery-case-report.pdf#page=6) · [Cell clearances, page 7](output/pdf/battery-case-report.pdf#page=7)
+
 The [snug-fit movie catalogue](output/videos/snug125/README.md) tracks the 22 requested subjects. The three bare modal films retain their verified 6 mm display scale. Each new RMS or seeded pair will share a range determined from the bare board and both 1.25 mm mounts.
 
 ## Appendix A — previous fit study

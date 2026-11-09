@@ -59,5 +59,5 @@ def compare(seat,campaign):
 
 
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('seat',choices=('flush','stand3'));p.add_argument('campaign')
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('seat',choices=('flush','stand3','snug125'));p.add_argument('campaign')
     a=p.parse_args();compare(a.seat,a.campaign)

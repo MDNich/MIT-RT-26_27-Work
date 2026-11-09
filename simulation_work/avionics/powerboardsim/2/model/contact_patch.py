@@ -121,7 +121,8 @@ def mesh_cards(state):
              'mp,prxy,850,.35', 'mp,prxz,850,.35', 'mp,pryz,850,.35',
              'mp,gxy,850,1.26922e9', 'mp,gxz,850,1.20154e9', 'mp,gyz,850,1.20154e9',
              'mp,dens,850,1170']
-    for m in (191, 187):
+    for m in state['bodies']:
+        if m==850:continue
         lines.extend([f'mp,ex,{m},2.e11', f'mp,nuxy,{m},.3', f'mp,dens,{m},2200'])
     lines += [f'n,{n},{x:.14g},{y:.14g},{z:.14g}' for n,(x,y,z) in zip(nodes,xyz,strict=True)]
     lines.append('type,1')

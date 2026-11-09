@@ -59,7 +59,7 @@ def run(variant, campaign):
             for index in [int(acceleration.argmin()),int(acceleration.argmax())]:
                 displacement = (data['coordinates'][index]@shapes).reshape(-1,3)
                 set_coordinates(parts,ids,xyz+displacement)
-                rows = sampled_gaps(parts,targets)
+                rows = sampled_gaps(parts,targets,include_locations=True)
                 records.append(dict(frame_one_based=index+1,time_s=float(FRAMES[index]/FS),
                     acceleration_m_s2=float(acceleration[index]),gaps=rows))
         results[axis] = dict(clip_sha256=record['clip_sha256'],load_sha256=record['input_sha256'],samples=records)

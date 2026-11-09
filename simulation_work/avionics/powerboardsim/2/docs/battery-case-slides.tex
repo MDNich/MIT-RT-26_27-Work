@@ -27,4 +27,12 @@
 \centering\includegraphics[width=.90\linewidth]{figures/snug-default-modes.pdf}
 \par\raggedright The first two mode shapes closely match the bare board. At mode 20 the shapes differ, so comparing frequencies by rank alone would give a misleading shift. These are the refined default-contact controls before bolt tightening. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{Paired movies.}
 \end{frame}
+\begin{frame}{Both snug mounts increase board motion under vibration}
+\centering\includegraphics[width=.96\linewidth]{figures/snug-locked-vibration.pdf}
+\par\raggedright Under base Z, peak board-normal motion rises from \textbf{52.7~$\mu$m RMS bare} to \textbf{139.5 with nylon} and \textbf{75.9 with aluminium}. The spectrum calculation holds the installed contact state fixed. The two cased first modes have similar shapes at 295 and 415~Hz.
+\end{frame}
+\begin{frame}{The outer cells can reach the case}
+\centering\includegraphics[width=.9\linewidth]{figures/snug-seeded-gaps.pdf}
+\par\raggedright At 1.02155~s under base Z, the linear reconstruction puts all three cells into the nylon-mounted case and two into the aluminium-mounted case. At 1.02753~s, all three clear the aluminium-mounted case. Contact forces require a nonlinear check.
+\end{frame}
 \end{document}

@@ -175,7 +175,11 @@ try {
         $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
     }
     if ($Case.StartsWith('patch_')){
-        $pub=(Get-Content "$share\validation\contact_patch_inputs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        $patchBook="$share\validation\contact_patch_inputs.json"
+        if ($Case -match '^patch_(snug125_(?:nylon|aluminium))_Z_span(?:9|15)_(?:free|contact)_v1$') {
+            $patchBook="$share\validation\snug125\$($Matches[1])_patch_inputs.json"
+        }
+        $pub=(Get-Content -LiteralPath $patchBook -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
         if ($pub.input_sha256 -ne $stage.input_sha256 -or $pub.campaign -ne $Campaign -or $Cores -ne 2){throw 'Wrong local contact-patch input'}
         $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
     }
