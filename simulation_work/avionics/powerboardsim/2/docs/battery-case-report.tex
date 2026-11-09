@@ -338,7 +338,7 @@ An independent check using the full closed skins gave a sampled overlap of 15.0~
 
 \newpage
 \heading{The four flush tabs touch at their edges while most of each face stays open}
-At 2.75~mm of the commanded 3~mm travel, all four nylon-screw tabs carried contact pressure against the flexible PCB. Only 4.4--5.1\% of each projected tab footprint lay within 0.05~mm of its opposing board face. The far side of each tab still had a 2.42~mm gap. All four outer washers intersected the computed PLA surface. The smallest sampled clearances at the three cells were 0.093, 0.112 and 0.077~mm. These figures describe the partial elastic installation. The required seating force for the printed assembly remains open.
+At 2.75~mm of the commanded 3~mm travel, all four nylon-screw tabs carried contact pressure against the flexible PCB. Only 4.4--5.1\% of each projected tab footprint lay within 0.05~mm of its opposing board face. The far side of each tab still had a 2.42~mm gap. All four outer washers intersected the computed PLA surface. The smallest sampled clearances at the three cells were 0.093, 0.112 and 0.077~mm. These figures describe the partial elastic installation. We stopped the trial at this equilibrium after three cutbacks. The printed assembly's full seating force remains unresolved.
 
 \begin{center}\includegraphics[width=.96\linewidth]{figures/flush_nylon_surf1_static_step3_substep20.pdf}
 \captionof{figure}{Left, the reactions at the four screw drives. Red brackets the first through-layer coupon crossing. Blue brackets first loaded tab-to-PCB contact. Right, the deformed footprint of the most heavily loaded tab at 2.75~mm. Dark blue denotes the largest gap. The uncoloured bore has no opposing faces.}\end{center}
@@ -355,7 +355,7 @@ High X, high Y & 327 & 4.9 & 2.418\\\bottomrule
 
 The first through-layer tensile stress crossed 40.5~MPa between 0.95 and 1.10~mm, at a node tied to the idealized screw bearing. In-plane tension crossed 52.3~MPa at 1.10--1.25~mm. When the search excluded points within 2~mm of tied bearing nodes, both references were first crossed at 1.25--1.40~mm. The latter interval follows the first crossing of the 15~$\mu$m hardware-penetration screen (1.10--1.25~mm). At 2.75~mm the contact field reached 71~$\mu$m penetration. The four drive reactions summed to 1.255~kN in this elastic continuation. Neither coupon response beyond its measured range nor the contact law supports an installation-load rating.
 
-The 12 native result partitions contained the same 28 converged equilibria. Against a completed raised assembly, the partition reader reproduced the combined result's material extrema, contact history, bolt reactions and fixed-support resultants. For the flush trial, DPF recovered the screw travel relative to each deformed PCB bearing. The 1,482 solid parents used to interpolate the eight opposing patches matched the checkpoint in connectivity and coordinates. Two surface refinements changed the gap extrema by less than 0.00017~mm. At four selected equilibria, the 9,466 hardware target facets also formed closed skins. The four outer washers were the only hardware surfaces intersecting the PLA at 0.65, 2.675 and 2.75~mm.
+The combined result reproduced all 28 saved equilibria from the 12 partitions. A second native contact readback included all 8,038 hardware faces across three solver-generated groups. At 0.95~mm travel, before the first coupon crossing, the four original outer battery bolts gained 10.3--14.0~N above their 750~N locked preload. The two centre bolts changed by $-0.9$ and $+1.4$~N. The four outer washers were the only hardware surfaces intersecting the PLA at 0.65, 2.675 and 2.75~mm.
 
 \newpage
 \heading{The raised nylon case lowers the transverse load on all three cells}
@@ -380,5 +380,23 @@ For each native mode we integrated the signed translations over each curved ten-
 The four- and five-point-per-coordinate volume rules agreed within $10^{-9}$ in relative norm. Reducing the upper modal cutoff from 4 to 3.5~kHz changed the driven-axis forces by at most 0.30\%. Independent nodal acceleration RMS fields matched the five available native PSD fields within 0.037\% in relative norm over cell nodes. Separately, the original bare-board native time histories and original signed shapes reproduced the independently integrated seeded cell accelerations within 0.0075\%.
 
 For the eight stationary seconds of the historical forcing, the driven-axis RMS loads differed from the continuous-spectrum estimates by at most 0.88\%. The largest discrepancy over all components was 10.4\% and occurred in a smaller transverse component. Evaluating the same sampled waveform with the discrete Newmark transfer function reproduced the time integration. At one-quarter of the historical time step, its largest discrepancy from the continuous-frequency response at the same Fourier bins fell to 0.59\%.
+
+\newpage
+\heading{The raised case preserves the first unpreloaded mode}
+The first default-contact mode remained at 66.61~Hz for the bare board and both raised cases. The signed displacements of the 368,754 original solid nodes give a modal assurance criterion (MAC) above 0.999999 for both screw materials. The 20th modes tell a different story. Although each is the 20th frequency in its own assembly, the three shapes differ substantially.
+
+\begin{center}\includegraphics[width=.89\linewidth]{figures/default-mode-comparison.pdf}
+\captionof{figure}{The upper panel orders each assembly's 20 native frequencies. The lower panel compares the bare and cased displacement vectors at equal rank. A value near one means that the original solid nodes moved in the same relative pattern.}\end{center}
+
+\begin{center}\begin{tabular}{lrrr}\toprule
+Mounting & Mode 1 [Hz] & Mode 20 [Hz] & Mode 20 MAC to bare\\\midrule
+Bare &66.611 &2247.59 &1.000\\
+3 mm, nylon screws &66.614 &1732.16 &0.042\\
+3 mm, aluminium screws &66.615 &1847.75 &$<0.001$\\\bottomrule
+\end{tabular}\end{center}
+The closest shape to bare mode 20 within either raised set was mode 19. Even those correlations were weak (0.129 for nylon and 0.137 for aluminium). The displayed aluminium mode 20 instead matches bare mode 14 at 1847.75~Hz (MAC 1.000). A matching shape for bare mode 20 may lie above the extracted range.
+
+\heading{Reading the mode movies}
+Both default-contact movie pairs preserve the October mode ranks, a common colour range, and a 6~mm peak display amplitude. The raised panels identify the screw material, native frequency and shape correlation. These runs retain the original unpreloaded contacts. The tightened assembly has different equilibrium contact conditions and prestressed frequencies (page~8). Across the full catalogue, all 22 subjects now have a bare view and a comparison of both raised configurations. The flush assemblies still need an admissible installed state before their vibration fields can be shown.
 
 \end{document}

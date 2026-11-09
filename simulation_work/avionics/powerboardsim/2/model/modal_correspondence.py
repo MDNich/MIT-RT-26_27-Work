@@ -46,12 +46,33 @@ def reference_geometry(result,include_case=False):
     return ids,ref,dict(parent=static,parent_RST_sha256=proof['rst_sha256'],peak_coordinate_plus_static_displacement_error_m=err)
 
 
+def exported_modes(result):
+    if not any(result.sparse_window(k) for k in range(result.nsets)):
+        return None
+    from basis_comparison import field_files
+    from audit_local import ROOT,read
+    from film_identity import verified
+    path=Path(result.filename).resolve()
+    case,campaign=path.parent.name,path.parent.parent.name
+    assert path==ROOT/'.runtime/archive'/campaign/case/'file.rst'
+    proof=read(ROOT/'validation/global'/(case+'.json'))
+    assert proof['case']==case and proof['campaign']==campaign
+    verified(path,proof['rst_sha256'])
+    return field_files(case,campaign,proof['rst_sha256'],result.nsets)
+
+
 def modes(result, ids):
     f=result.time_values
     if not len(f) or np.any(f<=0) or np.any(np.diff(f)<=0):raise ValueError('Expected a pure positive-frequency modal basis')
     out=np.empty((len(f),len(ids)*3))
+    exports=exported_modes(result)
     for k in range(len(f)):
-        numbers,u=result.nodal_displacement(k)
+        if exports is None:
+            numbers,u=result.nodal_displacement(k)
+        else:
+            stem=exports[k+1]
+            numbers=np.fromfile(stem.with_suffix('.ids'),'<i4')
+            u=np.fromfile(stem.with_suffix('.u'),'<f8').reshape(-1,3)
         order=np.argsort(numbers)
         pos=np.searchsorted(numbers[order],ids)
         if pos.max()>=len(numbers) or not np.array_equal(numbers[order[pos]],ids):

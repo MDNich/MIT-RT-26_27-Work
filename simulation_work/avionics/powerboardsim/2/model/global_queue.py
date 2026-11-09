@@ -141,6 +141,32 @@ def capture_closed_installation(case, state, receipt):
         log(f'Partial result capture needs inspection for {case}: {type(exc).__name__} {exc}')
 
 
+def recover_split_readbacks():
+    from split_contact_post import location
+    for case in ('flush_nylon_surf1_static','flush_aluminium_surf1_static'):
+        folder=location(case,CAMPAIGN)
+        receipt=RECEIPTS/case
+        prior=receipt/'audit_failed.txt'
+        if not prior.is_file() or not (folder/'request.json').is_file() or (folder/'audit_failed.txt').is_file():
+            continue
+        if not (folder/'exit.txt').is_file() and not (folder/'failed.txt').is_file():
+            log('Dispatch postprocessing of all split contact faces for '+case)
+            dispatch_solver('split_contact_post.ps1',['-Trial',folder.name],folder)
+        if (folder/'failed.txt').is_file():
+            log('Split-pair readback requires inspection: '+(folder/'failed.txt').read_text(errors='replace'))
+            continue
+        commands=[['split_contact_post.py','audit',case],['audit_board_surface.py',case,CAMPAIGN]]
+        for args in commands:
+            p=subprocess.run([sys.executable,str(ROOT/'model'/args[0]),*args[1:]],capture_output=True,text=True)
+            if p.returncode:
+                (folder/'audit_failed.txt').write_text(p.stdout+p.stderr)
+                log('Readback audit rejected '+case+': '+p.stderr[-240:])
+                break
+        else:
+            prior.rename(receipt/'original_incomplete_contact_selection.txt')
+            log('Combined and partitioned installation readbacks reconciled: '+case)
+
+
 def jobs():
     yield 'bare_static',''
     yield 'bare_original',''
@@ -371,6 +397,7 @@ def run():
         if local and not case.startswith('bare_') and not (ROOT/'validation/local_cased_preflight.json').is_file():
             raise RuntimeError('Cased pull fixture preflight review pending')
         if (receipt/'audit_failed.txt').exists():continue
+        if not (receipt/'dispatch.json').exists():recover_split_readbacks()
         if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
         state=receipt/'status.json'
         if not state.exists():

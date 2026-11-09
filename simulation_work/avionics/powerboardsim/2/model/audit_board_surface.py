@@ -41,7 +41,9 @@ def audit_complete(case,campaign,d,r):
     done=[(int(a),int(b)) for a,b in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',log)]
     assert np.array_equal(ls,done) and np.array_equal(np.unique(ls[:,0]),[1,2,3]) and np.all(np.diff(times)>0) and abs(times[-1]-3)<1e-8
     g=rst.grid.cell_data; pla=int(np.count_nonzero(g['ansys_etype']==850));assert pla>1000
-    a=table(d/'board_drives.csv');b=table(d/'bolt_preload_audit.csv');c=table(d/'seat_contacts.csv');m=table(d/'seat_material.csv')
+    from split_contact_post import corrected_rows
+    a=table(d/'board_drives.csv');b=table(d/'bolt_preload_audit.csv')
+    c=corrected_rows(case,campaign,d/'seat_contacts.csv');m=table(d/'seat_material.csv')
     assert len(a)==4*len(times) and len(c)==5*len(times) and len(b)==18
     assert np.array_equal(m['set'],np.arange(1,len(times)+1)) and np.allclose(m['time_s'],times,atol=1e-8,rtol=0) and np.all(m['pla_elements']==pla)
     assert max(m['s1max_Pa'])>0 and min(m['s3min_Pa'])<0 and max(m['e1max'])>0 and min(m['e3min'])<0
@@ -58,6 +60,7 @@ def audit_complete(case,campaign,d,r):
         assert np.max(abs(z['travel_m']-cmd))<1e-8 and np.max(abs(z['head_z_m']-z['board_z_m']-cmd))<1e-8
         drives.append(dict(foot=i+1,final_drive_N=float(z['drive_N'][-1]),peak_abs_drive_N=max(abs(z['drive_N'])),
                            signed_actuator_work_J=float(np.trapezoid(z['drive_N'],z['travel_m']))))
+    corrected=(ROOT/'validation/split_contact_readback'/(case+'.json')).is_file()
     evidence={}
     pairs={853:853,880:858,881:858,882:858,883:858}
     for k,hist in histories(rst,pairs).items():
@@ -66,7 +69,10 @@ def audit_complete(case,campaign,d,r):
         for z,h in zip(p,hist,strict=True):
             assert int(z['set'])==h['set'] and abs(z['time_s']-h['time_s'])<1e-8 and int(z['faces'])==h['n_contact']
             bins=[int(z[x]) for x in ('far','near','sliding','sticking')]
-            assert bins in ([h[x] for x in ('far','near','sliding','sticking')],h['fully_uniform_face_bins'])
+            # The corrected table's exact ETABLE bins were checked against each
+            # face's distinct native corners, including mixed-state triangles.
+            if not corrected:
+                assert bins in ([h[x] for x in ('far','near','sliding','sticking')],h['fully_uniform_face_bins'])
             assert bool(z['p_max_Pa']>0)==bool(h['p_max']>0)
         closed=[h for h in hist if h['sliding']+h['sticking']>0]
         if hist[-1]['sliding']+hist[-1]['sticking']==0:flag.append(f'pair {k}: no compressed face at final travel')

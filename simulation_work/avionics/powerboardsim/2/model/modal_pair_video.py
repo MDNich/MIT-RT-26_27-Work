@@ -11,7 +11,7 @@ import pyvista as pv
 from PIL import Image
 from native_rst import read_rst
 from study_cases import native_case
-from modal_correspondence import checksum,compare
+from modal_correspondence import checksum,compare,exported_modes
 from modal_video import render as render_bare
 from rms_video import ROOT,VARIANTS,LABELS
 from film_identity import verified,already_rendered,publish_baseline
@@ -22,6 +22,8 @@ SUBJECTS = {'modal_fig01_default_mode01':('refined',1), 'modal_fig02_default_mod
 
 def surfaces(rst,rank,exported=None):
     r=read_rst(str(rst)); g=r.grid
+    if exported is None and r.sparse_window(rank-1):
+        exported=exported_modes(r)[rank]
     if exported is None:
         numbers,disp=r.nodal_displacement(rank-1)
     else:
@@ -156,6 +158,8 @@ def main():
             assert data['reference_rst_sha256']==refs['bare'][1] and data['candidate_rst_sha256']==sha
             row=data['modes'][rank-1]
             mac,sign,best=row['equal_rank_MAC'],row['equal_rank_sign'],row['best_rank']
+            if kind=='refined':
+                note=f'Closest of 20 modes to bare mode {rank}: mode {best} (MAC {row["best_MAC"]:.2f})'
             wide_path=ROOT/'validation/bolted_mode_film.json'
             if kind=='modal20' and v in VARIANTS[3:] and wide_path.is_file():
                 from bolted_mode_film import confirm_dedicated

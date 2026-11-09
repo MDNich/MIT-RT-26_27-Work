@@ -1,6 +1,6 @@
 # Battery-board movies
 
-42 reviewed movies. 0 of 22 subjects cover all four cased configurations. An additional 20 subjects compare the bare board with both 3 mm stand-off variants.
+44 reviewed movies. 0 of 22 subjects cover all four cased configurations. An additional 22 subjects compare the bare board with both 3 mm stand-off variants.
 
 Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. Raised-only comparisons are identified in the table. “Independent motion” uses native mode shapes and independently integrated coordinates for the same October acceleration record. “Independent RMS” integrates the October base spectrum on the native modes. The matching bare RMS movie uses its native PSD result. Each pair uses matching colour limits for its displacement or stress field. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.
 
@@ -8,8 +8,8 @@ Each completed pair contains a bare-board movie and a four-panel comparison: flu
 
 | October subject | Without case | With case |
 |---|---|---|
-| modal_fig01_default_mode01 | [Bare](without_case/power_board_4k60/modal_fig01_default_mode01.mp4) | Pending |
-| modal_fig02_default_mode20 | [Bare](without_case/power_board_4k60/modal_fig02_default_mode20.mp4) | Pending |
+| modal_fig01_default_mode01 | [Bare](without_case/power_board_4k60/modal_fig01_default_mode01.mp4) | [3 mm stand-off · nylon and aluminium](with_case/power_board_4k60/modal_fig01_default_mode01.mp4) |
+| modal_fig02_default_mode20 | [Bare](without_case/power_board_4k60/modal_fig02_default_mode20.mp4) | [3 mm stand-off · nylon and aluminium](with_case/power_board_4k60/modal_fig02_default_mode20.mp4) |
 | modal_fig03_bolted_mode20 | [Bare](without_case/power_board_4k60/modal_fig03_bolted_mode20.mp4) | [3 mm stand-off · nylon and aluminium](with_case/power_board_4k60/modal_fig03_bolted_mode20.mp4) |
 
 ## One-sigma displacement (camera orbit)

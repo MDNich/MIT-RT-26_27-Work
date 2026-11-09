@@ -36,17 +36,20 @@ class CombinedResult(Result):
         else:self.quadgrid=self.grid=None
         self._insolution=np.isin(nnum,self._resultheader['neqv'],assume_unique=True)
 
-    def _nodal_solution_result(self,rnum,solution_type,in_nodal_coord_sys=False,nodes=None):
+    def sparse_window(self,rnum,solution_type='NSL'):
         import struct
-        from pathlib import Path
         k=int(self.parse_step_substep(rnum))%self.nsets
         h=self._result_solution_header(k)
         ptr=int(self._resultheader['rpointers'][k])+int(h['ptr'+solution_type])
         with open(self.filename,'rb') as f:
             f.seek(4*ptr+4);flags=struct.unpack('<I',f.read(4))[0]
-        # The old reader does not support this combined sparse-window encoding. Read the
-        # original archived field with the installed DPF instead of accepting nonsense values.
-        if (flags & 0x18000000)==0x18000000:
+        return (flags & 0x18000000)==0x18000000
+
+    def _nodal_solution_result(self,rnum,solution_type,in_nodal_coord_sys=False,nodes=None):
+        from pathlib import Path
+        k=int(self.parse_step_substep(rnum))%self.nsets
+        # The old reader cannot decode these combined sparse-window records.
+        if self.sparse_window(k,solution_type):
             if solution_type!='NSL' or in_nodal_coord_sys or nodes is not None:
                 raise ValueError('DPF fallback provides only global translations for the full field')
             path=Path(self.filename).resolve()

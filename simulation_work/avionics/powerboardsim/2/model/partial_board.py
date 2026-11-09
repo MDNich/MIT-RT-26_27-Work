@@ -55,7 +55,9 @@ def audit(case,campaign):
     log=(d/'solve.out').read_text(errors='replace')
     done=[(int(s),int(k)) for s,k in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',log)]
     assert len(sets) and np.array_equal(ls[indices],done) and np.all(np.diff(t)>0)
-    drives=table(d/'board_drives.csv');bolts=table(d/'partial_bolts.csv');contacts=table(d/'seat_contacts.csv');material=table(d/'seat_material.csv')
+    from split_contact_post import corrected_rows
+    drives=table(d/'board_drives.csv');bolts=table(d/'partial_bolts.csv')
+    contacts=corrected_rows(case,campaign,d/'seat_contacts.csv');material=table(d/'seat_material.csv')
     for rows,nrows in [(drives,4),(bolts,6),(contacts,5),(material,1)]:
         assert np.array_equal(rows['set'],np.repeat(sets,nrows)) and np.allclose(rows['time_s'],np.repeat(t,nrows),atol=1e-8,rtol=0)
     assert np.allclose(drives['head_z_m']-drives['board_z_m'],drives['travel_m'],atol=1e-8,rtol=0)
@@ -69,12 +71,33 @@ def audit(case,campaign):
             assert a['set']==b['set'] and a['faces']==b['n_contact']
             assert bool(a['p_max_Pa']>0)==bool(b['p_max']>0)
         last[str(pair)]=h[-1]
-    rec=dict(case=case,campaign=campaign,classification='Partial installation',rst_sha256=sha['file.rst'],
+    scope='Verified saved equilibria before numerical termination. A full installed state and modal restart remain pending.'
+    classification='Partial installation'
+    if (receipt/'engineering_close.json').is_file():
+        close=read(receipt/'engineering_close.json')
+        assert close['case']==case and close['original_model_sha256']==sha['model.inp']
+        assert 'NONLINEAR KEYWORD ON THE ABT FILE' in log and close['last_converged_substep']==ls[indices[-1],1]
+        marker=read(receipt/'rank_zero_close.json')
+        assert marker['current_jobname']=='file0' and marker['request_sha256']==digest(receipt/'engineering_close.json')
+        final_restart={}
+        for name in close['pre_stop_restart_hashes']:
+            verified(d/name,sha[name])
+            final_restart[name]=sha[name]
+        assert set(final_restart)=={'file.rdb','file.ldhi',*(f'file{i}.r001' for i in range(12))}
+        write_json(ROOT/'validation/partition_checks'/case/'engineering_close.json',dict(
+            request=close,rank_zero_marker=marker,archive_ledger_sha256=digest(receipt/'archived.json'),
+            combined_rst_sha256=sha['file.rst'],solver_listing_sha256=sha['solve.out'],
+            archived_restart_hashes=final_restart,termination='NONLINEAR KEYWORD ON THE ABT FILE',
+            saved_equilibria=len(sets),excluded_diagnostic_sets=int(len(ls)-len(sets)),
+            scope='Restart files are preserved. Only the converged installation equilibria were audited.'))
+        classification='Partial installation, intentionally stopped'
+        scope='Controlled stop after the material and contact screens were exceeded. Only converged installation states are eligible for review.'
+    rec=dict(case=case,campaign=campaign,classification=classification,rst_sha256=sha['file.rst'],
         equilibria=len(sets),last_converged_time=float(t[-1]),last_completed_step=int(ls[indices[-1],0]),
         screw_travel_mm=(1000*drives['travel_m'][-4:]).tolist(),drive_reactions_N=drives['drive_N'][-4:].tolist(),
         contact_at_last_equilibrium=last,bolt_reactions_N=bolts['reaction_N'][-6:].tolist(),
         maximum_principal_PLA_tension_MPa=float(material['s1max_Pa'].max()*1e-6),
-        scope='Verified saved equilibria before numerical termination. A full installed state and modal restart remain pending.')
+        scope=scope)
     write_json(ROOT/'validation/review_global'/f'{case}.json',rec)
     print(case,len(sets),'converged partial equilibria')
 if __name__=='__main__':
