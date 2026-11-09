@@ -103,7 +103,7 @@ def render(items,target,ax,scope,comp,period,limit,preview):
                           position_y=.20,width=.045,height=.48,n_labels=5,fmt='%.3g',label_font_size=16,title_font_size=16,color='#182e4c'))
             series.append((mesh,orig,ix,dis,stress))
         plot.add_text(f'{name}   /   Base {ax}   /   {field}',position='upper_left',font='arial',font_size=14 if preview else 21,color='#08357E')
-        plot.add_text(('PCB only' if scope=='pcb' else 'Assembly')+'   /   50x displacement   /   time slowed 273x',position='lower_left',
+        plot.add_text(('PCB only' if scope=='pcb' else 'Assembly')+'   /   50x displacement   /   time slowed 273x'+('   /   fixed contact state' if n>1 else ''),position='lower_left',
                       font='arial',font_size=11 if preview else 16,color='#183046')
         center=np.array([.0346,.0604,-.004])
         plot.camera_position=[center+(np.array([.14,.065,-.223]) if scope=='assembly' else np.array([.115,-.080,.220])),center,(0,1,0)]

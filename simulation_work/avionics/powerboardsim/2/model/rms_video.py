@@ -40,7 +40,7 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
             p.add_mesh(mesh,scalars='RMS displacement [mm]',clim=(0,limit),cmap='viridis',opacity=1. if opaque else .42,show_scalar_bar=(i==0 and j==0),
                        scalar_bar_args=dict(title='RMS [mm]',vertical=True,position_x=.085,position_y=.19,width=.047,height=.46,n_labels=4,fmt='%.3g',title_font_size=16,label_font_size=14,color='#25334a'))
         p.add_text(label+'   /   '+f'base {axis}, response {comp}',position='upper_left',font_size=13 if n>1 else 17,color='#08357e')
-        p.add_text('1-sigma displacement   |   camera orbit' + ('   |   translucent case' if len(actors)>1 else ''),position='lower_left',font_size=8,color='#183046')
+        p.add_text('1-sigma displacement   |   camera orbit' + ('   |   fixed contact state' if len(actors)>1 else ''),position='lower_left',font_size=8,color='#183046')
         camera(p,0,view)
     p.show(auto_close=False,interactive=False)
     if preview:
