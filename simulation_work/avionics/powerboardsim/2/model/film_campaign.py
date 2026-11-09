@@ -28,7 +28,6 @@ def now():return dt.datetime.now(dt.timezone.utc).isoformat()
 
 def catalog():
     with (ROOT/'validation/video_pairs.csv').open() as f:rows=list(csv.DictReader(f))
-    with (ROOT.parent/'1/output/videos/power_board_4k60/index.csv').open() as f:index={r['name']:r for r in csv.DictReader(f)}
     from seeded_video import SUBJECTS as seeded
     from modal_pair_video import SUBJECTS as modal
     assert [sum(r['kind']==k for r in rows) for k in KINDS]==[3,12,7]
@@ -38,8 +37,7 @@ def catalog():
         if kind==KINDS[0]:
             key,rank=modal[name];r.update(suffix=key,rank=rank,category='global',script='modal_pair_video.py')
         elif kind==KINDS[1]:
-            entry=index[name];assert entry['sha256']==r['sha256']
-            ax,resp,view=(s.strip() for s in entry['title'].split('|'))
+            ax,resp,view=(s.strip() for s in r['october_title'].split('|'))
             r.update(suffix='psd_'+ax[-1],axis=ax[-1],response=resp[-1],view=view,category='global',script='rms_video.py')
         else:
             ax,scope,comp=seeded[name]

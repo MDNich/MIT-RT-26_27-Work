@@ -88,6 +88,19 @@ try {
     }
     Update 'solving'
     $argsList=@('-b','nolist','-s','noread','-dis','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    if ($Case.StartsWith('replay_')){
+        $pub=(Get-Content "$share\validation\contact_replay_inputs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        if ($pub.case -ne $Case -or $pub.campaign -ne $Campaign -or $Cores -ne 2){throw 'Wrong transient replay case'}
+        foreach ($entry in $pub.files.PSObject.Properties){
+            if ((Get-FileHash -LiteralPath (Join-Path $work $entry.Name)).Hash -ne $entry.Value){throw 'Replay load checksum failed'}
+        }
+        $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    }
+    if ($Case.StartsWith('patch_')){
+        $pub=(Get-Content "$share\validation\contact_patch_inputs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        if ($pub.input_sha256 -ne $stage.input_sha256 -or $pub.campaign -ne $Campaign -or $Cores -ne 2){throw 'Wrong local contact-patch input'}
+        $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    }
     $p=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -PassThru
     while (!$p.WaitForExit(1500)){
         $freeNow=(Get-PSDrive C).Free

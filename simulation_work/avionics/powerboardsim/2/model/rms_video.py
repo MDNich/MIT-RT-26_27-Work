@@ -61,13 +61,14 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
     target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);args=parser.parse_args()
-    source=ROOT.parent/'1/output/videos/power_board_4k60/index.csv'
-    row=next(r for r in csv.DictReader(source.open()) if r['name']==args.name)
-    assert row['kind']=='rms'
-    base,response,view=(x.strip() for x in row['title'].split('|'));axis=base[-1];comp=response[-1]
+    with (ROOT/'validation/video_pairs.csv').open() as stream:
+        row=next(r for r in csv.DictReader(stream) if Path(r['file']).stem==args.name)
+    assert row['kind']=='camera motion over fixed RMS'
+    title=row['october_title']
+    base,response,view=(x.strip() for x in title.split('|'));axis=base[-1];comp=response[-1]
     if args.preview_rst:
         actors,peak=field(args.preview_rst,comp)
-        draw([('Reference reader check',actors,peak)],row['title'],axis,comp,view,peak,ROOT/'.runtime/qa/rms-reader-preview.png',True);return
+        draw([('Reference reader check',actors,peak)],title,axis,comp,view,peak,ROOT/'.runtime/qa/rms-reader-preview.png',True);return
     panels=[];sources=[]
     for variant,name in zip(VARIANTS,LABELS):
         key=f'{variant}_psd_{axis}'
@@ -78,5 +79,5 @@ def main():
         panels.append((name,actors,peak))
     limit=max(i[2] for i in panels)
     for group,sub in [('without_case',panels[:1]),('with_case',panels[1:])]:
-        draw(sub,row['title'],axis,comp,view,limit,ROOT/f'output/videos/{group}/power_board_4k60/{args.name}.mp4',sources=sources[:1] if group=='without_case' else sources[1:])
+        draw(sub,title,axis,comp,view,limit,ROOT/f'output/videos/{group}/power_board_4k60/{args.name}.mp4',sources=sources[:1] if group=='without_case' else sources[1:])
 if __name__=='__main__':main()

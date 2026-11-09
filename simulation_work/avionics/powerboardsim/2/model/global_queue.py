@@ -51,7 +51,14 @@ def jobs():
             name='flush_'+metal+'_lateral_friction_locked_approach1'
             if name in read(ROOT/'validation/local_install_jobs.json'):
                 yield name,'bare_lateral_friction_locked'
+        if branch=='bare' and (ROOT/'validation/contact_patch_inputs.json').is_file():
+            # The matching free submodel checks the cut-boundary motion before imposing contact.
+            yield 'patch_stand3_nylon_span9_free_v1','stand3_nylon_basis'
+            yield 'patch_stand3_nylon_span9_contact_v1','patch_stand3_nylon_span9_free_v1'
         yield branch+'_modal20',branch+'_static'
+        if branch=='bare' and (ROOT/'validation/contact_patch_inputs.json').is_file():
+            yield 'patch_stand3_nylon_span15_free_v1','stand3_nylon_basis'
+            yield 'patch_stand3_nylon_span15_contact_v1','patch_stand3_nylon_span15_free_v1'
         for axis in 'XYZ':
             yield branch+'_psd_'+axis,branch+'_basis'
             if branch=='bare' and axis=='X':
@@ -63,6 +70,13 @@ def jobs():
                     yield 'flush_nylon_surf1_static',''
             if branch=='bare' and axis=='Z' and (ROOT/'validation/board_surface_jobs.json').exists():
                 yield 'flush_aluminium_surf1_static',''
+        if (ROOT/'validation/contact_replay_inputs.json').is_file() and branch in ('bare','stand3_nylon'):
+            if branch=='bare':
+                yield 'replay_stand3_nylon_span9_free_s4_v1','patch_stand3_nylon_span9_free_v1'
+                yield 'replay_stand3_nylon_span9_contact_s4_v1','replay_stand3_nylon_span9_free_s4_v1'
+            else:
+                yield 'replay_stand3_nylon_span9_contact_s2_v1','replay_stand3_nylon_span9_contact_s4_v1'
+                yield 'replay_stand3_nylon_span15_contact_s4_v1','patch_stand3_nylon_span15_contact_v1'
         yield branch+'_enforced',branch+'_basis'
         for axis in 'XYZ':yield branch+'_motion_'+axis,branch+'_enforced'
         if branch!='bare':
@@ -77,12 +91,41 @@ def jobs():
             yield case,'bare_'+meta['source']
 
 def result_path(case):
+    if case.startswith('replay_'):
+        return ROOT/'validation/contact_replay'/(case+'.json')
+    if case.startswith('patch_'):
+        return ROOT/'validation/contact_patch'/(case+'.json')
     local='_lateral_' in case or '_damage_' in case
     category = 'motion' if case.endswith('_enforced') or '_motion_' in case else ('local' if local else 'global')
     return ROOT/'validation'/category/(case+'.json')
 
+def ordered_jobs():
+    sequence=list(jobs())
+    parents=dict(sequence)
+    pending=[]
+    for folder in RECEIPTS.iterdir():
+        state=folder/'status.json'
+        if state.exists():
+            phase=read(state)['phase']
+            if phase=='failed' or (phase=='solver_complete' and (folder/'released.txt').exists()):
+                continue
+        elif not (folder/'dispatch.json').exists():
+            continue
+        pending.append(folder.name)
+    if len(pending)>1 or any(name not in parents for name in pending):
+        raise RuntimeError('Inspect existing guest jobs before dispatch: '+str(pending))
+    if pending:
+        case=pending[0]
+        log('Reattaching current case '+case)
+        yield case,parents[case]
+    for case,parent in sequence:
+        if case not in pending:
+            yield case,parent
+
 def run():
-    for case,parent in jobs():
+    supervisor=Path(__file__).resolve()
+    initial_code=supervisor.read_bytes()
+    for case,parent in ordered_jobs():
         # A sealed geometry-only check runs between jobs; its results cannot
         # release a flush load case without a separate installed-state audit.
         if case=='stand3_nylon_static':
@@ -101,6 +144,8 @@ def run():
         if case in ('flush_nylon_lateral_friction_locked_approach1','bare_modal20','bare_psd_X','bare_psd_Y','bare_psd_Z') and not (RECEIPTS/case/'dispatch.json').exists():
             controls=[('seat_surface_control_v1','control.inp','seat_surface_control','actuator_control.ps1','seat_surface_control.py'),
                       ('board_surface_initial_v1','pre.inp','board_surface_initial','flush_install_check.ps1','surface_board.py')]
+        if case in ('patch_stand3_nylon_span9_free_v1','bare_modal20') and not (RECEIPTS/case/'dispatch.json').exists():
+            controls.append(('patch_table_control_v1','control.inp','patch_table_control','actuator_control.ps1','contact_transient.py'))
         if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.
@@ -126,6 +171,9 @@ def run():
             log('Parent unaccepted: '+case);continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
             raise RuntimeError('Cased preflight review pending')
+        if case.startswith('replay_') and not (ROOT/'validation/patch_table_control.json').is_file():
+            log('Motion-table validation pending: '+case)
+            continue
         local=final.parent.name=='local'
         motion=final.parent.name=='motion'
         if local and not case.startswith('bare_') and not (ROOT/'validation/local_cased_preflight.json').is_file():
@@ -142,7 +190,10 @@ def run():
                 branch=case.removesuffix('_enforced').split('_motion_')[0]
                 stage(branch,CAMPAIGN)
             flags=['-Case',case,'-Campaign',CAMPAIGN]
-            if parent and not local:flags.extend(['-Parent',parent])
+            if case.startswith(('patch_','replay_')):
+                flags.extend(['-Cores','2'])
+            elif parent and not local:
+                flags.extend(['-Parent',parent])
             log('Dispatch '+case);launch('native_run.ps1',flags,receipt/'dispatch.json')
         while not state.is_file():time.sleep(15)
         while read(state)['phase'] not in ('solver_complete','failed'):time.sleep(20)
@@ -151,10 +202,18 @@ def run():
             log('Archive '+case);launch('archive_native.ps1',['-Case',case,'-Campaign',CAMPAIGN],receipt/'archive_request.json')
         while not (receipt/'released.txt').exists():time.sleep(20)
         audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith('_approach1') else ('audit_local.py' if local else 'audit_global.py'))
+        if case.startswith('patch_'):
+            audit='audit_contact_patch.py'
+        elif case.startswith('replay_'):
+            audit='audit_contact_replay.py'
         args=['audit_motion.py','case',case,CAMPAIGN] if motion else [audit,case,CAMPAIGN]
         r=subprocess.run([sys.executable,str(ROOT/'model'/args[0]),*args[1:]],text=True,capture_output=True)
         log(r.stdout[-1000:])
         if r.returncode:(receipt/'audit_failed.txt').write_text(r.stderr);log('Audit failed '+case+': '+r.stderr[-330:])
+        if supervisor.read_bytes()!=initial_code:
+            # Read revised scheduling only between audited jobs. The new process image first reconciles receipts.
+            log('Loading updated schedule at a case boundary')
+            os.execv(sys.executable,[sys.executable,'-u',str(supervisor)])
     log('All available global tasks visited. Check receipts, deferred parents and material scope.')
 if __name__=='__main__':
     lock=(RT/'global_queue.lock').open('a')
