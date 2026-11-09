@@ -9,6 +9,17 @@ LABEL={'normalized modal motion':'Normalized modes','camera motion over fixed RM
        'seeded random motion':'Seeded time histories'}
 
 
+def subject(row):
+    if row['kind']=='normalized modal motion':
+        setup,mode,freq=(s.strip() for s in row['october_title'].split('|'))
+        return f'{setup} · {mode} ({freq} bare)'
+    if row['kind']=='camera motion over fixed RMS':
+        return f'{row["view"]} · base {row["axis"]} · {row["response"]} displacement'
+    view='Whole assembly' if row['scope']=='assembly' else 'PCB'
+    quantity='von Mises stress' if row['component']=='stress' else row['component']+' displacement'
+    return f'{view} · base {row["axis"]} · {quantity}'
+
+
 def make(reviews):
     rows=catalog();known={r[g]:(r,g) for r in rows for g in SLOTS}
     record=read(REVIEW) if REVIEW.exists() else {}
@@ -44,12 +55,18 @@ def make(reviews):
             if decode(r,'with_case').get('comparison_panels')==2:raised_pairs+=1
             else:pairs+=1
         lines.append((r,titles))
-    out=['# Battery-board movies','',f'{len(ready)} reviewed movies. {pairs} of 22 subjects cover all four cased configurations. An additional {raised_pairs} subjects compare the bare board with both 3 mm stand-off variants.','',
-         'Each completed pair contains a bare-board movie and a four-panel comparison: flush nylon, flush aluminium, 3 mm stand-off nylon and 3 mm stand-off aluminium. Raised-only comparisons are identified in the table. “Native motion” uses the rerun MAPDL modal-coordinate history. “Independent motion” uses native mode shapes and independently integrated coordinates for the same October acceleration record. “Independent RMS” integrates the October base spectrum on the native modes. The matching bare RMS movie uses its native PSD result. Each pair uses matching colour limits for its displacement or stress field. All movies are 3840 × 2160 at 60 fps. A modal amplitude is normalized; an RMS camera orbit is not a vibration time history.','']
+    out=['# Battery-board movies','',
+         f'{len(ready)} reviewed movies. {raised_pairs} subjects pair the bare board with the 3 mm nylon and aluminium mounts. '
+         f'{pairs} of 22 subjects include both flush mounts as well.','',
+         'The links open 3840 × 2160 movies at 60 fps. Paired views use the same displacement or stress scale. '
+         'The mode movies show normalized motion. In the one-sigma movies the camera moves around a fixed RMS field. '
+         'The seeded movies show successive instants of the original acceleration record.','',
+         'Native motion uses coordinates from the MAPDL transient. Independent motion uses the same excitation and native mode shapes '
+         'with independently integrated coordinates. Independent RMS uses frequency integration on the native modes.','']
     for kind,label in LABEL.items():
         out+=['## '+label,'','| October subject | Without case | With case |','|---|---|---|']
         for r,titles in lines:
-            if r['kind']==kind:out+=['| '+Path(r['file']).stem+' | '+' | '.join(titles)+' |']
+            if r['kind']==kind:out+=['| '+subject(r)+' | '+' | '.join(titles)+' |']
         out+=['']
     (ROOT/'output/videos/README.md').write_text('\n'.join(out))
     print(len(ready),'reviewed movies;',pairs,'complete pairs;',raised_pairs,'raised-only pairs')

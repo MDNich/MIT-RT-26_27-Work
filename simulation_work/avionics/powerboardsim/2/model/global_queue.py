@@ -243,6 +243,11 @@ def jobs():
                 # Compare the two whole-board flush installations before a second long local drawdown.
                 if (ROOT/'validation/board_surface_jobs.json').exists():
                     yield 'flush_aluminium_surf1_static',''
+                # Complete the native raised movie histories after the aluminium installation.
+                # Both accepted modal bases and all six native PSD comparisons precede them.
+                for raised in ('stand3_nylon','stand3_aluminium'):
+                    yield raised+'_enforced',raised+'_basis'
+                    for direction in 'XYZ':yield raised+'_motion_'+direction,raised+'_enforced'
                 yield 'stand3_nylon_damage_cont_nominal_pin1','bare_damage_cont_nominal'
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'

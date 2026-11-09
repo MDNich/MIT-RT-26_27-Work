@@ -75,7 +75,7 @@ The six signed dynamic stress components were summed at each of 312,112 PCB elem
 \begin{center}\includegraphics[width=.82\linewidth]{figures/raised-seeded-pcb-stress.pdf}
 \captionof{figure}{Maximum dynamic PCB stress at each of the original 480 movie times. The three curves use independent coordinates on each tightened modal basis. Each dot marks a clip maximum.}\end{center}
 
-Seven seeded pairs share colour scales, 50-fold displacement magnification and 273-fold slow motion. Twelve camera orbits show one-sigma fields. Bare and raised base-X fields use native PSD results; the raised Y and Z fields use independent integration. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
+Seven seeded pairs share colour scales, 50-fold displacement magnification and 273-fold slow motion. Twelve camera orbits show one-sigma fields. The bare fields and the raised X and Y fields use native PSD results. The raised Z views use independent integration. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{Paired movie catalogue.}
 \newpage
 \heading{Does the contact model start with the gap measured in CAD?}
 An enclosure that presses on the cells at the start of a raised-case calculation will appear to stiffen the assembly before the real parts would touch. We checked the undeformed contact pairs separately from the load solution. The local fixture uses one target for the moving edge cell and another for the fixed neighboring cells and washers. The global assembly uses deformable targets. The search radius tells MAPDL which nearby facets to examine; it does not set the physical clearance.
@@ -245,7 +245,7 @@ PCB normal strain Y [microstrain] &772&1655\\
 PCB normal strain Z [microstrain] &3045&2676\\\bottomrule
 \end{tabular}\end{center}
 
-The peak cell-body X acceleration fell by 11.3\% while the PCB Z acceleration rose by 29.0\%. Each entry is a maximum over the named part. The stress and strain maxima can occur at different corners. The native output contains stored statistical element stresses for 112,902 bare and 129,010 cased solids. Pages 10 and 12 show where a seeded history closes the modeled air gap and how the local case responds after contact.
+The peak cell-body X acceleration fell by 11.3\% while the PCB Z acceleration rose by 29.0\%. Each entry is a maximum over the named part. The stress and strain maxima can occur at different corners. The native output contains stored statistical element stresses for 112,902 bare and 129,010 cased solids. With base Y, peak PCB stress instead rose from 17.85~MPa RMS bare to 57.05~MPa with nylon screws and 50.29~MPa with aluminium. Both cased peaks occurred at the same PCB corner. Peak Z displacement rose from 19.45~$\mu$m bare to 86.65~$\mu$m and 82.33~$\mu$m, respectively. These spectra hold the contact state fixed (pages~10 and~12).
 
 \newpage
 \heading{The printed tab carries a local load across its layers}

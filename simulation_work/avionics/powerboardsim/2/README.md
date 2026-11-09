@@ -1,10 +1,17 @@
 # Power-board battery case comparison
 
-Revision 2 of the October populated power-board study. Both supplied CAD formats are retained in `geometry/`. The STEP is the source for geometry registration. The case is 3D-printed PLA with air between the cells and the case. The two mounting scenarios use aluminium screws or a catalog nylon screw. The six existing battery-attachment screws retain their original specification.
+[All 22 video pairs](output/videos/README.md) · [English report](output/pdf/battery-case-report.pdf) · [Seven-slide briefing](output/pdf/battery-case-slides.pdf)
 
-The study covers original and refined default modal analyses, static bolt preload and locking, prestressed modes, X/Y/Z random vibration, seeded motion and stress histories, nonlinear edge-cell pull and the subsequent nickel-damage investigation. The [movie index](output/videos/README.md) links the reviewed deliverables. The paired delivery matrix in [video_pairs.csv](validation/video_pairs.csv) contains the 22 verified October movie references. Its planned deliverables comprise 22 bare-board movies and 22 matched cased movies showing both fastener variants. Nominal geometry and contact assumptions will be stated with the corresponding results.
+The October power-board assembly carries three cells and six battery-attachment screws. Revision 2 adds the supplied 3D-printed PLA case, with air around the cells, and compares four additional case screws in aluminium or nylon. The model covers direct flush mounting and a 3 mm stand-off.
 
-The [October baseline notes](case-study-preparation.md) identify the full local Workbench archive. The isolated runtime under `.runtime/` holds generated decks, solver files and temporary fields. Native receipts are checked before accepting results for publication.
+| Configuration | Published evidence |
+|---|---|
+| Bare board | All 22 movie subjects, the three native base spectra, three native seeded histories and the nominal side pull. |
+| 3 mm stand-off, nylon and aluminium | All 22 movie subjects, bolt tightening, modes, vibration and the positive-X side pull. Each movie identifies its numerical source. |
+| Flush, nylon | The full-board installation stopped at 2.75 mm screw travel. The PLA coupon reference was crossed at 0.95–1.10 mm. The four tabs touched along their edges while most of each face remained open. |
+| Flush, aluminium | The full-board seating trial is queued. Flush vibration comparisons require a supported installed state. |
+
+For the PCB stress time history, open the [bare-board movie](output/videos/without_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) or [both raised mounts](output/videos/with_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4). The [October baseline notes](case-study-preparation.md) locate the original inputs. The [delivery matrix](validation/video_pairs.csv) records the source identity of every film. Native decks and scratch files are held under the isolated `.runtime/` directory.
 
 ## Material references
 
@@ -61,3 +68,5 @@ Under board-normal vibration, the lengthwise RMS force at the right-hand cell’
 All three bare-board native seeded-motion reruns completed. The 480 original base-X PCB stress peaks reproduced within 0.000028% using the fresh native coordinates. In the raised nylon local pull the case reached 28.6 MPa in-plane and 23.5 MPa through its printed layers at 0.50 mm cell travel. Both stayed below the coupon references in this fixture. [Native motion comparison](validation/seeded_bare_native_repeat.json) · [Side-pull results, page 6](output/pdf/battery-case-report.pdf#page=6)
 
 Both raised side-pull fixtures now completed the same 33 native load states. At the same 8.54 N lateral load the bare edge cell moved 0.50 mm and both cased cells moved about 0.20 mm. At the same 0.421 mm travel the force was 8.26 N bare, 101 N with nylon screws and 210 N with aluminium. The aluminium fixture crossed the first printed-PLA coupon reference in the following increment. [Force curves and material limits, page 6](output/pdf/battery-case-report.pdf#page=6) · [Comparison slide](output/pdf/battery-case-slides.pdf#page=4)
+
+Under native Y-axis base vibration, peak PCB stress rose from 17.85 MPa RMS bare to 57.05 MPa with raised nylon screws and 50.29 MPa with raised aluminium screws. Four paired views now show those native displacement fields. [Native comparison, page 13](output/pdf/battery-case-report.pdf#page=13) · [Base-Y assembly movie](output/videos/with_case/power_board_4k60/random_fig03_assembly.mp4)
