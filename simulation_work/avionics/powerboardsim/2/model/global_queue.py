@@ -27,9 +27,13 @@ def jobs():
     yield 'bare_static',''
     yield 'bare_original',''
     yield 'bare_refined',''
+    for source in ('bare_original','bare_refined'):
+        name=source+'_sturm'
+        if (ROOT/f'validation/{name}_input.json').is_file():yield name,''
+    yield 'stand3_nylon_static',''
     # Establish the first complete reference and one cased comparison before the remaining variants.
     for branch in ['bare','stand3_nylon','flush_nylon','stand3_aluminium','flush_aluminium']:
-        if branch!='bare':
+        if branch not in ('bare','stand3_nylon'):
             yield branch+'_static',''
         yield branch+'_basis',branch+'_static'
         yield branch+'_modal20',branch+'_static'

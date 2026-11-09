@@ -43,6 +43,14 @@ def audit(case,campaign):
         if case.endswith('_basis'):assert len(t)>=20 and t[-1]<=4000.0001
         else:assert len(t)==20
         result['frequencies_Hz']=t.tolist()
+        if case.startswith('bare_') and (case.endswith(('_original','_refined','_sturm'))):
+            mesh_name=case.removeprefix('bare_').removesuffix('_sturm')
+            ref=ROOT.parent/f'1/output/latex/modal_reproduction/native/default_{mesh_name}/frequencies.csv'
+            expected=np.loadtxt(ref,delimiter=',',skiprows=1)[:,1]
+            assert expected.shape==t.shape
+            error=float(np.max(np.abs(t/expected-1)))
+            assert error<1e-4, f'Mode sequence differs from the reference by {error:.3%}'
+            result['maximum_relative_frequency_difference_from_october']=error
     if not case.startswith('bare'):
         for mat in (850,851):assert np.count_nonzero(g.cell_data['ansys_material_type']==mat)>0
     out=ROOT/'validation/global';out.mkdir(exist_ok=True);dest=out/(case+'.json')
