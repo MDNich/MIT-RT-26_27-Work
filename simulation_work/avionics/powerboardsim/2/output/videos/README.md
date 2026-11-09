@@ -6,6 +6,8 @@ The links open 3840 × 2160 movies at 60 fps. Paired views use the same displace
 
 Native motion uses coordinates from the MAPDL transient. Independent motion uses the same excitation and native mode shapes with independently integrated coordinates. Independent RMS uses frequency integration on the native modes.
 
+In both flush installation trials the printed PLA exceeded its tensile reference before the tabs touched the board. The raised mounts supply the cased vibration fields. [Flush mounting results, page 19](../pdf/battery-case-report.pdf#page=19)
+
 ## Normalized modes
 
 | October subject | Without case | With case |

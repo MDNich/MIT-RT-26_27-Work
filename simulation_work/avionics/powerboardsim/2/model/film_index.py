@@ -63,6 +63,14 @@ def make(reviews):
          'The seeded movies show successive instants of the original acceleration record.','',
          'Native motion uses coordinates from the MAPDL transient. Independent motion uses the same excitation and native mode shapes '
          'with independently integrated coordinates. Independent RMS uses frequency integration on the native modes.','']
+    endpoints=ROOT/'validation/installation_comparisons/flush_endpoints.json'
+    if raised_pairs and endpoints.is_file():
+        checked=read(endpoints)['cases']
+        assert set(checked)=={'nylon','aluminium'}
+        if all(v['physical_vibration_state_established'] is False for v in checked.values()):
+            out.extend(['In both flush installation trials the printed PLA exceeded its tensile reference before the tabs '
+                        'touched the board. The raised mounts supply the cased vibration fields. '
+                        '[Flush mounting results, page 19](../pdf/battery-case-report.pdf#page=19)',''])
     for kind,label in LABEL.items():
         out+=['## '+label,'','| October subject | Without case | With case |','|---|---|---|']
         for r,titles in lines:

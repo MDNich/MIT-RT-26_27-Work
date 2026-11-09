@@ -94,10 +94,51 @@ def compare(nylon_checkpoint, aluminium_checkpoint, campaign):
     print(out.name, pairs[-1])
 
 
+def installation_endpoints(nylon_checkpoint, aluminium_checkpoint, campaign):
+    cases = {}
+    for screw, stamp in [('nylon', nylon_checkpoint), ('aluminium', aluminium_checkpoint)]:
+        case = f'flush_{screw}_surf1_static'
+        folder = ROOT/'validation/partition_checks'/case
+        sources = folder/(stamp+'_sources.json')
+        history = read(folder/(stamp+'_history.json'))
+        footprint = read(folder/(stamp+'_gap.json'))
+        matched_path = folder/(stamp+'_combined_comparison.json')
+        matched = read(matched_path)
+        proof_path = ROOT/'validation/review_global'/(case+'.json')
+        proof = read(proof_path)
+        assert history['case'] == proof['case'] == case and history['campaign'] == proof['campaign'] == campaign
+        assert digest(sources) == history['manifest_sha256'] == matched['checkpoint_sha256'] == footprint['checkpoint_sha256']
+        assert proof['rst_sha256'] == matched['combined_rst_sha256']
+        rows = history['history']
+        assert len(rows) == matched['matched_sets'] == proof.get('equilibria', proof.get('states'))
+        assert matched['max_extreme_gap_difference_mm'] < 1.e-5 and matched['max_footprint_area_difference_mm2'] < 1.e-4
+        last = rows[-1]
+        first = next(r for r in rows if any(v['p_max'] > 0 for k,v in r['contact'].items() if k != '853'))
+        crossing = first_crossings(rows)['layer_tension_MPa']
+        gap = footprint['gaps'][str(last['native_set'])]
+        assert abs(last['travel_mm']-gap['travel_mm']) < 1.e-7
+        areas = [100*r['area_gap_le_50um_mm2']/r['projected_overlap_mm2'] for r in gap['levels']['2'].values()]
+        penetration = last['contact']['853']['loaded_corner_pen_max']*1.e6
+        assert crossing['first_above_mm'] < first['travel_mm'] and penetration > 15.
+        cases[screw] = dict(case=case,native_classification=proof['classification'],combined_rst_sha256=proof['rst_sha256'],
+            combined_comparison_sha256=digest(matched_path),tab_geometry_sha256=digest(folder/(stamp+'_gap.json')),
+            final_travel_mm=last['travel_mm'],converged_native_states=len(rows),through_layer_reference=crossing,
+            first_loaded_tab_travel_mm=first['travel_mm'],final_near_seat_area_percent=areas,
+            final_loaded_hardware_penetration_um=penetration,physical_vibration_state_established=False)
+    write_json(ROOT/'validation/installation_comparisons/flush_endpoints.json',dict(
+        campaign=campaign,cases=cases,scope='The opposed-face whole-board flush installations with tied screw bearings. '
+        'The PLA coupon crossing precedes the first loaded tab and the final hardware penetration exceeds 15 micrometres '
+        'in both attempts. No physical flush vibration result follows from these two runs.'))
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('nylon_checkpoint')
     p.add_argument('aluminium_checkpoint')
     p.add_argument('--campaign', default='nov08_01')
+    p.add_argument('--endpoints', action='store_true', help='Compare final installations after the combined native checks.')
     a = p.parse_args()
-    compare(a.nylon_checkpoint, a.aluminium_checkpoint, a.campaign)
+    if a.endpoints:
+        installation_endpoints(a.nylon_checkpoint, a.aluminium_checkpoint, a.campaign)
+    else:
+        compare(a.nylon_checkpoint, a.aluminium_checkpoint, a.campaign)
