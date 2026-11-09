@@ -22,10 +22,12 @@ def source(case,campaign):
     return proof,folder,read_rst(folder/'file.rst')
 
 
-def case_elements(raw):
+def case_elements(raw,variant):
     data=raw.grid.cell_data
     elements=np.sort(data['ansys_elem_num'][(data['ansys_material_type']==850)&(data['ansys_elem_type_num']==187)])
-    assert len(elements)==16108 and len(np.unique(elements))==len(elements)
+    size=2 if variant.endswith('_mesh2') else 3
+    count=read(ROOT/f'validation/mesh_{size}.json')['tetrahedra']
+    assert len(elements)==count and len(np.unique(elements))==count
     return elements
 
 
@@ -42,7 +44,7 @@ def corners(raw,k,field,elements,width):
 def static(variant,campaign):
     case=native_case(variant,'static')
     proof,folder,r=source(case,campaign)
-    elements=case_elements(r);k=r.nsets-1
+    elements=case_elements(r,variant);k=r.nsets-1
     ids,stress=corners(r,k,'ENS',elements,6)
     sb,eps=corners(r,k,'EEL',elements,7)
     sa,euler=corners(r,k,'EUL',elements,3)
@@ -75,8 +77,8 @@ def spectrum(variant,axis,campaign):
     case=native_case(variant,'psd_'+axis)
     proof,folder,result=source(case,campaign)
     basis,bfolder,modal=source(native_case(variant,'basis'),campaign)
-    elements=case_elements(result)
-    assert np.array_equal(elements,case_elements(modal))
+    elements=case_elements(result,variant)
+    assert np.array_equal(elements,case_elements(modal,variant))
     nodes,stored=corners(result,[3,1],'ENS',elements,11)
     _,angles=corners(result,[3,1],'EUL',elements,3)
     target=np.column_stack([stored[:,:6],stored[:,10]])

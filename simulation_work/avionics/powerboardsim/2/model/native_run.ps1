@@ -15,14 +15,37 @@ if (!(Test-Path -LiteralPath $exe)){throw "Missing solver $exe"}
 if (Test-Path -LiteralPath $work){throw "Preserving existing job $work"}
 $active=@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(ANSYS|ANSYS\d+|mapdl|mpiexec|hydra_pmi_proxy)$' })
 if ($active.Count){throw "Another native job is running"}
-New-Item -ItemType Directory -Path $work -Force|Out-Null
+New-Item -ItemType Directory -Path $work -ErrorAction Stop|Out-Null
+$guard=$work
+$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$'
+if ($sharedWork) {
+    $work=Join-Path $share ".runtime\shared_native\$Campaign\$Case"
+    if (Test-Path -LiteralPath $work){throw 'Preserving the existing shared working directory'}
+}
 New-Item -ItemType Directory -Path $out -Force|Out-Null
 $stage=[ordered]@{case=$Case;work=$work;utc=[DateTime]::UtcNow.ToString('o');phase='staging';cores=$Cores}
 function Update([string]$Phase){$stage.phase=$Phase;$stage.updated=[DateTime]::UtcNow.ToString('o');$stage|ConvertTo-Json|Set-Content -LiteralPath "$out\status.tmp" -Encoding UTF8;Move-Item "$out\status.tmp" "$out\status.json" -Force}
 try {
     Update 'staging'
+    if ($sharedWork) {
+        $control=Get-Content "$share\validation\shared_dmp_control.json" -Raw|ConvertFrom-Json
+        if ($control.ranks -ne $Cores -or $control.trial -ne 'shared_dmp_io_v1'){throw 'Shared scratch DMP control mismatch'}
+        New-Item -ItemType Directory -Path $work -Force|Out-Null
+        $stage.local_guard=$guard
+        $stage.shared_scratch=$true
+    }
     Get-ChildItem -LiteralPath $inputDir -File | Copy-Item -Destination $work
     $stage.input_sha256=(Get-FileHash "$work\model.inp").Hash
+    $history=Join-Path $share 'validation\storage_recovery.json'
+    if (Test-Path -LiteralPath $history) {
+        $old=(Get-Content -LiteralPath $history -Raw|ConvertFrom-Json).PSObject.Properties[$Case]
+        if ($old -and $old.Value.campaign -eq $Campaign) {
+            $previous="$share\.runtime\stopped_receipts\$Campaign\$Case\stopped_archived.json"
+            if ((Get-FileHash -LiteralPath $previous).Hash -ne $old.Value.original_manifest_sha256 -or
+                $stage.input_sha256 -ne $old.Value.sealed_input_sha256){throw 'Recovered case input or original evidence mismatch'}
+            $stage.previous_storage_attempt_sha256=$old.Value.original_manifest_sha256
+        }
+    }
     if ($stage.input_sha256 -ne (Get-FileHash "$inputDir\model.inp").Hash){throw 'Staging checksum failed'}
     if ((Get-PSDrive C).Free -lt 18000000000){throw 'Insufficient space for a fresh structural job'}
     if ($Parent) {
@@ -34,7 +57,7 @@ try {
         $parents=@($manifest.files|Where-Object name -match $pattern)
         if ($parents.Count -lt 3) {throw 'Parent restart files missing'}
         $needed=($parents|Measure-Object bytes -Sum).Sum
-        if (!(Test-Path -LiteralPath "$work\remote_psd.json") -and !(Test-Path -LiteralPath "$work\private_psd.json") -and (Get-PSDrive C).Free -lt $needed+14000000000){throw "Insufficient space for parent and solver scratch"}
+        if (!$sharedWork -and !(Test-Path -LiteralPath "$work\remote_psd.json") -and !(Test-Path -LiteralPath "$work\private_psd.json") -and (Get-PSDrive C).Free -lt $needed+14000000000){throw "Insufficient space for parent and solver scratch"}
         if (Test-Path -LiteralPath "$work\remote_psd.json"){
             $remote=Get-Content -LiteralPath "$work\remote_psd.json" -Raw|ConvertFrom-Json
             if ($Case -notmatch '^((?:stand3|flush)_(?:nylon|aluminium)(?:_surf1)?)_psd_[XYZ]$'){throw 'Invalid remote PSD case'}
@@ -94,6 +117,10 @@ try {
         Update 'solver_complete'
         return
     }
+    if ($Case -match '^stand3_nylon_mesh2_(static|basis)$') {
+        $ref=(Get-Content "$share\validation\case_refinement_inputs.json" -Raw|ConvertFrom-Json).cases.PSObject.Properties[$Case].Value
+        if ($ref.input_sha256 -ne $stage.input_sha256 -or [string]$ref.parent -ne $Parent){throw 'Refined case input or parent mismatch'}
+    }
     $surfaceJob=$null
     $isDefaultSeat=$Case -match '^flush_(nylon|aluminium)_default_(original|refined)_(static|modal20)$'
     if ($isDefaultSeat -or $Case -match '^flush_(nylon|aluminium)_surf1_(static|modal20|basis)$'){
@@ -119,6 +146,7 @@ try {
         if ($pub.input_sha256 -ne $stage.input_sha256 -or $pub.campaign -ne $Campaign -or $Cores -ne 2){throw 'Wrong local contact-patch input'}
         $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
     }
+    if ($sharedWork){$argsList+=@('-dir',('"'+$work+'"'))}
     $p=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -PassThru
     while (!$p.WaitForExit(1500)){
         $freeNow=(Get-PSDrive C).Free
@@ -145,7 +173,7 @@ try {
             $proof=(Get-Content "$share\validation\partial_board_readbacks.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
             Copy-Item -LiteralPath "$share\.runtime\surface_partial_readbacks\$Case\partial_post.inp" -Destination $work
             if ((Get-FileHash "$work\partial_post.inp").Hash -ne $proof.input_sha256 -or $stage.input_sha256 -ne $proof.original_model_sha256){throw 'Partial readback input mismatch'}
-            $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','partialpost','-i','partial_post.inp','-o','partial_post.out') -Wait -PassThru
+            $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-dir',('"'+$work+'"'),'-j','partialpost','-i','partial_post.inp','-o','partial_post.out') -Wait -PassThru
             Copy-Item -LiteralPath "$work\partial_post.out" $out
             if ($pp.ExitCode -ne 0 -or !(Select-String -LiteralPath "$work\partial_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Partial whole-board readback failed'}
             Update 'solver_complete'
@@ -153,14 +181,14 @@ try {
         }
     }
     if ($surfaceJob -and $surfaceJob.kind -eq 'static'){
-        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','seatpost','-i','board_surface_post.inp','-o','board_surface_post.out') -Wait -PassThru
+        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-dir',('"'+$work+'"'),'-j','seatpost','-i','board_surface_post.inp','-o','board_surface_post.out') -Wait -PassThru
         Copy-Item "$work\board_surface_post.out" $out
         if ($pp.ExitCode -ne 0 -or !(Test-Path "$work\seat_contacts.csv") -or !(Test-Path "$work\seat_material.csv") -or
             !(Select-String -LiteralPath "$work\board_surface_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native tab/contact/material readback failed'}
     }
-    if ($Case -match '^(flush|stand3)_(nylon|aluminium)_static$') {
+    if ($Case -match '^(flush|stand3)_(nylon|aluminium)_static$' -or $Case -eq 'stand3_nylon_mesh2_static') {
         Copy-Item -LiteralPath "$PSScriptRoot\contact_post.inp" -Destination $work
-        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','casepost','-i','contact_post.inp','-o','contact_post.out') -Wait -PassThru
+        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-dir',('"'+$work+'"'),'-j','casepost','-i','contact_post.inp','-o','contact_post.out') -Wait -PassThru
         Copy-Item "$work\contact_post.out" $out
         if ($pp.ExitCode -ne 0 -or !(Test-Path "$work\case_contact.csv") -or !(Select-String -Path "$work\contact_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native contact readback failed'}
     }

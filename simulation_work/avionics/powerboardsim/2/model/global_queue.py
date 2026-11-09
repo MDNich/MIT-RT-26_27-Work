@@ -24,6 +24,20 @@ def launch(script,flags,dest):
     out=json.loads(run.stdout.lstrip('\ufeff'))
     if out['ReturnValue']!=0:raise RuntimeError(str(out))
     save(dest,dict(request_utc=utc(),script=script,arguments=flags,**out))
+def wait_for_scratch(required):
+    held=False
+    while True:
+        probe=subprocess.run([sys.executable,str(ROOT/'model/guest_command.py'),'--timeout','20'],
+                             input='[string](Get-PSDrive C -ErrorAction Stop).Free',text=True,capture_output=True)
+        value=probe.stdout.lstrip('\ufeff').strip()
+        if probe.returncode==0 and value.isdecimal() and int(value)>=required:
+            if held:log(f'Windows scratch ready: {value} bytes free')
+            return
+        if not held:log(f'Holding undispatched jobs pending {required} verified free bytes on C (readback {value[:100]!r})')
+        held=True
+        time.sleep(20)
+
+
 def dispatch_solver(script,flags,folder):
     """Reconcile an uncertain Parallels acknowledgement with the guest before any later launch."""
     native=script=='native_run.ps1'
@@ -36,6 +50,9 @@ def dispatch_solver(script,flags,folder):
         request=folder/('dispatch.json' if attempt==0 else f'dispatch_retry_{attempt}.json')
         if any(p.exists() for p in expected):return
         if not request.exists():
+            local=(RT/'inputs'/name/'local_job.json')
+            required=24_000_000_000 if native and local.is_file() and read(local).get('load_protocol')=='four_stage_install' else 18_000_000_000
+            wait_for_scratch(required)
             try:
                 launch(script,flags,request)
             except (RuntimeError,ValueError,subprocess.TimeoutExpired) as exc:
@@ -67,8 +84,13 @@ def archive_closed_case(case,receipt):
     """Reconcile a dropped archive acknowledgement without repeating a structural solve."""
     if (receipt/'released.txt').is_file():
         return
-    if read(receipt/'status.json')['phase']!='solver_complete':
+    status=read(receipt/'status.json')
+    if status['phase']!='solver_complete':
         raise RuntimeError('Native completion required before archive')
+    if status.get('shared_scratch') and not (receipt/'archive_request.json').exists() and not (receipt/'archive.lock').exists():
+        from archive_shared import archive
+        archive(case,CAMPAIGN)
+        return
     for attempt in range(3):
         path=receipt/('archive_request.json' if attempt==0 else f'archive_retry_{attempt}.json')
         if not path.exists():
@@ -178,6 +200,12 @@ def jobs():
         for axis in 'XYZ':yield branch+'_motion_'+axis,branch+'_enforced'
         if branch!='bare':
             for case in ('original','refined'):yield branch+'_'+case,''
+    refinement=ROOT/'validation/case_refinement_inputs.json'
+    if refinement.is_file():
+        branch=read(refinement)['branch']
+        yield branch+'_static',''
+        yield branch+'_basis',branch+'_static'
+        yield native_case(branch,'psd_X'),branch+'_basis'
     local_cases=read(ROOT/'validation/local_jobs.json')
     # The original local contact search failed the CAD check. Release only separately
     # sealed raised successors; flush still needs a verified nickel contact surface.
@@ -252,6 +280,8 @@ def run():
         if case in ('bare_psd_Y','bare_psd_Z') and not (RECEIPTS/case/'dispatch.json').exists():
             mesh='refined' if case=='bare_psd_Y' else 'original'
             controls.append((f'default_{mesh}_initial_v1','pre.inp',f'default_{mesh}_initial','flush_install_check.ps1','default_install.py'))
+        if case in ('stand3_aluminium_psd_X_private1','flush_nylon_surf1_static') and not (RECEIPTS/case/'dispatch.json').exists():
+            controls.append(('shared_dmp_io_v1','control.inp','shared_dmp_control','shared_dmp_control.ps1','shared_dmp_control.py'))
         if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.

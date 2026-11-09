@@ -1,0 +1,96 @@
+{
+  "branch": "stand3_nylon_mesh2",
+  "cases": {
+    "stand3_nylon_mesh2_static": {
+      "input_sha256": "301ebcd94f5b9f012f2253360c8f9f1d6bd8c7c785f261747e8392da4e45d47c",
+      "parent": null,
+      "mesh_file_sha256": "d9526599ea8c2fc32f595addb113fe04872475a04e0a74b4afadb6892ea19389",
+      "solid_count": 43659,
+      "supports": [
+        {
+          "case_center_mm": [
+            3.1800000000000033,
+            3.7679200000000037
+          ],
+          "board_center_mm": [
+            3.1750000000000007,
+            3.174999999999997
+          ],
+          "screw_axis_mm": [
+            3.175801091397845,
+            3.269996622321911
+          ],
+          "bearing_nodes": [
+            212,
+            103
+          ],
+          "grip_mm": 5.07831072053385
+        },
+        {
+          "case_center_mm": [
+            3.1800000000000033,
+            117.00908
+          ],
+          "board_center_mm": [
+            3.1750000000000007,
+            117.602
+          ],
+          "screw_axis_mm": [
+            3.175801091397845,
+            117.50700337767809
+          ],
+          "bearing_nodes": [
+            208,
+            103
+          ],
+          "grip_mm": 5.07831072053385
+        },
+        {
+          "case_center_mm": [
+            66.035,
+            3.7679200000000037
+          ],
+          "board_center_mm": [
+            66.04,
+            3.174999999999997
+          ],
+          "screw_axis_mm": [
+            66.03919890860216,
+            3.269996622321911
+          ],
+          "bearing_nodes": [
+            207,
+            104
+          ],
+          "grip_mm": 5.07831019037188
+        },
+        {
+          "case_center_mm": [
+            66.035,
+            117.00908
+          ],
+          "board_center_mm": [
+            66.04,
+            117.602
+          ],
+          "screw_axis_mm": [
+            66.03919890860216,
+            117.50700337767809
+          ],
+          "bearing_nodes": [
+            185,
+            116
+          ],
+          "grip_mm": 5.078304538760227
+        }
+      ],
+      "coarse_input_sha256": "28411303d0de2d20f74e704ca03d5b09363e8849d8564f4fb9a92d641d721313"
+    },
+    "stand3_nylon_mesh2_basis": {
+      "input_sha256": "3942f930e9cd0637dded8976595f816a76060faba0a474dc6d2316013967600e",
+      "parent": "stand3_nylon_mesh2_static"
+    }
+  },
+  "reference_spectrum": "stand3_nylon_psd_X_private1",
+  "scope": "Same STEP, material axes, side clearance, seating, board mesh, support patches and mode extraction. The PLA tetrahedral mesh and sampling of its screw-bearing footprint change from 3 to 2 mm. Compare local layer-normal stress on both meshes and outside the rigid bearing."
+}
