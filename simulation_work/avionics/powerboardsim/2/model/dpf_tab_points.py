@@ -3,7 +3,13 @@ import os,sys,json,struct
 from dpf_export_u import dpf
 def run(path,out):
     q=json.load(open(os.path.join(out,'request.json')))
-    dpf.DataProcessingCore.Initialization();src=dpf.DataSources(path)
+    dpf.DataProcessingCore.Initialization()
+    if 'domains' in q:
+        src=dpf.DataSources()
+        for index,name in enumerate(q['domains']):
+            src.SetDomainResultFilePath(os.path.join(path,name),'rst',index)
+    else:
+        src=dpf.DataSources(path)
     points=dpf.Scoping();points.Location='Nodal';points.Ids=q['nodes']
     binary=os.path.join(out,'displacements.bin')
     with open(binary+'.tmp','wb') as b:

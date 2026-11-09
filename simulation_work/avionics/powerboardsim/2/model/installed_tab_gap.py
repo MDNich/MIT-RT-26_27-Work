@@ -65,7 +65,30 @@ def triangles(domain, rst, z_mm, subdivisions, field):
     return facets
 
 
-def gap_on_overlap(tab, pcb):
+def area_below_gap(xy, gap, starts, area, minima, maxima, limit):
+    """Clip each convex overlap polygon at its affine gap contour and sum projected areas."""
+    total = float(area[maxima <= limit].sum())
+    ends = np.r_[starts[1:], len(xy)]
+    for i in np.flatnonzero((minima < limit) & (maxima > limit)):
+        a,b = starts[i],ends[i]
+        points = xy[a:b]
+        height = gap[a:b] - limit
+        assert np.array_equal(points[0], points[-1])
+        clipped = []
+        for j in range(len(points)-1):
+            first, last = height[j], height[j+1]
+            if first <= 0:
+                clipped.append(points[j])
+            if (first < 0 < last) or (last < 0 < first):
+                clipped.append(points[j] + first/(first-last)*(points[j+1]-points[j]))
+        if len(clipped) >= 3:
+            q = np.array(clipped) - clipped[0]
+            total += .5*abs(np.sum(q[:-1,0]*q[1:,1] - q[1:,0]*q[:-1,1]))
+    assert -1e-10 <= total <= float(area.sum())+1e-8
+    return total
+
+
+def overlap_vertices(tab, pcb):
     """Intersect projected triangles and evaluate both affine heights at every overlap vertex."""
     tab_polys = shapely.polygons(tab[:, :, :2])
     pcb_polys = shapely.polygons(pcb[:, :, :2])
@@ -95,10 +118,19 @@ def gap_on_overlap(tab, pcb):
     # Affine separation reaches its extrema at the vertices of each convex overlap.
     starts = np.flatnonzero(np.r_[True, np.diff(index) != 0])
     assert len(starts) == len(area)
+    return xy, gap, starts, area
+
+
+def gap_on_overlap(tab, pcb, *, seating_area=False):
+    xy, gap, starts, area = overlap_vertices(tab,pcb)
     minima, maxima = np.minimum.reduceat(gap, starts), np.maximum.reduceat(gap, starts)
-    return dict(projected_overlap_mm2=float(sum(area)), minimum_gap_mm=float(min(gap)), maximum_gap_mm=float(max(gap)),
+    row = dict(projected_overlap_mm2=float(sum(area)), minimum_gap_mm=float(min(gap)), maximum_gap_mm=float(max(gap)),
                 area_over_10um_crossing_lower_mm2=float(sum(area[maxima < -.010])),
                 area_over_10um_crossing_upper_mm2=float(sum(area[minima < -.010])))
+    if seating_area:
+        row['area_gap_le_50um_mm2'] = area_below_gap(xy,gap,starts,area,minima,maxima,.050)
+        row['area_gap_le_zero_mm2'] = area_below_gap(xy,gap,starts,area,minima,maxima,0.)
+    return row
 
 
 def plane_controls():
@@ -110,6 +142,12 @@ def plane_controls():
         assert np.allclose([rec['minimum_gap_mm'], rec['maximum_gap_mm']], 3. - travel)
         assert rec['area_over_10um_crossing_lower_mm2'] == (2. if travel > 3.01 else 0.)
     incline = tri + [1., 0., 2.]
+    wedge=tri.copy()
+    wedge[:,:,2]=tri[:,:,0]
+    clipped=gap_on_overlap(tri,wedge,seating_area=True)
+    assert np.isclose(clipped['area_gap_le_50um_mm2'],2*.05-.05**2/2,rtol=0,atol=1e-10)
+    assert clipped['area_gap_le_zero_mm2']==0.
+    assert gap_on_overlap(tri,tri,seating_area=True)['area_gap_le_zero_mm2']==2.
     incline[0, 1, 2] += 4.
     rec = gap_on_overlap(incline, pcb)
     assert np.allclose([rec['projected_overlap_mm2'], rec['minimum_gap_mm'], rec['maximum_gap_mm']], [.5, -1., 1.])
