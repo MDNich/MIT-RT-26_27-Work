@@ -1,0 +1,36 @@
+/batch
+resume,file,rdb
+/post1
+file,file,rst
+set,last
+*get,nset,active,0,set,nset
+*cfopen,case_contact,csv
+*vwrite
+('set,time_s,n_contact,far,near,sliding,sticking,p_max_Pa,pen_max_m')
+*do,ii,1,nset
+ allsel,all
+ set,,,,,,,ii
+ *get,tcur,active,0,set,time
+ esel,s,type,,853
+ *get,countc,elem,0,count
+ etable,eras
+ etable,cs,nmisc,41
+ etable,cpres,smisc,13
+ etable,cpen,cont,pene,max
+ esort,etab,cpres,0,0
+ *get,pmax,sort,0,max
+ esort,etab,cpen,0,0
+ *get,gmax,sort,0,max
+ *do,jj,0,3
+  esel,s,type,,853
+  esel,r,etab,cs,jj,jj
+  *get,ntemp,elem,0,count
+  cnt%jj%=ntemp
+ *enddo
+ *vwrite,ii,tcur,countc,cnt0,cnt1,cnt2,cnt3,pmax,gmax
+ (F6.0,',',E16.8,5(',',F10.0),2(',',E16.8))
+*enddo
+*cfclos
+allsel,all
+finish
+/exit,nosave

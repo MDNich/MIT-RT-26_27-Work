@@ -24,9 +24,20 @@ def audit(case,campaign):
         data=np.loadtxt(d/'bolt_preload_audit.csv',skiprows=1,delimiter=',');assert data.shape==(12,5)
         assert abs(t[-1]-2)<1e-8 and np.max(np.abs(data[6:,4]-750))<1
         result['locked_bolt_reactions_N']=data[6:,4].tolist()
+        if not case.startswith('bare'):
+            with (d/'case_contact.csv').open() as f:
+                rows=list(csv.DictReader(f))
+            last={key:float(value) for key,value in rows[-1].items()}
+            assert abs(last['time_s']-2)<1e-8 and last['n_contact']>0
+            assert last['n_contact']==sum(last[k] for k in ('far','near','sliding','sticking'))
+            assert np.all(np.isfinite(list(last.values())))
+            result['installed_contact_summary']=last
+            result['contact_scope']='Engineering interpretation requires penetration, seating loads and PLA stress review.'
     elif '_psd_' in case:
         # Workbench writes the statistical result sets after the modal basis; select PSD labels in the field audit.
         assert re.search(r'PSD ANALYSIS|POWER SPECTRAL DENSITY',lst,re.I)
+        from psd_fields import recover
+        result['native_psd_fields']=recover(d/'file.rst')
     else:
         assert np.all(np.diff(t)>0)
         if case.endswith('_basis'):assert len(t)>=20 and t[-1]<=4000.0001

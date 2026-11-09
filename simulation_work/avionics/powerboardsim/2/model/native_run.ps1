@@ -49,5 +49,11 @@ try {
     Copy-Item "$work\solve.out" $out
     Get-ChildItem $work -Filter '*.err' | Copy-Item -Destination $out
     if ($p.ExitCode -ne 0 -or !(Select-String -Path "$work\solve.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native solve failed. Inspect solve.out.'}
+    if ($Case -match '^(flush|stand3)_(nylon|aluminium)_static$') {
+        Copy-Item -LiteralPath "$PSScriptRoot\contact_post.inp" -Destination $work
+        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','casepost','-i','contact_post.inp','-o','contact_post.out') -Wait -PassThru
+        Copy-Item "$work\contact_post.out" $out
+        if ($pp.ExitCode -ne 0 -or !(Test-Path "$work\case_contact.csv") -or !(Select-String -Path "$work\contact_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Native contact readback failed'}
+    }
     Update 'solver_complete'
 } catch {$stage.failure=$_.Exception.Message;Update 'failed';throw}
