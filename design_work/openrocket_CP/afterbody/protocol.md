@@ -1,0 +1,12 @@
+# Supersonic afterbody study, November 9, 2026
+
+Reference: the preceding 6.6 research blend (fin 0.32, forebody 0.40). Fix the following alternatives before scoring the new Windows exports. No coefficients are fitted to Iris or the new family cases.
+
+* Center: apply the same 0.40 potential-load blend to an eligible, continuous main-stage nose/center section. Join equal-radius tubes. Approximate small monotone steps (end diameters within 10% of the nose base) by the Digital DATCOM effective center diameter and length, replacing the old contribution from each incorporated transition at the same blend weight. This extension to stepped cylinders is an engineering hypothesis. A true terminal taper is evaluated separately.
+* Tail: SUPBOD charts 4.2.1.1-22 A/B and 4.2.2.1-24/-25A for the potential force and its first moment about the beginning of an exposed conical boattail/flare. Exclude internal transitions and out-of-range moment queries. Use the established Mach/incidence envelope. Evaluate full in-domain chart effect.
+* Crossflow: substitute chart 4.2.1.2-35B, as a function of normal Mach, for the constant 1.1 multiplier of the existing body lift term, with the same envelope.
+* Combined: apply all three. Evaluate M=1.50–3.00 step 0.01 at 0/2/4 degrees, using nose-referenced CP in each configuration's maximum body diameters; at positive incidence also score CN and nose pitching moment. For the matched interventions convert both members to a common dimensional force and first moment before subtraction. Retain per-rocket scores, Iris near-burnout replay and a true OpenRocket flight; compare the earlier measured ARCAS/Yuska fixtures and a separate measured flare wherever geometry allows. Treat straight bodies and segmentation as controls. Family B is reserved for confirmation. Report regressions and don't promote on aggregate CP alone.
+
+Numerical implementation check: the first ARCAS dense sweep exposed an abrupt switch at the edge of the boattail CP table (Mach 2.527). Retain the same chart domain, but bring its weight continuously to zero within the final 10% of each Mach-dependent high-end axis. No RASAero or tunnel error metric selected this fade. Repeat the regression and the flight on this revision.
+
+A sixth diagnostic, segments, joins only touching equal-diameter tubes. It uses the exact same chart law and separates a geometry-representation correction from the stepped-body hypothesis. It was added after the pilot Iris run.
