@@ -1,0 +1,760 @@
+From 18bbfbd4219b1308f6ff0b45e0bb377c53524651 Mon Sep 17 00:00:00 2001
+From: MDNich <71262643+MDNich@users.noreply.github.com>
+Date: Sun, 8 Nov 2026 19:05:07 -0500
+Subject: [PATCH] Add opt-in supersonic finite-wing pressure integration and
+ tunnel benchmarks
+
+---
+ .../aerodynamics/BarrowmanCalculator.java     |  23 +++-
+ .../aerodynamics/barrowman/FinSetCalc.java    |  32 ++++-
+ .../barrowman/FiniteWingPressure.java         |  79 ++++++++++++
+ .../core/file/openrocket/OpenRocketSaver.java |   1 +
+ .../importt/SimulationConditionsHandler.java  |   6 +-
+ .../core/simulation/SimulationOptions.java    |  19 ++-
+ .../main/resources/l10n/messages.properties   |   2 +
+ .../aerodynamics/FiniteWingPressureTest.java  |  33 +++++
+ .../simulation/SimulationOptionsPanel.java    |   9 +-
+ .../finite-wing/CompareFlights.java           | 107 ++++++++++++++++
+ .../finite-wing/FinModelBenchmark.java        | 115 ++++++++++++++++++
+ sim/verification/finite-wing/README.md        |  44 +++++++
+ .../finite-wing/benchmark-results.csv         |  33 +++++
+ sim/verification/finite-wing/measurements.csv |  17 +++
+ 14 files changed, 507 insertions(+), 13 deletions(-)
+ create mode 100644 clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FiniteWingPressure.java
+ create mode 100644 clone/openrocket-release-24.12.RC.01/core/src/test/java/info/openrocket/core/aerodynamics/FiniteWingPressureTest.java
+ create mode 100644 sim/verification/finite-wing/CompareFlights.java
+ create mode 100644 sim/verification/finite-wing/FinModelBenchmark.java
+ create mode 100644 sim/verification/finite-wing/README.md
+ create mode 100644 sim/verification/finite-wing/benchmark-results.csv
+ create mode 100644 sim/verification/finite-wing/measurements.csv
+
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/BarrowmanCalculator.java b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/BarrowmanCalculator.java
+index 8566c0f6..1da1ac20 100644
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/BarrowmanCalculator.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/BarrowmanCalculator.java
+@@ -15,6 +15,7 @@ import info.openrocket.core.rocketcomponent.ComponentAssembly;
+ import info.openrocket.core.rocketcomponent.ExternalComponent;
+ import info.openrocket.core.rocketcomponent.ExternalComponent.Finish;
+ import info.openrocket.core.rocketcomponent.FinSet;
++import info.openrocket.core.rocketcomponent.TrapezoidFinSet;
+ import info.openrocket.core.rocketcomponent.FlightConfiguration;
+ import info.openrocket.core.rocketcomponent.InstanceContext;
+ import info.openrocket.core.rocketcomponent.InstanceMap;
+@@ -59,14 +60,20 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
+ 	private final double stallAngle = 17.5 * Math.PI / 180;
+ 	private double stallMargin;
+ 	
+-	public BarrowmanCalculator() {
+-		
+-	}
++	private final boolean finiteWingFins;
++
++    public BarrowmanCalculator() {
++        this(false);
++    }
++
++    public BarrowmanCalculator(boolean finiteWingFins) {
++        this.finiteWingFins = finiteWingFins;
++    }
+ 	
+ 	
+ 	@Override
+ 	public BarrowmanCalculator newInstance() {
+-		return new BarrowmanCalculator();
++		return new BarrowmanCalculator(finiteWingFins);
+ 	}
+ 
+ 	/**
+@@ -1077,8 +1084,12 @@ public class BarrowmanCalculator extends AbstractAerodynamicCalculator {
+ 				continue;
+ 			}
+ 
+-			RocketComponentCalc calcObj = (RocketComponentCalc) Reflection.construct(BARROWMAN_PACKAGE, comp,
+-					BARROWMAN_SUFFIX, comp);
++			RocketComponentCalc calcObj;
++            if (finiteWingFins && comp instanceof TrapezoidFinSet fins) {
++                calcObj = new FinSetCalc(fins, true);
++            } else {
++                calcObj = (RocketComponentCalc) Reflection.construct(BARROWMAN_PACKAGE, comp, BARROWMAN_SUFFIX, comp);
++            }
+             //System.out.println("Got calc object: " + calcObj);
+ 			calcMap.put(comp, calcObj);
+ 		}
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FinSetCalc.java b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FinSetCalc.java
+index c2bfc1a9..4ebf6d07 100644
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FinSetCalc.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FinSetCalc.java
+@@ -10,6 +10,7 @@ import info.openrocket.core.aerodynamics.FlightConditions;
+ import info.openrocket.core.logging.Warning;
+ import info.openrocket.core.logging.WarningSet;
+ import info.openrocket.core.rocketcomponent.FinSet;
++import info.openrocket.core.rocketcomponent.TrapezoidFinSet;
+ import info.openrocket.core.rocketcomponent.RocketComponent;
+ import info.openrocket.core.rocketcomponent.TabControlledTrapezoidFinSet;
+ import info.openrocket.core.util.BugException;
+@@ -61,6 +62,7 @@ public class FinSetCalc extends RocketComponentCalc {
+ 	private final FinSet liveFinSet;
+ 	private final FinSet.CrossSection crossSection;
+ 	private final double leadingEdgeAngle;
++	private final FiniteWingPressure finiteWing;
+ 
+ 
+ 	/**
+@@ -68,7 +70,18 @@ public class FinSetCalc extends RocketComponentCalc {
+ 	 * @param component		The fin in consideration
+ 	 */
+ 	public FinSetCalc(FinSet component) {
+-		super(component);
++        this(component, false);
++    }
++
++    public FinSetCalc(FinSet component, boolean finiteWingEnabled) {
++        super(component);
++        if (finiteWingEnabled && component instanceof TrapezoidFinSet trapezoid
++                && trapezoid.getRootChord() > MathUtil.EPSILON && trapezoid.getSpan() > MathUtil.EPSILON) {
++            finiteWing = new FiniteWingPressure(trapezoid.getRootChord(), trapezoid.getTipChord(),
++                    trapezoid.getSpan(), trapezoid.getSweep());
++        } else {
++            finiteWing = null;
++        }
+ 
+ 
+         if (component instanceof TabControlledTrapezoidFinSet) {
+@@ -125,6 +138,20 @@ public class FinSetCalc extends RocketComponentCalc {
+ 		
+ 		// One fin without interference (both sub- and supersonic):
+ 		double cna1 = calculateFinCNa1(conditions);
++        double x = macLead + calculateCPPos(conditions) * macLength;
++        if (finiteWing != null) {
++            double weight = finiteWing.weight(conditions.getMach(), conditions.getAOA());
++            if (weight > 0) {
++                var pressure = finiteWing.at(conditions.getMach());
++                double candidate = pressure.force() / conditions.getRefArea();
++                double legacyLoad = (1 - weight) * cna1;
++                double blended = legacyLoad + weight * candidate;
++                // Blend force and first moment about the same origin.
++                double legacyMoment = legacyLoad == 0 ? 0 : legacyLoad * x;
++                x = (legacyMoment + weight * pressure.moment() / conditions.getRefArea()) / blended;
++                cna1 = blended;
++            }
++        }
+ 			
+ 		// Multiple fins with fin-fin interference
+ 		double cna;
+@@ -183,8 +210,7 @@ public class FinSetCalc extends RocketComponentCalc {
+ 		// (Barrowman thesis pdf-page 40)
+ 		
+ 		// TODO: LOW: fin-fin mach cone effect, MIL-HDBK page 5-25
+-		// Calculate CP position
+-		double x = macLead + calculateCPPos(conditions) * macLength;
++
+ 		
+ 		
+ 		// Calculate roll forces, reduce forcing above stall angle
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FiniteWingPressure.java b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FiniteWingPressure.java
+new file mode 100644
+index 00000000..ef02ea69
+--- /dev/null
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/aerodynamics/barrowman/FiniteWingPressure.java
+@@ -0,0 +1,79 @@
++package info.openrocket.core.aerodynamics.barrowman;
++
++/**
++ * Experimental small-incidence, supersonic pressure integral for an exposed
++ * trapezoidal panel. x is aft from the root leading edge, y is outboard.
++ * The body acts as an image plane at the root; FinSetCalc adds its usual
++ * body/fin interference factor once after this isolated-fin calculation.
++ */
++public final class FiniteWingPressure {
++    private static final double MIN_MACH = 1.1;
++    private static final double MAX_MACH = 5;
++    private static final int INTERVALS = 156;
++    private static final int STRIPS = 48;
++    private static final int CHORD_POINTS = 32;
++
++    /** Area times CN slope (m²/rad), and its first moment (m³/rad). */
++    public record Load(double force, double moment) { }
++
++    private final Load[] table = new Load[INTERVALS + 1];
++    private final double edgeCosine;
++    private final double aftLengthOverSpan;
++
++    public FiniteWingPressure(double root, double tip, double span, double sweep) {
++        if (!(root > 0 && tip >= 0 && span > 0 && Double.isFinite(root + tip + span + sweep))) {
++            throw new IllegalArgumentException("Invalid trapezoidal fin dimensions");
++        }
++        edgeCosine = span / Math.hypot(span, sweep);
++        aftLengthOverSpan = Math.max(tip, root - sweep) / span;
++        for (int i = 0; i <= INTERVALS; i++) {
++            double mach = MIN_MACH + (MAX_MACH - MIN_MACH) * i / INTERVALS;
++            double beta = Math.sqrt(mach * mach - 1);
++            double areaSlope = 0, firstMoment = 0;
++            for (int j = 0; j < STRIPS; j++) {
++                double fraction = (j + 0.5) / STRIPS;
++                double chord = root + fraction * (tip - root);
++                double area = chord * span / (STRIPS * CHORD_POINTS);
++                double tipDistance = span * (1 - fraction);
++                for (int k = 0; k < CHORD_POINTS; k++) {
++                    double x = sweep * fraction + chord * (k + 0.5) / CHORD_POINTS;
++                    // Rectangular-wing linear tip-cone solution, applied as a
++                    // local approximation downstream of the swept tip corner.
++                    double downstream = x - sweep;
++                    double relief = downstream <= beta * tipDistance ? 1 :
++                            2 / Math.PI * Math.asin(Math.sqrt(beta * tipDistance / downstream));
++                    // Two-face Ackeret pressure jump per radian of incidence.
++                    double load = 4 / beta * area * relief;
++                    areaSlope += load;
++                    firstMoment += load * x;
++                }
++            }
++            table[i] = new Load(areaSlope, firstMoment);
++        }
++    }
++
++    public Load at(double mach) {
++        double index = Math.max(0, Math.min(INTERVALS, (mach - MIN_MACH) * INTERVALS / (MAX_MACH - MIN_MACH)));
++        int i = Math.min((int)index, INTERVALS - 1);
++        double t = index - i;
++        Load a = table[i], b = table[i + 1];
++        return new Load(a.force + t * (b.force - a.force), a.moment + t * (b.moment - a.moment));
++    }
++
++    /** Smooth handover only inside the small-angle, supersonic-leading-edge envelope. */
++    public double weight(double mach, double incidence) {
++        if (!(mach > MIN_MACH && mach < MAX_MACH)) return 0;
++        // The single-tip solution requires its Mach cone to clear the image
++        // plane at the aftmost point of the panel (beta * span >= aft length).
++        double coneClearance = Math.sqrt(mach * mach - 1) - aftLengthOverSpan;
++        return smooth((mach - MIN_MACH) / 0.4) * smooth((mach * edgeCosine - 1) / 0.15)
++                * smooth(coneClearance / 0.15)
++                * smooth((MAX_MACH - mach) / 0.35)
++                * smooth((Math.toRadians(8) - Math.abs(incidence)) / Math.toRadians(5));
++    }
++
++    private static double smooth(double value) {
++        double t = Math.max(0, Math.min(1, value));
++        return t * t * (3 - 2 * t);
++    }
++}
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/OpenRocketSaver.java b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/OpenRocketSaver.java
+index ec6095ea..78244378 100644
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/OpenRocketSaver.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/OpenRocketSaver.java
+@@ -398,6 +398,7 @@ public class OpenRocketSaver extends RocketSaver {
+ 		writeElement("launchaltitude", cond.getLaunchAltitude());
+ 		writeElement("launchlatitude", cond.getLaunchLatitude());
+ 		writeElement("launchlongitude", cond.getLaunchLongitude());
++		if (cond.isFiniteWingFins()) writeElement("supersonicfinmodel", "finitewing-v1");
+ 		writeElement("geodeticmethod", cond.getGeodeticComputation().name().toLowerCase(Locale.ENGLISH));
+ 		
+ 		if (cond.isISAAtmosphere()) {
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/importt/SimulationConditionsHandler.java b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/importt/SimulationConditionsHandler.java
+index d2576ead..8109b88d 100644
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/importt/SimulationConditionsHandler.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/file/openrocket/importt/SimulationConditionsHandler.java
+@@ -138,7 +138,11 @@ class SimulationConditionsHandler extends AbstractElementHandler {
+ 					options.setLaunchLongitude(d);
+ 				}
+ 			}
+-			case "geodeticmethod" -> {
++			case "supersonicfinmodel" -> {
++                if ("finitewing-v1".equals(content)) options.setFiniteWingFins(true);
++                else warnings.add("Unknown supersonic fin model: " + content);
++            }
++            case "geodeticmethod" -> {
+ 				GeodeticComputationStrategy gcs = (GeodeticComputationStrategy) DocumentConfig.findEnum(content,
+ 						GeodeticComputationStrategy.class);
+ 				if (gcs != null) {
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/simulation/SimulationOptions.java b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/simulation/SimulationOptions.java
+index 1d26b9c1..9c71cac3 100644
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/simulation/SimulationOptions.java
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/java/info/openrocket/core/simulation/SimulationOptions.java
+@@ -69,6 +69,8 @@ public class SimulationOptions implements ChangeSource, Cloneable, SimulationOpt
+ 	private double launchAltitude = preferences.getLaunchAltitude();
+ 	private double launchLatitude = preferences.getLaunchLatitude();
+ 	private double launchLongitude = preferences.getLaunchLongitude();
++	private boolean finiteWingFins;
++
+ 	private GeodeticComputationStrategy geodeticComputation = GeodeticComputationStrategy.SPHERICAL;
+ 	
+ 	private boolean useISA = preferences.isISAAtmosphere();
+@@ -290,6 +292,15 @@ public class SimulationOptions implements ChangeSource, Cloneable, SimulationOpt
+ 		fireChangeEvent();
+ 	}
+ 
++	public boolean isFiniteWingFins() { return finiteWingFins; }
++
++	public void setFiniteWingFins(boolean enabled) {
++		if (finiteWingFins != enabled) {
++			finiteWingFins = enabled;
++			fireChangeEvent();
++		}
++	}
++
+ 	public GeodeticComputationStrategy getGeodeticComputation() {
+ 		return geodeticComputation;
+ 	}
+@@ -515,6 +526,10 @@ public class SimulationOptions implements ChangeSource, Cloneable, SimulationOpt
+ 			isChanged = true;
+ 			this.maxSimulationTime = src.maxSimulationTime;
+ 		}
++		if (finiteWingFins != src.finiteWingFins) {
++			isChanged = true;
++			finiteWingFins = src.finiteWingFins;
++		}
+ 		if (this.geodeticComputation != src.geodeticComputation) {
+ 			isChanged = true;
+ 			this.geodeticComputation = src.geodeticComputation;
+@@ -538,7 +553,7 @@ public class SimulationOptions implements ChangeSource, Cloneable, SimulationOpt
+ 		if (!(other instanceof SimulationOptions))
+ 			return false;
+ 		SimulationOptions o = (SimulationOptions) other;
+-		return ensembleSettings.equals(o.ensembleSettings) && (MathUtil.equals(this.launchAltitude, o.launchAltitude) &&
++		return finiteWingFins == o.finiteWingFins && ensembleSettings.equals(o.ensembleSettings) && (MathUtil.equals(this.launchAltitude, o.launchAltitude) &&
+ 				MathUtil.equals(this.launchLatitude, o.launchLatitude) &&
+ 				MathUtil.equals(this.launchLongitude, o.launchLongitude) &&
+ 				MathUtil.equals(this.launchPressure, o.launchPressure) &&
+@@ -608,7 +623,7 @@ public class SimulationOptions implements ChangeSource, Cloneable, SimulationOpt
+ 		GravityModel gravityModel = new WGSGravityModel();
+ 		conditions.setGravityModel(gravityModel);
+ 
+-		conditions.setAerodynamicCalculator(new BarrowmanCalculator());
++		conditions.setAerodynamicCalculator(new BarrowmanCalculator(finiteWingFins));
+ 		conditions.setMassCalculator(new MassCalculator());
+ 
+ 		conditions.setTimeStep(getTimeStep());
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/main/resources/l10n/messages.properties b/clone/openrocket-release-24.12.RC.01/core/src/main/resources/l10n/messages.properties
+index 4f6fd373..d6aa67e0 100644
+--- a/clone/openrocket-release-24.12.RC.01/core/src/main/resources/l10n/messages.properties
++++ b/clone/openrocket-release-24.12.RC.01/core/src/main/resources/l10n/messages.properties
+@@ -568,6 +568,8 @@ simedtdlg.lbl.ttip.Direction3 =  0 is North.
+ simedtdlg.border.Simopt = Simulator options
+ simedtdlg.lbl.Calcmethod = Calculation method:
+ simedtdlg.lbl.ttip.Calcmethod = <html>The Extended Barrowman method calculates aerodynamic forces according  <br>to the Barrowman equations extended to accommodate more components.
++simedtdlg.finiteWingFins = Experimental supersonic trapezoidal fins
++simedtdlg.finiteWingFins.tip = Use finite-wing pressure loads at small incidence with supersonic leading edges.
+ simedtdlg.lbl.ExtBarrowman = Extended Barrowman
+ simedtdlg.lbl.Simmethod = Simulation method:
+ simedtdlg.lbl.ttip.Simmethod1 = <html>The six degree-of-freedom simulator allows the rocket total freedom during flight. <br>
+diff --git a/clone/openrocket-release-24.12.RC.01/core/src/test/java/info/openrocket/core/aerodynamics/FiniteWingPressureTest.java b/clone/openrocket-release-24.12.RC.01/core/src/test/java/info/openrocket/core/aerodynamics/FiniteWingPressureTest.java
+new file mode 100644
+index 00000000..bbeb77c9
+--- /dev/null
++++ b/clone/openrocket-release-24.12.RC.01/core/src/test/java/info/openrocket/core/aerodynamics/FiniteWingPressureTest.java
+@@ -0,0 +1,33 @@
++package info.openrocket.core.aerodynamics;
++
++import info.openrocket.core.aerodynamics.barrowman.FiniteWingPressure;
++import org.junit.jupiter.api.Test;
++import static org.junit.jupiter.api.Assertions.*;
++
++class FiniteWingPressureTest {
++    @Test void rectangularPanelMatchesAnalyticTipConeForceAndMoment() {
++        double beta = Math.sqrt(3);
++        var wing = new FiniteWingPressure(1, 1, 1, 0);
++        var load = wing.at(2);
++        // At each x the tip region has width x/beta and its mean pressure is
++        // exactly half the 2-D pressure. Integrate this deficit with 1 and x.
++        assertEquals(4 / beta * (1 - 1 / (4 * beta)), load.force(), 0.004);
++        assertEquals(4 / beta * (0.5 - 1 / (6 * beta)), load.moment(), 0.004);
++    }
++
++    @Test void widePanelApproachesTwoFaceAckeretSlopeAtMidchord() {
++        var load = new FiniteWingPressure(1, 1, 1000, 0).at(3);
++        assertEquals(4 / Math.sqrt(8), load.force() / 1000, 0.001);
++        assertEquals(0.5, load.moment() / load.force(), 0.001);
++    }
++
++    @Test void experimentalEnvelopeRespectsIncidenceAndSweptLeadingEdge() {
++        var iris = new FiniteWingPressure(.2032, .0762, .0889, .127);
++        assertEquals(0, iris.weight(1.5, 0));
++        assertEquals(1, iris.weight(2.8, 0));
++        assertEquals(0, iris.weight(2.8, Math.toRadians(10)));
++        assertEquals(0, iris.weight(5, 0));
++        assertEquals(0, new FiniteWingPressure(1, 1, 0.1, 0).weight(3, 0));
++        assertTrue(iris.at(2.8).moment() / iris.at(2.8).force() < .2032);
++    }
++}
+diff --git a/clone/openrocket-release-24.12.RC.01/swing/src/main/java/info/openrocket/swing/gui/simulation/SimulationOptionsPanel.java b/clone/openrocket-release-24.12.RC.01/swing/src/main/java/info/openrocket/swing/gui/simulation/SimulationOptionsPanel.java
+index 1bcb032e..3db5fbdf 100644
+--- a/clone/openrocket-release-24.12.RC.01/swing/src/main/java/info/openrocket/swing/gui/simulation/SimulationOptionsPanel.java
++++ b/clone/openrocket-release-24.12.RC.01/swing/src/main/java/info/openrocket/swing/gui/simulation/SimulationOptionsPanel.java
+@@ -10,6 +10,7 @@ import java.util.Set;
+ 
+ import javax.swing.BorderFactory;
+ import javax.swing.JButton;
++import javax.swing.JCheckBox;
+ import javax.swing.JComboBox;
+ import javax.swing.JComponent;
+ import javax.swing.JDialog;
+@@ -39,6 +40,7 @@ import info.openrocket.core.util.GeodeticComputationStrategy;
+ import net.miginfocom.swing.MigLayout;
+ import info.openrocket.swing.gui.SpinnerEditor;
+ import info.openrocket.swing.gui.adaptors.DoubleModel;
++import info.openrocket.swing.gui.adaptors.BooleanModel;
+ import info.openrocket.swing.gui.adaptors.EnumModel;
+ import info.openrocket.swing.gui.components.BasicSlider;
+ import info.openrocket.swing.gui.components.DescriptionArea;
+@@ -115,7 +117,12 @@ class SimulationOptionsPanel extends JPanel {
+ 		label.setToolTipText(tip);
+ 		subsub.add(label, "growx, span 3, wrap");
+ 		
+-		// Simulation method
++		JCheckBox finiteWing = new JCheckBox(new BooleanModel(conditions, "FiniteWingFins"));
++        finiteWing.setText(trans.get("simedtdlg.finiteWingFins"));
++        finiteWing.setToolTipText(trans.get("simedtdlg.finiteWingFins.tip"));
++        subsub.add(finiteWing, "span 4, wrap");
++
++        // Simulation method
+ 		tip = trans.get("simedtdlg.lbl.ttip.Simmethod1")
+ 				+ trans.get("simedtdlg.lbl.ttip.Simmethod2");
+ 		label = new JLabel(trans.get("simedtdlg.lbl.Simmethod"));
+diff --git a/sim/verification/finite-wing/CompareFlights.java b/sim/verification/finite-wing/CompareFlights.java
+new file mode 100644
+index 00000000..972e5b70
+--- /dev/null
++++ b/sim/verification/finite-wing/CompareFlights.java
+@@ -0,0 +1,107 @@
++import com.google.inject.AbstractModule;
++import com.google.inject.Guice;
++import com.google.inject.util.Modules;
++import info.openrocket.core.database.motor.MotorDatabase;
++import info.openrocket.core.database.motor.ThrustCurveMotorSetDatabase;
++import info.openrocket.core.document.Simulation;
++import info.openrocket.core.file.GeneralRocketLoader;
++import info.openrocket.core.file.GeneralRocketSaver;
++import info.openrocket.core.file.motor.RASPMotorLoader;
++import info.openrocket.core.plugin.PluginModule;
++import info.openrocket.core.models.wind.PinkNoiseWindModel;
++import info.openrocket.core.models.wind.MultiLevelPinkNoiseWindModel;
++import info.openrocket.core.simulation.SimulationStatus;
++import info.openrocket.core.simulation.listeners.AbstractSimulationListener;
++import info.openrocket.core.simulation.FlightDataType;
++import info.openrocket.core.startup.Application;
++import info.openrocket.swing.startup.GuiModule;
++import java.nio.file.*;
++import java.io.PrintWriter;
++import static info.openrocket.core.simulation.FlightDataType.*;
++
++/** Compare the first simulation in an .ork with identical inputs and wind realization. */
++public final class CompareFlights {
++    public static void main(String[] args) throws Exception {
++        if (args.length < 3) throw new IllegalArgumentException("Usage: CompareFlights rocket.ork output-directory motor.eng ...");
++        Path source = Path.of(args[0]), output = Path.of(args[1]);
++        Files.createDirectories(output);
++        var database = new ThrustCurveMotorSetDatabase();
++        System.setProperty("openrocket.bypass.presets", "true");
++        System.setProperty("openrocket.bypass.motors", "true");
++        var gui = new GuiModule();
++        Application.setInjector(Guice.createInjector(Modules.override(gui).with(new AbstractModule() {
++            @Override protected void configure() {
++                bind(ThrustCurveMotorSetDatabase.class).toInstance(database);
++                bind(MotorDatabase.class).toInstance(database);
++            }
++        }), new PluginModule()));
++        gui.startLoader();
++        for (int i = 2; i < args.length; i++) {
++            Path curve = Path.of(args[i]);
++            try (var stream = Files.newInputStream(curve)) {
++                for (var definition : new RASPMotorLoader().load(stream, curve.getFileName().toString())) {
++                    var motor = definition.build();
++                    database.addMotor(motor);
++                    System.out.println("MOTOR " + motor.getDesignation() + " " + motor.getDigest());
++                }
++            }
++        }
++        var loader = new GeneralRocketLoader(source.toFile());
++        var document = loader.load();
++        System.out.println("LOAD " + loader.getWarnings());
++        Simulation legacy = document.getSimulation(0);
++        legacy.setName("Legacy fins");
++        legacy.getOptions().setFiniteWingFins(false);
++        var candidate = legacy.duplicateSimulation(document.getRocket());
++        candidate.setName("Experimental finite-wing fins");
++        candidate.getOptions().setFiniteWingFins(true);
++        document.addSimulation(candidate);
++        Path copy = output.resolve("fin-model-comparison.ork");
++        if (copy.toAbsolutePath().normalize().equals(source.toAbsolutePath().normalize()))
++            throw new IllegalArgumentException("Use a separate output directory");
++        var storage = document.getDefaultStorageOptions().clone();
++        storage.setSaveSimulationData(false);
++        new GeneralRocketSaver().save(copy.toFile(), document, storage);
++        var reopened = new GeneralRocketLoader(copy.toFile()).load();
++        for (boolean useCandidate : new boolean[]{false, true}) {
++            var sim = reopened.getSimulation(useCandidate ? reopened.getSimulationCount() - 1 : 0);
++            if (sim.getOptions().isFiniteWingFins() != useCandidate) throw new AssertionError("Model selection lost on reload");
++            sim.getOptions().setRandomSeed(20261108);
++            sim.simulate(new AbstractSimulationListener() {
++                @Override public boolean isSystemListener() { return true; }
++                @Override public void startSimulation(SimulationStatus status) {
++                    // The wind generator has its own seed independent of RK4 noise.
++                    var conditions = status.getSimulationConditions();
++                    var wind = conditions.getWindModel();
++                    if (wind instanceof PinkNoiseWindModel average)
++                        conditions.setWindModel(average.withSeed(20261108));
++                    else if (wind instanceof MultiLevelPinkNoiseWindModel multi)
++                        conditions.setWindModel(multi.withSeed(20261108));
++                    else throw new IllegalArgumentException("Unsupported wind model for matched runs");
++                }
++            });
++            if (sim.hasErrors()) throw new AssertionError("Simulation failed: " + sim.getStatus());
++            var data = sim.getSimulatedData();
++            var branch = data.getBranch(0);
++            String model = useCandidate ? "candidate" : "legacy";
++            System.out.println("FLIGHT " + model + " branches=" + data.getBranchCount() + " apogee_m=" + data.getMaxAltitude());
++            for (var event : branch.getEvents()) {
++                System.out.println("EVENT " + model + " " + event.getTime() + " " + event.getType().name() + " " + event.getData());
++            }
++            try (var out = new PrintWriter(Files.newBufferedWriter(output.resolve(model + "-sustainer.csv")))) {
++                out.println("time_s,mach,cp_m,cg_m,margin_cal,diameter_m,aoa_rad,altitude_m");
++                var types = new FlightDataType[]{TYPE_TIME, TYPE_MACH_NUMBER, TYPE_CP_LOCATION, TYPE_CG_LOCATION,
++                        TYPE_STABILITY, TYPE_REFERENCE_LENGTH, TYPE_AOA, TYPE_ALTITUDE};
++                for (int row = 0; row < branch.getLength(); row++) {
++                    for (int column = 0; column < types.length; column++) {
++                        if (column > 0) out.print(',');
++                        out.print(branch.getByIndex(types[column], row));
++                    }
++                    out.println();
++                }
++                if (out.checkError()) throw new java.io.IOException("Could not write trajectory");
++            }
++        }
++        System.exit(0);
++    }
++}
+diff --git a/sim/verification/finite-wing/FinModelBenchmark.java b/sim/verification/finite-wing/FinModelBenchmark.java
+new file mode 100644
+index 00000000..a4ac150f
+--- /dev/null
++++ b/sim/verification/finite-wing/FinModelBenchmark.java
+@@ -0,0 +1,115 @@
++import com.google.inject.Guice;
++import info.openrocket.core.aerodynamics.BarrowmanCalculator;
++import info.openrocket.core.aerodynamics.FlightConditions;
++import info.openrocket.core.plugin.PluginModule;
++import info.openrocket.core.rocketcomponent.*;
++import info.openrocket.core.rocketcomponent.position.AxialMethod;
++import info.openrocket.core.startup.Application;
++import info.openrocket.swing.startup.GuiModule;
++import java.nio.file.*;
++import java.util.Locale;
++
++/** Offline, geometry-based comparison with two published wind-tunnel datasets. */
++public final class FinModelBenchmark {
++    static final double INCH = 0.0254;
++
++    static Rocket makeModel(boolean arcas) {
++        Rocket rocket = new Rocket();
++        AxialStage stage = new AxialStage();
++        rocket.addChild(stage);
++        // Dimensions in inches from the drawings. Convert at the OR boundary.
++        double noseLength = arcas ? 10.6 : 25.9;
++        double radius = arcas ? 1.125 : 3.0;
++        double bodyEnd = arcas ? 39.14 : 61.7;
++        NoseCone nose = new NoseCone(arcas ? Transition.Shape.OGIVE : Transition.Shape.POWER,
++                noseLength * INCH, radius * INCH);
++        if (!arcas) nose.setShapeParameter(.75);
++        stage.addChild(nose);
++        BodyTube tube = new BodyTube((bodyEnd - noseLength) * INCH, radius * INCH, .001);
++        stage.addChild(tube);
++        if (arcas) {
++            Transition tail = new Transition();
++            stage.addChild(tail);
++            tail.setShapeType(Transition.Shape.CONICAL);
++            tail.setLength((40.95 - bodyEnd) * INCH);
++            tail.setForeRadius(radius * INCH);
++            tail.setAftRadius(.735 * INCH);
++        }
++        double root = arcas ? 3.38 : 9.15;
++        double tip = arcas ? 2.165 : 6.54;
++        double height = arcas ? 2.103 : 4.95;
++        double sweep = arcas ? height * Math.tan(Math.toRadians(30)) : height;
++        double leadingStation = arcas ? 37.30 : bodyEnd - root;
++        TrapezoidFinSet fins = new TrapezoidFinSet(4, root * INCH, tip * INCH, sweep * INCH, height * INCH);
++        tube.addChild(fins);
++        fins.setAxialMethod(AxialMethod.TOP);
++        fins.setAxialOffset((leadingStation - noseLength) * INCH);
++        fins.setCantAngle(Math.toRadians(arcas ? 0 : .8));
++        fins.setThickness((arcas ? .15 : 2 * root * Math.tan(Math.toRadians(5))) * INCH);
++        rocket.enableEvents();
++        return rocket;
++    }
++
++    public static void main(String[] args) throws Exception {
++        System.setProperty("openrocket.bypass.presets", "true");
++        System.setProperty("openrocket.bypass.motors", "true");
++        var gui = new GuiModule();
++        Application.setInjector(Guice.createInjector(gui, new PluginModule()));
++        gui.startLoader();
++        var measurements = Files.readAllLines(Path.of(args[0]));
++        try (var out = new java.io.PrintWriter(Files.newBufferedWriter(Path.of(args[1])))) {
++            out.println("geometry,model,mach,measured_cna,predicted_cna,measured_cp_d,predicted_cp_d,measured_cm_alpha,predicted_cm_alpha");
++            for (String name : new String[]{"ARCAS", "Yuska-B"}) {
++                boolean arcas = name.equals("ARCAS");
++                var configuration = makeModel(arcas).getSelectedConfiguration();
++                double referenceStation = arcas ? 25.95 / 2.25 : 61.7 / 6.0;
++                double[][] squaredErrors = new double[2][3];
++                int supersonicPoints = 0;
++                for (boolean finite : new boolean[]{false, true}) {
++                    var solver = new BarrowmanCalculator(finite);
++                    var conditions = new FlightConditions(configuration);
++                    for (String row : measurements.subList(1, measurements.size())) {
++                        String[] fields = row.split(",");
++                        if (!fields[0].equals(name)) continue;
++                        double mach = Double.parseDouble(fields[1]);
++                        double measuredSlope = Double.parseDouble(fields[2]);
++                        double measuredCP = Double.parseDouble(fields[3]);
++                        conditions.setMach(mach);
++                        var cp = solver.getCP(configuration, conditions, null);
++                        double predictedCP = cp.x / conditions.getRefLength();
++                        double measuredMoment = measuredSlope * (referenceStation - measuredCP);
++                        double predictedMoment = cp.weight * (referenceStation - predictedCP);
++                        if (mach >= 1.5) {
++                            if (!finite) supersonicPoints++;
++                            double[] errors = {cp.weight - measuredSlope, predictedCP - measuredCP,
++                                    predictedMoment - measuredMoment};
++                            for (int i = 0; i < errors.length; i++) squaredErrors[finite ? 1 : 0][i] += errors[i] * errors[i];
++                        }
++                        out.printf(Locale.ROOT, "%s,%s,%.3f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f%n",
++                                name, finite ? "candidate" : "legacy", mach, measuredSlope, cp.weight,
++                                measuredCP, predictedCP, measuredMoment, predictedMoment);
++                    }
++                    // A dense sweep catches singularities or discontinuities a few tunnel points miss.
++                    double previousCP = Double.NaN, previousSlope = Double.NaN;
++                    for (int k = 750; k <= 5001; k++) {
++                        conditions.setMach(k / 1000.0);
++                        var cp = solver.getCP(configuration, conditions, null);
++                        double position = cp.x / conditions.getRefLength();
++                        if (!Double.isFinite(position + cp.weight) || Math.abs(position - previousCP) > .1
++                                || Math.abs(cp.weight - previousSlope) > .15)
++                            throw new AssertionError("Abrupt or invalid load: " + name + " M=" + conditions.getMach());
++                        previousCP = position;
++                        previousSlope = cp.weight;
++                    }
++                }
++                if (supersonicPoints != 5) throw new AssertionError("Incomplete benchmark for " + name);
++                for (int i = 0; i < 3; i++) {
++                    if (!(squaredErrors[1][i] < squaredErrors[0][i]))
++                        throw new AssertionError("Candidate failed supersonic error comparison for " + name + " metric " + i);
++                }
++            }
++            if (out.checkError()) throw new java.io.IOException("Could not write comparison");
++        }
++        System.exit(0);
++    }
++}
+diff --git a/sim/verification/finite-wing/README.md b/sim/verification/finite-wing/README.md
+new file mode 100644
+index 00000000..ca94799b
+--- /dev/null
++++ b/sim/verification/finite-wing/README.md
+@@ -0,0 +1,44 @@
++# Supersonic finite-wing experiment (MIT 6.6)
++
++In a flight simulation's **Simulation options**, enable **Experimental supersonic trapezoidal fins**. The choice is per simulation, defaults to legacy, and is saved in the .ork. FinModelBenchmark invokes the same Barrowman calculator as the flight integrator. The ordinary design-display CP and Component Analysis use their existing model selection.
++
++## Pressure audit and scope
++
++At zero incidence the legacy supersonic single-fin slope is the exposed area times 2/β, divided by the vehicle reference area, where β = √(Mach² − 1). Its origin is the one-surface pressure expansion in [OpenRocket technical documentation, eqs. 3.41–3.49](https://openrocket.sourceforge.net/techdoc.pdf#page=39). The two-face, infinite-span, thin-plate limit at small incidence is 4/β when referenced to one projected panel area. Applying that limit to an entire real fin would omit finite-span relief.
++
++The candidate integrates the two-face load and its axial first moment over a trapezoid. It applies the linear rectangular-wing tip-cone pressure distribution downstream of the tip leading edge as a **swept-planform approximation**. Inside the cone the local fraction of the 2-D pressure jump is (2/π) asin(√(β y/x)), with y measured inboard from the tip and x downstream from the tip leading edge. Outside the cone it is one. The mirrored fin root and the existing Barrowman body/fin multiplier approximate body interference. The existing instance orientation, fin-count interference and cant calculations apply afterwards. Existing drag, roll damping and body aerodynamics are used in both runs. There is no section-thickness, shock/body interaction, or full three-dimensional pressure solution in this experiment. [Rectangular finite-wing derivation](https://farside.ph.utexas.edu/teaching/336L/Fluidhtml/node220.html)
++
++The quadrature uses 48 spanwise strips and 32 chordwise midpoints. Per-geometry force and first-moment integrals are tabulated every 0.025 Mach from 1.1 to 5. Cubic smoothstep weights blend both force and first moment with legacy, after which their ratio gives the load position. The Mach handover spans 1.1–1.5 and ends at 4.65–5. The leading-edge-normal Mach handover spans 1–1.15. The model also requires β times panel span to exceed the aft length downstream of the tip leading edge, with the handover covering 0.15 span of clearance. The full incidence range is 0–3°, fading to legacy at 8°. These handover widths are engineering choices. Other planforms retain their existing calculation.
++
++## Wind-tunnel benchmarks
++
++The geometry is in FinModelBenchmark.java, and measurements.csv contains approximate graph readings. CNa is per radian, CP is aft of the nose in body diameters. The pitching-moment slope for comparison is CNa times (reference station minus CP) in calibers. It is reconstructed from the measured pair and is correlated with both measurements.
++
++- **ARCAS**, half-scale configuration 1, zero cant. [NASA TN D-4014, Fig. 1](https://ntrs.nasa.gov/api/citations/19670020031/downloads/19670020031.pdf#page=10) gives the 40.95 in vehicle, 2.25 in body diameter, 10.60 in ogive, and fin and tail stations. The fixture uses a straight conical boattail, planar trapezoids at the cylindrical mounting radius and omits the small anchor details, nose bluntness and reflexed lip. The moment reference station is 25.95 in. Both observables through M2.30 and CNa through M3.96 are read from the experimental series in [Fig. 6.7](https://openrocket.sourceforge.net/techdoc.pdf#page=103). Above M2.30 the CP values are read from the configuration 1 line in [NASA Fig. 7](https://ntrs.nasa.gov/api/citations/19670020031/downloads/19670020031.pdf#page=43). The historical simulated line is not used as ground truth.
++- **Yuska model B**, four swept wedge fins, 0.8° cant, 61.7 in vehicle, 6 in reference diameter. Dimensions follow [NASA TN D-3182, Fig. 1 and model description](https://ntrs.nasa.gov/api/citations/19660004864/downloads/19660004864.pdf#page=9). The fixture approximates the tabulated nose by a three-quarter power profile. Both coefficient series are the model B experimental circles in [Fig. 4(b)](https://ntrs.nasa.gov/api/citations/19660004864/downloads/19660004864.pdf#page=14). Its moment reference is the model base. The thick wedge is a challenging independent geometry for the thin-panel approximation.
++
++The numerical precision of the result file exceeds the precision of reading the graphs. Errors below are unweighted RMS over five supersonic points per configuration, M1.50–3.96 for ARCAS and M2.00–3.47 for Yuska B. The six additional ARCAS samples through M1.20 exercise the low-speed and transonic behavior.
++
++| Supersonic RMS error | ARCAS legacy | ARCAS candidate | Yuska B legacy | Yuska B candidate |
++| --- | ---: | ---: | ---: | ---: |
++| Normal-force slope, per radian | 5.67 | 2.88 | 4.68 | 2.23 |
++| CP, body diameters | 2.66 | 0.32 | 1.02 | 0.13 |
++| Pitching-moment slope, per radian | 18.58 | 2.65 | 6.14 | 4.85 |
++
++The candidate still underpredicts CNa at all ten supersonic points. On Yuska B at M3.47 it predicts 6.21/rad against approximately 9.12/rad. On the six low-speed ARCAS points the two models agree and share a CNa RMS error of 4.36/rad. The comparisons support keeping the candidate available for sensitivity studies. They do not establish a universal correction or an uncertainty interval for another rocket.
++
++## Reproduce
++
++From the repository root with JDK 17, build the current MIT shadow JAR. Run the following in bash. CompareFlights takes the operator's .ork, a separate output directory, and the associated RASP motor files. It creates a two-model setup, reopens it, fixes both solver and wind seeds to 20261108, runs both flights, and exports the primary branch history for each.
++
++```sh
++jar=clone/openrocket/build/libs/OpenRocket-MIT-v6.6.jar
++src=sim/verification/finite-wing
++out=build/finite-wing-benchmark
++mkdir -p "$out/classes"
++"$JAVA_HOME/bin/javac" -encoding UTF-8 -cp "$jar" -d "$out/classes" "$src"/*.java
++"$JAVA_HOME/bin/java" -Djava.awt.headless=true -cp "$jar:$out/classes" FinModelBenchmark "$src/measurements.csv" "$out/bench.csv"
++"$JAVA_HOME/bin/java" -Djava.awt.headless=true -cp "$jar:$out/classes" CompareFlights "$rocket_file" "$out/flight" "$booster_curve" "$sustainer_curve"
++```
++
++FiniteWingPressureTest checks the analytic finite rectangular-panel force and moment, the wide-panel limit, and the incidence, tip-cone and leading-edge envelopes. The benchmark sweeps each vehicle and model at 0.001 Mach from 0.75 through 5.001 and rejects nonfinite loads or large adjacent jumps. The per-point reference output is in [benchmark-results.csv](benchmark-results.csv).
+diff --git a/sim/verification/finite-wing/benchmark-results.csv b/sim/verification/finite-wing/benchmark-results.csv
+new file mode 100644
+index 00000000..6d1329bb
+--- /dev/null
++++ b/sim/verification/finite-wing/benchmark-results.csv
+@@ -0,0 +1,33 @@
++geometry,model,mach,measured_cna,predicted_cna,measured_cp_d,predicted_cp_d,measured_cm_alpha,predicted_cm_alpha
++ARCAS,legacy,0.600,12.90000,9.48918,13.65000,13.92132,-27.30500,-22.66005
++ARCAS,legacy,0.800,12.10000,9.80167,13.65000,14.07114,-25.61167,-24.87472
++ARCAS,legacy,0.900,12.70000,10.01459,13.68640,14.16742,-27.34395,-26.37925
++ARCAS,legacy,0.950,13.50000,10.13494,14.01400,14.21880,-33.48900,-27.21709
++ARCAS,legacy,1.000,16.85000,10.24338,14.70560,14.26555,-53.45269,-27.98714
++ARCAS,legacy,1.200,16.05000,10.15335,14.66920,14.29031,-50.33066,-27.99255
++ARCAS,legacy,1.500,14.25000,7.92852,14.19600,13.48595,-37.94300,-15.48136
++ARCAS,legacy,1.800,12.15000,6.13871,13.83200,12.37126,-27.92880,-5.14378
++ARCAS,legacy,2.300,10.00000,4.67263,13.10400,10.81001,-15.70667,3.37983
++ARCAS,legacy,2.960,9.35000,3.69394,12.21220,9.06957,-6.34740,9.10099
++ARCAS,legacy,3.960,7.85000,2.91842,11.06560,6.85532,3.67171,13.65239
++ARCAS,candidate,0.600,12.90000,9.48918,13.65000,13.92132,-27.30500,-22.66005
++ARCAS,candidate,0.800,12.10000,9.80167,13.65000,14.07114,-25.61167,-24.87472
++ARCAS,candidate,0.900,12.70000,10.01459,13.68640,14.16742,-27.34395,-26.37925
++ARCAS,candidate,0.950,13.50000,10.13494,14.01400,14.21880,-33.48900,-27.21709
++ARCAS,candidate,1.000,16.85000,10.24338,14.70560,14.26555,-53.45269,-27.98714
++ARCAS,candidate,1.200,16.05000,10.15335,14.66920,14.29031,-50.33066,-27.99255
++ARCAS,candidate,1.500,14.25000,10.78790,14.19600,14.52565,-37.94300,-32.28077
++ARCAS,candidate,1.800,12.15000,10.00798,13.83200,14.32419,-27.92880,-27.93083
++ARCAS,candidate,2.300,10.00000,7.75261,13.10400,13.44041,-15.70667,-14.78485
++ARCAS,candidate,2.960,9.35000,6.12376,12.21220,12.38940,-6.34740,-5.24237
++ARCAS,candidate,3.960,7.85000,4.76722,11.06560,10.96062,3.67171,2.73026
++Yuska-B,legacy,2.000,11.55000,6.36883,8.20000,7.49510,24.06250,17.75782
++Yuska-B,legacy,2.380,10.00000,5.50536,8.02000,7.15319,22.63333,17.23259
++Yuska-B,legacy,2.780,9.42000,4.91810,7.87000,6.84821,22.73360,16.89426
++Yuska-B,legacy,3.170,8.86000,4.51621,7.75000,6.59208,22.44533,16.67048
++Yuska-B,legacy,3.470,9.12000,4.27782,7.68000,6.41676,23.74240,16.54051
++Yuska-B,candidate,2.000,11.55000,9.58219,8.20000,8.24789,24.06250,19.50398
++Yuska-B,candidate,2.380,10.00000,8.23977,8.02000,8.01368,22.63333,18.70144
++Yuska-B,candidate,2.780,9.42000,7.29039,7.87000,7.79337,22.73360,18.15279
++Yuska-B,candidate,3.170,8.86000,6.61983,7.75000,7.59824,22.44533,17.77483
++Yuska-B,candidate,3.470,9.12000,6.21434,7.68000,7.45922,23.74240,17.55001
+diff --git a/sim/verification/finite-wing/measurements.csv b/sim/verification/finite-wing/measurements.csv
+new file mode 100644
+index 00000000..977a978c
+--- /dev/null
++++ b/sim/verification/finite-wing/measurements.csv
+@@ -0,0 +1,17 @@
++geometry,mach,cna_per_rad,cp_over_diameter
++ARCAS,0.6,12.9,13.6500
++ARCAS,0.8,12.1,13.6500
++ARCAS,0.9,12.7,13.6864
++ARCAS,0.95,13.5,14.0140
++ARCAS,1,16.85,14.7056
++ARCAS,1.2,16.05,14.6692
++ARCAS,1.5,14.25,14.1960
++ARCAS,1.8,12.15,13.8320
++ARCAS,2.3,10.0,13.1040
++ARCAS,2.96,9.35,12.2122
++ARCAS,3.96,7.85,11.0656
++Yuska-B,2.0,11.55,8.2
++Yuska-B,2.38,10.0,8.02
++Yuska-B,2.78,9.42,7.87
++Yuska-B,3.17,8.86,7.75
++Yuska-B,3.47,9.12,7.68
+-- 
+2.54.0 (Apple Git-157)
+

@@ -1,0 +1,28 @@
+Iris Nov 8 | RASAero II model
+
+Input: Iris_Nov8 (1).ork
+SHA-256: 255559ea24fbe9ea37e8a68e35a4312c8caf65875410cd5cefad488aa2a7b670
+
+In RASAero II choose File > Select Motor File and open Iris-motors.eng. Then open Iris_Nov8.CDX1. Keep the motor file with the design. It contains the two supplied thrust curves, whose OpenRocket motor digests matched the design.
+
+O6836 booster: 37,938.86 N s integrated impulse, final thrust sample at 5.52 s.
+N3366 sustainer: 17,770.75 N s integrated impulse, final thrust sample at 5.25 s.
+The source simulation requests separation 5 s after booster burnout and sustainer ignition 10 s after booster burnout. In RASAero the sustainer delay is measured from separation, so both delay fields are set to 5 s.
+
+OpenRocket loaded mass and CG from the nose: 73.2292 kg at 4.13688 m for the full stack, and 26.0760 kg at 2.41902 m for the sustainer. The mass calculation includes the recovery masses, camera shells and internal structure.
+
+The native OpenRocket exporter omitted the booster when it encountered the stepped motor case. RASAero represents that stage with one tube. The model uses the 6.17-inch airframe/fin-can diameter across the booster cylinder, including the 41-inch region where the source motor case is 6.00 inches in diameter. It preserves the 5-inch interstage shoulder, 3.5-inch aft boattail ending at 5 inches diameter, 239-inch stack length, fin count, fin dimensions and axial placement. The 19-degree included leading-edge bevels use the RASAero Hexagonal Blunt Base profile.
+
+The pairs of camera housings are represented by their combined exposed frontal areas as streamlined protuberances, 0.3694 in² on the sustainer and 0.4532 in² on the booster. RASAero calculates their drag from that approximation. The source pod drag overrides therefore do not transfer directly.
+
+Launch settings follow the ORK: sea level, standard atmosphere, vertical 1-m guide, 2 m/s mean wind. RASAero uses a steady wind. Both nozzle exit diameters are set to zero because the supplied files contain no exit diameter. This omits the nozzle-area thrust correction with altitude. The source represents recovery equipment as mass components only, so the CDX1 has no deployed recovery device.
+
+For the two short sustainer transitions, the as-run CDX1 retains the OpenRocket exporter’s diameter fields. The 0.25-inch record has Diameter and RearDiameter both 4.17 inches, and the 1-inch record has both 4.20 inches. Adjacent tube diameters remain 4.02, 4.17, and 4.20 inches. Explicitly entering the source forward diameters on those transition records produced a RASAero numeric overflow. Treat their local drag as an approximation.
+
+The native RASAero II 1.0.2.0 run was saved in Iris_Nov8.CDX1. Iris_Nov8-flight.csv is RASAero’s exported time history, with 16,547 samples and 24 columns. The installed Windows motor database also includes the two Iris motor curves.
+
+Apogee: 82,555.71 ft (25,162.98 m) at 76.39581 s.
+Peak speed: 2,849.81 ft/s (868.62 m/s) at 20.64 s.
+Peak Mach: 2.8073 at 20.66 s.
+The first zero-thrust booster sample is at 5.520 s. The first sustainer-stage sample is at 10.530 s and its first positive thrust sample is at 15.520 s. Sustainer thrust returns to zero at 20.770 s.
+The source ORK stores a 25,470 m apogee. This RASAero result is 307 m (1.21%) lower. The comparison uses the summary saved in the supplied ORK.
