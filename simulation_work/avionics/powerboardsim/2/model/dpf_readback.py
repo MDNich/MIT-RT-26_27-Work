@@ -19,7 +19,7 @@ def export(case,campaign,sets,job='file'):
     sets=sorted(set(sets));assert sets and sets[0]>0
     key='_'.join(map(str,sets))
     out=ROOT/'.runtime/post'/campaign/case/'dpf_u'/('sets_'+key);out.mkdir(parents=True,exist_ok=True)
-    lock=(out/'request.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    lock=(out/'request.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX)
     spec=dict(case=case,campaign=campaign,source_sha256=sha,sets=sets)
     if (out/'request.json').exists():assert json.loads((out/'request.json').read_text())==spec
     else:write_json(out/'request.json',spec)
@@ -30,14 +30,14 @@ def export(case,campaign,sets,job='file'):
         ps="& 'C:\\Program Files\\ANSYS Inc\\v261\\commonfiles\\IronPython\\ipy64.exe' '{}' '{}' '{}'\nexit $LASTEXITCODE".format(
             windows(ROOT/'model/dpf_export_u.py'),windows(path),windows(out))
         write_json(out/'dispatch.json',spec)
-        p=subprocess.run([sys.executable,str(ROOT/'model/guest_command.py')],input=ps,text=True,capture_output=True)
+        p=subprocess.run([sys.executable,str(ROOT/'model/guest_command.py'),'--timeout','3600'],input=ps,text=True,capture_output=True)
         (out/'export.log').write_text(p.stdout+p.stderr)
         if p.returncode or 'DPF_U_EXPORT_DONE' not in p.stdout:raise RuntimeError((p.stdout+p.stderr)[-2000:])
     for k in sets:
         stem=out/f'set_{k:04d}'
         m=json.loads(stem.with_suffix('.json').read_text())
         ids=np.fromfile(stem.with_suffix('.ids'),'<i4');u=np.fromfile(stem.with_suffix('.u'),'<f8').reshape(-1,3)
-        assert m['source_sha256']==sha and m['unit'].lower()=='m' and len(ids)==len(u)==m['nodes'] and len(np.unique(ids))==len(ids)
+        assert m['set']==k and m['components']==3 and m['source_sha256']==sha and m['unit'].lower()=='m' and len(ids)==len(u)==m['nodes'] and len(np.unique(ids))==len(ids)
         assert np.all(np.isfinite(u))
     return out
 

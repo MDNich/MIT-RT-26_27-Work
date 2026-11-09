@@ -26,6 +26,26 @@ def native_points(result):
     return ids[ix],sub.points[ix]
 
 
+def reference_geometry(result):
+    """Undo only the verified static restart displacement on prestressed native modes."""
+    ids,xyz=native_points(result);path=Path(result.filename).resolve()
+    if not path.parent.name.endswith(('_basis','_modal20')) or path.parent.parent.parent.name!='archive':
+        return ids,xyz,None
+    from audit_local import ROOT,read
+    from film_identity import verified
+    key=path.parent.name;camp=path.parent.parent.name
+    static=read(ROOT/'.runtime/receipts'/camp/key/'status.json')['parent']
+    assert static.endswith('_static')
+    proof=read(ROOT/'validation/global'/f'{static}.json')
+    file=path.parent.parent/static/'file.rst';verified(file,proof['rst_sha256'])
+    base=read_rst(file);b,ref=native_points(base);assert np.array_equal(b,ids)
+    n,u=base.nodal_displacement(base.nsets-1);i=np.searchsorted(n,ids)
+    assert np.array_equal(n[i],ids)
+    err=float(np.max(abs((xyz-ref)-u[i,:3])))
+    assert err<1.e-9, (key,static,err)
+    return ids,ref,dict(parent=static,parent_RST_sha256=proof['rst_sha256'],peak_coordinate_plus_static_displacement_error_m=err)
+
+
 def modes(result, ids):
     f=result.time_values
     if not len(f) or np.any(f<=0) or np.any(np.diff(f)<=0):raise ValueError('Expected a pure positive-frequency modal basis')
@@ -46,8 +66,8 @@ def modes(result, ids):
 
 def compare(reference,candidate):
     a,b=[read_rst(str(p)) for p in (reference,candidate)]
-    ids,xyz=native_points(a)
-    other,loc=native_points(b)
+    ids,xyz,pa=reference_geometry(a)
+    other,loc,pb=reference_geometry(b)
     if not np.array_equal(ids,other) or np.max(np.abs(xyz-loc))>1.e-9:
         raise ValueError('Reference and candidate must have the same original solid mesh in metres')
     left=modes(a,ids);right=modes(b,ids)
@@ -68,7 +88,7 @@ def compare(reference,candidate):
                             equal_rank_MAC=float(mac[i,i]) if i<len(right) else None,
                             equal_rank_sign=int(np.sign(signed[i,i])) if i<len(right) else None))
     return dict(method='Squared Euclidean correlation of three signed translations per common solid node; unweighted, not mass-normalized MAC. Assignment maximizes total score across the two supplied bases.',
-                common_original_solid_nodes=len(ids),coordinate_tolerance_m=1.e-9,
+                common_original_solid_nodes=len(ids),coordinate_tolerance_m=1.e-9,static_pose_checks=[pa,pb],
                 reference_rst_sha256=checksum(reference),candidate_rst_sha256=checksum(candidate),modes=records)
 
 

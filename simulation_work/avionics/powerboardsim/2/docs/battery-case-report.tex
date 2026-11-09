@@ -8,7 +8,7 @@
 \newcommand{\heading}[1]{\par\vspace{4pt}{\large\bfseries\color{B}#1}\par}
 \begin{document}
 {\LARGE\bfseries\color{B}Power-board battery case comparison}\par
-{\large Assembly fit, bolt tightening and the first side-pull comparison}\par
+{\large Assembly fit, bolt tightening, side pull and prestressed vibration modes}\par
 {\small 9 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02}
 \heading{The mounting height determines whether the cells are already loaded}
 Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. The raised case begins with an air gap. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
@@ -47,7 +47,7 @@ Existing bolt & Locked adjustment [$\mu$m] & Locked reaction [N]\\\midrule
 \end{tabular}
 \captionof{table}{Fresh MAPDL extraction after length locking. Every row agrees with the October export at its stored precision. The largest departure from the applied 750~N is 0.00321~N.}\end{center}
 
-The solver stored eight equilibrium states and completed the two load steps in approximately 59 minutes on 12 distributed processes. The largest total displacement at lock was 0.0474595~mm. The repeated result differs from the October Mechanical export by $3.4\times10^{-8}$ in relative terms. The model produced 45 warnings, including overlapping contacts, automatically removed redundant constraints and the fixed orientation of pretension elements during large-displacement analysis. The warning text printed in the main solver listing matched the reference run. This comparison establishes repeatability for the existing attachment. The final page compares the locked bare and raised assemblies. The vibration response requires separate modal and random-response results.
+The solver stored eight equilibrium states and completed the two load steps in approximately 59 minutes on 12 distributed processes. The largest total displacement at lock was 0.0474595~mm. The repeated result differs from the October Mechanical export by $3.4\times10^{-8}$ in relative terms. The model produced 45 warnings, including overlapping contacts, automatically removed redundant constraints and the fixed orientation of pretension elements during large-displacement analysis. The warning text printed in the main solver listing matched the reference run. This comparison establishes repeatability for the existing attachment. Page~7 compares the locked bare and raised assemblies. The vibration response requires separate modal and random-response results.
 
 \heading{How the side-pull comparison measures load transfer}
 The local model drives the outer cell sideways through its rigid pilot while the two nickel strips bend. In the washer-clamped fixture, each strip is compressed with 750~N and the clamp height is then locked. During the pull, the cell can translate in the other two directions and rotate. The cased fixture adds a deformable printed enclosure, four screw shanks and compression-only tab seats. The neighboring cells and screw tops are fixed in this local approximation. The native model check counted 9,502 potential PLA contact faces. These contacts carry compression between PLA and the cell or washer surfaces. Direct PLA-to-nickel contact is omitted from this local fixture. That omission matters most in the flush geometry, where the CAD also intersects the strips.
@@ -120,4 +120,21 @@ The archived cased result uses a compressed displacement record that the legacy 
 
 \heading{What remains to be established}
 This result concerns installation preload for one screw material and mounting height. It does not establish a reduction in vibration stress, cell motion under base excitation, or damage. The candidate flush model now starts from a checked open position and drives the screw heads towards the board relative to its flexible mounting points. A separate spring-and-mass verification reproduced the expected installation force and prestressed frequency; a converged flush installation and its stress and penetration limits still require verification.
+\newpage
+\heading{The raised enclosure adds resonances below the first bare-board mode}
+We extracted undamped natural frequencies about the verified bolt-locked states, using the same mounting constraints and a 1--4000~Hz search. The assembled mass rose from 251.82 to 325.82~g. The calculation found 38 modes without the case and 49 with the raised nylon-screw case. In the 20--2000~Hz excitation band the counts were 13 and 20, respectively. The lowest three cased frequencies were 253, 289 and 339~Hz, all below the lowest bare frequency of 486~Hz.
+
+\begin{center}\includegraphics[width=.96\linewidth]{figures/raised-prestressed-modes.pdf}
+\captionof{figure}{Each tick marks one native frequency in the excitation band. Lines connect five modes with a clear shape match (correlation above 0.94). Equal rank does not identify equal motion after adding the case.}\end{center}
+
+The 253~Hz mode carried 17.9\% of the assembled mass in X translation. In this shape the largest cell displacement was 2.8\% of the peak on the PCB, while the peak on the case was 126\% of the PCB peak. Those are amplitude ratios \emph{within a mode}; the actual vibration displacement requires a forcing spectrum and damping. The 253~Hz mode had no close counterpart in the bare set: its highest shape correlation was 0.56. Conversely, the bare 781.35~Hz mode matched cased mode 9 at 782.88~Hz (correlation 0.943). This battery-motion mode shifted by only 0.20\% even though its rank changed from fourth to ninth.
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Effective translational mass, fraction of whole assembly & X & Y & Z\\\midrule
+Bare, all 38 retained modes & 87.2\% & 89.0\% & 89.6\%\\
+Raised nylon, all 49 retained modes & 90.1\% & 91.5\% & 90.8\%\\\bottomrule
+\end{tabular}\end{center}
+
+\heading{How the shape comparison was made}
+Both modal meshes contain their assembly's static deformation. Before comparing vectors, we checked every original solid node against its own preload displacement and matched the 369,584 node IDs and their undeformed coordinates. The modal assurance criterion (MAC) is the squared, unweighted correlation of the global X, Y and Z eigenvector components at these nodes. It ranges from zero to one and is independent of the sign and normalization of a mode. It excludes the new case nodes so that both vectors describe the same structure. Modes with weak or competing matches remain ambiguous. Independently, all 38 bare frequencies and each printed per-mode translational mass fraction reproduced October. The new low frequencies establish additional ways the assembly can move. Their effect on PCB stress or cell travel requires the forced-response calculations.
 \end{document}

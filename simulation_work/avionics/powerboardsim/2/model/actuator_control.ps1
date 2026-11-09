@@ -1,4 +1,4 @@
-param([Parameter(Mandatory)][ValidateSet('board_actuator_control_v1')][string]$Trial)
+param([Parameter(Mandatory)][ValidateSet('board_actuator_control_v1','seat_surface_control_v1')][string]$Trial)
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot
 $src="$root\.runtime\$Trial"
@@ -13,7 +13,7 @@ try {
     Copy-Item -LiteralPath "$src\control.inp" -Destination $work
     if ((Get-FileHash "$src\control.inp").Hash -ne (Get-FileHash "$work\control.inp").Hash){throw 'Staging mismatch'}
     $p=Start-Process $exe -WorkingDirectory $work -Wait -PassThru -ArgumentList '-b nolist -s noread -p ansys -smp -np 1 -j file -i control.inp -o control.out'
-    foreach ($n in 'control.out','file.err','actuator_static.csv','actuator_modal.csv'){
+    foreach ($n in 'control.out','file.err','actuator_static.csv','actuator_modal.csv','seat_control.csv'){
         if (Test-Path "$work\$n"){Copy-Item "$work\$n" -Destination $src}
     }
     $p.ExitCode|Set-Content "$src\exit.txt" -Encoding UTF8

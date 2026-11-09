@@ -83,12 +83,18 @@ def run():
                 while not (probe/'exit.txt').is_file():
                     if (probe/'failed.txt').exists():raise RuntimeError('Unexpected preflight state; inspect guest before dispatch')
                     time.sleep(10)
+        controls=[]
         if case=='bare_basis':
+            controls=[('board_actuator_control_v1','control.inp','board_actuator_control','actuator_control.ps1','actuator_control.py'),
+                      ('board_initial_v1','pre.inp','board_initial_approach','flush_install_check.ps1','board_initial_check.py')]
+        # When reattaching, never insert a new control in front of an already dispatched case.
+        if case in ('flush_nylon_lateral_friction_locked_approach1','bare_modal20','bare_psd_X','bare_psd_Y','bare_psd_Z') and not (RECEIPTS/case/'dispatch.json').exists():
+            controls=[('seat_surface_control_v1','control.inp','seat_surface_control','actuator_control.ps1','seat_surface_control.py'),
+                      ('board_surface_initial_v1','pre.inp','board_surface_initial','flush_install_check.ps1','surface_board.py')]
+        if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.
-            for name,inp,publication,runner,auditor in [
-                    ('board_actuator_control_v1','control.inp','board_actuator_control','actuator_control.ps1','actuator_control.py'),
-                    ('board_initial_v1','pre.inp','board_initial_approach','flush_install_check.ps1','board_initial_check.py')]:
+            for name,inp,publication,runner,auditor in controls:
                 probe=RT/name
                 if not (probe/inp).is_file() or (ROOT/f'validation/{publication}.json').exists():continue
                 if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
