@@ -47,15 +47,26 @@ def audit(case,campaign):
     assert spec['basis_rst_sha256']==basis['rst_sha256']
     assert state['phase']=='solver_complete' and state['exit']==0
     assert all((folder/f['name']).stat().st_size==f['bytes'] for f in ledger['files'])
+    from film_identity import verified
+    hashes={f['name']:f['sha256'] for f in ledger['files']}
+    assert state['case']==spec['case']==case and state['motion_kind']==spec['kind']
+    assert state['input_sha256'].lower()==spec['files']['model.inp']==hashes['model.inp']
+    for name,expected in spec['files'].items():
+        assert expected==hashes[name]
+        verified(folder/name,expected)
+    for name in ['solve.out','motion_job.json',('combine.out' if spec['kind']=='enforced' else 'file.mcf')]:
+        verified(folder/name,hashes[name])
     listing=(folder/'solve.out').read_text(errors='replace')
     assert re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',listing) and 'RUN COMPLETED' in listing
     evidence=dict(case=case,branch=branch,campaign=campaign,basis_rst_sha256=basis['rst_sha256'])
+    evidence['source_hashes']={name:hashes[name] for name in ['model.inp','motion_job.json','solve.out']}
     if spec['kind']=='enforced':
         assert re.search(r'NUMBER OF STATIC SHAPES\s*=\s*3\b',listing)
         combined=(folder/'combine.out').read_text(errors='replace')
         assert 'RUN COMPLETED' in combined and re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',combined)
         limits=re.search(r'^\s*MODE_RANGE=\s*([\d.E+-]+)\s+TO\s+([\d.E+-]+)',combined,re.M|re.I)
         assert limits and np.allclose([float(limits[1]),float(limits[2])],np.array(basis['frequencies_Hz'])[[0,-1]],rtol=1e-5)
+        evidence['source_hashes']['combine.out']=hashes['combine.out']
         evidence['enforced_directions']=3
         evidence['smp_parent_sha256']={r['name']:r['sha256'] for r in ledger['files'] if r['name'].lower() in ('file.db','file.mode','file.full','file.mlv','file.enf')}
         assert {'file.db','file.mode','file.full','file.mlv'}.issubset({s.lower() for s in evidence['smp_parent_sha256']})
@@ -68,6 +79,9 @@ def audit(case,campaign):
             from check_cell_force_history import repeat as check_cell_force
             evidence['cell_acceleration_from_native_coordinates']=check_cell_force(
                 branch,campaign,axis,data,basis['rst_sha256'],parent)
+        if (ROOT/'validation/cell_attachment'/(branch+'.json')).is_file():
+            from cell_attachment_force import check_native_clip
+            evidence['attachment_forces_from_native_coordinates']=check_native_clip(branch,campaign,axis,data)
         nickel_path=ROOT/'validation/nickel_vibration'/f'{branch}_{axis}.json'
         if nickel_path.is_file():
             from nickel_vibration import early_crossing

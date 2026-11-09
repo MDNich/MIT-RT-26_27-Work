@@ -372,7 +372,7 @@ Centre & 25.60 & 25.13 & 26.28\\
 Right & 30.51 & 26.67 & 29.73\\\bottomrule
 \end{tabular}\end{center}
 
-Along the excited direction, the Y and Z cases changed by less than 0.13~N on each cell. A transverse component can still grow. With Y input the X force on the left cell was 0.12~N RMS bare, 1.75~N with nylon and 1.01~N with aluminium. Load sharing between the two welds and stress at the printed tabs require their local fields.
+Along the excited direction, the Y and Z cases changed by less than 0.13~N on each cell. A transverse component can still grow. With Y input the X force on the left cell was 0.12~N RMS bare, 1.75~N with nylon and 1.01~N with aluminium. Page~22 compares the signed forces at both cell-to-nickel attachments.
 
 \heading{Mass averaging and verification}
 For each native mode we integrated the signed translations over each curved ten-node cell tetrahedron with its material density. The relative acceleration transfer function follows from differentiating modal displacement twice. We added the common base acceleration before integrating over the 20--2000~Hz spectrum. Combining the signed quantities in this order accounts for phase cancellation within the cell. Multiplying the resulting centre-of-mass acceleration by cell mass gives the force.
@@ -398,5 +398,29 @@ The closest shape to bare mode 20 within either raised set was mode 19. Even tho
 
 \heading{Reading the mode movies}
 Both default-contact movie pairs preserve the October mode ranks, a common colour range, and a 6~mm peak display amplitude. The raised panels identify the screw material, native frequency and shape correlation. These runs retain the original unpreloaded contacts. The tightened assembly has different equilibrium contact conditions and prestressed frequencies (page~8). Across the full catalogue, all 22 subjects now have a bare view and a comparison of both raised configurations. The flush assemblies still need an admissible installed state before their vibration fields can be shown.
+
+\newpage
+\heading{The two cell attachments carry opposing lengthwise forces}
+The raised nylon case reduced the X force at both ends of all three cells under X excitation. Under Z excitation, however, both raised cases increased the force along the cell axis (Y) at all six attachments. The largest change occurred on the right-hand cell. The two ends carried 2.07 and 1.54~N RMS bare, 4.14 and 3.91~N with nylon screws, and 3.55 and 3.33~N with aluminium screws.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/cell-attachment-force.pdf}
+\captionof{figure}{Each line joins the low-Y and high-Y ends of one cell. Left, the X force for base X. Right, the lengthwise Y force for base Z. Each marker gives the one-sigma force integrated over a complete cell-to-nickel attachment.}\end{center}
+
+\heading{Why the whole-cell force can stay small}
+For the right-hand cell under base Z, the two lengthwise force histories had correlations of $-0.88$ bare, $-0.97$ with nylon and $-0.97$ with aluminium in the spectrum calculation. When the signed forces were added before taking RMS, the corresponding net loads were only 1.03, 0.99 and 0.90~N. The opposing forces matter to the individual attachments even when they nearly cancel across the cell.
+
+\begin{center}\begin{tabular}{lrrr}\toprule
+Right cell, base X & Bare & Raised nylon & Raised aluminium\\\midrule
+Low-Y end, X force [N RMS] &15.33&13.40&14.94\\
+High-Y end, X force [N RMS] &15.19&13.27&14.80\\
+Combined X force [N RMS] &30.52&26.66&29.73\\\bottomrule
+\end{tabular}\end{center}
+
+\heading{Force recovery and checks}
+Both sides of each bond were identified from the native contact and target connectivity. For each tightened mode, the assembled solid-element stiffness and inertia forces cancel at free cell nodes. Summing the residuals on a bonded face gives its signed modal force. The adjacent nickel strip reproduced the opposite resultant to within 0.00032\% in vector norm for every mode. Independent frequency integration then combined the six bond resultants over the original base spectrum with 2\% modal damping.
+
+For 90 sampled cell and nickel elements, the independently combined stiffness-force components agreed with the available native PSD fields within 0.0056\% in relative norm. Under base X the summed X loads agreed with the whole-cell inertia calculation (page~20) within 0.42\%. Across Y and Z the corresponding differences reached 4.73\% and 2.16\%. Removing modes above 3.5~kHz changed any component by at most 0.362~N. The original October mode forces and native coordinates reproduced all 480 bare-board movie frames for all three drives within 0.00043~N per component.
+
+The bonds cover the areas joined in the model. Actual weld sizes, local separation and the response after cell-to-case impact remain unmeasured.
 
 \end{document}

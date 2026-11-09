@@ -69,7 +69,7 @@ def signed_cache(campaign, basis, static, modal, elements, s_nodes, mean):
             tensor = np.load(shape_file, mmap_mode='r')
         else:
             tensor = np.empty((modal.nsets, len(s_nodes), 6))
-            for k in range(len(freq)):
+            for k in range(modal.nsets):
                 ids, tensor[k] = corners(modal, k, 'ENS', elements, 6)
                 assert np.array_equal(ids, s_nodes)
             np.save(shape_file,tensor)
