@@ -20,26 +20,26 @@ def excitation(axis):
     return t,full,float(np.sqrt(np.mean(a*a))/9.806)
 def participation(listing,axis):
     import re
-    part=re.search(r'PARTICIPATION FACTOR CALCULATION \*+\s*'+axis+r'\s+DIRECTION(.*?)(?=sum|TOTAL MASS)',listing,re.I|re.S)
+    part=re.search(r'PARTICIPATION FACTOR CALCULATION \*+\s*'+axis+r'\s+DIRECTION(.*?)(?=^\s*sum\b)',listing,re.I|re.S|re.M)
     if not part:raise ValueError('Native participation table missing')
     modes=[]
     for l in part[1].splitlines():
         fields=l.split()
         if len(fields)>=8 and fields[0].isdigit():modes.append((int(fields[0]),float(fields[3])))
-    assert [i for i,_ in modes]==list(range(1,len(modes)+1))
+    assert modes and [i for i,_ in modes]==list(range(1,len(modes)+1))
     return np.array([a for _,a in modes])
-def integrate(freq,gamma,axis):
+def integrate(freq,gamma,axis,indices=FRAMES):
     t,a,rms=excitation(axis)
-    coords=np.empty((480,len(freq)))
+    coords=np.empty((len(t[indices]),len(freq)))
     for k,(f,g) in enumerate(zip(freq,gamma,strict=True)):
         w=2*np.pi*f
         kappa=2*FS
         damping=2*.02*w
         d=[kappa*kappa+damping*kappa+w*w,2*(w*w-kappa*kappa),kappa*kappa-damping*kappa+w*w]
         b=-g*np.array([1.,2.,1.])
-        coords[:,k]=lfilter(b,d,a)[FRAMES]
+        coords[:,k]=lfilter(b,d,a)[indices]
     assert np.all(np.isfinite(coords))
-    return t[FRAMES],coords,rms
+    return t[indices],coords,rms
 def reference():
     previous=ROOT.parent/'1/output/latex/random_vibration/reproduction'
     basis=previous/'native/modal_basis'

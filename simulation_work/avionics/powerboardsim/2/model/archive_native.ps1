@@ -27,7 +27,7 @@ foreach ($file in $files) {
     } elseif ((Get-FileHash -LiteralPath $copy).Hash -ne $expected){throw "Existing archive differs: $($file.Name)"}
     $ledger+=[PSCustomObject]@{name=$file.Name;bytes=$file.Length;sha256=$expected}
 }
-$result=if ($status.result_job -in 'pull','tear'){ $status.result_job+'.rst' }else{ 'file.rst' }
+$result=if ($status.motion_kind -eq 'transient'){'file.mcf'}elseif($status.motion_kind -eq 'enforced'){'file.full'}elseif ($status.result_job -in 'pull','tear'){ $status.result_job+'.rst' }else{ 'file.rst' }
 if (!($ledger|Where-Object name -eq $result)){throw 'Missing assembled result file'}
 $manifest=[ordered]@{case=$Case;campaign=$Campaign;source=$work;utc=[datetime]::UtcNow.ToString('o');files=$ledger}
 $manifest|ConvertTo-Json -Depth 5|Set-Content "$finish.tmp" -Encoding UTF8

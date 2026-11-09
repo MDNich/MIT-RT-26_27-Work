@@ -41,6 +41,8 @@ def jobs():
         yield branch+'_basis',branch+'_static'
         yield branch+'_modal20',branch+'_static'
         for axis in 'XYZ':yield branch+'_psd_'+axis,branch+'_basis'
+        yield branch+'_enforced',branch+'_basis'
+        for axis in 'XYZ':yield branch+'_motion_'+axis,branch+'_enforced'
         if branch!='bare':
             for case in ('original','refined'):yield branch+'_'+case,''
     local_cases=read(ROOT/'validation/local_jobs.json')
@@ -50,7 +52,8 @@ def jobs():
 
 def result_path(case):
     local='_lateral_' in case or '_damage_' in case
-    return ROOT/'validation'/('local' if local else 'global')/(case+'.json')
+    category = 'motion' if case.endswith('_enforced') or '_motion_' in case else ('local' if local else 'global')
+    return ROOT/'validation'/category/(case+'.json')
 
 def run():
     for case,parent in jobs():
@@ -63,12 +66,17 @@ def run():
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
             raise RuntimeError('Cased preflight review pending')
         local=final.parent.name=='local'
+        motion=final.parent.name=='motion'
         if local and not case.startswith('bare_') and not (ROOT/'validation/local_cased_preflight.json').is_file():
             raise RuntimeError('Cased pull fixture preflight review pending')
         if (receipt/'audit_failed.txt').exists():continue
         if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
         state=receipt/'status.json'
         if not state.exists():
+            if motion:
+                from stage_motion import stage
+                branch=case.removesuffix('_enforced').split('_motion_')[0]
+                stage(branch,CAMPAIGN)
             flags=['-Case',case,'-Campaign',CAMPAIGN]
             if parent and not local:flags.extend(['-Parent',parent])
             log('Dispatch '+case);launch('native_run.ps1',flags,receipt/'dispatch.json')
@@ -79,7 +87,8 @@ def run():
             log('Archive '+case);launch('archive_native.ps1',['-Case',case,'-Campaign',CAMPAIGN],receipt/'archive_request.json')
         while not (receipt/'released.txt').exists():time.sleep(20)
         audit='audit_local.py' if local else 'audit_global.py'
-        r=subprocess.run([sys.executable,str(ROOT/'model'/audit),case,CAMPAIGN],text=True,capture_output=True)
+        args=['audit_motion.py','case',case,CAMPAIGN] if motion else [audit,case,CAMPAIGN]
+        r=subprocess.run([sys.executable,str(ROOT/'model'/args[0]),*args[1:]],text=True,capture_output=True)
         log(r.stdout[-1000:])
         if r.returncode:(receipt/'audit_failed.txt').write_text(r.stderr);log('Audit failed '+case+': '+r.stderr[-330:])
     log('All available global tasks visited. Check receipts, deferred parents and material scope.')

@@ -30,7 +30,7 @@ try {
         $parentRoot=Join-Path $share ".runtime\archive\$Campaign\$Parent"
         $parentReceipt=Join-Path $share ".runtime\receipts\$Campaign\$Parent\archived.json"
         $manifest=Get-Content $parentReceipt -Raw|ConvertFrom-Json
-        $pattern=if($Case -match '_psd_'){'^file(?:[0-9]*)\.(?:db|mode|full|esav|emat|rst|dsp)$'}else{'^file(?:[0-9]*)\.(?:rdb|ldhi|r[0-9]{3,}|rst|dsp|emat|esav|full|db|rsm|rth|s[0-9]{2,})$'}
+        $pattern=if($Case -match '_enforced$'){'^file(?:[0-9]*)\.(?:db|mode|full|esav|emat|dsp|mlv)$'}elseif($Case -match '_motion_[XYZ]$'){'^file\.(?:db|mode|full|enf|mlv)$'}elseif($Case -match '_psd_'){'^file(?:[0-9]*)\.(?:db|mode|full|esav|emat|rst|dsp)$'}else{'^file(?:[0-9]*)\.(?:rdb|ldhi|r[0-9]{3,}|rst|dsp|emat|esav|full|db|rsm|rth|s[0-9]{2,})$'}
         $parents=@($manifest.files|Where-Object name -match $pattern)
         if ($parents.Count -lt 3) {throw 'Parent restart files missing'}
         $needed=($parents|Measure-Object bytes -Sum).Sum
@@ -41,6 +41,17 @@ try {
             Copy-Item -LiteralPath (Join-Path $parentRoot $row.name) -Destination $to
             if((Get-FileHash -LiteralPath $to).Hash -ne $row.sha256){throw "Parent copy mismatch: $($row.name)"}
         }
+    }
+    if (Test-Path -LiteralPath "$work\motion_job.json") {
+        $spec=Get-Content "$work\motion_job.json" -Raw|ConvertFrom-Json
+        $stage.motion_kind=$spec.kind
+        $stage.cores=if ($spec.kind -eq 'transient') {1} else {12}
+        Update 'solving'
+        & "$PSScriptRoot\motion_solve.ps1" -Work $work -Case $Case -Campaign $Campaign -Exe $exe
+        $stage.exit=0
+        Copy-Item -LiteralPath "$work\solve.out" $out
+        Update 'solver_complete'
+        return
     }
     if (Test-Path -LiteralPath "$work\local_job.json") {
         $spec=Get-Content "$work\local_job.json" -Raw|ConvertFrom-Json

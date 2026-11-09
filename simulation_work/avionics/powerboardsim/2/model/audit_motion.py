@@ -1,0 +1,97 @@
+"""Verify the reduced native history and write phase-resolved clip coordinates."""
+import argparse
+import json
+import re
+from pathlib import Path
+
+import numpy as np
+
+from seeded_motion import FS,FRAMES,integrate,participation
+from stage_motion import ROOT,REFERENCE,sha
+
+
+def full_history(path,frequencies,listing,axis):
+    modes = len(frequencies)
+    with path.open() as stream:
+        header = [stream.readline().strip() for _ in range(9)]
+    if header[4].split()!=['Norm:','MASS'] or int(header[5].split(':')[-1])!=modes:
+        raise ValueError('MCF uses a different mode count or normalization')
+    if not np.array_equal(np.fromstring(header[6].split(':')[1],sep=' '),np.arange(1,modes+1)):
+        raise ValueError('Modal coordinate columns are out of order')
+    mcf_freq=np.fromstring(header[7].split(':')[1],sep=' ')
+    if not np.allclose(mcf_freq,frequencies,rtol=1e-6,atol=0):
+        raise ValueError('MCF frequencies differ from the parent native basis')
+    data=np.loadtxt(path,skiprows=9)
+    if data.shape!=(9*FS+1,modes+1) or not np.isfinite(data).all():
+        raise ValueError('Unexpected native time history')
+    gamma=participation(listing,axis)
+    t,expected,input_rms=integrate(frequencies,gamma,axis,slice(None))
+    if np.max(np.abs(data[:,0]-t))>5.1e-7 or np.linalg.norm(data[0,1:])>1e-13:
+        raise ValueError('Native sampling times or initial state differ')
+    relative_l2=float(np.linalg.norm(data[:,1:]-expected)/np.linalg.norm(expected))
+    if relative_l2>=.005:
+        raise ValueError(f'Native and independent modal histories differ by {relative_l2:.4%}')
+    return data[:,1:],dict(axis=axis,modes=modes,samples=len(t),duration_s=float(t[-1]),sampling_Hz=FS,
+                           input_stationary_rms_g=input_rms,full_history_relative_L2=relative_l2)
+
+
+def audit(case,campaign):
+    folder=ROOT/'.runtime/archive'/campaign/case
+    receipt=ROOT/'.runtime/receipts'/campaign/case
+    state=json.loads((receipt/'status.json').read_text('utf-8-sig'))
+    spec=json.loads((folder/'motion_job.json').read_text())
+    ledger=json.loads((receipt/'archived.json').read_text('utf-8-sig'))
+    branch=spec['branch']
+    basis=json.loads((ROOT/f'validation/global/{branch}_basis.json').read_text())
+    assert spec['campaign']==campaign==ledger['campaign'] and spec['case']==case==ledger['case']
+    assert spec['basis_rst_sha256']==basis['rst_sha256']
+    assert state['phase']=='solver_complete' and state['exit']==0
+    assert all((folder/f['name']).stat().st_size==f['bytes'] for f in ledger['files'])
+    listing=(folder/'solve.out').read_text(errors='replace')
+    assert re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',listing) and 'RUN COMPLETED' in listing
+    evidence=dict(case=case,branch=branch,campaign=campaign,basis_rst_sha256=basis['rst_sha256'])
+    if spec['kind']=='enforced':
+        assert re.search(r'NUMBER OF STATIC SHAPES\s*=\s*3\b',listing)
+        combined=(folder/'combine.out').read_text(errors='replace')
+        assert 'RUN COMPLETED' in combined and re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',combined)
+        limits=re.search(r'^\s*MODE_RANGE=\s*([\d.E+-]+)\s+TO\s+([\d.E+-]+)',combined,re.M|re.I)
+        assert limits and np.allclose([float(limits[1]),float(limits[2])],np.array(basis['frequencies_Hz'])[[0,-1]],rtol=1e-5)
+        evidence['enforced_directions']=3
+        evidence['smp_parent_sha256']={r['name']:r['sha256'] for r in ledger['files'] if r['name'].lower() in ('file.db','file.mode','file.full','file.mlv','file.enf')}
+        assert {'file.db','file.mode','file.full','file.mlv'}.issubset({s.lower() for s in evidence['smp_parent_sha256']})
+    else:
+        axis=spec['axis']
+        assert sha(folder/'acc.txt')==spec['acc_sha256']
+        parent=(ROOT/f'.runtime/archive/{campaign}/{branch}_basis/solve.out').read_text(errors='replace')
+        data,metrics=full_history(folder/'file.mcf',basis['frequencies_Hz'],parent,axis)
+        path=ROOT/'.runtime/post'/campaign/case/'coordinates.npz'
+        path.parent.mkdir(parents=True,exist_ok=True)
+        np.savez_compressed(path,time_s=FRAMES/FS,coordinates=data[FRAMES],frequencies_Hz=basis['frequencies_Hz'])
+        evidence.update(metrics,clip_samples=len(FRAMES),clip_sha256=sha(path),input_sha256=spec['acc_sha256'],
+                        mcf_sha256=next(r['sha256'] for r in ledger['files'] if r['name']=='file.mcf'))
+    dest=ROOT/'validation/motion';dest.mkdir(exist_ok=True)
+    (dest/(case+'.json')).write_text(json.dumps(evidence,indent=2)+'\n')
+    print('Verified',case,flush=True)
+
+
+def reference(archive):
+    parent=archive/'powerboardsim_v1_files/dp0/SYS-4/MECH/solve.out'
+    f=np.loadtxt(REFERENCE.parent/'native/modal_basis/frequencies.csv',delimiter=',',skiprows=1)[:,-1]
+    out=[]
+    for axis in 'XYZ':
+        raw=archive/f'outputs/random_motion_20261005_2143/transient_{axis}/file.mcf'
+        data,metric=full_history(raw,f,parent.read_text(errors='replace'),axis)
+        recorded=np.loadtxt(REFERENCE/f'inputs/modal_coordinates_{axis}_clip.csv',delimiter=',',skiprows=1)
+        assert np.array_equal(data[FRAMES],recorded[:,1:])
+        out.append(metric)
+    (ROOT/'validation/native_motion_reader.json').write_text(json.dumps({'scope':'Three full October native MCF histories compared with independent modal integration', 'axes':out},indent=2)+'\n')
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    p=parser.add_subparsers(dest='action',required=True)
+    ref=p.add_parser('reference');ref.add_argument('archive',type=Path)
+    case=p.add_parser('case');case.add_argument('name');case.add_argument('campaign')
+    a=parser.parse_args()
+    if a.action=='reference':reference(a.archive)
+    else:audit(a.name,a.campaign)
