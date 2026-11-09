@@ -1,5 +1,4 @@
 """Recheck raised-case clearances at two signed base-X states on curved native element surfaces."""
-import sys
 
 import numpy as np
 
@@ -99,5 +98,73 @@ def run(variant, campaign):
               'surface. Negative values and a triangle intersection indicate loss of the open-gap assumption.'))
 
 
+def native_peak(variant,campaign):
+    """Check the three cell skins at the maximum native layer stress in the nine-second X history."""
+    from audit_motion import selected_native_coordinates
+    from case_stress import source
+    from motion_surface import displacement_basis
+    key=variant+'_basis'
+    modal,_,rst=source(key,campaign)
+    case=variant+'_motion_X'
+    proof_path=ROOT/'validation/motion'/f'{case}.json'
+    proof=read(proof_path)
+    assert proof['case']==case and proof['campaign']==campaign and proof['basis_rst_sha256']==modal['rst_sha256']
+    stress=proof['native_seeded_PLA_layer_stress']
+    controls_path=ROOT/'validation/curved_contact'/f'{variant}.json'
+    controls=read(controls_path)
+    assert controls['basis_RST_sha256']==modal['rst_sha256'] and controls['campaign']==campaign
+    requested={'independent_approach_sample':controls['times_s']['largest_approach'],
+               'independent_stress_peak_sample':controls['times_s']['peak_layer_tension'],
+               'native_stress_peak_sample':stress['peak_time_s']}
+    times=np.unique(list(requested.values()))
+    samples=np.rint(times*FS).astype(int)
+    assert np.array_equal(times,samples/FS)
+    mcf=ROOT/'.runtime/archive'/campaign/case/'file.mcf'
+    verified(mcf,proof['mcf_sha256'])
+    q=selected_native_coordinates(mcf,rst.time_values,samples)
+    spectrum=variant+'_psd_X_private1'
+    stress_proof=read(ROOT/'validation/pla_stress'/f'{spectrum}.json')
+    assert stress_proof['basis_sha256']==modal['rst_sha256'] and stress_proof['campaign']==campaign
+    trace=ROOT/'.runtime/post'/campaign/spectrum/'PLA_critical_history.npz'
+    verified(trace,stress_proof['independent_signed_waveform']['cache_sha256'])
+    with np.load(trace) as fields:
+        recovered=q@fields['modal_Z_Pa']*1.e-6+float(fields['mean_MPa'])
+    index=int(np.searchsorted(times,stress['peak_time_s']))
+    assert np.isclose(recovered[index],stress['peak_tension_MPa'],rtol=1.e-11)
+    cover,cells=contact_solids(rst)
+    solids=[cover]+[cells.extract_cells(cells.cell_data['ansys_material_type']==mat) for mat in (176,191,187)]
+    ids=np.unique(np.concatenate([solid.point_data['ansys_node_num'] for solid in solids]))
+    pos=np.searchsorted(rst.mesh.nnum,ids)
+    assert np.array_equal(ids,rst.mesh.nnum[pos])
+    fields=field_files(key,campaign,modal['rst_sha256'],rst.nsets)
+    modes=displacement_basis(rst,ids,fields)
+    xyz=rst.mesh.nodes[pos]
+    states={}
+    for i,sample in enumerate(samples):
+        deformed=xyz+(q[i]@modes.reshape(len(modes),-1)).reshape(xyz.shape)
+        measures={name:sampled_clearance([cover,solid],ids,deformed,(2,3)) for name,solid in
+                  zip(('left','centre','right'),solids[1:],strict=True)}
+        assert all(row[2]['intersect']==row[3]['intersect'] for row in measures.values())
+        states[int(sample)]=dict(time_s=float(times[i]),layer_tension_MPa=float(recovered[i]),cells=measures)
+    out=ROOT/'validation/curved_contact'/f'{variant}_native_X.json'
+    write_json(out,dict(variant=variant,campaign=campaign,native_motion_sha256=digest(proof_path),
+        native_MCF_sha256=proof['mcf_sha256'],basis_rst_sha256=modal['rst_sha256'],
+        independent_geometry_sha256=digest(controls_path),stress_field_sha256=digest(trace),
+        sampling_Hz=FS,sample_times_s=requested,stress_node=stress['corner_node'],stress_element=stress['element'],
+        peak_native_layer_tension_MPa=stress['peak_tension_MPa'],states=states,
+        scope='Closed cell and case skins at selected native MCF stations. Peak refers to the monitored printed-layer '
+              'stress corner over the nine-second record. Native modal superposition holds the contact state fixed.'))
+    print(out.name,stress['peak_tension_MPa'],stress['peak_time_s'],flush=True)
+
+
 if __name__ == '__main__':
-    run(*sys.argv[1:])
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('variant',choices=['stand3_nylon','stand3_aluminium'])
+    parser.add_argument('campaign')
+    parser.add_argument('--native',action='store_true')
+    args=parser.parse_args()
+    if args.native:
+        native_peak(args.variant,args.campaign)
+    else:
+        run(args.variant,args.campaign)

@@ -2,6 +2,7 @@
 import argparse
 import json
 import re
+from itertools import islice
 from pathlib import Path
 
 import numpy as np
@@ -10,10 +11,8 @@ from seeded_motion import FS,FRAMES,integrate,participation
 from stage_motion import ROOT,REFERENCE,sha
 
 
-def full_history(path,frequencies,listing,axis):
-    modes = len(frequencies)
-    with path.open() as stream:
-        header = [stream.readline().strip() for _ in range(9)]
+def check_modal_columns(header,frequencies):
+    modes=len(frequencies)
     if header[4].split()!=['Norm:','MASS'] or int(header[5].split(':')[-1])!=modes:
         raise ValueError('MCF uses a different mode count or normalization')
     if not np.array_equal(np.fromstring(header[6].split(':')[1],sep=' '),np.arange(1,modes+1)):
@@ -21,6 +20,30 @@ def full_history(path,frequencies,listing,axis):
     mcf_freq=np.fromstring(header[7].split(':')[1],sep=' ')
     if not np.allclose(mcf_freq,frequencies,rtol=1e-6,atol=0):
         raise ValueError('MCF frequencies differ from the parent native basis')
+
+
+def selected_native_coordinates(path,frequencies,samples):
+    """Read exact stations from an already audited MCF without materializing the nine-second table."""
+    samples=np.asarray(samples,dtype=int)
+    assert samples.ndim==1 and len(samples) and np.all(np.diff(samples)>0) and 0<=samples[0]<=samples[-1]<=9*FS
+    values=np.empty((len(samples),len(frequencies)))
+    with path.open() as stream:
+        check_modal_columns([stream.readline().strip() for _ in range(9)],frequencies)
+        previous=-1
+        for k,index in enumerate(samples):
+            skip=int(index)-previous-1
+            row=np.fromstring(next(islice(stream,skip,skip+1)),sep=' ')
+            assert row.shape==(len(frequencies)+1,) and abs(row[0]-index/FS)<5.1e-7
+            values[k]=row[1:]
+            previous=int(index)
+    assert np.isfinite(values).all()
+    return values
+
+
+def full_history(path,frequencies,listing,axis):
+    modes=len(frequencies)
+    with path.open() as stream:
+        check_modal_columns([stream.readline().strip() for _ in range(9)],frequencies)
     data=np.loadtxt(path,skiprows=9)
     if data.shape!=(9*FS+1,modes+1) or not np.isfinite(data).all():
         raise ValueError('Unexpected native time history')

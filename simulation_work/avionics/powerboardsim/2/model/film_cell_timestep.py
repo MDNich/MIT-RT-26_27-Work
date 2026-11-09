@@ -6,6 +6,7 @@ from scipy.linalg import expm
 from scipy.signal import lfilter
 
 from audit_local import ROOT, read
+from audit_motion import selected_native_coordinates
 from basis_comparison import field_files
 from case_stress import source
 from curved_cell_contact import contact_solids, sampled_clearance
@@ -77,13 +78,7 @@ def clip_history(variant, axis, campaign, method, modal, folder, samples):
     if method == 'native':
         mcf = ROOT/'.runtime/archive'/campaign/case/'file.mcf'
         verified(mcf, proof['mcf_sha256'])
-        with mcf.open() as stream:
-            for _ in range(9 + int(samples[0])):
-                next(stream)
-            data = np.loadtxt(stream, max_rows=len(samples))
-        assert data.shape == (len(samples),len(modal['frequencies_Hz'])+1)
-        assert np.allclose(data[:,0], samples/FS, rtol=0, atol=5.1e-7)
-        q = data[:,1:]
+        q = selected_native_coordinates(mcf,modal['frequencies_Hz'],samples)
         history_sha = proof['mcf_sha256']
     else:
         assert proof['coordinate_method'] == 'independent'
