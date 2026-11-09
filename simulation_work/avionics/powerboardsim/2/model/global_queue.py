@@ -24,6 +24,45 @@ def launch(script,flags,dest):
     out=json.loads(run.stdout.lstrip('\ufeff'))
     if out['ReturnValue']!=0:raise RuntimeError(str(out))
     save(dest,dict(request_utc=utc(),script=script,arguments=flags,**out))
+def dispatch_solver(script,flags,folder):
+    """Reconcile an uncertain Parallels acknowledgement with the guest before any later launch."""
+    native=script=='native_run.ps1'
+    name=folder.name
+    expected=(folder/'status.json',) if native else (folder/'exit.txt',folder/'failed.txt')
+    guest_dir='C:'+chr(92)+'Temp'+chr(92)+'PBCaseStudy'+chr(92)+(CAMPAIGN+chr(92) if native else '')+name
+    arg='-Case' if native else '-Trial'
+    if not re.fullmatch(r'[A-Za-z0-9_]+',name):raise ValueError(name)
+    for attempt in range(3):
+        request=folder/('dispatch.json' if attempt==0 else f'dispatch_retry_{attempt}.json')
+        if any(p.exists() for p in expected):return
+        if not request.exists():
+            try:
+                launch(script,flags,request)
+            except (RuntimeError,ValueError,subprocess.TimeoutExpired) as exc:
+                log(f'Uncertain {name} dispatch: {exc}')
+        absent=0
+        while absent<2:
+            if any(p.exists() for p in expected):return
+            time.sleep(8)
+            if any(p.exists() for p in expected):return
+            ps=("$all=@(Get-CimInstance Win32_Process -ErrorAction Stop);"
+                "$launcher=@($all|Where-Object { $_.Name -eq 'powershell.exe' -and "
+                f"$_.CommandLine -like '*{chr(92)}{script} {arg} {name}*' }});"
+                "$sol=@($all|Where-Object { $_.Name -match '^(ANSYS(261)?|mapdl|mpiexec)\\.exe$' });"
+                f"@{{runner=$launcher.Count;solver=$sol.Count;directory=(Test-Path -LiteralPath '{guest_dir}' -ErrorAction Stop)}}|ConvertTo-Json -Compress")
+            check=subprocess.run([sys.executable,str(ROOT/'model/guest_command.py'),'--timeout','20'],
+                                 input=ps,text=True,capture_output=True)
+            try:
+                guest=json.loads(check.stdout.lstrip('\ufeff')) if check.returncode==0 else None
+            except ValueError:
+                guest=None
+            if guest=={'runner':0,'solver':0,'directory':True} and not any(p.exists() for p in expected):
+                raise RuntimeError('Existing guest directory without a completion or live process: '+guest_dir)
+            absent=absent+1 if guest=={'runner':0,'solver':0,'directory':False} else 0
+        log('Confirmed unused guest directory and no runner or solver twice: '+name)
+    raise RuntimeError('Guest dispatch could not be established: '+name)
+
+
 def archive_closed_case(case,receipt):
     """Reconcile a dropped archive acknowledgement without repeating a structural solve."""
     if (receipt/'released.txt').is_file():
@@ -194,7 +233,7 @@ def run():
             probe=RT/'flush_approach_v1'
             if (probe/'pre.inp').exists() and not (probe/'exit.txt').exists():
                 if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
-                launch('flush_install_check.ps1',['-Trial',probe.name],probe/'dispatch.json')
+                dispatch_solver('flush_install_check.ps1',['-Trial',probe.name],probe)
                 while not (probe/'exit.txt').is_file():
                     if (probe/'failed.txt').exists():raise RuntimeError('Unexpected preflight state; inspect guest before dispatch')
                     time.sleep(10)
@@ -221,7 +260,7 @@ def run():
                 if not (probe/inp).is_file() or (ROOT/f'validation/{publication}.json').exists():continue
                 if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
                 if not (probe/'exit.txt').exists() and not (probe/'failed.txt').exists():
-                    launch(runner,['-Trial',name],probe/'dispatch.json')
+                    dispatch_solver(runner,['-Trial',name],probe)
                     while not (probe/'exit.txt').exists():
                         if (probe/'failed.txt').exists():raise RuntimeError('Uncertain native control: '+name)
                         time.sleep(5)
@@ -278,7 +317,7 @@ def run():
                 flags.extend(['-Cores','2'])
             elif parent and not local:
                 flags.extend(['-Parent',parent])
-            log('Dispatch '+case);launch('native_run.ps1',flags,receipt/'dispatch.json')
+            log('Dispatch '+case);dispatch_solver('native_run.ps1',flags,receipt)
         while not state.is_file():time.sleep(15)
         while read(state)['phase'] not in ('solver_complete','failed'):time.sleep(20)
         if read(state)['phase']=='failed':log('Failed native '+case);continue

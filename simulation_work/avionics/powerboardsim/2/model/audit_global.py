@@ -82,6 +82,16 @@ def audit(case,campaign):
         if case.endswith('_basis'):assert len(t)>=20 and t[-1]<=4000.0001
         else:assert len(t)==20
         result['frequencies_Hz']=t.tolist()
+        if case.startswith('flush_') and ('_surf1_' in case or '_default_' in case):
+            from actuator_control import modal_residual
+            parent=load(receipt/'status.json')['parent']
+            assert parent==case.rsplit('_',1)[0]+'_static'
+            checks=[]
+            for k in range(rst.nsets):
+                ids,u=rst.nodal_displacement(k)
+                checks.append(modal_residual(ids,u,range(960101,960105),range(950002,950010,2),range(960111,960115)))
+            result['installed_head_motion_check']=dict(static_parent=parent,checked_modes=rst.nsets,
+                maximum_relative_error={key:max(q[key] for q in checks) for key in checks[0]})
         if case.startswith('bare_') and (case.endswith(('_original','_refined','_sturm'))):
             mesh_name=case.removeprefix('bare_').removesuffix('_sturm')
             ref=ROOT.parent/f'1/output/latex/modal_reproduction/native/default_{mesh_name}/frequencies.csv'

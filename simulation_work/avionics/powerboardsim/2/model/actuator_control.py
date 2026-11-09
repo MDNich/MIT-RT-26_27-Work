@@ -12,6 +12,22 @@ def stage():
     return seal(d/'control.inp',(ROOT/'model/board_actuator_control.inp').read_bytes())
 
 
+def modal_residual(ids,displacement,board,heads,drivers):
+    order=np.argsort(ids); translation=displacement[:,:3]
+    nodes=np.array([board,heads,drivers],dtype=int)
+    rows=order[np.searchsorted(ids[order],nodes)]
+    assert np.array_equal(ids[rows],nodes)
+    b,h,a=translation[rows]
+    assert np.all(np.isfinite([b,h,a]))
+    scale=float(np.nanmax(abs(translation)))
+    assert np.isfinite(scale) and scale>0
+    mismatch=float(np.max(abs(h-b))/scale)
+    driver=float(np.max(abs(a))/scale)
+    if max(mismatch,driver)>1e-7:
+        raise ValueError(f'Installed modal support moves relative to the board: {mismatch:g}, {driver:g}')
+    return dict(head_board_mismatch_over_mode_peak=mismatch,driver_motion_over_mode_peak=driver)
+
+
 def audit():
     d=ROOT/'.runtime/board_actuator_control_v1'
     assert int((d/'exit.txt').read_text(encoding='utf-8-sig').strip())==0

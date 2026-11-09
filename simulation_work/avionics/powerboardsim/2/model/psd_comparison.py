@@ -57,3 +57,11 @@ def summary(variant,axis):
                 scope='Native statistical response about each installed state, under the same stored excitation and damping.')
     write_json(ROOT/'validation/psd_comparisons'/f'{variant}_{axis}.json',result)
     return result
+
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('variant')
+    parser.add_argument('axis',choices=list('XYZ'))
+    args=parser.parse_args()
+    summary(args.variant,args.axis)

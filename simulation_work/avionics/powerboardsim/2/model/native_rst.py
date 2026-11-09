@@ -62,7 +62,14 @@ class CombinedResult(Result):
     def _element_solution_header(self,rnum):
         ptr,types,offset=super()._element_solution_header(rnum)
         if self._occupied is not None:
-            assert ptr.shape==self._occupied.shape and not np.any(ptr[~self._occupied])
+            assert ptr.shape==self._occupied.shape
+            # A PSD combination may allocate an empty element-result index record even for
+            # an unused mesh slot. Only discard a slot after verifying that it has no data.
+            for location in ptr[~self._occupied]:
+                if location:
+                    record=self.read_record(int(offset)+int(location))
+                    if len(record)!=27 or np.any(record):
+                        raise ValueError('Element result exists without a matching geometry record')
             ptr=ptr[self._occupied]
         return ptr,types,offset
 

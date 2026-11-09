@@ -149,7 +149,7 @@ The independent calculation uses each native mode's signed displacement field an
 
 We repeated the independent integration with modal cutoffs of 2000, 3000, 3500 and 4000~Hz, keeping the input spectrum fixed. For the raised nylon case under base X, both the 20-mode and 49-mode calculations gave a peak PCB Z displacement of 145.55~$\mu$m RMS. Across all three inputs, increasing the cutoff from 3500 to 4000~Hz changed the nine PCB directional peaks by at most 0.22\% bare and 0.056\% cased. The bare PCB's Y response to base Y differed by 8.32\% with the 2000~Hz cutoff. These checks apply to displacement within the available basis.
 
-The raised response uses native mode shapes and independent integration about a fixed contact state. A cased native spectrum solution is pending. Closing a local gap depends on simultaneous relative motion along the surface normal, which we examine below.
+The native base-X solution independently gave 145.55~$\mu$m for the raised PCB's peak Z displacement. All 15 directional displacement peaks across five part selections agreed with the independent integral within 0.0017\%. Both calculations linearize about the tightened contact state.
 
 \newpage
 \heading{The 3 mm stand-off does not prevent dynamic cell contact in the model}
@@ -207,4 +207,23 @@ Maximum sampled skin overlap, contact enabled [mm] & 0.0424 & 0.0445\\\bottomrul
 The independent geometry check measured signed distances on vertices and facet centres inside a common 8~mm band. Some tessellated surfaces still intersected even though the largest loaded-corner penetration recorded by ANSYS was below 0.5~$\mu$m at this state. Changing the cut size changed the force appreciably despite whole-model force imbalances below 0.004~N. These results establish local deflection under imposed motion. A flight impact load requires the cells and the surrounding board to respond to contact together.
 
 A separate search near the beginning of the same X waveform found a clear middle-cell state at 85.3424~ms and intersecting skins at 85.3577~ms. The search sampled at 8192~Hz and refined that interval at 65,536~Hz. Contacts between earlier survey samples or elsewhere on the assembly remain possible. This interval sets the time window for the transient contact comparison.
+\newpage
+\heading{The peak PCB stress moved when the raised case was fitted}
+The native MAPDL comparison used the same X-axis base spectrum and 2\% damping on both assemblies. Each original board bolt had already been tightened and locked. With four nylon case screws at the 3~mm stand-off, the peak PCB equivalent stress fell by 1.6\%, from 90.325 to 88.847~MPa RMS. Its location moved about 54~mm across the board. The PCB's maximum normal strains in X and Y both increased.
+
+\begin{center}\includegraphics[width=.86\linewidth]{figures/stand3_nylon-native-x-pcb.pdf}
+\captionof{figure}{PCB plan view in the original mesh coordinates. Each solid footprint shows its largest stored equivalent-stress RMS among its corners. Higher values are drawn last through the thickness. Red circles mark the maxima at $(60.55,101.11)$ and $(9.54,118.21)$~mm. Both maps use the same colour scale.}\end{center}
+
+\begin{center}\begin{tabular}{lrr}\toprule
+Native base-X response, one sigma & Bare & Raised nylon\\\midrule
+PCB relative Z displacement [$\mu$m] &23.37&145.55\\
+PCB absolute Z acceleration [$g$] &52.29&67.45\\
+Cell-body absolute X acceleration [$g$] &103.51&91.81\\
+PCB normal strain X [microstrain] &2216&3549\\
+PCB normal strain Y [microstrain] &772&1655\\
+PCB normal strain Z [microstrain] &3045&2676\\\bottomrule
+\end{tabular}\end{center}
+
+The peak cell-body X acceleration fell by 11.3\% while the PCB Z acceleration rose by 29.0\%. Each entry is a maximum over the named part. The stress and strain maxima can occur at different corners. The native output contains stored statistical element stresses for 112,902 bare and 129,010 cased solids. Pages 10 and 12 show where a seeded history closes the modeled air gap and how the local case responds after contact.
+
 \end{document}
