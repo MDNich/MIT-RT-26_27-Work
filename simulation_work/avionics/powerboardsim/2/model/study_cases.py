@@ -5,6 +5,8 @@ def branch_for(variant,subject):
     return variant
 
 def native_case(variant,subject):
+    if variant.startswith('flush_') and subject in ('original','refined'):
+        return f'{variant}_default_{subject}_modal20'
     branch=branch_for(variant,subject)
     if subject.startswith('psd_') and variant!='bare':
         return branch+'_'+subject+'_private1'

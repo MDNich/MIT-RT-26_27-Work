@@ -87,6 +87,11 @@ def jobs():
             for axis in 'XYZ':yield native_case(branch,'psd_'+axis),basis
             enforced=native_case(branch,'enforced');yield enforced,basis
             for axis in 'XYZ':yield native_case(branch,'motion_'+axis),enforced
+            if (ROOT/'validation/default_contact_jobs.json').exists():
+                for mesh in ('refined','original'):
+                    install=f'{branch}_default_{mesh}_static'
+                    yield install,''
+                    yield native_case(branch,mesh),install
             continue
         if branch not in ('bare','stand3_nylon'):
             yield branch+'_static',''
@@ -235,6 +240,11 @@ def run():
             log('Parent unaccepted: '+case);continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
             raise RuntimeError('Cased preflight review pending')
+        if '_default_' in case and case.startswith('flush_'):
+            mesh=case.split('_default_',1)[1].split('_')[0]
+            if not (ROOT/f'validation/default_{mesh}_initial.json').is_file():
+                log('Default-contact geometry check pending: '+case)
+                continue
         if case.endswith('_minus_seatfaces1'):
             nominal=case.replace('_minus_seatfaces1','_seatfaces1')
             paths=[result_path(nominal),ROOT/'validation/review_local'/(nominal+'.json'),ROOT/'validation/partial_local'/(nominal+'.json')]
@@ -276,6 +286,8 @@ def run():
             log('Archive '+case)
             archive_closed_case(case,receipt)
         audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith(('_approach1','_seatfaces1')) else ('audit_local.py' if local else 'audit_global.py'))
+        if '_default_' in case and case.endswith('_static'):
+            audit='audit_default_install.py'
         if case.startswith('patch_'):
             audit='audit_contact_patch.py'
         elif case.startswith('replay_'):

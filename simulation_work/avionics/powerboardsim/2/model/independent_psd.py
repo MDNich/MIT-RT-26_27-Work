@@ -19,7 +19,18 @@ def moments(mode_f,g,fk,sk,zeta,df):
         a*=np.sqrt(wt)[:,None];c+=(a.conj().T@a).real
     return .5*(c+c.T),float(power)
 
-def run(branch,campaign):
+def rms_field(phi,covariance):
+    eig,v=np.linalg.eigh(covariance)
+    assert eig.min()>=-1e-13*eig.max()
+    factor=v*np.sqrt(np.maximum(eig,0.))
+    values=np.empty(phi.shape[:2])
+    for start in range(0,len(phi),8192):
+        projected=phi[start:start+8192].reshape(-1,len(eig))@factor
+        values[start:start+8192]=1000*np.linalg.norm(projected,axis=1).reshape(-1,3)
+    return values
+
+
+def run(branch,campaign,*,cutoffs=False):
     case=branch+'_basis';p=read(ROOT/'validation/global'/f'{case}.json');assert p['campaign']==campaign
     ledger=read(ROOT/'.runtime/receipts'/campaign/case/'archived.json')
     d=ROOT/'.runtime/archive'/campaign/case;rst=d/'file.rst';verified(rst,p['rst_sha256'])
@@ -37,7 +48,7 @@ def run(branch,campaign):
         else:n,u=r.nodal_displacement(k);u=u[:,:3]
         sort=np.argsort(n);i=sort[np.searchsorted(n[sort],ids)];assert np.array_equal(n[i],ids);phi[:,:,k]=u[i]
     assert np.isfinite(phi).all()
-    out={};diffs=[];octbase=ROOT/'validation/october_psd_reference'
+    out={};diffs=[];truncation={};octbase=ROOT/'validation/october_psd_reference'
     for ax in 'XYZ':
         path=ROOT/f'.runtime/inputs/bare_psd_{ax}/model.inp';src=path.read_text()
         def numbers(card):return np.array([float(x) for x in re.search(r'^'+card+r',1,,?([^\n!]+)',src,re.I|re.M)[1].split(',')])
@@ -45,12 +56,20 @@ def run(branch,campaign):
         assert np.array_equal(fk,[20,50,800,2000]) and np.all(sk>0) and zeta==.02 and 'psdres,disp,rel' in src.lower()
         gamma=participation(listing,ax);c,power=moments(freq,gamma,fk,sk,zeta,.125);c2,_=moments(freq,gamma,fk,sk,zeta,.25)
         quaderr=float(np.linalg.norm(c2-c)/np.linalg.norm(c));assert quaderr<1e-5
-        eig,v=np.linalg.eigh(c);assert eig.min()>=-1e-13*eig.max()
-        factor=v*np.sqrt(np.maximum(eig,0.))
-        gvals=np.empty((len(ids),3))
-        for start in range(0,len(ids),8192):
-            arr=phi[start:start+8192].reshape(-1,len(freq))@factor
-            gvals[start:start+8192]=1000*np.linalg.norm(arr,axis=1).reshape(-1,3)
+        gvals=rms_field(phi,c)
+        if cutoffs:
+            truncation[ax]={}
+            for limit in (2000,3000,3500,4000):
+                count=int(np.searchsorted(freq,limit,side='right'))
+                assert count>0
+                field=gvals if count==len(freq) else rms_field(phi[:,:,:count],c[:count,:count])
+                levels={}
+                for name,indices in scopes.items():
+                    peaks=field[indices].max(axis=0)
+                    reference=gvals[indices].max(axis=0)
+                    levels[name]=dict(peak_XYZ_RMS_mm=peaks.tolist(),
+                        change_from_full_basis_percent=(100*(peaks/reference-1)).tolist())
+                truncation[ax][str(limit)]=dict(retained=count,last_mode_Hz=float(freq[count-1]),scopes=levels)
         fields={};octref={}
         if branch=='bare':
             provenance=read(octbase/'sources.json')[ax];ref=octbase/provenance['file'];verified(ref,provenance['sha256'])
@@ -69,8 +88,23 @@ def run(branch,campaign):
     if branch=='bare':
         rec['max_relative_difference_over_18_October_peaks']=float(max(diffs));rec['baseline_5pct_screen_passed']=bool(max(diffs)<.05)
     else:rec['baseline_5pct_screen_passed']=read(ROOT/'validation/independent_psd/bare_basis.json')['baseline_5pct_screen_passed']
-    write_json(ROOT/'validation/independent_psd'/f'{case}.json',rec)
+    dest=ROOT/'validation/independent_psd'/f'{case}.json'
+    if cutoffs:
+        existing=read(dest)
+        assert rec['rst_sha256']==existing['rst_sha256']
+        for ax in 'XYZ':
+            for scope,entry in rec['base_cases'][ax]['scopes'].items():
+                original=existing['base_cases'][ax]['scopes'][scope]
+                assert np.allclose(entry['peak_directional_RMS_mm'],original['peak_directional_RMS_mm'],rtol=1e-10,atol=1e-12)
+        write_json(ROOT/'validation/modal_cutoff'/f'{case}.json',dict(case=case,campaign=campaign,
+            native_rst_sha256=p['rst_sha256'],full_response_sha256=digest(dest),base_cases=truncation,
+            scope='Independent displacement integration on nested subsets of the same native basis. The input spectrum spans 20–2000 Hz at every cutoff. Differences are relative to the available modes through 4000 Hz.'))
+    else:
+        write_json(dest,rec)
     print(case,'5 percent baseline screen',rec['baseline_5pct_screen_passed'],'max discrepancy',rec.get('max_relative_difference_over_18_October_peaks'),flush=True)
 if __name__=='__main__':
-    import sys
-    run(*sys.argv[1:])
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('branch');parser.add_argument('campaign')
+    parser.add_argument('--cutoffs',action='store_true')
+    args=parser.parse_args()
+    run(args.branch,args.campaign,cutoffs=args.cutoffs)

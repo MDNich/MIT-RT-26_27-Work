@@ -65,6 +65,32 @@ def stage():
         scope='Prepared models for the historical unpreloaded support and contact conditions. The added case screws drive four tabs by 3 mm. Static equilibrium and a separately checked modal restart are required for each installed comparison.'))
 
 
+def stage_jobs():
+    rt=ROOT/'.runtime'
+    candidates=read(ROOT/'validation/default_install_inputs.json')
+    results={}
+    post=(ROOT/'model/board_surface_post.inp').read_text()
+    select=' set,,,,,,,ii\n'
+    assert post.count(select)==2
+    post=post.replace(select,select+' *get,kss,active,0,set,sbst\n *if,kss,eq,999999,then\n *cycle\n *endif\n')
+    post=post.replace('/com,BOARD_FACE_POST_FINISHED',support_post().decode().replace('\r\n','\n')+'/com,BOARD_FACE_POST_FINISHED')
+    for branch,model in candidates['branches'].items():
+        for kind,source in [('static','static'),('modal20','modal')]:
+            case=f'{branch}_{kind}'
+            folder=rt/'inputs'/case;folder.mkdir(exist_ok=True)
+            deck=rt/'default_install_v1'/branch/f'{source}.inp'
+            sha=verified(deck,model[source+'_sha256'])
+            assert seal(folder/'model.inp',deck.read_bytes())==sha
+            spec=dict(case=case,kind=kind,mesh=model['default_mesh'],model_sha256=sha,
+                      parent=None if kind=='static' else branch+'_static')
+            if kind=='static':spec['post_sha256']=seal(folder/'board_surface_post.inp',post.encode())
+            name=folder/'surface_job.json'
+            import json
+            vh=seal(name,(json.dumps(spec,indent=2)+'\n').encode())
+            results[case]=dict(**spec,spec_sha256=vh)
+    write_json(ROOT/'validation/default_contact_jobs.json',results)
+
+
 def audit(mesh):
     src=read(ROOT/'validation/default_install_inputs.json')
     branch=f'flush_nylon_default_{mesh}'
@@ -77,9 +103,10 @@ def audit(mesh):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action',choices=('stage','audit'))
+    parser.add_argument('action',choices=('stage','jobs','audit'))
     parser.add_argument('mesh',choices=('original','refined'),nargs='?')
     args=parser.parse_args()
     if args.action=='stage':stage()
+    elif args.action=='jobs':stage_jobs()
     elif args.mesh:audit(args.mesh)
     else:parser.error('The audit requires a default mesh name')

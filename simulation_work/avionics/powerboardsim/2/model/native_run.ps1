@@ -95,9 +95,11 @@ try {
         return
     }
     $surfaceJob=$null
-    if ($Case -match '^flush_(nylon|aluminium)_surf1_(static|modal20|basis)$'){
+    $isDefaultSeat=$Case -match '^flush_(nylon|aluminium)_default_(original|refined)_(static|modal20)$'
+    if ($isDefaultSeat -or $Case -match '^flush_(nylon|aluminium)_surf1_(static|modal20|basis)$'){
         $surfaceJob=Get-Content -LiteralPath "$work\surface_job.json" -Raw|ConvertFrom-Json
-        $pub=(Get-Content "$share\validation\board_surface_jobs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        $registry=if($isDefaultSeat){'default_contact_jobs.json'}else{'board_surface_jobs.json'}
+        $pub=(Get-Content "$share\validation\$registry" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
         if ($surfaceJob.case -ne $Case -or $stage.input_sha256 -ne $surfaceJob.model_sha256 -or
             (Get-FileHash "$work\surface_job.json").Hash -ne $pub.spec_sha256 -or [string]$surfaceJob.parent -ne $Parent){throw 'Wrong surface-contact job or parent'}
         if ($surfaceJob.kind -eq 'static' -and (Get-FileHash "$work\board_surface_post.inp").Hash -ne $surfaceJob.post_sha256){throw 'Wrong seating readback'}
@@ -139,14 +141,16 @@ try {
     if (!$stage.native_clean){
         if (!($surfaceJob -and $surfaceJob.kind -eq 'static' -and (Test-Path -LiteralPath "$work\file.rst") -and
             (Select-String -LiteralPath "$work\solve.out" -Pattern 'LOAD STEP\s+\d+\s+SUBSTEP\s+\d+\s+COMPLETED' -Quiet))){throw 'Native solve failed. Inspect solve.out.'}
-        $proof=(Get-Content "$share\validation\partial_board_readbacks.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
-        Copy-Item -LiteralPath "$share\.runtime\surface_partial_readbacks\$Case\partial_post.inp" -Destination $work
-        if ((Get-FileHash "$work\partial_post.inp").Hash -ne $proof.input_sha256 -or $stage.input_sha256 -ne $proof.original_model_sha256){throw 'Partial readback input mismatch'}
-        $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','partialpost','-i','partial_post.inp','-o','partial_post.out') -Wait -PassThru
-        Copy-Item -LiteralPath "$work\partial_post.out" $out
-        if ($pp.ExitCode -ne 0 -or !(Select-String -LiteralPath "$work\partial_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Partial whole-board readback failed'}
-        Update 'solver_complete'
-        return
+        if (!$isDefaultSeat) {
+            $proof=(Get-Content "$share\validation\partial_board_readbacks.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+            Copy-Item -LiteralPath "$share\.runtime\surface_partial_readbacks\$Case\partial_post.inp" -Destination $work
+            if ((Get-FileHash "$work\partial_post.inp").Hash -ne $proof.input_sha256 -or $stage.input_sha256 -ne $proof.original_model_sha256){throw 'Partial readback input mismatch'}
+            $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','partialpost','-i','partial_post.inp','-o','partial_post.out') -Wait -PassThru
+            Copy-Item -LiteralPath "$work\partial_post.out" $out
+            if ($pp.ExitCode -ne 0 -or !(Select-String -LiteralPath "$work\partial_post.out" -Pattern 'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b' -Quiet)){throw 'Partial whole-board readback failed'}
+            Update 'solver_complete'
+            return
+        }
     }
     if ($surfaceJob -and $surfaceJob.kind -eq 'static'){
         $pp=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList @('-b','nolist','-s','noread','-smp','-np','1','-p','ansys','-j','seatpost','-i','board_surface_post.inp','-o','board_surface_post.out') -Wait -PassThru
