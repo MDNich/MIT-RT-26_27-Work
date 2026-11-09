@@ -14,15 +14,19 @@ from study_cases import native_case
 from modal_correspondence import checksum,compare
 from modal_video import render as render_bare
 from rms_video import ROOT,VARIANTS,LABELS
-from film_identity import verified,already_rendered
+from film_identity import verified,already_rendered,publish_baseline
 
 SUBJECTS = {'modal_fig01_default_mode01':('refined',1), 'modal_fig02_default_mode20':('refined',20),
             'modal_fig03_bolted_mode20':('modal20',20)}
 
 
-def surfaces(rst,rank):
+def surfaces(rst,rank,exported=None):
     r=read_rst(str(rst)); g=r.grid
-    numbers,disp=r.nodal_displacement(rank-1)
+    if exported is None:
+        numbers,disp=r.nodal_displacement(rank-1)
+    else:
+        numbers=np.fromfile(exported.with_suffix('.ids'),'<i4')
+        disp=np.fromfile(exported.with_suffix('.u'),'<f8').reshape(-1,3)
     order=np.argsort(numbers)
     solid=np.isin(g.cell_data['ansys_elem_type_num'],[185,186,187,188])
     case=g.cell_data['ansys_material_type']==850
@@ -41,11 +45,11 @@ def surfaces(rst,rank):
 
 
 def draw(panels,rank,target,preview=False):
-    if len(panels)!=4:raise ValueError('Four panels required')
-    p=pv.Plotter(shape=(2,2),window_size=(1440,810) if preview else (3840,2160),off_screen=True,border=False)
+    if len(panels) not in (2,4):raise ValueError('Two raised or four installed cases required')
+    p=pv.Plotter(shape=(1,2) if len(panels)==2 else (2,2),window_size=(1440,810) if preview else (3840,2160),off_screen=True,border=False)
     colors='Relative amplitude'
     transforms=[]
-    for i,(name,parts,Hz,mac,sign) in enumerate(panels):
+    for i,(name,parts,Hz,mac,sign,note) in enumerate(panels):
         p.subplot(i//2,i%2);p.set_background('#f8f9fc')
         for j,(mesh,orig,v,case) in enumerate(parts):
             norms=np.linalg.norm(v,axis=1)
@@ -57,7 +61,9 @@ def draw(panels,rank,target,preview=False):
                        title_font_size=14,label_font_size=13,color='#25334a'))
         p.add_text(f'{name}   |   mode {rank}: {Hz:.2f} Hz',position='upper_left',
                    font='arial',font_size=11 if preview else 21,color='#08357e')
-        p.add_text(f'Same-rank shape correlation (MAC) {mac:.2f}   |   6 mm display amplitude',
+        caption=f'Same-rank MAC {mac:.4f}   |   6 mm display amplitude'
+        if note:caption+='\n'+note
+        p.add_text(caption,
                    position='lower_left',font='arial',font_size=8 if preview else 13,color='#183046')
         center=np.array([.0346,.0604,-.004])
         p.camera_position=[center+np.array([.140,.065,-.223]),center,(0,1,0)]
@@ -100,18 +106,23 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('subject',choices=SUBJECTS);p.add_argument('--campaign',default='nov08_01')
     p.add_argument('--preview',action='store_true',help='Historical repeat rendered in all four panels to check layout only')
+    mode=p.add_mutually_exclusive_group()
+    mode.add_argument('--raised-only',action='store_true')
+    mode.add_argument('--raised-basis',action='store_true',help='Use rank 20 of the accepted wider native prestressed extractions.')
     args=p.parse_args();kind,rank=SUBJECTS[args.subject]
     base=ROOT/f'.runtime/archive/{args.campaign}'
     bare=base/('bare_'+kind)/'file.rst'
+    if args.raised_basis:assert kind=='modal20'
+    variants=[*VARIANTS[:1],*VARIANTS[3:]] if args.raised_only or args.raised_basis else VARIANTS
     if args.preview:
         panels=[]
         for i in range(4):
             parts,f=surfaces(bare,rank)
-            panels.append((f'Bare reference layout check {i+1}',parts,f,1.,1))
+            panels.append((f'Bare reference layout check {i+1}',parts,f,1.,1,''))
         draw(panels,rank,ROOT/'.runtime/qa/modal-panels.png',True);return
     refs={}
-    for v in VARIANTS:
-        key=native_case(v,kind);audit=json.loads((ROOT/f'validation/global/{key}.json').read_text())
+    for v in variants:
+        key=native_case(v,'basis' if args.raised_basis and v!='bare' else kind);audit=json.loads((ROOT/f'validation/global/{key}.json').read_text())
         f=base/key/'file.rst';assert audit['campaign']==args.campaign and audit['case']==key and verified(f,audit['rst_sha256'])==audit['rst_sha256']
         refs[v]=(f,audit['rst_sha256'])
     bare_out=ROOT/f'output/videos/without_case/power_board_4k60/{args.subject}.mp4'
@@ -125,20 +136,49 @@ def main():
         assert repeat['reference_rst_sha256']==film['source_rst_sha256'] and repeat['candidate_rst_sha256']==refs['bare'][1]
         baseline_sign=repeat['modes'][rank-1]['equal_rank_sign']
     panels=[];evidence=[]
-    for v,label in zip(VARIANTS[1:],LABELS[1:]):
-        f,sha=refs[v];path=ROOT/f'validation/modal_matches/{v}_{kind}.json';path.parent.mkdir(exist_ok=True)
-        if not path.exists():
-            path.write_text(json.dumps(compare(bare,f),indent=2)+'\n')
-        data=json.loads(path.read_text());assert data['reference_rst_sha256']==refs['bare'][1] and data['candidate_rst_sha256']==sha
-        row=data['modes'][rank-1];parts,Hz=surfaces(f,rank)
-        sign=row['equal_rank_sign']*baseline_sign or 1
-        panels.append((label,parts,Hz,row['equal_rank_MAC'],sign))
-        evidence.append(dict(variant=v,rst_sha256=sha,rank=rank,Hz=Hz,same_rank_MAC=row['equal_rank_MAC'],phase_sign=sign,closest_shape_rank=row['best_rank']))
+    for v in variants[1:]:
+        f,sha=refs[v]
+        label=LABELS[VARIANTS.index(v)];note='';exported=None
+        if args.raised_basis:
+            from basis_comparison import field_files
+            data=json.loads((ROOT/'validation/bolted_mode_film.json').read_text())
+            assert data['reference_rst_sha256']==refs['bare'][1] and data['campaign']==args.campaign
+            record=data['cases'][v]
+            assert record['rank']==rank and record['rst_sha256']==sha
+            exported=field_files(record['case'],args.campaign,sha,record['modes_searched'])[rank]
+            mac,sign,best=record['same_rank_MAC'],record['phase_sign'],record['closest_shape_rank']
+            note=f'Closest shape to bare mode {rank}: mode {best} (MAC {record["closest_MAC"]:.2f})'
+        else:
+            path=ROOT/f'validation/modal_matches/{v}_{kind}.json';path.parent.mkdir(exist_ok=True)
+            if not path.exists():
+                path.write_text(json.dumps(compare(bare,f),indent=2)+'\n')
+            data=json.loads(path.read_text())
+            assert data['reference_rst_sha256']==refs['bare'][1] and data['candidate_rst_sha256']==sha
+            row=data['modes'][rank-1]
+            mac,sign,best=row['equal_rank_MAC'],row['equal_rank_sign'],row['best_rank']
+        parts,Hz=surfaces(f,rank,exported)
+        sign=sign*baseline_sign or 1
+        panels.append((label,parts,Hz,mac,sign,note))
+        evidence.append(dict(variant=v,rst_sha256=sha,rank=rank,Hz=Hz,same_rank_MAC=mac,phase_sign=sign,closest_shape_rank=best))
     target=ROOT/f'output/videos/with_case/power_board_4k60/{args.subject}.mp4'
-    if already_rendered(target,dict(subject=args.subject,panels=evidence,baseline_film_sha256=film['video_sha256'],peak_display_displacement_mm=6)):return
-    draw(panels,rank,target)
-    target.with_suffix('.json').write_text(json.dumps(dict(subject=args.subject,panels=evidence,baseline_film_sha256=film['video_sha256'],
-            sha256=checksum(target),frames=540,duration_s=9,fps=60,resolution=[3840,2160],peak_display_displacement_mm=6,
-            interpretation='Same frequency rank on each model. MAC compares original-solid translations. Eigenvector signs face the bare reference; amplitudes are arbitrary.'),indent=2)+'\n')
+    method='wide native basis' if args.raised_basis else 'dedicated native extraction'
+    identity=dict(subject=args.subject,panels=evidence,baseline_film_sha256=film['video_sha256'],
+                  peak_display_displacement_mm=6,modal_source=method)
+    take=ROOT/'.runtime/films/modal'/args.subject/('_'.join(variants[1:]))/('wide.mp4' if args.raised_basis else 'dedicated.mp4')
+    if not already_rendered(take,identity):
+        draw(panels,rank,take)
+        take.with_suffix('.json').write_text(json.dumps(dict(**identity,sha256=checksum(take),frames=540,duration_s=9,
+            fps=60,resolution=[3840,2160],interpretation='Displays the selected frequency rank on each model. MAC '
+            'compares translations on the original solids. The 6 mm motion is the peak display amplitude.'),indent=2)+'\n')
+    if target.is_file():
+        previous=json.loads(target.with_suffix('.json').read_text())
+        for panel in previous['panels']:
+            variant=panel['variant']
+            assert variant in variants[1:]
+            if panel['rst_sha256']!=refs[variant][1]:
+                assert kind=='modal20' and previous['modal_source']=='wide native basis' and not args.raised_basis
+                from bolted_mode_film import confirm_dedicated
+                confirm_dedicated(variant,args.campaign,panel['rst_sha256'],refs[variant][1],rank)
+    publish_baseline(take,target,('subject','baseline_film_sha256','peak_display_displacement_mm'))
 
 if __name__=='__main__':main()

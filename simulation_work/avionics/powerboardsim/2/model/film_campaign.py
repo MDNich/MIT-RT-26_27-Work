@@ -52,14 +52,24 @@ def proof_path(r,v):return ROOT/'validation'/r['category']/(native_case(v,r['suf
 
 def identity(r,side,meta):
     kind=r['kind'];variants=VARIANTS[:1] if side==SLOTS[0] else VARIANTS[1:]
-    if side=='with_case' and kind in KINDS[1:] and len(meta['panels'])==2:
+    if side=='with_case' and len(meta['panels'])==2:
         variants=VARIANTS[3:]
-    if kind==KINDS[2] and meta['coordinate_method']=='independent':
+    if kind==KINDS[0] and meta.get('modal_source')=='wide native basis':
+        assert side=='with_case' and r['suffix']=='modal20' and variants==VARIANTS[3:]
+        sources=read(ROOT/'validation/bolted_mode_film.json')
+        assert sources['campaign']==CAMP
+        proofs=[read(ROOT/'validation/global'/(v+'_basis.json')) for v in variants]
+        assert [p['rst_sha256'] for p in proofs]==[sources['cases'][v]['rst_sha256'] for v in variants]
+    elif kind==KINDS[1] and meta.get('field_method')=='independent':
+        assert side=='with_case' and variants==VARIANTS[3:]
+        proofs=[read(ROOT/'validation/rms_film_fields'/(native_case(v,r['suffix'])+'.json')) for v in variants]
+    elif kind==KINDS[2] and meta['coordinate_method']=='independent':
         proofs=[read(ROOT/'validation/independent_motion'/(native_case(v,r['suffix'])+'.json')) for v in variants]
         assert all(p['coordinate_method']=='independent' and p['Newmark_relative_L2']<1e-9 for p in proofs)
     else:
         proofs=[read(proof_path(r,v)) for v in variants]
-    assert all(t['campaign']==CAMP and t['case']==native_case(v,r['suffix']) for v,t in zip(variants,proofs,strict=True))
+    source_key='basis' if meta.get('modal_source')=='wide native basis' else r['suffix']
+    assert all(t['campaign']==CAMP and t['case']==native_case(v,source_key) for v,t in zip(variants,proofs,strict=True))
     if kind==KINDS[0] and side==SLOTS[0]:
         assert meta['rank']==r['rank']
         if meta['source_rst_sha256']!=proofs[0]['rst_sha256']:
@@ -67,12 +77,17 @@ def identity(r,side,meta):
             assert r['suffix']=='refined' and repeat['reference_rst_sha256']==meta['source_rst_sha256']
             assert repeat['candidate_rst_sha256']==proofs[0]['rst_sha256'] and repeat['modes'][r['rank']-1]['equal_rank_MAC']>.999999
     elif kind==KINDS[0]:
-        assert meta['peak_display_displacement_mm']==6 and len(meta['panels'])==4
+        assert meta['peak_display_displacement_mm']==6 and len(meta['panels'])==len(variants)
         for p,v,proof in zip(meta['panels'],variants,proofs,strict=True):
             assert p['variant']==v and p['rst_sha256']==proof['rst_sha256'] and p['rank']==r['rank']
     elif kind==KINDS[1]:
         assert (meta['base'],meta['response'],meta['view'])==(r['axis'],r['response'],r['view'])
-        assert meta['sources']==[dict(variant=v,rst_sha256=t['rst_sha256']) for v,t in zip(variants,proofs,strict=True)]
+        expected=[dict(variant=v,rst_sha256=t['rst_sha256']) for v,t in zip(variants,proofs,strict=True)]
+        if meta.get('field_method')=='independent':
+            for src,proof in zip(expected,proofs,strict=True):
+                assert proof['axis']==r['axis'] and proof['method']=='Independent PSD integration'
+                src['surface_field_sha256']=proof['surface_field_sha256']
+        assert meta['sources']==expected
         assert [p['label'] for p in meta['panels']]==[LABELS[VARIANTS.index(v)] for v in variants]
     else:
         from seeded_motion import FRAMES,FS
@@ -117,7 +132,7 @@ def decode(r,side,refresh=False):
     page.save(sheet,quality=90)
     proof=dict(sha256=sha,sidecar_sha256=digest(movie.with_suffix('.json')),sheet_sha256=digest(sheet),frames=frames,
                fps=fmt['fps'],width=3840,height=2160,duration_s=secs,bytes=movie.stat().st_size,check_frames=samples,
-               panel_average_pixel_changes=contrast,reference_sha256=r['sha256'],comparison_panels=panels,coordinate_method=meta.get('coordinate_method'))
+               panel_average_pixel_changes=contrast,reference_sha256=r['sha256'],comparison_panels=panels,coordinate_method=meta.get('coordinate_method'),field_method=meta.get('field_method'))
     write_json(receipt,proof);return proof
 
 
@@ -153,6 +168,20 @@ def seeded_command(row,bare,cased):
     return None
 
 
+def raised_rms_method(row):
+    raised=[VARIANTS[0],*VARIANTS[3:]]
+    if all(proof_path(row,v).is_file() for v in raised):
+        return 'native'
+    if not proof_path(row,'bare').is_file():
+        return None
+    axes=ROOT/'validation/rms_film_checks'
+    controls=[native_case('bare','psd_'+a) for a in 'XYZ']+[native_case(v,'psd_X') for v in VARIANTS[3:]]
+    if all((axes/(k+'.json')).is_file() for k in controls) and all(
+            (ROOT/'validation/rms_film_fields'/(native_case(v,row['suffix'])+'.json')).is_file() for v in VARIANTS[3:]):
+        return 'independent'
+    return None
+
+
 def cycle(render,refresh,lease):
     result=[];issues=[];models=ROOT/'model'
     for r in catalog():
@@ -181,8 +210,18 @@ def cycle(render,refresh,lease):
                     if options is not None:command([models/r['script'],s,'--campaign',CAMP,*options],lease)
                 elif complete_sources and existing_panels<4:
                     command([models/r['script'],s,'--campaign',CAMP],lease)
-                elif not existing_panels and r['kind']==KINDS[1] and all(proof_path(r,v).is_file() for v in [VARIANTS[0],*VARIANTS[3:]]):
-                    command([models/r['script'],s,'--campaign',CAMP,'--raised-only'],lease)
+                elif r['kind']==KINDS[0] and existing_panels<4:
+                    native_raised=all(proof_path(r,v).is_file() for v in [VARIANTS[0],*VARIANTS[3:]])
+                    if native_raised and (not existing_panels or displayed.get('modal_source')=='wide native basis'):
+                        command([models/r['script'],s,'--campaign',CAMP,'--raised-only'],lease)
+                    elif not existing_panels and r['suffix']=='modal20' and (ROOT/'validation/bolted_mode_film.json').is_file():
+                        command([models/r['script'],s,'--campaign',CAMP,'--raised-basis'],lease)
+                elif r['kind']==KINDS[1] and existing_panels<4:
+                    method=raised_rms_method(r)
+                    if method and (not existing_panels or displayed.get('field_method','native')!=method):
+                        flags=['--raised-only']
+                        if method=='independent':flags.append('--independent-raised')
+                        command([models/r['script'],s,'--campaign',CAMP,*flags],lease)
             for g in SLOTS:
                 movie=ROOT/r[g]
                 if movie.is_file():
@@ -196,7 +235,7 @@ def cycle(render,refresh,lease):
             issues.append(r['file'])
     provisional=sum(p.get('comparison_panels')==2 for p in result)
     report=dict(total_requested=44,decoded=len(result),raised_comparisons=provisional,
-                paired_and_encoded=len(result)==44 and not issues and not provisional and not any(p.get('coordinate_method')=='independent' for p in result),issues=issues,films=result)
+                paired_and_encoded=len(result)==44 and not issues and not provisional and not any('independent' in (p.get('coordinate_method'),p.get('field_method')) for p in result),issues=issues,films=result)
     write_json(RT/'coverage.json',report)
     return report
 

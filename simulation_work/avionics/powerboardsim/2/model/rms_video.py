@@ -8,21 +8,36 @@ from film_identity import verified,already_rendered,publish_baseline
 ROOT=Path(__file__).resolve().parents[1]
 VARIANTS=['bare','flush_nylon','flush_aluminium','stand3_nylon','stand3_aluminium']
 LABELS=['Bare board','Flush / nylon screws','Flush / aluminium screws','3 mm / nylon screws','3 mm / aluminium screws']
-def field(path,component):
-    result=read_rst(str(path));grid=result.grid
-    node,disp=result.nodal_solution([3,1]);order=np.argsort(node)
+def surfaces(result):
+    grid=result.grid
     solid=np.isin(grid.cell_data['ansys_elem_type_num'],[185,186,187,188])
     case=grid.cell_data['ansys_material_type']==850
-    actors=[];peak=0
+    items=[]
     for group,opaque in ((solid&~case,True),(solid&case,False)):
         if not group.any():continue
         surface=grid.extract_cells(group).extract_surface(algorithm='dataset_surface',nonlinear_subdivision=0).triangulate()
-        ids=surface.point_data['ansys_node_num'];idx=order[np.searchsorted(node[order],ids)]
-        assert np.array_equal(node[idx],ids)
-        u=1000*np.abs(disp[idx,'XYZ'.index(component)]);assert np.all(np.isfinite(u))
-        peak=max(peak,float(np.max(u)));surface.clear_data();surface['RMS displacement [mm]']=u
+        items.append((surface,opaque))
+    return items
+
+
+def apply_field(items,nodes,values_mm):
+    order=np.argsort(nodes)
+    actors=[];peak=0.
+    for surface,opaque in items:
+        ids=surface.point_data['ansys_node_num']
+        idx=order[np.searchsorted(nodes[order],ids)]
+        assert np.array_equal(nodes[idx],ids)
+        u=values_mm[idx];assert np.isfinite(u).all() and u.min()>=0
+        peak=max(peak,float(u.max()))
+        surface.clear_data();surface['RMS displacement [mm]']=u
         actors.append((surface,opaque))
     return actors,peak
+
+
+def field(path,component):
+    result=read_rst(str(path))
+    node,disp=result.nodal_solution([3,1])
+    return apply_field(surfaces(result),node,1000*np.abs(disp[:,'XYZ'.index(component)]))
 def camera(plot,phase,view):
     if view=='Rear view':initial=160.
     elif view=='Battery view':initial=13.
@@ -33,6 +48,10 @@ def camera(plot,phase,view):
     plot.enable_parallel_projection();plot.camera.parallel_scale=.088
 def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
     layout_record={'layout_revision':2} if len(panels)>1 else {}
+    integrated=bool(sources and any('surface_field_sha256' in s for s in sources))
+    if integrated:
+        assert all('surface_field_sha256' in s for s in sources)
+        layout_record['field_method']='independent'
     if not preview and already_rendered(target,dict(subject=title,base=axis,response=comp,view=view,range_mm=[0,limit],sources=sources,**layout_record)):return
     n=len(panels);width,height=(1280,720) if preview else (3840,2160)
     layout={1:(1,1),2:(1,2),4:(2,2)}[n]
@@ -43,7 +62,10 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
             p.add_mesh(mesh,scalars='RMS displacement [mm]',clim=(0,limit),cmap='viridis',opacity=1. if opaque else .42,show_scalar_bar=(i==0 and j==0),
                        scalar_bar_args=dict(title='RMS [mm]',vertical=True,position_x=.085,position_y=.19,width=.047,height=.46,n_labels=4,fmt='%.3g',title_font_size=26 if n>1 else 16,label_font_size=22 if n>1 else 14,color='#25334a'))
         p.add_text(label+'   /   '+f'base {axis}, response {comp}',position='upper_left',font_size=27 if n>1 else 17,color='#08357e')
-        p.add_text('1-sigma displacement   |   camera orbit' + ('   |   fixed contact state' if len(actors)>1 else ''),position='lower_left',font_size=16 if n>1 else 8,color='#183046')
+        caption='1-sigma displacement   |   camera orbit'
+        if len(actors)>1:caption+='   |   fixed contact state'
+        if integrated:caption+='\nIndependent integration of native modes'
+        p.add_text(caption,position='lower_left',font_size=16 if n>1 else 8,color='#183046')
         camera(p,0,view)
     p.show(auto_close=False,interactive=False)
     if preview:
@@ -61,9 +83,12 @@ def draw(panels,title,axis,comp,view,limit,target,preview=False,sources=None):
     stream=imageio_ffmpeg.read_frames(str(temp));meta=next(stream);stream.close()
     assert tuple(meta['size'])==(3840,2160) and meta['fps']==60
     temp.replace(target)
-    target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],**layout_record,panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
+    target.with_suffix('.json').write_text(json.dumps(dict(subject=title,resolution=[3840,2160],sources=sources,kind='Camera orbit of independently integrated fixed RMS' if integrated else 'Camera orbit of native fixed one-sigma RMS',base=axis,response=comp,view=view,range_mm=[0,limit],**layout_record,panels=[dict(label=a[0],visible_surface_peak_mm=a[2]) for a in panels],frames=frames,fps=60,duration_s=duration,sha256=hashlib.sha256(target.read_bytes()).hexdigest()),indent=2)+'\n')
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);mode=parser.add_mutually_exclusive_group();mode.add_argument('--bare-only',action='store_true');mode.add_argument('--raised-only',action='store_true');args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('name');parser.add_argument('--campaign',default='nov08_01');parser.add_argument('--preview-rst',type=Path);mode=parser.add_mutually_exclusive_group();mode.add_argument('--bare-only',action='store_true');mode.add_argument('--raised-only',action='store_true')
+    parser.add_argument('--independent-raised',action='store_true')
+    args=parser.parse_args()
+    assert not args.independent_raised or args.raised_only
     with (ROOT/'validation/video_pairs.csv').open() as stream:
         row=next(r for r in csv.DictReader(stream) if Path(r['file']).stem==args.name)
     assert row['kind']=='camera motion over fixed RMS'
@@ -77,10 +102,15 @@ def main():
     for variant in variants:
         name=LABELS[VARIANTS.index(variant)]
         key=native_case(variant,'psd_'+axis)
-        audit=json.loads((ROOT/f'validation/global/{key}.json').read_text());assert audit['case']==key and audit['campaign']==args.campaign
-        rst=ROOT/f'.runtime/archive/{args.campaign}/{key}/file.rst'
-        verified(rst,audit['rst_sha256']);sources.append(dict(variant=variant,rst_sha256=audit['rst_sha256']))
-        actors,peak=field(rst,comp)
+        if args.independent_raised and variant!='bare':
+            from rms_film_fields import film_field
+            actors,peak,source=film_field(variant,axis,comp,args.campaign)
+        else:
+            audit=json.loads((ROOT/f'validation/global/{key}.json').read_text());assert audit['case']==key and audit['campaign']==args.campaign
+            rst=ROOT/f'.runtime/archive/{args.campaign}/{key}/file.rst'
+            verified(rst,audit['rst_sha256']);source=dict(variant=variant,rst_sha256=audit['rst_sha256'])
+            actors,peak=field(rst,comp)
+        sources.append(source)
         panels.append((name,actors,peak))
     limit=max(i[2] for i in panels)
     dest=ROOT/f'output/videos/without_case/power_board_4k60/{args.name}.mp4'
@@ -89,13 +119,22 @@ def main():
     if not args.bare_only:
         cased=ROOT/f'output/videos/with_case/power_board_4k60/{args.name}.mp4'
         group='raised' if args.raised_only else 'all_four'
+        if args.independent_raised:group+='-independent'
         take=ROOT/'.runtime/films/comparisons'/args.name/(group+'_v2')/(float(limit).hex()+'.mp4')
         draw(panels[1:],title,axis,comp,view,limit,take,sources=sources[1:])
         sidecar=cased.with_suffix('.json')
         if sidecar.exists():
             previous=json.loads(sidecar.read_text())['sources']
-            if not all(s in sources[1:] for s in previous):
-                raise ValueError('Previously published case has changed or is missing from this comparison')
+            current={s['variant']:s for s in sources[1:]}
+            for old in previous:
+                new=current[old['variant']]
+                if new==old:continue
+                if 'surface_field_sha256' not in old or 'surface_field_sha256' in new:
+                    raise ValueError('Previously published case has changed or is missing from this comparison')
+                from rms_film_fields import compare_native
+                compare_native(old['variant'],axis,args.campaign)
+                prior=json.loads((ROOT/'validation/rms_film_fields'/(native_case(old['variant'],'psd_'+axis)+'.json')).read_text())
+                assert prior['rst_sha256']==old['rst_sha256'] and prior['surface_field_sha256']==old['surface_field_sha256']
         # Finish both encodes and source checks before replacing either publication.
         publish_baseline(take,cased,('subject','base','response','view'))
     publish_baseline(generation,dest,('subject','base','response','view','sources'))
