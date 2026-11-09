@@ -2,7 +2,7 @@
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
-work="$root/work"
+work="${CP_WORK:-$root/work}"
 repo="${OR_REPO:-$root/../../../ActiveControl_MIT_RktTeam}"
 jar="${OR_JAR:-$repo/clone/openrocket/build/libs/OpenRocket-MIT-v6.6.jar}"
 python3 followup/fixtures.py
@@ -12,3 +12,6 @@ for variant in legacy full charts transfer handover; do
     case "$variant" in charts|transfer|handover) cl="$work/$variant/classes:$cl";; esac
     java -Xmx2g -Djava.awt.headless=true -cp "$cl" Loads "$variant" "$root" > "$work/handover/loads-$variant.log" 2>&1
 done
+# Independent numerical refinement of the body fairing and isolated-wing carrier.
+java -Djava.awt.headless=true -Dbenchmark.tunnelOnly=true -Dbenchmark.fairingPanels=48 -Dbenchmark.carrierIn=0.000005 \
+    -cp "$work/handover/classes:$work/classes:$jar" Loads refined "$root" > "$work/handover/loads-refined.log" 2>&1

@@ -77,12 +77,12 @@ public class Loads {
         BodyTube base;
         if(part.equals("wing")){
             // Radius tends to zero for the isolated triangular wing. Common reference diameter is set explicitly below.
-            base=tube(stage,11,0.00001);
+            base=tube(stage,11,Double.parseDouble(System.getProperty("benchmark.carrierIn","0.00001")));
         }else{
             double angle=Math.toRadians(15),radius=11.02,bodyRadius=.75;
             double r0=bodyRadius-radius*(1-Math.cos(angle)), x0=r0/Math.tan(angle);
             NoseCone nose=new NoseCone(Transition.Shape.CONICAL,x0*IN,r0*IN);nose.setAftRadiusAutomatic(false);stage.addChild(nose);
-            final int panels=24;
+            final int panels=Integer.getInteger("benchmark.fairingPanels",24);
             double end=x0+radius*Math.sin(angle), lastX=x0,lastR=r0;
             for(int i=1;i<=panels;i++){
                 double x=x0+(end-x0)*i/panels;
@@ -107,6 +107,14 @@ public class Loads {
         cond.setTheta(tunnel?Math.PI/2:0);
         for(double deg:angles)for(double mach:machs){
             cond.setAOA(Math.toRadians(deg));cond.setMach(mach);
+            if(tunnel){
+                var atmosphere=cond.getAtmosphericConditions().clone();
+                double bodyRe=cond.getVelocity()*11*IN/atmosphere.getKinematicViscosity();
+                atmosphere.setPressure(atmosphere.getPressure()*5.5e6/bodyRe);
+                cond.setAtmosphericConditions(atmosphere);
+                if(Math.abs(cond.getVelocity()*11*IN/atmosphere.getKinematicViscosity()-5.5e6)>1)
+                    throw new AssertionError("Tunnel Reynolds number");
+            }
             var cp=solver.getCP(cfg,cond,null);
             double ca=tunnel?solver.getAerodynamicForces(cfg,cond,null).getCDaxial():Double.NaN;
             if(!Double.isFinite(cp.x+cp.weight) || (tunnel && !Double.isFinite(ca)))throw new AssertionError(family);
@@ -126,10 +134,10 @@ public class Loads {
                 for(double step:new double[]{-2e-5,-1e-5,0,1e-5,2e-5})machs.add(boundary+step);
             }
             double[] irisGrid=machs.stream().mapToDouble(Double::doubleValue).toArray();
-            for(String part:List.of("forebody","finless","finned")){
+            if(!Boolean.getBoolean("benchmark.tunnelOnly")) for(String part:List.of("forebody","finless","finned")){
                 var cfg=cdx(root.resolve("inputs/iris-components/models/"+part+".CDX1"));
                 output(w,model,"cdx",part,0,cfg,4.20,irisGrid,new double[]{0,2,4},experimental,false);
-                var doc=new GeneralRocketLoader(root.resolve("work/handover/"+part+".ork").toFile()).load();
+                var doc=new GeneralRocketLoader(Path.of(System.getenv().getOrDefault("CP_WORK",root.resolve("work").toString())).resolve("handover/"+part+".ork").toFile()).load();
                 output(w,model,"ork",part,0,doc.getRocket().getSelectedConfiguration(),4.20,irisGrid,new double[]{0,2,4},experimental,false);
             }
             for(String row:Files.readAllLines(root.resolve("followup/tn3795.csv")).subList(1,7)){
