@@ -6,7 +6,8 @@ $root=Split-Path $PSScriptRoot
 $work=Join-Path "C:\Temp\PBCaseStudy\$Campaign" $Case
 $receipt=Join-Path $root ".runtime\receipts\$Campaign\$Case"
 $dst=Join-Path $root ".runtime\archive\$Campaign\$Case"
-if ((Get-Content "$receipt\status.json" -Raw |ConvertFrom-Json).phase -ne 'solver_complete') {throw 'Solver completion record required'}
+$status=Get-Content "$receipt\status.json" -Raw|ConvertFrom-Json
+if ($status.phase -ne 'solver_complete') {throw 'Solver completion record required'}
 New-Item -ItemType Directory -Path $dst -Force|Out-Null
 $finish="$receipt\archived.json"
 try {
@@ -26,7 +27,8 @@ foreach ($file in $files) {
     } elseif ((Get-FileHash -LiteralPath $copy).Hash -ne $expected){throw "Existing archive differs: $($file.Name)"}
     $ledger+=[PSCustomObject]@{name=$file.Name;bytes=$file.Length;sha256=$expected}
 }
-if (!($ledger|Where-Object name -eq 'file.rst')){throw 'Missing assembled result file'}
+$result=if ($status.result_job -in 'pull','tear'){ $status.result_job+'.rst' }else{ 'file.rst' }
+if (!($ledger|Where-Object name -eq $result)){throw 'Missing assembled result file'}
 $manifest=[ordered]@{case=$Case;campaign=$Campaign;source=$work;utc=[datetime]::UtcNow.ToString('o');files=$ledger}
 $manifest|ConvertTo-Json -Depth 5|Set-Content "$finish.tmp" -Encoding UTF8
 Move-Item "$finish.tmp" $finish

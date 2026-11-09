@@ -42,6 +42,18 @@ try {
             if((Get-FileHash -LiteralPath $to).Hash -ne $row.sha256){throw "Parent copy mismatch: $($row.name)"}
         }
     }
+    if (Test-Path -LiteralPath "$work\local_job.json") {
+        $spec=Get-Content "$work\local_job.json" -Raw|ConvertFrom-Json
+        $stage.cores=$spec.cores
+        Update 'solving'
+        $localResult=& "$PSScriptRoot\local_solve.ps1" -Work $work -Case $Case -Exe $exe
+        $stage.exit=$localResult.exit
+        $stage.native_clean=$localResult.clean
+        $stage.result_job=$localResult.job
+        Copy-Item -LiteralPath "$work\solve.out" $out
+        Update 'solver_complete'
+        return
+    }
     Update 'solving'
     $argsList=@('-b','nolist','-s','noread','-dis','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
     $p=Start-Process -FilePath $exe -WorkingDirectory $work -ArgumentList $argsList -Wait -PassThru

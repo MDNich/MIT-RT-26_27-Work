@@ -1,0 +1,126 @@
+"""Audit an isolated pull or coupon run. Retain partial histories separately from completed cases."""
+import hashlib
+import json
+import re
+import sys
+from pathlib import Path
+
+import numpy as np
+
+from local_equilibrium import movement_table, recover, write_csv
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def read(path):
+    return json.loads(path.read_text(encoding='utf-8-sig'))
+
+
+def table(path):
+    values = np.atleast_1d(np.genfromtxt(path, delimiter=',', names=True))
+    if not len(values) or not np.all(np.isfinite(values.view(float))):
+        raise ValueError(f'Invalid native result table: {path.name}')
+    return values
+
+
+def fixture(folder, spec, config, source, listing, balance_path):
+    history = table(folder/'history.csv')
+    native = recover(folder/f"{spec['job']}.rst", source, movement_table(folder/'moving_supports.csv'), spec['cased'])
+    converged = {(int(a),int(b)) for a,b in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)}
+    if not all((r['loadstep'],r['substep']) in converged for r in native):
+        raise ValueError('RST contains an unconfirmed equilibrium state')
+    steps = np.array([r['loadstep'] for r in native])
+    if not np.array_equal(np.unique(steps), np.arange(1,steps.max()+1)) or np.any(np.diff(steps)<0):
+        raise ValueError('Load-step sequence resets or skips a stage')
+    is_damage = spec['source'].startswith('damage_')
+    start = config.get('pull_start_time',0)
+    pull = [row for row in native if row['time'] > start+1e-9]
+    if not pull:
+        raise ValueError('Fixture did not reach the pull stage')
+    matching = history[history['time']>start+1e-9]
+    if len(matching)!=len(pull) or not np.allclose(matching['time'],[x['time'] for x in pull],atol=1e-7,rtol=0):
+        raise ValueError('Native history does not match the converged RST time series')
+    forces = np.array([x['cell_fx_N'] for x in pull])
+    if not np.allclose(forces, matching['fx_N'], rtol=1e-6,atol=1e-5):
+        raise ValueError('Native POST1 cell force differs from the RST reactions')
+    if 'bottom_pilots' in config:
+        clamps = table(folder/('set_inventory.csv' if is_damage else 'contact_history.csv'))
+        fields = ('clamp1_N','clamp2_N') if is_damage else ('washer1_RFz','washer2_RFz')
+        lock = clamps[np.isclose(clamps['time'],start,rtol=0,atol=1e-7)]
+        if len(lock)!=1 or any(abs(abs(float(lock[k][0]))-config['preload_N'])>.2 for k in fields):
+            raise ValueError('One or more washers failed to retain the preload at locking')
+        if not is_damage:
+            if any(np.ptp(clamps[k][clamps['time']>=start])>1e-7 for k in ('washer1_uz','washer2_uz')):
+                raise ValueError('Locked washer heights changed during pull')
+    force = np.array([[r['force_N_'+ax] for ax in 'xyz'] for r in native])
+    torque = np.array([[r['moment_cell_Nmm_'+ax] for ax in 'xyz'] for r in native])
+    cell_force = np.abs([r['cell_fx_N'] for r in native])
+    max_fx_rel = float(np.max(abs(force[:,0])/np.maximum(1,cell_force)))
+    max_force = np.max(abs(force),axis=0)
+    max_torque = np.max(abs(torque),axis=0)
+    # Use the same practical force limits as the prior fixture and a lateral moment
+    # check based on the distance (42.5 mm) from the cell centre to a washer centre.
+    moment_norm = np.linalg.norm(torque[steps>=3] if start else torque,axis=1)
+    pull_scale = np.maximum(1.,np.abs(forces)*42.5)
+    if len(moment_norm)!=len(pull_scale):
+        raise ValueError('Moment audit and pull states differ')
+    rel_moment = float(np.max(moment_norm/pull_scale))
+    balance_path.parent.mkdir(parents=True,exist_ok=True)
+    write_csv(native,balance_path)
+    if max_fx_rel>=.01 or max_force[1]>=.1 or max_force[2]>=.2 or rel_moment>=.01:
+        raise ValueError(f'Equilibrium outside tolerance: {max_fx_rel:g}, {max_force}, {rel_moment:g}')
+    end = config.get('end_time',1)
+    reached = (abs(pull[-1]['time']-end)<1e-6 and
+               abs(pull[-1]['ux_mm']-config['sign']*config['displacement_mm'])<1e-5)
+    data = dict(states=len(native), last_time=pull[-1]['time'], last_ux_mm=pull[-1]['ux_mm'],
+                last_fx_N=pull[-1]['cell_fx_N'], peak_abs_fx_N=float(np.max(abs(forces))),
+                max_abs_force_residual_N=max_force.tolist(), max_abs_moment_at_cell_Nmm=max_torque.tolist(),
+                max_relative_lateral_imbalance=max_fx_rel, max_relative_pull_moment_residual=rel_moment)
+    if is_damage and 'dtop' in matching.dtype.names:
+        damage=np.maximum.reduce([matching[k] for k in ('dtop','dmid','dbot')])
+        data['max_reported_damage']=float(np.max(damage))
+        data['max_reported_equivalent_plastic_strain']=float(np.max(matching['peeq']))
+        if data['max_reported_equivalent_plastic_strain']>1.55:
+            raise ValueError('Nickel plastic strain exceeded the material-law scope')
+        if np.any(np.diff(damage)<-1e-4):
+            raise ValueError('Reported peak damage decreased during continuous loading')
+    elif 'max_eppl' in matching.dtype.names:
+        data['max_reported_equivalent_plastic_strain']=float(np.max(matching['max_eppl']))
+    return data,reached
+
+
+def audit(case, campaign):
+    receipts = ROOT/'.runtime/receipts'/campaign/case
+    folder = ROOT/'.runtime/archive'/campaign/case
+    status = read(receipts/'status.json')
+    ledger = read(receipts/'archived.json')
+    spec = read(folder/'local_job.json')
+    manifest = read(ROOT/'validation/local_jobs.json')[case]
+    assert hashlib.sha256((folder/'local_job.json').read_bytes()).hexdigest()==manifest['spec_sha256']
+    assert spec['case']==ledger['case']==status['case']==case and status['phase']=='solver_complete'
+    assert all((folder/f['name']).stat().st_size==f['bytes'] for f in ledger['files'])
+    cfgdir = ROOT/'.runtime/local_inputs'/spec['source']
+    cfg = read(cfgdir/'config.json')
+    listing = (folder/'solve.out').read_text(errors='replace')
+    if 'RUN COMPLETED' not in listing or (folder/'REJECTED_LOAD_HISTORY.txt').exists():
+        raise ValueError('Native run lacks a valid completion record')
+    if spec['coupon']:
+        values=table(folder/'history.csv')
+        if np.any(np.diff(values['time'])<=0):
+            raise ValueError('Coupon load sequence reset')
+        data=dict(states=len(values),last_time=float(values['time'][-1]),
+                  last_ux_mm=float(values['ux_mm'][-1]),max_damage=float(np.max(values['damage'])))
+        reached=abs(data['last_time']-cfg['end_time'])<1e-7
+    else:
+        data,reached=fixture(folder,spec,cfg,cfgdir,listing,ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv')
+    complete = bool(status['native_clean']) and reached
+    data.update(case=case,source=spec['source'],campaign=campaign,full_requested_path=complete,
+                scope='Completed numerical fixture' if complete else 'Partial converged path; endpoint under review',
+                rst_sha256=next(f['sha256'] for f in ledger['files'] if f['name']==spec['job']+'.rst'))
+    dest=ROOT/'validation'/('local' if complete else 'partial_local')
+    dest.mkdir(exist_ok=True)
+    (dest/(case+'.json')).write_text(json.dumps(data,indent=2)+'\n')
+    print(data['scope'],case,flush=True)
+
+if __name__ == '__main__':
+    audit(*sys.argv[1:])

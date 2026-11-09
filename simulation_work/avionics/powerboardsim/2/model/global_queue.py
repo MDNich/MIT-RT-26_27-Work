@@ -30,6 +30,9 @@ def jobs():
     for source in ('bare_original','bare_refined'):
         name=source+'_sturm'
         if (ROOT/f'validation/{name}_input.json').is_file():yield name,''
+    # Run a paired edge-cell fixture early while the full global series is still pending.
+    yield 'bare_lateral_friction_locked',''
+    yield 'stand3_nylon_lateral_friction_locked','bare_lateral_friction_locked'
     yield 'stand3_nylon_static',''
     # Establish the first complete reference and one cased comparison before the remaining variants.
     for branch in ['bare','stand3_nylon','flush_nylon','stand3_aluminium','flush_aluminium']:
@@ -40,21 +43,34 @@ def jobs():
         for axis in 'XYZ':yield branch+'_psd_'+axis,branch+'_basis'
         if branch!='bare':
             for case in ('original','refined'):yield branch+'_'+case,''
+    local_cases=read(ROOT/'validation/local_jobs.json')
+    for case,meta in local_cases.items():
+        if case in ('bare_lateral_friction_locked','stand3_nylon_lateral_friction_locked'):continue
+        yield case,'' if case.startswith('bare_') else 'bare_'+meta['source']
+
+def result_path(case):
+    local='_lateral_' in case or '_damage_' in case
+    return ROOT/'validation'/('local' if local else 'global')/(case+'.json')
+
 def run():
     for case,parent in jobs():
         receipt=RECEIPTS/case;receipt.mkdir(parents=True,exist_ok=True)
-        final=ROOT/'validation/global'/(case+'.json')
-        if final.exists():continue
-        if parent and not (ROOT/'validation/global'/(parent+'.json')).is_file():
+        final=result_path(case)
+        partial=ROOT/'validation/partial_local'/(case+'.json')
+        if final.exists() or partial.exists():continue
+        if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
             log('Parent unaccepted: '+case);continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
             raise RuntimeError('Cased preflight review pending')
+        local=final.parent.name=='local'
+        if local and not case.startswith('bare_') and not (ROOT/'validation/local_cased_preflight.json').is_file():
+            raise RuntimeError('Cased pull fixture preflight review pending')
         if (receipt/'audit_failed.txt').exists():continue
         if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
         state=receipt/'status.json'
         if not state.exists():
             flags=['-Case',case,'-Campaign',CAMPAIGN]
-            if parent:flags.extend(['-Parent',parent])
+            if parent and not local:flags.extend(['-Parent',parent])
             log('Dispatch '+case);launch('native_run.ps1',flags,receipt/'dispatch.json')
         while not state.is_file():time.sleep(15)
         while read(state)['phase'] not in ('solver_complete','failed'):time.sleep(20)
@@ -62,7 +78,8 @@ def run():
         if not (receipt/'released.txt').exists():
             log('Archive '+case);launch('archive_native.ps1',['-Case',case,'-Campaign',CAMPAIGN],receipt/'archive_request.json')
         while not (receipt/'released.txt').exists():time.sleep(20)
-        r=subprocess.run([sys.executable,str(ROOT/'model/audit_global.py'),case,CAMPAIGN],text=True,capture_output=True)
+        audit='audit_local.py' if local else 'audit_global.py'
+        r=subprocess.run([sys.executable,str(ROOT/'model'/audit),case,CAMPAIGN],text=True,capture_output=True)
         log(r.stdout[-1000:])
         if r.returncode:(receipt/'audit_failed.txt').write_text(r.stderr);log('Audit failed '+case+': '+r.stderr[-330:])
     log('All available global tasks visited. Check receipts, deferred parents and material scope.')
