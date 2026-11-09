@@ -69,11 +69,9 @@ def stage():
     write_json(ROOT/'validation/board_surface_candidates.json',dict(candidates=records,tab_pairs=spec,assumptions=
         'Four frictionless face pairs at actual tab undersides, PCB underside retained, no compression pad spring. Short shank, four driven heads and original six bolts unchanged. Prepared inputs only.'))
 
-def audit():
-    d=ROOT/'.runtime'/TRIAL
+def verify_faces(d,preflight_sha256,tab_pairs):
     assert int((d/'exit.txt').read_text(encoding='utf-16').strip())==0
-    src=read(ROOT/'validation/board_surface_candidates.json')
-    assert digest(d/'pre.inp')==src['candidates']['nylon']['preflight_sha256']
+    assert digest(d/'pre.inp')==preflight_sha256
     listing=(d/'pre.out').read_text(errors='replace')
     assert 'BOARD_SURFACE_INITIAL_DONE' in listing and re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',listing)
     assert not re.search(r'^\s*UNEXPECTED_CO_MOVING_SEATS\s*$',listing,re.M)
@@ -87,8 +85,8 @@ def audit():
         m=re.search(r'Min\.\s+Initial gap\s+([\d.E+-]+)',block,re.I)
         assert m and not re.search(r'Max\.\s+Initial penetration',block,re.I)
         seen[pair]=float(m[1])*1e3
-    assert abs(seen[853]-.198685224)<.001
-    for s in src['tab_pairs']:
+    assert set(seen)=={853,*REALS} and 0<seen[853]<1.
+    for s in tab_pairs:
         ir=s['pair'];assert abs(seen[ir]-3)<1e-4
         out={}
         for typ,name,sign,z in [(857,'PCB',-1,-.00055118),(858,'PLA',1,-.00355118)]:
@@ -100,6 +98,12 @@ def audit():
         pairs[ir]=dict(**out,initial_gap_mm=seen[ir])
     rec=dict(pairs=pairs,cell_interface_gap_mm=seen[853],input_sha256=digest(d/'pre.inp'),listing_sha256=digest(d/'pre.out'),
              scope='Initial native geometry/contact only; all tab normals face the board, all four patch pairs start open. No installation result.')
+    return rec
+
+def audit():
+    src=read(ROOT/'validation/board_surface_candidates.json')
+    rec=verify_faces(ROOT/'.runtime'/TRIAL,src['candidates']['nylon']['preflight_sha256'],src['tab_pairs'])
+    assert abs(rec['cell_interface_gap_mm']-.198685224)<.001
     write_json(ROOT/'validation/board_surface_initial.json',rec);print(rec)
 
 if __name__=='__main__':{'stage':stage,'audit':audit}[sys.argv[1]]()

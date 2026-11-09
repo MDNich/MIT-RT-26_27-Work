@@ -166,11 +166,15 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--watch',action='store_true');p.add_argument('--render',action='store_true')
     p.add_argument('--refresh',action='store_true');a=p.parse_args()
     RT.mkdir(parents=True,exist_ok=True);lease=(RT/'worker.lock').open('a');fcntl.flock(lease,fcntl.LOCK_EX|fcntl.LOCK_NB)
-    write_json(RT/'worker.json',dict(pid=os.getpid(),started=now(),render=a.render,watch=a.watch))
+    source=Path(__file__).resolve()
+    generation=digest(source)
+    write_json(RT/'worker.json',dict(pid=os.getpid(),started=now(),render=a.render,watch=a.watch,source_sha256=generation))
     while True:
         data=cycle(a.render,a.refresh,lease)
         if not a.watch or data['paired_and_encoded']:break
         time.sleep(60)
+        if digest(source)!=generation:
+            os.execv(sys.executable,[sys.executable,'-u',str(source),*sys.argv[1:]])
     print(data['decoded'],'of 44 decoded;',len(data['issues']),'issues')
 
 if __name__=='__main__':main()

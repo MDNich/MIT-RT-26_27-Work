@@ -15,7 +15,7 @@ def point_fields(raw,sets,points):
     from film_identity import verified,digest
     from local_equilibrium import movement_table
     path=Path(raw.filename).resolve();folder=path.parent
-    assert path.name=='pull.rst' and folder.parent.parent==ROOT/'.runtime/archive'
+    assert path.name in ('pull.rst','tear.rst') and folder.parent.parent==ROOT/'.runtime/archive'
     case,campaign=folder.name,folder.parent.name
     meta=json.loads((ROOT/'.runtime/receipts'/campaign/case/'archived.json').read_text(encoding='utf-8-sig'))
     sha=next(f['sha256'] for f in meta['files'] if f['name']==path.name)

@@ -80,13 +80,14 @@ def fixture(folder, spec, config, source, listing, balance_path):
                 max_abs_force_residual_N=max_force.tolist(), max_abs_moment_at_cell_Nmm=max_torque.tolist(),
                 max_relative_lateral_imbalance=max_fx_rel, max_relative_pull_moment_residual=rel_moment)
     if is_damage and 'dtop' in matching.dtype.names:
+        from nickel_damage import summarize
+        data.update(summarize(clamps,native))
         damage=np.maximum.reduce([matching[k] for k in ('dtop','dmid','dbot')])
         data['max_reported_damage']=float(np.max(damage))
         data['max_reported_equivalent_plastic_strain']=float(np.max(matching['peeq']))
         if data['max_reported_equivalent_plastic_strain']>1.55:
             raise ValueError('Nickel plastic strain exceeded the material-law scope')
-        if np.any(np.diff(damage)<-1e-4):
-            raise ValueError('Reported peak damage decreased during continuous loading')
+        assert np.allclose(damage,clamps['damage'][clamps['time']>start+1e-9],rtol=1e-6,atol=1e-8)
     elif 'max_eppl' in matching.dtype.names:
         data['max_reported_equivalent_plastic_strain']=float(np.max(matching['max_eppl']))
     if 'absolute_search_mm' in spec:

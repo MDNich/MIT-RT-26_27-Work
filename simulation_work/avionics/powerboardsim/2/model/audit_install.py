@@ -65,7 +65,7 @@ def contact_history(raw, records, tab, topology):
     assert len(tab)==len(output)
     return output,dict(contact_onset=first,peak_closed_corner_penetration_mm=worst,
                 worst_case_support_contact_residual_N=case_error,worst_neighbor_contact_residual_N=neighbor_error,
-                worst_fixed_seat_contact_residual_N=seat_error)
+                **({'worst_fixed_seat_contact_residual_N':seat_error} if any(pid>=880 for pid in groups) else {}))
 
 
 def indexed(tab,sets):
@@ -79,7 +79,9 @@ def audit(case,campaign):
     status=read(receipt/'status.json');ledger=read(receipt/'archived.json');spec=read(folder/'local_job.json')
     face_seats=case.endswith('_seatfaces1')
     registry='local_seat_jobs.json' if face_seats else 'local_install_jobs.json'
-    ref=read(ROOT/'validation'/registry)[case]
+    catalog=read(ROOT/'validation'/registry)
+    if face_seats and case not in catalog:catalog=read(ROOT/'validation/flush_pull_variants.json')
+    ref=catalog[case]
     assert status['phase']=='solver_complete' and case==spec['case']==status['case']==ledger['case']
     assert spec['load_protocol']=='four_stage_install' and digest((folder/'local_job.json').read_bytes())==ref['spec_sha256']
     assert status['input_sha256'].lower()==ref['input_sha256']==spec['files']['model.inp']
@@ -87,7 +89,8 @@ def audit(case,campaign):
     assert all((folder/r['name']).stat().st_size==r['bytes'] for r in ledger['files'])
     source=ROOT/'.runtime/local_inputs'/spec['source']
     listing=(folder/'solve.out').read_text(errors='replace')
-    rst=folder/'pull.rst'
+    damage=spec['job']=='tear'
+    rst=folder/(spec['job']+'.rst')
     movements=movement_table(folder/'moving_supports.csv')
     rows=recover(rst,source,movements,True,moving_screw_tops=True,seat_pilots=spec.get('seat_pilots',()))
     done=[tuple(map(int,x)) for x in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)]
@@ -95,15 +98,26 @@ def audit(case,campaign):
     for (sa,ia),(sb,ib) in zip(done,done[1:]):
         assert (sb==sa and ib==ia+1) or (sb==sa+1 and ib==1)
     sets=[r['native_set'] for r in rows]
-    h=indexed(table(folder/'history.csv'),sets)
-    clamp=indexed(table(folder/'contact_history.csv'),sets)
+    if damage:
+        inv=indexed(table(folder/'set_inventory.csv'),sets)
+        kin=indexed(table(folder/'damage_kinematics.csv'),sets)
+        assert np.array_equal(inv['loadstep'],[r['loadstep'] for r in rows]) and np.array_equal(inv['substep'],[r['substep'] for r in rows])
+        h={key:kin[key] for key in kin.dtype.names}
+        h.update(ux_mm=inv['ux_mm'],fx_N=inv['fx_N'],max_eppl=inv['peeq'])
+        clamp={'time':inv['time']}
+        for j in (1,2):
+            clamp[f'washer{j}_RFz']=inv[f'clamp{j}_N']
+            clamp[f'washer{j}_uz']=np.array([r[f'washer{j}_u_mm_z'] for r in rows])
+    else:
+        h=indexed(table(folder/'history.csv'),sets)
+        clamp=indexed(table(folder/'contact_history.csv'),sets)
     solid=indexed(table(folder/'case_solid.csv'),sets)
     assert np.all(solid['solids']==16108) and np.all(solid['seqv_MPa']>=0)
     times=np.array([r['time'] for r in rows])
     assert np.allclose(times,h['time'],atol=5e-9,rtol=0) and np.allclose(times,clamp['time'],atol=5e-9,rtol=0)
     assert np.allclose([r['cell_fx_N'] for r in rows],h['fx_N'],atol=1e-5,rtol=1e-6)
     lock,seat,end=spec['washer_lock_time'],spec['installed_time'],spec['end_time']
-    assert (lock,seat,end)==(2.,3.,4.) and times[-1]<=end+1e-8
+    assert (lock,seat,end)==(2.,3.,11. if damage else 4.) and times[-1]<=end+1e-8
     # Check the complete displacement path, not just whether the last actuator happened to reach 3 mm.
     uz=spec['top_travel_mm']*np.clip((times-lock)/(seat-lock),0,1)
     ux=spec['cell_pull_mm']*np.clip((times-seat)/(end-seat),0,1)
@@ -129,6 +143,8 @@ def audit(case,campaign):
     topology={int(float(p['pair'])):int(float(p['contact'])) for p in read(ROOT/'validation/flush_approach_preflight.json')['pairs']}
     if face_seats:
         topology.update({p['real']:p['tab_faces'] for p in read(ROOT/'validation/local_seat_preflight.json')['pairs']})
+    if 'nickel_faces_per_side' in spec:
+        topology.update({pid:spec['nickel_faces_per_side'] for pid in (863,864)})
     raw=reader.read_binary(str(rst))
     pairs,checks=contact_history(raw,rows,table(folder/'case_pairs.csv'),topology)
     from tab_seating import trace
@@ -181,9 +197,14 @@ def audit(case,campaign):
         force_residual_peak_N=float(np.linalg.norm(ff,axis=1).max()),moment_residual_peak_Nmm=float(np.linalg.norm(mm,axis=1).max()),
         integrated_external_work_Nmm=work,contact_resolution_limits_mm=limits,contact_resolution_flagged_pairs=unresolved,
         peak_abs_total_drawdown_force_N=max(abs(r['screw_support_N_z']) for r in rows),**checks,
-        rst_sha256=next(r['sha256'] for r in ledger['files'] if r['name']=='pull.rst'),
+        rst_sha256=next(r['sha256'] for r in ledger['files'] if r['name']==rst.name),
         scope='Local fixture only; linear printed PLA and surrogate screw beams, fixed neighbors. A forced seat is not a demonstrated assembly.')
     category='local' if reached and not unresolved and not tab_review else ('review_local' if reached else 'partial_local')
+    if damage:
+        from nickel_damage import summarize
+        out.update(summarize(inv,rows))
+        if out['nickel_material_scope_exceeded'] and category=='local':
+            category='review_local'
     out['classification']=category
     pub=ROOT/'validation'/category;pub.mkdir(exist_ok=True)
     tmp=pub/(case+'.tmp');tmp.write_text(json.dumps(out,indent=2)+'\n');tmp.replace(pub/(case+'.json'))

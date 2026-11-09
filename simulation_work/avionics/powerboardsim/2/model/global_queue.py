@@ -142,6 +142,10 @@ def jobs():
     for case,meta in read(ROOT/'validation/local_contact_retries.json').items():
         if case!='stand3_nylon_lateral_friction_locked_pin1':
             yield case,'bare_'+meta['source']
+    extra=ROOT/'validation/flush_pull_variants.json'
+    if extra.exists():
+        for case,record in read(extra).items():
+            yield case,'bare_'+record['source']
 
 def result_path(case):
     if case.startswith('replay_'):
@@ -201,6 +205,9 @@ def run():
             controls.append(('patch_table_control_v1','control.inp','patch_table_control','actuator_control.ps1','contact_transient.py'))
         if case in ('patch_stand3_nylon_span9_contact_eq1','bare_psd_X') and not (RECEIPTS/case/'dispatch.json').exists():
             controls.append(('local_seat_faces_v1','pre.inp','local_seat_preflight','flush_install_check.ps1','local_board_seats.py'))
+        if case in ('bare_psd_Y','bare_psd_Z') and not (RECEIPTS/case/'dispatch.json').exists():
+            mesh='refined' if case=='bare_psd_Y' else 'original'
+            controls.append((f'default_{mesh}_initial_v1','pre.inp',f'default_{mesh}_initial','flush_install_check.ps1','default_install.py'))
         if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.
@@ -215,7 +222,9 @@ def run():
                         time.sleep(5)
                 if (probe/'failed.txt').exists():raise RuntimeError('Uncertain native control: '+name)
                 if not (probe/'audit_failed.txt').exists():
-                    r=subprocess.run([sys.executable,str(ROOT/'model'/auditor),'audit'],capture_output=True,text=True)
+                    args=[sys.executable,str(ROOT/'model'/auditor),'audit']
+                    if auditor=='default_install.py':args.append(mesh)
+                    r=subprocess.run(args,capture_output=True,text=True)
                     if r.returncode:(probe/'audit_failed.txt').write_text(r.stderr);log('Rejected '+name+'; bare jobs independent')
         receipt=RECEIPTS/case;receipt.mkdir(parents=True,exist_ok=True)
         final=result_path(case)
@@ -226,6 +235,12 @@ def run():
             log('Parent unaccepted: '+case);continue
         if not case.startswith('bare_') and not (ROOT/'validation/cased_preflight.json').is_file():
             raise RuntimeError('Cased preflight review pending')
+        if case.endswith('_minus_seatfaces1'):
+            nominal=case.replace('_minus_seatfaces1','_seatfaces1')
+            paths=[result_path(nominal),ROOT/'validation/review_local'/(nominal+'.json'),ROOT/'validation/partial_local'/(nominal+'.json')]
+            if not any(p.is_file() and read(p).get('installed_state') is not None for p in paths):
+                log('Reverse pull shares the nominal installation up to its first lateral increment: '+case)
+                continue
         if case.startswith('replay_') and '_span9_contact_' in case and not result_path('patch_stand3_nylon_span9_contact_eq1').exists():
             log('Static contact check pending: '+case)
             continue
