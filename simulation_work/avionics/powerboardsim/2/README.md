@@ -2,6 +2,8 @@
 
 [All 22 video pairs](output/videos/README.md) · [English report](output/pdf/battery-case-report.pdf) · [Seven-slide briefing](output/pdf/battery-case-slides.pdf)
 
+The Balius SolidWorks part clears the original outer washers at 1.25 mm tab stand-off and leaves 0.003–0.020 mm at the cells. Its end geometry differs from the originally supplied STEP used for the simulations. The six-pocket Zphr part has incompatible pocket spacing and mounting holes. [CAD comparison, page 29](output/pdf/battery-case-report.pdf#page=29) · [Balius native export](geometry/candidates/Balius-native-verification.STEP) · [Zphr STEP](geometry/candidates/zphr-av-fcpbcase.STEP)
+
 The October power-board assembly carries three cells and six battery-attachment screws. Revision 2 adds the supplied 3D-printed PLA case, with air around the cells, and compares four additional case screws in aluminium or nylon. The model covers direct flush mounting and a 3 mm stand-off.
 
 | Configuration | Published evidence |

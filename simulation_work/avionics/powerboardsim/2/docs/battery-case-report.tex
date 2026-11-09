@@ -13,7 +13,7 @@
 {\large Assembly fit, bolt tightening, side pull and vibration response}\par
 {\small 9 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02\quad|\quad\href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{22 paired movies}}
 \heading{The mounting height determines whether the cells are already loaded}
-Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. During rigid installation from the raised position, the four outer washers touch first while 2.397~mm of tab stand-off remains. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
+Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. With the supplied Balius STEP, the outer washers touch at 2.397~mm stand-off. The Balius SolidWorks part has different washer clearance (page~29). Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
 \begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.pdf}
 \captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
 \heading{What the raised case changes}
@@ -624,5 +624,29 @@ Tab-to-PCB spacing & Left cell minimum & Middle cell minimum & Right cell minimu
 \captionof*{table}{Shortest three-dimensional surface distances between each undeformed cell and the case. The 2.400~mm setting leaves just 0.003~mm between the case and the first four washers.}\end{center}
 
 Holding the board and cells fixed, the middle cell would first touch as spacing fell to about 1.240~mm, then the outer cells near 1.210~mm. Reaching either position requires interference with the existing washers. A 2.5~mm spacer can therefore give a close nominal side fit, while simultaneous supported contact of all three rigid cells requires a change to the installation geometry or compliance. Actual print dimensions, washer stack and cell positions determine the as-built clearances.
+
+
+\newpage
+\pageheading{Which battery case fits the archived board?}
+The Balius SolidWorks part gives the closest nominal fit of the three files examined. The supplied Balius STEP and the fresh native export share the same three cell-pocket axes and radii. The native part provides additional space around the washers. SolidWorks 2026 SP4.1 exported the default configuration of each native part to AP203 STEP with zero reported errors or warnings. Each export reopened as one solid.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/alternate-case-sections.pdf}
+\captionof{figure}{Midspan sections at equal scale. For this pocket comparison, the middle cell axis coincides with one pocket axis in each direction. Red marks where the outer cells intersect the Zphr case in this pose. The mounting holes are checked separately.}\end{center}
+
+\heading{Balius at 1.25 mm tab-to-board spacing}
+A rigid sweep over the 35 archived hardware solids found that the native part reaches the middle cell first at 1.240~mm stand-off. The outer cells reach their pockets at 1.210~mm if the geometry is allowed to continue through first contact. The earliest outer-washer contact in that continuation is at 0.733~mm. With the original supplied STEP, the washers touch at 2.397~mm, before any cell can reach its pocket.
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Case and tab spacing & Middle cell gap & Outer cell gaps & Smallest outer-washer gap\\\midrule
+Supplied Balius STEP, 2.50 mm & 0.076 mm & 0.093 mm & 0.103 mm\\
+Balius native export, 2.50 mm & 0.076 mm & 0.093 mm & 1.250 mm\\
+Balius native export, 1.25 mm & 0.003 mm & 0.020 mm & 0.328 mm\\\bottomrule
+\end{tabular}\end{center}
+At 1.25~mm all three cells sit close to the native pockets. The small clearances depend on the actual print, battery sleeves, washer stack and board alignment. The reported structural and vibration results use the originally supplied STEP.
+
+\heading{Zphr pocket and screw alignment}
+Zphr has six pockets of radius 11.000~mm and pitch 25.623~mm. The three 10.700~mm-radius cells have adjacent pitches of 23.893 and 23.859~mm. Centring the middle cell in a Zphr pocket puts the outer cell axes 1.729 and 1.764~mm off-centre in the neighbouring pockets. The available concentric radial clearance is only 0.300~mm.
+
+The 14 Zphr bores have 3.400~mm through diameter. Comparing inter-hole distances over every assignment of four bores to the board corners proves that at least one centre is displaced by at least 10.525~mm under any rigid planar alignment. A nominal M3 screw can accommodate only 0.800~mm of centre offset across the case and PCB bores. Changing stand-off alone cannot register this pattern.
 
 \end{document}
