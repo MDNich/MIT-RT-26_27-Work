@@ -248,7 +248,8 @@ def jobs():
                 for raised in ('stand3_nylon','stand3_aluminium'):
                     yield raised+'_enforced',raised+'_basis'
                     for direction in 'XYZ':yield raised+'_motion_'+direction,raised+'_enforced'
-                yield 'stand3_nylon_damage_cont_nominal_pin1','bare_damage_cont_nominal'
+                for raised in ('stand3_nylon','stand3_aluminium'):
+                    yield raised+'_damage_cont_nominal_pin1','bare_damage_cont_nominal'
                 if (ROOT/'validation/local_seat_jobs.json').is_file():
                     yield 'flush_nylon_lateral_friction_locked_seatfaces1','bare_lateral_friction_locked'
                     if (ROOT/'validation/rocking_bearing_input.json').is_file():
