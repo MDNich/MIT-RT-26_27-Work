@@ -1,0 +1,106 @@
+{
+  "variant": "stand3_nylon",
+  "campaign": "nov08_01",
+  "axis": "X",
+  "coordinate_method": "linear_input_exact",
+  "basis_rst_sha256": "b35872b8ce74f5f2244f6f49b186825a2bab903e27bc464197e60b5342a4fc34",
+  "accepted_motion_sha256": "2f6a692c574ce2f51d3a1f198962a83b681cb16ab53cb5b970040b8bbc867051",
+  "clip_sha256": "bb429d517a610806ac604e60ebcc4a7833fc56efb2e5b16b6ea2871ef8b22969",
+  "native_mcf_sha256": null,
+  "integration": "Matrix exponential with piecewise-linear input",
+  "ramp_control_relative_max_error": 2.878386949524641e-13,
+  "sealed_input_sha256": "f04864b2974a882b110dbf0a9442317a992b1a2a0360617cf08f1f8d1f36de67",
+  "difference_from_historical_relative_L2": 0.004009098492937708,
+  "nominal_half_quarter_relative_L2_vs_exact": [
+    0.004008061796838699,
+    0.0010041137345583302,
+    0.0002511594544330999
+  ],
+  "displayed_frame_control_sha256": "64cc3b203c6c1bdbe9460a27e35d7f7a931aebb804c143365f07736d39323c11",
+  "samples": 1917,
+  "sampling_Hz": 65536,
+  "first_sample": 65540,
+  "last_sample": 67456,
+  "changed_movie_frames_one_based": [],
+  "unresolved_samples": 0,
+  "intersecting_samples": 72,
+  "cell_order": "Increasing PCB X",
+  "cells": {
+    "left": {
+      "material": 176,
+      "quadratic_faces": 328,
+      "candidate_face_pairs": 2379,
+      "crossing_intervals_samples": [
+        [
+          66546,
+          66614
+        ]
+      ],
+      "unresolved_intervals_samples": [],
+      "intersecting_samples": 69,
+      "midpoint_checks": [
+        {
+          "sample": 66580,
+          "time_s": 1.01593017578125,
+          "curved_skins": {
+            "2": {
+              "PLA_triangles": 128608,
+              "cell_triangles": 5248,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.012638352992035662
+            },
+            "3": {
+              "PLA_triangles": 514432,
+              "cell_triangles": 20992,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.012202785769552322
+            }
+          }
+        }
+      ]
+    },
+    "centre": {
+      "material": 191,
+      "quadratic_faces": 308,
+      "candidate_face_pairs": 2206,
+      "crossing_intervals_samples": [
+        [
+          66545,
+          66616
+        ]
+      ],
+      "unresolved_intervals_samples": [],
+      "intersecting_samples": 72,
+      "midpoint_checks": [
+        {
+          "sample": 66580,
+          "time_s": 1.01593017578125,
+          "curved_skins": {
+            "2": {
+              "PLA_triangles": 128608,
+              "cell_triangles": 4928,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.004297234078593196
+            },
+            "3": {
+              "PLA_triangles": 514432,
+              "cell_triangles": 19712,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.011375964132798615
+            }
+          }
+        }
+      ]
+    },
+    "right": {
+      "material": 187,
+      "quadratic_faces": 302,
+      "candidate_face_pairs": 2569,
+      "crossing_intervals_samples": [],
+      "unresolved_intervals_samples": [],
+      "intersecting_samples": 0,
+      "midpoint_checks": []
+    }
+  },
+  "scope": "Physical-scale quadratic skin geometry at every integration station within the original film interval. Endpoints are integer indices from the start of the excitation. Each consecutive run is a sequence of predicted surface intersections under fixed open contact."
+}

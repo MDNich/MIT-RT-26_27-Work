@@ -340,26 +340,27 @@ At 0.91~mm of screw travel, before the first coupon crossing, the four local tab
 For comparison, tightening the six original bolts in the raised full-board models produced a maximum case-screw fibre tension of 1.15~MPa with nylon and 1.63~MPa with aluminium. Neither raised case reached a printed-PLA coupon reference during tightening. The local flush trial subsequently crossed the board datum (page~11). Resolving the force required for an actual flush seat depends on the full-board contact path and the as-built material and joint behaviour.
 
 \newpage
-\heading{Does the cell touch the case during the motion shown in the movies?}
-The case with nylon screws lost its modeled cell clearance in 18 consecutive frames under X-axis excitation. Using the October numbering (first frame 1), these are frames 253--270 of the 480-frame film, about 4.20--4.48~s into playback and 1.015442--1.016479~s into the physical load history. At their midpoint, a cell surface vertex lay 14.6~$\mu$m inside the modeled PLA. The movie magnifies displacements 50 times. The section below uses the physical deformations.
+\heading{The left and centre cells reach the raised nylon case in the X movie}
+The open-gap model puts the cell and PLA skins into intersection in frames 253--270 of the 480-frame X-axis movie. That is 4.20--4.48~s into playback, at 1.015442--1.016479~s in the load record. Checking all 1,917 integration samples in the clip identified two cells. The centre cell crossed first, then the left cell one sample later. The right cell stayed clear. All three stayed clear throughout the film interval for the other five mount and excitation combinations.
 
 \begin{center}\includegraphics[width=.96\linewidth]{figures/raised-film-contact.pdf}
 \captionof{figure}{Left, the cell and PLA surface check repeated at every displayed instant for each 3~mm mount and input axis. Right, the exterior surfaces at frame 262, cut in a plane through the closest PLA point and the most deeply embedded sampled cell vertex. Both section axes use the same scale.}\end{center}
 
 \begin{center}\small
 \begin{tabular}{lrrr}\toprule
-Raised mount & X & Y & Z\\\midrule
-Nylon screws & 18/480 & 0/480 & 0/480\\
-Aluminium screws & 0/480 & 0/480 & 0/480\\\bottomrule
+Cell & Entry bracket [ms] & Exit bracket [ms] & Overlap at 15.869 ms [$\mu$m]\\\midrule
+Left & 15.335--15.350 & 16.388--16.403 & 12.1\\
+Centre & 15.320--15.335 & 16.418--16.434 & 11.3\\
+Right & \multicolumn{2}{c}{Clear at all 1,917 samples} & ---\\\bottomrule
 \end{tabular}
-\captionof{table}{Frames with intersecting surfaces under separate base excitations. In the longer nine-second X history both screw variants showed interference at other sampled instants (pages~10 and~15).}\end{center}
+\captionof{table}{Physical time from the first movie sample. The $15.26~\mu$s integration step brackets entry and exit. Overlap is the sampled cell-vertex depth inside the curved PLA skin at one common instant. The response holds the contact state fixed.}\end{center}
 
 At each mount's own peak dynamic PCB stress in the X clip, the smallest sampled cell-vertex gap was 0.149~mm at frame 228 for nylon and 0.146~mm at frame 290 for aluminium. The fixed-contact motion calculation omits any change in stress or trajectory caused by earlier contact.
 
-\heading{How the surface check was verified}
-Independent modal coordinates displaced all 8,038 exterior quadratic PLA faces and all 938 cell faces. Each quadratic face lies inside the convex hull of six control points. We excluded pairs with disjoint hulls and subdivided overlapping hulls until they separated or successive triangular approximations intersected. In all 18 crossing frames the eight- and sixteen-segment edge refinements agreed. The remaining 2,862 frame/configuration combinations had disjoint curved surfaces.
+\heading{Sensitivity to integration step and modal cutoff}
+Independent integration displaced all 8,038 exterior quadratic PLA faces and all 938 cell faces. Subdividing their convex hulls established separation at clear samples. Two successive triangle refinements confirmed each crossing. The full closed skins gave 15.0~$\mu$m of sampled overlap with four segments per edge and 14.6~$\mu$m with eight at frame 262. The movie magnifies movement 50 times. The section above uses physical displacements.
 
-An independent check using the full closed skins gave a sampled overlap of 15.0~$\mu$m at four segments per edge and 14.6~$\mu$m at eight for frame 262. The geometry check also reproduced a prescribed planar crossing and the earlier open and intersecting whole-assembly states. Impact force and the motion between displayed samples require further analysis. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
+For the nylon X history we halved and quartered the integration step, holding the piecewise-linear acceleration input fixed. Relative to the exact response of the modal oscillators to that input, the modal-coordinate differences fell from 0.401\% to 0.100\% and 0.025\%. All three time steps and the exact integration gave the same entry and exit brackets at the original sampling times. Retaining 35 modes through 2.95~kHz or 39 through 3.44~kHz gave the same brackets as the full 49-mode basis. Impact forces still require a contact-response calculation. \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4}{Raised cases under X-axis excitation.}
 
 \newpage
 \heading{The flush tabs make edge contact while most of each face stays open}

@@ -123,21 +123,28 @@ def plane_control(weights):
     assert states == ['separated', 'intersecting', 'separated']
 
 
-def run(variant, campaign):
-    key = variant+'_basis'
-    proof, folder, rst = source(key, campaign)
-    shapes = [outer_faces(rst, mats) for mats in ([850], [176,187,191])]
-    solids = contact_solids(rst)
+def surface_fields(rst, shapes, solids, fields):
+    """Represent every quadratic face in a common frame translating with the cell surface nodes."""
     ids = np.unique(np.concatenate([s.point_data['ansys_node_num'] for s in solids]))
     pos = np.searchsorted(rst.mesh.nnum, ids)
     assert np.array_equal(rst.mesh.nnum[pos], ids)
     xyz = rst.mesh.nodes[pos]*1000
     nodes = [np.searchsorted(ids, f) for f in shapes]
-    fields = field_files(key, campaign, proof['rst_sha256'], rst.nsets)
+    assert all(np.array_equal(ids[ix], f) for ix,f in zip(nodes,shapes,strict=True))
     phi = 1000*displacement_basis(rst, ids, fields)
-    phi -= phi[:,np.unique(nodes[1]),:].mean(axis=1, keepdims=True)
+    phi -= phi[:,np.unique(np.concatenate([f.ravel() for f in nodes[1:]])),:].mean(axis=1, keepdims=True)
     rest = [bezier(xyz[f]) for f in nodes]
     modes = [bezier(phi[:,f,:]) for f in nodes]
+    return ids, xyz, phi, rest, modes
+
+
+def run(variant, campaign):
+    key = variant+'_basis'
+    proof, folder, rst = source(key, campaign)
+    shapes = [outer_faces(rst, mats) for mats in ([850], [176,187,191])]
+    solids = contact_solids(rst)
+    fields = field_files(key, campaign, proof['rst_sha256'], rst.nsets)
+    ids, xyz, phi, rest, modes = surface_fields(rst, shapes, solids, fields)
     weights = subdivision_weights()
     plane_control(weights)
     control_path = ROOT/'validation/curved_contact'/f'{variant}.json'
