@@ -1,9 +1,7 @@
 """Compare modeled screw force by travel and show the actual tab-to-board gap over one bearing."""
 import argparse
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 
@@ -93,7 +91,7 @@ def compare(nylon_stamp, aluminium_stamp):
         surf=ax.tripcolor(xy[:,0],xy[:,1],faces,h,shading='gouraud',cmap=colors,vmin=0,vmax=.25,rasterized=True)
         ax.set(aspect='equal',title=f'{screw.capitalize()}\n{travel[-1]:.2f} mm travel',xlabel='X [mm]')
         ax.set_xticks([63,67]);ax.set_yticks([0,5,10,15]);ax.spines[['top','right']].set_visible(False)
-    axes[0].set(xlabel='Screw travel relative to PCB [mm]',ylabel='Area within 0.05 mm of PCB [%]',
+    axes[0].set(xlabel='Screw travel relative to PCB [mm]',ylabel='Area within 0.05 mm of PCB [\\%]',
                 title='Near-seat footprint, four tabs',xlim=(2.42,3.015),ylim=(-.7,20))
     axes[0].set_xticks([2.45,2.60,2.75,2.90,3.00]);axes[0].legend(frameon=False,loc='upper left',fontsize=8)
     axes[0].spines[['top','right']].set_visible(False)

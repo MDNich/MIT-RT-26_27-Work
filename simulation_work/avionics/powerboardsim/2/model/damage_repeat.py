@@ -86,9 +86,7 @@ def compare(case,campaign,plot=False):
 
 
 def plot_comparison(original,repeat,threshold):
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
+    from report_plot import plt
 
     fig,(force,damage)=plt.subplots(1,2,figsize=(7.7,2.25),layout='constrained')
     curves=[measured_curve(original),measured_curve(repeat)]

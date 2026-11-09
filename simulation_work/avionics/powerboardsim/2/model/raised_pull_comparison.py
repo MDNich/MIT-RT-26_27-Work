@@ -1,7 +1,5 @@
 """Compare the same lateral displacement and the same applied force across three audited fixtures."""
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 
 from audit_local import ROOT,read
@@ -57,7 +55,7 @@ def compare():
             label=key if key=='Bare board' else key.capitalize()+' screws'
             ax.plot(x[:cut],y[:cut],'.-',color=palette[key],lw=1.55,ms=3.5,label=label)
             if cut<len(rows):ax.plot(x[cut-1:],y[cut-1:],'.--',color=palette[key],lw=1.4,ms=3.5)
-    for ax,label in zip(axes,['Lateral cell force [N]','Peak nickel plastic strain [%]'],strict=True):
+    for ax,label in zip(axes,['Lateral cell force [N]','Peak nickel plastic strain [\\%]'],strict=True):
         ax.axvspan(*entries['nylon'][0]['pair_861']['contact_travel_bracket_mm'],color='#3C78D8',alpha=.12)
         ax.set(xlabel='Lateral cell travel [mm]',ylabel=label,xlim=(0,.51))
         ax.spines[['top','right']].set_visible(False);ax.grid(axis='y',alpha=.22)

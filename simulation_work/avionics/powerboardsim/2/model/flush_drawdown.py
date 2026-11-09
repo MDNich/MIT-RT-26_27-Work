@@ -1,7 +1,5 @@
 """Summarize actual tab clearance and contact error along an audited partial installation."""
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 from audit_local import ROOT,read,table
 from film_identity import write_json

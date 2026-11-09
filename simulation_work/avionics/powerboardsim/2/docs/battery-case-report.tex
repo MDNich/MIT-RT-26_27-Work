@@ -14,7 +14,7 @@
 {\small 9 November 2026\quad|\quad Native structural analysis in ANSYS MAPDL 2026 R1.02\quad|\quad\href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/README.md}{22 paired movies}}
 \heading{The mounting height determines whether the cells are already loaded}
 Placing the four tabs directly against the board creates approximately 1.18~mm of interference at the cell crowns. Each of the three cell solids shares about 1.70~cm$^3$ with the undeformed enclosure. A 3~mm tab stand-off clears the cells, nickel strips, washers and fasteners present in the 35-body mechanical STEP assembly. Thus a flush installation must displace or deform parts as the screws tighten. During rigid installation from the raised position, the four outer washers touch first while 2.397~mm of tab stand-off remains. Translating a rigid cell along the PCB X axis first closes a gap after 0.146--0.325~mm, depending on the cell and direction. Flexible relative motion determines whether contact occurs under load.
-\begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.png}
+\begin{center}\includegraphics[width=.94\linewidth]{figures/midspan-fit.pdf}
 \captionof{figure}{Section through the middle of the cells, in PCB coordinates. The solid outlines show as-designed geometry before tightening. The mounting tabs lie beyond this section.}\end{center}
 \heading{What the raised case changes}
 Under X-axis vibration, the 3~mm case increased peak board-normal motion from 23.37~$\mu$m RMS bare to 145.55 with nylon screws and 120.00 with aluminium. Under base Z the peak PCB stress rose from 32.5~MPa RMS bare to 64.8 with nylon and 84.2 with aluminium (page~13). With the bilinear nickel law, an 8.54~N pull moved the edge cell 0.50~mm bare and about 0.20~mm with either raised case. With the multilinear law, a fixed 0.3375~mm travel required 10.15~N bare, 63.82~N with nylon and 125.98~N with aluminium screws (page~26). Nylon also gave the lowest cell-body X acceleration. Aluminium reduced board movement relative to nylon and increased the local stress across the PLA layers at a screw bearing. In the flush mounting trials, the printed-PLA tensile reference was exceeded before the tabs touched. At the last nylon equilibrium, only 4--5\% of each tab lay within 0.05~mm of the board. With aluminium, that fraction was 18--19\% even at the full 3~mm screw travel (page~19).
@@ -296,11 +296,11 @@ For X-axis vibration with nylon screws, the native peak layer-normal stress was 
 The native nine-second histories gave peak layer-normal tension above the printed-coupon mean of 40.5~MPa under all three base inputs. The table uses the corner of highest layer-normal RMS for each input and includes the locked preload. All three cell skins intersected the case at the X stress peak. At the Y and Z stress peaks, the curved skins were disjoint. These selected instants describe a linear model with fixed contact.
 
 \begin{center}\small
-\begin{tabular}{lrrrrr}\toprule
-Base & Peak tension [MPa] & Time [s] & Left gap [mm] & Centre gap [mm] & Right gap [mm]\\\midrule
-X & 64.3 & 5.74146 & $-0.201$ & $-0.186$ & $-0.123$\\
-Y & 44.0 & 5.18582 & 0.128 & 0.111 & 0.133\\
-Z & 56.2 & 7.76979 & 0.121 & 0.132 & 0.114\\\bottomrule
+\begin{tabular}{lrrrrrr}\toprule
+Base & Peak [MPa] & Coupon [\%] & Time [s] & Left gap [mm] & Centre gap [mm] & Right gap [mm]\\\midrule
+X & 64.3 & 159 & 5.74146 & $-0.201$ & $-0.186$ & $-0.123$\\
+Y & 44.0 & 109 & 5.18582 & 0.128 & 0.111 & 0.133\\
+Z & 56.2 & 139 & 7.76979 & 0.121 & 0.132 & 0.114\\\bottomrule
 \end{tabular}
 \captionof*{table}{Raised nylon mount. Each gap is the minimum signed distance sampled on that cell's skin at the stress peak, with eight segments per quadratic edge. Negative gaps indicate overlap. The surface-intersection check agreed at two refinements.}\end{center}
 
@@ -329,11 +329,11 @@ The aluminium case had a peak layer-normal stress of 24.78~MPa RMS at a corner 0
 At the monitored X peak, all three cell skins crossed the PLA. The left cell had the greatest sampled overlap. The table compares the monitored stress maximum for each of the three independent base directions with the signed cell gaps from the same native time sample. Physical loads after impact and across the actual screw bearing remain unresolved.
 
 \begin{center}\small
-\begin{tabular}{lrrrrr}\toprule
-Base & Peak tension [MPa] & Time [s] & Left gap [mm] & Centre gap [mm] & Right gap [mm]\\\midrule
-X & 110.1 & 8.09808 & $-0.175$ & $-0.155$ & $-0.100$\\
-Y & 91.6 & 5.14613 & 0.100 & 0.087 & 0.115\\
-Z & 104.2 & 6.32817 & 0.160 & 0.143 & 0.140\\\bottomrule
+\begin{tabular}{lrrrrrr}\toprule
+Base & Peak [MPa] & Coupon [\%] & Time [s] & Left gap [mm] & Centre gap [mm] & Right gap [mm]\\\midrule
+X & 110.1 & 272 & 8.09808 & $-0.175$ & $-0.155$ & $-0.100$\\
+Y & 91.6 & 226 & 5.14613 & 0.100 & 0.087 & 0.115\\
+Z & 104.2 & 257 & 6.32817 & 0.160 & 0.143 & 0.140\\\bottomrule
 \end{tabular}
 \captionof*{table}{Raised aluminium mount under the original nine-second waveforms. The monitored corner maximizes layer-normal RMS for the given input axis. The signed distances and surface checks use the same definitions as on page~14.}\end{center}
 \newpage
@@ -589,5 +589,40 @@ The aluminium solve retained 37 lateral equilibria through 0.87435~mm and stoppe
 
 \heading{Nickel material-law check}
 Three single-element tensile coupon reruns reproduced the October reaction, transverse displacement, axial stress, equivalent plastic strain and damage at all 1,074 shared stations. The peak reactions lay between 66.87 and 66.89~N. All three paths softened and stopped before the requested 1~mm extension. These numerical coupons verify the implemented material law. Predicting separation of the assembled strips also requires material and attachment measurements.
+
+
+\newpage
+\pageheading{How the vibration loads compare with component strength}
+The high through-layer tension occurs in the \textbf{printed PLA tab beside the screw bearing}. The four case screws change how force enters the tab. For the assumed print, the manufacturer's tensile specimens reached a mean of 40.5~MPa across the layers and 52.3~MPa in the print plane. Each percentage below is the largest tensile stress in the stated record divided by its corresponding coupon mean. These ratios include bolt preload.
+
+\begin{center}\includegraphics[width=.99\linewidth]{figures/pla-vibration-strength.pdf}
+\captionof{figure}{Dashed lines mark 100\% of mean coupon strength. Left: peak signed through-layer stress at the bearing corner with the highest layer-normal RMS for each nine-second test. Centre and right: maxima over all PLA corners during the first 0.1~s. X, Y and Z were separate base excitations.}\end{center}
+
+For board-normal vibration the monitored PLA tab reached 56.2~MPa with nylon screws and 104.2~MPa with aluminium screws. Both peaks occurred with the sampled cell and case skins clear at that instant. The linear model continues to store elastic stress beyond the coupon strength. At these peaks, actual load redistribution or cracking would require the print properties and screw-bearing compliance of the installed case. The earlier aluminium startup crossings occurred within 0.54~mm of a node tied to a screw bearing.
+
+\heading{Other components}
+\textbf{Nickel strips.} The nickel damage model assumes 185~MPa initial yield. Bolt tightening alone reached about 162~MPa (88\% of this reference). Under base X the signed, preload-inclusive stress crossed 185~MPa in all three assemblies within 39~ms (page~16). The actual temper and weld geometry are needed to assess strip rupture or fatigue life.\\
+\textbf{Board and soldered parts.} Board-normal base vibration produced 32.5, 64.8 and 84.2~MPa RMS in the equivalent PCB material for bare, nylon and aluminium, respectively. These statistical stresses show how the board response changes. A strength margin for a populated assembly requires the actual laminate allowables and package-specific limits on local board strain or solder fatigue.\\
+\textbf{Case screws and cell attachments.} At 0.3375~mm lateral travel the modeled peak tensile screw-fibre stresses were 13.1~MPa (nylon) and 34.2~MPa (aluminium). The nylon reference screw has no rated tensile strength in its listing, and the aluminium alloy and temper are unspecified. The attachment calculations give force over the idealized bonded footprint. A tested weld strength is needed to turn that force into a margin.
+
+{\small \href{https://wiki.polymaker.com/polymaker-products/more-about-our-products/documents/technical-data-sheets/pla/polylite-tm-pla}{Printed PLA tensile data}\quad|\quad\href{https://www.electronics.org/TOC/IPC-9704A.pdf}{IPC/JEDEC guidance on measuring board strain near components}}
+
+
+\newpage
+\pageheading{A 2.5 mm stand-off leaves clearance at the lips and under the cells}
+For the supplied Balius STEP at its nominal hole alignment, four outer washers set the closest rigid mounting position. They first touch at a 2.397~mm tab-to-PCB spacing. At 2.500~mm they clear by 0.103~mm. The cells approach the sides of their circular pockets much more closely than the floors.
+
+\begin{center}\includegraphics[width=.99\linewidth]{figures/midspan-fit-2p5mm.pdf}
+\captionof{figure}{Section at the case midspan using the STEP profile and 10.700~mm cell radii. The 1.32~mm dimension is vertical beneath the middle cell. Washers and mounting tabs sit outside this plane. The drawing uses the same scale for both axes.}\end{center}
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Tab-to-PCB spacing & Left cell minimum & Middle cell minimum & Right cell minimum\\\midrule
+2.400~mm & 0.082~mm & 0.065~mm & 0.082~mm\\
+2.500~mm & 0.093~mm & 0.076~mm & 0.093~mm\\
+3.000~mm & 0.161~mm & 0.144~mm & 0.161~mm\\\bottomrule
+\end{tabular}
+\captionof*{table}{Shortest three-dimensional surface distances between each undeformed cell and the case. The 2.400~mm setting leaves just 0.003~mm between the case and the first four washers.}\end{center}
+
+Holding the board and cells fixed, the middle cell would first touch as spacing fell to about 1.240~mm, then the outer cells near 1.210~mm. Reaching either position requires interference with the existing washers. A 2.5~mm spacer can therefore give a close nominal side fit, while simultaneous supported contact of all three rigid cells requires a change to the installation geometry or compliance. Actual print dimensions, washer stack and cell positions determine the as-built clearances.
 
 \end{document}

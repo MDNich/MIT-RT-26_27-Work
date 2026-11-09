@@ -1,9 +1,7 @@
 """Compare unaveraged PCB stresses at common physical times in the original base-X movie."""
 import argparse
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 
 from audit_local import ROOT,read
@@ -81,8 +79,11 @@ def run(campaign, coordinates='independent'):
         physical_time_s=[float(time[0]),float(time[-1])],frame_spacing_s=float(4/FS),cases=curves,
         scope='Maximum over unaveraged PCB element corners at each stored movie frame. Native signed modal stress '
               'components are summed before evaluating von Mises. The film shows the dynamic increment about bolt preload.'))
+    draw(curves,1000*(time-time[0]),suffix)
+
+
+def draw(curves,ms,suffix):
     fig,ax=plt.subplots(figsize=(7.5,2.4),layout='constrained')
-    ms=1000*(time-time[0])
     for (name,data),label,col,ls in zip(curves.items(),('Bare','3 mm / nylon','3 mm / aluminium'),
                                        ('#08357E','#3C78D8','#38761D'),('-','--','-.'),strict=True):
         ax.plot(ms,data['frame_maximum_MPa'],color=col,ls=ls,lw=1.35,label=label)
@@ -100,5 +101,14 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('campaign',nargs='?',default='nov08_01')
     parser.add_argument('--coordinates',choices=('independent','native'),default='independent')
+    parser.add_argument('--plot-only',action='store_true',help='Draw the existing audited 480-frame curves.')
     args = parser.parse_args()
-    run(args.campaign,args.coordinates)
+    if args.plot_only:
+        suffix = '_native' if args.coordinates=='native' else ''
+        record=read(ROOT/'validation'/f'seeded_pcb_stress_comparison{suffix}.json')
+        assert record['campaign']==args.campaign and record['frames']==len(FRAMES)==480
+        ms=1000*np.arange(record['frames'])*record['frame_spacing_s']
+        assert np.isclose(ms[-1],1000*np.diff(record['physical_time_s']).item())
+        draw(record['cases'],ms,suffix)
+    else:
+        run(args.campaign,args.coordinates)

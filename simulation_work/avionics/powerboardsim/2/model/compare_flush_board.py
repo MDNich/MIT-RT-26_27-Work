@@ -111,9 +111,7 @@ def compare(nylon_checkpoint, aluminium_checkpoint, campaign, plot=False):
 
 
 def draw(mesh, ids, nylon, aluminium, history):
-    import matplotlib
-    matplotlib.use('Agg')
-    from matplotlib import pyplot as plt
+    from report_plot import plt
     from matplotlib.collections import PolyCollection
     from matplotlib.colors import Normalize
     from clearance_response import surface

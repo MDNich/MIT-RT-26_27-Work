@@ -1,7 +1,5 @@
 """Plot frame-resolved cell clearance and a true-scale section through one verified overlap."""
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 from matplotlib.collections import LineCollection
 

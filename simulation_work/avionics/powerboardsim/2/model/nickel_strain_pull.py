@@ -1,7 +1,5 @@
 """Compare nickel plastic strain at the same cell travel and pull force in the nominal damage fixtures."""
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 from ansys.mapdl import reader
 
@@ -100,7 +98,7 @@ def draw(histories, result, path):
                                 (right, 'force_N', [s for s in states if s['native_set'] <= upper])]:
             ax.plot([s[field] for s in keep], [100*s['max_equivalent_plastic_strain'] for s in keep],
                     color=colour, marker=marker, markersize=3.5, linewidth=1.25, label=label)
-    left.set(title='Prescribed cell travel', xlabel='Cell travel [mm]', ylabel='Peak nickel plastic strain [%]')
+    left.set(title='Prescribed cell travel', xlabel='Cell travel [mm]', ylabel='Peak nickel plastic strain [\\%]')
     right.set(title='Applied cell force', xlabel='Lateral force [N]')
     right.axvline(force, linestyle='--', color='#7A0101', linewidth=1.1, label=f'{force:.2f} N')
     right.legend(loc='upper left', frameon=False, fontsize=8)

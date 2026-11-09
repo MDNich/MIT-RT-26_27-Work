@@ -64,9 +64,7 @@ def compare(campaign):
              parent_screen=parent,cases=cases,relative_force_change_9_to_15=f[1]/f[0]-1,
              scope='Quasistatic force for prescribed lateral motion of the cells and outer cut, sampled at the peak linear state. Signed distances use vertices and facet centres of closed assembled skins within the common central 8 mm band.')
     write_json(ROOT/'validation/contact_patch_comparison.json',rec)
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
+    from report_plot import plt
     fig,ax=plt.subplots(figsize=(7.2,2.7),layout='constrained')
     for radius,color in [(9,'#08357E'),(15,'#38761D')]:
         result=read(ROOT/'validation/contact_patch'/f'patch_{BRANCH}_span{radius}_contact_eq1.json')

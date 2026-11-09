@@ -1,7 +1,5 @@
 """Plot time-coincident force magnitudes and components at the governing cell attachment."""
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 
 from attachment_history import BRANCHES

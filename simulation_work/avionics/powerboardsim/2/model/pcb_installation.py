@@ -163,9 +163,7 @@ def audit(case, campaign, checkpoint, plot=False):
 
 
 def draw(rst, ids, delta_z, results, case):
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
+    from report_plot import plt
     from matplotlib.collections import PolyCollection
     from clearance_response import surface
 

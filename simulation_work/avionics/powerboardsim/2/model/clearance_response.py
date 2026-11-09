@@ -48,9 +48,7 @@ def run(branch,campaign):
     verified(log,next(row['sha256'] for row in ledger['files'] if row['name']=='solve.out'))
     r=read_rst(rst);freq=r.time_values;fields=field_files(case,campaign,proof['rst_sha256'],len(freq))
     from seeded_motion import integrate,FS
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
+    from report_plot import plt
     cov={};histories={}
     for axis in 'XYZ':
         f=ROOT/f'.runtime/inputs/bare_psd_{axis}/model.inp';t=f.read_text()

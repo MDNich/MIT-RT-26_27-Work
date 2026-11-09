@@ -1,8 +1,6 @@
 """Plot a matched damage-law pull at first cell contact and through the in-range case response."""
 import argparse
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 
 from audit_local import ROOT,read,table

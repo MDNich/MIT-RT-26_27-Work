@@ -3,9 +3,7 @@ import argparse
 import json
 from pathlib import Path
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]

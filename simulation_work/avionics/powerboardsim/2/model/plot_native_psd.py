@@ -1,9 +1,7 @@
 """Map peak stored PCB corner stress on the original board coordinates for a native PSD pair."""
 import argparse
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 from matplotlib.colors import PowerNorm
 from matplotlib.collections import PolyCollection
 from scipy.spatial import ConvexHull

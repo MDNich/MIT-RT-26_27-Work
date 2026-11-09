@@ -1,7 +1,5 @@
 """Render prestressed spectra and a few named shape matches from accepted receipts."""
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 from audit_local import ROOT,read
 

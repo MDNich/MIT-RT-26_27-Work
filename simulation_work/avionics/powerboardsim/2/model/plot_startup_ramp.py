@@ -1,7 +1,5 @@
 """Compare the chronology of gap closure and coupon stress crossings for the raised mounts."""
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 
 from audit_local import ROOT, read

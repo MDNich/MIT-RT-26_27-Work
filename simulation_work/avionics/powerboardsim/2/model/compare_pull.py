@@ -4,9 +4,7 @@ import csv
 import json
 from pathlib import Path
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from report_plot import plt
 import numpy as np
 from audit_local import ROOT,read,table
 
@@ -71,7 +69,7 @@ def compare(name,bare):
             ax.plot(x,[r[var]*mult for r in rows],'.-',ms=3,lw=1.4,color=color,label=label)
     axes[0].plot([r['ux_mm'] for r in case_rows],[r['screw_path_N']+r['neighbour_path_N'] for r in case_rows],
                  '--',lw=1.3,color='#7A0101',label='Via case supports')
-    for ax,ylabel in zip(axes,['Lateral force [N]','Peak nickel plastic strain [%]']):
+    for ax,ylabel in zip(axes,['Lateral force [N]','Peak nickel plastic strain [\\%]']):
         ax.set(xlabel='Edge-cell travel [mm]',ylabel=ylabel);ax.grid(alpha=.18);ax.legend(fontsize=7,frameon=False)
         bracket=new['pair_861']['contact_travel_bracket_mm']
         if bracket:ax.axvspan(*sorted(bracket),color='#3C78D8',alpha=.13,lw=0)
