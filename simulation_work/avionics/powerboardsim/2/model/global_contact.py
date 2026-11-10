@@ -4,6 +4,15 @@ import numpy as np
 from ansys.mapdl import reader
 
 
+def contact_data(raw, k):
+    from pathlib import Path
+    data = raw.element_solution_data(k, 'ECT')
+    if Path(raw.filename).parent.name == 'snug125_aluminium_project3_static':
+        from snug_projection_readback import normalized_contact_data
+        return normalized_contact_data(raw, k, *data)
+    return data
+
+
 def pair_summary(k,t,ids,enum,data,nodes):
     loc=np.searchsorted(enum,ids)
     assert np.array_equal(enum[loc],ids)

@@ -10,6 +10,8 @@ import ctypes
 import os
 import re
 import shutil
+from functools import lru_cache
+from pathlib import Path
 
 import numpy as np
 
@@ -21,6 +23,74 @@ from stage_local_jobs import seal
 CASE = 'snug125_aluminium_project3_static'
 CAMPAIGN = 'nov08_01'
 OUT = ROOT / '.runtime' / ('projection_readback_' + CASE + '_' + CAMPAIGN)
+
+
+def verified_inventory(raw):
+    """Bind the special-case reader to this single, hash-verified native archive."""
+    path = Path(raw.filename)
+    if path.parent.name != CASE:
+        return None
+    assert path.resolve() == (ROOT / '.runtime/archive' / CAMPAIGN / CASE / 'file.rst').resolve()
+    inventory = read(ROOT / 'validation/snug125/projection_readback_inventory.json')
+    verified(path, inventory['source_rst_sha256'])
+    verified(OUT / 'inventory_audit.json', inventory['inventory_audit_sha256'])
+    for file, key in [('selection.csv', 'selection_sha256'), ('corners.csv', 'corners_sha256'),
+                      ('forces.csv', 'forces_sha256'), ('control.inp', 'post_input_sha256')]:
+        verified(OUT / file, inventory[key])
+    assert inventory['case'] == CASE and inventory['campaign'] == CAMPAIGN
+    assert all(row['all_native_entities_open_and_force_free'] for row in inventory['states'])
+    return inventory
+
+
+@lru_cache(maxsize=1)
+def native_corner_arrays(corners_sha256, selection_sha256, nsets):
+    verified(OUT / 'selection.csv', selection_sha256)
+    verified(OUT / 'corners.csv', corners_sha256)
+    selected = table(OUT / 'selection.csv')['element'].astype(int)
+    corners, _ = corner_table(selected, nsets)
+    values = np.stack([corners[name] for name in ('status', 'signed_pen_m', 'pressure_Pa')], axis=-1)
+    return selected, values.reshape(nsets, 4, len(selected), 3).transpose(0, 2, 1, 3)
+
+
+def normalized_contact_data(raw, k, enum, data, nodes):
+    """Expose verified corner fields, retaining the original RST and native exports.
+
+    This is deliberately limited to the all-open control audited by POST1. It
+    does not interpret extended records for a different solve or loaded face.
+    """
+    proof = verified_inventory(raw)
+    assert proof is not None
+    selected, native = native_corner_arrays(proof['corners_sha256'], proof['selection_sha256'], raw.nsets)
+    grid = raw.grid.cell_data
+    ids = np.sort(grid['ansys_elem_num'][grid['ansys_etype'] == 853])
+    assert len(ids) == proof['original_faces']
+    where = np.searchsorted(enum, ids)
+    take = np.searchsorted(selected, ids)
+    np.testing.assert_array_equal(enum[where], ids)
+    np.testing.assert_array_equal(selected[take], ids)
+    node_ids = set(raw.mesh.nnum.tolist())
+    result = list(data)
+    layouts = {}
+    for j, i in enumerate(where):
+        values = data[i]
+        expected = native[k, take[j]].copy()
+        if values is None or not len(values):
+            assert np.all(expected == 0)
+            continue
+        assert len(nodes[i]) == 4 and len(values) > 41 and np.isfinite(values).all()
+        fields = values[:40].reshape(4, 10)
+        np.testing.assert_allclose(fields[:, 0], expected[:, 0], rtol=0, atol=0)
+        np.testing.assert_allclose(fields[:, 1], np.maximum(expected[:, 1], 0), rtol=3e-6, atol=1e-12)
+        np.testing.assert_allclose(fields[:, 6], np.minimum(expected[:, 1], 0), rtol=3e-6, atol=1e-12)
+        np.testing.assert_allclose(fields[:, 2], expected[:, 2], rtol=0, atol=0)
+        assert np.all(fields[:, 0] < 2) and np.all(fields[:, 2] == 0)
+        tail = values[41:]
+        assert np.all(tail == tail.astype(int)) and set(tail.astype(int).tolist()) <= node_ids
+        np.testing.assert_array_equal(tail[:4], nodes[i])
+        layouts[str(len(values))] = layouts.get(str(len(values)), 0) + 1
+        result[i] = values[:40].copy()
+    assert layouts == proof['states'][k]['ECT_record_lengths']
+    return enum, result, nodes
 
 
 def corner_table(all_ids, nsets):

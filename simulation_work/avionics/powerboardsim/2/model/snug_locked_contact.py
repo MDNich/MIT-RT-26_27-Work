@@ -13,7 +13,7 @@ from curved_cell_contact import set_coordinates, curved_skins
 from dpf_readback import export
 from extend_board import NODE
 from film_identity import digest, verified, write_json
-from global_contact import pair_summary
+from global_contact import pair_summary, contact_data
 from installed_cell_gap import target_connectivity, hardware_face_grids
 from native_rst import read_rst
 from stage_snug_fit import AUDIT, MESH, STEP, input_record
@@ -44,7 +44,7 @@ def contact_by_face(rst, owners, recorded, indices=None):
     for k, state in zip(indices,recorded,strict=True):
         k=int(k)
         assert state['set']==k+1 and np.isclose(rst.time_values[k],state['time_s'])
-        enum, data, nodes = rst.element_solution_data(k,'ECT')
+        enum, data, nodes = contact_data(rst,k)
         pos = np.searchsorted(enum,all_faces)
         assert np.array_equal(enum[pos],all_faces)
         loaded = {}
@@ -189,9 +189,11 @@ def check_resultant(rst,owners,archive,history):
     assert len(native)==rst.nsets and np.array_equal(native['native_set'],np.arange(rst.nsets)+1)
     assert np.allclose(native['load_time'],rst.time_values,rtol=0,atol=1e-8)
     faces=np.array(sorted(owners))
+    from snug_projection_readback import verified_inventory
+    projection = verified_inventory(rst)
     rows=[]
     for k,(station,state) in enumerate(zip(native,history,strict=True)):
-        assert station['faces']==len(faces)
+        assert station['faces']==(projection['resumed_type853_entities'] if projection else len(faces))
         result=element_contact_forces(rst,k,faces)
         total=result.sum(axis=0)
         post=np.array([station[n] for n in ('fx_N','fy_N','fz_N')])

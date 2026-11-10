@@ -1,4 +1,4 @@
-"""Apply the existing force screens to the native cylindrical-surface control."""
+"""Apply the existing force screens to the native contact-formulation controls."""
 import numpy as np
 
 from case_stress import source
@@ -16,8 +16,11 @@ CAMPAIGN = 'nov08_01'
 
 
 def audit(case=CASE):
-    assert case in (CASE, 'snug125_aluminium_cylinder_tol0001_static')
+    assert case in (CASE, 'snug125_aluminium_cylinder_tol0001_static', 'snug125_aluminium_project3_static')
     reference_case = CASE if case.endswith('_tol0001_static') else REFERENCE
+    kind = ('nodal surface projection with unchanged mesh' if '_project3_' in case else
+            'force tolerance with cylindrical corrections retained' if case != CASE else
+            'native cylindrical surface correction with unchanged mesh and Gauss detection')
     spec, reference = map(input_record, (case, reference_case))
     assert spec['reference_input_sha256'] == reference['input_sha256']
     assert spec['mesh_sha256'] == reference['mesh_sha256']
@@ -29,8 +32,7 @@ def audit(case=CASE):
     seats = AUDIT / (case + '_seats.json')
     write_json(seats, dict(case=case, rst_sha256=proof['rst_sha256'],
         input_sha256=spec['input_sha256'], native_contact_audit_sha256=digest(contacts),
-        control_kind=('force tolerance with cylindrical corrections retained' if case != CASE else
-                      'native cylindrical surface correction with unchanged mesh and Gauss detection'),
+        control_kind=kind,
         states=states, states_outside_force_screens=[r['native_set'] for r in states if not r['within_force_screens']],
         max_axial_equilibrium_residual_N=axial, max_case_vector_residual_N=vector,
         scope='Unmodified four-tab and M4/spacer force screens at every saved installation state. '
@@ -69,7 +71,7 @@ def audit(case=CASE):
         force_seats_sha256=digest(seats), solids_at_lock=fields,
         scope='Native displacement vectors at identical nodes and reference positions, at final bolt lock. '
               'These kinematic differences do not waive the force screens.'))
-    print('Cylinder force screens', [r['within_force_screens'] for r in states], flush=True)
+    print(case, 'force screens', [r['within_force_screens'] for r in states], flush=True)
     print('Locked displacement differences [um]', {k: v['max_vector_difference_um'] for k, v in fields.items()}, flush=True)
 
 

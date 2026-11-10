@@ -6,7 +6,7 @@ from case_stress import source
 from dpf_readback import export
 from early_cell_clearance import bezier, outer_faces, subdivision_weights
 from film_identity import digest, verified, write_json
-from global_contact import pair_summary
+from global_contact import pair_summary, contact_data
 from motion_surface import displacement_basis
 from snug_board_pull import AUDIT, BODIES, CAMPAIGN, positions, read
 from snug_pocket_dynamics import BASIS_PROOF, BRANCH, OUTPUT, STUDY
@@ -55,7 +55,7 @@ def static_check(case, reference_face, adjacent, weights):
         u = np.fromfile(stem.with_suffix(".u"), "<f8").reshape(-1, 3)[
             order[positions(ids[order], nodes)]
         ]
-        enum, records, n = rst.element_solution_data(k, "ECT")
+        enum, records, n = contact_data(rst,k)
         direct = {
             key: pair_summary(k, time, np.array([element]), enum, records, n)
             for key, element in zip(("original", "adjacent"), numbers[:2], strict=True)

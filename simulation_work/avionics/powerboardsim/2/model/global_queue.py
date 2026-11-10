@@ -274,6 +274,20 @@ def jobs():
             if registration.is_file():
                 control=read(registration)
                 yield control['case'],control['parent']
+        # Fixed-contact trajectories have already crossed their validity bounds.
+        # Resolve the sealed whole-shell controls and short dynamic pilots before
+        # the remaining long local pulls. Active work completes before this reload.
+        for branch in branches:
+            registry=snug_dir/(branch+'_shell_inputs_v2.json')
+            if registry.is_file():
+                for name,spec in read(registry).items():
+                    parent=f'shell_{branch}_free_v2' if spec['contact'] else branch+'_basis'
+                    yield name,parent
+        for branch in branches:
+            name=branch+'_shellwave_pilot_s4'
+            if (snug_dir/(name+'_preflight.json')).is_file():
+                for case,spec in read(snug_dir/(name+'.json')).items():
+                    yield case,spec['static_fixture']
         local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
         local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
         coarse=snug_dir/'local_inputs_m3.json'
@@ -317,17 +331,6 @@ def jobs():
             if patch_series.is_file():
                 for case,spec in read(patch_series).items():
                     yield case,spec['free_reference'] if spec['contact'] else branch+'_basis'
-        for branch in branches:
-            registry=ROOT/'validation/snug125'/(branch+'_shell_inputs_v2.json')
-            if registry.is_file():
-                for name,spec in read(registry).items():
-                    parent=f'shell_{branch}_free_v2' if spec['contact'] else branch+'_basis'
-                    yield name,parent
-        for branch in branches:
-            name=branch+'_shellwave_pilot_s4'
-            if (snug_dir/(name+'_preflight.json')).is_file():
-                for case,spec in read(snug_dir/(name+'.json')).items():
-                    yield case,spec['static_fixture']
         for case in coarse_cases:
             yield case,case.removesuffix('_m3')+'_m15'
         sensitivities=snug_dir/('local_sensitivity_inputs'+local_suffix+'.json')

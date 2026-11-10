@@ -3,6 +3,7 @@ from pathlib import Path
 import csv,hashlib,json,re,sys
 import numpy as np
 from native_rst import read_rst
+from film_identity import digest
 ROOT=Path(__file__).resolve().parents[1]
 def load(p):return json.loads(p.read_text(encoding='utf-8-sig'))
 def audit(case,campaign):
@@ -32,28 +33,38 @@ def audit(case,campaign):
             assert abs(last['time_s']-2)<1e-8 and last['n_contact']>0
             from global_contact import history
             if case.startswith('snug125_'):
-                from global_contact import pair_summary
+                from global_contact import pair_summary,contact_data
                 grid=rst.grid.cell_data
                 ids=np.sort(grid['ansys_elem_num'][grid['ansys_etype']==853])
                 # The native readback selects TYPE 853, including DMP real-constant children.
-                stored=[pair_summary(k,t[k],ids,*rst.element_solution_data(k,'ECT')) for k in range(rst.nsets)]
+                stored=[pair_summary(k,t[k],ids,*contact_data(rst,k)) for k in range(rst.nsets)]
             else:
                 stored=history(rst,853,853)
             assert len(rows)==len(stored)
             for item,raw in zip(rows,stored,strict=True):
                 item={k:float(v) for k,v in item.items()}
                 assert np.isfinite(list(item.values())).all() and item['set']==raw['set'] and abs(item['time_s']-raw['time_s'])<1e-7
-                assert item['n_contact']==raw['n_contact']
+                projection = None
+                if case == 'snug125_aluminium_project3_static':
+                    from snug_projection_readback import verified_inventory
+                    projection = verified_inventory(rst)
+                assert item['n_contact']==(projection['resumed_type853_entities'] if projection else raw['n_contact'])
                 # POST1 classifies entire faces with exactly integer ETABLE status. A face
                 # with both far and near corners can have a fractional ETABLE value.
                 bins=[int(item[x]) for x in ('far','near','sliding','sticking')]
                 highest=[raw[x] for x in ('far','near','sliding','sticking')]
                 uniform=raw['fully_uniform_face_bins']
-                assert bins==highest or bins==uniform,(bins,highest,uniform)
+                if projection:
+                    assert bins==projection['states'][int(item['set'])-1]['native_integer_status_bins']
+                    assert raw['sliding']==raw['sticking']==raw['p_max']==0
+                else:
+                    assert bins==highest or bins==uniform,(bins,highest,uniform)
                 if raw['p_max']==0:assert item['p_max_Pa']==0
             result['post1_integer_status_summary']=last
             result['installed_contact_summary']=stored[-1]
             result['contact_history_native_RST']=stored
+            if case == 'snug125_aluminium_project3_static':
+                result['projection_inventory_sha256']=digest(ROOT/'validation/snug125/projection_readback_inventory.json')
             result['contact_scope']='Engineering interpretation requires penetration, seating loads and PLA stress review.'
     elif '_psd_' in case:
         # Workbench writes the statistical result sets after the modal basis; select PSD labels in the field audit.
@@ -151,7 +162,7 @@ def audit(case,campaign):
                         and all((ROOT/'validation/snug125'/(name+'_residuals.json')).is_file() for name in pair)):
                     compare_forces(pair[1])
             else:compare_forces(case)
-            if case in ('snug125_aluminium_cylinder_static','snug125_aluminium_cylinder_tol0001_static'):
+            if case in ('snug125_aluminium_cylinder_static','snug125_aluminium_cylinder_tol0001_static','snug125_aluminium_project3_static'):
                 from snug_detection_balance import audit as check_detection_balance
                 check_detection_balance(case)
             if case in (*PRELOAD_CONTROLS, "snug125_nylon_tol001_static", "snug125_nylon_mesh15_static", "snug125_aluminium_mesh15_static"):
