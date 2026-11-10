@@ -27,6 +27,9 @@ def series(name, *, proof_path=None):
     sets=eq['native_set'].astype(int)
     assert np.array_equal(native['set'],sets)
     assert np.allclose(native['fx_N'],eq['cell_fx_N'],rtol=1e-6,atol=1e-5)
+    if 'accepted_equilibrium_prefix' in proof:
+        assert len(eq)==proof['rst_converged_states'] and proof['accepted_equilibrium_prefix']==proof['states']
+        eq=eq[:proof['states']]
     rows=[]
     for i in np.flatnonzero(eq['time']>=t0-1.e-7):
         er=eq[i];hi=native[i]

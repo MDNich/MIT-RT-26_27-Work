@@ -99,6 +99,14 @@ def paired(case,bare,verdict):
                 scope='First loading branch at matched displacement or matched bare terminal force. All reported '
                       'comparisons stop before the first printed-material or closed-corner penetration screen is exceeded. Screw beam stress '
                       'is given in MPa; the fitted screw grade and thread capacity have no established allowable.')
+    if 'accepted_equilibrium_prefix' in proof:
+        closure=ROOT/'validation/snug125'/(case+'_termination.json')
+        verified(closure,proof['terminal_inventory_sha256'])
+        record['last_balance_verified_travel_mm']=rows[-1]['ux_mm']
+        record['last_converged_travel_mm']=read(closure)['last_imposed_travel_mm']
+        record['accepted_equilibrium_prefix']=proof['accepted_equilibrium_prefix']
+        record['whole_path_audit_rejection_sha256']=proof['whole_path_audit_rejection_sha256']
+        record['scope']+=' The rejected whole-path result is retained separately.'
     if refined:
         record['refined_tab_crossing']=refined
         record['parent_screen_last_set']=parent_last
@@ -194,6 +202,9 @@ def reconcile_checkpoint(checkpoint, verdict, ledger):
     assert contact_record['rst_sha256']==proof['rst_sha256']
     fields=('native_set','pair','closed_faces','closed_corner_records','max_closed_corner_penetration_mm')
     contacts=np.genfromtxt(contact_file,delimiter=',',names=True,usecols=fields)
+    if 'accepted_equilibrium_prefix' in proof:
+        assert len(np.unique(pairs['set'])) == proof['rst_converged_states']
+        pairs = pairs[pairs['set']<=proof['accepted_equilibrium_prefix']]
     assert len(contacts)==len(pairs) and np.isfinite(contacts.view(float)).all()
     n=item['converged_sets']
     assert len(item['states'])==n and len(fx)>=n

@@ -124,7 +124,8 @@ def compare_states(first,second,sets):
 
 
 def smp_threads(listing):
-    workers,=set(map(int,re.findall(r'SINGLE PROCESS WITH\s+(\d+) THREADS? REQUESTED',listing)))
+    counts = re.findall(r'SINGLE PROCESS WITH\s+(SINGLE|\d+) THREADS? REQUESTED',listing)
+    workers, = {1 if value=='SINGLE' else int(value) for value in counts}
     requested,=set(map(int,re.findall(r'TOTAL OF\s+(\d+) CORES? REQUESTED',listing)))
     assert workers==requested
     return workers
@@ -141,12 +142,13 @@ def choose_cores(rows):
 def verify_production_runtime(case,campaign,spec,status,listing):
     """Check the actual solver banner against the case receipt, including older four-core runs."""
     cores=smp_threads(listing)
-    assert status['cores']==cores and spec['cores']==4
+    assert status['cores']==cores and spec['cores'] in (1,4)
     profile=status.get('local_runtime',{})
     assert profile.get('cores',spec['cores'])==cores
     assert profile.get('sealed_cores',spec['cores'])==spec['cores'] and profile.get('mode','SMP')=='SMP'
     proof=profile.get('trial_sha256')
     if proof:
+        assert spec['cores']==4 and not spec.get('snug_step_parent')
         decision=ROOT/'.runtime/receipts'/campaign/case/'local_core_trial.json'
         verified(decision,proof)
         trial=read(decision)

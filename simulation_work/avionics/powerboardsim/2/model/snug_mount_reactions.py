@@ -135,6 +135,8 @@ def archive(case,comparison,folder,sha):
     assert material['input_sha256']==comparison['input_sha256']==sha['model.inp']
     verified(folder/'model.inp',sha['model.inp']);verified(folder/'pull.rst',sha['pull.rst'])
     balance=table(ROOT/'.runtime/post'/material['campaign']/case/'whole_fixture_balance.csv')
+    if 'accepted_equilibrium_prefix' in comparison:
+        balance=balance[:comparison['accepted_equilibrium_prefix']]
     assert len(balance)==len(material['history'])
     last=comparison['equal_travel']
     supported=last['cased']['set'] if last else 0

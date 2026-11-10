@@ -42,7 +42,7 @@ def converged_pull_table(path, result_file):
     return values
 
 
-def fixture(folder, spec, config, source, listing, balance_path):
+def fixture(folder, spec, config, source, listing, balance_path, *, last_set=None):
     result_file = folder / (spec['job'] + '.rst')
     is_damage = spec['source'].startswith('damage_')
     history = table(folder/'history.csv') if is_damage else converged_pull_table(folder/'history.csv', result_file)
@@ -76,6 +76,18 @@ def fixture(folder, spec, config, source, listing, balance_path):
         if not is_damage:
             if any(np.ptp(clamps[k][clamps['time']>=start])>1e-7 for k in ('washer1_uz','washer2_uz')):
                 raise ValueError('Locked washer heights changed during pull')
+    all_ids = [r['native_set'] for r in native]
+    balance_path.parent.mkdir(parents=True,exist_ok=True)
+    write_csv(native,balance_path)
+    if last_set is not None:
+        assert not is_damage and spec['cased'] and 0 < last_set < len(native)
+        assert all_ids == list(range(1,len(native)+1))
+        native = native[:last_set]
+        steps = steps[:last_set]
+        pull = [r for r in pull if r['native_set'] <= last_set]
+        matching = matching[matching['set'] <= last_set]
+        forces = np.asarray([r['cell_fx_N'] for r in pull])
+        assert len(forces) == len(matching) > 0
     force = np.array([[r['force_N_'+ax] for ax in 'xyz'] for r in native])
     torque = np.array([[r['moment_cell_Nmm_'+ax] for ax in 'xyz'] for r in native])
     cell_force = np.abs([r['cell_fx_N'] for r in native])
@@ -89,8 +101,6 @@ def fixture(folder, spec, config, source, listing, balance_path):
     if len(moment_norm)!=len(pull_scale):
         raise ValueError('Moment audit and pull states differ')
     rel_moment = float(np.max(moment_norm/pull_scale))
-    balance_path.parent.mkdir(parents=True,exist_ok=True)
-    write_csv(native,balance_path)
     if max_fx_rel>=.01 or max_force[1]>=.1 or max_force[2]>=.2 or rel_moment>=.01:
         raise ValueError(f'Equilibrium outside tolerance: {max_fx_rel:g}, {max_force}, {rel_moment:g}')
     end = config.get('end_time',1)
@@ -115,6 +125,9 @@ def fixture(folder, spec, config, source, listing, balance_path):
         pairs=table(folder/'case_pairs.csv')
         for pid in (861,862):
             a=pairs[pairs['pair']==pid]
+            if not np.array_equal(a['set'],all_ids):
+                raise ValueError(f'Incomplete full contact set inventory for pair {pid}')
+            a=a[:len(native)]
             if not np.array_equal(a['set'],[r['native_set'] for r in native]) or not np.allclose(a['time'],[r['time'] for r in native]):
                 raise ValueError(f'Missing contact history on case pair {pid}')
             if not np.all(a['elements']==a['elements'][0]) or a['elements'][0]<=0 or np.any((a['closed']<0)|(a['closed']>a['elements'])):
@@ -157,7 +170,7 @@ def verify_recovered_post(receipt, status, ledger):
     assert all(hashes['before_readback_'+name] == value.lower() for name, value in record['original_table_hashes'].items())
 
 
-def audit(case, campaign):
+def audit(case, campaign, *, equilibrium_prefix=False):
     receipts = ROOT/'.runtime/receipts'/campaign/case
     folder = ROOT/'.runtime/archive'/campaign/case
     status = read(receipts/'status.json')
@@ -192,12 +205,26 @@ def audit(case, campaign):
     listing = (folder/'solve.out').read_text(errors='replace')
     if 'RUN COMPLETED' not in listing or (folder/'REJECTED_LOAD_HISTORY.txt').exists():
         raise ValueError('Native run lacks a valid completion record')
+    last_set = None
+    if equilibrium_prefix:
+        from film_identity import digest, verified
+        path = ROOT/'validation/snug125'/(case+'_termination.json')
+        closed = read(path)
+        assert spec['job']=='pull' and case.startswith('snug125_') and not spec['coupon']
+        assert closed['case']==case and closed['campaign']==campaign and closed['original_exit']==status['exit']!=0
+        assert not status['native_clean'] and closed['input_sha256']==manifest['input_sha256']
+        verified(receipts/'audit_failed.txt',closed['whole_path_audit_rejection_sha256'])
+        verified(receipts/'archived.json',closed['closed_readback']['archived_manifest_sha256'])
+        assert closed['rst_sha256']==next(f['sha256'] for f in ledger['files'] if f['name']=='pull.rst')
+        last_set=closed['first_contiguous_balance_pass_states']
+        assert last_set==min(v['native_set'] for v in closed['force_balance_violations'])-1
+        assert 0 < last_set < closed['converged_states']==closed['closed_readback']['recovered_force_travel_states']
     if spec['coupon']:
         from coupon_audit import fresh as check_coupon
         data,reached=check_coupon(folder,spec,cfg,{f['name']:f['sha256'] for f in ledger['files']})
     else:
         balance_path=ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv'
-        data,reached=fixture(folder,spec,cfg,cfgdir,listing,balance_path)
+        data,reached=fixture(folder,spec,cfg,cfgdir,listing,balance_path,last_set=last_set)
         if spec['job']=='tear':
             from nickel_pull_balance import native_check
             native_check(folder,balance_path,campaign,cfg['pull_start_time'])
@@ -218,6 +245,11 @@ def audit(case, campaign):
         data['solver_runtime']=verify_production_runtime(case,campaign,spec,status,listing)
     if status.get('readback_recovery_sha256'):
         data.update(original_solver_exit=status['exit'],partial_post_recovery_sha256=status['readback_recovery_sha256'].lower())
+    if last_set is not None:
+        assert not complete and data['states']==last_set
+        data.update(accepted_equilibrium_prefix=last_set,rst_converged_states=closed['converged_states'],
+                    terminal_inventory_sha256=digest(path),whole_path_audit_rejection_sha256=closed['whole_path_audit_rejection_sha256'],
+                    scope='Consecutive numerical equilibria before the first force-balance violation. Material and contact limits apply within this prefix.')
     dest=ROOT/'validation'/('local' if complete else 'partial_local')
     dest.mkdir(exist_ok=True)
     from film_identity import write_json
@@ -274,4 +306,10 @@ def audit(case, campaign):
     print(data['scope'],case,flush=True)
 
 if __name__ == '__main__':
-    audit(*sys.argv[1:])
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('case')
+    parser.add_argument('campaign')
+    parser.add_argument('--equilibrium-prefix',action='store_true',help='Audit the consecutive prefix in a separately verified terminal inventory; preserve the full-history rejection.')
+    args=parser.parse_args()
+    audit(args.case,args.campaign,equilibrium_prefix=args.equilibrium_prefix)

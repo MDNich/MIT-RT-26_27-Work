@@ -35,6 +35,9 @@ def verify(case,proof_path=None):
     assert np.array_equal(balance['native_set'],expected)
     assert np.allclose(balance['time'],raw.time_values[expected-1],atol=1.e-7,rtol=0)
     assert np.array_equal(pairs['set'],np.repeat(expected,2)) and np.array_equal(pairs['pair'],np.tile([861,862],len(expected)))
+    if 'accepted_equilibrium_prefix' in proof:
+        assert len(balance)==proof['rst_converged_states'] and proof['states']==proof['accepted_equilibrium_prefix']
+        balance=balance[:proof['states']]
     rows=[]
     for br in balance:
         k=int(br['native_set'])

@@ -147,6 +147,9 @@ def run(case, campaign, *, pull=False, verdict_path=None):
     else:
         ids = indices + 1
         travel = np.zeros(len(ids))
+    if 'accepted_equilibrium_prefix' in verdict:
+        assert local and pull and len(indices)==verdict['rst_converged_states']
+        indices=indices[:verdict['accepted_equilibrium_prefix']]
     assert np.array_equal(ids[:len(indices)],indices+1)
     if 'flush_' in case and not pull:
         assert np.allclose(travel[:len(indices)],3*np.clip(rt.time_values[indices]-2,0,1),rtol=0,atol=1e-6)
@@ -159,6 +162,8 @@ def run(case, campaign, *, pull=False, verdict_path=None):
         description='All converged states through local lateral loading. Travel is the signed X displacement of the battery pilot. '
     else:
         description='Converged static load states through drawdown. '
+    if 'accepted_equilibrium_prefix' in verdict:
+        description='Consecutive audited numerical states before the first balance violation. Travel is the signed X displacement of the battery pilot. '
     out=ROOT/'validation'/('pull_material' if pull else 'installation_material')/(case+'.json')
     write_json(out,dict(case=case,campaign=campaign,rst_sha256=hashes[job+'.rst'],input_sha256=hashes['model.inp'],
         contact_verdict_sha256=digest(verdict_path),reference_properties=PLA,coupon_engineering_elongation_Z=.018,PLA_source=TDS,
