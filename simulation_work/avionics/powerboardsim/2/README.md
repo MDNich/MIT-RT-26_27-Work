@@ -106,6 +106,8 @@ On the nominal aluminium model's independent left-cell pull path, the original c
 
 The nominal bare nickel-damage rerun first crossed its reporting threshold between 3.250 and 3.275 mm (42.87–43.37 N). The force was still rising at its last converged point. Page 2 plots this reference and the three initiation curves used in the matched bare and snug sensitivity cases. The cased damage results are pending. [Report, page 2](output/pdf/battery-case-report.pdf#page=2) · [Verified damage inputs](validation/snug125/damage_family_inputs.json)
 
+The third nylon mesh now confirms that outer-pocket timing and order remain mesh-sensitive under base X: the 3 mm model reaches the right pocket first; the 2 and 1.5 mm models reach the left first. Each accepted crossing has an independent quadratic-surface witness. These histories retain the locked contact state. [Report, page 20](output/pdf/battery-case-report.pdf#page=20)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.

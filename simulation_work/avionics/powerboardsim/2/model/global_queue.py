@@ -173,6 +173,30 @@ def recover_split_readbacks():
             log('Combined and partitioned installation readbacks reconciled: '+case)
 
 
+def projection_inventory():
+    """Inspect the closed projection archive between native jobs, without accepting its results."""
+    from snug_projection_readback import OUT, audit
+    if not (OUT/'request.json').is_file() or (OUT/'inventory_audit.json').is_file():
+        return
+    if (OUT/'failed.txt').is_file() or (OUT/'audit_failed.txt').is_file():
+        return
+    if shutil.disk_usage(ROOT).free<400_000_000_000:
+        raise RuntimeError('Host storage reserve reached')
+    if not (OUT/'exit.txt').is_file():
+        log('Dispatch projection contact inventory from closed archive')
+        dispatch_solver('projection_readback.ps1',['-Trial',OUT.name],OUT)
+        while not (OUT/'exit.txt').is_file():
+            if (OUT/'failed.txt').is_file():
+                raise RuntimeError('Projection inventory needs inspection; preserve existing launch')
+            time.sleep(5)
+    try:
+        audit()
+    except (AssertionError,ValueError,OSError) as exc:
+        import traceback
+        (OUT/'audit_failed.txt').write_text(traceback.format_exc())
+        log('Projection inventory requires inspection: '+str(exc)[-250:])
+
+
 def jobs():
     # Honour the new geometry at the next case boundary. Each listed input is independently sealed.
     snug = ROOT/'validation/snug125/global_inputs.json'
@@ -670,7 +694,9 @@ def run():
         if local and not case.startswith('bare_') and not (ROOT/'validation/local_cased_preflight.json').is_file():
             raise RuntimeError('Cased pull fixture preflight review pending')
         if (receipt/'audit_failed.txt').exists():continue
-        if not (receipt/'dispatch.json').exists():recover_split_readbacks()
+        if not (receipt/'dispatch.json').exists():
+            projection_inventory()
+            recover_split_readbacks()
         if shutil.disk_usage(ROOT).free<400_000_000_000:raise RuntimeError('Host storage reserve reached')
         state=receipt/'status.json'
         if not state.exists():

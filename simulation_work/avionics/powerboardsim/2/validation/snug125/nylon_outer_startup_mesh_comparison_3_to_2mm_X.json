@@ -1,0 +1,130 @@
+{
+  "coarse_displacement_audit_sha256": "7c66cd2ad9128e2075df49af0ad1dcb00a2486a2a752f3e95e130c6ace5cd104",
+  "models": [
+    {
+      "variant": "snug125_nylon_mesh3",
+      "mesh_mm": 3,
+      "mesh_sha256": "145e7347a16ab6bb3523a1d821be15fa3c6bc2e7d99671bc25155c752aedaeee",
+      "basis_sha256": "c4fe415853fbb785b81abb7b24c4912d386bddfa4c321ad5d94380a7bfddb7ad",
+      "waveform_sha256": "f04864b2974a882b110dbf0a9442317a992b1a2a0360617cf08f1f8d1f36de67",
+      "sample_rate_Hz": 65536,
+      "face_counts": [
+        8934,
+        328,
+        302
+      ],
+      "installed_sha256": "c29843363fd09a87edba28f2797ec1ac27b92951efd6d7f26755dd7dd2e6af7e",
+      "witness_sha256": "f7a56985d9d62d51f2a43504f3106c072ce31fbe0905063d52c83a5938f768a1",
+      "order": [
+        "right",
+        "left"
+      ],
+      "cells": {
+        "left": {
+          "sample_interval": [
+            2511,
+            2512
+          ],
+          "time_interval_ms": [
+            38.3148193359375,
+            38.330078125
+          ],
+          "sampled_locked_gap_um": 12.75278510091235,
+          "witness_xyz_mm": [
+            19.861042174094937,
+            26.44363834093117,
+            -17.500954218538073
+          ]
+        },
+        "right": {
+          "sample_interval": [
+            2463,
+            2464
+          ],
+          "time_interval_ms": [
+            37.5823974609375,
+            37.59765625
+          ],
+          "sampled_locked_gap_um": 14.747981197804519,
+          "witness_xyz_mm": [
+            66.60759059742358,
+            74.02621555744204,
+            -18.863179045793913
+          ]
+        }
+      }
+    },
+    {
+      "variant": "snug125_nylon",
+      "mesh_mm": 2,
+      "mesh_sha256": "12b33a6fc8bec499e062c86fa0d9442d062f5b5fff7ad08425ec26d8c1cd0a2b",
+      "basis_sha256": "b286ea6e68892ee9c4c91ed6314a9031ca0f8edec901e2a9fd4ab50d2844e799",
+      "waveform_sha256": "f04864b2974a882b110dbf0a9442317a992b1a2a0360617cf08f1f8d1f36de67",
+      "sample_rate_Hz": 65536,
+      "face_counts": [
+        16596,
+        328,
+        302
+      ],
+      "installed_sha256": "f9f649cec562bac625879bfd29c0b74284175257415eb2ce08ada4f411eb511a",
+      "witness_sha256": "78abc58757b4857e6b4832136732b3f6b92c77778d3fd60ca412d7bffb08f416",
+      "order": [
+        "left",
+        "right"
+      ],
+      "cells": {
+        "left": {
+          "sample_interval": [
+            2509,
+            2510
+          ],
+          "time_interval_ms": [
+            38.2843017578125,
+            38.299560546875
+          ],
+          "sampled_locked_gap_um": 13.136452057253736,
+          "witness_xyz_mm": [
+            20.06875521435691,
+            25.406597774665332,
+            -17.154261802561496
+          ]
+        },
+        "right": {
+          "sample_interval": [
+            2649,
+            2650
+          ],
+          "time_interval_ms": [
+            40.4205322265625,
+            40.435791015625
+          ],
+          "sampled_locked_gap_um": 15.78972604336779,
+          "witness_xyz_mm": [
+            66.49939691211975,
+            77.28911865033982,
+            -19.002876397430928
+          ]
+        }
+      }
+    }
+  ],
+  "interval_changes": {
+    "left": {
+      "nominal_minus_coarse_midpoint_ms": -0.030517578125,
+      "possible_nominal_minus_coarse_ms": [
+        -0.0457763671875,
+        -0.0152587890625
+      ]
+    },
+    "right": {
+      "nominal_minus_coarse_midpoint_ms": 2.838134765625,
+      "possible_nominal_minus_coarse_ms": [
+        2.8228759765625,
+        2.8533935546875
+      ]
+    }
+  },
+  "order_retained": false,
+  "modal_comparison_sha256": "0069f72dc22f696131d1b62bb3eb21bcb934564163234aa8c2dac590a4cade89",
+  "scope": "Sampled fixed-contact trajectories from independent exact integration of each native mode basis. Interval differences reflect the two tested meshes. A face-intersection witness does not determine a unique physical impact point or the amount of contact pressure."
+}
