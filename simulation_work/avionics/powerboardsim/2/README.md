@@ -50,6 +50,8 @@ At the peak of each native base-X vibration record, rotation of the left cell re
 
 The only battery touching the case at bolt lock was the middle one. Its initial side travel under a small force fell from 0.5235 µm/N bare to 0.4717 with nylon screws and 0.4509 with aluminium screws (9.9% and 13.9% less). The finer nylon case gave a 9.4% reduction. The changes at either outer cell were below 0.36%. This independent calculation uses the complete installed stiffness matrices. The native nonlinear controls will test force and unloading beyond the initial slope. [Report, page 21](output/pdf/battery-case-report.pdf#page=21) · [Slide 3](output/pdf/battery-case-slides.pdf#page=3) · [Full-matrix comparison](validation/snug125/full_board_tangent_comparison.json)
 
+The nominal bare nickel-damage rerun first crossed its reporting threshold between 3.250 and 3.275 mm (42.87–43.37 N). The force was still rising at its last converged point. Page 2 plots this reference and the three initiation curves used in the matched bare and snug sensitivity cases. The cased damage results are pending. [Report, page 2](output/pdf/battery-case-report.pdf#page=2) · [Verified damage inputs](validation/snug125/damage_family_inputs.json)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.

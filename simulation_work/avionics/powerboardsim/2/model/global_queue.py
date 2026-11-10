@@ -178,6 +178,10 @@ def jobs():
     snug = ROOT/'validation/snug125/global_inputs.json'
     if snug.is_file():
         inputs = read(snug)
+        trial_path=snug.parent/'local_core_trial_input.json'
+        trial=read(trial_path) if trial_path.is_file() else None
+        if trial and (RECEIPTS/trial['parent']/'dispatch.json').exists():
+            yield trial['case'],trial['parent']
         for subject in ('static','refined','original'):
             for material in ('nylon','aluminium'):
                 case = f'snug125_{material}_{subject}'
@@ -222,10 +226,6 @@ def jobs():
         if tolerance.is_file():
             control=read(tolerance)
             yield control['case'],''
-        trial=snug_dir/'local_core_trial_input.json'
-        if trial.is_file():
-            entry=read(trial)
-            yield entry['case'],entry['parent']
         coarse_basis=snug_dir/'coarse_geometry_modes.json'
         if coarse_basis.is_file():
             entry=read(coarse_basis)
@@ -244,6 +244,8 @@ def jobs():
                     if (meta['source'] in primary)==directional:
                         yield meta['bare_reference'],''
                         yield case,meta['bare_reference']
+                        if trial and case==trial['parent']:
+                            yield trial['case'],case
                 # Compare the reported tab-root crossing on the second mesh after the four primary directions.
                 if directional and nylon_forward_coarse in coarse_cases:
                     yield nylon_forward_coarse,nylon_forward_coarse.removesuffix('_m3')+'_m15'
@@ -579,7 +581,14 @@ def run():
         review=ROOT/'validation/review_local'/(case+'.json')
         if final.exists() or partial.exists() or review.exists() or (ROOT/'validation/review_global'/(case+'.json')).exists():continue
         if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
-            log('Parent unaccepted: '+case);continue
+            # This timing test consumes the four-core clamp ramp, which can be verified
+            # separately if later high-travel states failed their physical audit.
+            if case=='snug125_nylon_clamp_smp12':
+                from snug_local_core_trial import closed_clamp_reference
+                if not closed_clamp_reference(CAMPAIGN):
+                    log('Parent clamp reference unavailable: '+case);continue
+            else:
+                log('Parent unaccepted: '+case);continue
         if case.startswith('shellwave_'):
             free=case.replace('_contact_pilot_','_free_pilot_')
             if not (ROOT/'validation/snug125/transient_control.json').is_file() or (free!=case and not result_path(free).is_file()):

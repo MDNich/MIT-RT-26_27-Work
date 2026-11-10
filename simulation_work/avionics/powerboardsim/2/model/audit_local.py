@@ -161,6 +161,9 @@ def audit(case, campaign):
     data.update(case=case,source=spec['source'],campaign=campaign,full_requested_path=complete,
                 scope='Completed numerical fixture' if complete else 'Partial converged path; endpoint under review',
                 rst_sha256=next(f['sha256'] for f in ledger['files'] if f['name']==spec['job']+'.rst'))
+    if case.startswith('snug125_') and case.endswith('_m15'):
+        from snug_local_core_trial import verify_production_runtime
+        data['solver_runtime']=verify_production_runtime(case,campaign,spec,status,listing)
     dest=ROOT/'validation'/('local' if complete else 'partial_local')
     dest.mkdir(exist_ok=True)
     from film_identity import write_json
@@ -183,6 +186,16 @@ def audit(case, campaign):
             and spec['source'] in ('lateral_friction_locked','lateral_friction_locked_minus')):
         from snug_directional_result import run as compare_bare
         compare_bare(case)
+    if case.startswith('snug125_') and case.endswith('_m15') and spec['source'].startswith('damage_cont'):
+        from snug_damage_family import compare_case
+        pair=compare_case(case)
+        if spec['source']=='damage_cont_nominal' and pair and 'at_common_travel' in pair:
+            from compare_pull_laws import compare
+            branch=case.split('_damage_')[0]
+            forward=branch+'_lateral_friction_locked_pin1_m15'
+            from snug_damage_family import result_file
+            if result_file(forward) and result_file('bare_lateral_friction_locked'):
+                compare(branch)
     if case=='bare_damage_cont_nominal':
         from damage_repeat import compare as compare_damage
         compare_damage(case,campaign)

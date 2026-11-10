@@ -36,7 +36,7 @@ In the unloaded CAD assembly, shifting the case 0.0030~mm in negative PCB X brin
 
 \newpage
 \pageheading{Comparison baseline and native rerun}
-The reference is the same no-case assembly across both screw-material comparisons. It includes the original board, all three batteries, their nickel strips, and the six preloaded fasteners. The global comparison uses the eight original mounting faces, three separate base-excitation axes, the original 20--2000~Hz spectrum and the nine-second seeded acceleration records. The edge-cell fixtures retain the earlier clamp preload, weld idealization, and nickel laws so changes in reaction or strain can be traced to the snug case.
+Both screw-material comparisons use the October bare board, its three cells and six preloaded fasteners. The three native base-excitation runs use the eight original mounting faces, the 20--2000~Hz spectrum and the nine-second seeded records. The side-pull fixtures retain the original clamp preload and idealized weld footprints.
 
 \begin{center}\small\begin{tabular}{lr}\toprule
 Verified no-case result & Value\\\midrule
@@ -53,10 +53,14 @@ The nominal 2~mm case mesh has 45,549 quadratic tetrahedra and 77,166 nodes. Its
 
 In the local side-pull fixture the left cell moves along PCB X. With rigid, undeformed CAD and fixed registration it first touches its pocket after 0.02035--0.02039~mm in positive X or 0.16470--0.16474~mm in negative X. Both first contacts fall on the cylindrical pocket face selected in the native fixture. Replaying the bare nickel fixture's native cell translation and rotation against the stationary case gave first sampled overlaps between 0.0175 and 0.02875~mm toward the middle cell, and between 0.145625 and 0.170625~mm away. Exact CAD and two reconstructions of the fixture surfaces agreed on both brackets. ANSYS rejected one nearly flat PLA element in the 2~mm local fixture before it solved a load step. The replacement uses the 1.5~mm shell mesh. Native shape checks passed for all 99,818 tetrahedra, four screw beams, four spacer springs and both contact pairs. Page~19 compares the first converged nylon forward-pull stations with the bare force curve.
 
-\heading{What changes with the case}
-Peak PCB deflection at bolt lock fell by 39\% with nylon screws and 51\% with aluminium screws. Under board-normal vibration the nominal peak PCB stress rose from 32.5~MPa RMS bare to 69.4 and 98.7~MPa RMS, respectively (page~12). The vibration model holds contact fixed at bolt lock. In the separate nylon forward-pull fixture the 1.5~mm mesh reached the PLA tensile reference near 0.30~mm. An independent local refinement moved that crossing progressively earlier (pages~23--24). The aluminium, reverse and damage-law pulls remain in progress.
+\heading{Nickel damage under a sideways pull}
+The bare nominal model first crossed its section-damage reporting threshold between 3.250 and 3.275~mm (42.87--43.37~N). The last converged point lay at 3.347~mm on a rising force curve. Rupture load remains unresolved.
 
-All 22 movie subjects compare the bare board with both snug mounts on shared scales (page~16). Appendix~A preserves the previous geometry study and its original page numbering.
+\begin{center}\includegraphics[width=.96\linewidth]{figures/snug-nickel-damage-controls.pdf}
+\captionof*{figure}{Left, native bare-board fixture with multilinear nickel hardening. Right, the assumed plastic strain for damage initiation as a function of mean stress divided by von Mises stress. The bare and both snug fixtures each pair all three curves with evolution lengths of 0.03, 0.12 and 0.24~mm. The nominal pair uses $\varepsilon_0=0.30$ and 0.12~mm.}\end{center}
+
+\heading{What changes with the case}
+Both mounts reduced PCB displacement at bolt lock and increased base-Z PCB stress (page~12). The nylon forward-pull model crossed the PLA coupon reference near 0.30~mm on its native mesh. Local refinement moved that crossing earlier (pages~23--24). Page~16 links the 22 matched movie subjects. Appendix~A preserves the previous fit study.
 
 \newpage
 \pageheading{Both snug mounts reduce PCB deflection during tightening}

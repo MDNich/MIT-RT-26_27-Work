@@ -21,16 +21,22 @@ def main(rst,out):
     spec=json.load(open(os.path.join(out,'request.json')))
     dpf.DataProcessingCore.Initialization()
     ds=dpf.DataSources(rst)
+    field=spec.get('field','U')
+    expected=spec.get('unit','m')
+    assert (field,expected) in [('U','m'),('U','mm'),('ROT','rad')]
+    suffix='.rot' if field=='ROT' else '.u'
     for k in spec['sets']:
         stem=os.path.join(out,'set_%04d'%k)
         if os.path.exists(stem+'.json'):continue
-        ts=dpf.Scoping();ts.Ids=[k];op=dpf.Operator('U');op.Connect(4,ds);op.Connect(0,ts)
+        ts=dpf.Scoping();ts.Ids=[k];op=dpf.Operator(field);op.Connect(4,ds);op.Connect(0,ts)
         fc=op.GetOutputAsFieldsContainer(0)
         assert fc.FieldCount==1
-        f=fc[0];unit=str(f.Unit);assert unit.strip().lower()=='m',unit
-        ids=binary(stem+'.ids',f.ScopingIds,Int32);values=binary(stem+'.u',f.Data,Double)
+        f=fc[0];unit=str(f.Unit);assert unit.strip().lower()==expected,unit
+        ids=binary(stem+'.ids',f.ScopingIds,Int32);values=binary(stem+suffix,f.Data,Double)
         assert values==3*ids
-        with open(stem+'.json.tmp','w') as s:json.dump(dict(set=k,nodes=ids,unit=unit,components=3,source_sha256=spec['source_sha256']),s)
+        info=dict(set=k,nodes=ids,unit=unit,components=3,source_sha256=spec['source_sha256'])
+        if 'field' in spec:info['field']=field
+        with open(stem+'.json.tmp','w') as s:json.dump(info,s)
         os.rename(stem+'.json.tmp',stem+'.json')
     print('DPF_U_EXPORT_DONE')
 

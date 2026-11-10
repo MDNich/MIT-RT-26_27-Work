@@ -67,9 +67,20 @@ def export(case,campaign,sets,job='file'):
     # A set request has a unique immutable identity and isolated output directory.
     sets=sorted(set(sets));assert sets and sets[0]>0
     key='_'.join(map(str,sets))
-    out=ROOT/'.runtime/post'/campaign/case/'dpf_u'/('sets_'+key);out.mkdir(parents=True,exist_ok=True)
-    lock=(out/'request.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX)
+    out=ROOT/'.runtime/post'/campaign/case/'dpf_u'/('sets_'+key)
     spec=dict(case=case,campaign=campaign,source_sha256=sha,sets=sets)
+    return export_file(path,out,spec)
+
+
+def export_file(path,out,spec):
+    """Read a hash-verified stationary result, including optional fixture U or ROT fields."""
+    sha=spec['source_sha256'];sets=spec['sets']
+    verified(path,sha)
+    assert sets==sorted(set(sets)) and sets[0]>0
+    field=spec.get('field','U');unit=spec.get('unit','m')
+    assert (field,unit) in [('U','m'),('U','mm'),('ROT','rad')]
+    out.mkdir(parents=True,exist_ok=True)
+    lock=(out/'request.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX)
     if (out/'request.json').exists():assert json.loads((out/'request.json').read_text())==spec
     else:write_json(out/'request.json',spec)
     def windows(p):
@@ -81,8 +92,8 @@ def export(case,campaign,sets,job='file'):
     for k in sets:
         stem=out/f'set_{k:04d}'
         m=json.loads(stem.with_suffix('.json').read_text())
-        ids=np.fromfile(stem.with_suffix('.ids'),'<i4');u=np.fromfile(stem.with_suffix('.u'),'<f8').reshape(-1,3)
-        assert m['set']==k and m['components']==3 and m['source_sha256']==sha and m['unit'].lower()=='m' and len(ids)==len(u)==m['nodes'] and len(np.unique(ids))==len(ids)
+        ids=np.fromfile(stem.with_suffix('.ids'),'<i4');u=np.fromfile(stem.with_suffix('.rot' if field=='ROT' else '.u'),'<f8').reshape(-1,3)
+        assert m['set']==k and m['components']==3 and m['source_sha256']==sha and m['unit'].lower()==unit and m.get('field','U')==field and len(ids)==len(u)==m['nodes'] and len(np.unique(ids))==len(ids)
         assert np.all(np.isfinite(u))
     return out
 

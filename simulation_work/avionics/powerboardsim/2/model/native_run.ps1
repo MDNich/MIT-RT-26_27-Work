@@ -188,9 +188,21 @@ try {
     }
     if (Test-Path -LiteralPath "$work\local_job.json") {
         $spec=Get-Content "$work\local_job.json" -Raw|ConvertFrom-Json
-        $stage.cores=$spec.cores
+        . "$PSScriptRoot\local_runtime.ps1"
+        $runtime=Get-LocalRuntime $spec $Case $Campaign $share
+        if ($runtime.trial_sha256) {
+            Copy-Item -LiteralPath "$share\validation\snug125\local_core_trial.json" -Destination "$out\local_core_trial.json"
+            if ((Get-FileHash -LiteralPath "$out\local_core_trial.json").Hash -ne $runtime.trial_sha256) {
+                $runtime.Remove('trial_sha256')
+                $runtime.cores=[int]$spec.cores
+                $runtime.fallback_reason='Timing receipt changed during launch preparation'
+            }
+        }
+        $stage.cores=$runtime.cores
+        $stage.local_runtime=$runtime
         Update 'solving'
-        $localResult=& "$PSScriptRoot\local_solve.ps1" -Work $work -Case $Case -Exe $exe -Receipt $out
+        $localResult=& "$PSScriptRoot\local_solve.ps1" -Work $work -Case $Case -Exe $exe -Receipt $out -SolveCores $runtime.cores
+        if ($localResult.cores -ne $stage.cores) {throw 'Local solver core count differs from its receipt'}
         $stage.exit=$localResult.exit
         $stage.native_clean=$localResult.clean
         $stage.result_job=$localResult.job

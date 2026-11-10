@@ -1,5 +1,6 @@
 param([Parameter(Mandatory)][string]$Work,
-      [Parameter(Mandatory)][string]$Case,[Parameter(Mandatory)][string]$Exe,[Parameter(Mandatory)][string]$Receipt)
+      [Parameter(Mandatory)][string]$Case,[Parameter(Mandatory)][string]$Exe,[Parameter(Mandatory)][string]$Receipt,
+      [ValidateSet(0,1,4,12)][int]$SolveCores=0)
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 $spec=Get-Content -LiteralPath "$Work\local_job.json" -Raw|ConvertFrom-Json
@@ -34,8 +35,15 @@ if ((Get-FileHash -LiteralPath "$Work\local_job.json").Hash -ne $record.spec_sha
 foreach ($item in $spec.files.PSObject.Properties){
     if ((Get-FileHash -LiteralPath (Join-Path $Work $item.Name)).Hash -ne $item.Value){throw "Staging checksum failed: $($item.Name)"}
 }
+if (!$SolveCores) {$SolveCores=[int]$spec.cores}
+if ($SolveCores -ne $spec.cores) {
+    $receiptState=Get-Content -LiteralPath "$Receipt\status.json" -Raw|ConvertFrom-Json
+    if ($Case -notlike 'snug125_*_m15' -or $SolveCores -ne 12 -or $spec.cores -ne 4 -or
+        $receiptState.case -ne $Case -or $receiptState.cores -ne $SolveCores -or
+        $receiptState.local_runtime.trial_sha256 -notmatch '^[a-f0-9]{64}$') {throw 'Unverified local SMP override'}
+}
 $job=$spec.job
-$arguments=@('-b','nolist','-s','noread','-smp','-np',"$($spec.cores)",'-p','ansys','-j',$job,'-i','model.inp','-o','solve.out')
+$arguments=@('-b','nolist','-s','noread','-smp','-np',"$SolveCores",'-p','ansys','-j',$job,'-i','model.inp','-o','solve.out')
 if ($spec.load_protocol -in 'four_stage_install','grip_install' -and (Get-PSDrive C).Free -lt 24000000000) {
     throw 'Insufficient guest headroom for installation path'
 }
@@ -66,4 +74,4 @@ foreach ($stem in $readbacks){
         throw "Local $stem result readback failed"
     }
 }
-[PSCustomObject]@{exit=$native.ExitCode;clean=$clean;job=$job;cores=$spec.cores}
+[PSCustomObject]@{exit=$native.ExitCode;clean=$clean;job=$job;cores=$SolveCores}

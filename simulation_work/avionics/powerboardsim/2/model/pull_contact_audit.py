@@ -134,7 +134,8 @@ def damage_scope(case,campaign,proof,proof_path,contacts):
         section_map_sha256=digest(maps_path),contact_table_sha256=digest(base/'pulls'/(case+'_contact.csv')),
         nickel_reporting_threshold=maps['threshold'],nickel_bracket=damage,first_criterion_sets=limits,
         last_station_before_limits=before,interpretation=location,
-        scope='Native converged states of the raised lateral fixture with the assumed nickel law. A section damage '
+        scope=('Native converged states of the 1.250 mm snug lateral fixture' if case.startswith('snug125_') else
+               'Native converged states of the raised lateral fixture')+' with the assumed nickel law. A section damage '
               'threshold marks onset within the model. Rupture and crack propagation require independent evidence.'))
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('case');verify(parser.parse_args().case)

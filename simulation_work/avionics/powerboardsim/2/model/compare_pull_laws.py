@@ -7,9 +7,11 @@ from audit_local import ROOT, read, table
 from film_identity import digest, verified, write_json
 
 
-def loading_curve(branch, damage):
-    source='damage_cont_nominal' if damage else 'lateral_friction_locked'
-    case=f'{branch}_{source}'+('' if branch=='bare' else '_pin1')
+def loading_curve(branch, damage, *, source=None):
+    source=source or ('damage_cont_nominal' if damage else 'lateral_friction_locked')
+    assert damage==source.startswith('damage_')
+    suffix='' if branch=='bare' else ('_pin1_m15' if branch.startswith('snug125_') else '_pin1')
+    case=f'{branch}_{source}'+suffix
     base=ROOT/'validation'
     verdict_path,=[p for group in ('local','partial_local') if (p:=base/group/(case+'.json')).is_file()]
     proof=read(verdict_path)
@@ -127,5 +129,5 @@ def compare(branch):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('branch',choices=['bare','stand3_nylon','stand3_aluminium'])
+    p.add_argument('branch',choices=['bare','stand3_nylon','stand3_aluminium','snug125_nylon','snug125_aluminium'])
     compare(p.parse_args().branch)
