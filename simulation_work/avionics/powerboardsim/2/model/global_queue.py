@@ -222,6 +222,10 @@ def jobs():
         if tolerance.is_file():
             control=read(tolerance)
             yield control['case'],''
+        trial=snug_dir/'local_core_trial_input.json'
+        if trial.is_file():
+            entry=read(trial)
+            yield entry['case'],entry['parent']
         local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
         local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
         if local_catalog.is_file():
@@ -429,6 +433,8 @@ def damage_reference_ready(spec):
 
 
 def result_path(case):
+    if case=='snug125_nylon_clamp_smp12':
+        return ROOT/'validation/snug125/local_core_trial.json'
     if case.startswith('shellwave_'):
         return ROOT/'validation/shellwave_pilot'/(case+'.json')
     if case.startswith('shell_snug125_'):
@@ -613,6 +619,8 @@ def run():
             flags=['-Case',case,'-Campaign',CAMPAIGN]
             if case.startswith(('patch_','replay_','shell_snug125_','shellwave_')):
                 flags.extend(['-Cores','2'])
+            elif case=='snug125_nylon_clamp_smp12':
+                flags.extend(['-Cores','12'])
             elif parent and not local:
                 flags.extend(['-Parent',parent])
             log('Dispatch '+case);dispatch_solver('native_run.ps1',flags,receipt)
@@ -645,6 +653,8 @@ def run():
         elif case.startswith('replay_'):
             audit='audit_contact_replay.py'
         args=['audit_motion.py','case',case,CAMPAIGN] if motion else [audit,case,CAMPAIGN]
+        if case=='snug125_nylon_clamp_smp12':
+            args=['snug_local_core_trial.py','audit','--campaign',CAMPAIGN]
         r=subprocess.run([sys.executable,str(ROOT/'model'/args[0]),*args[1:]],text=True,capture_output=True)
         log(r.stdout[-1000:])
         if r.returncode:(receipt/'audit_failed.txt').write_text(r.stderr);log('Audit failed '+case+': '+r.stderr[-330:])

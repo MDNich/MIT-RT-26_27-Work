@@ -358,6 +358,23 @@ For nylon screws, both independent brackets moved one sampling interval earlier 
 \heading{What the local fixtures can recover}
 The 15~mm left-side fixture includes both faces at the verified left-cell crossings for nylon and aluminium. The 9~mm fixture includes the native aluminium left crossing but misses the native nylon left crossing. Both radii omit the right cell and every PLA face that carried middle-cell load at bolt lock (five with nylon, one with aluminium). Their local reactions consequently cover only part of the assembly. The intact-shell controls include all three cells and the original hardware. A nonlinear vibration solution is still needed to determine impact force, separation and rebound.
 
+\newpage
+\pageheading{How far does the left cell move relative to its clamps?}
+The lateral pull fixture drives the left cell along PCB~X. In the nine-second base-X vibration record, the peak displacement along that axis relative to the two nickel-strip clamps was 48.2~$\mu$m bare, 34.3~$\mu$m with nylon screws and 42.6~$\mu$m with aluminium screws. The snug case reduced the peak by 28.8\% and 11.7\%, respectively. Under base Y and base Z, both mounts increased this cross-axis motion.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-edge-cell-travel.pdf}
+\captionof{figure}{Left, minimum and maximum lateral travel of the left cell from bolt lock in the full native base-X history. Positive X points towards the middle cell. Right, peak absolute travel along the same axis for the base-Y and base-Z histories, on a smaller scale. Each assembly uses the same imposed acceleration for a given base direction.}\end{center}
+
+\heading{Where the displacement is measured}
+We followed the cell's mass centroid, which lies within 0.002~mm of the drive point in the bare pull fixture. To follow its two clamps, we used the upper annular faces of the washers at either end of the cell. At each time the best-fitting rigid motion of those faces gives a translation and a rotation. Transporting that motion to the height of the cell centre and subtracting it from the cell displacement gives the travel plotted above. All displacements are increments from the installed state.
+
+Rotation matters because the centre is about 10.5~mm below the washer faces. Under base X, subtracting only the mean translation of the washers would give peaks of 83.5, 60.4 and 72.4~$\mu$m for bare, nylon and aluminium. Excluding the part of the washer face inside the local strip-hole radius changed the calculated X travel by less than 0.19~$\mu$m throughout the three native records for each assembly.
+
+\heading{Numerical checks and interpretation}
+All three assemblies retained the same washer-face nodes and quadratic connectivity. Fits directly to the reconstructed displacements at each signed extreme reproduced the modal projection to within $10^{-7}$~mm. Independent integration of the same modes with linearly interpolated acceleration changed the 18 signed extrema by at most 1.07\%. Refining the nylon case from 2 to 1.5~mm reduced its independently calculated base-X peak by 4.1\%, to 33.1~$\mu$m. The finer base-Z value increased by 11.6\%, to 1.81~$\mu$m.
+
+The quasistatic fixture prescribes one cell displacement while the global model excites the board, the clamps and all three cells. The case itself also vibrates, so clamp-relative cell travel cannot by itself establish pocket closure, nickel damage or pull force. The results above use the fixed contact state at bolt lock. Page~17 addresses the moving cell and case surfaces under base Z.
+
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}

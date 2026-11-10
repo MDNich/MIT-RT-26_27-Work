@@ -192,6 +192,17 @@ try {
     }
     Update 'solving'
     $argsList=@('-b','nolist','-s','noread','-dis','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    if ($Case -eq 'snug125_nylon_clamp_smp12'){
+        $trial=Get-Content "$share\validation\snug125\local_core_trial_input.json" -Raw|ConvertFrom-Json
+        $book=Get-Content "$share\validation\snug125\local_inputs_m15.json" -Raw|ConvertFrom-Json
+        $row=$book.PSObject.Properties[$trial.parent].Value
+        if ($Parent -or $Cores -ne 12 -or $trial.trial_cores -ne $Cores -or $trial.case -ne $Case -or
+            $trial.input_sha256 -ne $stage.input_sha256 -or $trial.parent_spec_sha256 -ne $row.spec_sha256 -or
+            $trial.parent_input_sha256 -ne $row.input_sha256 -or $trial.mesh_sha256 -ne $row.mesh_sha256){
+            throw 'Local SMP clamp trial identity mismatch'
+        }
+        $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    }
     if ($Case.StartsWith('shell_snug125_')){
         if ($Case -notmatch '^shell_(snug125_(?:nylon|aluminium))_(?:free|contact)_v2$'){throw 'Unknown whole-shell case'}
         $branch=$Matches[1]

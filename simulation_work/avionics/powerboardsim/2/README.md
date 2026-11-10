@@ -30,6 +30,8 @@ On the nominal prestressed modes under base Z, the right outer cell reaches the 
 
 The local forward and reverse pulls use the verified 1.5 mm case mesh. Native preprocessing rejected one nearly flat element in the initial 2 mm local fixtures before an equilibrium was reached. The replacement passed native shape checking with 99,818 tetrahedra and the expected hardware and contact counts. [Native preflight](validation/snug125/local_mesh15_preflight.json)
 
+In the nine-second base-X vibration record, the left cell moved laterally by up to 48.2 µm relative to its two clamp washers bare, 34.3 µm with nylon screws and 42.6 µm with aluminium screws. Both mounts increased the smaller cross-axis response to Y and Z excitation. These native histories use the installed contact state. [Clamp-relative cell travel, page 18](output/pdf/battery-case-report.pdf#page=18) · [Briefing, slide 9](output/pdf/battery-case-slides.pdf#page=9)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.
