@@ -1,0 +1,105 @@
+{
+  "base_axis": "X",
+  "models": {
+    "nylon": {
+      "motion_sha256": "ce6cfb997d24034f75b1475b5454dbcf9fe4fe95174f9299a61b7eacd9f9a719",
+      "scan_sha256": "382706d94a6b4aab557f9869614dc92967346ba23af5a479faad75eb7613117b",
+      "witness_sha256": "d572e99eac3a35b5f0bc14bd18c81d97e9d27292b81cdc87e767aa7adba64f52",
+      "PLA_screen_sha256": "f7f21ad37af01677c7da83d23236be8d9b507fdd2fdca805753fbb555a92b531",
+      "sample_rate_Hz": 65536,
+      "cells": {
+        "left": {
+          "interval_ms": [
+            38.2843017578125,
+            38.299560546875
+          ],
+          "point_mm": [
+            20.068800568235854,
+            25.406596959716897,
+            -17.154306786352613
+          ]
+        },
+        "right": {
+          "interval_ms": [
+            40.4205322265625,
+            40.4510498046875
+          ],
+          "point_mm": [
+            67.17929765737468,
+            95.40584816323083,
+            -18.173958413442648
+          ]
+        }
+      },
+      "order": [
+        "left",
+        "right"
+      ],
+      "nickel_trial_crossing_ms": [
+        37.8265380859375,
+        37.841796875
+      ],
+      "nickel_minus_first_outer_interval_ms": [
+        -0.4730224609375,
+        -0.4425048828125
+      ],
+      "PLA_first_coupon_crossings_ms": {
+        "layer_tension_MPa": null,
+        "in_plane_tension_MPa": null
+      },
+      "middle_pressure_change_upper_bound_ms": 18.402099609375,
+      "reserve_sha256": "1bca1d17412886de305398aad7bf42ce46de7d1ae67fff66ac72662638842082"
+    },
+    "aluminium": {
+      "motion_sha256": "80053c2311f34a18889da4f93adfafa5d891aacdcdc4360f4bc4d3ef1cf1e3ce",
+      "scan_sha256": "a04868586b271c65547ef053844ae8c9ae345cc8c1b897e49d995286894df8bf",
+      "witness_sha256": "8cfc19d2ad8f4ee98c3880f84d024b6626323a7bc30f6d943c09f09526600bc2",
+      "PLA_screen_sha256": "b59680c644bfb8e0c3fc548e1235e6ebfd35d3134950bc8d86a257799048fcb6",
+      "sample_rate_Hz": 65536,
+      "cells": {
+        "left": {
+          "interval_ms": [
+            29.0985107421875,
+            29.11376953125
+          ],
+          "point_mm": [
+            20.072332203835625,
+            25.406637007567383,
+            -17.157949046276375
+          ]
+        },
+        "right": {
+          "interval_ms": [
+            40.374755859375,
+            40.3900146484375
+          ],
+          "point_mm": [
+            68.93027771878488,
+            25.406814702606585,
+            -14.493816793018325
+          ]
+        }
+      },
+      "order": [
+        "left",
+        "right"
+      ],
+      "nickel_trial_crossing_ms": [
+        40.3900146484375,
+        40.4052734375
+      ],
+      "nickel_minus_first_outer_interval_ms": [
+        11.2762451171875,
+        11.3067626953125
+      ],
+      "PLA_first_coupon_crossings_ms": {
+        "layer_tension_MPa": [
+          190.5670166015625,
+          190.582275390625
+        ],
+        "in_plane_tension_MPa": null
+      }
+    }
+  },
+  "scope": "Time ordering on the native trajectory linearized at bolt lock. Nickel uses the 185 MPa exploratory trial yield threshold anywhere in the nickel strips. An outer-cell crossing is an interpolated geometric intersection. These events do not directly give an impact or tearing load."
+}
