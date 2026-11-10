@@ -32,6 +32,8 @@ The local forward and reverse pulls use the verified 1.5 mm case mesh. Native pr
 
 In the nine-second base-X vibration record, the left cell moved laterally by up to 48.2 µm relative to its two clamp washers bare, 34.3 µm with nylon screws and 42.6 µm with aluminium screws. Both mounts increased the smaller cross-axis response to Y and Z excitation. These native histories use the installed contact state. [Clamp-relative cell travel, page 18](output/pdf/battery-case-report.pdf#page=18) · [Briefing, slide 9](output/pdf/battery-case-slides.pdf#page=9)
 
+At a sideways load of 8.54 N toward the middle cell, the bare cell moved 0.500 mm. The snug case with nylon screws moved about 0.034 mm, interpolated between saved equilibria at 0.02875 and 0.04000 mm. At 0.206875 mm travel the cased fixture required 109.53 N versus 7.23 N bare. The nylon result covers the first 12 converged pull increments. [Force curve and load paths, page 19](output/pdf/battery-case-report.pdf#page=19) · [Slide 4](output/pdf/battery-case-slides.pdf#page=4) · [Verified checkpoint](validation/snug125/snug125_nylon_lateral_friction_locked_pin1_m15_ls3_ss12_checkpoint.json)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.

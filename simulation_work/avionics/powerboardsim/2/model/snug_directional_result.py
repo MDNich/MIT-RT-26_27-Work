@@ -5,7 +5,7 @@ import re
 
 import numpy as np
 
-from audit_local import ROOT, read
+from audit_local import ROOT, read, table
 from compare_pull import series
 from film_identity import digest, verified, write_json
 from stage_snug_fit import AUDIT
@@ -18,7 +18,7 @@ def first_bracket(rows, quantity, target, sign):
     if not len(indices):
         return None
     upper=int(indices[0])
-    exact=abs(values[upper]-sign*target)<1e-9
+    exact=bool(abs(values[upper]-sign*target)<1e-9)
     if upper==0 and not exact:
         return None
     lower=upper if exact else upper-1
@@ -146,6 +146,50 @@ def registered_gaps(folder,hashes,spec,case_mesh):
     return dict(pairs=rows,native_listing_sha256=hashes['solve.out'],CAD_fit_sha256=digest(cad_file))
 
 
+def reconcile_checkpoint(checkpoint, verdict, ledger):
+    """Compare every checkpoint station with the closed native POST1 and material readbacks."""
+    item=read(checkpoint);proof=read(verdict);case=proof['case'];campaign=proof['campaign']
+    sha={f['name']:f['sha256'] for f in ledger['files']}
+    assert item['case']==case and item['campaign']==campaign and not item['completed']
+    assert item['input_sha256']==sha['model.inp'] and sha['pull.rst']==proof['rst_sha256']
+    archive=ROOT/'.runtime/archive'/campaign/case
+    verified(archive/'case_pairs.csv',sha['case_pairs.csv'])
+    pairs=table(archive/'case_pairs.csv')
+    fx=table(ROOT/'.runtime/post'/campaign/case/'whole_fixture_balance.csv')
+    mat=read(ROOT/'validation/pull_material'/(case+'.json'))
+    assert mat['rst_sha256']==proof['rst_sha256'] and mat['contact_verdict_sha256']==digest(verdict)
+    limit=mat['reference_properties'];history=mat['history']
+    contact_file=ROOT/'validation/pulls'/(case+'_contact.csv')
+    contact_record=read(contact_file.with_suffix('.json'))
+    assert contact_record['rst_sha256']==proof['rst_sha256']
+    fields=('native_set','pair','closed_faces','closed_corner_records','max_closed_corner_penetration_mm')
+    contacts=np.genfromtxt(contact_file,delimiter=',',names=True,usecols=fields)
+    assert len(contacts)==len(pairs) and np.isfinite(contacts.view(float)).all()
+    n=item['converged_sets']
+    assert len(item['states'])==n and len(fx)>=n
+    for i,r in enumerate(item['states']):
+        k=r['native_set'];br=fx[i];mr=history[i]
+        assert k==int(br['native_set'])==mr['native_set']==i+1
+        assert (r['loadstep'],r['substep'])==(br['loadstep'],br['substep'])
+        assert abs(r['travel_mm']-br['ux_mm'])<1e-7
+        forces=[r['cell_force_N'],r['screw_support_resistance_N'],r['neighbor_resistance_N'],r['nickel_clamp_resistance_N']]
+        closed=[br['cell_fx_N'],-br['screw_support_N_x'],-br['neighbor_support_N_x'],
+                br['cell_fx_N']+br['screw_support_N_x']+br['neighbor_support_N_x']-br['force_N_x']]
+        np.testing.assert_allclose(forces,closed,atol=1e-5,rtol=2e-6)
+        assert abs(r['screw_peak_fibre_MPa']-max(mr['four_screws']['peak_fiber_tension_MPa']))<1e-6
+        for field,v in r['printed_coupon_percent'].items():
+            assert abs(v-100*mr['all_'+field]/limit[field])<1e-6
+        for pair,c in r['both_contact_pairs'].items():
+            rid=int(pair)
+            rr,=pairs[(pairs['set']==k)&(pairs['pair']==rid)]
+            cc,=contacts[(contacts['native_set']==k)&(contacts['pair']==rid)]
+            assert c['closed_faces']==rr['closed']==cc['closed_faces'] and c['loaded_corners']==cc['closed_corner_records']
+            assert abs(c['max_loaded_penetration_mm']-cc['max_closed_corner_penetration_mm'])<1e-7
+            np.testing.assert_allclose(c['force_N'],[rr[a+'_N'] for a in ('fx','fy','fz')],atol=1e-5,rtol=2e-6)
+    return dict(checkpoint=checkpoint.name,checkpoint_sha256=digest(checkpoint),agreed_native_sets=n,
+                stationary_rst_sha256=item['rst_sha256'],closed_rst_sha256=sha['pull.rst'])
+
+
 def run(case):
     suffix='_m3' if case.endswith('_m3') else '_m15'
     inputs=read(AUDIT/('local_inputs'+suffix+'.json'));spec=inputs[case]
@@ -160,6 +204,8 @@ def run(case):
     record['initial_contact_search']=registered_gaps(ROOT/'.runtime/archive'/ledger['campaign']/case,sha,spec,
                                                    '3' if suffix=='_m3' else '1.5')
     record['case_mesh_sha256']=spec['mesh_sha256'];record['input_sha256']=spec['input_sha256']
+    record['verified_checkpoints']=[reconcile_checkpoint(p,verdict,ledger)
+                                    for p in sorted(AUDIT.glob(case+'_*_checkpoint.json'))]
     write_json(AUDIT/(case+'_comparison.json'),record)
 
 

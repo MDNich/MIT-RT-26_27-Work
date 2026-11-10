@@ -1,0 +1,198 @@
+"""Audit saved side-pull equilibria from a stationary, hash-verified copy while the parent job continues."""
+import argparse
+import re
+from pathlib import Path
+
+import numpy as np
+from ansys.mapdl import reader
+
+from audit_local import ROOT,read
+from compare_pull import series
+from film_identity import digest,verified,write_json
+from global_contact import pair_summary
+from installation_material import PLA,material_history
+from local_equilibrium import SCREW_PILOTS,NEIGHBOR_PILOT,positions,recover
+from partition_snapshot import converged_prefix,check_element_tables
+from pull_pose_clearance import rigid_pose
+from snug_directional_result import first_bracket,registered_gaps
+from stage_snug_fit import AUDIT,INPUTS
+
+CASE='snug125_nylon_lateral_friction_locked_pin1_m15'
+CAMPAIGN='nov08_01'
+
+
+def verify_capture(folder):
+    spec=read(AUDIT/'local_inputs_m15.json')[CASE]
+    capture=read(folder/'capture.json')
+    assert capture['case']==CASE and capture['campaign']==CAMPAIGN
+    status=read(ROOT/'.runtime/receipts'/CAMPAIGN/CASE/'status.json')
+    assert status['input_sha256'].lower()==spec['input_sha256'] and capture['source']==status['work']+'\\pull.rst'
+    file=folder/'pull.rst'
+    verified(file,capture['sha256']);assert file.stat().st_size==capture['bytes']
+    verified(INPUTS/CASE/'model.inp',spec['input_sha256'])
+    text=(folder/'solve.out').read_text(errors='replace')
+    pattern=r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED[^\r\n]*[\r\n]+\s*\*\*\* TIME\s*=\s*([\d.Ee+\-]+)'
+    events=list(re.finditer(pattern,text))
+    steps=np.array([list(map(int,m.groups()[:2])) for m in events]);times=np.array([float(m[3]) for m in events])
+    raw=reader.read_binary(str(file))
+    assert len(steps)==raw.nsets and converged_prefix(raw,steps,times,False)==0
+    check_element_tables(file,raw,len(steps))
+    monitor=[line.split() for line in (folder/'pull.mntr').read_text().splitlines() if re.match(r'^\s*\d+\s+\d+\s+\d+\s',line)]
+    last_monitor=capture['last_monitor']
+    if isinstance(last_monitor,dict):
+        last_monitor=last_monitor['value']
+    assert last_monitor.split()==monitor[-1]
+    assert np.array_equal(steps,[[int(line[0]),int(line[1])] for line in monitor])
+    assert np.allclose(times,[float(x[6]) for x in monitor],rtol=0,atol=5.1e-5)
+    return spec,capture,raw
+
+
+def movements(folder,capture,raw,settings,mesh):
+    out=folder/'dpf_points';req=read(out/'request.json');done=read(out/'done.json')
+    assert req['source_sha256']==done['source_sha256']==capture['sha256']
+    assert req['sets']==done['sets']==list(range(1,raw.nsets+1))
+    ids=np.asarray(req['nodes']);assert done['nodes']==len(ids) and done['unit'].lower()=='mm'
+    u=np.fromfile(out/'displacements.bin','<f8').reshape(raw.nsets,len(ids),3)
+    assert np.isfinite(u).all()
+    assert np.all(np.diff(ids)>0)
+    pilot=mesh['pilot'];attached=np.asarray(mesh['attachment']);bottom=settings['bottom_pilots']
+    initial=raw.mesh.nodes[positions(raw.mesh.nnum,attached)]
+    coords=raw.mesh.nodes[positions(raw.mesh.nnum,[pilot])[0]]
+    where=positions(ids,attached);index=positions(ids,[pilot])[0]
+    error=0.;resid=0.
+    for k,field in enumerate(u):
+        _,shift,delta=rigid_pose(initial,initial+field[where],coords)
+        error=max(error,float(abs(shift-field[index]).max()));resid=max(resid,delta)
+    assert error<2e-6 and resid<1e-5,(error,resid)
+    expected=settings['sign']*settings['displacement_mm']*np.clip(raw.time_values-settings['pull_start_time'],0,1)
+    assert np.max(abs(u[:,index,0]-expected))<1e-7
+    assert np.max(abs(u[:,positions(ids,[*SCREW_PILOTS,NEIGHBOR_PILOT])]))<1e-7
+    held=raw.time_values>=settings['pull_start_time']
+    assert np.max(np.ptp(u[held][:,positions(ids,bottom),:],axis=0))<1e-7
+    moving={ (k+1,n):u[k,i] for n,i in zip([pilot,*bottom],positions(ids,[pilot,*bottom]),strict=True)
+            for k in range(raw.nsets) }
+    return moving,dict(rigid_attachment_nodes=len(attached),maximum_rigid_pose_residual_mm=resid,
+                       maximum_DPF_pilot_vs_fitted_shift_mm=error,DPF_translations_sha256=digest(out/'displacements.bin'))
+
+
+def force_balance(folder,capture,raw,config,source,moving):
+    rows=recover(folder/'pull.rst',source,moving,True)
+    out=folder/'dpf_forces';data=read(out/'forces.json');spec=read(out/'request.json')
+    assert data['source_sha256']==spec['source_sha256']==capture['sha256']
+    assert spec['sets']==list(range(1,raw.nsets+1))
+    assert set(spec['nodes'])=={read(source/'mesh.json')['pilot'],*config['target_pilots'],*SCREW_PILOTS,NEIGHBOR_PILOT}
+    assert len(rows)==len(data['sets'])==raw.nsets
+    mx=0.;max_fx=0.;max_y=0.;max_z=0.;max_m=0.
+    for k,(br,dpf) in enumerate(zip(rows,data['sets'],strict=True)):
+        assert br['native_set']==dpf['native_set']==k+1
+        forces,ns,dofs=raw.nodal_reaction_forces(k)
+        for n in spec['nodes']:
+            hit=(ns==n)&(dofs<=3)
+            v=np.bincount(dofs[hit]-1,weights=forces[hit],minlength=3)
+            value=np.asarray(dpf['forces_N'].get(str(n),[0.]*3))
+            mx=max(mx,float(abs(v-value).max()))
+        assert abs(br['cell_fx_N']-dpf['forces_N']['2481'][0])<1e-4
+        if np.isclose(br['time'],config['pull_start_time']):
+            assert all(abs(abs(dpf['forces_N'][str(n)][2])-config['preload_N'])<.1 for n in config['bottom_pilots'])
+        max_fx=max(max_fx,abs(br['force_N_x'])/max(1.,abs(br['cell_fx_N'])))
+        max_y=max(max_y,abs(br['force_N_y']));max_z=max(max_z,abs(br['force_N_z']))
+        if br['loadstep']==3:
+            moment=np.linalg.norm([br['moment_cell_Nmm_'+a] for a in 'xyz'])
+            max_m=max(max_m,moment/max(1.,abs(br['cell_fx_N'])*42.5))
+    assert mx<1e-4 and max_fx<.01 and max_y<.1 and max_z<.2 and max_m<.01,(mx,max_fx,max_y,max_z,max_m)
+    return rows,dict(maximum_DPF_vs_RST_force_component_N=mx,maximum_relative_X_imbalance=max_fx,
+                     maximum_Y_imbalance_N=max_y,maximum_Z_imbalance_N=max_z,maximum_relative_pull_moment_residual=max_m,
+                     DPF_reaction_sha256=digest(out/'forces.json'))
+
+
+def contact_history(raw,rows):
+    g=raw.grid.cell_data
+    groups={rid:g['ansys_elem_num'][(g['ansys_etype']==862)&(g['ansys_real_constant']==rid)] for rid in (861,862)}
+    assert all(len(v)>0 for v in groups.values())
+    contact=[]
+    for k,br in enumerate(rows):
+        enum,values,_=raw.element_solution_data(k,'EMN')
+        ee,ect,nodes=raw.element_solution_data(k,'ECT')
+        both={}
+        for rid,elements in groups.items():
+            idx=np.searchsorted(enum,elements);assert np.array_equal(enum[idx],elements)
+            items=[values[i] for i in idx if values[i] is not None and len(values[i])]
+            a=np.stack(items) if items else np.empty((0,45));assert a.shape[1]>=45
+            corners=pair_summary(k,br['time'],elements,ee,ect,nodes)
+            loaded=a[:,:4]>=2
+            closed=int((a[:,40]>=2).sum())
+            assert corners['sliding']+corners['sticking']==loaded.any(axis=1).sum()
+            pen=float(a[:,8:12][loaded].max(initial=0.))
+            assert np.isclose(pen,corners['loaded_corner_pen_max'],atol=1e-9,rtol=2.e-6)
+            f=a[:,42:45].sum(axis=0,dtype=float)
+            if br['loadstep']<=2:assert closed==0 and abs(f).max()<1e-4
+            if rid==861:
+                support=np.array([br['screw_support_N_'+x]+br['neighbor_support_N_'+x] for x in 'xyz'])
+                assert np.linalg.norm(f-support)<=max(.01,.002*np.linalg.norm(f))
+            both[str(rid)]=dict(closed_faces=closed,loaded_corners=int(loaded.sum()),max_loaded_penetration_mm=pen,
+                                force_N=f.tolist())
+        contact.append(both)
+    return contact
+
+
+def audit(folder):
+    source=ROOT/'.runtime/local_inputs/lateral_friction_locked'
+    catalog=read(ROOT/'validation/local_inputs.json')['lateral_friction_locked']['files']
+    for name in ('mesh.json','config.json','model.inp'):verified(source/name,catalog[name])
+    config=read(source/'config.json'); mesh=read(source/'mesh.json')
+    spec,capture,raw=verify_capture(folder)
+    moving,pose=movements(folder,capture,raw,config,mesh)
+    rows,balance=force_balance(folder,capture,raw,config,source,moving)
+    print('Balance passed',len(rows),flush=True)
+    contacts=contact_history(raw,rows)
+    print('Both contact pairs passed',flush=True)
+    forces=np.array([r['cell_fx_N'] for r in rows]);travel=np.array([r['ux_mm'] for r in rows])
+    deck=(INPUTS/CASE/'model.inp').read_text()
+    nt,history,first,serr,berr,axerr=material_history(raw,deck,np.arange(len(rows)),travel,local=True,forces=forces)
+    assert nt==read(AUDIT/'local_mesh15_preflight.json')['native_counts']['tetrahedra']
+    baseline,bare=series(spec['bare_reference'])
+    assert baseline['source']==spec['source']==source.name and baseline['campaign']==CAMPAIGN
+    measurements=[];eligible=[];stop=None;touch=None
+    for k,(br,contact,mat) in enumerate(zip(rows,contacts,history,strict=True)):
+        assert br['native_set']==mat['native_set']==k+1
+        ratios={metric:mat['all_'+metric]/limit for metric,limit in PLA.items()}
+        max_pen=max(c['max_loaded_penetration_mm'] for c in contact.values())
+        if stop is None and (max(ratios.values())>=1 or max_pen>.05):stop=k+1
+        if contact['861']['closed_faces']>0 and touch is None:
+            touch=[dict(native_set=j+1,travel_mm=rows[j]['ux_mm'],cell_force_N=rows[j]['cell_fx_N']) for j in (k-1,k)]
+        row=dict(native_set=k+1,loadstep=br['loadstep'],substep=br['substep'],travel_mm=br['ux_mm'],cell_force_N=br['cell_fx_N'],
+                 screw_support_resistance_N=-br['screw_support_N_x'],neighbor_resistance_N=-br['neighbor_support_N_x'],
+                 nickel_clamp_resistance_N=br['cell_fx_N']+br['screw_support_N_x']+br['neighbor_support_N_x']-br['force_N_x'],
+                 printed_coupon_percent={key:100*v for key,v in ratios.items()},screw_peak_fibre_MPa=max(mat['four_screws']['peak_fiber_tension_MPa']),
+                 both_contact_pairs=contact,within_screens=stop is None)
+        measurements.append(row)
+        if stop is None and br['time']>=config['pull_start_time']:
+            eligible.append(dict(set=k+1,ux_mm=br['ux_mm'],cell_force_N=br['cell_fx_N']))
+    assert eligible and eligible[-1]['ux_mm']>0
+    last=eligible[-1]
+    equal_load=first_bracket(eligible,'cell_force_N',bare[-1]['cell_force_N'],1)
+    bare_at=first_bracket(bare,'ux_mm',last['ux_mm'],1)
+    assert bare_at is not None
+    result=dict(case=CASE,campaign=CAMPAIGN,completed=False,checkpoint=folder.name,
+                rst_sha256=capture['sha256'],result_bytes=capture['bytes'],input_sha256=spec['input_sha256'],
+                listing_sha256=digest(folder/'solve.out'),monitor_sha256=digest(folder/'pull.mntr'),capture_sha256=digest(folder/'capture.json'),
+                converged_sets=raw.nsets,final_converged_loadstep_substep=raw._resultheader['ls_table'][-1,:2].tolist(),
+                pose_check=pose,equilibrium=balance,case_tetrahedra=nt,constitutive_errors=dict(PLA=serr,beam=berr,beam_area=axerr),
+                states=measurements,first_print_crossings=first,first_excluded_set=stop,first_loaded_moving_cell_bracket=touch,
+                equal_bare_endpoint_load=dict(bare=bare[-1],cased=equal_load),last_common_travel=dict(cased=last,bare=bare_at),
+                scope='Verified stationary copy of completed MAPDL increments during the ongoing lateral pull. This record '
+                      'does not release the solver job or its dependencies. Comparisons stop at the first printed-material '
+                      'reference crossing or 0.05 mm loaded-corner penetration screen. Forces are for the prescribed fixture.')
+    result['DPF_files']={name:digest(folder/name) for name in ('dpf_forces/request.json','dpf_points/request.json',
+                         'dpf_points/done.json','dpf_points/dispatch.json')}
+    result['bare_case']=spec['bare_reference']
+    result['bare_rst_sha256']=baseline['rst_sha256']
+    result['initial_contact_search']=registered_gaps(folder,{'solve.out':result['listing_sha256'],
+                                            'pull.rst':capture['sha256']},spec,'1.5')
+    write_json(AUDIT/(CASE+'_'+folder.name+'_checkpoint.json'),result)
+    print('Last matched travel',result['last_common_travel'],'equal load',equal_load,'contact',touch,flush=True)
+
+
+if __name__=='__main__':
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('folder',type=Path)
+    audit(p.parse_args().folder.resolve())

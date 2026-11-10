@@ -15,47 +15,11 @@ TDS = 'https://wiki.polymaker.com/polymaker-products/more-about-our-products/doc
 BEAM_REF = 'https://ansyshelp.ansys.com/public/views/secured/corp/v261/en/ans_elem/Hlp_E_BEAM188.html'
 
 
-def run(case, campaign, *, pull=False, verdict_path=None):
-    root = ROOT/'.runtime'
-    folder = root/'archive'/campaign/case
-    receipts = root/'receipts'/campaign/case
-    ledger = read(receipts/'archived.json')
-    assert ledger['case']==case and ledger['campaign']==campaign and (receipts/'released.txt').is_file()
-    hashes = {row['name']:row['sha256'] for row in ledger['files']}
-    local = (folder/'local_job.json').is_file()
-    job = read(folder/'local_job.json')['job'] if local else 'file'
-    if pull and not local:raise ValueError('Pull material audit requires a local fixture')
-    verified(folder/(job+'.rst'),hashes[job+'.rst'])
-    verified(folder/'model.inp',hashes['model.inp'])
-    deck = (folder/'model.inp').read_text()
-    scope = ('partial_local','local','review_local') if local else ('global','review_global')
-    proofs = [ROOT/'validation'/k/(case+'.json') for k in scope]
-    if verdict_path is None:
-        verdict_path = next(p for p in proofs if p.is_file())
-    verdict = read(verdict_path)
-    assert verdict['case']==case and verdict['campaign']==campaign
-    assert verdict['rst_sha256']==hashes[job+'.rst']
-    rt = reader.read_binary(str(folder/(job+'.rst'))) if local else read_rst(folder/'file.rst')
-    length = 1. if local else 1000.
-    stress = 1. if local else 1e-6
-    state = rt._resultheader['ls_table']
-    indices = np.flatnonzero((state[:, 1] != 999999) & ((state[:, 0] <= 3) | pull))
-    if local:
-        fixed = table(root/'post'/campaign/case/'whole_fixture_balance.csv')
-        ids = fixed['native_set'].astype(int)
-        travel = fixed['ux_mm'] if pull else fixed['screw1_u_mm_z']
-    elif case.startswith('flush_'):
-        verified(folder/'board_drives.csv',hashes['board_drives.csv'])
-        drive = table(folder/'board_drives.csv')
-        fixed = drive[drive['foot']==0]
-        ids = fixed['set'].astype(int)
-        travel = length*fixed['travel_m']
-    else:
-        ids = indices + 1
-        travel = np.zeros(len(ids))
-    assert np.array_equal(ids[:len(indices)],indices+1)
-    if 'flush_' in case and not pull:
-        assert np.allclose(travel[:len(indices)],3*np.clip(rt.time_values[indices]-2,0,1),rtol=0,atol=1e-6)
+def material_history(rt,deck,indices,travel,*,local,forces=None,bearing_pilots=None):
+    """Recover signed PLA corners and beam section stresses on exactly the supplied native states."""
+    length=1. if local else 1000.
+    stress=1. if local else 1e-6
+    state=rt._resultheader['ls_table']
     grid = rt.grid.cell_data
     def elements(t):
         return np.sort(grid['ansys_elem_num'][grid['ansys_etype']==t])
@@ -71,7 +35,6 @@ def run(case, campaign, *, pull=False, verdict_path=None):
     for i,j,k in ((0,1,'PRXY'),(1,2,'PRYZ'),(0,2,'PRXZ')):
         comp[i,j]=comp[j,i]=-prop[k]/mod[i]
     shear = stress*np.array([prop[k] for k in ('GXY','GYZ','GXZ')])
-    bearing_pilots = read(folder/'local_job.json').get('bearing_pilots') if local else None
     masters = '|'.join(map(str,bearing_pilots or (950001,950003,950005,950007)))
     bound = np.array(sorted({int(n) for n in re.findall(r'(?im)^CERIG,(?:'+masters+r'),(\d+),UXYZ',deck)}))
     assert len(bound)>=12
@@ -116,9 +79,8 @@ def run(case, campaign, *, pull=False, verdict_path=None):
         fields={'in_plane_tension_MPa':(x+y)*.5+np.hypot((x-y)*.5,txy),'layer_tension_MPa':z,
                 'layer_tensile_strain':strain[:,2]}
         row=dict(native_set=int(k)+1,loadstep=int(state[k,0]),time_s=float(rt.time_values[k]),travel_mm=float(travel[len(records)]))
-        if pull:
-            row['cell_force_N']=float(fixed['cell_fx_N'][len(records)])
-            assert np.isclose(fixed['time'][len(records)],rt.time_values[k],atol=1.e-9,rtol=0)
+        if forces is not None:
+            row['cell_force_N']=float(forces[len(records)])
         for name,field in fields.items():
             full=field.reshape(-1,4)
             elem=int(np.argmax(full.min(axis=1)))
@@ -145,6 +107,54 @@ def run(case, campaign, *, pull=False, verdict_path=None):
             assert err <.015,(k,err)
             axial_error=max(axial_error,float(err))
         records.append(row)
+    return len(solids),records,cross,solid_error,beam_error,axial_error
+
+
+def run(case, campaign, *, pull=False, verdict_path=None):
+    root = ROOT/'.runtime'
+    folder = root/'archive'/campaign/case
+    receipts = root/'receipts'/campaign/case
+    ledger = read(receipts/'archived.json')
+    assert ledger['case']==case and ledger['campaign']==campaign and (receipts/'released.txt').is_file()
+    hashes = {row['name']:row['sha256'] for row in ledger['files']}
+    local = (folder/'local_job.json').is_file()
+    job = read(folder/'local_job.json')['job'] if local else 'file'
+    if pull and not local:raise ValueError('Pull material audit requires a local fixture')
+    verified(folder/(job+'.rst'),hashes[job+'.rst'])
+    verified(folder/'model.inp',hashes['model.inp'])
+    deck = (folder/'model.inp').read_text()
+    scope = ('partial_local','local','review_local') if local else ('global','review_global')
+    proofs = [ROOT/'validation'/k/(case+'.json') for k in scope]
+    if verdict_path is None:
+        verdict_path = next(p for p in proofs if p.is_file())
+    verdict = read(verdict_path)
+    assert verdict['case']==case and verdict['campaign']==campaign
+    assert verdict['rst_sha256']==hashes[job+'.rst']
+    rt = reader.read_binary(str(folder/(job+'.rst'))) if local else read_rst(folder/'file.rst')
+    length = 1. if local else 1000.
+    state = rt._resultheader['ls_table']
+    indices = np.flatnonzero((state[:, 1] != 999999) & ((state[:, 0] <= 3) | pull))
+    if local:
+        fixed = table(root/'post'/campaign/case/'whole_fixture_balance.csv')
+        ids = fixed['native_set'].astype(int)
+        travel = fixed['ux_mm'] if pull else fixed['screw1_u_mm_z']
+    elif case.startswith('flush_'):
+        verified(folder/'board_drives.csv',hashes['board_drives.csv'])
+        drive = table(folder/'board_drives.csv')
+        fixed = drive[drive['foot']==0]
+        ids = fixed['set'].astype(int)
+        travel = length*fixed['travel_m']
+    else:
+        ids = indices + 1
+        travel = np.zeros(len(ids))
+    assert np.array_equal(ids[:len(indices)],indices+1)
+    if 'flush_' in case and not pull:
+        assert np.allclose(travel[:len(indices)],3*np.clip(rt.time_values[indices]-2,0,1),rtol=0,atol=1e-6)
+    bearing_pilots = read(folder/'local_job.json').get('bearing_pilots') if local else None
+    if pull:
+        assert np.allclose(fixed['time'][:len(indices)],rt.time_values[indices],atol=1.e-9,rtol=0)
+    nsolids,records,cross,solid_error,beam_error,axial_error=material_history(
+        rt,deck,indices,travel,local=local,forces=fixed['cell_fx_N'] if pull else None,bearing_pilots=bearing_pilots)
     if pull:
         description='All converged states through local lateral loading. Travel is the signed X displacement of the battery pilot. '
     else:
@@ -152,7 +162,7 @@ def run(case, campaign, *, pull=False, verdict_path=None):
     out=ROOT/'validation'/('pull_material' if pull else 'installation_material')/(case+'.json')
     write_json(out,dict(case=case,campaign=campaign,rst_sha256=hashes[job+'.rst'],input_sha256=hashes['model.inp'],
         contact_verdict_sha256=digest(verdict_path),reference_properties=PLA,coupon_engineering_elongation_Z=.018,PLA_source=TDS,
-        beam_section_reference=BEAM_REF,case_tets=len(solids),section_nodes_per_beam_end=25,constitutive_relative_errors=dict(
+        beam_section_reference=BEAM_REF,case_tets=nsolids,section_nodes_per_beam_end=25,constitutive_relative_errors=dict(
             PLA=float(solid_error),beam_axial=float(beam_error),**({'beam_direct_vs_native_force_area':axial_error} if local else {})),
         temperature_scope='Printed coupons under uniaxial tension. The material directions follow the layer orientation assumed for the case.',
         first_reference_crossings=cross,history=records,scope=description+'Stresses are material-frame '
