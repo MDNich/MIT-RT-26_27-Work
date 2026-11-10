@@ -56,10 +56,25 @@ def draw():
                 color=color,
                 label=label,
             )
-    area.legend(loc="lower left", fontsize=7.5, frameon=False)
+    cad = read(AUDIT / "moving_cell_target_resolution.json")
+    assert cad["pressure_sha256"] == digest(AUDIT / f"{CASE}_ls3_ss18_cell_pressure.json")
+    assert [s["native_set"] for s in states] == [s["native_set"] for s in cad["states"]]
+    overlaps = [s for s in cad["states"] if s["exact_CAD_inside_points"]]
+    area.plot(
+        [s["travel_mm"] for s in overlaps],
+        [s["CAD_inside_point_area_mm2"] for s in overlaps],
+        ls="--",
+        marker="s",
+        ms=3.2,
+        mfc="white",
+        lw=1.0,
+        color="#7A0101",
+        label="Left, STEP overlap",
+    )
+    area.legend(loc="lower left", fontsize=7.1, frameon=False, labelspacing=0.2)
     for ax, title, ylabel in zip(
         axes,
-        ("Force to move the cell", "Area carrying load", "Highest sampled pressure"),
+        ("Force to move the cell", "Pocket contact and overlap", "Highest sampled pressure"),
         ("Applied force [N]", r"Area [mm$^2$]", "Pressure [MPa]"),
         strict=True,
     ):
@@ -74,7 +89,7 @@ def draw():
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(axis="y", color="#DADADA", lw=0.45)
         ax.set_axisbelow(True)
-    area.set_ylim(0, 90)
+    area.set_ylim(0, 1.06 * max(s["CAD_inside_point_area_mm2"] for s in overlaps))
     pressure.set_ylim(0, 33)
     fig.savefig(
         ROOT / "docs/figures/snug-pull-pressure.pdf",

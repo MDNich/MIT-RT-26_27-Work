@@ -1,0 +1,58 @@
+{
+  "snug125_nylon_lateral_friction_locked_target4_m15": {
+    "case": "snug125_nylon_lateral_friction_locked_target4_m15",
+    "parent": "snug125_nylon_lateral_friction_locked_steps_m15",
+    "geometry_audit_sha256": "08e6301b108a249c4d0862adc82da2b34e9cc7de51897d74d36da541efa2f328",
+    "parent_input_sha256": "e0950f9853201ac9880055147a4860cb023ddb5358e75f5331e65cd639502e84",
+    "mesh_sha256": "415b0bff2d28641b19fd4fc90e16c323d3192833be79c7889b106f85b0909d0b",
+    "spec_sha256": "15d7dd53789dafbbd35fdc4f875c95564030b5a8c203bce14b761b8c6db289b1",
+    "input_sha256": "14496f4ebe360a0f9560284c09d9275ebe1437172d67d48186471150149d3fe7",
+    "bare_reference": "bare_lateral_friction_locked",
+    "steps": [
+      {
+        "parent_native_set": 10,
+        "travel_mm": 0.005,
+        "subdivisions": 1
+      },
+      {
+        "parent_native_set": 11,
+        "travel_mm": 0.01,
+        "subdivisions": 1
+      },
+      {
+        "parent_native_set": 12,
+        "travel_mm": 0.0175,
+        "subdivisions": 1
+      },
+      {
+        "parent_native_set": 13,
+        "travel_mm": 0.02875,
+        "subdivisions": 4
+      },
+      {
+        "parent_native_set": 14,
+        "travel_mm": 0.04,
+        "subdivisions": 4
+      }
+    ],
+    "moving_cell_skins": {
+      "native": {
+        "triangles": 8856,
+        "points": 4430,
+        "linear_deflection_mm": 0.0005,
+        "angular_deflection_rad": 0.016,
+        "skin_sha256": "1dd13a14cf3721beed1a60817323655d1928027f8f6d61cecb0c0761b915e8e4"
+      },
+      "finer": {
+        "triangles": 35162,
+        "points": 17583,
+        "linear_deflection_mm": 3.125e-05,
+        "angular_deflection_rad": 0.004,
+        "skin_sha256": "c3f38728bebe017a1da0c316561ec453371dab9f7ab8cbc629852cd0e73414db"
+      }
+    },
+    "fixed_hardware_skin_sha256": "1dd13a14cf3721beed1a60817323655d1928027f8f6d61cecb0c0761b915e8e4",
+    "cores": 4,
+    "scope": "Same clamp and lock, 1.5 mm PLA mesh, fixed neighbours, four-core SMP and displacement increments as the matched time-step control through +0.040 mm. Only the driven rigid cell changes from 8,856 to 35,162 target triangles."
+  }
+}

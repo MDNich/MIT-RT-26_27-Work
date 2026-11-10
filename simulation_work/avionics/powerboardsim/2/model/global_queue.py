@@ -273,6 +273,10 @@ def jobs():
                 if directional and step_trial.is_file():
                     for name,entry in read(step_trial).items():
                         yield name,entry['bare_reference']
+                target_trial=snug_dir/'local_target_control.json'
+                if directional and target_trial.is_file():
+                    for name,entry in read(target_trial).items():
+                        yield name,entry['parent']
                 rocking=snug_dir/'local_bearing_inputs.json'
                 if directional and rocking.is_file():
                     for case,meta in read(rocking).items():

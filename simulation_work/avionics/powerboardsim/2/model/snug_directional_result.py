@@ -284,10 +284,13 @@ def run(case):
         record['initial_geometry_vs_native_contact']=comparison
     record['verified_checkpoints']=[reconcile_checkpoint(p,verdict,ledger)
                                     for p in sorted(AUDIT.glob(case+'_*_checkpoint.json'))]
+    from snug_pull_resolution import closed as contact_history
+    folder=ROOT/'.runtime/archive'/ledger['campaign']/case
+    reference=case.removesuffix('_m3')+'_m15' if suffix=='_m3' else None
+    record['moving_contact_history_sha256']=digest(contact_history(case,folder,sha,record,verdict,reference=reference))
     if suffix=='_m15':
         from snug_mount_reactions import archive as check_mounts
         from snug_fixed_contact_path import archive as check_fixed_targets
-        folder=ROOT/'.runtime/archive'/ledger['campaign']/case
         record['mount_history_sha256']=digest(check_mounts(case,record,folder,sha))
         record['fixed_target_history_sha256']=digest(check_fixed_targets(case,record,folder,sha))
         if record['equal_travel'] and record['equal_travel']['cased']['set']>1:
@@ -295,7 +298,6 @@ def run(case):
             record['energy_history_sha256']=digest(check_energy(case,ledger['campaign'],verdict,record))
     from snug_tab_edge import FORWARD, closed as check_tab_edge
     if case in (FORWARD+'_m15', FORWARD+'_m3'):
-        folder=ROOT/'.runtime/archive'/ledger['campaign']/case
         record['tab_edge_history_sha256']=digest(check_tab_edge(case,record,folder))
     write_json(AUDIT/(case+'_comparison.json'),record)
 

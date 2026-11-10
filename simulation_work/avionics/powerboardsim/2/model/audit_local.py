@@ -149,7 +149,7 @@ def audit(case, campaign):
     if case.startswith('snug125_') and case.endswith('_pin1_m3'):
         catalog='snug125/local_inputs_m3.json'
     if spec.get('snug_step_parent'):
-        catalog='snug125/local_pull_step_input.json'
+        catalog='snug125/local_target_control.json' if spec.get('snug_target_parent') else 'snug125/local_pull_step_input.json'
     if spec.get('snug_bearing_control'):
         catalog='snug125/local_bearing_inputs.json'
     manifest = read(ROOT/'validation'/catalog)[case]
@@ -202,7 +202,16 @@ def audit(case, campaign):
         from common_pull_resolution import check as check_resolution
         check_resolution(case,campaign)
     write_json(dest/(case+'.json'),data)
-    if spec.get('snug_step_parent'):
+    if spec.get('snug_target_parent'):
+        from snug_directional_result import paired
+        from snug_pull_resolution import closed
+        verdict=dest/(case+'.json')
+        hashes={f['name']:f['sha256'] for f in ledger['files']}
+        assert data['solver_runtime']['cores']==manifest['cores']==4
+        assert manifest['input_sha256']==hashes['model.inp'] and spec['snug_target_parent']==manifest['parent']
+        comparison=paired(case,manifest['bare_reference'],verdict)
+        closed(case,folder,hashes,comparison,verdict,reference=manifest['parent'])
+    elif spec.get('snug_step_parent'):
         from snug_pull_steps import audit as check_step_resolution
         check_step_resolution(case,campaign,dest/(case+'.json'))
     elif spec.get('snug_bearing_control'):
