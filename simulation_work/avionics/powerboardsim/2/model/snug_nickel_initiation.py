@@ -465,6 +465,10 @@ def closed_family_case(case):
                 "expected_first_initiation_bracket": expected,
                 "conditional_on": "The assemblies share the pre-damage solution. A higher-threshold variant can continue past damage on the nominal path.",
             }
+    from snug_nickel_evolution import audit as check_evolution
+
+    evolution = check_evolution(case)
+    result["native_evolution_sha256"] = digest(evolution)
     write_json(AUDIT / (case + "_nickel_initiation.json"), result)
 
 
