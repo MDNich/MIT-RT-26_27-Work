@@ -186,8 +186,18 @@ def reconcile_checkpoint(checkpoint, verdict, ledger):
             assert c['closed_faces']==rr['closed']==cc['closed_faces'] and c['loaded_corners']==cc['closed_corner_records']
             assert abs(c['max_loaded_penetration_mm']-cc['max_closed_corner_penetration_mm'])<1e-7
             np.testing.assert_allclose(c['force_N'],[rr[a+'_N'] for a in ('fx','fy','fz')],atol=1e-5,rtol=2e-6)
-    return dict(checkpoint=checkpoint.name,checkpoint_sha256=digest(checkpoint),agreed_native_sets=n,
-                stationary_rst_sha256=item['rst_sha256'],closed_rst_sha256=sha['pull.rst'])
+    receipt=dict(checkpoint=checkpoint.name,checkpoint_sha256=digest(checkpoint),agreed_native_sets=n,
+                 stationary_rst_sha256=item['rst_sha256'],closed_rst_sha256=sha['pull.rst'])
+    strain_file=checkpoint.with_name(checkpoint.stem.removesuffix('_checkpoint')+'_nickel_strain.json')
+    if strain_file.is_file():
+        strain=read(strain_file)
+        assert strain['checkpoint_sha256']==receipt['checkpoint_sha256'] and strain['case']==case
+        verified(archive/'history.csv',sha['history.csv'])
+        rows=table(archive/'history.csv')[:n]
+        assert np.array_equal(rows['set'],[r['native_set'] for r in strain['states']])
+        np.testing.assert_allclose(rows['max_eppl'],[r['peak'] for r in strain['states']],rtol=2e-7,atol=1e-8)
+        receipt['nickel_strain_sha256']=digest(strain_file)
+    return receipt
 
 
 def run(case):
