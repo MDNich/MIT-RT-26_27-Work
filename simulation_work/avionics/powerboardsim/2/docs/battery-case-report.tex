@@ -698,22 +698,29 @@ Middle-cell sideways displacement per unit force was 0.5235~$\mu$m/N bare. At th
 We linearized the equations about the independently equilibrated 1~N state using two-percent modal damping. Forcing and displacements were carried in the original native mode shapes plus additional stiffness responses. A separate full-matrix calculation checked the first four frequencies with all spacers bearing and the original pocket stiffness retained. Two and five blocks of additional responses, and a half sample interval, preserved the governing point on all three models. We swept each originally clear middle-pocket integration point against all 308 curved middle-cell faces. Other interfaces, locations between integration points and motion after a contact changes require separate checks.
 
 \clearpage
-\pageheading{How far does 8.54 N move a cell on the complete bare board?}
-The left cell moved \textbf{4.824~$\mu$m} toward the middle cell under a distributed sideways force of 8.542~N. Its two nickel-strip clamps moved and rotated with the PCB. Relative to their fitted motion at the cell centre, the travel was \textbf{2.327~$\mu$m}. The middle and right cells moved 0.291 and 0.234~$\mu$m in the same direction relative to the board supports.
+\pageheading{Does the snug case restrain the left cell on the complete board?}
+With 8.542~N applied sideways, the left cell moved \textbf{4.824~$\mu$m bare} and \textbf{4.816~$\mu$m with nylon screws}, a 0.16\% reduction on the nominal meshes. Relative to the motion of the two strip clamps, the same displacements were 2.3275 and 2.3278~$\mu$m. The driven cell stayed clear of its pocket at every saved loading and unloading station.
 
-\begin{center}\includegraphics[width=.99\linewidth]{figures/bare-board-side-load.pdf}
-\captionof{figure}{Each marker is a converged native loading station after bolt lock and a zero-added-load hold. The stress curves track two different quantities because the largest local rise can occur away from the original stress maximum.}\end{center}
+\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-board-side-load.pdf}
+\captionof{figure}{Left, the same mass-weighted sideways force on the two installed boards. Right, native force at the five middle-pocket faces that carried load with nylon screws. Displacements use the zero-added-load hold after bolt lock as their reference.}\end{center}
 
 \heading{Why the local pull gives a different travel}
-The local fixture on page~19 drove a rigid cell with bilinear nickel strips and held its supports locally. The bare fixture required the same 8.542~N at 0.500~mm of prescribed travel. On the complete board, we applied the load to 1,353 nodes in proportion to their contribution to the cell mass, retained the original mounting conditions and used the global model's elastic solid strips. The fixed-contact whole-board stiffness predicted 4.799~$\mu$m at the centre and 2.329~$\mu$m relative to the clamps. The nonlinear solution gave 1.820~$\mu$m of the latter travel from relative rotation, leaving 0.507~$\mu$m at strip height.
+The fixture on page~19 prescribed rigid-cell travel with locally supported, bilinear nickel strips. At the same 8.542~N the bare cell moved 0.500~mm and the snug nylon cell moved about 0.034~mm. On the complete boards, the original stand-offs support the PCB, the strips are elastic solids, and the force acts on 1,353 nodes in proportion to their contribution to the cell mass. The fixed-contact whole-board stiffness predicted 4.799~$\mu$m bare and 4.789~$\mu$m with nylon screws. The driven cell could reach its pocket in the local fixture under this load.
 
-\heading{Which components carry the load?}
-Integrating the native solid stresses independently on the strip side of each bond gave lateral increments of 4.262 and 4.286~N opposing the pull. The largest difference between the two sides of any bond increment was 0.030~N. These are idealized bonds. The study has no measured weld-force allowable.
+\heading{Where does the load go?}
+\begin{center}\small
+\begin{tabular}{lrr}\toprule
+At 8.542~N on the left cell & Bare & Nylon screws\\\midrule
+Lateral load increment at its two nickel bonds [N] & 4.262 / 4.286 & 4.262 / 4.285\\
+Peak nickel equivalent stress including bolt preload [MPa] & 167.30 & 167.52\\
+Largest local increase in nickel equivalent stress [MPa] & 27.08 & 26.93\\
+Largest local increase in PCB principal tensile strain [$\mu\varepsilon$] & 367 & 366\\
+Work supplied by the distributed load [$\mu$J] & 20.597 & 20.565\\\bottomrule
+\end{tabular}\end{center}
 
-The largest nickel equivalent stress rose from 161.91~MPa after installation to \textbf{167.30~MPa}, or 90.4\% of the assumed 185~MPa yield reference. The largest increase at a single nickel corner was 27.08~MPa on strip body 8. The PCB's largest local increase in principal tensile strain was 367~$\mu\varepsilon$. A hardware allowable for this PCB assembly is unavailable.
+The nickel peaks reached 90.4\% and 90.6\% of the assumed 185~MPa yield reference. The nickel is linear elastic in the complete-board model. Peak through-layer tension in the printed case was 0.335~MPa (0.83\% of the coupon mean), and peak nylon shank fibre tension was 1.24~MPa. The PCB assembly, ideal welds and nylon screws have no verified hardware allowables in this study.
 
-\heading{Loading and return}
-The lateral load supplied 20.597~$\mu$J and recovered 20.596~$\mu$J as it returned to zero. After unloading, the left cell was within 0.001~$\mu$m of its starting position. Integrating each individual nodal force against its own displacement reproduced the work from total force and mass-centre displacement. Support-force closure was within 0.000001~N per axis throughout.
+The tighter zero-load hold settled the middle-pocket compression from 0.594 to 0.5685~N. Applying 8.542~N to the left cell relieved it to 0.5059~N. All five original faces continued to carry pressure. Only spacer 3 bore load, rising from 0.0588 to 0.0624~N. The four-tab and native contact vectors agreed within 0.000005~N at the endpoint. Both left cells returned to within 0.001~$\mu$m of their starting positions. The matched aluminium-screw cycle is under way.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

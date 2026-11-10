@@ -89,43 +89,111 @@ def compare_resultant(row, native):
     )
 
 
-def check_installation(branch, sections, preload):
-    case = branch + "_out2_static"
-    repeat, _, raw = source(case, CAMPAIGN)
+def installation_displacements(case, proof, folder, sets, points, reuse_full_fields):
+    if reuse_full_fields:
+        fields = export(case, CAMPAIGN, sets)
+        for k in sets:
+            field = fields / f"set_{k:04d}"
+            nodes = np.fromfile(field.with_suffix(".ids"), "<i4")
+            order = np.argsort(nodes)
+            u = np.fromfile(field.with_suffix(".u"), "<f8").reshape(-1, 3)
+            yield u[order[positions(nodes[order], points)]]
+    else:
+        out = ROOT / ".runtime/post" / CAMPAIGN / case / "tab_load_points"
+        u_mm, _ = read_point_file(folder / "file.rst", out, proof["rst_sha256"], sets, points.tolist())
+        for u in u_mm:
+            yield 0.001 * u
+
+
+def check_installation(case, sections, previous_history=None):
+    repeat, folder, raw = source(case, CAMPAIGN)
     contact_path = AUDIT / (case + "_contacts.json")
     contact = read(contact_path)
     assert contact["rst_sha256"] == repeat["rst_sha256"]
     sets = list(range(1, raw.nsets + 1))
-    fields = export(case, CAMPAIGN, sets)
+    movements = installation_displacements(
+        case, repeat, folder, sets, sections.points, previous_history is not None
+    )
     beams = screw_elements(raw)[1]
     states = []
-    for k, saved, previous in zip(
-        sets, contact["resultant_force_check"], preload["history"], strict=True
-    ):
-        assert (
-            saved["native_set"] == previous["set"] == k and previous["time"] == raw.time_values[k - 1]
-        )
-        field = fields / f"set_{k:04d}"
-        nodes = np.fromfile(field.with_suffix(".ids"), "<i4")
-        order = np.argsort(nodes)
-        u = np.fromfile(field.with_suffix(".u"), "<f8").reshape(-1, 3)
-        r = sections.read(raw, k, u[order[positions(nodes[order], sections.points)]], beams)
-        np.testing.assert_allclose(
-            r["signed_extension_nm"], previous["signed_seat_extension_nm"], atol=1e-5, rtol=0
-        )
+    for k, saved, u in zip(sets, contact["resultant_force_check"], movements, strict=True):
+        assert saved["native_set"] == k
+        r = sections.read(raw, k, u, beams)
+        time = float(raw.time_values[k - 1])
+        if previous_history is not None:
+            previous = previous_history[k - 1]
+            assert previous["set"] == k and previous["time"] == time
+            np.testing.assert_allclose(
+                r["signed_extension_nm"], previous["signed_seat_extension_nm"], atol=1e-5, rtol=0
+            )
         compare_resultant(r, saved["force_xyz_N"])
-        r["time"] = previous["time"]
+        r["time"] = time
         states.append(r)
     worst = float(np.max(np.abs([r["axial_equilibrium_residual_N"] for r in states])))
     force_error = max(r["four_tab_force_balance_residual_N"] for r in states)
     print(
-        branch,
+        case,
         "installation max tab axial and whole-case vector residual [N]",
         worst,
         force_error,
         flush=True,
     )
     return states, worst, force_error, contact_path
+
+
+def check_tighter_preload(case):
+    assert case == "snug125_nylon_tol001_static"
+    proof, folder, raw = source(case, CAMPAIGN)
+    spec = read(AUDIT / "force_tolerance_input.json")
+    deck = folder / "model.inp"
+    verified(deck, spec["input_sha256"])
+    branch = "snug125_nylon"
+    nominal = read(AUDIT / (branch + "_spacer_bearing.json"))
+    reference = AUDIT / (branch + "_installation_seats.json")
+    comparison = AUDIT / "nylon_force_tolerance_comparison.json"
+    assert read(comparison)["runs"][1]["rst_sha256"] == proof["rst_sha256"]
+    assert spec["case"] == case and spec["absolute_force_criterion_N"] == 0.01
+    sections = BearingSections(branch, raw, deck.read_text(), nominal)
+    rows, worst, error, contacts = check_installation(case, sections)
+    matched = []
+    original_states = read(reference)["states"]
+    for station in read(comparison)["matched_native_stations"]:
+        old = original_states[station["coarse_set"] - 1]
+        new = rows[station["fine_set"] - 1]
+        assert abs(old["time"] - new["time"]) < 1e-9
+        matched.append(
+            {
+                "load_time": old["time"],
+                "original_case_vector_residual_N": old["four_tab_force_balance_residual_N"],
+                "tighter_case_vector_residual_N": new["four_tab_force_balance_residual_N"],
+                "original_pocket_resultant_N": float(
+                    np.linalg.norm(old["native_force_on_cells_XYZ_N"])
+                ),
+                "tighter_pocket_resultant_N": float(
+                    np.linalg.norm(new["native_force_on_cells_XYZ_N"])
+                ),
+            }
+        )
+    write_json(
+        AUDIT / (case + "_seats.json"),
+        {
+            "case": case,
+            "rst_sha256": proof["rst_sha256"],
+            "input_sha256": spec["input_sha256"],
+            "reference_sha256": digest(reference),
+            "comparison_sha256": digest(comparison),
+            "native_contact_audit_sha256": digest(contacts),
+            "matched_stations": matched,
+            "states": rows,
+            "states_outside_force_screens": [
+                r["native_set"] for r in rows if not r["within_force_screens"]
+            ],
+            "max_axial_equilibrium_residual_N": worst,
+            "max_case_vector_residual_N": error,
+            "scope": "Original and tighter force-tolerance results for the same registered mesh, springs, screws and "
+            "bolt history. Stations which fail the bearing or case vector screens remain diagnostic.",
+        },
+    )
 
 
 def audit(branch, parent_only=False):
@@ -153,7 +221,9 @@ def audit(branch, parent_only=False):
         baseline["spacer_compression_N"], -np.array(preload["locked_seat_force_N"]), atol=1e-7
     )
     if parent_only:
-        states, worst, force_error, contact_path = check_installation(branch, sections, preload)
+        states, worst, force_error, contact_path = check_installation(
+            branch + "_out2_static", sections, preload["history"]
+        )
         assert states[-1]["within_force_screens"], states[-1]
         write_json(
             AUDIT / (branch + "_installation_seats.json"),

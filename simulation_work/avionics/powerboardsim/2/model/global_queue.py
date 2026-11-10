@@ -226,14 +226,15 @@ def jobs():
             for case,meta in read(board_pulls).items():
                 yield meta['parent'],''
                 yield case,meta['parent']
-        aluminium=snug_dir/'aluminium_refinement_inputs.json'
-        if aluminium.is_file():
-            for case,spec in read(aluminium).items():
-                yield case,spec['parent']
+        # Resolve the non-equilibrated nylon tightening peak before finer aluminium meshes.
         tolerance=ROOT/'validation/snug125/force_tolerance_input.json'
         if tolerance.is_file():
             control=read(tolerance)
             yield control['case'],''
+        aluminium=snug_dir/'aluminium_refinement_inputs.json'
+        if aluminium.is_file():
+            for case,spec in read(aluminium).items():
+                yield case,spec['parent']
         coarse_basis=snug_dir/'coarse_geometry_modes.json'
         if coarse_basis.is_file():
             entry=read(coarse_basis)

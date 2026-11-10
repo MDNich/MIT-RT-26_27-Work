@@ -145,6 +145,9 @@ def audit(case,campaign):
                         and all((ROOT/'validation/snug125'/(name+'_residuals.json')).is_file() for name in pair)):
                     compare_forces(pair[1])
             else:compare_forces(case)
+            if case=="snug125_nylon_tol001_static":
+                from snug_board_pull_seats import check_tighter_preload
+                check_tighter_preload(case)
     if case=='snug125_nylon_mesh3_basis':
         from snug_coarse_modes import audit as check_coarse_basis
         check_coarse_basis(campaign)
