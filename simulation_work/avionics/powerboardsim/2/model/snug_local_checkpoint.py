@@ -328,6 +328,29 @@ def audit_terminal(folder):
                 excluded_terminal_set=raw._resultheader['ls_table'][-1,:2].tolist(),matching_checkpoints=checks,
                 scope='Closed original native file and solver-exit inventory. The failed terminal state is excluded. '
                       'This verifies saved set identities and earlier force and travel histories; material and complete fixture audits retain their own scope.')
+    if (receipt/'released.txt').is_file():
+        from audit_local import converged_pull_table, verify_recovered_post
+        ledger = read(receipt/'archived.json')
+        assert ledger['case']==CASE and ledger['campaign']==CAMPAIGN
+        archive = ROOT/'.runtime/archive'/CAMPAIGN/CASE
+        hashes={v['name']:v['sha256'] for v in ledger['files']}
+        assert hashes['pull.rst']==record['rst_sha256'] and hashes['moving_supports.csv']==digest(moving)
+        verify_recovered_post(receipt,status,ledger)
+        for name in ('history.csv','moving_supports.csv','moving.out','partial_local_post.out'):
+            verified(archive/name, hashes[name])
+        tab=converged_pull_table(archive/'history.csv',archive/'pull.rst')
+        np.testing.assert_allclose(tab['fx_N'],force,rtol=1e-6,atol=1e-5)
+        np.testing.assert_allclose(tab['ux_mm'],travel,rtol=0,atol=1e-7)
+        assert np.array_equal(tab['set'],np.arange(1,len(steps)+1))
+        assert re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',(archive/'partial_local_post.out').read_text(errors='replace'))
+        record['closed_readback']=dict(original_solver_exit=status['exit'],post_exit=read(receipt/'closed_post_recovery.json')['post_exit'],
+            archived_manifest_sha256=digest(receipt/'archived.json'),recovery_sha256=digest(receipt/'closed_post_recovery.json'),
+            recovered_force_travel_states=len(tab),max_POST1_vs_direct_force_N=float(max(abs(tab['fx_N']-force))),
+            max_POST1_vs_imposed_travel_mm=float(max(abs(tab['ux_mm']-travel))))
+        refusal=receipt/'audit_failed.txt'
+        if failed and refusal.is_file():
+            assert 'Equilibrium outside tolerance:' in refusal.read_text()
+            record['whole_path_audit_rejection_sha256']=digest(refusal)
     write_json(AUDIT/(CASE+'_termination.json'),record)
     print(len(steps),steps[-1],travel[-1],elapsed,flush=True)
 
