@@ -49,6 +49,10 @@ def prepare():
             cfg_file=ROOT/'.runtime/local_inputs'/source/'config.json'
             verified(cfg_file,config[source]['files']['config.json'])
             cfg=read(cfg_file);deck=(folder/'model.inp').read_bytes()
+            mesh_file=cfg_file.with_name('mesh.json')
+            verified(mesh_file,config[source]['files']['mesh.json'])
+            shell_count=len(read(mesh_file)['elements'])
+            assert shell_count==cfg['shell_elements'] and shell_count<cfg['elements']
             (points,uf),outside=law(deck)
             assert uf==cfg['uf_mm'] and points[2,1]==cfg['eps0']
             if source==NOMINAL:
@@ -71,7 +75,7 @@ def prepare():
                 assert np.array_equal(points,ref_points) and uf==.12
                 kind='refined_nickel_mesh'
             profile[source]=dict(case=name,control=kind,eps0=float(points[2,1]),evolution_length_mm=uf,
-                total_requested_lateral_travel_mm=cfg['displacement_mm'],nickel_shell_elements=cfg['elements'],
+                total_requested_lateral_travel_mm=cfg['displacement_mm'],nickel_shell_elements=shell_count,
                 input_sha256=proof['input_sha256'],job_spec_sha256=proof['spec_sha256'],config_sha256=digest(cfg_file),
                 nickel_mesh_sha256=config[source]['files']['mesh.json'])
         assert {(r['eps0'],r['evolution_length_mm']) for r in profile.values() if r['control']=='material_grid'}=={

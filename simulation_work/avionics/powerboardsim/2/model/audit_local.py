@@ -222,6 +222,9 @@ def audit(case, campaign):
             from snug_damage_family import result_file
             if result_file(forward) and result_file('bare_lateral_friction_locked'):
                 compare(branch)
+    if case.startswith(('bare_damage_cont','snug125_')) and spec['source'].startswith('damage_cont'):
+        from snug_nickel_initiation import closed_family_case
+        closed_family_case(case)
     if case=='bare_damage_cont_nominal':
         from damage_repeat import compare as compare_damage
         compare_damage(case,campaign)

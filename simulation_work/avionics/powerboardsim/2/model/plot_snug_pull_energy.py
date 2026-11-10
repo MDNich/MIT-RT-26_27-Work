@@ -18,8 +18,8 @@ def draw():
     atforce = record["at_bare_endpoint_force"]
     work = cased["actuator_work_mJ"]
     bare = record["bare_work_at_cased_stations"][index]["external_work_mJ"]
-    fig, (match, parts) = plt.subplots(
-        1, 2, figsize=(8.2, 2.45), layout="constrained", gridspec_kw={"width_ratios": [1.2, 1]}
+    fig, (match, nickel, parts) = plt.subplots(
+        1, 3, figsize=(8.3, 2.5), layout="constrained", gridspec_kw={"width_ratios": [1.15, 0.93, 1.06]}
     )
     navy = "#08357E"
     green = "#38761D"
@@ -33,8 +33,8 @@ def draw():
         ylim=(-0.42, 1.39),
         yticks=[1, 0],
         yticklabels=["8.54 N", "0.207 mm"],
-        xlabel="Work done by the actuator [mJ]",
-        title="Match the force or the travel",
+        xlabel="Actuator work [mJ]",
+        title="Matched loading",
     )
     match.hlines(1, *atforce["endpoint_work_bracket_mJ"], color=green, lw=4, alpha=0.35)
     for i, (snug, reference) in enumerate(data):
@@ -59,6 +59,61 @@ def draw():
             )
     match.set_xticks([0.1, 1, 10], labels=["0.1", "1", "10"])
     match.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, 0.34), frameon=False, fontsize=8)
+    evidence = read(AUDIT / "nickel_initiation_replay.json")
+    replay = evidence["matched_bilinear"]
+    proof = read(AUDIT / f"{PARENT}_ls3_ss24_checkpoint.json")
+    assert (
+        proof["rst_sha256"] == replay["snug_rst_sha256"]
+        and proof["bare_rst_sha256"] == replay["bare_rst_sha256"]
+    )
+    np.testing.assert_allclose(
+        replay["common_load_N"],
+        proof["equal_bare_endpoint_load"]["bare"]["cell_force_N"],
+        rtol=0,
+        atol=1e-8,
+    )
+    at_load = [
+        replay["snug"][k - 1]["curves"]["0.3"]["maximum"] for k in replay["snug_common_load_bracket"]
+    ]
+    assert at_load == [0.0, 0.0]
+    (case_at_travel,) = [r for r in replay["snug"] if r["native_set"] == cased["native_set"]]
+    travel = case_at_travel["travel_mm"]
+    assert abs(travel - 0.206875) < 1.0e-8
+    bare_states = replay["bare"]
+    upper = next(i for i, row in enumerate(bare_states) if row["travel_mm"] >= travel)
+    pair = bare_states[upper - 1 : upper + 1]
+    bare_limits = [100 * r["curves"]["0.3"]["maximum"] for r in pair]
+    bare_value = np.interp(travel, [r["travel_mm"] for r in pair], bare_limits)
+    snug_value = 100 * case_at_travel["curves"]["0.3"]["maximum"]
+    nickel.set(
+        ylim=match.get_ylim(),
+        xlim=(-0.45, 7.2),
+        yticks=[1, 0],
+        yticklabels=[],
+        xticks=[0, 2, 4, 6],
+        xlabel="Initiation criterion [\\%]",
+        title="Nickel strip history",
+    )
+    nickel.hlines(0, *bare_limits, color=navy, lw=4, alpha=0.35)
+    for y, first, second in [
+        (1, 0.0, 100 * bare_states[-1]["curves"]["0.3"]["maximum"]),
+        (0, snug_value, bare_value),
+    ]:
+        nickel.hlines(y, min(first, second), max(first, second), color="#aaa", lw=0.8)
+        for val, mark, color, offset in (
+            (first, "D", green, 6),
+            (second, "o", navy, 6 if y == 1 else -13),
+        ):
+            nickel.plot(val, y, marker=mark, ms=4.2, color=color)
+            nickel.annotate(
+                f"{val:.2f}",
+                (val, y),
+                xytext=(0, offset),
+                textcoords="offset points",
+                ha="center",
+                color=color,
+                fontsize=8,
+            )
     group = cased["work_by_group_mJ"]
     values = [
         group["PLA"],
@@ -72,11 +127,11 @@ def draw():
     parts.set(
         yticks=[3, 2, 1, 0],
         yticklabels=["Printed case", "Four shanks", "Nickel strips", "Other elements"],
-        xlabel="Integrated nodal-force work [mJ]",
+        xlabel="Nodal-force work [mJ]",
         title="Snug fixture at 0.207 mm",
         xlim=(0, 5.9),
     )
-    for ax in (match, parts):
+    for ax in (match, nickel, parts):
         ax.spines[["top", "right", "left"]].set_visible(False)
         ax.tick_params(axis="y", length=0)
         ax.grid(axis="x", alpha=0.12)

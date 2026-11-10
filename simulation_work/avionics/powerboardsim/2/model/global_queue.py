@@ -254,12 +254,18 @@ def jobs():
             primary=('lateral_friction_locked','lateral_friction_locked_minus')
             for directional in (True,False):
                 for case,meta in local_cases.items():
-                    if (meta['source'] in primary)==directional:
+                    if meta['source']!='damage_cont_nominal' and (meta['source'] in primary)==directional:
                         yield meta['bare_reference'],''
                         yield case,meta['bare_reference']
                         if trial and case==trial['parent']:
                             yield trial['case'],case
-                # Compare the reported tab-root crossing on the second mesh after the four primary directions.
+                # Obtain both nominal damage histories before evaluating the many conditional variations.
+                if directional:
+                    for case,meta in local_cases.items():
+                        if meta['source']=='damage_cont_nominal':
+                            yield meta['bare_reference'],''
+                            yield case,meta['bare_reference']
+                # Compare the tab-root crossing on the second mesh after the primary directions and nominal damage cases.
                 if directional and nylon_forward_coarse in coarse_cases:
                     yield nylon_forward_coarse,nylon_forward_coarse.removesuffix('_m3')+'_m15'
                     coarse_cases.remove(nylon_forward_coarse)
