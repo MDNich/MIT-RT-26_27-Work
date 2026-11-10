@@ -4,7 +4,7 @@ from matplotlib.ticker import FixedLocator, FixedFormatter, NullLocator
 
 from audit_local import ROOT, read
 from compare_pull import series
-from compare_snug_forward_checkpoint import CHECKPOINTS, OUTPUT
+from compare_snug_forward_mounts import CHECKPOINTS, OUTPUT
 from film_identity import verified
 from report_plot import plt
 from stage_snug_fit import AUDIT
@@ -26,8 +26,8 @@ def plot():
     for key, label, color in zip(('nylon', 'aluminium'), labels[1:], colors[1:], strict=True):
         ax.plot([r['travel_mm'] for r in rows], [r[key]['cell_force_N'] for r in rows],
                 'o-', ms=2.8, lw=1.3, color=color, label=label)
-    ax.set(xlim=(0, .088), ylim=(0, 90), xlabel='Cell travel [mm]', ylabel='Applied force [N]',
-           title='Same imposed travel', xticks=[0, .04, .08])
+    ax.set(xlim=(0, .22), ylim=(0, 260), xlabel='Cell travel [mm]', ylabel='Applied force [N]',
+           title='Same imposed travel', xticks=[0, .1, .2])
     ax.legend(fontsize=8, frameon=False, loc='upper left')
     endpoint = comparison['bare_endpoint']
     target = endpoint['cell_force_N']
@@ -48,13 +48,14 @@ def plot():
     end = rows[-1]
     screws = [0.] + [end[key]['screw_support_resistance_N'] for key in ('nylon', 'aluminium')]
     nickel = [end['bare']['cell_force_N']] + [end[key]['nickel_clamp_resistance_N'] for key in ('nylon', 'aluminium')]
-    assert all(abs(end[key]['neighbor_resistance_N']) < 1e-8 for key in ('nylon', 'aluminium'))
+    neighbours = [0.] + [end[key]['neighbor_resistance_N'] for key in ('nylon', 'aluminium')]
     cx.barh([2, 1, 0], screws, height=.48, color='#8EACD5', label='Case mounts')
     cx.barh([2, 1, 0], nickel, left=screws, height=.48, color='#5A43A0', label='Nickel clamps')
-    for y, total in zip((2, 1, 0), np.array(screws)+nickel, strict=True):
-        cx.text(total+1., y, f'{total:.2f}', va='center', fontsize=8)
-    cx.set(xlim=(0, 104), ylim=(-.45, 2.55), yticks=[2, 1, 0], yticklabels=labels,
-           xlabel='Lateral support reaction [N]', title='At 0.081875 mm')
+    cx.barh([2, 1, 0], neighbours, left=np.array(screws)+nickel, height=.48, color='#38761D', label='Fixed neighbour')
+    for y, total in zip((2, 1, 0), np.array(screws)+nickel+neighbours, strict=True):
+        cx.text(total+2., y, f'{total:.2f}', va='center', fontsize=8)
+    cx.set(xlim=(0, 305), ylim=(-.45, 2.75), yticks=[2, 1, 0], yticklabels=labels,
+           xlabel='Lateral support reaction [N]', title='At 0.206875 mm')
     cx.legend(fontsize=7, frameon=False, loc='upper right')
     for axis in (ax, bx, cx):
         axis.title.set(color='#08357E', fontsize=10)
