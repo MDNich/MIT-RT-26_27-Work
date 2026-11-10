@@ -146,39 +146,47 @@ def setup(variant,campaign):
     return modal,folder,rst.time_values,preload,elements,ids,base,shapes,xyz,distance,max(errors)
 
 
+def full_coordinates(variant,campaign,method,axis,modal,folder,freq):
+    """Read the native coordinates or integrate the same sealed nine-second base input."""
+    motion=variant+'_motion_'+axis
+    clip=read(ROOT/'validation/independent_motion'/(motion+'.json'))
+    assert clip['basis_rst_sha256']==modal['rst_sha256'] and clip['campaign']==campaign and clip['case']==motion
+    if method=='independent':
+        listing=folder/'solve.out'
+        verified(listing,clip['modal_listing_sha256'])
+        _,q,_=integrate(freq,participation(listing.read_text(errors='replace'),axis),axis,slice(None))
+        cache=ROOT/'.runtime/post'/campaign/motion/'independent/coordinates.npz'
+        verified(cache,clip['clip_sha256'])
+        with np.load(cache) as data:assert np.array_equal(q[FRAMES],data['coordinates'])
+        coordinate_source=clip['modal_listing_sha256']
+    elif method=='exact':
+        listing=folder/'solve.out'
+        verified(listing,clip['modal_listing_sha256'])
+        load=ROOT/'.runtime/motion_loads'/(axis+'.txt');verified(load,clip['input_sha256'])
+        forcing=np.loadtxt(load,skiprows=1)
+        samples=np.arange(9*FS+1)
+        assert np.allclose(forcing[:,0],samples/FS,rtol=0,atol=5.1e-13)
+        q,_=refined_coordinates('linear_input_exact',forcing[:,1],samples,freq,
+                                 participation(listing.read_text(errors='replace'),axis))
+        coordinate_source=clip['input_sha256']
+    elif method=='native':
+        native=read(ROOT/'validation/motion'/(motion+'.json'))
+        assert native['basis_rst_sha256']==modal['rst_sha256']
+        mcf=ROOT/'.runtime/archive'/campaign/motion/'file.mcf';verified(mcf,native['mcf_sha256'])
+        q=native_series(mcf,freq)
+        coordinate_source=native['mcf_sha256']
+    else:
+        raise ValueError('Unknown coordinate method: '+method)
+    assert q.shape==(9*FS+1,len(freq)) and np.isfinite(q).all()
+    return q,coordinate_source,clip['input_sha256']
+
+
 def run(variant,campaign,method,axes,onset_only=False):
     check_bounds()
     modal,folder,freq,preload,elems,ids,base,shapes,xyz,distance,error=setup(variant,campaign)
     assert np.array_equal(freq,modal['frequencies_Hz'])
     for axis in axes:
-        motion=variant+'_motion_'+axis
-        clip=read(ROOT/'validation/independent_motion'/(motion+'.json'))
-        assert clip['basis_rst_sha256']==modal['rst_sha256']
-        if method=='independent':
-            listing=folder/'solve.out'
-            verified(listing,clip['modal_listing_sha256'])
-            _,q,_=integrate(freq,participation(listing.read_text(errors='replace'),axis),axis,slice(None))
-            cache=ROOT/'.runtime/post'/campaign/motion/'independent/coordinates.npz'
-            verified(cache,clip['clip_sha256'])
-            with np.load(cache) as data:assert np.array_equal(q[FRAMES],data['coordinates'])
-            coordinate_source=clip['modal_listing_sha256']
-        elif method=='exact':
-            listing=folder/'solve.out'
-            verified(listing,clip['modal_listing_sha256'])
-            load=ROOT/'.runtime/motion_loads'/(axis+'.txt');verified(load,clip['input_sha256'])
-            forcing=np.loadtxt(load,skiprows=1)
-            samples=np.arange(9*FS+1)
-            assert np.allclose(forcing[:,0],samples/FS,rtol=0,atol=5.1e-13)
-            q,_=refined_coordinates('linear_input_exact',forcing[:,1],samples,freq,
-                                     participation(listing.read_text(errors='replace'),axis))
-            coordinate_source=clip['input_sha256']
-        else:
-            native=read(ROOT/'validation/motion'/(motion+'.json'))
-            assert native['basis_rst_sha256']==modal['rst_sha256']
-            mcf=ROOT/'.runtime/archive'/campaign/motion/'file.mcf';verified(mcf,native['mcf_sha256'])
-            q=native_series(mcf,freq)
-            coordinate_source=native['mcf_sha256']
-        assert q.shape==(9*FS+1,len(freq)) and np.isfinite(q).all()
+        q,coordinate_source,input_sha=full_coordinates(variant,campaign,method,axis,modal,folder,freq)
         if onset_only:
             filename=f'{variant}_{axis}_PLA_{method}'
             peak_path=ROOT/'validation/snug125'/(filename+'.json')
@@ -214,7 +222,7 @@ def run(variant,campaign,method,axes,onset_only=False):
         write_json(ROOT/'validation/snug125'/f'{variant}_{axis}_PLA_{method}.json',dict(
             variant=variant,method=method,campaign=campaign,axis=axis,native_basis_sha256=modal['rst_sha256'],
             native_static_sha256=preload['rst_sha256'],coordinate_source_sha256=coordinate_source,
-            input_sha256=clip['input_sha256'],modal_stress_strain_error=error,history_samples=len(q),
+            input_sha256=input_sha,modal_stress_strain_error=error,history_samples=len(q),
             scopes=records,scope='Largest signed layer-normal and in-plane principal tension over all eligible '
             'unaveraged PLA element corners and all 589,825 samples. Preload and modal tensors are combined '
             'at the same corner and instant. The fixed-contact elastic calculation uses the reported coupon '

@@ -23,7 +23,7 @@ def point_fields(raw,sets,points,*,field_directory='tab_points_v1'):
     native=movement_table(folder/'moving_supports.csv')
     points=sorted(set(map(int,points))|{int(n) for k,n in native});sets=list(map(int,sets))
     q=dict(nodes=points,sets=sets,source_sha256=sha)
-    assert field_directory in ('tab_points_v1','first_loaded_corners_v1','pull_case_energy','pull_pose')
+    assert field_directory in ('tab_points_v1','first_loaded_corners_v1','pull_case_energy','pull_pose','edge_cell_poses')
     out=ROOT/'.runtime/post'/campaign/case/field_directory;out.mkdir(parents=True,exist_ok=True)
     lock=(out/'request.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX)
     req=out/'request.json'

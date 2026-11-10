@@ -49,7 +49,7 @@ Bilinear nickel, force at $+0.500$ / $-0.500$ mm cell travel & $+8.54$ / $-8.51$
 \heading{Resolving the initial contact}
 The nominal 2~mm case mesh has 45,549 quadratic tetrahedra and 77,166 nodes. Its integrated volume differs from CAD by 0.00089\%. The 3 and 1.5~mm meshes have 18,051 and 99,818 tetrahedra. All three have positive minimum scaled Jacobians. Both finer meshes cleared all three undeformed cells at both surface sampling levels. The 3~mm mesh showed an apparent middle-cell intersection at the coarser sampling level. At the higher level the middle cell first touched at 1.2412--1.2414~mm stand-off on the 2~mm mesh and 1.2406--1.2408~mm on the 1.5~mm mesh, compared with 1.2396--1.2400~mm in CAD. The native minimum initial gaps on the two finer meshes were 2.969 and 2.984~$\mu$m. Page~4 compares their actual loaded responses.
 
-In the local side-pull fixture the left cell moves along PCB X. With rigid, undeformed CAD and fixed registration it first touches its pocket after 0.02035--0.02039~mm in positive X or 0.16470--0.16474~mm in negative X. Both first contacts fall on the cylindrical pocket face selected in the native fixture. These distances describe free translation before clamp deformation or cell rotation. The native pull history supplies the loaded onset.
+In the local side-pull fixture the left cell moves along PCB X. With rigid, undeformed CAD and fixed registration it first touches its pocket after 0.02035--0.02039~mm in positive X or 0.16470--0.16474~mm in negative X. Both first contacts fall on the cylindrical pocket face selected in the native fixture. Replaying the bare nickel fixture's native cell translation and rotation against the stationary case gave first sampled overlaps between 0.0175 and 0.02875~mm toward the middle cell, and between 0.145625 and 0.170625~mm away. Exact CAD and two reconstructions of the fixture surfaces agreed on both brackets. Actual cased contact reactions require the nonlinear pull histories.
 
 \heading{Response quantities}
 The native comparisons will report mounting reactions, board deformation, cell and washer contact, matched natural modes, signed and RMS vibration quantities, tension along and across the printed layers, and edge-cell force and nickel damage for both pull directions where supported by the fixture. The 22 movie subjects use the bare board as the reference on shared physical or display scales. The following pages identify the native solver results and the independent reconstructions from those results. Appendix~A preserves the previous study with its original geometries and page numbering.
@@ -281,6 +281,21 @@ Nylon, 1.5~mm, integrated from native modes & 89.54 & 47.16 & 69.83\\\bottomrule
 The highest through-layer tension shifted from 31.17~MPa under base Y on the nominal mesh to 28.94~MPa under base X on the finer mesh, or 77.0\% and 71.5\% of the coupon mean. The fine maximum lay 0.71~mm from a constrained bearing node. Two time integrations agreed within 0.34\% on all twelve fine-mesh tensile peaks. At the fine base-X maximum, the left and middle cells intersected the printed shell in the linear reconstruction. The right cell remained clear. The real loads after contact redistribution require a nonlinear response.
 
 Refinement also shifted the base-Y time by which the locked contact load must redistribute, from about 25.6 to 21.0~ms. Both meshes put the base-Z bound near 13~ms. This agreement concerns the fixed contact pattern only. The time of full cell lift-off remains unresolved. The aluminium strength figure on page~9 uses its nominal mesh. Its matched refinement is queued.
+
+\newpage
+\pageheading{Board-normal vibration shifts the highest bond load to the middle cell}
+Under base-Z excitation the largest dynamic force at a cell-to-nickel attachment rose from 30.22~N bare to 40.09~N with nylon case screws and 50.50~N with aluminium, increases of 33\% and 67\%. The right cell's low-Y bond governed on the bare board. The middle cell's high-Y bond governed in both snug mounts. Under base X the largest bond load increased with nylon screws and changed by less than 1\% with aluminium.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-attachment-history.pdf}
+\captionof{figure}{Left, the maximum simultaneous three-component force magnitude at any of the six bonds in each nine-second record. Right, signed PCB-X force on the middle cell under base Z, evaluated separately for each assembly at its own largest middle-cell bond load. Opposing bond and pocket forces partially cancel in the total.}\end{center}
+
+\heading{Where the load goes}
+At the middle cell's governing instant under base Z, its two bonds carried $+34.6$ and $+27.3$~N along PCB~X with nylon screws. The pocket contributed $-49.0$~N, leaving $+12.9$~N across the three interfaces. For aluminium, the corresponding components were $-45.3$, $-19.5$ and $+52.6$~N, giving $-12.2$~N. The modest whole-cell resultant therefore hides substantial demands on each attachment.
+
+\heading{Checks and interpretation}
+The reconstruction uses the signed native modal forces on each complete bonded area and the nominal prestressed mode shapes. We independently integrated all 589,825 stations of each original acceleration record. A second integration, exact for a linearly interpolated input, changed the nine largest bond loads by at most 1.18\%. A 3.5~kHz mode cutoff changed them by at most 0.92\%. The bare native time histories reproduced the independently calculated peaks within 0.002~N. At every station we summed both bonds and the installed middle pocket and checked the result against the cell's independently mass-weighted modal force operator. The largest relative difference over a whole history was below $2.4\times10^{-6}$.
+
+These loads describe intact bonds and contact held at its installed state. Page~10 shows the early pressure redistribution required by the nylon model. Joint strength, actual contact forces after redistribution, and damage in a weld require separate evidence.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

@@ -24,6 +24,12 @@ def fitted_pose(path, mesh, pilot, history):
     archived = np.column_stack([nodes[a+'_mm'][picked] for a in 'xyz'])
     assert np.allclose(initial, archived, atol=1e-5, rtol=0)
     final = initial + np.column_stack([nodes['u'+a+'_mm'][picked] for a in 'xyz'])
+    rotation, shift, residual = rigid_pose(initial, final, pilot)
+    assert np.allclose(shift, [history['u'+a+'_mm'] for a in 'xyz'], atol=1e-6, rtol=0)
+    return rotation, shift, residual
+
+
+def rigid_pose(initial, final, pilot):
     x, y = initial.mean(0), final.mean(0)
     u, scales, vt = np.linalg.svd((initial-x).T @ (final-y))
     assert scales[-1] > 0 and np.linalg.det(u@vt) > 0
@@ -31,7 +37,6 @@ def fitted_pose(path, mesh, pilot, history):
     shift = rotation.apply(pilot-x) + y - pilot
     residual = float(np.linalg.norm(rotation.apply(initial-x) + y - final, axis=1).max())
     assert residual < 1e-5
-    assert np.allclose(shift, [history['u'+a+'_mm'] for a in 'xyz'], atol=1e-6, rtol=0)
     return rotation, shift, residual
 
 

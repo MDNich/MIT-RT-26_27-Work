@@ -20,6 +20,8 @@ Across the 3, 2 and 1.5 mm nylon case meshes, peak PCB displacement at bolt lock
 
 Refining the nylon case from 2 to 1.5 mm changed the maximum base-X PCB stress from 82.68 to 89.54 MPa RMS, close to the 90.32 MPa bare result. Base Z was less sensitive, at 69.37 and 69.83 MPa versus 32.48 MPa bare. The maximum signed through-layer PLA demand moved from 77.0% of the coupon mean under Y to 71.5% under X. The fine values use an independently integrated response on the native fine ANSYS basis. A matched aluminium refinement is queued. [Mesh comparison, page 13](output/pdf/battery-case-report.pdf#page=13) · [Fine-mesh PCB stress](validation/snug125/nylon_mesh_pcb_spectra.json)
 
+In the nine-second base-Z record, the largest force at a cell-to-nickel bond rose from 30.22 N bare to 40.09 N with nylon screws and 50.50 N with aluminium. The governing bond moved from the right cell to the middle cell. These are independently integrated, fixed-contact loads on the nominal native modes. [Bond loads, page 14](output/pdf/battery-case-report.pdf#page=14) · [Comparison slide](output/pdf/battery-case-slides.pdf#page=6)
+
 The [snug-fit movie catalogue](output/videos/snug125/README.md) tracks the 22 requested subjects. The three bare modal films retain their verified 6 mm display scale. Each new RMS or seeded pair will share a range determined from the bare board and both 1.25 mm mounts.
 
 ## Appendix A — previous fit study

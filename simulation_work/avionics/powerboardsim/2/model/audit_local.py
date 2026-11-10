@@ -153,16 +153,15 @@ def audit(case, campaign):
                 rst_sha256=next(f['sha256'] for f in ledger['files'] if f['name']==spec['job']+'.rst'))
     dest=ROOT/'validation'/('local' if complete else 'partial_local')
     dest.mkdir(exist_ok=True)
-    # The damage fixture needs both the printed-material and contact checks before its verdict is available to callers.
     from film_identity import write_json
-    raised_damage=case.startswith(('stand3_','snug125_')) and spec['source'].startswith('damage_cont')
-    if raised_damage:
+    if case.startswith(('stand3_','snug125_')) and not spec['coupon']:
         from installation_material import run as check_material
-        from pull_contact_audit import verify as verify_hardware
         draft=ROOT/'.runtime/post'/campaign/case/'fixture_verdict.json'
         write_json(draft,data)
         check_material(case,campaign,pull=True,verdict_path=draft)
-        verify_hardware(case,draft)
+        if case.startswith('snug125_') or spec['source'].startswith('damage_cont'):
+            from pull_contact_audit import verify as check_hardware
+            check_hardware(case,draft)
     if spec.get('common_load_parent') and complete:
         from common_pull_resolution import check as check_resolution
         check_resolution(case,campaign)
@@ -173,12 +172,6 @@ def audit(case, campaign):
     if case.startswith('bare_lateral_'):
         from pull_reference import compare
         compare(case,campaign)
-    if case.startswith(('stand3_','snug125_')) and not spec['coupon'] and not raised_damage:
-        from installation_material import run as check_material
-        check_material(case,campaign,pull=True)
-        if case.startswith('snug125_'):
-            from pull_contact_audit import verify as check_hardware
-            check_hardware(case)
     print(data['scope'],case,flush=True)
 
 if __name__ == '__main__':
