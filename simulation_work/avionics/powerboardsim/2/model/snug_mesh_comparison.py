@@ -55,7 +55,8 @@ def compare():
 
 
 def compare_forces(control='snug125_nylon_mesh15_static'):
-    cases=('snug125_nylon_out2_static',control)
+    material=input_record(control)['material']
+    cases=(f'snug125_{material}_out2_static',control)
     same_mesh=control=='snug125_nylon_tol001_static'
     if same_mesh:
         reference, tight = map(input_record,cases)
@@ -89,7 +90,7 @@ def compare_forces(control='snug125_nylon_mesh15_static'):
                            fine_minus_coarse_magnitude_N=float(np.linalg.norm(y)-np.linalg.norm(x))))
     assert shared and np.isclose(shared[-1]['load_time'],2.) and any(np.isclose(r['load_time'],1.) for r in shared)
     a=coarse['locked_resultant_N'];b=fine['locked_resultant_N']
-    output='nylon_force_tolerance_comparison.json' if same_mesh else 'nylon_force_mesh_comparison.json'
+    output='nylon_force_tolerance_comparison.json' if same_mesh else f'{material}_force_mesh_comparison.json'
     write_json(AUDIT/output,dict(runs=runs,matched_native_stations=shared,
         locked_resultant_change_percent=100*(b/a-1) if a>0 else None,
         scope='Matched boundaries, solver loads and material. Only shared native equilibria are paired; '

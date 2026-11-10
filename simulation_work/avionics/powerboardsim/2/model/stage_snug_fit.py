@@ -26,6 +26,8 @@ def input_record(case):
     if case in main:return main[case]
     if case=='snug125_aluminium_mesh15_static':
         return json.loads((AUDIT/'aluminium_refinement_inputs.json').read_text())[case]
+    if case=='snug125_aluminium_out2_static':
+        return json.loads((AUDIT/'aluminium_force_repeat_input.json').read_text())
     if case=='snug125_nylon_tol001_static':
         entry=json.loads((AUDIT/'force_tolerance_input.json').read_text())
         assert entry['case']==case

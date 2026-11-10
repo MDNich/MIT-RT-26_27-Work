@@ -69,7 +69,7 @@ try {
             throw 'Fine prestressed basis or parent mesh identity mismatch'
         }
     }
-    $forceReadback = $Case -match '^snug125_(?:nylon_(?:out2|mesh15|tol001)|aluminium_mesh15)_static$'
+    $forceReadback = $Case -match '^snug125_(?:nylon_(?:out2|mesh15|tol001)|aluminium_(?:mesh15|out2))_static$'
     if ($forceReadback) {
         $book=Get-Content "$share\validation\snug125\contact_refinement_inputs.json" -Raw | ConvertFrom-Json
         if ($Case -eq 'snug125_aluminium_mesh15_static') {
@@ -78,6 +78,13 @@ try {
             $nylon=$book.PSObject.Properties['snug125_nylon_mesh15_static'].Value
             if ($entry.case -ne $Case -or $entry.material -ne 'aluminium' -or $entry.nylon_fine_input_sha256 -ne $nylon.input_sha256 -or
                 $entry.mesh_sha256 -ne $nylon.mesh_sha256 -or $entry.post_sha256 -ne $nylon.post_sha256) {throw 'Fine aluminium control lineage mismatch'}
+        } elseif ($Case -eq 'snug125_aluminium_out2_static') {
+            $entry=Get-Content "$share\validation\snug125\aluminium_force_repeat_input.json" -Raw | ConvertFrom-Json
+            $main=Get-Content "$share\validation\snug125\global_inputs.json" -Raw | ConvertFrom-Json
+            $ref=$main.PSObject.Properties['snug125_aluminium_static'].Value
+            if ($entry.case -ne $Case -or $entry.reference_case -ne 'snug125_aluminium_static' -or
+                $entry.reference_input_sha256 -ne $ref.input_sha256 -or $entry.mesh_sha256 -ne $ref.mesh_sha256 -or
+                $entry.post_sha256 -ne $book.PSObject.Properties['snug125_nylon_out2_static'].Value.post_sha256) {throw 'Nominal aluminium force lineage mismatch'}
         } elseif ($Case -eq 'snug125_nylon_tol001_static') {
             $entry=Get-Content "$share\validation\snug125\force_tolerance_input.json" -Raw | ConvertFrom-Json
             $ref=$book.PSObject.Properties['snug125_nylon_out2_static'].Value

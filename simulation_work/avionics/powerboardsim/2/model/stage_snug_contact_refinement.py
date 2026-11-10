@@ -154,14 +154,41 @@ def stage_aluminium_refinement():
     write_json(AUDIT/'aluminium_refinement_inputs.json',{case:spec,basis:modal})
 
 
+def stage_aluminium_force_repeat():
+    """Add contact-force output to the original nominal aluminium run at its two load steps."""
+    source='snug125_aluminium_static'
+    case='snug125_aluminium_out2_static'
+    nominal=read(AUDIT/'global_inputs.json')[source]
+    nylon=read(AUDIT/'contact_refinement_inputs.json')['snug125_nylon_out2_static']
+    assert nominal['material']=='aluminium' and nominal['step_sha256']==nylon['step_sha256']==STEP_HASH
+    assert nominal['mesh_sha256']==nylon['mesh_sha256'] and nominal['size_mm']==2
+    original=INPUTS/source/'model.inp'
+    verified(original,nominal['input_sha256']);deck=original.read_bytes()
+    marker=b'outres,cont,all,\r\n'
+    extra=b'outres,misc,all,CASECONTACT\r\n'
+    assert deck.count(marker)==2 and extra not in deck
+    updated=deck.replace(marker,marker+extra)
+    assert updated.replace(extra,b'')==deck
+    dest=INPUTS/case;dest.mkdir(exist_ok=True)
+    post=INPUTS/'snug125_nylon_out2_static/snug_force_post.inp'
+    verified(post,nylon['post_sha256'])
+    entry=dict(nominal,case=case,parent='',case_node_start=NODE,reference_case=source,
+               reference_input_sha256=nominal['input_sha256'],input_sha256=seal(dest/'model.inp',updated),
+               post_sha256=seal(dest/'snug_force_post.inp',post.read_bytes()),
+               surface_closure_file='cell_surface_closure.json',extra_output='MISC for CASECONTACT at every saved state')
+    write_json(AUDIT/'aluminium_force_repeat_input.json',entry)
+
+
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--modal-only',action='store_true')
     parser.add_argument('--force-tolerance-only',action='store_true')
     parser.add_argument('--aluminium-only',action='store_true')
+    parser.add_argument('--aluminium-force-repeat',action='store_true')
     args=parser.parse_args()
-    if args.aluminium_only:stage_aluminium_refinement()
+    if args.aluminium_force_repeat:stage_aluminium_force_repeat()
+    elif args.aluminium_only:stage_aluminium_refinement()
     elif args.force_tolerance_only:
         stage_force_tolerance()
     else:

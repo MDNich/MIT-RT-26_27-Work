@@ -215,6 +215,9 @@ def jobs():
         if aluminium.is_file():
             for case,spec in read(aluminium).items():
                 yield case,spec['parent']
+        force_repeat=snug_dir/'aluminium_force_repeat_input.json'
+        if force_repeat.is_file():
+            yield read(force_repeat)['case'],''
         tolerance=ROOT/'validation/snug125/force_tolerance_input.json'
         if tolerance.is_file():
             control=read(tolerance)
