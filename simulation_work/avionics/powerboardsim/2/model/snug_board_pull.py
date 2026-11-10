@@ -250,6 +250,12 @@ def audit(case):
     result['scope']='Whole installed board loaded in +X through the mass-weighted nodes of its left cell. Displacements are relative to the zero-added-load hold; the original stage-2 lock is also retained for drift checks.'
     write_json(AUDIT/(case+'.json'),result)
     compare_closed()
+    from snug_board_pull_stress import audit as check_stresses
+    from snug_board_bond_forces import audit as check_bond_loads
+    from snug_board_pull_work import audit as check_work
+    check_work(branch)
+    check_stresses(branch)
+    check_bond_loads(branch)
 
 
 def compare_pocket_unloading(branch, result, zero):

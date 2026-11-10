@@ -456,7 +456,7 @@ Right cell relative to board supports & 0.7969 & 0.7954 & 0.7941\\
 Left cell relative to its own strip clamps & 0.2726 & 0.2726 & 0.2727\\\bottomrule
 \end{tabular}\end{center}
 
-Cutting off the modes at 4~kHz lowered the last row by less than 0.8\%. Relative cell rotation contributed 0.213~$\mu$m/N on each board and 17.81 of 17.95~$\mu$m/N in the local bare and nylon fixtures over 5--10~$\mu$m of travel. Page~25 traces the initial force into the strips and PLA. Queued nonlinear checks load the left cell to 1 and 8.542~N, then unload.
+Cutting off the modes at 4~kHz lowered the last row by less than 0.8\%. Relative cell rotation contributed 0.213~$\mu$m/N on each board and 17.81 of 17.95~$\mu$m/N in the local bare and nylon fixtures over 5--10~$\mu$m of travel. Page~25 traces the initial force into the strips and PLA. The bare nonlinear check gives 2.327~$\mu$m relative to the clamps at 8.542~N (page~34).
 
 \newpage
 \pageheading{How much closer do neighbouring cells move?}
@@ -541,7 +541,7 @@ The nominal ANSYS models gave \textbf{0.594~N of middle-pocket compression with 
 \captionof{figure}{Left, the initial whole-board force slope projected along the installed compressive reaction. Each line ends when that projection reaches zero. Right, the first sample on the fixed-contact trajectory at which the old patch would have to pull on the cell. The nominal cases use native modal coordinates. The finer nylon model uses independent integration. Mesh sizes refer to the printed shell.}\end{center}
 
 \heading{An applied force can relieve contact}
-A force along negative PCB X on the middle cell relieves the seated pocket. Extrapolating the initial slope gives zero net compression at 5.27~N with nylon and 5.33~N on its finer mesh. The aluminium estimate is 0.14~N. Loading the \emph{left} cell in positive X also relieves the middle pocket, through motion of the board. That intercept is 82.2~N with nylon and 3.07~N with aluminium. The planned whole-board pulls pass through 1.00 and 8.54~N on the left cell before unloading. New contact or a redistribution over the original patch can occur before any of these intercepts.
+A force along negative PCB X on the middle cell relieves the seated pocket. Extrapolating the initial slope gives zero net compression at 5.27~N with nylon and 5.33~N on its finer mesh. The aluminium estimate is 0.14~N. Loading the \emph{left} cell in positive X also relieves the middle pocket, through motion of the board. That intercept is 82.2~N with nylon and 3.07~N with aluminium. The whole-board pulls pass through 1.00 and 8.54~N on the left cell before unloading. New contact or a redistribution over the original patch can occur before any of these intercepts.
 
 \heading{When vibration uses up that compression}
 With aluminium screws the net projection first changed sign at 3.05~ms for base X, 7.22~ms for base Y and 5.62~ms for base Z. With nylon it changed sign at 15.46, 24.48 and 11.47~ms, respectively. Independent Newmark and piecewise-linear-input integrations reproduced all six nominal native crossings within the original sample. Reducing the mode cutoff from 4 to 3~kHz preserved all nine plotted crossings. Refining nylon moved the base-Y crossing from 24.48 to 20.19~ms. At the plotted instants all original patch normals still lay within the compressive half-space. The times mark a limit of the frozen-contact calculation. Complete separation and subsequent impact require a changing-contact solution.
@@ -696,6 +696,24 @@ Middle-cell sideways displacement per unit force was 0.5235~$\mu$m/N bare. At th
 
 \heading{Checks on the tightened state}
 We linearized the equations about the independently equilibrated 1~N state using two-percent modal damping. Forcing and displacements were carried in the original native mode shapes plus additional stiffness responses. A separate full-matrix calculation checked the first four frequencies with all spacers bearing and the original pocket stiffness retained. Two and five blocks of additional responses, and a half sample interval, preserved the governing point on all three models. We swept each originally clear middle-pocket integration point against all 308 curved middle-cell faces. Other interfaces, locations between integration points and motion after a contact changes require separate checks.
+
+\clearpage
+\pageheading{How far does 8.54 N move a cell on the complete bare board?}
+The left cell moved \textbf{4.824~$\mu$m} toward the middle cell under a distributed sideways force of 8.542~N. Its two nickel-strip clamps moved and rotated with the PCB. Relative to their fitted motion at the cell centre, the travel was \textbf{2.327~$\mu$m}. The middle and right cells moved 0.291 and 0.234~$\mu$m in the same direction relative to the board supports.
+
+\begin{center}\includegraphics[width=.99\linewidth]{figures/bare-board-side-load.pdf}
+\captionof{figure}{Each marker is a converged native loading station after bolt lock and a zero-added-load hold. The stress curves track two different quantities because the largest local rise can occur away from the original stress maximum.}\end{center}
+
+\heading{Why the local pull gives a different travel}
+The local fixture on page~19 drove a rigid cell with bilinear nickel strips and held its supports locally. The bare fixture required the same 8.542~N at 0.500~mm of prescribed travel. On the complete board, we applied the load to 1,353 nodes in proportion to their contribution to the cell mass, retained the original mounting conditions and used the global model's elastic solid strips. The fixed-contact whole-board stiffness predicted 4.799~$\mu$m at the centre and 2.329~$\mu$m relative to the clamps. The nonlinear solution gave 1.820~$\mu$m of the latter travel from relative rotation, leaving 0.507~$\mu$m at strip height.
+
+\heading{Which components carry the load?}
+Integrating the native solid stresses independently on the strip side of each bond gave lateral increments of 4.262 and 4.286~N opposing the pull. The largest difference between the two sides of any bond increment was 0.030~N. These are idealized bonds. The study has no measured weld-force allowable.
+
+The largest nickel equivalent stress rose from 161.91~MPa after installation to \textbf{167.30~MPa}, or 90.4\% of the assumed 185~MPa yield reference. The largest increase at a single nickel corner was 27.08~MPa on strip body 8. The PCB's largest local increase in principal tensile strain was 367~$\mu\varepsilon$. A hardware allowable for this PCB assembly is unavailable.
+
+\heading{Loading and return}
+The lateral load supplied 20.597~$\mu$J and recovered 20.596~$\mu$J as it returned to zero. After unloading, the left cell was within 0.001~$\mu$m of its starting position. Integrating each individual nodal force against its own displacement reproduced the work from total force and mass-centre displacement. Support-force closure was within 0.000001~N per axis throughout.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
