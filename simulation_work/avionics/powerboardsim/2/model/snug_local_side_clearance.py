@@ -90,15 +90,50 @@ def rigid_paths():
                 initial_left_cell_gap_mm=initial,rigid_translation=records)
 
 
-def run(*,refined=False):
-    suffix='_m15' if refined else ''
-    node_start=2100001 if refined else NODE
-    series={**read(AUDIT/('local_inputs'+suffix+'.json')),**read(AUDIT/('local_sensitivity_inputs'+suffix+'.json'))}
+def shape_comparison():
+    """Evaluate every corner dihedral and bound the full curved Jacobian on each fixture mesh."""
+    from itertools import combinations
+    from snug_modal_mesh import cubic_controls
+
+    transform,gradients=cubic_controls()
+    rows={}
+    for size in ('3','2','1.5'):
+        path=MESH/f'case_{size}.npz'
+        mesh=read(AUDIT/f'mesh_{size}.json')
+        assert mesh['step_sha256']==STEP_HASH
+        with np.load(path) as data:
+            points=data['points'][data['tets'][:,[0,1,2,3,4,5,6,7,9,8]]]
+        assert len(points)==mesh['tetrahedra']
+        normals=[]
+        for opposite in range(4):
+            i,j,k=[i for i in range(4) if i!=opposite]
+            n=np.cross(points[:,j]-points[:,i],points[:,k]-points[:,i])
+            inward=np.sum(n*(points[:,opposite]-points[:,i]),axis=1)>0.
+            n[inward]*=-1
+            normals.append(n/np.linalg.norm(n,axis=1,keepdims=True))
+        cosines=np.stack([-np.sum(normals[i]*normals[j],axis=1) for i,j in combinations(range(4),2)],axis=1)
+        angles=np.rad2deg(np.arccos(np.clip(cosines,-1,1)))
+        controls=np.stack([np.linalg.det(points.transpose(0,2,1)@g) for g in gradients],axis=1)@transform
+        assert np.min(controls)>0
+        rows[size]=dict(mesh_sha256=digest(path),tetrahedra=len(points),min_dihedral_deg=float(angles.min()),
+                        max_dihedral_deg=float(angles.max()),max_angle_element=1200001+int(angles.max(axis=1).argmax()),
+                        min_jacobian_bernstein_bound_mm3=float(controls.min()))
+    assert rows['2']['max_angle_element']==1206035
+    return rows
+
+
+def run(*,refined=False,coarse=False):
+    suffix='_m3' if coarse else ('_m15' if refined else '')
+    full_connectivity=refined or coarse
+    node_start=2100001 if full_connectivity else NODE
+    series=read(AUDIT/('local_inputs'+suffix+'.json'))
+    if not coarse:
+        series.update(read(AUDIT/('local_sensitivity_inputs'+suffix+'.json')))
     groups={}
     cases={}
     registered_sha=None
     error=None
-    mesh_path=MESH/('case_1.5.npz' if refined else 'case_2.npz');target_path=MESH/'fixture_targets_0005.npz'
+    mesh_path=MESH/('case_3.npz' if coarse else ('case_1.5.npz' if refined else 'case_2.npz'));target_path=MESH/'fixture_targets_0005.npz'
     mesh_sha=digest(mesh_path);target_sha=digest(target_path)
     with np.load(mesh_path) as mesh,np.load(target_path) as skin:
         for case,spec in series.items():
@@ -108,9 +143,10 @@ def run(*,refined=False):
             assert job['step_sha256']==STEP_HASH and job['tab_standoff_mm']==SPACING
             verified(folder/'model.inp',spec['input_sha256']);assert job['files']['model.inp']==spec['input_sha256']
             full=(folder/'model.inp').read_text()
-            if refined:
-                original=INPUTS/job['supersedes']
-                verified(original/'model.inp',job['previous_input_sha256'])
+            if full_connectivity:
+                reference='reference_input_sha256' if coarse else 'previous_input_sha256'
+                original=INPUTS/job['mesh_reference' if coarse else 'supersedes']
+                verified(original/'model.inp',job[reference])
                 former=(original/'model.inp').read_text()
                 insert='FINISH\n/PREP7\nALLSEL,ALL\nCSYS,0\nESYS,0\nET,850,SOLID187'
                 end='RMODIF,861,6,-1\n'
@@ -118,9 +154,9 @@ def run(*,refined=False):
                 assert full.split(insert)[0]==former.split(insert)[0] and full.split(end)[1]==former.split(end)[1]
                 before=read(original/'local_job.json')
                 assert {k:v for k,v in job['files'].items() if k!='model.inp'}=={k:v for k,v in before['files'].items() if k!='model.inp'}
-            end=r'^EBLOCK,11,COMPACT' if refined else r'^EN,1200001,'
+            end=r'^EBLOCK,11,COMPACT' if full_connectivity else r'^EN,1200001,'
             coord,=re.findall(r'^MP,DENS,850,1.17E-9\nTYPE,850\nMAT,850\nREAL,1\n(.*?)'+end,full,re.M|re.S)
-            if refined:
+            if full_connectivity:
                 expected_count=len(mesh['tets'])
                 block,=re.findall(rf'^EBLOCK,11,COMPACT,,{expected_count}\n\(11i9\)\n(.*?)^-1$',full,re.M|re.S)
                 conn_sha=hashlib.sha256(block.encode()).hexdigest()
@@ -147,9 +183,10 @@ def run(*,refined=False):
             if sha not in groups:groups[sha]=check_block(block,mesh,skin,pilot,node_start)
             assert groups[sha]['861']['pilot']==pilot
             cases[case]=dict(input_sha256=spec['input_sha256'],contact_block_sha256=sha)
-            if refined:cases[case]['previous_input_sha256']=job['previous_input_sha256']
+            if full_connectivity:cases[case][reference]=job[reference]
     result=rigid_paths()
-    if refined:result.update(case_node_start=node_start,connectivity_sha256=connectivity_sha)
+    if coarse:result['mesh_shape_controls']=shape_comparison()
+    if full_connectivity:result.update(case_node_start=node_start,connectivity_sha256=connectivity_sha)
     write_json(AUDIT/('local_rigid_side_clearance'+suffix+'.json'),dict(**result,case_mesh_sha256=mesh_sha,
                target_mesh_sha256=target_sha,registered_coordinates_sha256=registered_sha,
                maximum_case_coordinate_error_mm=error,cases=cases,contact_blocks=groups,
@@ -161,5 +198,7 @@ def run(*,refined=False):
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--refined',action='store_true')
-    run(refined=parser.parse_args().refined)
+    group=parser.add_mutually_exclusive_group()
+    group.add_argument('--refined',action='store_true')
+    group.add_argument('--coarse',action='store_true')
+    args=parser.parse_args();run(refined=args.refined,coarse=args.coarse)

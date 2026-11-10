@@ -19,6 +19,11 @@ if ($Case -like 'snug125_*_m15') {
     $trial=Get-Content "$PSScriptRoot\..\validation\snug125\local_mesh15_preflight.json" -Raw|ConvertFrom-Json
     if ($spec.size_mm -ne 1.5 -or $spec.case_node_start -ne 2100001 -or $trial.native_counts.tetrahedra -ne 99818 -or $spec.step_sha256 -ne $trial.step_sha256) {throw 'Wrong refined local geometry'}
 }
+if ($Case -like 'snug125_*_pin1_m3') {
+    $catalog='snug125/local_inputs_m3.json'
+    $trial=Get-Content "$PSScriptRoot\..\validation\snug125\local_mesh3_preflight.json" -Raw|ConvertFrom-Json
+    if ($spec.size_mm -ne 3 -or $spec.case_node_start -ne 2100001 -or $trial.native_counts.tetrahedra -ne 18051 -or $trial.step_sha256 -ne $spec.step_sha256) {throw 'Wrong coarse local geometry'}
+}
 $published=Get-Content -LiteralPath "$PSScriptRoot\..\validation\$catalog" -Raw|ConvertFrom-Json
 $record=$published.PSObject.Properties[$Case].Value
 if ((Get-FileHash -LiteralPath "$Work\local_job.json").Hash -ne $record.spec_sha256){throw 'Local specification identity failed'}

@@ -211,12 +211,6 @@ def jobs():
             for branch in branches:
                 yield branch+'_motion_'+axis,branch+'_enforced'
         snug_dir=ROOT/'validation/snug125'
-        local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
-        local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
-        if local_catalog.is_file():
-            for case,meta in read(local_catalog).items():
-                yield meta['bare_reference'],''
-                yield case,meta['bare_reference']
         aluminium=ROOT/'validation/snug125/aluminium_refinement_inputs.json'
         if aluminium.is_file():
             for case,spec in read(aluminium).items():
@@ -225,6 +219,12 @@ def jobs():
         if tolerance.is_file():
             control=read(tolerance)
             yield control['case'],''
+        local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
+        local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
+        if local_catalog.is_file():
+            for case,meta in read(local_catalog).items():
+                yield meta['bare_reference'],''
+                yield case,meta['bare_reference']
         for branch in branches:
             patch_series=ROOT/'validation/snug125'/(branch+'_patch_inputs.json')
             if patch_series.is_file():
@@ -236,6 +236,10 @@ def jobs():
                 for name,spec in read(registry).items():
                     parent=f'shell_{branch}_free_v2' if spec['contact'] else branch+'_basis'
                     yield name,parent
+        coarse=snug_dir/'local_inputs_m3.json'
+        if coarse.is_file() and (snug_dir/'local_rigid_side_clearance_m3.json').is_file():
+            for case in read(coarse):
+                yield case,case.removesuffix('_m3')+'_m15'
         sensitivities=snug_dir/('local_sensitivity_inputs'+local_suffix+'.json')
         if sensitivities.is_file():
             for case,meta in read(sensitivities).items():
@@ -487,6 +491,11 @@ def run():
             controls.append(('shared_dmp_io_v1','control.inp','shared_dmp_control','shared_dmp_control.ps1','shared_dmp_control.py'))
         if case=='stand3_nylon_enforced' and not (RECEIPTS/case/'dispatch.json').exists():
             controls.append(('spherical_bearing_control_v1','control.inp','spherical_bearing_control','actuator_control.ps1','rocking_bearing.py'))
+        coarse_check = case=='snug125_aluminium_mesh15_static' or case.endswith('_pin1_m3')
+        if (coarse_check and not (RECEIPTS/case/'dispatch.json').exists()
+                and (ROOT/'validation/snug125/local_rigid_side_clearance_m3.json').is_file()):
+            controls.append(('snug_local_mesh3_shape_v1','pre.inp','snug125/local_mesh3_preflight',
+                             'flush_install_check.ps1','snug_local_preflight.py'))
         if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.
@@ -503,9 +512,12 @@ def run():
                 if not (probe/'audit_failed.txt').exists():
                     args=[sys.executable,str(ROOT/'model'/auditor),'audit']
                     if auditor=='default_install.py':args.append(mesh)
+                    if auditor=='snug_local_preflight.py':args.append('--coarse')
                     r=subprocess.run(args,capture_output=True,text=True)
                     if r.returncode:(probe/'audit_failed.txt').write_text(r.stderr);log('Rejected '+name+'; bare jobs independent')
         receipt=RECEIPTS/case;receipt.mkdir(parents=True,exist_ok=True)
+        if case.endswith('_pin1_m3') and not (ROOT/'validation/snug125/local_mesh3_preflight.json').is_file():
+            continue
         if case.startswith('snug125_') and case.endswith('_original_sturm') and not (receipt/'dispatch.json').exists():
             source=case.removesuffix('_sturm')
             if result_path(source).is_file() or not (RECEIPTS/source/'audit_failed.txt').is_file():continue
