@@ -135,6 +135,40 @@ def locked_geometry(rst, case, campaign):
                 native_set=k,rows=rows)
 
 
+def element_contact_forces(rst, index, faces):
+    """Read signed global CNFX/Y/Z on the complete set of case contact elements."""
+    numbers, records, _ = rst.element_solution_data(int(index), 'EMN')
+    rows = np.searchsorted(numbers, faces)
+    assert np.array_equal(numbers[rows], faces)
+    forces = np.zeros((len(faces), 3))
+    for j, row in enumerate(rows):
+        values = records[row]
+        if values is not None and len(values):
+            assert len(values) >= 45
+            forces[j] = values[42:45]
+    assert np.isfinite(forces).all()
+    return forces
+
+
+def incremental_contact_forces(rst, owners, indices, states):
+    """Compare each restart contact resultant with the final zero-added-load hold."""
+    faces = np.array(sorted(owners))
+    assert len(faces) and len(states) and len(states) == len(indices)
+    assert states[0]['applied_X_N'] == 0
+    baseline = None
+    for index, state in zip(indices, states, strict=True):
+        assert state['native_set'] == index + 1
+        forces = element_contact_forces(rst, index, faces)
+        if state['case_contact']['p_max'] > 0:
+            assert np.any(forces)
+        net = forces.sum(axis=0)
+        if baseline is None:
+            baseline = net.copy()
+        state['native_case_contact_force'] = dict(
+            CNF_XYZ_N=net.tolist(), change_from_zero_hold_XYZ_N=(net-baseline).tolist(),
+            sum_of_element_magnitudes_N=float(np.linalg.norm(forces, axis=1).sum()))
+
+
 def check_resultant(rst,owners,archive,history):
     native=table(archive/'snug_contact_force.csv')
     assert len(native)==rst.nsets and np.array_equal(native['native_set'],np.arange(rst.nsets)+1)
@@ -143,14 +177,7 @@ def check_resultant(rst,owners,archive,history):
     rows=[]
     for k,(station,state) in enumerate(zip(native,history,strict=True)):
         assert station['faces']==len(faces)
-        ids,records,_=rst.element_solution_data(k,'EMN')
-        inds=np.searchsorted(ids,faces);assert np.array_equal(ids[inds],faces)
-        result=np.zeros((len(faces),3))
-        for j,ind in enumerate(inds):
-            values=records[ind]
-            if values is not None and len(values):
-                assert len(values)>=45
-                result[j]=values[42:45]
+        result=element_contact_forces(rst,k,faces)
         total=result.sum(axis=0)
         post=np.array([station[n] for n in ('fx_N','fy_N','fz_N')])
         assert np.isfinite(result).all() and np.allclose(total,post,rtol=2e-5,atol=1e-5)

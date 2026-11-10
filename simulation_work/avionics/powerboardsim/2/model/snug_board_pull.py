@@ -223,7 +223,7 @@ def audit(case):
         for i,s in zip(steps,result['states'],strict=True):
             num,vals,nn=raw.element_solution_data(int(i),'ECT')
             s['case_contact']=pair_summary(int(i),times[i],ids,num,vals,nn)
-        from snug_locked_contact import contact_by_face, surface_owners
+        from snug_locked_contact import contact_by_face, incremental_contact_forces, surface_owners
         mesh=MESH/'case_2.npz'
         verified(mesh,input_record(parent)['mesh_sha256'])
         owners=surface_owners(raw,mesh)
@@ -231,6 +231,9 @@ def audit(case):
         for s,faces in zip(result['states'],by_face,strict=True):
             assert s['native_set']==faces['native_set']
             s['loaded_case_faces']=faces['loaded_case_faces']
+        # The original parent did not request MISC. The restart explicitly requests it.
+        incremental_contact_forces(raw,owners,steps[zero:],result['states'][zero:])
+        result['native_contact_scope']='Signed CNFX/Y/Z summed over every case contact face and target, referenced to the zero-added-load hold.'
     prediction=AUDIT/f'{branch}_cell_flexibility.json'
     projected=read(prediction)
     assert projected['force_pattern_sha256']==spec['force_cards_sha256']
@@ -265,6 +268,19 @@ def compare_full_tangent(branch, spec, result):
             native_minus_predicted_cell_centres_X_um=(centres-force*centre_slope).tolist(),
             predicted_left_to_clamps_X_um=force*clamp_slope,
             native_minus_predicted_left_to_clamps_X_um=state['left_to_clamps_XYZ_um'][0]-force*clamp_slope)
+    paths=AUDIT/f'{branch}_initial_cell_load_paths.json'
+    if paths.is_file():
+        recovery=read(paths)
+        assert recovery['full_tangent_sha256']==digest(path)
+        assert recovery['load_order']==['left','middle','right']
+        # The test loads the left cell; its pocket is open initially. Board motion
+        # can still shift the force at the middle pocket through the nickel strips.
+        slope=np.asarray(recovery['cell_load_paths'][1]['case_XYZ_N_per_N'])[:,0]
+        for state in result['states']:
+            if state['load_step']>=4:
+                state['full_tangent_check']['additional_middle_cell_force_into_PLA_XYZ_N']=(
+                    state['applied_X_N']*slope).tolist()
+        result['initial_load_paths_sha256']=digest(paths)
     result['full_linear_tangent_sha256']=digest(path)
 
 

@@ -84,10 +84,10 @@ def check_modes(branch, modal, folder, rst, dofs, free, fixed, dep, G, K, M, sol
     return check,error
 
 
-def evaluate(branch, matrices):
+def evaluate(branch, matrices, *, load_paths=False):
     d,free,fixed,dep,G,K,M,identity=matrices
     basis,folder,rst=source(branch+'_basis',CAMPAIGN)
-    installed,_,initial=source(branch+'_static',CAMPAIGN)
+    installed,static_folder,initial=source(branch+'_static',CAMPAIGN)
     supports=np.sort(initial.mesh.node_components['_FIXEDSU'])
     ground=np.flatnonzero(np.isin(d[:,0],supports)&(d[:,1]<3))
     assert len(supports)==781 and len(ground)==2343 and np.isin(ground,fixed).all()
@@ -175,18 +175,24 @@ def evaluate(branch, matrices):
         four_kHz_minus_full_relative_pct=100*(prior_clamp/(1000*relative[0,0])-1),
         scope='Independent static solution of the original installed modal tangent. Each column applies one newton '
               'along PCB X to the mass of one cell. Contact and material tangents retain their installed states.')
-    write_json(AUDIT/f'{branch}_full_board_tangent.json',result)
+    if load_paths:
+        from snug_pocket_load_path import recover
+        recover(branch,basis,folder,rst,installed,static_folder,d,u,compliance)
+    else:
+        write_json(AUDIT/f'{branch}_full_board_tangent.json',result)
     print(branch,compliance[:,0].tolist(),1000*relative[0,0],roll[0],flush=True)
 
 
-def run(branch):
+def run(branch, *, load_paths=False):
     case=branch+'_basis'
     ledger=read(ROOT/'.runtime/receipts'/CAMPAIGN/case/'archived.json')
     assert ledger['case']==case and ledger['campaign']==CAMPAIGN
-    evaluate(branch,assemble(ROOT/'.runtime/archive'/CAMPAIGN/case,{r['name']:r['sha256'] for r in ledger['files']}))
+    evaluate(branch,assemble(ROOT/'.runtime/archive'/CAMPAIGN/case,{r['name']:r['sha256'] for r in ledger['files']}),load_paths=load_paths)
 
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('branch',choices=(*BRANCHES,'snug125_nylon_mesh15','snug125_aluminium_mesh15'))
-    run(p.parse_args().branch)
+    p.add_argument('--load-paths',action='store_true',help='Recover cell-to-strip and cell-to-case force increments')
+    args=p.parse_args()
+    run(args.branch,load_paths=args.load_paths)

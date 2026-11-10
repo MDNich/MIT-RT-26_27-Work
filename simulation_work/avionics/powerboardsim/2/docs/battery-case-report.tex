@@ -453,7 +453,7 @@ Right cell relative to board supports & 0.7969 & 0.7954 & 0.7941\\
 Left cell relative to its own strip clamps & 0.2726 & 0.2726 & 0.2727\\\bottomrule
 \end{tabular}\end{center}
 
-Cutting off the modes at 4~kHz lowered the last row by less than 0.8\%. Relative cell rotation contributed 0.213~$\mu$m/N on each board and 17.81 of 17.95~$\mu$m/N in the local bare and nylon fixtures over 5--10~$\mu$m of travel. Queued nonlinear checks load the left cell to 1 and 8.542~N, then unload.
+Cutting off the modes at 4~kHz lowered the last row by less than 0.8\%. Relative cell rotation contributed 0.213~$\mu$m/N on each board and 17.81 of 17.95~$\mu$m/N in the local bare and nylon fixtures over 5--10~$\mu$m of travel. Page~25 traces the initial force into the strips and PLA. Queued nonlinear checks load the left cell to 1 and 8.542~N, then unload.
 
 \newpage
 \pageheading{How much closer do neighbouring cells move?}
@@ -510,6 +510,24 @@ With the native element sizes, the independent model reproduced the native high-
 
 \heading{What the first crossing means}
 The original native mesh bracketed the coupon comparison at 0.2950--0.3039~mm. At the finest illustrated resolution the independent bracket was 0.2194--0.2319~mm, and it had moved at every refinement. This sensitivity limits any physical interpretation of a single corner reaching 40.5~MPa. The actual printed corner radius and local print quality are unmeasured. The separate native whole-fixture mesh comparison will also allow the tab and the rest of the assembly to redistribute their loads.
+
+\newpage
+\pageheading{Where does a sideways force on the middle cell go?}
+On the bare board the two nickel strips shared the middle cell's lateral load almost equally. After tightening the snug case, the PLA pocket carried \textbf{10.4\% of an additional small load with nylon screws} and \textbf{14.5\% with aluminium screws}. Both nickel strips carried less than on the bare board. The high-Y strip showed the larger reduction with either screw material.
+
+\begin{center}\includegraphics[width=\linewidth]{figures/snug-middle-load-path.pdf}
+\captionof{figure}{Independent whole-board calculation at bolt lock. The left panel divides the additional PCB-X force among the two ends of the middle cell and its case pocket. The right panel resolves the same pocket force at the four screw-bearing rings. Both panels use the total applied cell force as the denominator. L and R denote the low- and high-X mounting tabs.}\end{center}
+
+\heading{What changed with the screws and the mesh?}
+For each newton applied along PCB X, the low- and high-Y strips carried 0.458 and 0.438~N with nylon screws. With aluminium they carried 0.463 and 0.392~N. The largest share at a single mount occurred at the high-X, high-Y tab in all three cased calculations. It carried 3.2\% of the applied load with nylon and 5.2\% with aluminium on the 2~mm meshes. Refining nylon to 1.5~mm changed the total pocket share from 10.37\% to 9.90\% and this tab's share from 3.21\% to 3.47\%.
+
+\heading{Why the load location matters}
+We applied a separate load through the mass centre of each cell. With either outer cell loaded, both outer pockets remained open in the installed configuration, and the loaded cell transferred its full additional X force to its two strips. The board flexed enough to change the reaction at the already seated middle pocket. Per newton on the left cell, its signed X increment was $-0.0066$~N with nylon and $-0.0068$~N with aluminium. Under load on the middle cell, the corresponding increments were $+0.1037$ and $+0.1452$~N.
+
+\heading{How the forces were checked}
+We solved the full linearized board equations for each load and recovered the forces from the original ANSYS element matrices on the nickel, PLA and contact sides. Each cell balanced in X, Y and Z to within $10^{-9}$~N per newton applied. The four tab reactions balanced the pocket force within $10^{-11}$~N/N across the cases. As a separate check, the same element operators reproduced native force fields on the six bonds and the closed pocket across 38 bare, 48 nominal and 49 fine-nylon modes. The largest relative force-field difference was below $4.1\times10^{-7}$.
+
+The calculation gives the initial slope while the installed contact pattern persists. Page~14 gives bond loads under vibration and page~21 gives the local fixture's finite-travel response.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
