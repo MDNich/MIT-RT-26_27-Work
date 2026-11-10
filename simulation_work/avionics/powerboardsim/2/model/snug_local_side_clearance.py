@@ -14,7 +14,7 @@ from film_identity import digest,verified,write_json
 from stage_snug_fit import AUDIT,INPUTS,MESH,SPACING,STEP,STEP_HASH
 
 
-def check_block(text,mesh,skin,pilot):
+def check_block(text,mesh,skin,pilot,case_node_start=NODE):
     sections=text.split('TSHAP,PILO\nE,')
     assert len(sections)==3
     groups={}
@@ -32,7 +32,7 @@ def check_block(text,mesh,skin,pilot):
         mark=next(i for i,line in enumerate(lines[end:],end) if line.startswith('CMBLOCK,CASE_PATCH,NODE,'))
         count=int(lines[mark].split(',')[-1])
         actual=np.fromstring(' '.join(lines[mark+2:mark+2+(count+7)//8]),sep=' ',dtype=int)
-        expected=np.unique(np.concatenate([mesh[str(tag)].ravel() for tag in tags]))+NODE
+        expected=np.unique(np.concatenate([mesh[str(tag)].ravel() for tag in tags]))+case_node_start
         assert len(actual)==count and np.array_equal(actual,expected)
         assert f'CMSEL,S,CASE_PATCH,NODE\nTYPE,862\nREAL,{real}\nMAT,862\nESURF' in group
         groups[str(real)]=dict(pilot=control,hardware_STEP_bodies=bodies,case_STEP_faces=tags,
@@ -90,13 +90,15 @@ def rigid_paths():
                 initial_left_cell_gap_mm=initial,rigid_translation=records)
 
 
-def run():
-    series={**read(AUDIT/'local_inputs.json'),**read(AUDIT/'local_sensitivity_inputs.json')}
+def run(*,refined=False):
+    suffix='_m15' if refined else ''
+    node_start=2100001 if refined else NODE
+    series={**read(AUDIT/('local_inputs'+suffix+'.json')),**read(AUDIT/('local_sensitivity_inputs'+suffix+'.json'))}
     groups={}
     cases={}
     registered_sha=None
     error=None
-    mesh_path=MESH/'case_2.npz';target_path=MESH/'fixture_targets_0005.npz'
+    mesh_path=MESH/('case_1.5.npz' if refined else 'case_2.npz');target_path=MESH/'fixture_targets_0005.npz'
     mesh_sha=digest(mesh_path);target_sha=digest(target_path)
     with np.load(mesh_path) as mesh,np.load(target_path) as skin:
         for case,spec in series.items():
@@ -106,13 +108,35 @@ def run():
             assert job['step_sha256']==STEP_HASH and job['tab_standoff_mm']==SPACING
             verified(folder/'model.inp',spec['input_sha256']);assert job['files']['model.inp']==spec['input_sha256']
             full=(folder/'model.inp').read_text()
-            coord,=re.findall(r'^MP,DENS,850,1.17E-9\nTYPE,850\nMAT,850\nREAL,1\n(.*?)^EN,1200001,',full,re.M|re.S)
+            if refined:
+                original=INPUTS/job['supersedes']
+                verified(original/'model.inp',job['previous_input_sha256'])
+                former=(original/'model.inp').read_text()
+                insert='FINISH\n/PREP7\nALLSEL,ALL\nCSYS,0\nESYS,0\nET,850,SOLID187'
+                end='RMODIF,861,6,-1\n'
+                assert all(text.count(insert)==text.count(end)==1 for text in (full,former))
+                assert full.split(insert)[0]==former.split(insert)[0] and full.split(end)[1]==former.split(end)[1]
+                before=read(original/'local_job.json')
+                assert {k:v for k,v in job['files'].items() if k!='model.inp'}=={k:v for k,v in before['files'].items() if k!='model.inp'}
+            end=r'^EBLOCK,11,COMPACT' if refined else r'^EN,1200001,'
+            coord,=re.findall(r'^MP,DENS,850,1.17E-9\nTYPE,850\nMAT,850\nREAL,1\n(.*?)'+end,full,re.M|re.S)
+            if refined:
+                expected_count=len(mesh['tets'])
+                block,=re.findall(rf'^EBLOCK,11,COMPACT,,{expected_count}\n\(11i9\)\n(.*?)^-1$',full,re.M|re.S)
+                conn_sha=hashlib.sha256(block.encode()).hexdigest()
+                if registered_sha is None:
+                    elements=np.fromstring(block,sep=' ',dtype=int).reshape(-1,11)
+                    assert np.array_equal(elements[:,0],1200001+np.arange(expected_count))
+                    assert np.array_equal(elements[:,1:],node_start+mesh['tets'][:,[0,1,2,3,4,5,6,7,9,8]])
+                    connectivity_sha=conn_sha
+                assert conn_sha==connectivity_sha
+
             coord_sha=hashlib.sha256(coord.encode()).hexdigest()
             if registered_sha is None:
                 x=mesh['points']
                 expected=np.column_stack((PCB_CENTER[0]+x[:,0],PCB_CENTER[1]+x[:,2],PCB_BOTTOM-10-SPACING-x[:,1]))
                 nodes=np.asarray([list(map(float,line.split(',')[1:])) for line in coord.splitlines()])
-                assert np.array_equal(nodes[:,0],NODE+np.arange(len(x)))
+                assert np.array_equal(nodes[:,0],node_start+np.arange(len(x)))
                 error=float(np.max(abs(nodes[:,1:]-expected)))
                 assert error<1e-7
                 registered_sha=coord_sha
@@ -120,11 +144,13 @@ def run():
             block,=re.findall(r'ET,861,TARGE170\n(.*?)RMODIF,861,6,-1\n',full,re.S)
             pilot=read(ROOT/'.runtime/local_inputs'/spec['source']/'mesh.json')['pilot']
             sha=hashlib.sha256(block.encode()).hexdigest()
-            if sha not in groups:groups[sha]=check_block(block,mesh,skin,pilot)
+            if sha not in groups:groups[sha]=check_block(block,mesh,skin,pilot,node_start)
             assert groups[sha]['861']['pilot']==pilot
             cases[case]=dict(input_sha256=spec['input_sha256'],contact_block_sha256=sha)
+            if refined:cases[case]['previous_input_sha256']=job['previous_input_sha256']
     result=rigid_paths()
-    write_json(AUDIT/'local_rigid_side_clearance.json',dict(**result,case_mesh_sha256=mesh_sha,
+    if refined:result.update(case_node_start=node_start,connectivity_sha256=connectivity_sha)
+    write_json(AUDIT/('local_rigid_side_clearance'+suffix+'.json'),dict(**result,case_mesh_sha256=mesh_sha,
                target_mesh_sha256=target_sha,registered_coordinates_sha256=registered_sha,
                maximum_case_coordinate_error_mm=error,cases=cases,contact_blocks=groups,
                scope='Rigid CAD translation of the left cell along PCB X with the registered case fixed. '
@@ -132,4 +158,8 @@ def run():
                      'Its solved force onset must be determined separately from the native results.'))
 
 
-if __name__=='__main__':run()
+if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--refined',action='store_true')
+    run(refined=parser.parse_args().refined)

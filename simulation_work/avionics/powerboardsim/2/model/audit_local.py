@@ -123,6 +123,8 @@ def audit(case, campaign):
     if spec.get('detection_parent'):catalog='pull_detection_control.json'
     if case.startswith('snug125_'):
         catalog='snug125/local_sensitivity_inputs.json' if spec.get('snug_sensitivity') else 'snug125/local_inputs.json'
+    if case.startswith('snug125_') and case.endswith('_m15'):
+        catalog=catalog.replace('.json','_m15.json')
     manifest = read(ROOT/'validation'/catalog)[case]
     assert hashlib.sha256((folder/'local_job.json').read_bytes()).hexdigest()==manifest['spec_sha256']
     assert spec['case']==ledger['case']==status['case']==case and status['phase']=='solver_complete'

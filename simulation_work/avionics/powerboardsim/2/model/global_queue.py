@@ -210,7 +210,9 @@ def jobs():
         for axis in 'XYZ':
             for branch in branches:
                 yield branch+'_motion_'+axis,branch+'_enforced'
-        local_catalog=ROOT/'validation/snug125/local_inputs.json'
+        snug_dir=ROOT/'validation/snug125'
+        local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
+        local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
         if local_catalog.is_file():
             for case,meta in read(local_catalog).items():
                 yield meta['bare_reference'],''
@@ -234,7 +236,7 @@ def jobs():
                 for name,spec in read(registry).items():
                     parent=f'shell_{branch}_free_v2' if spec['contact'] else branch+'_basis'
                     yield name,parent
-        sensitivities=ROOT/'validation/snug125/local_sensitivity_inputs.json'
+        sensitivities=snug_dir/('local_sensitivity_inputs'+local_suffix+'.json')
         if sensitivities.is_file():
             for case,meta in read(sensitivities).items():
                 yield meta['bare_reference'],''
@@ -537,7 +539,8 @@ def run():
                 continue
         damage_catalog=ROOT/'validation/damage_variant_inputs.json'
         if case.startswith('snug125_'):
-            damage_catalog=ROOT/'validation/snug125/local_sensitivity_inputs.json'
+            name='local_sensitivity_inputs_m15.json' if case.endswith('_m15') else 'local_sensitivity_inputs.json'
+            damage_catalog=ROOT/'validation/snug125'/name
         if '_damage_cont' in case and not case.startswith('bare_') and damage_catalog.is_file():
             variation=read(damage_catalog).get(case)
             if variation and not damage_reference_ready(variation):

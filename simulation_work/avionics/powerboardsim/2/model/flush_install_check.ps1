@@ -1,4 +1,4 @@
-param([Parameter(Mandatory)][ValidateSet('flush_approach_v1','board_initial_v1','board_surface_initial_v1','local_seat_faces_v1','default_refined_initial_v1','default_original_initial_v1')] [string]$Trial)
+param([Parameter(Mandatory)][ValidateSet('flush_approach_v1','board_initial_v1','board_surface_initial_v1','local_seat_faces_v1','default_refined_initial_v1','default_original_initial_v1','snug_local_mesh15_shape_v1')] [string]$Trial)
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot
 $env:ANSYSLMD_LICENSE_FILE='1055@localhost'

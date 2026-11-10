@@ -59,7 +59,7 @@ def target_skin(*, out=None, cell_resolution=(.005,.07)):
     np.savez_compressed(out,**data)
     return out
 
-def rigid_surface(lines,skin,bodies,pilot,real,tags,mesh):
+def rigid_surface(lines,skin,bodies,pilot,real,tags,mesh,case_node_start=NODE):
     """Attach the target facets to their own rigid pilot and pair with selected PLA faces."""
     coords=skin['points'];tri=np.vstack([skin[str(body)] for body in bodies])
     base_node=1600000 if real==861 else 1800000
@@ -70,17 +70,23 @@ def rigid_surface(lines,skin,bodies,pilot,real,tags,mesh):
     for triangle in tri:lines.append('E,'+','.join(map(str,base_node+triangle)))
     lines.extend(['TSHAP','ALLSEL,ALL','ESEL,S,TYPE,,850'])
     faces=np.unique(np.concatenate([mesh[str(t)].ravel() for t in tags]))
-    component(lines,'CASE_PATCH',NODE+faces)
+    component(lines,'CASE_PATCH',case_node_start+faces)
     lines.extend(['CMSEL,S,CASE_PATCH,NODE','TYPE,862',f'REAL,{real}','MAT,862','ESURF','ALLSEL,ALL'])
 
-def make(mesh,skin,variant,offset,pilot,initial_retreat_mm=0., *, bearing_faces=(42,38,40,44), tab_thickness_mm=2.0828, fixed_faces=range(5,46)):
+def make(mesh,skin,variant,offset,pilot,initial_retreat_mm=0., *, bearing_faces=(42,38,40,44), tab_thickness_mm=2.0828, fixed_faces=range(5,46), case_node_start=NODE, full_connectivity=False):
     local=mesh['points']
     pts=np.column_stack((34.6075+local[:,0],60.3885+local[:,2],-.55118-10-offset-initial_retreat_mm-local[:,1]))
     e,nu,rho=SCREWS[variant]
     lines=['FINISH','/PREP7','ALLSEL,ALL','CSYS,0','ESYS,0','ET,850,SOLID187','MP,EX,850,3426.9','MP,EY,850,3426.9','MP,EZ,850,3064.9','MP,GXY,850,1269.22','MP,GXZ,850,1201.54','MP,GYZ,850,1201.54','MP,PRXY,850,.35','MP,PRXZ,850,.35','MP,PRYZ,850,.35','MP,DENS,850,1.17E-9','TYPE,850','MAT,850','REAL,1']
-    for i,xyz in enumerate(pts):lines.append('N,'+str(NODE+i)+','+','.join(f'{v:.11g}' for v in xyz))
-    for i,t in enumerate(mesh['tets'][:,[0,1,2,3,4,5,6,7,9,8]]+NODE):
-        lines.extend(['EN,'+str(1200001+i)+','+','.join(map(str,t[:8])),'EMORE,'+','.join(map(str,t[8:]))])
+    for i,xyz in enumerate(pts):lines.append('N,'+str(case_node_start+i)+','+','.join(f'{v:.11g}' for v in xyz))
+    tets=mesh['tets'][:,[0,1,2,3,4,5,6,7,9,8]]+case_node_start
+    if full_connectivity:
+        lines.extend([f'EBLOCK,11,COMPACT,,{len(tets)}','(11i9)'])
+        lines.extend(''.join(f'{n:9d}' for n in (1200001+i,*t)) for i,t in enumerate(tets))
+        lines.append('-1')
+    else:
+        for i,t in enumerate(tets):
+            lines.extend(['EN,'+str(1200001+i)+','+','.join(map(str,t[:8])),'EMORE,'+','.join(map(str,t[8:]))])
     lines.extend(['ET,851,BEAM188',f'MP,EX,851,{e/1e6}',f'MP,PRXY,851,{nu}',f'MP,DENS,851,{rho*1e-12}','SECTYPE,851,BEAM,CSOLID','SECDATA,1.672,12,2','KEYOPT,851,3,3','ET,854,COMBIN39','KEYOPT,854,4,1'])
     for i,(sx,sy) in enumerate([(-1,-1),(-1,1),(1,-1),(1,1)]):
         case_xy=np.array([34.6075+sx*31.4275,60.3885+sy*56.62058])
@@ -91,13 +97,13 @@ def make(mesh,skin,variant,offset,pilot,initial_retreat_mm=0., *, bearing_faces=
         lo=950001+2*i;up=lo+1
         for node,z in [(lo,pts[ring,2].mean()),(up,-.55118-initial_retreat_mm)]:lines.append(f'N,{node},{axis[0]:.11g},{axis[1]:.11g},{z:.11g}')
         lines.extend(['TYPE,851','MAT,851','SECNUM,851',f'E,{lo},{up}',f'D,{up},ALL,0'])
-        lines.extend(f'CERIG,{lo},{n},UXYZ' for n in (ring+NODE))
+        lines.extend(f'CERIG,{lo},{n},UXYZ' for n in (ring+case_node_start))
         k=3064.9*np.pi*(4**2-2.15**2)/(offset+tab_thickness_mm)
         lines.extend([f'R,{870+i},-4,{-4*k:.11g},0,0,4,0','TYPE,854',f'REAL,{870+i}',f'E,{lo},{up}'])
     lines.extend(['ET,861,TARGE170','KEYOPT,861,2,1','ET,862,CONTA174','KEYOPT,862,9,2','MP,MU,862,0','R,861','R,862'])
-    rigid_surface(lines,skin,[4],pilot,861,[10,11,12,13],mesh)
+    rigid_surface(lines,skin,[4],pilot,861,[10,11,12,13],mesh,case_node_start)
     fixed=959001;lines.extend([f'N,{fixed},34.6075,60.3885,-11.822674',f'D,{fixed},ALL,0'])
-    rigid_surface(lines,skin,[15,19,1,6,9,10,11,20],fixed,862,fixed_faces,mesh)
+    rigid_surface(lines,skin,[15,19,1,6,9,10,11,20],fixed,862,fixed_faces,mesh,case_node_start)
     lines.extend(['ALLSEL,ALL','FINISH','/PREP7'])
     return '\n'.join(lines)+'\n'
 

@@ -10,7 +10,7 @@ from stage_local_jobs import seal
 from stage_snug_fit import AUDIT,BEARINGS,INPUTS,MESH,ROOT,SPACING,STEP_HASH,THICKNESS
 
 
-def stage(sensitivities=False):
+def stage(sensitivities=False,*,refined=False):
     fixtures=('lateral_friction_locked','lateral_friction_locked_minus','lateral_friction_locked_fine','damage_cont_nominal')
     controls=read(ROOT/'validation/local_contact_retries.json')
     if sensitivities:
@@ -22,7 +22,8 @@ def stage(sensitivities=False):
     target=MESH/'fixture_targets_0005.npz'
     if not target.exists():
         target_skin(out=target,cell_resolution=(.0005,.016))
-    mesh_path=MESH/'case_2.npz'
+    mesh_path=MESH/('case_1.5.npz' if refined else 'case_2.npz')
+    old_registry=read(AUDIT/('local_sensitivity_inputs.json' if sensitivities else 'local_inputs.json')) if refined else {}
     mesh=np.load(mesh_path);skin=np.load(target)
     assert len(skin['points'])<200000
     # The 1 mm search stays unchanged. Finer target facets bound cylinder chord error below the central CAD gap.
@@ -32,6 +33,8 @@ def stage(sensitivities=False):
         pilot=read(ROOT/'.runtime/local_inputs'/source/'mesh.json')['pilot']
         for material in ('nylon','aluminium'):
             old=f'stand3_{material}_{source}_pin1';fresh=f'snug125_{material}_{source}_pin1'
+            original=fresh
+            if refined:fresh+='_m15'
             template=INPUTS/old;dest=INPUTS/fresh;dest.mkdir(exist_ok=True)
             verified(template/'local_job.json',controls[old]['spec_sha256'])
             data=read(template/'local_job.json');files={}
@@ -48,27 +51,36 @@ def stage(sensitivities=False):
                     key=(material,pilot)
                     if key not in attachment_cache:
                         attachment_cache[key]=make(mesh,skin,material,SPACING,pilot,bearing_faces=BEARINGS,
-                            tab_thickness_mm=THICKNESS,fixed_faces=[*range(5,46),50,51,52,53]).encode()
+                            tab_thickness_mm=THICKNESS,fixed_faces=[*range(5,46),50,51,52,53],
+                            **({'case_node_start':2100001,'full_connectivity':True} if refined else {})).encode()
                     attachment=attachment_cache[key]
                     assert f'TSHAP,PILO\nE,{pilot}\n'.encode() in attachment
                     binary=before+attachment+right+after
                 files[name]=seal(dest/name,binary)
             spec=dict(case=fresh,source=source,cased=True,coupon=False,job=data['job'],cores=data['cores'],
                       files=files,tab_standoff_mm=SPACING,step_sha256=STEP_HASH,absolute_search_mm=1.)
+            if refined:
+                original_spec=old_registry[original]
+                verified(INPUTS/original/'local_job.json',original_spec['spec_sha256'])
+                verified(INPUTS/original/'model.inp',original_spec['input_sha256'])
+                spec.update(supersedes=original,previous_input_sha256=original_spec['input_sha256'],
+                            size_mm=1.5,case_node_start=2100001,case_mesh_sha256=digest(mesh_path))
             if sensitivities:
                 spec['snug_sensitivity']=True
                 if 'sensitivity_reference' in data:
-                    spec.update(sensitivity_reference=data['sensitivity_reference'].replace('stand3_','snug125_',1),
+                    spec.update(sensitivity_reference=data['sensitivity_reference'].replace('stand3_','snug125_',1)+('_m15' if refined else ''),
                                 original_run_sha256=data['original_run_sha256'])
             specs[fresh]=dict(spec_sha256=seal(dest/'local_job.json',(json.dumps(spec,indent=2)+'\n').encode()),
                         input_sha256=files['model.inp'],bare_reference='bare_'+source,template=old,
                         source=source,mesh_sha256=digest(mesh_path),target_sha256=digest(target),moving_target_faces=len(skin['4']))
             if sensitivities and 'sensitivity_reference' in spec:
                 specs[fresh]['nominal']=spec['sensitivity_reference']
-    write_json(AUDIT/('local_sensitivity_inputs.json' if sensitivities else 'local_inputs.json'),specs)
+    name='local_sensitivity_inputs' if sensitivities else 'local_inputs'
+    write_json(AUDIT/(name+('_m15' if refined else '')+'.json'),specs)
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--sensitivities',action='store_true')
-    stage(parser.parse_args().sensitivities)
+    parser.add_argument('--refined',action='store_true')
+    args=parser.parse_args();stage(args.sensitivities,refined=args.refined)

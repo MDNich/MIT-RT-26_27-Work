@@ -9,15 +9,11 @@
 \begin{document}
 \begin{frame}{The three-pocket Balius case fits at 1.25 mm stand-off}
 \includegraphics[width=.95\linewidth]{figures/balius-native-fit-1p25mm.pdf}
-\par\small The middle-cell clearance is 0.003 mm and the closest washer clears by 0.328 mm. The rigid left cell reaches its pocket after \textbf{0.020 mm toward the middle cell} or \textbf{0.165 mm away from it}.
+\par\small The dense PLA shell adds 73.7 g to the 251.8 g bare board. The middle-cell clearance is 0.003 mm and the closest washer clears by 0.328 mm. The rigid left cell reaches its pocket after \textbf{0.020 mm toward the middle cell} or \textbf{0.165 mm away from it}.
 \end{frame}
-\begin{frame}{The shell adds 73.7 g to the 251.8 g bare assembly}
-\begin{columns}[T,onlytextwidth]
-\column{.48\textwidth}\textbf{Snug geometry}\par Three cells, four 6.35 mm thick tabs and four M4 case screws. The nominal model uses printed PLA, an air gap, and either nylon or aluminium screws.
-\vspace{2mm}\par\small The shell mass assumes dense PLA. Screws and spacer mass are excluded from the estimate.
-\column{.48\textwidth}\textbf{No-case reference}\par First prestressed mode 485.96 Hz. Peak board-normal motion under base Z was 52.67 $\mu$m RMS. At 0.50 mm lateral travel the bare fixture required 8.54 N in positive X and 8.51 N in negative X.
-\end{columns}
-\vfill\small The rerun compares the same loads and movie subjects. The earlier flush and 3 mm results are preserved in Appendix A of the report.
+\begin{frame}{The snug case increases board travel in the seeded clips}
+\centering\includegraphics[width=.95\linewidth]{figures/snug-seeded-board-travel.pdf}
+\par\raggedright During the displayed base-Z interval, PCB travel normal to the board reached \textbf{0.168 mm bare}, \textbf{0.390 mm with nylon screws} and \textbf{0.248 mm with aluminium}. All \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{22 paired movie subjects} are available.
 \end{frame}
 \begin{frame}{Both snug mounts reduce PCB movement during tightening}
 \centering\includegraphics[width=.89\linewidth]{figures/snug-preload.pdf}
@@ -33,7 +29,7 @@
 \end{frame}
 \begin{frame}{Board-normal vibration loads the middle cell's nickel bond}
 \centering\includegraphics[width=.93\linewidth]{figures/snug-attachment-history.pdf}
-\par\raggedright The largest base-Z bond load rose from \textbf{30.2 N bare} to \textbf{40.1 N with nylon screws} and \textbf{50.5 N with aluminium}. The finer nylon mesh gave \textbf{48.8 N}. All cased base-Z peaks occur at the middle cell. Values use the installed contact state and independently integrated native modes.
+\par\raggedright The largest base-Z bond load rose from \textbf{30.2 N bare} to \textbf{40.1 N with nylon screws} and \textbf{50.5 N with aluminium}. The finer nylon mesh gave \textbf{48.8 N}. All cased base-Z peaks occur at the middle cell. Bars use native histories at the installed contact state. The diamond uses independent integration on the finer native modes.
 \end{frame}
 \begin{frame}{The outer cells can reach the case}
 \centering\includegraphics[width=.9\linewidth]{figures/snug-seeded-gaps.pdf}
