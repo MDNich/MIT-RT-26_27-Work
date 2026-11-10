@@ -229,9 +229,18 @@ def jobs():
         local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
         local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
         if local_catalog.is_file():
-            for case,meta in read(local_catalog).items():
-                yield meta['bare_reference'],''
-                yield case,meta['bare_reference']
+            local_cases=read(local_catalog)
+            # Complete both directions on both nominal mounts before testing tab rotation.
+            primary=('lateral_friction_locked','lateral_friction_locked_minus')
+            for directional in (True,False):
+                for case,meta in local_cases.items():
+                    if (meta['source'] in primary)==directional:
+                        yield meta['bare_reference'],''
+                        yield case,meta['bare_reference']
+                rocking=snug_dir/'local_bearing_inputs.json'
+                if directional and rocking.is_file():
+                    for case,meta in read(rocking).items():
+                        yield case,meta['parent']
         for branch in branches:
             patch_series=ROOT/'validation/snug125'/(branch+'_patch_inputs.json')
             if patch_series.is_file():
@@ -407,7 +416,11 @@ def damage_reference_ready(spec):
     case=spec['nominal']
     if case.startswith(('stand3_','snug125_')):
         scope=ROOT/'validation/pulls'/(case+'_damage_scope.json')
-        return scope.is_file() and read(scope)['case']==case
+        if not scope.is_file():
+            return False
+        record=read(scope)
+        station=record['last_station_before_limits']
+        return record['case']==case and station is not None and station['travel_mm']>0
     from audit_local import table
     material_path=ROOT/'validation/installation_material'/(case+'.json')
     verdicts=[ROOT/'validation'/k/(case+'.json') for k in ('local','partial_local','review_local')]

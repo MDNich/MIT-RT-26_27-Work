@@ -127,13 +127,15 @@ def audit(case, campaign):
         catalog=catalog.replace('.json','_m15.json')
     if case.startswith('snug125_') and case.endswith('_pin1_m3'):
         catalog='snug125/local_inputs_m3.json'
+    if spec.get('snug_bearing_control'):
+        catalog='snug125/local_bearing_inputs.json'
     manifest = read(ROOT/'validation'/catalog)[case]
     assert hashlib.sha256((folder/'local_job.json').read_bytes()).hexdigest()==manifest['spec_sha256']
     assert spec['case']==ledger['case']==status['case']==case and status['phase']=='solver_complete'
     assert all((folder/f['name']).stat().st_size==f['bytes'] for f in ledger['files'])
     cfgdir = ROOT/'.runtime/local_inputs'/spec['source']
     cfg = read(cfgdir/'config.json')
-    if spec.get('common_load_parent') or spec.get('detection_parent'):
+    if spec.get('common_load_parent') or spec.get('detection_parent') or spec.get('snug_bearing_control'):
         cfg.update(end_time=spec['end_time'],displacement_mm=spec['displacement_mm'])
     listing = (folder/'solve.out').read_text(errors='replace')
     if 'RUN COMPLETED' not in listing or (folder/'REJECTED_LOAD_HISTORY.txt').exists():
@@ -151,6 +153,10 @@ def audit(case, campaign):
         from damage_footprint import run as damage_maps
         from film_identity import digest
         data['damage_footprint_sha256']=digest(damage_maps(case,campaign))
+    if spec.get('snug_bearing_control'):
+        from rocking_bearing import audit_joint
+        from film_identity import digest
+        data['joint_check_sha256']=digest(audit_joint(case,campaign))
     complete = bool(status['native_clean']) and reached
     data.update(case=case,source=spec['source'],campaign=campaign,full_requested_path=complete,
                 scope='Completed numerical fixture' if complete else 'Partial converged path; endpoint under review',
@@ -170,7 +176,10 @@ def audit(case, campaign):
         from common_pull_resolution import check as check_resolution
         check_resolution(case,campaign)
     write_json(dest/(case+'.json'),data)
-    if (case.startswith('snug125_') and case.endswith(('_m15','_m3'))
+    if spec.get('snug_bearing_control'):
+        from snug_rocking_pull import compare as compare_mounts
+        compare_mounts(case,dest/(case+'.json'))
+    elif (case.startswith('snug125_') and case.endswith(('_m15','_m3'))
             and spec['source'] in ('lateral_friction_locked','lateral_friction_locked_minus')):
         from snug_directional_result import run as compare_bare
         compare_bare(case)

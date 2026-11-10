@@ -24,6 +24,65 @@ def normal_resultant(arms, forces, radius):
                 minimum_opposing_load_N=opposed)
 
 
+def bearing_readback(rst, deck, expected_tets, radius):
+    """Prepare the section and tie maps once, then evaluate a one-based saved state."""
+    grid = rst.grid.cell_data
+    element_order = np.argsort(rst.mesh.enum)
+    def elements(etype):
+        numbers = np.sort(grid['ansys_elem_num'][grid['ansys_etype'] == etype])
+        indices = element_order[positions(rst.mesh.enum[element_order], numbers)]
+        connectivity = [rst.mesh.elem[i][10:] for i in indices]
+        return numbers, np.stack(connectivity) if connectivity else np.empty((0, 2), int)
+
+    tets, tet_nodes = elements(850)
+    beams, beam_nodes = elements(851)
+    seats, seat_nodes = elements(854)
+    assert len(tets) == expected_tets and tet_nodes.shape[1] == 10
+    ends = beam_nodes[:, :2]
+    assert np.array_equal(ends, np.arange(950001, 950009).reshape(4, 2))
+    if len(seats):
+        assert np.array_equal(ends, seat_nodes)
+    coupled_nodes = []
+    for pilot in ends[:, 0]:
+        coupled = np.array([int(x) for x in re.findall(r'(?im)^CERIG,' + str(pilot) + r',(\d+),UXYZ', deck)])
+        assert len(coupled) >= 3 and len(np.unique(coupled)) == len(coupled)
+        coupled_nodes.append(coupled)
+    all_nodes = np.concatenate(coupled_nodes)
+    assert len(np.unique(all_nodes)) == len(all_nodes)
+    incident = np.flatnonzero(np.isin(tet_nodes, all_nodes).any(axis=1))
+    ids, inverse = np.unique(tet_nodes[incident], return_inverse=True)
+    def evaluate(k):
+        numbers, enf, _ = rst.element_solution_data(k-1, 'ENF')
+        assembled = np.zeros((len(ids), 3))
+        tet_force = np.stack([enf[j] for j in positions(numbers, tets[incident])]).reshape(-1, 3)
+        np.add.at(assembled, inverse.ravel(), tet_force)
+        feet = []
+        for i, (pilot, _) in enumerate(ends):
+            coupled = coupled_nodes[i]
+            center = rst.mesh.nodes[positions(rst.mesh.nnum, [pilot])][0]
+            arms = rst.mesh.nodes[positions(rst.mesh.nnum, coupled)] - center
+            assert np.linalg.norm(arms[:, :2], axis=1).max() <= radius
+            load = -assembled[positions(ids, coupled)]
+            force = load.sum(0)
+            moment = np.cross(arms, load).sum(0)
+            beam = enf[positions(numbers, beams)[i]].reshape(-1, 6)[0]
+            seat_force = np.zeros(3)
+            if len(seats):
+                block = enf[positions(numbers, seats)[i]]
+                if block is not None and len(block):
+                    seat_force = block.reshape(2, 3)[0]
+            force_error = float(abs(force - beam[:3] - seat_force).max())
+            moment_error = float(abs(moment - beam[3:]).max())
+            assert force_error < .002 and moment_error < .002, (k, pilot, force_error, moment_error)
+            record = normal_resultant(arms, load, radius)
+            feet.append(dict(pilot=int(pilot), bearing_nodes=len(coupled), original_xy_mm=center[:2].tolist(),
+                             force_XYZ_N=force.tolist(), moment_XYZ_Nmm=moment.tolist(),
+                             max_abs_Z_offset_mm=float(abs(arms[:, 2]).max()), beam_end_force_error_N=force_error,
+                             beam_end_moment_error_Nmm=moment_error, **record))
+        return feet
+    return evaluate
+
+
 def check(case, campaign, stage, travel):
     radius = 3.75  # The radial node selection in local_case_geometry.py, in the board XY plane.
     folder = ROOT / '.runtime/archive' / campaign / case
@@ -44,52 +103,8 @@ def check(case, campaign, stage, travel):
     assert all(k < crossing['native_set'] for name, crossing in material['first_reference_crossings'].items() if name.startswith('all_'))
     rst = reader.read_binary(folder / 'pull.rst')
     assert rst._resultheader['ls_table'][k-1, 1] != 999999 and np.isclose(rst.time_values[k-1], row['time_s'], atol=1.e-8, rtol=0)
-    grid = rst.grid.cell_data
-    element_order = np.argsort(rst.mesh.enum)
-    def elements(etype):
-        numbers = np.sort(grid['ansys_elem_num'][grid['ansys_etype'] == etype])
-        indices = element_order[positions(rst.mesh.enum[element_order], numbers)]
-        connectivity = [rst.mesh.elem[i][10:] for i in indices]
-        return numbers, np.stack(connectivity) if connectivity else np.empty((0, 2), int)
-
-    tets, tet_nodes = elements(850)
-    beams, beam_nodes = elements(851)
-    seats, seat_nodes = elements(854)
-    assert len(tets) == material['case_tets'] and tet_nodes.shape[1] == 10
-    ends = beam_nodes[:, :2]
-    assert np.array_equal(ends, np.arange(950001, 950009).reshape(4, 2))
-    if len(seats):
-        assert np.array_equal(ends, seat_nodes)
-    numbers, enf, _ = rst.element_solution_data(k-1, 'ENF')
-    ids, inverse = np.unique(tet_nodes, return_inverse=True)
-    assembled = np.zeros((len(ids), 3))
-    tet_force = np.stack([enf[j] for j in positions(numbers, tets)]).reshape(-1, 3)
-    np.add.at(assembled, inverse.ravel(), tet_force)
     deck = (folder / 'model.inp').read_text()
-    feet = []
-    for i, (pilot, _) in enumerate(ends):
-        coupled = np.array([int(x) for x in re.findall(r'(?im)^CERIG,' + str(pilot) + r',(\d+),UXYZ', deck)])
-        assert len(coupled) >= 3 and len(np.unique(coupled)) == len(coupled)
-        center = rst.mesh.nodes[positions(rst.mesh.nnum, [pilot])][0]
-        arms = rst.mesh.nodes[positions(rst.mesh.nnum, coupled)] - center
-        assert np.linalg.norm(arms[:, :2], axis=1).max() <= radius
-        load = -assembled[positions(ids, coupled)]
-        force = load.sum(0)
-        moment = np.cross(arms, load).sum(0)
-        beam = enf[positions(numbers, beams)[i]].reshape(-1, 6)[0]
-        seat_force = np.zeros(3)
-        if len(seats):
-            block = enf[positions(numbers, seats)[i]]
-            if block is not None and len(block):
-                seat_force = block.reshape(2, 3)[0]
-        force_error = float(abs(force - beam[:3] - seat_force).max())
-        moment_error = float(abs(moment - beam[3:]).max())
-        assert force_error < .002 and moment_error < .002, (k, pilot, force_error, moment_error)
-        record = normal_resultant(arms, load, radius)
-        feet.append(dict(pilot=int(pilot), bearing_nodes=len(coupled), original_xy_mm=center[:2].tolist(),
-                         force_XYZ_N=force.tolist(), moment_XYZ_Nmm=moment.tolist(),
-                         max_abs_Z_offset_mm=float(abs(arms[:, 2]).max()), beam_end_force_error_N=force_error,
-                         beam_end_moment_error_Nmm=moment_error, **record))
+    feet = bearing_readback(rst, deck, material['case_tets'], radius)(k)
     result = dict(case=case, campaign=campaign, stage=stage, native_set=k, travel_mm=travel, model_radius_mm=radius,
                   rst_sha256=hashes['pull.rst'], deck_sha256=hashes['model.inp'], material_scope_sha256=digest(path),
                   feet=feet, scope='Reference-configuration first moment of the board-normal loads transmitted through '

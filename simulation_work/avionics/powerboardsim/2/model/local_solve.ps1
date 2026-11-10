@@ -19,6 +19,10 @@ if ($Case -like 'snug125_*_m15') {
     $trial=Get-Content "$PSScriptRoot\..\validation\snug125\local_mesh15_preflight.json" -Raw|ConvertFrom-Json
     if ($spec.size_mm -ne 1.5 -or $spec.case_node_start -ne 2100001 -or $trial.native_counts.tetrahedra -ne 99818 -or $spec.step_sha256 -ne $trial.step_sha256) {throw 'Wrong refined local geometry'}
 }
+if ($Case -like 'snug125_*_rock125_m15') {
+    if (!$spec.snug_bearing_control -or $spec.end_time -ne 2.25 -or $spec.displacement_mm -ne 0.125) {throw 'Invalid snug rocking-control path'}
+    $catalog='snug125/local_bearing_inputs.json'
+}
 if ($Case -like 'snug125_*_pin1_m3') {
     $catalog='snug125/local_inputs_m3.json'
     $trial=Get-Content "$PSScriptRoot\..\validation\snug125\local_mesh3_preflight.json" -Raw|ConvertFrom-Json

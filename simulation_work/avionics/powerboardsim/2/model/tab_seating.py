@@ -9,22 +9,15 @@ Z_BOARD=-.55118
 FACES=(33,29,25,37)
 SIGNS=((-1,-1),(-1,1),(1,-1),(1,1))
 
-def point_fields(raw,sets,points,*,field_directory='tab_points_v1'):
+def read_point_file(path,out,sha,sets,points):
+    """Read selected native translations from a verified stationary RST; return millimetres."""
     import fcntl,json,subprocess,sys
-    from pathlib import Path
-    from film_identity import verified,digest
-    from local_equilibrium import movement_table
-    path=Path(raw.filename).resolve();folder=path.parent
-    assert path.name in ('pull.rst','tear.rst') and folder.parent.parent==ROOT/'.runtime/archive'
-    case,campaign=folder.name,folder.parent.name
-    meta=json.loads((ROOT/'.runtime/receipts'/campaign/case/'archived.json').read_text(encoding='utf-8-sig'))
-    sha=next(f['sha256'] for f in meta['files'] if f['name']==path.name)
-    assert (case,campaign)==(meta['case'],meta['campaign']);verified(path,sha)
-    native=movement_table(folder/'moving_supports.csv')
-    points=sorted(set(map(int,points))|{int(n) for k,n in native});sets=list(map(int,sets))
+    from film_identity import digest,verified
+    path=path.resolve();out=out.resolve()
+    verified(path,sha)
+    assert len(points)==len(set(points)) and sorted(sets)==list(sets) and len(sets)==len(set(sets))
     q=dict(nodes=points,sets=sets,source_sha256=sha)
-    assert field_directory in ('tab_points_v1','first_loaded_corners_v1','pull_case_energy','pull_pose','edge_cell_poses')
-    out=ROOT/'.runtime/post'/campaign/case/field_directory;out.mkdir(parents=True,exist_ok=True)
+    out.mkdir(parents=True,exist_ok=True)
     lock=(out/'request.lock').open('a');fcntl.flock(lock,fcntl.LOCK_EX)
     req=out/'request.json'
     if req.exists():assert json.loads(req.read_text())==q
@@ -42,6 +35,25 @@ def point_fields(raw,sets,points,*,field_directory='tab_points_v1'):
     assert audit['source_sha256']==sha and audit['sets']==sets and audit['nodes']==len(points)
     fields=np.fromfile(out/'displacements.bin','<f8').reshape(len(sets),len(points),3)*{'m':1000.,'mm':1.}[audit['unit'].lower()]
     assert np.isfinite(fields).all()
+    return fields,audit
+
+
+def point_fields(raw,sets,points,*,field_directory='tab_points_v1'):
+    import json
+    from pathlib import Path
+    from film_identity import verified,digest
+    from local_equilibrium import movement_table
+    path=Path(raw.filename).resolve();folder=path.parent
+    assert path.name in ('pull.rst','tear.rst') and folder.parent.parent==ROOT/'.runtime/archive'
+    case,campaign=folder.name,folder.parent.name
+    meta=json.loads((ROOT/'.runtime/receipts'/campaign/case/'archived.json').read_text(encoding='utf-8-sig'))
+    sha=next(f['sha256'] for f in meta['files'] if f['name']==path.name)
+    assert (case,campaign)==(meta['case'],meta['campaign']);verified(path,sha)
+    native=movement_table(folder/'moving_supports.csv')
+    points=sorted(set(map(int,points))|{int(n) for k,n in native});sets=list(map(int,sets))
+    assert field_directory in ('tab_points_v1','first_loaded_corners_v1','pull_case_energy','pull_pose','edge_cell_poses','tab_bearing_motion')
+    out=ROOT/'.runtime/post'/campaign/case/field_directory
+    fields,audit=read_point_file(path,out,sha,sets,points)
     ref=np.array([v for (k,n),v in native.items() if k in sets]);ix={n:i for i,n in enumerate(points)};sidx={k:i for i,k in enumerate(sets)}
     recovered=np.array([fields[sidx[k],ix[n]] for k,n in native if k in sidx])
     assert abs(ref).max()>1e-8 and np.allclose(ref,recovered,rtol=5e-6,atol=1e-7), (abs(ref-recovered).max(),abs(ref).max(),abs(recovered).max())

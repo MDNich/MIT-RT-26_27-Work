@@ -64,18 +64,8 @@ def joint_post():
     return '\n'.join(lines)
 
 
-def stage():
-    rt = ROOT / '.runtime'
-    control = rt / CONTROL
-    control.mkdir(exist_ok=True)
-    control_sha = seal(control / 'control.inp', control_deck())
-    source = rt / 'inputs' / BASE
-    source_spec = read(source / 'local_job.json')
-    registered = read(ROOT / 'validation/local_seat_jobs.json')[BASE]
-    verified(source / 'local_job.json', registered['spec_sha256'])
-    for name, sha in source_spec['files'].items():
-        verified(source / name, sha)
-    original = (source / 'model.inp').read_text()
+def release_tab_rotations(original):
+    """Introduce four coincident, translation-coupled bearing pilots in an existing tied-tab deck."""
     deck = original
     marker = 'SAVE,model,db'
     assert deck.count(marker) == 1 and deck.count('\nET,855,') == 0
@@ -96,6 +86,22 @@ def stage():
     addition = '\n'.join(cards + ['ALLSEL,ALL', ''])
     modified = deck.replace(marker, addition + marker)
     assert modified.split(marker)[1] == original.split(marker)[1]
+    return modified, matrix
+
+
+def stage():
+    rt = ROOT / '.runtime'
+    control = rt / CONTROL
+    control.mkdir(exist_ok=True)
+    control_sha = seal(control / 'control.inp', control_deck())
+    source = rt / 'inputs' / BASE
+    source_spec = read(source / 'local_job.json')
+    registered = read(ROOT / 'validation/local_seat_jobs.json')[BASE]
+    verified(source / 'local_job.json', registered['spec_sha256'])
+    for name, sha in source_spec['files'].items():
+        verified(source / name, sha)
+    original = (source / 'model.inp').read_text()
+    modified, matrix = release_tab_rotations(original)
     dest = rt / 'inputs' / CASE
     dest.mkdir(exist_ok=True)
     moving = (source/'moving.inp').read_text()
@@ -140,7 +146,6 @@ def audit_joint(case, campaign):
     """Check the four actual fixture joints against the forces at the free shank ends."""
     from ansys.mapdl import reader
     from local_equilibrium import positions
-    assert case == CASE
     folder = ROOT/'.runtime/archive'/campaign/case
     receipt = ROOT/'.runtime/receipts'/campaign/case
     ledger = read(receipt/'archived.json')
@@ -151,6 +156,8 @@ def audit_joint(case, campaign):
     spec = read(folder/'local_job.json')
     ctrl = ROOT/'validation/spherical_bearing_control.json'
     assert read(ctrl)['input_sha256'] == spec['bearing_control_sha256'] and spec['case'] == case
+    assert spec['files']['model.inp']==hashes['model.inp']
+    assert case==CASE or spec.get('snug_bearing_control') is True
     r = reader.read_binary(folder/'pull.rst')
     geom = r.grid.cell_data
     mesh = r.mesh.elem
@@ -159,6 +166,9 @@ def audit_joint(case, campaign):
         en = np.sort(geom['ansys_elem_num'][geom['ansys_etype'] == etype])
         return en, np.stack([mesh[j][10:12] for j in order[positions(r.mesh.enum[order], en)]])
     beam, ends = connectivity(851)
+    seats = np.sort(geom['ansys_elem_num'][geom['ansys_etype']==854])
+    if len(seats):
+        assert len(seats)==4 and np.array_equal(connectivity(854)[1],ends)
     jnums, pairs = connectivity(855)
     assert np.array_equal(jnums, np.arange(1900010,1900014))
     assert np.array_equal(ends, np.arange(950001,950009).reshape(4,2))
@@ -175,7 +185,12 @@ def audit_joint(case, campaign):
         en, values, _ = r.element_solution_data(int(k-1), 'ENF')
         first_end = np.stack([values[j].reshape(-1,6)[0] for j in positions(en,beam)])
         joint_force = post['force_N'][post['set']==k]
-        magnitude = np.linalg.norm(first_end[:,:3],axis=1)
+        transmitted=first_end[:,:3].astype(float)
+        for i,j in enumerate(positions(en,seats)):
+            spring=values[j]
+            if spring is not None and len(spring):
+                transmitted[i]+=spring.reshape(2,3)[0]
+        magnitude = np.linalg.norm(transmitted,axis=1)
         delta = abs(magnitude-joint_force)
         assert np.all(delta < .005 + 2.e-4*joint_force), (k,delta)
         end_moment = float(np.max(np.linalg.norm(first_end[:,3:],axis=1)))

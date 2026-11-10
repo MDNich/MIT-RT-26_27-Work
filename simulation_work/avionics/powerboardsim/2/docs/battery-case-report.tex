@@ -380,7 +380,7 @@ The quasistatic fixture prescribes one cell displacement while the global model 
 
 \newpage
 \pageheading{The snug case restrains the edge cell in a sideways pull}
-At a sideways load of 8.54~N, the left cell moved 0.500~mm in the bare fixture. With the snug case and nylon screws it moved about \textbf{0.034~mm}, a 93\% reduction. The two cased equilibria bracketing that load were 5.53~N at 0.02875~mm and 11.57~N at 0.04000~mm. The estimate uses straight-line interpolation between them.
+An 8.54~N sideways load moved the left cell 0.500~mm bare and about \textbf{0.034~mm} with the snug nylon mount, a 93\% reduction. The estimate interpolates between the cased equilibria at 5.53~N (0.02875~mm) and 11.57~N (0.04000~mm).
 
 \begin{center}\includegraphics[width=.99\linewidth]{figures/snug-forward-pull.pdf}
 \captionof{figure}{Left, the low-force part of the forward pull. Dots mark saved equilibria and diamonds mark the common load. Right, reactions opposing the 109.53~N applied to the cased cell at the last audited station.}\end{center}
@@ -389,13 +389,16 @@ At a sideways load of 8.54~N, the left cell moved 0.500~mm in the bare fixture. 
 At 0.206875~mm travel the snug case required 109.53~N. Interpolating the bare reaction between 0.195625 and 0.220625~mm gives 7.23~N at the same travel. The four case screw supports resisted 90.31~N, the fixed neighbouring hardware 12.69~N and the original nickel clamps 6.54~N. The lateral balance residual was 0.010~N. The moving cell first loaded the printed pocket between 0.01750 and 0.02875~mm. Two independent subdivisions of the displaced contact surfaces found clearance at 0.01750~mm and intersection at 0.02875~mm. Native initial clearances at the moving outer cell and the fixed middle cell were 19.702 and 2.933~$\mu$m, within 0.007~$\mu$m of their registered CAD gaps.
 
 \heading{Stress at the last audited station}
-Peak printed-PLA tension reached 17.94~MPa in the layer plane and 17.97~MPa across the layers, respectively 34\% and 44\% of the published coupon means. The highest tensile fibre stress in the nylon screw shanks was 27.64~MPa. The actual screw grade and thread capacity are unknown. Loaded contact corners penetrated by at most 0.0027~mm at this station, below the 0.05~mm comparison limit.
+Peak printed-PLA tension reached 17.94~MPa in the layer plane and 17.97~MPa across the layers, respectively 34\% and 44\% of the published coupon means. The four mounts carried 22.07--23.10~N each sideways. The highest nylon shank tension occurred at the fixed PCB end of a screw on the pulled-cell side. Of its 27.64~MPa peak, 26.68~MPa came from bending and 0.96~MPa from axial loading. The actual screw grade and thread capacity are unknown. Loaded contact corners penetrated by at most 0.0027~mm at this station, below the 0.05~mm comparison limit.
 
 \heading{How the nickel strips respond}
-At 8.54~N the bare fixture reached 1.254\% peak equivalent plastic strain in the nickel. Both cased states bracketing that force still had zero plastic strain across all 2,304 strip shells. Prescribing the same large travel gives a different result. At 0.206875~mm the cased peak reached 0.645\%, while the bare states on either side reached 0.355\% and 0.429\%. The casing takes load off the strips at the smaller common force. Forcing the cased cell through the larger displacement increases local plastic deformation even as the screws take most of the reaction. These strain values average the four corners of each shell face before selecting the maximum. The bilinear model keeps the weld attachments intact.
+At 8.54~N the bare nickel reached 1.254\% peak equivalent plastic strain. All 2,304 cased strip shells stayed elastic at both forces bracketing 8.54~N. At the larger \emph{prescribed travel} of 0.206875~mm, the cased peak rose to 0.645\%, above both neighbouring bare values (0.355\% and 0.429\%). Each value is the maximum of the four-corner averages on the two strip faces. The bilinear nickel law retains intact weld attachments.
+
+\heading{Can the tabs rotate?}
+The tabs move with the screw ends. When the cell moved 0.206875~mm, all four tabs shifted 0.0817--0.0837~mm sideways. The ties enforce equal tab and screw-tip rotation. Reproducing each tab’s normal load and moment inside the 3.75~mm bearing radius requires at least 6.33--8.11~N per tab opposing the net normal force. The 93\% travel reduction depends on this mount assumption. The two queued controls allow rotation between the tab and shank.
 
 \heading{How far this result applies}
-The local fixture clamps two nickel strips at 750~N per washer, locks the preload and drives the left cell toward the middle. Both cases use the October bilinear nickel law. The cased fixture holds the four screw supports and neighbouring hardware fixed. The readback covers 21 converged native states, including 12 forward-pull increments in the 1.5~mm case mesh. Separate ANSYS DPF and result-file reads agreed on support reactions. The cased $+0.500$~mm endpoint, reverse pull, aluminium comparison and nickel damage tests remain open.
+Two washers clamp the nickel strips at 750~N each before locking. The fixture then drives the left cell toward the middle and holds the screw supports and neighbouring hardware fixed. The audit covers 12 forward increments on the 1.5~mm case mesh. DPF and result-file support reactions agreed. The cased $+0.500$~mm endpoint, reverse pull, aluminium comparison and damage tests remain open.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
