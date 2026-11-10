@@ -1,7 +1,7 @@
 """Show the native preload force and the first loss of consistency of the installed contact tangent."""
 import numpy as np
 from audit_local import ROOT,read
-from film_identity import verified
+from film_identity import digest, verified
 from report_plot import plt
 
 def draw():
@@ -20,9 +20,14 @@ def draw():
     fine_force=[v['resultant_N'] for v in fine['force_history']]
     loads.plot([0,*t],[0,*f],'-o',color='#08357E',lw=1.35,ms=3.7,label='2.0 mm')
     loads.plot([0,*fine['times']],[0,*fine_force],'--s',color='#38761D',lw=1.35,ms=3.4,label='1.5 mm')
+    seats=read(ROOT/'validation/snug125/snug125_nylon_installation_seats.json')
+    assert seats['repeat_contact_audit_sha256']==digest(ROOT/'validation/snug125/snug125_nylon_out2_static_contacts.json')
+    assert [r['time'] for r in seats['states']]==t
+    tab_load=[np.linalg.norm(np.sum(r['tab_load_XYZ_N'],axis=0)) for r in seats['states']]
+    loads.plot([0,*t],[0,*tab_load],':D',color='#7A0101',lw=1.3,ms=3.0,label='2.0 mm, four tabs')
     loads.axvline(1,color='.55',ls=':',lw=.8)
     loads.legend(frameon=False,fontsize=8,loc='upper right')
-    loads.set(xlabel='Native load-step parameter',ylabel='Case contact resultant [N]',xlim=(-.07,2.10),ylim=(0,None))
+    loads.set(xlabel='Native load-step parameter',ylabel='Resultant force [N]',xlim=(-.07,2.10),ylim=(0,None))
     colors=['#08357E','#3C78D8','#38761D']
     signed=read(ROOT/'validation/snug125/snug125_nylon_pocket_unloading.json')
     for i,(axis,color) in enumerate(zip('XYZ',colors,strict=True)):

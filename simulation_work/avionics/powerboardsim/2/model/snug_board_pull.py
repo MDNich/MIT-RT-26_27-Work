@@ -256,6 +256,9 @@ def audit(case):
     check_work(branch)
     check_stresses(branch)
     check_bond_loads(branch)
+    if branch != "bare":
+        from snug_board_pull_seats import audit as check_mounts
+        check_mounts(branch)
 
 
 def compare_pocket_unloading(branch, result, zero):
