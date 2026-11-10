@@ -130,11 +130,40 @@ def fixture(folder, spec, config, source, listing, balance_path):
     return data,reached
 
 
+def verify_recovered_post(receipt, status, ledger):
+    """Link a repaired POST1 readback to the original failed wrapper, structural exit and archived tables."""
+    from film_identity import verified
+    proof = receipt / 'closed_post_recovery.json'
+    verified(proof, status['readback_recovery_sha256'].lower())
+    record = read(proof)
+    original = receipt / 'original_readback_failure.json'
+    observer = receipt / 'observed_solver_exit.json'
+    verified(original, record['original_status_sha256'].lower())
+    verified(observer, record['observed_exit_sha256'].lower())
+    before = read(original)
+    exit_record = read(observer)
+    hashes = {f['name']: f['sha256'].lower() for f in ledger['files']}
+    assert record['case'] == before['case'] == exit_record['case'] == status['case'] == ledger['case']
+    assert record['campaign'] == exit_record['campaign'] == ledger['campaign']
+    assert before['phase'] == 'failed' and before['failure'] == 'Local local_post result readback failed'
+    assert status['native_clean'] is False and status['exit'] == exit_record['exit_code'] == record['original_solver_exit'] != 0
+    assert record['post_exit'] == 0 and hashes['pull.rst'] == record['rst_sha256'].lower()
+    assert hashes['model.inp'] == record['input_sha256'].lower() == exit_record['input_sha256'].lower()
+    assert hashes['partial_local_post.inp'] == record['post_input_sha256'].lower() == '2cb57f5ebafeaaf728c4597aa4dc8bbb2627898a0095629ec6871b712936457e'
+    expected = {'history.csv','nodal.csv','element_top.csv','element_bottom.csv','contact_history.csv',
+                'balance.csv','contact_detail.csv','moment_balance.csv'}
+    assert set(record['outputs']) == expected
+    assert all(hashes[name] == value.lower() for name, value in record['outputs'].items())
+    assert all(hashes['before_readback_'+name] == value.lower() for name, value in record['original_table_hashes'].items())
+
+
 def audit(case, campaign):
     receipts = ROOT/'.runtime/receipts'/campaign/case
     folder = ROOT/'.runtime/archive'/campaign/case
     status = read(receipts/'status.json')
     ledger = read(receipts/'archived.json')
+    if status.get('readback_recovery_sha256'):
+        verify_recovered_post(receipts, status, ledger)
     spec = read(folder/'local_job.json')
     catalog='local_contact_retries.json' if case.endswith('_pin1') else 'local_jobs.json'
     if spec.get('case_template') and spec['source'].startswith('lateral_grip_'):
@@ -187,6 +216,8 @@ def audit(case, campaign):
     if case.startswith('snug125_') and case.endswith('_m15'):
         from snug_local_core_trial import verify_production_runtime
         data['solver_runtime']=verify_production_runtime(case,campaign,spec,status,listing)
+    if status.get('readback_recovery_sha256'):
+        data.update(original_solver_exit=status['exit'],partial_post_recovery_sha256=status['readback_recovery_sha256'].lower())
     dest=ROOT/'validation'/('local' if complete else 'partial_local')
     dest.mkdir(exist_ok=True)
     from film_identity import write_json

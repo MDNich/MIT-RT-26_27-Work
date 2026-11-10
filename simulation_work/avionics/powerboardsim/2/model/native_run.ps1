@@ -13,6 +13,21 @@ $exe='C:\Program Files\ANSYS Inc\v261\ansys\bin\winx64\ANSYS261.exe'
 $env:ANSYSLMD_LICENSE_FILE='1055@localhost'
 if (!(Test-Path -LiteralPath $exe)){throw "Missing solver $exe"}
 if (Test-Path -LiteralPath $work){throw "Preserving existing job $work"}
+# The November 10 forward pull loaded the old readback wrapper. Reconcile its observed
+# nonconvergence at this serial boundary before starting a different structural solve.
+$oldCase='snug125_nylon_lateral_friction_locked_pin1_m15'
+$oldReceipt=Join-Path $share ".runtime\receipts\$Campaign\$oldCase"
+if ($Campaign -eq 'nov08_01' -and $Case -ne $oldCase -and (Test-Path "$oldReceipt\observed_solver_exit.json") -and
+    !(Test-Path "$oldReceipt\released.txt") -and !(Test-Path "$oldReceipt\recovery_error.txt")) {
+    try {
+        & "$PSScriptRoot\recover_observed_pull.ps1" -Campaign $Campaign
+        if (Test-Path "$oldReceipt\closed_post_recovery.json") {
+            & "$PSScriptRoot\archive_native.ps1" -Case $oldCase -Campaign $Campaign
+        }
+    } catch {
+        $_.Exception.Message|Set-Content "$oldReceipt\recovery_error.txt" -Encoding UTF8
+    }
+}
 $active=@(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '^(ANSYS|ANSYS\d+|mapdl|mpiexec|hydra_pmi_proxy)$' })
 if ($active.Count){throw "Another native job is running"}
 New-Item -ItemType Directory -Path $work -ErrorAction Stop|Out-Null
