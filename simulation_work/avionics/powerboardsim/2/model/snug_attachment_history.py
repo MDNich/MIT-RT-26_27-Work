@@ -103,7 +103,7 @@ def summarize(variant, campaign, method, axis):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('variant',choices=BRANCHES)
+    parser.add_argument('variant',choices=(*BRANCHES,'snug125_nylon_mesh15','snug125_aluminium_mesh15'))
     parser.add_argument('--axes',default='XYZ',choices=('X','Y','Z','XYZ'))
     parser.add_argument('--method',choices=('independent','exact','native'),default='independent')
     parser.add_argument('--campaign',default='nov08_01')

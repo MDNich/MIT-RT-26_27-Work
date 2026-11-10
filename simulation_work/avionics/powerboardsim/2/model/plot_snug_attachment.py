@@ -47,8 +47,18 @@ def compare(method):
         dx=(j-1)*.24
         ax.bar(np.arange(3)+dx,loads[j],width=.22,color=color,label=label)
         mid.bar(np.arange(4)+dx,transfer[j],width=.22,color=color)
+    mesh_path=source/'nylon_bond_mesh_comparison.json'
+    mesh=read(mesh_path)
+    fine=[]
+    for i,axis in enumerate('XYZ'):
+        pair=mesh['axes'][axis]
+        assert abs(pair['nominal']['governing_bond']['magnitude_N']-loads[1,i]) < .005*loads[1,i]
+        verified(source/f'snug125_nylon_mesh15_{axis}_bond_independent.json',pair['fine']['inputs'][0])
+        fine.append(pair['fine']['governing_bond']['magnitude_N'])
+    ax.plot(np.arange(3),fine,linestyle='none',marker='D',ms=5.5,mec=COLORS[1],mfc='white',mew=1.3,
+            label='Nylon, finer mesh',zorder=4)
     ax.set(xticks=range(3),xticklabels=['Base X','Base Y','Base Z'],ylabel='Dynamic force magnitude [N]',
-           title='Largest load at a single nickel bond',ylim=(0,85))
+           title='Largest load at a single nickel bond',ylim=(0,95))
     mid.set(xticks=range(4),xticklabels=['Peak bond','Other bond','Pocket','Sum'],ylabel='Signed force along PCB X [N]',
             title='Middle-cell load paths under base Z')
     mid.axhline(0,color='#303030',lw=.7)
@@ -57,11 +67,11 @@ def compare(method):
         panel.grid(axis='y',alpha=.18)
         panel.set_axisbelow(True)
         panel.spines[['top','right']].set_visible(False)
-    fig.legend(*ax.get_legend_handles_labels(),loc='outside lower center',ncol=3,frameon=False)
+    fig.legend(*ax.get_legend_handles_labels(),loc='outside lower center',ncol=4,frameon=False)
     out=ROOT/'docs/figures/snug-attachment-history.pdf'
     fig.savefig(out,metadata={'CreationDate':None,'ModDate':None})
     plt.close(fig)
-    write_json(source/'bond_history_comparison.json',dict(method=method,checks=checks,
+    write_json(source/'bond_history_comparison.json',dict(method=method,checks=checks,nylon_mesh_check_sha256=digest(mesh_path),
                peak_bond_N_rows_bare_nylon_aluminium_columns_XYZ=loads.tolist(),
                base_Z_simultaneous_middle_cell_X_N_rows_bare_nylon_aluminium=transfer,
                scope='Peak vector magnitude over six bonds and every sample of the given nine-second record. '

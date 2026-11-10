@@ -10,8 +10,9 @@ from pcb_dynamic_stress import cache_modes,equivalent,extrema
 from seeded_motion import FS,FRAMES,integrate,participation
 
 
-def run(campaign, coordinates='independent'):
-    cases=['bare','stand3_nylon','stand3_aluminium']
+def run(campaign, coordinates='independent', *, snug_fit=False):
+    fit='snug125' if snug_fit else 'stand3'
+    cases=['bare',fit+'_nylon',fit+'_aluminium']
     curves={}
     reference=None
     time=FRAMES/FS
@@ -64,7 +65,17 @@ def run(campaign, coordinates='independent'):
                     peak_frame=peak+1,peak_time_s=float(time[peak]),clip_peak_MPa=float(high[peak]*1e-6),
                     peak_element=int(matches[0][ix]),peak_node=int(matches[1][ix]),
                     frame_maximum_MPa=(high*1e-6).tolist(),frame_minimum_MPa=(low*1e-6).tolist())
-        if variant=='bare':
+        if variant=='bare' and snug_fit:
+            # Use revision 2's independently rerun standalone control and all 480 published maxima.
+            old=ROOT/'validation/seeded_pcb_stress_comparison_native.json'
+            prior=read(old)['cases']['bare']
+            assert prior['basis_sha256']==basis['rst_sha256'] and prior['corner_labels_sha256']==record['corner_labels_sha256']
+            if coordinates=='native':
+                assert prior['native_clip_sha256']==native_reference
+            err=float(np.max(abs((high*1e-6)/np.asarray(prior['frame_maximum_MPa'])-1)))
+            assert err<.001
+            record.update(bare_repeat_sha256=digest(old),maximum_frame_peak_relative_error=err)
+        elif variant=='bare':
             old=ROOT.parent/'1/output/latex/random_vibration/reproduction/motion/audits/dpf_stress_unaveraged_frames.json'
             prior=read(old)
             assert [a['frame'] for a in prior]==list(range(1,481))
@@ -75,16 +86,18 @@ def run(campaign, coordinates='independent'):
         curves[variant]=record
         print(variant,record['clip_peak_MPa'],peak+1,record['peak_node'],flush=True)
     suffix = '_native' if coordinates=='native' else ''
-    write_json(ROOT/'validation'/f'seeded_pcb_stress_comparison{suffix}.json',dict(campaign=campaign,frames=len(time),
+    output=ROOT/'validation/snug125' if snug_fit else ROOT/'validation'
+    write_json(output/f'seeded_pcb_stress_comparison{suffix}.json',dict(campaign=campaign,frames=len(time),
         physical_time_s=[float(time[0]),float(time[-1])],frame_spacing_s=float(4/FS),cases=curves,
         scope='Maximum over unaveraged PCB element corners at each stored movie frame. Native signed modal stress '
               'components are summed before evaluating von Mises. The film shows the dynamic increment about bolt preload.'))
-    draw(curves,1000*(time-time[0]),suffix)
+    draw(curves,1000*(time-time[0]),suffix,snug_fit=snug_fit)
 
 
-def draw(curves,ms,suffix):
+def draw(curves,ms,suffix,*,snug_fit=False):
     fig,ax=plt.subplots(figsize=(7.5,2.4),layout='constrained')
-    for (name,data),label,col,ls in zip(curves.items(),('Bare','3 mm / nylon','3 mm / aluminium'),
+    labels=('Bare','1.25 mm / nylon','1.25 mm / aluminium') if snug_fit else ('Bare','3 mm / nylon','3 mm / aluminium')
+    for (name,data),label,col,ls in zip(curves.items(),labels,
                                        ('#08357E','#3C78D8','#38761D'),('-','--','-.'),strict=True):
         ax.plot(ms,data['frame_maximum_MPa'],color=col,ls=ls,lw=1.35,label=label)
         i=data['peak_frame']-1
@@ -93,7 +106,8 @@ def draw(curves,ms,suffix):
     ax.set(xlim=(0,ms[-1]),ylim=(0,None),xlabel='Time from the first movie frame [ms]',ylabel='Peak PCB stress [MPa]')
     ax.spines[['top','right']].set_visible(False)
     ax.grid(axis='y',alpha=.17)
-    fig.savefig(ROOT/'docs/figures'/f'raised-seeded-pcb-stress{suffix}.pdf',metadata={'CreationDate':None,'ModDate':None})
+    fit='snug' if snug_fit else 'raised'
+    fig.savefig(ROOT/'docs/figures'/f'{fit}-seeded-pcb-stress{suffix}.pdf',metadata={'CreationDate':None,'ModDate':None})
     plt.close(fig)
 
 
@@ -102,13 +116,15 @@ if __name__=='__main__':
     parser.add_argument('campaign',nargs='?',default='nov08_01')
     parser.add_argument('--coordinates',choices=('independent','native'),default='independent')
     parser.add_argument('--plot-only',action='store_true',help='Draw the existing audited 480-frame curves.')
+    parser.add_argument('--snug-fit',action='store_true')
     args = parser.parse_args()
     if args.plot_only:
         suffix = '_native' if args.coordinates=='native' else ''
-        record=read(ROOT/'validation'/f'seeded_pcb_stress_comparison{suffix}.json')
+        output=ROOT/'validation/snug125' if args.snug_fit else ROOT/'validation'
+        record=read(output/f'seeded_pcb_stress_comparison{suffix}.json')
         assert record['campaign']==args.campaign and record['frames']==len(FRAMES)==480
         ms=1000*np.arange(record['frames'])*record['frame_spacing_s']
         assert np.isclose(ms[-1],1000*np.diff(record['physical_time_s']).item())
-        draw(record['cases'],ms,suffix)
+        draw(record['cases'],ms,suffix,snug_fit=args.snug_fit)
     else:
-        run(args.campaign,args.coordinates)
+        run(args.campaign,args.coordinates,snug_fit=args.snug_fit)

@@ -287,15 +287,37 @@ Refinement also shifted the base-Y time by which the locked contact load must re
 Under base-Z excitation the largest dynamic force at a cell-to-nickel attachment rose from 30.22~N bare to 40.09~N with nylon case screws and 50.50~N with aluminium, increases of 33\% and 67\%. The right cell's low-Y bond governed on the bare board. The middle cell's high-Y bond governed in both snug mounts. Under base X the largest bond load increased with nylon screws and changed by less than 1\% with aluminium.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/snug-attachment-history.pdf}
-\captionof{figure}{Left, the maximum simultaneous three-component force magnitude at any of the six bonds in each nine-second record. Right, signed PCB-X force on the middle cell under base Z, evaluated separately for each assembly at its own largest middle-cell bond load. Opposing bond and pocket forces partially cancel in the total.}\end{center}
+\captionof{figure}{Left, the maximum simultaneous three-component force magnitude at any of the six bonds in each nine-second record. Diamonds give the finer nylon mesh. Right, nominal-mesh signed PCB-X force on the middle cell under base Z, evaluated separately for each assembly at its own largest middle-cell bond load. Opposing bond and pocket forces partially cancel in the total.}\end{center}
+
+\heading{How much does the case mesh matter?}
+Refining the nylon mesh from 2 to 1.5~mm raised the governing bond force under base X from 74.95 to 85.20~N ($+13.7\%$) and under base Z from 40.09 to 48.77~N ($+21.6\%$). Under Y it stayed near 29.6~N, while the pocket's maximum force increased from 17.98 to 28.94~N. The same bond governed each direction on both meshes. These differences limit a ranking of screw materials before the aluminium refinement.
 
 \heading{Where the load goes}
 At the middle cell's governing instant under base Z, its two bonds carried $+34.6$ and $+27.3$~N along PCB~X with nylon screws. The pocket contributed $-49.0$~N, leaving $+12.9$~N across the three interfaces. For aluminium, the corresponding components were $-45.3$, $-19.5$ and $+52.6$~N, giving $-12.2$~N. The modest whole-cell resultant therefore hides substantial demands on each attachment.
 
 \heading{Checks and interpretation}
-The reconstruction uses the signed native modal forces on each complete bonded area and the nominal prestressed mode shapes. We independently integrated all 589,825 stations of each original acceleration record. A second integration, exact for a linearly interpolated input, changed the nine largest bond loads by at most 1.18\%. A 3.5~kHz mode cutoff changed them by at most 0.92\%. The bare native time histories reproduced the independently calculated peaks within 0.002~N. At every station we summed both bonds and the installed middle pocket and checked the result against the cell's independently mass-weighted modal force operator. The largest relative difference over a whole history was below $2.4\times10^{-6}$.
+The reconstruction uses the signed native modal forces on each complete bonded area and the nominal prestressed mode shapes. We independently integrated all 589,825 stations of each original acceleration record. A second integration, exact for a linearly interpolated input, changed the nine largest bond loads by at most 1.18\%. A 3.5~kHz mode cutoff changed them by at most 0.92\%. The native base-X histories reproduced the independently calculated bond peaks for all three assemblies within 0.002~N. At every station we summed both bonds and the installed middle pocket and checked the result against the cell's independently mass-weighted modal force operator. The largest relative difference over a whole history was below $2.4\times10^{-6}$.
 
 These loads describe intact bonds and contact held at its installed state. Page~10 shows the early pressure redistribution required by the nylon model. Joint strength, actual contact forces after redistribution, and damage in a weld require separate evidence.
+
+\newpage
+\pageheading{Base-X time histories give higher peak PCB stress in both snug mounts}
+Across the 480 original movie frames, the maximum dynamic PCB equivalent stress reached 154.41~MPa bare, 177.87~MPa with nylon case screws and 170.75~MPa with aluminium. These increases of 15.2\% and 10.6\% apply to the displayed 29.24~ms of the seeded base-X record. The largest bare and nylon stresses occurred at the same element corner. The aluminium maximum moved to another corner and occurred at a different time.
+
+\begin{center}\includegraphics[width=.96\linewidth]{figures/snug-seeded-pcb-stress_native.pdf}
+\captionof{figure}{Maximum dynamic von Mises stress across 312,112 unaveraged PCB corners at each matched instant. The solver supplied the signed modal coordinates. We summed all six stress components before forming the equivalent stress. The dots mark the maximum for each assembly.}\end{center}
+
+\heading{Comparing the boards at the same instant}
+\begin{center}\small\begin{tabular}{lrrrr}\toprule
+Governing assembly & Time from start [s] & Bare [MPa] & Nylon [MPa] & Aluminium [MPa]\\\midrule
+Nylon     & 1.007385 & 154.09 & 177.87 & 119.21\\
+Aluminium & 1.008240 & 119.63 & 143.00 & 170.75\\
+Bare      & 1.017761 & 154.41 & 116.70 & 145.56\\\bottomrule
+\end{tabular}\end{center}
+At the instant of the nylon maximum, the aluminium board stress was lower than bare. At its own maximum, aluminium exceeded both other boards. A single comparison frame would miss this change in ordering. The plotted values are linear dynamic increments about bolt lock. The RMS spectra on pages~8 and~12 characterize the response to the input spectrum over its frequency band. Neither quantity provides a failure threshold for the populated PCB.
+
+\heading{Watching the base-X comparisons}
+The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{movie catalogue} includes the assembly's X displacement, the board's Z displacement and its dynamic equivalent stress. Each subject pairs the bare board with both snug mounts at matching times and on one physical scale. The views magnify displacement $50\times$ and slow playback by about $273\times$. The native simulations hold the installed contact state fixed throughout the original nine-second records.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

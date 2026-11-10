@@ -323,7 +323,7 @@ def october(archive,campaign):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('branch',choices=['bare','stand3_nylon','stand3_aluminium','snug125_nylon','snug125_aluminium','october'])
+    p.add_argument('branch',choices=['bare','stand3_nylon','stand3_aluminium','snug125_nylon','snug125_aluminium','snug125_nylon_mesh15','snug125_aluminium_mesh15','october'])
     p.add_argument('--october-archive',type=Path);p.add_argument('--campaign',default='nov08_01')
     a=p.parse_args()
     if a.branch=='october':

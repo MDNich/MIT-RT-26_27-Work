@@ -1,8 +1,10 @@
 # Snug Balius comparison movies
 
-15 of 22 subjects have reviewed pairs for the bare board and both 1.250 mm mounts.
+18 of 22 subjects have reviewed pairs for the bare board and both 1.250 mm mounts.
 
 The links open 3840 × 2160 movies at 60 fps. Paired views use the same displacement or stress scale. The mode movies show normalized motion. In the one-sigma movies the camera moves around a fixed RMS field. The seeded movies show successive instants of the original acceleration record.
+
+3 of seven seeded movie pairs use native MAPDL time histories for every displayed panel.
 
 ## Normalized modes
 
@@ -33,10 +35,10 @@ The links open 3840 × 2160 movies at 60 fps. Paired views use the same displace
 
 | October subject | Without case | With case |
 |---|---|---|
-| Whole assembly · base X · X displacement | Pending | Pending |
+| Whole assembly · base X · X displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) | [1.25 mm Balius · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig06_baseX_responseX.mp4) |
 | Whole assembly · base Y · Z displacement | Pending | Pending |
 | Whole assembly · base Z · Z displacement | Pending | Pending |
-| PCB · base X · Z displacement | Pending | Pending |
+| PCB · base X · Z displacement | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) | [1.25 mm Balius · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig15_pcb_baseX.mp4) |
 | PCB · base Y · Z displacement | Pending | Pending |
 | PCB · base Z · Z displacement | Pending | Pending |
-| PCB · base X · von Mises stress | Pending | Pending |
+| PCB · base X · von Mises stress | [Bare · native motion](without_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) | [1.25 mm Balius · nylon and aluminium · native motion](with_case/power_board_random_motion_4k60/random_fig18_pcb_stress.mp4) |
