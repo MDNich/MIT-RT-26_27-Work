@@ -9,7 +9,14 @@ from snug_board_pull import AUDIT, BRANCHES, ROOT, read
 
 
 def draw(branches):
-    fig, (travel, pressure) = plt.subplots(1, 2, figsize=(8.6, 2.65), layout="constrained")
+    fig, axes = plt.subplots(
+        1,
+        len(branches),
+        figsize=(8.6, 2.65),
+        layout="constrained",
+        width_ratios=[1.35, *([1] * (len(branches) - 1))],
+    )
+    travel = axes[0]
     labels = {"bare": "Bare", "snug125_nylon": "Nylon", "snug125_aluminium": "Aluminium"}
     colors = {"snug125_nylon": "#38761D", "snug125_aluminium": "#08357E"}
     specs = read(AUDIT / "whole_board_pull_inputs.json")
@@ -40,34 +47,55 @@ def draw(branches):
         if branch != "bare":
             seats = read(AUDIT / (case + "_seats.json"))
             assert seats["native_pull_sha256"] == digest(proof)
-            assert not set(seats["states_outside_force_screens"]) & {r["native_set"] for r in rows}
-            vals = [
-                r["middle_patch_comparison"]["native_whole_case_projected_compression_N"] for r in rows
-            ]
-            pressure.plot(
-                [r["applied_X_N"] for r in rows],
-                vals,
-                "-o",
-                color=colors[branch],
-                lw=1.3,
-                ms=3.1,
-                label=labels[branch] + " screws",
+            pressure = axes[i]
+            excluded = set(seats["states_outside_force_screens"])
+            scale = 1000 if branch == "snug125_aluminium" else 1
+            unit = "mN" if scale == 1000 else "N"
+            for states, style, marker, fill in (
+                (rows, "-", "o", colors[branch]),
+                ([r for r in history["states"] if r["time"] >= 5], "--", "s", "none"),
+            ):
+                force = [r["applied_X_N"] for r in states]
+                vals = (
+                    np.asarray(
+                        [
+                            r["middle_patch_comparison"]["native_whole_case_projected_compression_N"]
+                            for r in states
+                        ]
+                    )
+                    * scale
+                )
+                passed = np.array([r["native_set"] not in excluded for r in states])
+                pressure.plot(
+                    force,
+                    np.where(passed, vals, np.nan),
+                    ls=style,
+                    marker=marker,
+                    color=colors[branch],
+                    mfc=fill,
+                    ms=3.7,
+                    lw=1,
+                    label="Loading" if style == "-" else "Unloading",
+                )
+                if not all(passed):
+                    pressure.scatter(
+                        np.array(force)[~passed], vals[~passed], color="#7A0101", s=18, marker="x"
+                    )
+            pressure.set_title(
+                labels[branch] + " middle pocket", loc="left", color="#08357E", fontsize=10.5
             )
+            pressure.set(
+                xlabel="Left-cell load [N]", ylabel=f"Compression [{unit}]", xlim=(-0.25, 9.1)
+            )
+            pressure.set_xticks(np.arange(0, 9, 2))
+            pressure.set_ylim(bottom=min(pressure.get_ylim()[0], -0.035 * max(pressure.get_ylim()[1], 1e-4)))
+            pressure.legend(loc="best", frameon=False, fontsize=7.8)
     travel.set_title("Left-cell travel at 8.542 N", loc="left", color="#08357E", fontsize=11)
     travel.set_yticks(range(len(branches)), [labels[b] for b in branches[::-1]])
-    travel.set_ylim(-0.55, len(branches) - 0.45)
+    travel.set_ylim(-1.0, len(branches) - 0.45)
     travel.set(xlabel=r"Displacement along PCB X [$\mu$m]", xlim=(0, 5.65))
-    travel.legend(loc="lower left", frameon=False, ncol=2, fontsize=8)
-    pressure.set_title("Force at the middle pocket", loc="left", color="#08357E", fontsize=11)
-    pressure.set(
-        xlabel="Sideways force on the left cell [N]",
-        ylabel="Projected compression [N]",
-        xlim=(-0.2, 9),
-        ylim=(0, None),
-    )
-    pressure.set_xticks(np.arange(0, 9, 2))
-    pressure.legend(loc="lower left", frameon=False, fontsize=8)
-    for axis in (travel, pressure):
+    travel.legend(loc="lower left", frameon=False, ncol=1, fontsize=7.2)
+    for axis in axes:
         axis.spines[["right", "top"]].set_visible(False)
         axis.grid(axis="x", lw=0.45, color="#ddd")
         axis.set_axisbelow(True)

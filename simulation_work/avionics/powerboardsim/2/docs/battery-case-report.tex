@@ -231,7 +231,7 @@ The nominal model reached that condition at 15.46~ms for base X, 24.48~ms for ba
 At both force crossings for each base direction, the outer cells remained clear on both meshes. On the finer mesh, an intersection within the seven-face installed patch confirmed middle-cell contact even where the whole-shell search lacked sufficient resolution. The force check detects a need to redistribute the installed pressure before those snapshots show an outer cell reaching its pocket. Complete lift-off remains unresolved. The nonlinear controls include an intact shell with all three cells, six nickel strips and six washers so both outer pockets can engage.
 
 \heading{How closely did the installed models balance?}
-At the nylon tightening peak the four tab bearings carried only 0.056~N in resultant against 8.323~N at the pocket. The difference between force vectors was \textbf{8.285~N}. Integrating native PLA stresses independently around all four bearings gave 0.568~N at bolt lock against 0.594~N at the pocket (4.35\% vector difference). Aluminium at lock gave 0.02229~N at the tabs and 0.02230~N at the pocket (0.052\%). The queued same-mesh repeat tightens the global force criterion to 0.01~N. Until that check, the intermediate contact peaks cannot establish the load transmitted to the mounting hardware.
+At the nylon tightening peak the four tab bearings carried only 0.056~N in resultant against 8.323~N at the pocket. The difference between force vectors was \textbf{8.285~N}. Integrating native PLA stresses independently around all four bearings gave 0.568~N at bolt lock against 0.594~N at the pocket (4.35\% vector difference). Aluminium at lock gave 0.02229~N at the tabs and 0.02230~N at the pocket (0.052\%). The same-mesh repeat tightens the global force criterion to 0.01~N. Until that check, the intermediate contact peaks cannot establish the load transmitted to the mounting hardware.
 \newpage
 \pageheading{Under base Y, stress rises across most of the PCB}
 The peak equivalent stress under Y excitation increased from 17.85~MPa RMS bare to 50.21~MPa with nylon screws and 48.40~MPa with aluminium. The bare peak lies at $(10.0,16.0)$~mm in the PCB plane. The nylon peak shifts to $(9.5,118.2)$~mm, and the aluminium peak to $(62.6,5.5)$~mm.
@@ -550,7 +550,7 @@ With aluminium screws the net projection first changed sign at 3.05~ms for base 
 We integrated stress over the deformed quadratic solids on both sides of the interface. For aluminium, the PLA pocket, the four tab reactions and the middle cell outside its two nickel bonds gave 0.022296, 0.022290 and 0.022290~N. On the fine nylon mesh those three values and the native contact output agreed within 0.00002~N in magnitude. On nominal nylon the solid values were 0.568--0.571~N against 0.594~N from the contact elements. The tab, cell and native contact forces were put on the same side of the interface before comparison. The aluminium mesh refinement remains queued. The 0.003~mm nominal middle-cell clearance makes this comparison sensitive to the as-printed fit.
 
 \heading{Does zero contact force mean the middle cell has cleared the case?}
-The aluminium mesh has one independent normal contact stiffness at lock. We allowed it to open under the left-cell pull, keeping the other supports at their installed stiffness. Its modeled force reached zero at 3.07~N. At 5.807~N the original triangle was clear, but a different case triangle still crossed the curved middle-cell surface. At 5.850~N the complete surfaces were separated. At 8.54~N all three cells cleared the case on this calculated path. The point-by-point check on page~30 places the intersection between contact integration points. The nonlinear whole-board control will test whether pressure transfers to another triangle.
+In the independent calculation the initial aluminium contact unloaded at 3.07~N. Another case triangle still crossed the curved middle cell at 5.807~N. The surfaces separated by 5.850~N. In the native pull (page~34), the original face still carried pressure at 2.886~N. The force was zero at 4.771~N even though the curved surfaces still intersected. During unloading the original face resumed carrying pressure.
 
 \clearpage
 \pageheading{Does the middle cell lift off during vibration?}
@@ -622,14 +622,14 @@ With an 8.54~N load on the middle cell toward negative PCB X, the bare cell cent
 \heading{How the original pocket points release}
 On the nominal nylon mesh, five points carried compression at lock. Under middle-cell load the second spacer engaged at 1.00~N. The first pocket point unloaded at 1.08~N and the last at 5.58~N. On the finer nylon mesh ten points carried compression over seven triangles. The weakest unloaded at only 0.018~N and the last at 5.39~N. The finer mesh predicted 4.21~$\mu$m of middle-cell travel at 8.54~N. With aluminium the only loaded point unloaded at 0.143~N.
 
-Loading the \emph{left} cell toward positive PCB X gave a different result. At 8.54~N its centre moved 4.799~$\mu$m bare, 4.789~$\mu$m with nylon screws and 4.785~$\mu$m with aluminium. The nominal nylon middle pocket still carried 0.532~N summed over its points. The aluminium middle pocket lost its original compressive force at 3.07~N, although the applied force was on the adjacent cell.
+Loading the \emph{left} cell toward positive PCB X gave a different result. At 8.54~N its centre moved 4.799~$\mu$m bare, 4.789~$\mu$m with nylon screws and 4.785~$\mu$m with aluminium. This independent calculation retained 0.532~N on the nominal nylon middle pocket. The native control on page~34 retained 0.506~N after the tighter zero-load hold. The aluminium middle pocket lost its original compressive force at 3.07~N, although the applied force was on the adjacent cell.
 
 \heading{Checks and limits}
 The contact elements retained the same installed nodal forces across every prestressed mode. For both nylon meshes we checked the forces on each triangle against the separate static ANSYS output. For aluminium the inherited resultant was 0.0222964~N. The difference from the independent solid-stress integration was 0.00000034~N in vector norm. This use of stored base contact data follows the \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_LinearPerturbElems.html}{ANSYS Element Reference, section 5.9.2}.
 
 At the 8.54~N middle-cell endpoint, the deformed surfaces of all three cells cleared the case for both screw materials and both nylon mesh sizes. Loading the left cell instead left a middle-cell surface intersection on both nylon meshes. The aluminium mesh cleared at the endpoint.
 
-Under the left-cell load we followed every initially unloaded integration point on the middle pocket through each interval of constant bearing. We bounded the distance to the complete quadratic cell surface, including the ends, throughout each interval. The closest approach was 7.4--7.6~nm with nylon screws on the 2~mm case mesh, 81.3--81.8~nm with the same screws on the 1.5~mm mesh and 18.5--18.7~nm with aluminium screws on the 2~mm mesh. No additional point touched. The margins depend strongly on the mesh. The native loading and unloading controls will test whether the same triangles carry force after the zero-load hold.
+Under the left-cell load we followed every initially unloaded integration point on the middle pocket through each interval of constant bearing. We bounded the distance to the complete quadratic cell surface, including the ends, throughout each interval. The closest approach was 7.4--7.6~nm with nylon screws on the 2~mm case mesh, 81.3--81.8~nm with the same screws on the 1.5~mm mesh and 18.5--18.7~nm with aluminium screws on the 2~mm mesh. No additional point touched. The margins depend strongly on the mesh. In the native pulls, all five nylon faces retained pressure. The single aluminium face released and re-engaged. No new face carried pressure with either mount (page~34).
 
 \clearpage
 \pageheading{Does the middle battery stay seated during vibration?}
@@ -699,28 +699,29 @@ We linearized the equations about the independently equilibrated 1~N state using
 
 \clearpage
 \pageheading{Does the snug case restrain the left cell on the complete board?}
-With 8.542~N applied sideways, the left cell moved \textbf{4.824~$\mu$m bare} and \textbf{4.816~$\mu$m with nylon screws}, a 0.16\% reduction on the nominal meshes. Relative to the motion of the two strip clamps, the same displacements were 2.3275 and 2.3278~$\mu$m. The driven cell stayed clear of its pocket at every saved loading and unloading station.
+At 8.542~N the left cell moved \textbf{4.824~$\mu$m bare}, \textbf{4.816~$\mu$m with nylon screws} and \textbf{4.812~$\mu$m with aluminium screws}. Relative to the two strip clamps, travel was 2.3275, 2.3278 and 2.3279~$\mu$m, respectively. The nominal complete-board models give less than a 0.25\% change in centre travel with either mount.
 
 \begin{center}\includegraphics[width=.99\linewidth]{figures/snug-board-side-load.pdf}
-\captionof{figure}{Left, the same mass-weighted sideways force on the two installed boards. Right, native force at the five middle-pocket faces that carried load with nylon screws. Displacements use the zero-added-load hold after bolt lock as their reference.}\end{center}
+\captionof{figure}{Cell-centre motion from the zero-added-load hold and native compression along each middle pocket's installed reaction direction. Markers show converged states. The two force panels use different vertical units.}\end{center}
 
 \heading{Why the local pull gives a different travel}
-The fixture on page~19 prescribed rigid-cell travel with locally supported, bilinear nickel strips. At the same 8.542~N the bare cell moved 0.500~mm and the snug nylon cell moved about 0.034~mm. On the complete boards, the original stand-offs support the PCB, the strips are elastic solids, and the force acts on 1,353 nodes in proportion to their contribution to the cell mass. The fixed-contact whole-board stiffness predicted 4.799~$\mu$m bare and 4.789~$\mu$m with nylon screws. The driven cell could reach its pocket in the local fixture under this load.
+The local fixture on page~19 prescribed rigid-cell travel with locally supported, bilinear nickel strips. There the left cell reached its pocket and travel at the same load fell from 0.500~mm bare to about 0.034~mm with nylon screws. On the complete boards, the stand-offs support the PCB and force acts on 1,353 nodes in proportion to their contribution to the cell mass. The elastic solid strips carried essentially the same lateral increments in all three models. The loaded left cell stayed clear of the case at every saved station.
 
-\heading{Where does the load go?}
-\begin{center}\small
-\begin{tabular}{lrr}\toprule
-At 8.542~N on the left cell & Bare & Nylon screws\\\midrule
-Lateral load increment at its two nickel bonds [N] & 4.262 / 4.286 & 4.262 / 4.285\\
-Peak nickel equivalent stress including bolt preload [MPa] & 167.30 & 167.52\\
-Largest local increase in nickel equivalent stress [MPa] & 27.08 & 26.93\\
-Largest local increase in PCB principal tensile strain [$\mu\varepsilon$] & 367 & 366\\
-Work supplied by the distributed load [$\mu$J] & 20.597 & 20.565\\\bottomrule
-\end{tabular}\end{center}
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+At 8.542~N on the left cell & Bare & Nylon & Aluminium\\\midrule
+Lateral increment at the two left-cell nickel bonds [N] & 4.262 / 4.286 & 4.262 / 4.285 & 4.262 / 4.285\\
+Peak nickel equivalent stress including bolt preload [MPa] & 167.30 & 167.52 & 167.59\\
+Largest local increase in nickel equivalent stress [MPa] & 27.08 & 26.93 & 26.89\\
+Largest local increase in PCB principal tensile strain [$\mu\varepsilon$] & 367 & 366 & 364\\
+Work supplied by the distributed load [$\mu$J] & 20.597 & 20.565 & 20.549\\
+\bottomrule\end{tabular}\end{center}
 
-The nickel peaks reached 90.4\% and 90.6\% of the assumed 185~MPa yield reference. The nickel is linear elastic in the complete-board model. Peak through-layer tension in the printed case was 0.335~MPa (0.83\% of the coupon mean), and peak nylon shank fibre tension was 1.24~MPa. The PCB assembly, ideal welds and nylon screws have no verified hardware allowables in this study.
+Both cased nickel peaks reached 90.6\% of the assumed 185~MPa yield reference, compared with 90.4\% bare. Through-layer PLA tension reached 0.335~MPa with nylon screws and 0.789~MPa with aluminium (0.83\% and 1.95\% of the coupon mean). Peak shank fibre tension was 1.24 and 2.39~MPa. The PCB assembly, ideal welds and screws have no verified hardware allowables in this study.
 
-The tighter zero-load hold settled the middle-pocket compression from 0.594 to 0.5685~N. Applying 8.542~N to the left cell relieved it to 0.5059~N. All five original faces continued to carry pressure. Only spacer 3 bore load, rising from 0.0588 to 0.0624~N. The four-tab and native contact vectors agreed within 0.000005~N at the endpoint. Both left cells returned to within 0.001~$\mu$m of their starting positions. The matched aluminium-screw cycle is under way.
+\heading{Which pockets still touch?}
+With nylon screws, the tighter hold relaxed the middle-pocket force to 0.5685~N. At maximum load it retained 0.5059~N on five faces. With aluminium the middle pocket carried 0.98~mN at 2.886~N and zero at 4.771~N. The curved meshes still intersected at 4.771~N and were separated at 7.599~N. At 8.542~N their minimum gap was 58.7--59.8~nm. As the load returned to zero the same face carried pressure again.
+
+At maximum load, the smallest driven-cell gap was 9.878--9.889~$\mu$m with nylon and 11.018--11.029~$\mu$m with aluminium. All six modeled washers cleared the case by at least 0.311~mm with nylon and 0.314~mm with aluminium at the saved stations. These bounds use the nominal mesh and solved displacements. Print and sleeve tolerances remain unmeasured.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
