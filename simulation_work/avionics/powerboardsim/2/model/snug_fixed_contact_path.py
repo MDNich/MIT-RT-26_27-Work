@@ -3,7 +3,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 from ansys.mapdl import reader
-from audit_local import read
+from audit_local import ROOT,read,table
 from early_cell_clearance import bezier
 from film_cell_contact import candidate_pairs
 from film_identity import digest,verified,write_json
@@ -12,13 +12,11 @@ from stage_snug_fit import AUDIT,INPUTS,MESH
 from tab_seating import read_point_file
 
 
-def check(folder):
-    cap=read(folder/'capture.json');case=cap['case']
-    source=AUDIT/f'{case}_{folder.name}_checkpoint.json';checkpoint=read(source)
-    assert checkpoint['rst_sha256']==cap['sha256']
-    spec=read(AUDIT/'local_inputs_m15.json')[case];target=MESH/'fixture_targets_0005.npz'
-    verified(target,spec['target_sha256']);verified(folder/'pull.rst',cap['sha256'])
-    job=read(INPUTS/case/'local_job.json');deck=INPUTS/case/'model.inp'
+def classify(folder,case,rst_sha,spec,states,out):
+    target=MESH/'fixture_targets_0005.npz'
+    verified(target,spec['target_sha256']);verified(folder/'pull.rst',rst_sha)
+    job_path=INPUTS/case/'local_job.json';verified(job_path,spec['spec_sha256'])
+    job=read(job_path);deck=INPUTS/case/'model.inp'
     verified(deck,spec['input_sha256'])
     radius=job['absolute_search_mm']
     assert radius==1. and 'RMODIF,862,6,-1\n' in deck.read_text()
@@ -42,7 +40,7 @@ def check(folder):
             assert np.max(abs(p-skin['points'][skin[str(b)]]))<1e-6
             boxes[b]=(p.min(axis=1),p.max(axis=1))
     live=[]
-    for row in checkpoint['states']:
+    for row in states:
         if not row['within_screens']:break
         k=row['native_set'];enum,values,_=raw.element_solution_data(k-1,'EMN')
         idx=positions(enum,ids)
@@ -55,10 +53,11 @@ def check(folder):
         assert (native[:,40]>=2).sum()==ref['closed_faces']
         assert np.allclose(force.sum(axis=0,dtype=float),ref['force_N'],atol=1e-5,rtol=1e-6)
         if moving.any():live.append((row,faces[exists][moving],force[moving].astype(float)))
-    assert live
+    if not live:
+        return []
     nodes=np.unique(np.r_[NEIGHBOR_PILOT,np.concatenate([f.ravel() for _,f,_ in live])])
-    sets=[r['native_set'] for r,_,_ in live];out=folder/'dpf_fixed_faces'
-    u,_=read_point_file(folder/'pull.rst',out,cap['sha256'],sets,nodes.tolist())
+    sets=[r['native_set'] for r,_,_ in live]
+    u,_=read_point_file(folder/'pull.rst',out,rst_sha,sets,nodes.tolist())
     assert np.max(abs(u[:,positions(nodes,[NEIGHBOR_PILOT])]))<1e-9
     records=[]
     for (row,f,forces),field in zip(live,u,strict=True):
@@ -81,12 +80,56 @@ def check(folder):
         records.append(dict(native_set=row['native_set'],travel_mm=row['travel_mm'],cell_force_N=row['cell_force_N'],
                             fixed_resistance_N=total,possible_target_bodies=groups))
         print(row['native_set'],{k:round(v['force_N'][0],2) for k,v in groups.items()},flush=True)
-    write_json(AUDIT/f'{case}_{folder.name}_fixed_targets.json',dict(case=case,checkpoint_sha256=digest(source),
-               skin_sha256=spec['target_sha256'],fixed_body_numbers=list(bodies),search_radius_mm=radius,
-               DPF_displacements_sha256=digest(out/'displacements.bin'),loaded_states=records,
-               scope='Each target triangle has its exact native vertices. The deformed quadratic contact-face hull '
-                     'bounds are expanded by the full 1 mm native search radius in each coordinate. A unique candidate '
-                     'body establishes attribution. Ambiguous facet forces are retained as a group.'))
+    return records
+
+
+def write_result(path,case,source_key,source_sha,spec,out,records):
+    result=dict(case=case,skin_sha256=spec['target_sha256'],fixed_body_numbers=[15,19,1,6,9,10,11,20],
+                search_radius_mm=1.,loaded_states=records,
+                scope='Each target triangle has its exact native vertices. The deformed quadratic contact-face hull '
+                      'bounds are expanded by the full 1 mm native search radius in each coordinate. A unique candidate '
+                      'body establishes attribution. Ambiguous facet forces are retained as a group.')
+    result[source_key]=source_sha
+    if records:result['DPF_displacements_sha256']=digest(out/'displacements.bin')
+    write_json(path,result)
+    return path
+
+
+def check(folder):
+    cap=read(folder/'capture.json');case=cap['case']
+    source=AUDIT/f'{case}_{folder.name}_checkpoint.json';checkpoint=read(source)
+    assert checkpoint['rst_sha256']==cap['sha256']
+    spec=read(AUDIT/'local_inputs_m15.json')[case];out=folder/'dpf_fixed_faces'
+    rows=classify(folder,case,cap['sha256'],spec,checkpoint['states'],out)
+    return write_result(AUDIT/f'{case}_{folder.name}_fixed_targets.json',case,'checkpoint_sha256',digest(source),spec,out,rows)
+
+
+def archive(case,comparison,folder,sha):
+    spec=read(AUDIT/'local_inputs_m15.json')[case]
+    assert spec['input_sha256']==sha['model.inp'] and sha['pull.rst']==comparison['native_rst_sha256']
+    post=ROOT/'.runtime/post'/folder.parent.name/case
+    verified(folder/'case_pairs.csv',sha['case_pairs.csv'])
+    pairs=table(folder/'case_pairs.csv');balance=table(post/'whole_fixture_balance.csv')
+    fixed=pairs[pairs['pair']==862]
+    assert np.array_equal(fixed['set'],balance['native_set'])
+    end=comparison['equal_travel'];last=end['cased']['set'] if end else 0
+    rows=[dict(native_set=int(b['native_set']),within_screens=True,travel_mm=b['ux_mm'],cell_force_N=b['cell_fx_N'],
+               neighbor_resistance_N=-b['neighbor_support_N_x'],both_contact_pairs={'862':dict(
+               closed_faces=f['closed'],force_N=[f[k+'_N'] for k in ('fx','fy','fz')])})
+          for b,f in zip(balance,fixed,strict=True) if b['native_set']<=last]
+    out=post/'dpf_fixed_faces'
+    records=classify(folder,case,sha['pull.rst'],spec,rows,out) if rows else []
+    keyed={r['native_set']:r['possible_target_bodies'] for r in records}
+    for path in sorted(AUDIT.glob(case+'_ls*_fixed_targets.json')):
+        snap=read(path)
+        assert snap['checkpoint_sha256'] in {c['checkpoint_sha256'] for c in comparison['verified_checkpoints']}
+        for row in snap['loaded_states']:
+            before=row['possible_target_bodies'];after=keyed[row['native_set']]
+            assert before.keys()==after.keys()
+            for k,v in before.items():
+                assert v['faces']==after[k]['faces']
+                np.testing.assert_allclose(v['force_N'],after[k]['force_N'],atol=1e-5,rtol=1e-6)
+    return write_result(AUDIT/f'{case}_fixed_target_history.json',case,'closed_rst_sha256',sha['pull.rst'],spec,out,records)
 
 
 if __name__=='__main__':

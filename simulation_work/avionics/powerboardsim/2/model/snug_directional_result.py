@@ -218,7 +218,10 @@ def run(case):
                                     for p in sorted(AUDIT.glob(case+'_*_checkpoint.json'))]
     if suffix=='_m15':
         from snug_mount_reactions import archive as check_mounts
-        record['mount_history_sha256']=digest(check_mounts(case,record,ROOT/'.runtime/archive'/ledger['campaign']/case,sha))
+        from snug_fixed_contact_path import archive as check_fixed_targets
+        folder=ROOT/'.runtime/archive'/ledger['campaign']/case
+        record['mount_history_sha256']=digest(check_mounts(case,record,folder,sha))
+        record['fixed_target_history_sha256']=digest(check_fixed_targets(case,record,folder,sha))
     write_json(AUDIT/(case+'_comparison.json'),record)
 
 
