@@ -332,6 +332,28 @@ The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/
 \heading{How the movie fields were checked}
 Every bare and cased video decoded at $3840\times2160$ and 60 frames/s. The corresponding panels share the response quantity, physical interval and scale. Independent integration recovered the scalar field actually painted on each of the 21 seeded panels to within 0.0026\% in relative field norm over the whole clip. We also inspected three decoded frames from each of the 44 files. The animation magnifies motion $50\times$. The values in the graph use the physical displacement.
 
+\newpage
+\pageheading{Which outer cell reaches its pocket first?}
+Both outer cells clear the case when the bolts lock. Under the same seeded base-Z vibration, the nylon assembly's right cell reaches its pocket first, at about 31.1~ms. With aluminium screws the left cell reaches the case first, at about 42.6~ms. These times describe motion along the nominal 2~mm model's prestressed modes. The middle cell already carries load when vibration starts.
+
+\begin{center}\includegraphics[width=.97\linewidth]{figures/snug-outer-startup.pdf}
+\captionof{figure}{Outer-cell markers show the first sampled surface crossing bracketed from the native MAPDL motion history. The purple line gives the independent upper bound on when the installed middle-pocket pressure must redistribute with nylon screws. Once that pressure changes, the real assembly can follow a different path.}\end{center}
+
+\begin{center}\small\begin{tabular}{llrr}\toprule
+Case screws & Outer cell & Native history [ms] & Independent history [ms]\\\midrule
+Nylon & Right & 31.051--31.083 & 31.051--31.083\\
+Nylon & Left & 40.771--40.803 & 40.771--40.787\\
+Aluminium & Left & 42.602--42.634 & 42.602--42.634\\
+Aluminium & Right & 45.150--45.167 & 45.150--45.167\\\bottomrule
+\end{tabular}
+\captionof*{table}{Bounds rounded outwards. Each lower endpoint is the last sample in a sequence with both surfaces proven separate. At the upper endpoint the two curved faces share an interior point. A sample spans 0.01526~ms.}\end{center}
+
+\heading{How the crossings were checked}
+At every sampled station from rest, we searched the entire 16,596-face printed shell against the quadratic faces of each outer cell. Subdivided Bézier control hulls establish separation. At a crossing we evaluated the original six-node interpolations and found the same point on both surfaces to within $10^{-9}$~mm, with nonparallel normals. This avoids the premature overlap that can appear on faceted renderings of the curved cells. Independent integration of the same modes and acceleration, exact for linearly interpolated input, reproduced the order for both screw materials.
+
+\heading{What the local fixtures can recover}
+The 15~mm left-side fixture includes both faces at the verified left-cell crossings for nylon and aluminium. The 9~mm fixture includes the native aluminium left crossing but misses the native nylon left crossing. Both radii omit the right cell and every PLA face that carried middle-cell load at bolt lock (five with nylon, one with aluminium). Their local reactions consequently cover only part of the assembly. The intact-shell controls include all three cells and the original hardware. A nonlinear vibration solution is still needed to determine impact force, separation and rebound.
+
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}

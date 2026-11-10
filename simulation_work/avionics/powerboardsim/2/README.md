@@ -26,6 +26,8 @@ All three native base-X motion subjects are published. In the original 29.24 ms 
 
 All **22 paired subjects** are published and reviewed. Each pairs the bare board with both snug mounts. In the base-Z seeded clip, peak board-normal travel reached 0.168 mm bare, 0.390 mm with nylon screws and 0.248 mm with aluminium. [Full catalogue](output/videos/snug125/README.md) · [Bare base-Z PCB movie](output/videos/snug125/without_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) · [Both snug mounts](output/videos/snug125/with_case/power_board_random_motion_4k60/random_fig17_pcb_baseZ.mp4) · [Film comparison, page 16](output/pdf/battery-case-report.pdf#page=16)
 
+On the nominal prestressed modes under base Z, the right outer cell reaches the case first with nylon screws (31.1 ms), and the left reaches it first with aluminium (42.6 ms). Independent integration reproduced both orderings. With nylon, the middle pocket needs to redistribute its preload by 12.7 ms. The outer-cell times describe the fixed-contact model. [Startup comparison, page 17](output/pdf/battery-case-report.pdf#page=17) · [Briefing, slide 7](output/pdf/battery-case-slides.pdf#page=7)
+
 The local forward and reverse pulls use the verified 1.5 mm case mesh. Native preprocessing rejected one nearly flat element in the initial 2 mm local fixtures before an equilibrium was reached. The replacement passed native shape checking with 99,818 tetrahedra and the expected hardware and contact counts. [Native preflight](validation/snug125/local_mesh15_preflight.json)
 
 ## Appendix A — previous fit study
