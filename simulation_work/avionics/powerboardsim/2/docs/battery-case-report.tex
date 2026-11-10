@@ -443,7 +443,7 @@ On the driven cell, the loaded area \emph{fell} from 59.57 to 55.08~mm$^2$ as th
 \heading{How much does the faceted cell surface matter?}
 At 5.53~N, 112 of 18,372 pocket points carried native pressure, covering 30.58~mm$^2$. Holding the deformed case and rigid cell pose fixed, successively finer target skins put 201 and 224 points inside the cell. The trimmed STEP solid gave 227 points (61.61~mm$^2$). At 11.57~N the finest skin and STEP agreed on the count of 278, compared with 164 loaded natively. A matched native control refines only the driven cell through 0.040~mm to determine how the forces redistribute.
 
-Pressure recovered from case-node forces and deformed areas agreed with MAPDL within $1.3\times10^{-6}$~MPa. The rigid cell and air gap give no sleeve or can damage limit. The refined PLA corner crosses its coupon reference after 0.219375~mm (page~23). The four-core solve stopped on nonconvergence after 16~h 03~min at $+0.470494$~mm of the requested $+0.500$~mm. Of 83 solver-converged states, two at 0.453 and 0.455~mm exceeded the 0.20~N force-balance limit in Z. We excluded the final diagnostic state. Both balance violations occurred beyond the printed-material range.
+Pressure recovered from case-node forces and deformed areas agreed with MAPDL within $1.3\times10^{-6}$~MPa. The rigid cell and air gap give no sleeve or can damage limit. The refined PLA corner crosses its coupon reference after 0.219375~mm (page~23). The four-core solve stopped on nonconvergence after 16~h 03~min at $+0.470494$~mm of the requested $+0.500$~mm. Of 83 solver-converged states, two at 0.453 and 0.455~mm exceeded the 0.20~N force-balance limit in Z. We excluded the final diagnostic state. The first 63 states passed this check through 0.452697~mm. The refined PLA limit restricts the physical comparison to 0.219375~mm.
 
 \heading{How much does the installed case restrain each cell?}
 At bolt lock, the middle cell moved \textbf{9.9\% less with nylon screws} and \textbf{13.9\% less with aluminium} under the same small sideways force. Refining the nylon case from 2 to 1.5~mm gave a 9.4\% reduction. The change from bare at either outer cell was below 0.36\%. We solved each full stiffness matrix independently, applying a unit force along PCB X through each cell's mass centre in turn. Contacts retained their installed state.
@@ -678,6 +678,24 @@ For each of the three Gauss points on every middle-pocket triangle, we intersect
 At bolt lock the FE calculation identified all five loaded points on nominal nylon and all ten on finer nylon. Multiplying penetration by the native normal contact stiffness and the area represented by each point reproduced the locked pocket resultants of 0.594 and 0.572~N to within 0.000002~N. The calculation matched the loaded faces at 15 of the 16 saved nylon states. At the remaining tightening station it missed one edge face and gave 7.946~N against the native 8.323~N. The ANSYS normal stiffness and force records are defined in the \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_CONTA174.html}{CONTA174 element output table}.
 
 Under base Z, the first previously unloaded cylindrical point entered the mesh at 5.91~ms with nominal nylon, 10.07~ms on finer nylon and 6.33~ms with aluminium. The later gaps on page~31 use a trajectory that omits the forces at those new points. They quantify the geometry of that trajectory; the actual battery motion through recontact remains open.
+
+\clearpage
+\pageheading{How does M4 tension change the first pocket contact event?}
+A mean M4 shank tension of 1~N seated all four spacers. Under board-normal vibration, the first change still occurred at a middle-pocket point. We used the same nine-second input as on page~29 and changed only the assumed assembly state and the stiffness of the points bearing in that state. The screw tension in the hardware is unknown.
+
+\begin{center}\includegraphics[width=\linewidth]{figures/snug-screw-vibration.pdf}
+\captionof{figure}{Left, lowest observed input level for a middle-pocket or spacer change. Right, first change in the ramp at the full reference level. Both panels describe the same board-normal waveform. The points show the attained upper ends of the numerical intervals.}\end{center}
+
+\heading{Where the contact changes}
+On the nominal nylon mesh, a previously clear point touched the middle cell at \textbf{0.00842--0.00852~$g$ RMS} after tightening, compared with 0.00659--0.00667~$g$ before tightening. With aluminium screws a new point touched at \textbf{0.00676--0.00683~$g$ RMS}. An originally loaded point had unloaded first at 0.00511~$g$ in the original assembly. The first frequency with all spacers bearing was 295.93~Hz with nylon and 415.44~Hz with aluminium on these meshes.
+
+On finer nylon, one weakly loaded point opened during tightening. Its contact spring seated again at \textbf{0.00110~$g$ RMS}. At that station the deformed quadratic mesh still gave 0.015~nm of clearance. At the same time sample, continuing the tightened linear response closed the geometric gap at 0.00112~$g$ RMS. This difference sets the precision of the predicted seating level for that point.
+
+\heading{Comparison with the bare board}
+Middle-cell sideways displacement per unit force was 0.5235~$\mu$m/N bare. At the assumed screw tension it was 0.4715~$\mu$m/N with nylon, 0.4743~$\mu$m/N with finer nylon and 0.4509~$\mu$m/N with aluminium. In the cased models tightening changed this static quantity by less than 0.033\%, even as the lightly loaded contacts responded to different vibration levels.
+
+\heading{Checks on the tightened state}
+We linearized the equations about the independently equilibrated 1~N state using two-percent modal damping. Forcing and displacements were carried in the original native mode shapes plus additional stiffness responses. A separate full-matrix calculation checked the first four frequencies with all spacers bearing and the original pocket stiffness retained. Two and five blocks of additional responses, and a half sample interval, preserved the governing point on all three models. We swept each originally clear middle-pocket integration point against all 308 curved middle-cell faces. Other interfaces, locations between integration points and motion after a contact changes require separate checks.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

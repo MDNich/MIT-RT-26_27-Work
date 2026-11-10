@@ -82,7 +82,7 @@ def crossing(point, point_delta, face, face_delta, rest, axis, radius, upper):
     return scale, uv, error
 
 
-def witness(g, q, rms, ceiling):
+def witness(g, q, rms, ceiling, rate=FS):
     """Rank projected open sites by first-order gap change, then solve on both deformed quadratic surfaces."""
     i, j, uv, gap = (g[k] for k in ("i", "j", "uv", "gap"))
     w, du, dv = shape(uv)
@@ -127,7 +127,7 @@ def witness(g, q, rms, ceiling):
                     "scale": float(root),
                     "stationary_rms_g": float(root * rms),
                     "sample": int(step),
-                    "time_s": float(step / FS),
+                    "time_s": float(step / rate),
                     "element": int(g["element"][a]),
                     "point": int(g["point"][a]),
                     "target": int(g["target_ids"][b]),
@@ -316,7 +316,12 @@ def initial_time(g, q, branch, axis):
     seats = seats["integrations"][method.removesuffix("_4000")]
     times = [s["current_length"]["interpolated_ms"] for s in seats if s["current_length"]]
     previous_ms = min(first_open, *times) if times else first_open
-    end = previous_ms * FS / 1000
+    return startup_before_switch(g, q, previous_ms)
+
+
+def startup_before_switch(g, q, previous_ms, rate=FS):
+    """Search the actual waveform up to the earliest known spacer or pocket-point change."""
+    end = previous_ms * rate / 1000
     whole = int(np.floor(end))
     tail = q[whole] + (end - whole) * (q[whole + 1] - q[whole])
     prefix = np.vstack((q[: whole + 1], tail))
@@ -351,7 +356,7 @@ def initial_time(g, q, branch, axis):
     return {
         "original_switch_ms": previous_ms,
         "exclusion": bounded,
-        "first_time_bracket_ms": [low * 1000 / FS, (low + fraction * (upper - low)) * 1000 / FS],
+        "first_time_bracket_ms": [low * 1000 / rate, (low + fraction * (upper - low)) * 1000 / rate],
         "open_point_crossing": {
             "sample_interval": [int(low), int(high)],
             "element": hit["element"],

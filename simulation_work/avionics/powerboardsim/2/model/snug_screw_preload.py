@@ -135,6 +135,8 @@ def check(branch, raw, dofs, free, transfer, labels, k, g, C, Y, B, K, cell, cel
                 "shortening_interval_um": [lo, hi],
                 "bearing_inside_interval": [s for s, bearing in zip(labels, active, strict=True) if bearing],
                 "pocket_and_spacer_N": cb.tolist(),
+                "signed_compression_nm": (1e9 * (g + delta)).tolist(),
+                "equivalent_port_load_N": b.tolist(),
                 "middle_pocket_compression_N": float(cb[:-4].sum()),
                 "shank_tension_N": tb.tolist(),
                 "mean_shank_tension_N": float(tb.mean()),
@@ -170,6 +172,25 @@ def check(branch, raw, dofs, free, transfer, labels, k, g, C, Y, B, K, cell, cel
         "interfaces and geometric stiffness retain their installed linearization. Physical screw torque "
         "and preload were not supplied.",
     }
+    # Save the exact full-matrix endpoint skin for the small-vibration and first-touch comparison.
+    from film_identity import verified
+    from snug_contact_vibration import CACHE
+
+    modal_proof = read(AUDIT / f"{branch}_contact_vibration_basis.json")
+    root = CACHE / (branch + "_basis") / f"coupled_contact_b{modal_proof['residual_blocks']}"
+    verified(root / "basis.npz", modal_proof["basis_sha256"])
+    with np.load(root / "basis.npz") as modal:
+        nodes = modal["nodes"]
+        xyz = modal["positions"]
+    eq = 8 * dofs[:, 0].astype(np.int64) + dofs[:, 1]
+    order = np.argsort(eq)
+    ix = order[positions(eq[order], 8 * nodes[:, None] + np.arange(3))]
+    expanded = np.zeros(len(dofs))
+    expanded[free] = disp
+    endpoint = xyz + (expanded + transfer @ expanded)[ix]
+    destination = root / "screw_preload_skin.npz"
+    np.savez(destination, nodes=nodes, positions=endpoint)
+    record["endpoint_skin_sha256"] = digest(destination)
     write_json(AUDIT / f"{branch}_screw_preload_path.json", record)
     print(
         branch,
