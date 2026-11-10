@@ -89,7 +89,7 @@ def classify(a, b, weights):
     return 'unresolved', hits
 
 
-def series(rest, modes, q, weights):
+def series(rest, modes, q, weights, *, stop_at_first=False):
     limits = np.max(np.abs(q), axis=0)
     ia, ib = candidate_pairs(*(envelopes(x, u, limits) for x, u in zip(rest, modes, strict=True)))
     if not len(ia):
@@ -108,6 +108,8 @@ def series(rest, modes, q, weights):
             states.append(state)
             if state == 'intersecting':
                 depths.append(max(hits))
+                if stop_at_first:
+                    return states, len(ia), depths
     return states, len(ia), depths
 
 
