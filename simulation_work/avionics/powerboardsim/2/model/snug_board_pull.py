@@ -232,7 +232,9 @@ def audit(case):
             assert s['native_set']==faces['native_set']
             s['loaded_case_faces']=faces['loaded_case_faces']
         # The original parent did not request MISC. The restart explicitly requests it.
-        incremental_contact_forces(raw,owners,steps[zero:],result['states'][zero:])
+        locked_middle = {e for patch in by_face[0]['loaded_case_faces'] if patch['STEP_face']==17
+                         for e in patch['element_ids']}
+        incremental_contact_forces(raw,owners,steps[zero:],result['states'][zero:],locked_middle)
         result['native_contact_scope']='Signed CNFX/Y/Z summed over every case contact face and target, referenced to the zero-added-load hold.'
         compare_pocket_unloading(branch,result,zero)
     prediction=AUDIT/f'{branch}_cell_flexibility.json'
@@ -266,20 +268,22 @@ def compare_pocket_unloading(branch, result, zero):
     axis = np.asarray(record['opening_direction'])
     assert abs(np.linalg.norm(axis)-1) < 1e-12
     locked_faces = set(tangent['installed_contact_elements'])
+    parent_patches = result['states'][0]['loaded_case_faces']
+    assert locked_faces == {e for patch in parent_patches if patch['STEP_face']==17 for e in patch['element_ids']}
     slope = record['opening_force_increment_N_per_unit_positive_X_load'][0]
     preload = record['projected_compression_N'][record['selected_preload_source']]
     states = result['states'][zero:]
     assert states[0]['applied_X_N'] == 0
-    held = np.dot(states[0]['native_case_contact_force']['CNF_XYZ_N'], axis)
+    held = np.dot(states[0]['native_middle_pocket_force']['CNF_XYZ_N'], axis)
     first_change = None
     for state in states:
-        faces = {n for contact in state['loaded_case_faces'] for n in contact['element_ids']}
+        faces = {n for contact in state['loaded_case_faces'] if contact['STEP_face']==17 for n in contact['element_ids']}
         if faces != locked_faces and first_change is None:
             first_change = state['native_set']
         # Native CNF is force on the cell. Compression projects positively on
         # this axis, opposite to the signed compression force into the shell.
-        projected = float(np.dot(state['native_case_contact_force']['CNF_XYZ_N'], axis))
-        change = float(np.dot(state['native_case_contact_force']['change_from_zero_hold_XYZ_N'],axis))
+        projected = float(np.dot(state['native_middle_pocket_force']['CNF_XYZ_N'], axis))
+        change = float(np.dot(state['native_middle_pocket_force']['change_from_zero_hold_XYZ_N'],axis))
         assert abs(projected-held-change) < 1e-8
         state['middle_patch_comparison'] = dict(original_closed_faces_retained=len(faces & locked_faces),
             new_closed_faces=len(faces - locked_faces), same_faces_as_parent=(faces==locked_faces),
@@ -289,8 +293,15 @@ def compare_pocket_unloading(branch, result, zero):
         original_projected_compression_N=preload, zero_hold_native_projection_N=float(held),
         first_saved_set_with_different_faces=first_change,
         signed_left_cell_X_N_at_frozen_patch_zero=preload/slope,
-        scope='CNF sums all contacting targets. Retained and new face counts track changes from bolt lock. '
+        scope='The projection uses case-side STEP face 17. The separate assembly resultant includes all other case faces. '
               'The tangent refers to the original equilibrium; the native increments start at the converged zero-load hold.')
+
+    sweep_path = AUDIT / f'{branch}_cellpush_swept_points.json'
+    if sweep_path.is_file():
+        sweep = read(sweep_path)
+        assert sweep['parent_rst_sha256'] == result['parent_rst_sha256'] and sweep['whole_board_inputs_sha256'] == result['registry_sha256']
+        assert {e for e,_ in sweep['original_bearing_points']} == locked_faces
+        result['pocket_unloading_check']['swept_geometry_sha256'] = digest(sweep_path)
 
     released_path = AUDIT / f'{branch}_released_pocket_tangent.json'
     if released_path.is_file():

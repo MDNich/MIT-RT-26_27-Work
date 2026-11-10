@@ -150,20 +150,35 @@ def element_contact_forces(rst, index, faces):
     return forces
 
 
-def incremental_contact_forces(rst, owners, indices, states):
+def incremental_contact_forces(rst, owners, indices, states, locked_middle_faces):
     """Compare each restart contact resultant with the final zero-added-load hold."""
     faces = np.array(sorted(owners))
     assert len(faces) and len(states) and len(states) == len(indices)
     assert states[0]['applied_X_N'] == 0
-    baseline = None
+    middle = np.array([owners[int(e)] == 17 for e in faces])
+    original = np.isin(faces, list(locked_middle_faces))
+    assert original.any() and set(faces[original]) == set(locked_middle_faces)
+    assert not np.any(original & ~middle)
+    baseline = middle_baseline = None
     for index, state in zip(indices, states, strict=True):
         assert state['native_set'] == index + 1
         forces = element_contact_forces(rst, index, faces)
         if state['case_contact']['p_max'] > 0:
             assert np.any(forces)
         net = forces.sum(axis=0)
+        old = forces[original].sum(axis=0)
+        new = forces[middle & ~original].sum(axis=0)
+        other = forces[~middle].sum(axis=0)
+        middle_net = old + new
+        np.testing.assert_allclose(middle_net + other, net, rtol=1e-10, atol=1e-9)
         if baseline is None:
             baseline = net.copy()
+            middle_baseline = middle_net.copy()
+        state['native_middle_pocket_force'] = dict(
+            STEP_face=17, CNF_XYZ_N=middle_net.tolist(), change_from_zero_hold_XYZ_N=(middle_net-middle_baseline).tolist(),
+            original_triangles_XYZ_N=old.tolist(), previously_unloaded_triangles_XYZ_N=new.tolist(),
+            previously_unloaded_sum_of_magnitudes_N=float(np.linalg.norm(forces[middle & ~original], axis=1).sum()),
+            other_STEP_faces_XYZ_N=other.tolist())
         state['native_case_contact_force'] = dict(
             CNF_XYZ_N=net.tolist(), change_from_zero_hold_XYZ_N=(net-baseline).tolist(),
             sum_of_element_magnitudes_N=float(np.linalg.norm(forces, axis=1).sum()))

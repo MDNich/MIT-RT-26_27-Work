@@ -1,0 +1,79 @@
+{
+  "branch": "snug125_nylon",
+  "parent_rst_sha256": "e0588702debad2cbbc55d6b7eb73e2d19a9e71b127b555ed4b6b164f48a72e94",
+  "whole_board_inputs_sha256": "8205c0262637d030aea56e448859e88bbc91666de8ac6e92b9a224e5020a18a2",
+  "spacer_pocket_prediction_sha256": "5ea9a4c103d0d36a18e229a0bc723f2316e82b26d67552fe729276ea763c25d9",
+  "pressure_check_sha256": "7d20d3ad5a2131e9f5e7d1238ae6eda39ab12341d4b13e3f85a338f5644655c8",
+  "endpoint_force_N": 8.542048658016569,
+  "middle_pocket_triangles": 1486,
+  "cell_boundary_triangles": 308,
+  "initially_unloaded_points": 4453,
+  "original_bearing_points": [
+    [
+      1258174,
+      1
+    ],
+    [
+      1258810,
+      1
+    ],
+    [
+      1259836,
+      3
+    ],
+    [
+      1262083,
+      3
+    ],
+    [
+      1266472,
+      3
+    ]
+  ],
+  "geometry_tolerance_mm": 1e-08,
+  "intervals": [
+    {
+      "load_range_N": [
+        0.0,
+        8.542048658016569
+      ],
+      "bearing": [
+        "1258810.1",
+        "1258174.1",
+        "1259836.3",
+        "1266472.3",
+        "1262083.3",
+        "spacer 3"
+      ],
+      "surviving_hull_pairs": [
+        7500,
+        6092,
+        3170,
+        2149,
+        1105,
+        324,
+        21,
+        2,
+        0
+      ],
+      "confirmed_crossings": [],
+      "unresolved_pairs": [],
+      "minimum_separation": {
+        "certified_lower_nm": 7.419571030603754,
+        "attained_upper_nm": 7.570990847554851,
+        "witness": {
+          "distance_mm": 7.570990847554851e-06,
+          "applied_force_N": 8.542048658016569,
+          "case_element": 1263554,
+          "point": 3,
+          "cell_target": 1252806,
+          "target_uv": [
+            0.06616661311990134,
+            0.336176730895478
+          ]
+        }
+      }
+    }
+  ],
+  "scope": "Independent +X left-cell loading along the piecewise-affine whole-board equilibrium. New intersections invalidate continuation with the original bearing set. Multiple roots on a confirmed target pair are possible. This check covers the three Gauss stations on the middle pocket."
+}

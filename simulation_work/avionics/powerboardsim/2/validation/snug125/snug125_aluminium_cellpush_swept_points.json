@@ -1,0 +1,97 @@
+{
+  "branch": "snug125_aluminium",
+  "parent_rst_sha256": "3484d58472e218cbb681c8bfb58efad0e5a9258fb1728dab4f1197e4aaac524e",
+  "whole_board_inputs_sha256": "8205c0262637d030aea56e448859e88bbc91666de8ac6e92b9a224e5020a18a2",
+  "spacer_pocket_prediction_sha256": "821c30bfd44d89978c99dca0aac5cb4f79e3b34dc145b15f62cdebc47b48a094",
+  "pressure_check_sha256": "6d3d6adb11b62dc78735152cd84ee9abcd95ce6e018b04a4215da8b47bba667d",
+  "endpoint_force_N": 8.542048658016569,
+  "middle_pocket_triangles": 1486,
+  "cell_boundary_triangles": 308,
+  "initially_unloaded_points": 4457,
+  "original_bearing_points": [
+    [
+      1259836,
+      3
+    ]
+  ],
+  "geometry_tolerance_mm": 1e-08,
+  "intervals": [
+    {
+      "load_range_N": [
+        0.0,
+        3.071652689043741
+      ],
+      "bearing": [
+        "1259836.3",
+        "spacer 2",
+        "spacer 3"
+      ],
+      "surviving_hull_pairs": [
+        7431,
+        5960,
+        3114,
+        2072,
+        1048,
+        226,
+        35,
+        1,
+        0
+      ],
+      "confirmed_crossings": [],
+      "unresolved_pairs": [],
+      "minimum_separation": {
+        "certified_lower_nm": 18.50973804956233,
+        "attained_upper_nm": 18.602751808605355,
+        "witness": {
+          "distance_mm": 1.8602751808605356e-05,
+          "applied_force_N": 0.0,
+          "case_element": 1263554,
+          "point": 3,
+          "cell_target": 1252806,
+          "target_uv": [
+            0.06687728179528654,
+            0.33675027687265824
+          ]
+        }
+      }
+    },
+    {
+      "load_range_N": [
+        3.071652689043741,
+        8.542048658016569
+      ],
+      "bearing": [
+        "spacer 2",
+        "spacer 3"
+      ],
+      "surviving_hull_pairs": [
+        7432,
+        5961,
+        3116,
+        2072,
+        1046,
+        223,
+        31,
+        0
+      ],
+      "confirmed_crossings": [],
+      "unresolved_pairs": [],
+      "minimum_separation": {
+        "certified_lower_nm": 30.086385831589258,
+        "attained_upper_nm": 30.23757370008971,
+        "witness": {
+          "distance_mm": 3.0237573700089708e-05,
+          "applied_force_N": 3.071652689043741,
+          "case_element": 1263554,
+          "point": 3,
+          "cell_target": 1252806,
+          "target_uv": [
+            0.06688903005242085,
+            0.33675945015098585
+          ]
+        }
+      }
+    }
+  ],
+  "scope": "Independent +X left-cell loading along the piecewise-affine whole-board equilibrium. New intersections invalidate continuation with the original bearing set. Multiple roots on a confirmed target pair are possible. This check covers the three Gauss stations on the middle pocket."
+}

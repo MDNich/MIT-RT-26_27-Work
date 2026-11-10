@@ -119,7 +119,7 @@ def contact_columns(d, free, transfer, parts):
     return (B0 + transfer.T @ B0)[free].tocsc()
 
 
-def study(branch):
+def study(branch, *, check_left_load=False):
     faces_file = AUDIT / f"{branch}_pocket_face_unloading.json"
     seats_file = AUDIT / f"{branch}_spacer_bearing.json"
     faces, seats = read(faces_file), read(seats_file)
@@ -167,6 +167,10 @@ def study(branch):
     ru = symmetric_product(K, u) - loads
     assert np.linalg.norm(ru, axis=0).max() < 2e-7
     ids = [label for _, _, label in parts]
+    if check_left_load:
+        from snug_cellpush_geometry import check
+        check(branch, raw, d, free, transfer, ids, k, g, C, dload[:, 0], Y, u[:, -3], identity)
+        return
     paths = {}
     surfaces = [outer_faces(raw, [material]) for material in (850, *BODIES)]
     # The native board-load controls use +X on the left cell. Negative X on the
@@ -238,4 +242,6 @@ def study(branch):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("branch", choices=("snug125_nylon", "snug125_nylon_mesh15", "snug125_aluminium"))
-    study(p.parse_args().branch)
+    p.add_argument("--check-left-load", action="store_true", help="Sweep the middle-pocket integration points through the queued left-cell load.")
+    args = p.parse_args()
+    study(args.branch, check_left_load=args.check_left_load)

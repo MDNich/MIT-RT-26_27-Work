@@ -1,0 +1,148 @@
+{
+  "branch": "snug125_nylon_mesh15",
+  "parent_rst_sha256": "04ac618a0b0b4e839aaac9af7200e54fd2bd89aeb049a491263a312d42c3b042",
+  "whole_board_inputs_sha256": "8205c0262637d030aea56e448859e88bbc91666de8ac6e92b9a224e5020a18a2",
+  "spacer_pocket_prediction_sha256": "f8bc8df08ae842294ff3cbd8b8b1ad13b596f52409a0560434011ba05b33be39",
+  "pressure_check_sha256": "236fb7d954c1ce30eb8ea0447f3438f5037db60641ffaf87013fda40e63609aa",
+  "endpoint_force_N": 8.542048658016569,
+  "middle_pocket_triangles": 2666,
+  "cell_boundary_triangles": 308,
+  "initially_unloaded_points": 7988,
+  "original_bearing_points": [
+    [
+      1311118,
+      1
+    ],
+    [
+      1313343,
+      1
+    ],
+    [
+      1313343,
+      2
+    ],
+    [
+      1318207,
+      1
+    ],
+    [
+      1318207,
+      2
+    ],
+    [
+      1320061,
+      1
+    ],
+    [
+      1320061,
+      2
+    ],
+    [
+      1321266,
+      1
+    ],
+    [
+      1326175,
+      1
+    ],
+    [
+      1332762,
+      3
+    ]
+  ],
+  "geometry_tolerance_mm": 1e-08,
+  "intervals": [
+    {
+      "load_range_N": [
+        0.0,
+        3.0555455120780315
+      ],
+      "bearing": [
+        "1332762.3",
+        "1321266.1",
+        "1318207.1",
+        "1318207.2",
+        "1311118.1",
+        "1313343.1",
+        "1313343.2",
+        "1326175.1",
+        "1320061.1",
+        "1320061.2",
+        "spacer 3"
+      ],
+      "surviving_hull_pairs": [
+        13444,
+        10942,
+        5838,
+        3968,
+        2045,
+        540,
+        33,
+        0
+      ],
+      "confirmed_crossings": [],
+      "unresolved_pairs": [],
+      "minimum_separation": {
+        "certified_lower_nm": 81.31567091557459,
+        "attained_upper_nm": 81.72429237746191,
+        "witness": {
+          "distance_mm": 8.17242923774619e-05,
+          "applied_force_N": 0.0,
+          "case_element": 1317112,
+          "point": 2,
+          "cell_target": 1306888,
+          "target_uv": [
+            0.4644779085853004,
+            0.02668510324153245
+          ]
+        }
+      }
+    },
+    {
+      "load_range_N": [
+        3.0555455120780315,
+        8.542048658016569
+      ],
+      "bearing": [
+        "1332762.3",
+        "1321266.1",
+        "1318207.1",
+        "1318207.2",
+        "1313343.1",
+        "1313343.2",
+        "1326175.1",
+        "1320061.1",
+        "1320061.2",
+        "spacer 3"
+      ],
+      "surviving_hull_pairs": [
+        13444,
+        10941,
+        5838,
+        3961,
+        2044,
+        531,
+        29,
+        0
+      ],
+      "confirmed_crossings": [],
+      "unresolved_pairs": [],
+      "minimum_separation": {
+        "certified_lower_nm": 89.08846336786,
+        "attained_upper_nm": 89.53614408830151,
+        "witness": {
+          "distance_mm": 8.953614408830152e-05,
+          "applied_force_N": 3.0555455120780315,
+          "case_element": 1314475,
+          "point": 1,
+          "cell_target": 1307075,
+          "target_uv": [
+            0.3030576783480144,
+            0.3134161243821028
+          ]
+        }
+      }
+    }
+  ],
+  "scope": "Independent +X left-cell loading along the piecewise-affine whole-board equilibrium. New intersections invalidate continuation with the original bearing set. Multiple roots on a confirmed target pair are possible. This check covers the three Gauss stations on the middle pocket."
+}
