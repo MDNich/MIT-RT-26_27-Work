@@ -233,6 +233,9 @@ def run(case):
         folder=ROOT/'.runtime/archive'/ledger['campaign']/case
         record['mount_history_sha256']=digest(check_mounts(case,record,folder,sha))
         record['fixed_target_history_sha256']=digest(check_fixed_targets(case,record,folder,sha))
+        if record['equal_travel'] and record['equal_travel']['cased']['set']>1:
+            from snug_pull_energy import archived as check_energy
+            record['energy_history_sha256']=digest(check_energy(case,ledger['campaign'],verdict,record))
     from snug_tab_edge import FORWARD, closed as check_tab_edge
     if case in (FORWARD+'_m15', FORWARD+'_m3'):
         folder=ROOT/'.runtime/archive'/ledger['campaign']/case

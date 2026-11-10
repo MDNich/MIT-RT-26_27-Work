@@ -262,6 +262,10 @@ def jobs():
                 if directional and nylon_forward_coarse in coarse_cases:
                     yield nylon_forward_coarse,nylon_forward_coarse.removesuffix('_m3')+'_m15'
                     coarse_cases.remove(nylon_forward_coarse)
+                step_trial=snug_dir/'local_pull_step_input.json'
+                if directional and step_trial.is_file():
+                    for name,entry in read(step_trial).items():
+                        yield name,entry['bare_reference']
                 rocking=snug_dir/'local_bearing_inputs.json'
                 if directional and rocking.is_file():
                     for case,meta in read(rocking).items():

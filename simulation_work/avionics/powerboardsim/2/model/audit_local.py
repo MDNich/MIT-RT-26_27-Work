@@ -127,6 +127,8 @@ def audit(case, campaign):
         catalog=catalog.replace('.json','_m15.json')
     if case.startswith('snug125_') and case.endswith('_pin1_m3'):
         catalog='snug125/local_inputs_m3.json'
+    if spec.get('snug_step_parent'):
+        catalog='snug125/local_pull_step_input.json'
     if spec.get('snug_bearing_control'):
         catalog='snug125/local_bearing_inputs.json'
     manifest = read(ROOT/'validation'/catalog)[case]
@@ -135,7 +137,7 @@ def audit(case, campaign):
     assert all((folder/f['name']).stat().st_size==f['bytes'] for f in ledger['files'])
     cfgdir = ROOT/'.runtime/local_inputs'/spec['source']
     cfg = read(cfgdir/'config.json')
-    if spec.get('common_load_parent') or spec.get('detection_parent') or spec.get('snug_bearing_control'):
+    if spec.get('common_load_parent') or spec.get('detection_parent') or spec.get('snug_bearing_control') or spec.get('snug_step_parent'):
         cfg.update(end_time=spec['end_time'],displacement_mm=spec['displacement_mm'])
     listing = (folder/'solve.out').read_text(errors='replace')
     if 'RUN COMPLETED' not in listing or (folder/'REJECTED_LOAD_HISTORY.txt').exists():
@@ -179,7 +181,10 @@ def audit(case, campaign):
         from common_pull_resolution import check as check_resolution
         check_resolution(case,campaign)
     write_json(dest/(case+'.json'),data)
-    if spec.get('snug_bearing_control'):
+    if spec.get('snug_step_parent'):
+        from snug_pull_steps import audit as check_step_resolution
+        check_step_resolution(case,campaign,dest/(case+'.json'))
+    elif spec.get('snug_bearing_control'):
         from snug_rocking_pull import compare as compare_mounts
         compare_mounts(case,dest/(case+'.json'))
     elif (case.startswith('snug125_') and case.endswith(('_m15','_m3'))

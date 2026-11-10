@@ -568,6 +568,24 @@ At the base-Z peak the original mesh face cleared the middle cell by 39--40~nm. 
 Across the first 8.789~ms, the 48 installed modes alone captured 44.3\% of static contact flexibility and gave 16.7~nm peak spring opening under base Z. Adding 16 static displacement vectors recovered the full flexibility. Going from 12 to 16 changed peak openings by at most 1.3\%. Time-step refinement reproduced the force-increment histories within 0.25\% in relative norm. All other contacts and 2\% installed damping stayed fixed. Physical clearance and recontact force remain unresolved.
 
 \clearpage
+\pageheading{How much work does it take to move the edge cell?}
+At the bare fixture's terminal force of \textbf{8.54 N}, the snug nylon fixture required about \textbf{0.085 mJ} of lateral actuator work, compared with \textbf{3.30 mJ bare}. At the same imposed travel of \textbf{0.206875 mm}, the comparison reversed. The actuator supplied \textbf{9.55 mJ} with the case and \textbf{0.962 mJ} bare. The snug local fixture fixes the four screw supports and neighbouring cells.
+
+\begin{center}\includegraphics[width=\linewidth]{figures/snug-pull-work.pdf}
+\captionof{figure}{Left, the cased result at 8.54~N uses a linear force--travel segment between the two saved equilibria. The green band spans the accumulated work at those endpoints, 0.045--0.141~mJ. Bare work at the common travel uses its bracketing segment. Right, the signed element forces and moments are integrated against their own nodal translations and rotations.}\end{center}
+
+\heading{Where the work goes}
+At 0.206875~mm the PLA stored 4.974~mJ and the four nylon shanks stored 3.365~mJ. Together they accounted for 87.3\% of the actuator work. Integrating the internal nodal forces independently gave 4.974 and 3.365~mJ for those same elastic components. The nickel strips took 1.022~mJ of nodal-force work. The remaining 0.193~mJ was concentrated in the contact elements. Across the cased checkpoint the summed nodal work agreed with the separately integrated actuator reaction to within 0.0009~mJ. That agreement checks the accounting on the saved path.
+
+\heading{How fixed-neighbour contact affects the interpretation}
+The fixed middle cell first took load between 0.206875 and 0.219375~mm. Work supplied by the actuator rose from 9.55 to 13.60~mJ over that interval. The moving and fixed cell contact pairs together accumulated 1.32~mJ of net nodal work by the upper station. They use frictionless contact, so this quantity includes numerical enforcement and finite-increment effects. Treating it as impact absorption or plastic damage would give an unsupported material property. A matched native control refines the increments around first pocket contact and fixed-cell engagement while retaining the washer preload, mesh, fixture and continuous displacement ramp.
+
+On the parent mesh at 0.2950~mm, the moving-cell contact pair accumulated 37.19~mJ of net force work, while its native contact stiffness energy increased by 11.06~mJ. The corresponding values at the fixed hardware were 8.27 and 6.50~mJ. These two differences account for 27.89~mJ of the 28.05~mJ difference between actuator work and summed element stiffness energies. This station already exceeds the locally refined corner reference and serves as a numerical diagnostic.
+
+\heading{Limit of the comparison}
+An independently copied native result contains 56 converged states through 0.45139~mm. It reproduces every force, travel, contact and printed-material entry in the four earlier snapshots. The 1.5~mm mesh crossed its layer-tension coupon reference by 0.30391~mm (page~23), and the locally refined corner crossed earlier (page~24). The common-travel comparison above precedes all tested corner crossings. Later increments document the numerical path beyond those references. Reverse pull, aluminium and damage-law results require their own native audits.
+
+\clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}
 \setcounter{table}{0}\renewcommand{\thetable}{A.\arabic{table}}

@@ -1,6 +1,8 @@
 # Use measured SMP timing only for the matching, previously undispatched local mesh.
 function Get-LocalRuntime($Spec, [string]$Case, [string]$Campaign, [string]$Share) {
     $choice=[ordered]@{cores=[int]$Spec.cores;sealed_cores=[int]$Spec.cores;mode='SMP'}
+    # The increment-control run compares with a four-core parent at common saved displacements.
+    if ($Spec.snug_step_parent) {return $choice}
     $dir=Join-Path $Share 'validation\snug125'
     $audit=Join-Path $dir 'local_core_trial.json'
     if ($Case -notmatch '^snug125_(nylon|aluminium)_(lateral|damage)_[a-z0-9_]+_m15$' -or
