@@ -25,7 +25,10 @@ def compare():
         verified(pathfile, barrel["native_and_solid_balance_sha256"])
         rows = []
         for load, surface, solve, time in zip(path["states"], barrel["states"], residual["states"], run["times"], strict=True):
-            assert time == load["time"] == surface["time"] == solve["load_time"]
+            assert load["native_set"] == surface["native_set"] == solve["native_set"]
+            # The listing prints 0.7 while the binary RST stores 0.7000000000000001.
+            np.testing.assert_allclose([load["time"], surface["time"], solve["load_time"]],
+                                       time, atol=1e-12, rtol=0)
             assert solve["force_criterion_N"] == 0.01 and solve["force_residual_N"] <= 0.01
             assert load["within_existing_bearing_force_screens"] and surface["mounting_force_balance_passed"]
             assert surface["loaded_faces_match"]

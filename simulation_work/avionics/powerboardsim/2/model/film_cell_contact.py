@@ -64,7 +64,7 @@ def separate_convex_hulls(a, b):
     return remaining
 
 
-def classify(a, b, weights):
+def classify(a, b, weights, *, crossing_depth=3):
     """Prove separation on curved faces or test for crossing at two triangulation refinements."""
     hits = {}
     for depth in range(9):
@@ -77,7 +77,7 @@ def classify(a, b, weights):
             if not len(use):
                 return 'separated', hits
             a, b = a[use], b[use]
-        if depth >= 3:
+        if depth >= crossing_depth:
             hits[depth] = triangles_cross(a, b)
             if hits[depth] and hits.get(depth-1):
                 return 'intersecting', hits
@@ -89,7 +89,7 @@ def classify(a, b, weights):
     return 'unresolved', hits
 
 
-def series(rest, modes, q, weights, *, stop_at_first=False):
+def series(rest, modes, q, weights, *, stop_at_first=False, crossing_depth=3):
     limits = np.max(np.abs(q), axis=0)
     ia, ib = candidate_pairs(*(envelopes(x, u, limits) for x, u in zip(rest, modes, strict=True)))
     if not len(ia):
@@ -104,7 +104,7 @@ def series(rest, modes, q, weights, *, stop_at_first=False):
         samples = q[start:start+16]
         blocks = [x + (samples@u).reshape(len(samples), *x.shape) for x, u, _ in sides]
         for a, b in zip(*blocks, strict=True):
-            state, hits = classify(a[sides[0][2]], b[sides[1][2]], weights)
+            state, hits = classify(a[sides[0][2]], b[sides[1][2]], weights, crossing_depth=crossing_depth)
             states.append(state)
             if state == 'intersecting':
                 depths.append(max(hits))

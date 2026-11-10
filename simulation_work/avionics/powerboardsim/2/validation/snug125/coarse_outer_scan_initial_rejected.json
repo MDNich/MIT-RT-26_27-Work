@@ -1,0 +1,186 @@
+{
+  "accepted": false,
+  "reason": "The early faceted left-cell crossing failed independent curved-surface verification. Deeper convex hulls proved separation at that sample.",
+  "source_sha256": "e2d3f98d58113150123ea6742c38e5e6bb85112139bf042e7b45de157788fe07",
+  "initial_scan": {
+    "variant": "snug125_nylon_mesh3",
+    "campaign": "nov08_01",
+    "method": "exact",
+    "base_axis": "X",
+    "basis_rst_sha256": "c4fe415853fbb785b81abb7b24c4912d386bddfa4c321ad5d94380a7bfddb7ad",
+    "input_sha256": "f04864b2974a882b110dbf0a9442317a992b1a2a0360617cf08f1f8d1f36de67",
+    "window_sha256": "548797a2f72e27506119a7770d656fb3b9f92377b0074535ad0e47adc79e0ef4",
+    "samples": 5941,
+    "sample_rate_Hz": 65536,
+    "quadratic_face_counts": [
+      8934,
+      328,
+      302
+    ],
+    "checks": {
+      "integration": "Matrix exponential with piecewise-linear input",
+      "ramp_control_relative_max_error": 2.878386949524641e-13
+    },
+    "cells": {
+      "left": {
+        "last_contiguous_clear_sample": 1921,
+        "first_intersecting_sample": 1922,
+        "first_intersection_time_interval_ms": [
+          29.3121337890625,
+          29.327392578125
+        ],
+        "unresolved_samples": [],
+        "candidate_face_pairs": 4068,
+        "certified_by_block": 0,
+        "individually_classified": 1923,
+        "individual_control_samples": [
+          0,
+          240,
+          480,
+          720,
+          960,
+          1200,
+          1440,
+          1680,
+          1919,
+          1920,
+          1921,
+          1922
+        ],
+        "reconstructed_skin_checks": [
+          {
+            "sample": 1921,
+            "subdivisions": {
+              "2": {
+                "PLA_triangles": 142944,
+                "cell_triangles": 5248,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.004172163687948668
+              },
+              "3": {
+                "PLA_triangles": 571776,
+                "cell_triangles": 20992,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0008229148244843182
+              }
+            }
+          },
+          {
+            "sample": 1922,
+            "subdivisions": {
+              "2": {
+                "PLA_triangles": 142944,
+                "cell_triangles": 5248,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.004228437446531835
+              },
+              "3": {
+                "PLA_triangles": 571776,
+                "cell_triangles": 20992,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0009104958857518102
+              }
+            }
+          },
+          {
+            "sample": 1930,
+            "subdivisions": {
+              "2": {
+                "PLA_triangles": 142944,
+                "cell_triangles": 5248,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0039211854715362655
+              },
+              "3": {
+                "PLA_triangles": 571776,
+                "cell_triangles": 20992,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0007248563973061312
+              }
+            }
+          }
+        ]
+      },
+      "right": {
+        "last_contiguous_clear_sample": 2463,
+        "first_intersecting_sample": 2464,
+        "first_intersection_time_interval_ms": [
+          37.5823974609375,
+          37.59765625
+        ],
+        "unresolved_samples": [],
+        "candidate_face_pairs": 4026,
+        "certified_by_block": 0,
+        "individually_classified": 2465,
+        "individual_control_samples": [
+          0,
+          307,
+          615,
+          923,
+          1231,
+          1539,
+          1847,
+          2155,
+          2461,
+          2462,
+          2463,
+          2464
+        ],
+        "reconstructed_skin_checks": [
+          {
+            "sample": 2463,
+            "subdivisions": {
+              "2": {
+                "PLA_triangles": 142944,
+                "cell_triangles": 4832,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.006201746235624903
+              },
+              "3": {
+                "PLA_triangles": 571776,
+                "cell_triangles": 19328,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0008157150701003413
+              }
+            }
+          },
+          {
+            "sample": 2464,
+            "subdivisions": {
+              "2": {
+                "PLA_triangles": 142944,
+                "cell_triangles": 4832,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0065826526797272585
+              },
+              "3": {
+                "PLA_triangles": 571776,
+                "cell_triangles": 19328,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0011888491057761594
+              }
+            }
+          },
+          {
+            "sample": 2472,
+            "subdivisions": {
+              "2": {
+                "PLA_triangles": 142944,
+                "cell_triangles": 4832,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.007456593585957153
+              },
+              "3": {
+                "PLA_triangles": 571776,
+                "cell_triangles": 19328,
+                "intersect": true,
+                "minimum_signed_vertex_gap_mm": -0.0020063856366952333
+              }
+            }
+          }
+        ]
+      }
+    },
+    "scope": "Registered outer cells and full quadratic case exterior on the fixed-contact trajectory. Hull separation is checked for every earlier native sampling station. The first crossing is a geometric prediction. Actual contact reactions and rebound require nonlinear dynamics."
+  }
+}

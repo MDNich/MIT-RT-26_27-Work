@@ -16,16 +16,16 @@ from snug_shell_drive_sampling import native_startup
 from stage_snug_fit import AUDIT
 
 
-def first_overlap(rest,modes,q):
+def first_overlap(rest,modes,q,*,crossing_depth=3):
     weights=subdivision_weights()
-    states,count,_=series(rest,modes,q,weights,stop_at_first=True)
+    states,count,_=series(rest,modes,q,weights,stop_at_first=True,crossing_depth=crossing_depth)
     first=len(states)-1 if states[-1]=='intersecting' else None
     assert first is not None or len(states)==len(q)
     unknown=[j for j,state in enumerate(states) if state=='unresolved']
     lo=min(unknown+[first if first is not None else len(q)])-1
     assert lo>=0
     audit=np.unique(np.r_[np.linspace(0,lo,min(9,lo+1),dtype=int),np.arange(max(0,lo-2),len(states))]).astype(int)
-    reference,_,_=series(rest,modes,q[audit],weights)
+    reference,_,_=series(rest,modes,q[audit],weights,crossing_depth=crossing_depth)
     assert reference==[states[i] for i in audit]
     return dict(last_contiguous_clear_sample=int(lo),first_intersecting_sample=first,
                 first_intersection_time_interval_ms=None if first is None else [1000*lo/FS,1000*first/FS],
@@ -45,6 +45,8 @@ def control():
     a=first_overlap(rest,modes,trace)
     assert a['first_intersecting_sample']==11 and a['last_contiguous_clear_sample']==10
     assert first_overlap(rest,modes,trace*0.)['first_intersecting_sample'] is None
+    strict=first_overlap(rest,modes,trace,crossing_depth=6)
+    assert strict['first_intersecting_sample']==11 and strict['last_contiguous_clear_sample']==10
 
 
 def scan_path(variant,axis,method,cutoff):
@@ -87,8 +89,12 @@ def run(variant,campaign,method,axis='Z',*,cutoff=None):
     shapes=[outer_faces(rst,[mat]) for mat in (850,176,187)]
     ids,xyz,phi,rest,modes=surface_fields(rst,shapes,solids,field_files(basis,campaign,proof['rst_sha256'],rst.nsets))
     rows={}
+    # The 3 mm chord surfaces can cross at depths 3 and 4 while the actual
+    # quadratic faces still separate. Require deeper candidates, then the
+    # separate curved-surface witness audit before reporting an event.
+    crossing_depth=6 if variant.endswith('_mesh3') else 3
     for i,cell in enumerate(('left','right'),1):
-        result=first_overlap([rest[0],rest[i]],[modes[0],modes[i]],q)
+        result=first_overlap([rest[0],rest[i]],[modes[0],modes[i]],q,crossing_depth=crossing_depth)
         print(variant,method,cell,result['first_intersection_time_interval_ms'],flush=True)
         first=result['first_intersecting_sample']
         if first is not None:
@@ -102,6 +108,7 @@ def run(variant,campaign,method,axis='Z',*,cutoff=None):
                 witness.append(dict(sample=k,subdivisions=gaps))
             result['reconstructed_skin_checks']=witness
         rows[cell]=result
+    if crossing_depth!=3:frequency_scope['minimum_triangulation_crossing_depth']=crossing_depth
     write_json(scan_path(variant,axis,method,cutoff),dict(**frequency_scope,variant=variant,campaign=campaign,
         method=method,base_axis=axis,basis_rst_sha256=proof['rst_sha256'],input_sha256=motion['input_sha256'],
         window_sha256=digest(replay_path),samples=len(q),sample_rate_Hz=FS,quadratic_face_counts=list(map(len,shapes)),
