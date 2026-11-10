@@ -15,9 +15,9 @@
 \centering\includegraphics[width=.95\linewidth]{figures/snug-seeded-board-travel.pdf}
 \par\raggedright During the displayed base-Z interval, PCB travel normal to the board reached \textbf{0.168 mm bare}, \textbf{0.390 mm with nylon screws} and \textbf{0.248 mm with aluminium}. All \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{22 paired movie subjects} are available.
 \end{frame}
-\begin{frame}{Middle-cell restraint depends on contact with the pocket}
-\centering\includegraphics[width=.98\linewidth]{figures/snug-middle-pocket-release.pdf}
-\par\raggedright At bolt lock, the pocket took \textbf{10.4\% of a small sideways load with nylon screws} and \textbf{14.5\% with aluminium}. Holding the pocket open in the whole-board calculation brought cell travel within \textbf{0.011\% of bare} with either mount. With aluminium screws, loading the adjacent left cell released the middle-pocket pressure between \textbf{2.89 and 4.77 N} in ANSYS. The independent model predicted release at 3.07 N.
+\begin{frame}{With nylon case screws, the middle cell carries 0.57 N at lock}
+\centering\includegraphics[width=.96\linewidth]{figures/snug-preload-convergence.pdf}
+\par\raggedright The tighter nylon solve gave \textbf{0.121 N at 70\% of bolt tightening} and \textbf{0.568 N at lock}. All four tab reactions together matched the pocket within 0.000011 N. The earlier 8.323 N point failed this check. At lock, peak PCB deflection was \textbf{28.915~$\mu$m}, about \textbf{39\% below bare}.
 \end{frame}
 \begin{frame}{The local fixture and the complete board respond differently}
 \centering\includegraphics[width=.97\linewidth]{figures/snug-board-side-load.pdf}

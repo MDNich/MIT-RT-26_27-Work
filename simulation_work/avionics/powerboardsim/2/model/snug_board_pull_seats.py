@@ -11,39 +11,44 @@ from local_equilibrium import positions
 from native_rst import read_rst
 from screw_vibration import screw_elements, section
 from snug_board_pull import AUDIT, BRANCHES, CAMPAIGN, ROOT, read
+from snug_mesh_comparison import force_pair
 from snug_mount_reactions import ring_nodes
 from snug_pocket_equilibrium import solid_nodal_forces
-from snug_spacer_bearing import PILOTS
+from snug_spacer_bearing import PILOTS, seat_stiffness
+from stage_snug_fit import PRELOAD_CONTROLS, input_record
 from tab_seating import read_point_file
 
 
+def incident_tetrahedra(raw, elements, boundary_nodes):
+    order = np.argsort(raw.mesh.enum)
+    connectivity = np.stack(
+        [raw.mesh.elem[j][10:20] for j in order[positions(raw.mesh.enum[order], elements)]]
+    )
+    # A surface nodal force includes every incident solid, including those touching it only at a vertex.
+    use = np.isin(connectivity, boundary_nodes).any(axis=1)
+    ids, inverse = np.unique(connectivity[use], return_inverse=True)
+    return elements[use], ids, inverse.reshape(-1, 10)
+
+
 class BearingSections:
-    def __init__(self, branch, raw, deck, installed):
+    def __init__(self, branch, raw, deck):
         rings, _ = ring_nodes(deck)
         np.testing.assert_array_equal(list(rings), PILOTS[::2])
         all_ring_nodes = np.concatenate(list(rings.values()))
         assert len(all_ring_nodes) == len(np.unique(all_ring_nodes))
         solids = case_elements(raw, branch)
-        order = np.argsort(raw.mesh.enum)
-        conn = np.stack(
-            [raw.mesh.elem[j][10:20] for j in order[positions(raw.mesh.enum[order], solids)]]
-        )
-        # All elements incident on any bearing node contribute to its nodal internal force.
-        incident = np.isin(conn, all_ring_nodes).any(axis=1)
-        self.elements = solids[incident]
-        self.ids, inverse = np.unique(conn[incident], return_inverse=True)
-        self.conn = inverse.reshape(-1, 10)
+        self.elements, self.ids, self.conn = incident_tetrahedra(raw, solids, all_ring_nodes)
         self.rings = [positions(self.ids, r) for r in rings.values()]
         self.points = np.union1d(self.ids, PILOTS)
         self.solid_ix = positions(self.points, self.ids)
         self.pilot_ix = positions(self.points, PILOTS)
         self.x0 = raw.mesh.nodes[positions(raw.mesh.nnum, self.points)]
-        self.length = np.asarray(installed["unstrained_grip_m"])
-        self.k = np.asarray(installed["seat_stiffness_N_per_m"])
+        ends = self.x0[self.pilot_ix].reshape(4, 2, 3)
+        self.length = np.linalg.norm(ends[:, 1] - ends[:, 0], axis=1)
+        self.k = seat_stiffness(deck)
         self.area = (
             np.pi * float(re.search(r"(?im)^SECTYPE,851,BEAM,CSOLID\s+SECDATA,([^,]+)", deck)[1]) ** 2
         )
-        self.reference = np.array(installed["PLA_ring_projected_force_N"])
 
     def read(self, raw, native_set, u_m, beam_positions):
         x = self.x0 + u_m
@@ -89,7 +94,9 @@ def compare_resultant(row, native):
     )
 
 
-def installation_displacements(case, proof, folder, sets, points, reuse_full_fields):
+def installation_displacements(
+    case, proof, folder, sets, points, reuse_full_fields, point_folder="tab_load_points"
+):
     if reuse_full_fields:
         fields = export(case, CAMPAIGN, sets)
         for k in sets:
@@ -99,7 +106,7 @@ def installation_displacements(case, proof, folder, sets, points, reuse_full_fie
             u = np.fromfile(field.with_suffix(".u"), "<f8").reshape(-1, 3)
             yield u[order[positions(nodes[order], points)]]
     else:
-        out = ROOT / ".runtime/post" / CAMPAIGN / case / "tab_load_points"
+        out = ROOT / ".runtime/post" / CAMPAIGN / case / point_folder
         u_mm, _ = read_point_file(folder / "file.rst", out, proof["rst_sha256"], sets, points.tolist())
         for u in u_mm:
             yield 0.001 * u
@@ -141,23 +148,54 @@ def check_installation(case, sections, previous_history=None):
     return states, worst, force_error, contact_path
 
 
-def check_tighter_preload(case):
-    assert case == "snug125_nylon_tol001_static"
+def check_preload_control(case):
+    assert case in (
+        *PRELOAD_CONTROLS,
+        "snug125_nylon_tol001_static",
+        "snug125_nylon_mesh15_static",
+        "snug125_aluminium_mesh15_static",
+    )
     proof, folder, raw = source(case, CAMPAIGN)
-    spec = read(AUDIT / "force_tolerance_input.json")
+    spec = input_record(case)
     deck = folder / "model.inp"
     verified(deck, spec["input_sha256"])
-    branch = "snug125_nylon"
-    nominal = read(AUDIT / (branch + "_spacer_bearing.json"))
-    reference = AUDIT / (branch + "_installation_seats.json")
-    comparison = AUDIT / "nylon_force_tolerance_comparison.json"
-    assert read(comparison)["runs"][1]["rst_sha256"] == proof["rst_sha256"]
-    assert spec["case"] == case and spec["absolute_force_criterion_N"] == 0.01
-    sections = BearingSections(branch, raw, deck.read_text(), nominal)
-    rows, worst, error, contacts = check_installation(case, sections)
+    tighter = "absolute_force_criterion_N" in spec
+    comparison_kind = "tolerance" if tighter else "mesh"
+    control_kind = "tighter" if tighter else "refined"
+    reference_case, comparison = force_pair(case)
+    reference = AUDIT / (reference_case.replace("_out2_static", "_installation") + "_seats.json")
+    pair = read(comparison)
+    before, after = pair["runs"]
+    assert after["case"] == case and after["rst_sha256"] == proof["rst_sha256"]
+    assert after["input_sha256"] == spec["input_sha256"]
+    assert before["case"] == reference_case
+    original = read(reference)
+    verified(
+        AUDIT / (before["case"] + "_contacts.json"),
+        original.get("repeat_contact_audit_sha256") or original["native_contact_audit_sha256"],
+    )
+    if tighter:
+        assert (
+            spec["absolute_force_criterion_N"] == 0.01
+            and before["mesh_size_mm"] == after["mesh_size_mm"]
+        )
+    else:
+        assert before["mesh_size_mm"] == 2 and after["mesh_size_mm"] == 1.5
+    sections = BearingSections(case.removesuffix("_static"), raw, deck.read_text())
+    # The equations can be recovered before modal extraction. If the same case already has an
+    # archived bearing history, check all pilot separations against it.
+    archived = AUDIT / (case.removesuffix("_static") + "_spacer_bearing.json")
+    preload = read(archived) if archived.is_file() else None
+    if preload is not None:
+        assert preload["static_rst_sha256"] == proof["rst_sha256"]
+        np.testing.assert_allclose(sections.k, preload["seat_stiffness_N_per_m"], rtol=1e-12, atol=0)
+        np.testing.assert_allclose(sections.length, preload["unstrained_grip_m"], rtol=0, atol=1e-14)
+    rows, worst, error, contacts = check_installation(
+        case, sections, preload["history"] if preload else None
+    )
     matched = []
-    original_states = read(reference)["states"]
-    for station in read(comparison)["matched_native_stations"]:
+    original_states = original["states"]
+    for station in pair["matched_native_stations"]:
         old = original_states[station["coarse_set"] - 1]
         new = rows[station["fine_set"] - 1]
         assert abs(old["time"] - new["time"]) < 1e-9
@@ -165,11 +203,11 @@ def check_tighter_preload(case):
             {
                 "load_time": old["time"],
                 "original_case_vector_residual_N": old["four_tab_force_balance_residual_N"],
-                "tighter_case_vector_residual_N": new["four_tab_force_balance_residual_N"],
+                f"{control_kind}_case_vector_residual_N": new["four_tab_force_balance_residual_N"],
                 "original_pocket_resultant_N": float(
                     np.linalg.norm(old["native_force_on_cells_XYZ_N"])
                 ),
-                "tighter_pocket_resultant_N": float(
+                f"{control_kind}_pocket_resultant_N": float(
                     np.linalg.norm(new["native_force_on_cells_XYZ_N"])
                 ),
             }
@@ -182,6 +220,7 @@ def check_tighter_preload(case):
             "input_sha256": spec["input_sha256"],
             "reference_sha256": digest(reference),
             "comparison_sha256": digest(comparison),
+            "control_kind": comparison_kind,
             "native_contact_audit_sha256": digest(contacts),
             "matched_stations": matched,
             "states": rows,
@@ -190,8 +229,8 @@ def check_tighter_preload(case):
             ],
             "max_axial_equilibrium_residual_N": worst,
             "max_case_vector_residual_N": error,
-            "scope": "Original and tighter force-tolerance results for the same registered mesh, springs, screws and "
-            "bolt history. Stations which fail the bearing or case vector screens remain diagnostic.",
+            "scope": "The same four bearing and complete-case force checks are applied at every native installation "
+            "station. Only common load stations are paired. Stations outside the force screens remain diagnostic.",
         },
     )
 
@@ -203,7 +242,9 @@ def audit(branch, parent_only=False):
     assert parent["rst_sha256"] == preload["static_rst_sha256"]
     deck = original / "model.inp"
     verified(deck, preload["deck_sha256"])
-    sections = BearingSections(branch, locked, deck.read_text(), preload)
+    sections = BearingSections(branch, locked, deck.read_text())
+    np.testing.assert_allclose(sections.k, preload["seat_stiffness_N_per_m"], rtol=1e-12, atol=0)
+    np.testing.assert_allclose(sections.length, preload["unstrained_grip_m"], rtol=0, atol=1e-14)
     k = locked.nsets
     field = export(parent["case"], CAMPAIGN, [k]) / f"set_{k:04d}"
     nodes = np.fromfile(field.with_suffix(".ids"), "<i4")
@@ -212,7 +253,9 @@ def audit(branch, parent_only=False):
     baseline = sections.read(
         locked, k, us[order[positions(nodes[order], sections.points)]], screw_elements(locked)[1]
     )
-    np.testing.assert_allclose(baseline["axial_tab_load_N"], sections.reference, atol=1e-7)
+    np.testing.assert_allclose(
+        baseline["axial_tab_load_N"], preload["PLA_ring_projected_force_N"], atol=1e-7
+    )
     mean_tension = np.mean(
         [baseline["shank_tab_end_tension_N"], baseline["shank_board_end_tension_N"]], axis=0
     )

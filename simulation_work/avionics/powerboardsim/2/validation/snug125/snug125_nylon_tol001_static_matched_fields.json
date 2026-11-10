@@ -1,0 +1,138 @@
+{
+  "case": "snug125_nylon_tol001_static",
+  "reference": "snug125_nylon_out2_static",
+  "force_comparison_sha256": "28578fa45a1d07a0a84de0f27e36970642775a8410f9f6e5dec98935d10d0a89",
+  "reference_native_U_sha256": "2fb339f1b567563e4a9f7db1ecd47456b83b2c3b84d3efc3a2c0f3f02bf80bac",
+  "control_native_U_sha256": "3c27569988d8f64daef93b36ce7a747a36f75a29e34f75488257543f1153ec0b",
+  "reference_rst_sha256": "40227865fbeff3997c2fc63ae68c53acbc7ac9511cd53ee06cd69d74c9e7d269",
+  "control_rst_sha256": "314be27109e7cc4b8ac8e383cd097d7eb76026384298f29985d92ac3cc2e2d2c",
+  "solids_at_lock": {
+    "PCB": {
+      "matched_nodes": 217704,
+      "max_vector_difference_um": 0.004172767009087717,
+      "peak_node": 207484,
+      "peak_reference_xyz_mm": [
+        69.215,
+        120.777,
+        -0.55118
+      ],
+      "peak_delta_XYZ_um": [
+        0.00019533009089581373,
+        4.579672759422171e-05,
+        0.004167941137715736
+      ],
+      "rms_nodal_difference_um": 0.0005431869584037998,
+      "p95_nodal_difference_um": 0.0013057550212886195
+    },
+    "cells": {
+      "matched_nodes": 3951,
+      "max_vector_difference_um": 0.0008479799444408202,
+      "peak_node": 45134,
+      "peak_reference_xyz_mm": [
+        37.46638561,
+        95.40699911,
+        -22.15808424
+      ],
+      "peak_delta_XYZ_um": [
+        -0.0008224728156734813,
+        -4.5688736082872064e-05,
+        -0.00020129826886275404
+      ],
+      "rms_nodal_difference_um": 0.0003206109022214532,
+      "p95_nodal_difference_um": 0.0006974024992323666
+    },
+    "nickel_strips": {
+      "matched_nodes": 7179,
+      "max_vector_difference_um": 0.0007919148349124379,
+      "peak_node": 52520,
+      "peak_reference_xyz_mm": [
+        42.18834839,
+        95.55699726,
+        -18.62267947
+      ],
+      "peak_delta_XYZ_um": [
+        -0.0007060099190664935,
+        -2.914483937716851e-05,
+        -0.0003575327653122101
+      ],
+      "rms_nodal_difference_um": 0.0002043292501004596,
+      "p95_nodal_difference_um": 0.0005141464012932146
+    },
+    "washers": {
+      "matched_nodes": 38908,
+      "max_vector_difference_um": 0.00018996333743745642,
+      "peak_node": 9989,
+      "peak_reference_xyz_mm": [
+        38.12642268,
+        98.59578966000001,
+        -2.899823417
+      ],
+      "peak_delta_XYZ_um": [
+        -0.0001400052211497204,
+        1.4563580485939687e-05,
+        -0.00012756374776802526
+      ],
+      "rms_nodal_difference_um": 8.910479292772701e-05,
+      "p95_nodal_difference_um": 0.00014427338974336748
+    },
+    "printed_case": {
+      "matched_nodes": 77166,
+      "max_vector_difference_um": 0.007460962110603407,
+      "peak_node": 820722,
+      "peak_reference_xyz_mm": [
+        44.874882514,
+        78.9523357109,
+        -15.1347788528
+      ],
+      "peak_delta_XYZ_um": [
+        0.006850294646573393,
+        -6.472780216492096e-05,
+        0.00295554211315191
+      ],
+      "rms_nodal_difference_um": 0.004102844381528552,
+      "p95_nodal_difference_um": 0.005184914301108774
+    }
+  },
+  "scope": "Native three-component displacement differences in the fixed PCB coordinates at final bolt lock. Each pair has the same native node ID and reference position. Nodal summaries use equal node weights.",
+  "comparison_to_original_zero_load_hold": {
+    "restart_fit_sha256": "5e0cf18c100600e7b90d2548eb6ee4916da3b4b60296992740487afdd34de1d0",
+    "native_set": 9,
+    "original_lock_vs_strict_lock": {
+      "matched_nodes": 51980,
+      "max_vector_difference_um": 0.007460962110603407,
+      "peak_node": 820722,
+      "peak_reference_xyz_mm": [
+        44.874882514,
+        78.9523357109,
+        -15.1347788528
+      ],
+      "peak_delta_XYZ_um": [
+        0.006850294646573393,
+        -6.472780216492096e-05,
+        0.00295554211315191
+      ],
+      "rms_nodal_difference_um": 0.0032377714563342048,
+      "p95_nodal_difference_um": 0.0051138201968960375
+    },
+    "original_hold_vs_strict_lock": {
+      "matched_nodes": 51980,
+      "max_vector_difference_um": 0.0004254119106141919,
+      "peak_node": 800078,
+      "peak_reference_xyz_mm": [
+        -3.1974423109199995e-13,
+        -0.009500000000009999,
+        -1.8011799999999998
+      ],
+      "peak_delta_XYZ_um": [
+        -1.5747009560456576e-05,
+        -2.1208061376292928e-05,
+        -0.00042459103089323436
+      ],
+      "rms_nodal_difference_um": 0.000171600491416927,
+      "p95_nodal_difference_um": 0.0003537163210936063
+    },
+    "original_pressure_N": 0.5937368264069565,
+    "original_hold_pressure_N": 0.568485342578809,
+    "scope": "Case, all three cell surfaces and all six washer surfaces common to the closed side-load restart."
+  }
+}

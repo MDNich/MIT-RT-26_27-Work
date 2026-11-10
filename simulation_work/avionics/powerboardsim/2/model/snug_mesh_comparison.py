@@ -54,10 +54,20 @@ def compare():
         scope='Same board, CAD registration, fasteners and load histories. Changing PLA volume and contact meshes also changes the case-side bearing nodes inside each fixed physical footprint. Two meshes measure sensitivity at these resolutions.'))
 
 
+def force_pair(control):
+    spec = input_record(control)
+    if 'absolute_force_criterion_N' in spec:
+        reference = spec['reference_case']
+        stem = control.removeprefix('snug125_').removesuffix('_tol001_static')
+        return reference, AUDIT / f'{stem}_force_tolerance_comparison.json'
+    material = spec['material']
+    return f'snug125_{material}_out2_static', AUDIT / f'{material}_force_mesh_comparison.json'
+
+
 def compare_forces(control='snug125_nylon_mesh15_static'):
-    material=input_record(control)['material']
-    cases=(f'snug125_{material}_out2_static',control)
-    same_mesh=control=='snug125_nylon_tol001_static'
+    reference_case,output=force_pair(control)
+    cases=(reference_case,control)
+    same_mesh='absolute_force_criterion_N' in input_record(control)
     if same_mesh:
         reference, tight = map(input_record,cases)
         assert tight['reference_input_sha256']==reference['input_sha256'] and tight['mesh_sha256']==reference['mesh_sha256']
@@ -90,8 +100,7 @@ def compare_forces(control='snug125_nylon_mesh15_static'):
                            fine_minus_coarse_magnitude_N=float(np.linalg.norm(y)-np.linalg.norm(x))))
     assert shared and np.isclose(shared[-1]['load_time'],2.) and any(np.isclose(r['load_time'],1.) for r in shared)
     a=coarse['locked_resultant_N'];b=fine['locked_resultant_N']
-    output='nylon_force_tolerance_comparison.json' if same_mesh else f'{material}_force_mesh_comparison.json'
-    write_json(AUDIT/output,dict(runs=runs,matched_native_stations=shared,
+    write_json(output,dict(runs=runs,matched_native_stations=shared,
         locked_resultant_change_percent=100*(b/a-1) if a>0 else None,
         scope='Matched boundaries, solver loads and material. Only shared native equilibria are paired; '
               'all saved states are retained separately. The native contact vector in each run was independently summed.'))

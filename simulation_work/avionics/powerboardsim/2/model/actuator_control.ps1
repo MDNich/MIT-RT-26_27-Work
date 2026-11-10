@@ -25,5 +25,13 @@ try {
     foreach ($n in 'control.out','file.err','actuator_static.csv','actuator_modal.csv','seat_control.csv','control_response.csv','bearing_control.csv','twoblock.nlh','twoblock.err','twoblock.out'){
         if (Test-Path "$work\$n"){Copy-Item "$work\$n" -Destination $src}
     }
+    if ($Trial -eq 'snug_transient_control_v1' -and $p.ExitCode -eq 0) {
+        $source=Join-Path $work 'twoblock.rst'
+        $target=Join-Path $src 'twoblock.rst'
+        $hash=(Get-FileHash -LiteralPath $source).Hash.ToLower()
+        if (!(Test-Path -LiteralPath $target)) {Copy-Item -LiteralPath $source -Destination $target}
+        if ((Get-FileHash -LiteralPath $target).Hash.ToLower() -ne $hash){throw 'Two-block RST archive mismatch'}
+        @{source=$source;bytes=(Get-Item -LiteralPath $source).Length;sha256=$hash} | ConvertTo-Json | Set-Content (Join-Path $src 'rst_copy.json') -Encoding UTF8
+    }
     $p.ExitCode|Set-Content "$src\exit.txt" -Encoding UTF8
 } catch {$_.Exception.Message|Set-Content "$src\failed.txt";throw}

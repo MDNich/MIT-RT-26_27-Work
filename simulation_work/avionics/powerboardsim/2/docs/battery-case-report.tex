@@ -86,7 +86,7 @@ Peak PLA tension in-plane / across layers [MPa] & 0.334 / 0.344 & 1.052 / 0.760\
 Peak screw extreme-fibre tension after lock [MPa] & 1.25 & 2.40\\\bottomrule
 \end{tabular}\end{center}
 
-Each model converged at eight saved states. All six locked bolt forces were within 0.015~N of the 750~N target. The highest through-layer PLA tension reached 0.85\% of the printed-coupon mean with nylon and 1.88\% with aluminium. The contact pressures come from a small patch on the 2~mm case mesh. The mesh check on page~4 quantifies their sensitivity. Vibration and side pull are separate load cases.
+Each model converged at eight saved states. All six locked bolt forces were within 0.015~N of the 750~N target. The highest through-layer PLA tension reached 0.85\% of the printed-coupon mean with nylon and 1.88\% with aluminium. Page~4 gives the tighter nylon pressure result. The original contact pressures come from a small patch on the 2~mm case mesh. The mesh check on page~4 quantifies their sensitivity. Vibration and side pull are separate load cases.
 
 \newpage
 \pageheading{Mesh sensitivity of board displacement and pocket pressure}
@@ -109,7 +109,15 @@ Peak through-layer PLA tension [MPa] & 0.299 & 0.344 & 0.398\\\bottomrule
 \heading{Board displacement and pocket loading}
 All three meshes place the maximum displacement at the same PCB corner and the locked contact on the middle cell. The full spread in peak PCB displacement is 0.055~$\mu$m, or 0.19\%. Each mesh predicts about 39\% less displacement than the 47.46~$\mu$m bare-board result.
 
-The integrated pocket force at lock fell from 0.594 to 0.572~N on the two finer meshes. At the end of tightening it fell from 3.447 to 1.939~N, a 44\% change at the same applied load. The peak local pressure at lock also varies nonmonotonically across the three meshes. These data support the reduction in board deflection and identify the cell carrying the load. Local pressure and the intermediate force history require further convergence checks. Page~10 shows the force at each equilibrium.
+With the original stopping criterion, the 2 and 1.5~mm meshes reported peak contact forces of 8.323 and 8.571~N at 70\% of tightening. At the same station the resultant reactions at the four PLA bearings were only 0.056 and 0.043~N. These contact peaks failed equilibrium on both meshes. At final bolt lock the 1.5~mm solution gave 0.5716~N independently at the pocket, bearings and cell.
+
+\heading{Repeating the same 2 mm mesh with tighter force convergence}
+We repeated the two installation steps with a fixed 0.01~N force-residual criterion. Geometry, screw materials, bolt history and requested outputs stayed identical. The six bolts reached 525~N each at 70\% of tightening. The middle pocket then carried \textbf{0.12107~N}. At 750~N per bolt the pocket carried \textbf{0.56844~N}, falling to \textbf{0.56843~N} after lock. The four-tab reaction agreed within 0.000011~N at every saved station.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-preload-convergence.pdf}
+\captionof{figure}{At load-step parameter 1 the six original fasteners reached 750~N each. The second step locked their achieved adjustment. Each panel uses its own vertical scale. The tab trace sums the four force vectors before taking their magnitude.}\end{center}
+
+The maximum nodal change across the PCB between the two 2~mm runs was 0.0042~$\mu$m. Peak PCB displacement after lock was 28.915~$\mu$m in both, about 39\% below bare. The tighter calculation reduced the largest saved contact pressure from 1.080 to 0.331~MPa. The vibration results use their original installed states.
 
 \newpage
 \pageheading{The first two default-contact shapes persist with either mount}
@@ -218,7 +226,7 @@ The four circular M4 beam shanks were evaluated at 25 section points at each end
 An exact oscillator solution for the piecewise-linear acceleration changed the 24 PLA maxima across both screw materials, tensile directions, base axes and bearing-distance scopes by at most 0.43\% from the average-acceleration integration. Both methods use the same installed stiffness and material law.
 \newpage
 \pageheading{The nylon middle pocket carries about 0.6 N at bolt lock}
-The six original fasteners were each tightened to 750~N. The case carried a much smaller load at the middle cell. The contact elements reported peaks of 8.323 and 8.571~N during tightening on the 2 and 1.5~mm meshes. The four-tab reaction check below excludes the 2~mm peak as an equilibrated case load. At bolt lock they gave 0.594 and 0.572~N across five and seven loaded case faces, respectively. All loaded faces belonged to the same middle pocket.
+The six original fasteners were each tightened to 750~N. Only the middle pocket carried a case-to-cell load. The original 2 and 1.5~mm runs gave 0.594 and 0.572~N at lock over five and seven faces. The tighter 2~mm solve gave 0.568~N over the same five faces. The 8.323 and 8.571~N intermediate peaks on the two original meshes failed the four-tab equilibrium check (page~4).
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/snug-pocket-preload.pdf}
 \captionof{figure}{Left, native contact resultants on both meshes and the independently recovered resultant at the four 2~mm-mesh tab bearings. Right, the 2~mm model gives the times when the signed modal increment along the lock-force direction first passed $+0.594$ and $-0.594$~N during each separate base acceleration. The open marker and label show when unloading first exhausted the initial compression. The solid marker shows an increment of the same magnitude in compression.}\end{center}
@@ -231,7 +239,8 @@ The nominal model reached that condition at 15.46~ms for base X, 24.48~ms for ba
 At both force crossings for each base direction, the outer cells remained clear on both meshes. On the finer mesh, an intersection within the seven-face installed patch confirmed middle-cell contact even where the whole-shell search lacked sufficient resolution. The force check detects a need to redistribute the installed pressure before those snapshots show an outer cell reaching its pocket. Complete lift-off remains unresolved. The nonlinear controls include an intact shell with all three cells, six nickel strips and six washers so both outer pockets can engage.
 
 \heading{How closely did the installed models balance?}
-At the nylon tightening peak the four tab bearings carried only 0.056~N in resultant against 8.323~N at the pocket. The difference between force vectors was \textbf{8.285~N}. Integrating native PLA stresses independently around all four bearings gave 0.568~N at bolt lock against 0.594~N at the pocket (4.35\% vector difference). Aluminium at lock gave 0.02229~N at the tabs and 0.02230~N at the pocket (0.052\%). The same-mesh repeat tightens the global force criterion to 0.01~N. Until that check, the intermediate contact peaks cannot establish the load transmitted to the mounting hardware.
+At the rejected 2~mm peak, independent stress integration gave 2.441~N at the PLA pocket, 0.260~N on the cell and 0.056~N at the four tab bearings. With tighter convergence all three gave 0.1211~N at that station. At bolt lock all three gave 0.5684~N, and their moments about the centre of the four bearing pilots agreed within 0.0004~N\,mm. Individual nylon tab loads remained larger than their net resultant because their directions differed. On the original aluminium mesh at lock the four tab magnitudes ranged from 0.724 to 0.868~N, while their resultant was 0.02229~N against 0.02230~N at the pocket. Matched tighter repeats are queued for aluminium and for the finer nylon mesh.
+
 \newpage
 \pageheading{Under base Y, stress rises across most of the PCB}
 The peak equivalent stress under Y excitation increased from 17.85~MPa RMS bare to 50.21~MPa with nylon screws and 48.40~MPa with aluminium. The bare peak lies at $(10.0,16.0)$~mm in the PCB plane. The nylon peak shifts to $(9.5,118.2)$~mm, and the aluminium peak to $(62.6,5.5)$~mm.

@@ -10,7 +10,7 @@ from mesh_case import make
 from check_case_mesh import check
 from snug_surface_check import run as audit_initial_skin
 from stage_local_jobs import seal
-from stage_snug_fit import AUDIT,INPUTS,MESH,STEP,SPACING,STEP_HASH,THICKNESS,BEARINGS
+from stage_snug_fit import AUDIT,INPUTS,MESH,STEP,SPACING,STEP_HASH,THICKNESS,BEARINGS,PRELOAD_CONTROLS,input_record
 
 
 def stage():
@@ -83,11 +83,9 @@ def stage_modal_control():
     write_json(AUDIT/'modal_refinement_input.json',rec)
 
 
-def stage_force_tolerance():
-    """Keep both load steps and contact readback byte-identical except for the force criterion."""
-    source = 'snug125_nylon_out2_static'
-    case = 'snug125_nylon_tol001_static'
-    nominal = read(AUDIT/'contact_refinement_inputs.json')[source]
+def tolerance_input(source, case):
+    """Seal a fresh copy with the same two solve commands, force readback and physical input."""
+    nominal = input_record(source)
     baseline = read(AUDIT/(source+'_residuals.json'))
     assert baseline['input_sha256']==nominal['input_sha256']
     source_dir = INPUTS/source
@@ -109,7 +107,24 @@ def stage_force_tolerance():
                  absolute_force_criterion_N=0.01,force_reference_N=1.0,force_tolerance=0.01,
                  force_norm='L2',load_steps=[1,2],
                  command_reference='https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_cmd/Hlp_C_CNVTOL.html')
+    return entry
+
+
+def stage_force_tolerance():
+    entry = tolerance_input('snug125_nylon_out2_static', 'snug125_nylon_tol001_static')
     write_json(AUDIT/'force_tolerance_input.json',entry)
+
+
+def stage_remaining_tolerances():
+    tight = read(AUDIT/'snug125_nylon_tol001_static_seats.json')
+    assert not tight['states_outside_force_screens']
+    entries = {}
+    for case, source in PRELOAD_CONTROLS.items():
+        path = AUDIT / (source.replace('_out2_static', '_installation') + '_seats.json')
+        check = read(path)
+        assert check['states_outside_force_screens'] and check['states'][-1]['within_force_screens']
+        entries[case] = dict(tolerance_input(source, case), reference_bearing_sha256=digest(path))
+    write_json(AUDIT/'extra_force_tolerance_inputs.json',entries)
 
 
 def stage_aluminium_refinement():
@@ -186,8 +201,10 @@ if __name__=='__main__':
     parser.add_argument('--force-tolerance-only',action='store_true')
     parser.add_argument('--aluminium-only',action='store_true')
     parser.add_argument('--aluminium-force-repeat',action='store_true')
+    parser.add_argument('--remaining-tolerances',action='store_true')
     args=parser.parse_args()
-    if args.aluminium_force_repeat:stage_aluminium_force_repeat()
+    if args.remaining_tolerances:stage_remaining_tolerances()
+    elif args.aluminium_force_repeat:stage_aluminium_force_repeat()
     elif args.aluminium_only:stage_aluminium_refinement()
     elif args.force_tolerance_only:
         stage_force_tolerance()

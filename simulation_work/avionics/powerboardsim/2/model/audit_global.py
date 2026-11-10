@@ -117,7 +117,8 @@ def audit(case,campaign):
     if case.startswith('snug125_') and case.endswith('_static'):
         from snug_installed import review
         review(case,campaign)
-        if case in ('snug125_nylon_mesh15_static','snug125_nylon_tol001_static','snug125_aluminium_mesh15_static','snug125_aluminium_out2_static','snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
+        from stage_snug_fit import PRELOAD_CONTROLS
+        if case in (*PRELOAD_CONTROLS,'snug125_nylon_mesh15_static','snug125_nylon_tol001_static','snug125_aluminium_mesh15_static','snug125_aluminium_out2_static','snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
             from snug_locked_contact import run as check_faces
             from compare_static import compare as check_board
             from snug_mesh_comparison import compare_forces
@@ -139,15 +140,21 @@ def audit(case,campaign):
             if case in ('snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
                 from snug_unilateral_geometry import audit_projection
                 audit_projection(campaign,case)
+            elif case in PRELOAD_CONTROLS:
+                compare_forces(case)
             elif case.startswith('snug125_aluminium_'):
                 pair=('snug125_aluminium_out2_static','snug125_aluminium_mesh15_static')
                 if ((ROOT/'validation/snug125/aluminium_force_repeat.json').is_file()
                         and all((ROOT/'validation/snug125'/(name+'_residuals.json')).is_file() for name in pair)):
                     compare_forces(pair[1])
             else:compare_forces(case)
-            if case=="snug125_nylon_tol001_static":
-                from snug_board_pull_seats import check_tighter_preload
-                check_tighter_preload(case)
+            if case in (*PRELOAD_CONTROLS, "snug125_nylon_tol001_static", "snug125_nylon_mesh15_static", "snug125_aluminium_mesh15_static"):
+                from snug_board_pull_seats import check_preload_control
+                check_preload_control(case)
+                from snug_preload_load_path import audit as check_load_path
+                check_load_path(case)
+                from snug_preload_fields import audit as check_locked_fields
+                check_locked_fields(case)
     if case=='snug125_nylon_mesh3_basis':
         from snug_coarse_modes import audit as check_coarse_basis
         check_coarse_basis(campaign)

@@ -235,6 +235,11 @@ def jobs():
         if aluminium.is_file():
             for case,spec in read(aluminium).items():
                 yield case,spec['parent']
+        # Both references failed the tab-force check during tightening, so compare using the
+        # verified 0.01 N criterion after the aluminium mesh pair and before the long pulls.
+        extra_tolerance=snug_dir/'extra_force_tolerance_inputs.json'
+        if extra_tolerance.is_file():
+            for case in read(extra_tolerance):yield case,''
         coarse_basis=snug_dir/'coarse_geometry_modes.json'
         if coarse_basis.is_file():
             entry=read(coarse_basis)

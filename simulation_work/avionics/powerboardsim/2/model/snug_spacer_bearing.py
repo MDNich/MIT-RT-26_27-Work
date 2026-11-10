@@ -27,6 +27,15 @@ PILOTS = np.arange(950001, 950009)
 BRANCHES = ("snug125_nylon", "snug125_aluminium", "snug125_nylon_mesh15")
 
 
+def seat_stiffness(text):
+    assert "KEYOPT,854,4,1" in text
+    slopes = []
+    for tag in range(870, 874):
+        (force,) = re.findall(r"(?im)^R," + str(tag) + r",-\.004,([^,]+),0,0,\.004,0$", text)
+        slopes.append(float(force) / -0.004)
+    return np.asarray(slopes)
+
+
 def springs(branch):
     case = branch + "_basis"
     proof, folder, modal = source(case, CAMPAIGN)
@@ -42,12 +51,7 @@ def springs(branch):
     deck = static / "model.inp"
     verified(deck, sha["model.inp"])
     text = deck.read_text()
-    assert "KEYOPT,854,4,1" in text
-    slopes = []
-    for tag in range(870, 874):
-        (force,) = re.findall(r"(?im)^R," + str(tag) + r",-\.004,([^,]+),0,0,\.004,0$", text)
-        slopes.append(float(force) / -0.004)
-    stiffness = np.asarray(slopes)
+    stiffness = seat_stiffness(text)
     area = np.pi * float(re.search(r"(?im)^SECTYPE,851,BEAM,CSOLID\s+SECDATA,([^,]+)", text)[1]) ** 2
     e = float(re.search(r"(?im)^MP,EX,851,([^\r\n]*)", text)[1])
     x0 = raw.mesh.nodes[positions(raw.mesh.nnum, PILOTS)].reshape(4, 2, 3)

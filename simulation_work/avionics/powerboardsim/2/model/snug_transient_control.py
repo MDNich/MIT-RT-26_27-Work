@@ -11,6 +11,7 @@ from audit_local import ROOT, read, table
 from audit_snug_transient_pilot import pair_tracker
 from contact_transient import control_inputs, tables
 from film_identity import digest, verified, write_json
+from native_rst import read_rst
 from stage_local_jobs import seal
 from stage_snug_fit import AUDIT
 
@@ -59,6 +60,46 @@ def stage():
                original_spring_input_sha256=digest(old),original_contact_input_sha256=digest(touch)))
 
 
+def tracker_corners(folder, seat, tracker):
+    copied=read(folder/'rst_copy.json')
+    rst_path=folder/'twoblock.rst'
+    assert copied['source'].endswith('snug_transient_control_v1'+chr(92)+'twoblock.rst') and rst_path.stat().st_size==copied['bytes']
+    verified(rst_path,copied['sha256'])
+    rst=read_rst(rst_path)
+    grid=rst.grid.cell_data
+    element,=grid['ansys_elem_num'][(grid['ansys_etype']==858)&(grid['ansys_real_constant']==880)]
+    np.testing.assert_allclose(rst.time_values,seat['time'],rtol=0,atol=6e-9)
+    part=[]
+    maximum=0.
+    for k,time in enumerate(rst.time_values):
+        nums,fields,nodes=rst.element_solution_data(k,'ECT')
+        j=np.searchsorted(nums,element)
+        assert nums[j]==element and np.array_equal(nodes[j],[5,6,7,8])
+        ect=fields[j]
+        assert len(ect)==41 and ect[-1]==24.
+        corners=ect[:-1].astype(float).reshape(4,10)
+        stat,pen,pressure=corners[:,:3].T
+        assert set(stat).issubset({0.,1.,2.,3.})
+        np.testing.assert_allclose([stat.mean(),pressure.mean(),pen.mean()],
+            [seat['state'][k],seat['pressure'][k],seat['penetration'][k]],rtol=2e-6,atol=1e-16)
+        closed=int(np.any(stat>=2))
+        assert tracker[k,4]==closed
+        np.testing.assert_allclose(tracker[k,5],pressure.max(),rtol=2e-6,atol=1e-14)
+        if closed:
+            np.testing.assert_allclose(tracker[k,6],pen.max(),rtol=2e-6,atol=1e-23)
+        nums,fields,_=rst.element_solution_data(k,'EMN')
+        j=np.searchsorted(nums,element)
+        assert nums[j]==element and len(fields[j])>=45
+        actual=fields[j][42:45].astype(float)
+        maximum=max(maximum,float(np.linalg.norm(tracker[k,1:4]-actual)))
+        np.testing.assert_allclose(tracker[k,1:4],actual,rtol=2e-6,atol=1e-9)
+        if len(set(stat))>1:
+            part.append(dict(native_set=k+1,time=float(time),corner_status=stat.tolist(),post1_status=seat['state'][k],
+                             tracker_closed_elements=closed,native_contact_force_N=actual.tolist()))
+    return dict(rst_sha256=copied['sha256'],contact_element=int(element),mixed_corner_states=part,
+                maximum_tracker_minus_RST_force_N=maximum,verified_stations=rst.nsets)
+
+
 def audit():
     folder=ROOT/'.runtime'/TRIAL
     assert int((folder/'exit.txt').read_text(encoding='utf-8-sig'))==0
@@ -89,13 +130,14 @@ def audit():
     assert abs(x[:,1:3]).max()<1e-4 and np.max(abs(x[:,3]))>100
     sign=1 if (x[:,3]@seat['bot_F'])>0 else -1
     gap=float(abs(sign*x[:,3]-seat['bot_F']).max())
-    assert gap<.3 and np.all((x[:,4]>0)==(seat['state']>=2))
+    assert gap<.3
+    corner_check=tracker_corners(folder,seat,x)
     write_json(AUDIT/'transient_control.json',dict(input_sha256=src['files']['control.inp'],
                oscillator_csv_sha256=digest(folder/'control_response.csv'),contact_csv_sha256=digest(folder/'seat_control.csv'),
                tracker_sha256=digest(folder/'twoblock.nlh'),listing_sha256=digest(folder/'control.out'),
                oscillator_steps=len(at)-1,prescribed_error_m=drive_error,free_mass_error_m=error,
                single_clock_error_m=single_clock,contact_sets=len(seat),max_tracker_reaction_difference_N=gap,
-               tracker_sign_relative_to_lower_block=sign,scope='Analytical time-table and two-block fixture verification.'))
+               tracker_sign_relative_to_lower_block=sign,native_corner_check=corner_check,scope='Analytical time-table and two-block fixture verification.'))
 
 
 if __name__=='__main__':

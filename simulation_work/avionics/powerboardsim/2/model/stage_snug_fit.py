@@ -21,6 +21,12 @@ THICKNESS = 6.35
 STEP_HASH = '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef'
 
 
+PRELOAD_CONTROLS = {
+    "snug125_aluminium_tol001_static": "snug125_aluminium_out2_static",
+    "snug125_nylon_mesh15_tol001_static": "snug125_nylon_mesh15_static",
+}
+
+
 def input_record(case):
     main=json.loads((AUDIT/'global_inputs.json').read_text())
     if case in main:return main[case]
@@ -32,6 +38,8 @@ def input_record(case):
         return json.loads((AUDIT/'aluminium_cylinder_input.json').read_text())
     if case=='snug125_aluminium_project3_static':
         return json.loads((AUDIT/'aluminium_projection_input.json').read_text())
+    if case in PRELOAD_CONTROLS:
+        return json.loads((AUDIT/'extra_force_tolerance_inputs.json').read_text())[case]
     if case=='snug125_nylon_tol001_static':
         entry=json.loads((AUDIT/'force_tolerance_input.json').read_text())
         assert entry['case']==case
