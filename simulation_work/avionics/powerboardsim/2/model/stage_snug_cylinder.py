@@ -146,13 +146,29 @@ def stage():
 
 
 def audit_sections(case, campaign):
-    entry = read(MANIFEST)
+    entry = input_record(case)
     assert case == entry["case"]
+    assert entry['groups'] == read(MANIFEST)['groups']
     _, _, rst = source(case, campaign)
     for g in entry["groups"]:
         elements = [int(e[8]) for e in rst.mesh.elem if e[3] == g["section"]]
         assert len(elements) == g["faces"] and id_hash(elements) == g["element_ids_sha256"]
     return entry["groups"]
+
+
+def stage_tolerance():
+    from stage_snug_contact_refinement import tolerance_input
+    seats = AUDIT / (CASE + '_seats.json')
+    verdict = read(seats)
+    assert verdict['case'] == CASE and not verdict['states'][-1]['within_force_screens']
+    candidate = 'snug125_aluminium_cylinder_tol0001_static'
+    entry = tolerance_input(CASE, candidate, absolute_force_criterion_N=0.0001)
+    entry.update(reference_bearing_sha256=digest(seats),
+        reason='The original final pocket/tab vector discrepancy was 22.1% of the pocket resultant. '
+               'A 0.0001 N absolute L2 criterion tests convergence below the millinewton scale. '
+               'All original independent force screens still apply.',
+        scheduled='At the next audited serial case boundary; do not interrupt the active local pull.')
+    write_json(AUDIT / 'aluminium_cylinder_tolerance_input.json', entry)
 
 
 if __name__ == "__main__":

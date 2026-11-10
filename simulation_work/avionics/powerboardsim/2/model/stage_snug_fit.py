@@ -36,6 +36,8 @@ def input_record(case):
         return json.loads((AUDIT/'aluminium_force_repeat_input.json').read_text())
     if case=='snug125_aluminium_cylinder_static':
         return json.loads((AUDIT/'aluminium_cylinder_input.json').read_text())
+    if case=='snug125_aluminium_cylinder_tol0001_static':
+        return json.loads((AUDIT/'aluminium_cylinder_tolerance_input.json').read_text())
     if case=='snug125_aluminium_project3_static':
         return json.loads((AUDIT/'aluminium_projection_input.json').read_text())
     if case in PRELOAD_CONTROLS:

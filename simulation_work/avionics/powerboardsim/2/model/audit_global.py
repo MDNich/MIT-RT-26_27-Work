@@ -118,7 +118,7 @@ def audit(case,campaign):
         from snug_installed import review
         review(case,campaign)
         from stage_snug_fit import PRELOAD_CONTROLS
-        if case in (*PRELOAD_CONTROLS,'snug125_nylon_mesh15_static','snug125_nylon_tol001_static','snug125_aluminium_mesh15_static','snug125_aluminium_out2_static','snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
+        if case in (*PRELOAD_CONTROLS,'snug125_nylon_mesh15_static','snug125_nylon_tol001_static','snug125_aluminium_mesh15_static','snug125_aluminium_out2_static','snug125_aluminium_project3_static','snug125_aluminium_cylinder_static','snug125_aluminium_cylinder_tol0001_static'):
             from snug_locked_contact import run as check_faces
             from compare_static import compare as check_board
             from snug_mesh_comparison import compare_forces
@@ -137,7 +137,10 @@ def audit(case,campaign):
                                 identical_locked_bolt_forces_and_contact_histories=True))
                 from snug_pocket_unloading import compare_native_repeat
                 compare_native_repeat('snug125_aluminium',case,errors)
-            if case in ('snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
+            if case == 'snug125_aluminium_cylinder_tol0001_static':
+                from stage_snug_cylinder import audit_sections
+                audit_sections(case,campaign)
+            elif case in ('snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
                 from snug_unilateral_geometry import audit_projection
                 audit_projection(campaign,case)
             elif case in PRELOAD_CONTROLS:
@@ -148,6 +151,9 @@ def audit(case,campaign):
                         and all((ROOT/'validation/snug125'/(name+'_residuals.json')).is_file() for name in pair)):
                     compare_forces(pair[1])
             else:compare_forces(case)
+            if case in ('snug125_aluminium_cylinder_static','snug125_aluminium_cylinder_tol0001_static'):
+                from snug_detection_balance import audit as check_detection_balance
+                check_detection_balance(case)
             if case in (*PRELOAD_CONTROLS, "snug125_nylon_tol001_static", "snug125_nylon_mesh15_static", "snug125_aluminium_mesh15_static"):
                 from snug_board_pull_seats import check_preload_control
                 check_preload_control(case)

@@ -268,7 +268,8 @@ def jobs():
         if coarse_basis.is_file():
             entry=read(coarse_basis)
             yield entry['case'],entry['parent']
-        for file in ('aluminium_projection_input.json','aluminium_cylinder_input.json'):
+        for file in ('aluminium_projection_input.json','aluminium_cylinder_input.json',
+                     'aluminium_cylinder_tolerance_input.json'):
             registration=snug_dir/file
             if registration.is_file():
                 control=read(registration)

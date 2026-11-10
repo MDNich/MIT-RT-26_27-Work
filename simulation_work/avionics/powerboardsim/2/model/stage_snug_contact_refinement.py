@@ -83,7 +83,7 @@ def stage_modal_control():
     write_json(AUDIT/'modal_refinement_input.json',rec)
 
 
-def tolerance_input(source, case):
+def tolerance_input(source, case, absolute_force_criterion_N=0.01):
     """Seal a fresh copy with the same two solve commands, force readback and physical input."""
     nominal = input_record(source)
     baseline = read(AUDIT/(source+'_residuals.json'))
@@ -95,7 +95,8 @@ def tolerance_input(source, case):
     verified(post, nominal['post_sha256'])
     original = deck_path.read_bytes()
     solve = b'\r\nsolve\r\n'
-    command = b'CNVTOL,F,1,0.01,2\r\n'
+    assert absolute_force_criterion_N in (0.01, 0.0001)
+    command = f'CNVTOL,F,1,{absolute_force_criterion_N:g},2\r\n'.encode('ascii')
     assert original.count(solve)==2 and b'cnvtol,' not in original.lower()
     updated = original.replace(solve,b'\r\n'+command+solve[2:])
     assert updated.count(command)==2 and updated.replace(command,b'')==original
@@ -104,7 +105,8 @@ def tolerance_input(source, case):
     entry = dict(nominal,case=case,reference_case=source,reference_input_sha256=nominal['input_sha256'],
                  input_sha256=seal(folder/'model.inp',updated),post_sha256=seal(folder/post.name,post.read_bytes()),
                  reference_residual_audit_sha256=digest(AUDIT/(source+'_residuals.json')),
-                 absolute_force_criterion_N=0.01,force_reference_N=1.0,force_tolerance=0.01,
+                 absolute_force_criterion_N=absolute_force_criterion_N,force_reference_N=1.0,
+                 force_tolerance=absolute_force_criterion_N,
                  force_norm='L2',load_steps=[1,2],
                  command_reference='https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_cmd/Hlp_C_CNVTOL.html')
     return entry
