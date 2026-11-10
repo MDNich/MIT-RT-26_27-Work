@@ -28,6 +28,8 @@ def input_record(case):
         return json.loads((AUDIT/'aluminium_refinement_inputs.json').read_text())[case]
     if case=='snug125_aluminium_out2_static':
         return json.loads((AUDIT/'aluminium_force_repeat_input.json').read_text())
+    if case=='snug125_aluminium_cylinder_static':
+        return json.loads((AUDIT/'aluminium_cylinder_input.json').read_text())
     if case=='snug125_aluminium_project3_static':
         return json.loads((AUDIT/'aluminium_projection_input.json').read_text())
     if case=='snug125_nylon_tol001_static':

@@ -117,7 +117,7 @@ def audit(case,campaign):
     if case.startswith('snug125_') and case.endswith('_static'):
         from snug_installed import review
         review(case,campaign)
-        if case in ('snug125_nylon_mesh15_static','snug125_nylon_tol001_static','snug125_aluminium_mesh15_static','snug125_aluminium_out2_static','snug125_aluminium_project3_static'):
+        if case in ('snug125_nylon_mesh15_static','snug125_nylon_tol001_static','snug125_aluminium_mesh15_static','snug125_aluminium_out2_static','snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
             from snug_locked_contact import run as check_faces
             from compare_static import compare as check_board
             from snug_mesh_comparison import compare_forces
@@ -136,9 +136,9 @@ def audit(case,campaign):
                                 identical_locked_bolt_forces_and_contact_histories=True))
                 from snug_pocket_unloading import compare_native_repeat
                 compare_native_repeat('snug125_aluminium',case,errors)
-            if case=='snug125_aluminium_project3_static':
+            if case in ('snug125_aluminium_project3_static','snug125_aluminium_cylinder_static'):
                 from snug_unilateral_geometry import audit_projection
-                audit_projection(campaign)
+                audit_projection(campaign,case)
             elif case.startswith('snug125_aluminium_'):
                 pair=('snug125_aluminium_out2_static','snug125_aluminium_mesh15_static')
                 if ((ROOT/'validation/snug125/aluminium_force_repeat.json').is_file()

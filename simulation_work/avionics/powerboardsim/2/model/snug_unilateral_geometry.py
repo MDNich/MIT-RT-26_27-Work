@@ -205,15 +205,32 @@ def stage_projection():
     write_json(PROJECTION_INPUT, entry)
 
 
-def audit_projection(campaign):
+def audit_projection(campaign, case=PROJECTED):
     import re
 
     from snug_board_pull import ROOT
     from stage_snug_fit import input_record
 
     assert campaign == CAMPAIGN
-    entry = input_record(PROJECTED)
-    verified(SURFACES, entry["witness_geometry_sha256"])
+    from stage_snug_cylinder import CASE as cylinder_case, MANIFEST as cylinder_input, audit_sections
+    from snug_pocket_depth import analyse, load_poses
+
+    entry = input_record(case)
+    if case == cylinder_case:
+        depth = AUDIT / "aluminium_curved_pocket_depth.json"
+        verified(depth, entry["depth_audit_sha256"])
+        verified(SURFACES, read(depth)["surface_checks_sha256"])
+        sections = audit_sections(case, campaign)
+        registration = cylinder_input
+        method = "Gauss integration point"
+        output = "aluminium_cylinder_comparison.json"
+    else:
+        assert case == PROJECTED
+        verified(SURFACES, entry["witness_geometry_sha256"])
+        registration = PROJECTION_INPUT
+        sections = []
+        method = "nodal point (surface projection based)"
+        output = "aluminium_projection_comparison.json"
     ref = input_record(REFERENCE)
     assert (
         entry["reference_input_sha256"] == ref["input_sha256"]
@@ -223,7 +240,7 @@ def audit_projection(campaign):
     rows = {}
     for name, detection in (
         (REFERENCE, "Gauss integration point"),
-        (PROJECTED, "nodal point (surface projection based)"),
+        (case, method),
     ):
         listing = ROOT / ".runtime/archive" / campaign / name / "solve.out"
         residuals = read(AUDIT / (name + "_residuals.json"))
@@ -246,18 +263,21 @@ def audit_projection(campaign):
             == equilibrium["rst_sha256"]
             == residuals["rst_sha256"]
         )
+        depths = analyse(*load_poses(control=geometry))
         rows[name] = {
             "detection": detection,
             "geometry": geometry,
+            "locked_depth_check": depths,
             "locked_force": contact["resultant_force_check"][-1],
             "locked_faces": contact["contact_history"][-1]["loaded_case_faces"],
             "locked_bolts_N": equilibrium["locked_bolt_forces_N"],
             "locked_residual": residuals["states"][-1],
         }
     write_json(
-        AUDIT / "aluminium_projection_comparison.json",
+        AUDIT / output,
         {
-            "input_audit_sha256": digest(PROJECTION_INPUT),
+            "input_audit_sha256": digest(registration),
+            "native_cylinder_sections": sections,
             "adjacent": proof["adjacent_pair"],
             "cases": rows,
         },

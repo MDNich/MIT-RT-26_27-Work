@@ -551,25 +551,21 @@ The aluminium mesh has one independent normal contact stiffness at lock. We allo
 
 \clearpage
 \pageheading{Does the middle cell lift off during vibration?}
-With aluminium screws and excitation normal to the board, the independently calculated force at the initially loaded contact fell to zero at \textbf{5.608~ms}. That contact stayed open for \textbf{0.543~ms} and its spring opened by at most \textbf{44~nm}. At peak opening the original curved PLA face cleared the cell, while a neighbouring PLA face still intersected it. The calculation therefore leaves open how much of the middle-cell load can transfer through the neighbouring face.
+With aluminium screws and excitation normal to the board, the independently calculated force at the initially loaded contact fell to zero at \textbf{5.608~ms}. That contact stayed open for \textbf{0.543~ms} and its spring opened by at most \textbf{44~nm}. At peak opening, whether the original PLA face clears the cell depends on how its curvature is represented. A second face still overlaps the cell in both geometry checks.
 
 \begin{center}\includegraphics[width=\linewidth]{figures/snug-aluminium-first-opening.pdf}
-\captionof{figure}{Left, the signed projection from the native fixed-contact modal history and the independent compression-only response. Both start with the same 0.0223~N solid-stress estimate at bolt lock. Shading marks the first open interval. Right, each axis starts at its own release time. The opening is local to the one normal spring in the aluminium tangent.}\end{center}
+\captionof{figure}{Base-Z compression from the native fixed-contact history and the independent spring model. Both use 0.0223~N at lock. Shading marks release to reclosure. At right, each trace starts at its own release time.}\end{center}
 
-\begin{center}\begin{tabular}{lrrr}
-\toprule
-Base excitation & First release [ms] & First reclosure [ms] & Peak opening [nm]\\
-\midrule
-PCB X & 3.048 & 3.546 & 6.58\\
-PCB Y & 7.214 & 7.632 & 13.29\\
-PCB Z & 5.608 & 6.151 & 44.23\\
-\bottomrule\end{tabular}\end{center}
+Under base X the first release lasted from 3.048 to 3.546~ms, and under base Y from 7.214 to 7.632~ms. We compared the local gap on two PLA faces about 10~mm apart along the cell. At bolt lock ANSYS reported 0.0406~MPa peak pressure on the first face and zero on the second.
 
-\heading{What the native and geometric checks show}
-We reconstructed the exterior from its six-node quadratic faces at three instants per axis. The original loaded face cleared the middle cell at all three peak openings. A neighbouring pair of faces shared an interior point at all nine sampled poses. Both outer cells stayed clear at those instants. In the archived native preload, the same neighbouring pair started apart, intersected by the end of tightening and still intersected at bolt lock. ANSYS recorded zero pressure on that PLA face throughout all eight saved states. A queued same-mesh preload changes only the case contact detection from Gauss points to surface projection. It will compare pressure, force, surface geometry and the six bolt reactions.
+\heading{Keeping the displacements and restoring the STEP curvature}
+\begin{center}\includegraphics[width=.92\linewidth]{figures/snug-aluminium-pocket-curvature.pdf}
+\captionof{figure}{Positive values indicate geometric overlap along a common outward radial direction. Each base axis is sampled at its own maximum spring opening. The STEP comparison restores the undeformed 10.795~mm pocket radius and 10.700~mm cell radius while retaining the same displacement fields. Values are rounded to the nearest nanometre.}\end{center}
+
+At the base-Z peak the original mesh face cleared the middle cell by 39--40~nm. Restoring the curvature gave 3--4~nm of overlap there. On the second face, overlap fell from about 23 to 13~nm under the same correction. The sign at the original face also changed under base X and Y. We bounded each maximum to 0.5~nm and checked the witness points on the trimmed STEP surfaces. Both outer cells cleared the original mesh at all nine sampled poses. Two queued preloads test surface projection and cylindrical geometry correction independently. The STEP reconstruction uses the existing equilibrium and provides no new pressure.
 
 \heading{How accurately is the local opening calculated?}
-We used the first 8.789~ms of each archived acceleration record, retained the 48 installed modes and added 16 displacement vectors from static solves under the contact and three inertia loads. The 48 modes alone captured 44.3\% of static contact flexibility and gave only 16.7~nm peak opening under base Z. The additional vectors recovered the full static flexibility. Going from 12 to 16 changed the three peak openings by at most 1.3\%. The model retains the installed 2\% damping and all other contact states. An independent time-step refinement reproduced the force-increment histories within 0.25\% in relative norm. Native projection and finer-mesh force checks are pending. The calculated gaps describe the assumed contact law during startup. They cannot establish separation of the physical cell or the force on recontact.
+Across the first 8.789~ms, the 48 installed modes alone captured 44.3\% of static contact flexibility and gave 16.7~nm peak spring opening under base Z. Adding 16 static displacement vectors recovered the full flexibility. Going from 12 to 16 changed peak openings by at most 1.3\%. Time-step refinement reproduced the force-increment histories within 0.25\% in relative norm. All other contacts and 2\% installed damping stayed fixed. Physical clearance and recontact force remain unresolved.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
