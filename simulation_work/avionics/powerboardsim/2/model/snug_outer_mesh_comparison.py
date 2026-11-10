@@ -8,7 +8,7 @@ from film_identity import digest, write_json
 from stage_snug_fit import AUDIT, STEP_HASH
 
 
-def compare(material):
+def compare(material,axis='Z'):
     modal=AUDIT/(material+'_modal_mesh_comparison.json')
     models=read(modal)['models']
     assert [m['mesh_size_mm'] for m in models]==[2,1.5]
@@ -19,18 +19,21 @@ def compare(material):
         installed=read(installed_path)
         assert installed['case_mesh_sha256']==model['mesh_sha256'] and installed['step_sha256']==STEP_HASH
         assert installed['rst_sha256']==model['installed_rst_sha256']
-        path=AUDIT/(variant+'_outer_onset_Z_exact.json')
+        path=AUDIT/(f'{variant}_outer_onset_{axis}_exact.json')
         geometry=read(path)
         cert=path.with_name(path.stem+'_witness.json');witness=read(cert)
         assert geometry['basis_rst_sha256']==model['basis_rst_sha256'] and witness['source_sha256']==digest(path)
-        assert geometry['base_axis']=='Z' and geometry['method']==witness['method']=='exact'
+        assert geometry['base_axis']==axis and geometry['method']==witness['method']=='exact'
         assert witness['variant']==geometry['variant']==variant
         cells={}
         for side,body in [('left',4),('right',15)]:
             bounds=geometry['cells'][side];point=witness['cells'][side]
-            assert not bounds['unresolved_samples'] and bounds['last_contiguous_clear_sample']+1==bounds['first_intersecting_sample']
+            unresolved=bounds['unresolved_samples'];first=bounds['first_intersecting_sample']
+            assert first is not None and bounds['last_contiguous_clear_sample']+1==min([first,*unresolved])
+            assert all(bounds['last_contiguous_clear_sample']<k<first for k in unresolved)
             low=bounds['last_contiguous_clear_sample'];high=point['sample']
-            assert low<high and abs(np.sum(point['PLA_barycentric'])-1)<1e-10
+            assert low<first<=high<geometry['samples']
+            assert all(abs(np.sum(point[key+'_barycentric'])-1)<1e-10 for key in ('PLA','cell'))
             assert point['residual_mm']<1e-9 and point['normal_cross_magnitude']>1e-5
             interval=np.array([low,high])*1000/geometry['sample_rate_Hz']
             assert np.array_equal(interval,point['first_intersection_interval_ms'])
@@ -54,7 +57,8 @@ def compare(material):
         fine_lo,fine_hi=b['cells'][side]['time_interval_ms']
         delta[side]=dict(fine_minus_nominal_midpoint_ms=(fine_lo+fine_hi-lo-hi)/2,
                          possible_fine_minus_nominal_ms=[fine_lo-hi,fine_hi-lo])
-    write_json(AUDIT/(material+'_outer_startup_mesh_comparison.json'),dict(models=result,interval_changes=delta,
+    suffix='' if axis=='Z' else '_'+axis
+    write_json(AUDIT/(material+'_outer_startup_mesh_comparison'+suffix+'.json'),dict(models=result,interval_changes=delta,
                order_retained=a['order']==b['order'],modal_comparison_sha256=digest(modal),
                scope='Sampled fixed-contact trajectories from independent exact integration of each native mode basis. '
                      'Interval differences reflect the two tested meshes. A face-intersection witness does not determine '
@@ -65,4 +69,5 @@ def compare(material):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('material',choices=('nylon','aluminium'))
-    compare(p.parse_args().material)
+    p.add_argument('--axis',choices=('X','Y','Z'),default='Z')
+    args=p.parse_args();compare(args.material,args.axis)
