@@ -237,6 +237,10 @@ def jobs():
             for case,meta in read(board_pulls).items():
                 yield meta['parent'],''
                 yield case,meta['parent']
+        projection=snug_dir/'aluminium_projection_input.json'
+        if projection.is_file():
+            control=read(projection)
+            yield control['case'],control['parent']
         local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
         local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
         coarse=snug_dir/'local_inputs_m3.json'

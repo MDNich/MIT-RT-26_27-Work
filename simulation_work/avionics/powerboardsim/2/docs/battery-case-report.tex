@@ -550,6 +550,28 @@ We integrated stress over the deformed quadratic solids on both sides of the int
 The aluminium mesh has one independent normal contact stiffness at lock. We allowed it to open under the left-cell pull, keeping the other supports at their installed stiffness. Its modeled force reached zero at 3.07~N. At 5.807~N the original triangle was clear, but a different case triangle still crossed the curved middle-cell surface. At 5.850~N the complete surfaces were separated. At 8.54~N all three cells cleared the case on this calculated path. The nonlinear whole-board control can test whether pressure transfers to the neighbouring triangle and changes the path.
 
 \clearpage
+\pageheading{Does the middle cell lift off during vibration?}
+With aluminium screws and excitation normal to the board, the independently calculated force at the initially loaded contact fell to zero at \textbf{5.608~ms}. That contact stayed open for \textbf{0.543~ms} and its spring opened by at most \textbf{44~nm}. At peak opening the original curved PLA face cleared the cell, while a neighbouring PLA face still intersected it. The calculation therefore leaves open how much of the middle-cell load can transfer through the neighbouring face.
+
+\begin{center}\includegraphics[width=\linewidth]{figures/snug-aluminium-first-opening.pdf}
+\captionof{figure}{Left, the signed projection from the native fixed-contact modal history and the independent compression-only response. Both start with the same 0.0223~N solid-stress estimate at bolt lock. Shading marks the first open interval. Right, each axis starts at its own release time. The opening is local to the one normal spring in the aluminium tangent.}\end{center}
+
+\begin{center}\begin{tabular}{lrrr}
+\toprule
+Base excitation & First release [ms] & First reclosure [ms] & Peak opening [nm]\\
+\midrule
+PCB X & 3.048 & 3.546 & 6.58\\
+PCB Y & 7.214 & 7.632 & 13.29\\
+PCB Z & 5.608 & 6.151 & 44.23\\
+\bottomrule\end{tabular}\end{center}
+
+\heading{What the native and geometric checks show}
+We reconstructed the exterior from its six-node quadratic faces at three instants per axis. The original loaded face cleared the middle cell at all three peak openings. A neighbouring pair of faces shared an interior point at all nine sampled poses. Both outer cells stayed clear at those instants. In the archived native preload, the same neighbouring pair started apart, intersected by the end of tightening and still intersected at bolt lock. ANSYS recorded zero pressure on that PLA face throughout all eight saved states. A queued same-mesh preload changes only the case contact detection from Gauss points to surface projection. It will compare pressure, force, surface geometry and the six bolt reactions.
+
+\heading{How accurately is the local opening calculated?}
+We used the first 8.789~ms of each archived acceleration record, retained the 48 installed modes and added 16 displacement vectors from static solves under the contact and three inertia loads. The 48 modes alone captured 44.3\% of static contact flexibility and gave only 16.7~nm peak opening under base Z. The additional vectors recovered the full static flexibility. Going from 12 to 16 changed the three peak openings by at most 1.3\%. The model retains the installed 2\% damping and all other contact states. An independent time-step refinement reproduced the force-increment histories within 0.25\% in relative norm. Native projection and finer-mesh force checks are pending. The calculated gaps describe the assumed contact law during startup. They cannot establish separation of the physical cell or the force on recontact.
+
+\clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}
 \setcounter{table}{0}\renewcommand{\thetable}{A.\arabic{table}}
