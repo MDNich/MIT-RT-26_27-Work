@@ -1,0 +1,932 @@
+{
+  "campaign": "nov08_01",
+  "models": [
+    {
+      "case": "snug125_aluminium_basis",
+      "preload": "snug125_aluminium_static",
+      "mesh_size_mm": 2,
+      "mesh_sha256": "12b33a6fc8bec499e062c86fa0d9442d062f5b5fff7ad08425ec26d8c1cd0a2b",
+      "installed_rst_sha256": "3484d58472e218cbb681c8bfb58efad0e5a9258fb1728dab4f1197e4aaac524e",
+      "basis_rst_sha256": "b1ea191bc69596e0b4b8cde834f5df66c3ffc6d2057df26cf574f9de7473fb86",
+      "spectrum_sha256": "60beef8e27d02b30b9c434f1eb7dd7894d9dad05248ddc18c75c73b48a21b526"
+    },
+    {
+      "case": "snug125_aluminium_mesh15_basis",
+      "preload": "snug125_aluminium_mesh15_static",
+      "mesh_size_mm": 1.5,
+      "mesh_sha256": "415b0bff2d28641b19fd4fc90e16c323d3192833be79c7889b106f85b0909d0b",
+      "installed_rst_sha256": "5b3ab82975ceff0e3593d91667994f17cc98b1646187fff774e164355e194c8c",
+      "basis_rst_sha256": "f7bf1434aa57734520c1b4a63d86758a05704e860a7c15baf15d99b4400d9460",
+      "spectrum_sha256": "6a0e966297de5a3077c55add14e8babf82253f725039a74fbd5cec65c451a446"
+    }
+  ],
+  "native_mode_matching": {
+    "method": "Squared Euclidean correlation of three signed translations per common solid node; unweighted, not mass-normalized MAC. Assignment maximizes total score across the two supplied bases.",
+    "common_original_solid_nodes": 369584,
+    "coordinate_tolerance_m": 1e-09,
+    "static_pose_checks": [
+      {
+        "parent": "snug125_aluminium_static",
+        "parent_RST_sha256": "3484d58472e218cbb681c8bfb58efad0e5a9258fb1728dab4f1197e4aaac524e",
+        "peak_coordinate_plus_static_displacement_error_m": 6.938867434127627e-18
+      },
+      {
+        "parent": "snug125_aluminium_mesh15_static",
+        "parent_RST_sha256": "5b3ab82975ceff0e3593d91667994f17cc98b1646187fff774e164355e194c8c",
+        "peak_coordinate_plus_static_displacement_error_m": 6.938893903907228e-18
+      }
+    ],
+    "reference_rst_sha256": "b1ea191bc69596e0b4b8cde834f5df66c3ffc6d2057df26cf574f9de7473fb86",
+    "candidate_rst_sha256": "f7bf1434aa57734520c1b4a63d86758a05704e860a7c15baf15d99b4400d9460",
+    "modes": [
+      {
+        "reference_rank": 1,
+        "reference_Hz": 415.4172255139496,
+        "best_rank": 1,
+        "best_MAC": 0.9964411611756838,
+        "runner_up_MAC": 0.13588561010167594,
+        "assigned_rank": 1,
+        "assigned_Hz": 412.9984154979922,
+        "assigned_MAC": 0.9964411611756838,
+        "assigned_sign": -1,
+        "equal_rank_MAC": 0.9964411611756838,
+        "equal_rank_sign": -1
+      },
+      {
+        "reference_rank": 2,
+        "reference_Hz": 426.8382910075936,
+        "best_rank": 2,
+        "best_MAC": 0.999545454140511,
+        "runner_up_MAC": 0.18611758097289915,
+        "assigned_rank": 2,
+        "assigned_Hz": 425.88422002336347,
+        "assigned_MAC": 0.999545454140511,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.999545454140511,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 3,
+        "reference_Hz": 493.2789484185592,
+        "best_rank": 3,
+        "best_MAC": 0.9972335531968546,
+        "runner_up_MAC": 0.22432573030603256,
+        "assigned_rank": 3,
+        "assigned_Hz": 487.34724487795245,
+        "assigned_MAC": 0.9972335531968546,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9972335531968546,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 4,
+        "reference_Hz": 649.131534946785,
+        "best_rank": 4,
+        "best_MAC": 0.9999384666634186,
+        "runner_up_MAC": 0.24279970971307238,
+        "assigned_rank": 4,
+        "assigned_Hz": 649.0206193313309,
+        "assigned_MAC": 0.9999384666634186,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999384666634186,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 5,
+        "reference_Hz": 767.8367702306396,
+        "best_rank": 5,
+        "best_MAC": 0.9999602891740671,
+        "runner_up_MAC": 0.2866213058625013,
+        "assigned_rank": 5,
+        "assigned_Hz": 766.7717570181311,
+        "assigned_MAC": 0.9999602891740671,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999602891740671,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 6,
+        "reference_Hz": 792.1467403140103,
+        "best_rank": 6,
+        "best_MAC": 0.99933794492775,
+        "runner_up_MAC": 0.09876210908399866,
+        "assigned_rank": 6,
+        "assigned_Hz": 791.5149443803299,
+        "assigned_MAC": 0.99933794492775,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.99933794492775,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 7,
+        "reference_Hz": 815.1129216937143,
+        "best_rank": 7,
+        "best_MAC": 0.9966729018360666,
+        "runner_up_MAC": 0.3143620851790938,
+        "assigned_rank": 7,
+        "assigned_Hz": 814.1728366021805,
+        "assigned_MAC": 0.9966729018360666,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9966729018360666,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 8,
+        "reference_Hz": 825.2065981117559,
+        "best_rank": 8,
+        "best_MAC": 0.9999928816481117,
+        "runner_up_MAC": 0.2646994695822769,
+        "assigned_rank": 8,
+        "assigned_Hz": 825.1631585359493,
+        "assigned_MAC": 0.9999928816481117,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999928816481117,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 9,
+        "reference_Hz": 854.2025822451017,
+        "best_rank": 9,
+        "best_MAC": 0.9996505215061984,
+        "runner_up_MAC": 0.16522628822375166,
+        "assigned_rank": 9,
+        "assigned_Hz": 852.6394223951517,
+        "assigned_MAC": 0.9996505215061984,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9996505215061984,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 10,
+        "reference_Hz": 908.8690763444397,
+        "best_rank": 10,
+        "best_MAC": 0.9985813994122729,
+        "runner_up_MAC": 0.2734806794011246,
+        "assigned_rank": 10,
+        "assigned_Hz": 905.7472427221041,
+        "assigned_MAC": 0.9985813994122729,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9985813994122729,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 11,
+        "reference_Hz": 1143.5639743346235,
+        "best_rank": 12,
+        "best_MAC": 0.982271377246314,
+        "runner_up_MAC": 0.7535298041683344,
+        "assigned_rank": 12,
+        "assigned_Hz": 1144.664955361512,
+        "assigned_MAC": 0.982271377246314,
+        "assigned_sign": -1,
+        "equal_rank_MAC": 0.7535298041683344,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 12,
+        "reference_Hz": 1188.2826892554501,
+        "best_rank": 13,
+        "best_MAC": 0.6915239818650778,
+        "runner_up_MAC": 0.2231358375847773,
+        "assigned_rank": 11,
+        "assigned_Hz": 1138.2418408937344,
+        "assigned_MAC": 0.2231358375847773,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.0005530004387484696,
+        "equal_rank_sign": -1
+      },
+      {
+        "reference_rank": 13,
+        "reference_Hz": 1201.0038565408925,
+        "best_rank": 13,
+        "best_MAC": 0.9698866771395469,
+        "runner_up_MAC": 0.138575096548076,
+        "assigned_rank": 13,
+        "assigned_Hz": 1198.260206183791,
+        "assigned_MAC": 0.9698866771395469,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9698866771395469,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 14,
+        "reference_Hz": 1274.8486596748237,
+        "best_rank": 14,
+        "best_MAC": 0.9941216452537203,
+        "runner_up_MAC": 0.15550304495225048,
+        "assigned_rank": 14,
+        "assigned_Hz": 1271.9286175104953,
+        "assigned_MAC": 0.9941216452537203,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9941216452537203,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 15,
+        "reference_Hz": 1457.2765084594516,
+        "best_rank": 15,
+        "best_MAC": 0.9886341160016524,
+        "runner_up_MAC": 0.31144067700557543,
+        "assigned_rank": 15,
+        "assigned_Hz": 1453.7591505066841,
+        "assigned_MAC": 0.9886341160016524,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9886341160016524,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 16,
+        "reference_Hz": 1513.0990441237436,
+        "best_rank": 16,
+        "best_MAC": 0.9481739294882635,
+        "runner_up_MAC": 0.3980927809836235,
+        "assigned_rank": 16,
+        "assigned_Hz": 1494.5303217591734,
+        "assigned_MAC": 0.9481739294882635,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9481739294882635,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 17,
+        "reference_Hz": 1709.8893016676745,
+        "best_rank": 17,
+        "best_MAC": 0.999915553593102,
+        "runner_up_MAC": 0.4480059708795735,
+        "assigned_rank": 17,
+        "assigned_Hz": 1709.4322991975725,
+        "assigned_MAC": 0.999915553593102,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.999915553593102,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 18,
+        "reference_Hz": 1748.8984477074212,
+        "best_rank": 18,
+        "best_MAC": 0.9993226545634507,
+        "runner_up_MAC": 0.41413533844496153,
+        "assigned_rank": 18,
+        "assigned_Hz": 1747.2104189155039,
+        "assigned_MAC": 0.9993226545634507,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9993226545634507,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 19,
+        "reference_Hz": 1979.6859460886753,
+        "best_rank": 19,
+        "best_MAC": 0.9917072896032795,
+        "runner_up_MAC": 0.5998555689804388,
+        "assigned_rank": 19,
+        "assigned_Hz": 1976.551582977387,
+        "assigned_MAC": 0.9917072896032795,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9917072896032795,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 20,
+        "reference_Hz": 2011.3700773895632,
+        "best_rank": 20,
+        "best_MAC": 0.9994288726853767,
+        "runner_up_MAC": 0.5471088502629684,
+        "assigned_rank": 20,
+        "assigned_Hz": 2010.9017441118228,
+        "assigned_MAC": 0.9994288726853767,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9994288726853767,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 21,
+        "reference_Hz": 2072.715974630747,
+        "best_rank": 21,
+        "best_MAC": 0.9985364584048373,
+        "runner_up_MAC": 0.26164152352385517,
+        "assigned_rank": 21,
+        "assigned_Hz": 2063.1874283068323,
+        "assigned_MAC": 0.9985364584048373,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9985364584048373,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 22,
+        "reference_Hz": 2140.7764876200404,
+        "best_rank": 22,
+        "best_MAC": 0.9996996610118689,
+        "runner_up_MAC": 0.38783427806660037,
+        "assigned_rank": 22,
+        "assigned_Hz": 2140.625356774655,
+        "assigned_MAC": 0.9996996610118689,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9996996610118689,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 23,
+        "reference_Hz": 2183.8014570132686,
+        "best_rank": 23,
+        "best_MAC": 0.9998339355779311,
+        "runner_up_MAC": 0.12840697896889186,
+        "assigned_rank": 23,
+        "assigned_Hz": 2183.6489299241366,
+        "assigned_MAC": 0.9998339355779311,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9998339355779311,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 24,
+        "reference_Hz": 2219.6707259736027,
+        "best_rank": 24,
+        "best_MAC": 0.9999617346026737,
+        "runner_up_MAC": 0.7102593458888735,
+        "assigned_rank": 24,
+        "assigned_Hz": 2219.424471715406,
+        "assigned_MAC": 0.9999617346026737,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999617346026737,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 25,
+        "reference_Hz": 2310.400142936024,
+        "best_rank": 25,
+        "best_MAC": 0.9995110314176197,
+        "runner_up_MAC": 0.7147248895389444,
+        "assigned_rank": 25,
+        "assigned_Hz": 2309.8142378613593,
+        "assigned_MAC": 0.9995110314176197,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9995110314176197,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 26,
+        "reference_Hz": 2346.8973569565414,
+        "best_rank": 26,
+        "best_MAC": 0.9912207429134741,
+        "runner_up_MAC": 0.06070966431500193,
+        "assigned_rank": 26,
+        "assigned_Hz": 2345.2693568617424,
+        "assigned_MAC": 0.9912207429134741,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9912207429134741,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 27,
+        "reference_Hz": 2378.244915942318,
+        "best_rank": 27,
+        "best_MAC": 0.9992351350873331,
+        "runner_up_MAC": 0.6089494739255807,
+        "assigned_rank": 27,
+        "assigned_Hz": 2376.614717407412,
+        "assigned_MAC": 0.9992351350873331,
+        "assigned_sign": -1,
+        "equal_rank_MAC": 0.9992351350873331,
+        "equal_rank_sign": -1
+      },
+      {
+        "reference_rank": 28,
+        "reference_Hz": 2501.517789181404,
+        "best_rank": 28,
+        "best_MAC": 0.999170789134879,
+        "runner_up_MAC": 0.1399344729487675,
+        "assigned_rank": 28,
+        "assigned_Hz": 2499.3214684924656,
+        "assigned_MAC": 0.999170789134879,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.999170789134879,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 29,
+        "reference_Hz": 2565.0929173278523,
+        "best_rank": 29,
+        "best_MAC": 0.9985554850491124,
+        "runner_up_MAC": 0.3368025239300957,
+        "assigned_rank": 29,
+        "assigned_Hz": 2563.0069331356303,
+        "assigned_MAC": 0.9985554850491124,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9985554850491124,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 30,
+        "reference_Hz": 2677.1654376216916,
+        "best_rank": 30,
+        "best_MAC": 0.9784308596734076,
+        "runner_up_MAC": 0.263510095069263,
+        "assigned_rank": 30,
+        "assigned_Hz": 2668.7275160661616,
+        "assigned_MAC": 0.9784308596734076,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9784308596734076,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 31,
+        "reference_Hz": 2704.9140658101446,
+        "best_rank": 31,
+        "best_MAC": 0.9999295636681991,
+        "runner_up_MAC": 0.14524431948139033,
+        "assigned_rank": 31,
+        "assigned_Hz": 2704.7117112907176,
+        "assigned_MAC": 0.9999295636681991,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999295636681991,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 32,
+        "reference_Hz": 2775.926983680275,
+        "best_rank": 32,
+        "best_MAC": 0.9982093613910087,
+        "runner_up_MAC": 0.2207161967829017,
+        "assigned_rank": 32,
+        "assigned_Hz": 2769.3165187548425,
+        "assigned_MAC": 0.9982093613910087,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9982093613910087,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 33,
+        "reference_Hz": 2879.176589970723,
+        "best_rank": 33,
+        "best_MAC": 0.9999920328821464,
+        "runner_up_MAC": 0.05288698155834961,
+        "assigned_rank": 33,
+        "assigned_Hz": 2879.1351695630096,
+        "assigned_MAC": 0.9999920328821464,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999920328821464,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 34,
+        "reference_Hz": 2959.6034413101365,
+        "best_rank": 34,
+        "best_MAC": 0.9967163991713638,
+        "runner_up_MAC": 0.1661548717664883,
+        "assigned_rank": 34,
+        "assigned_Hz": 2955.1276096779075,
+        "assigned_MAC": 0.9967163991713638,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9967163991713638,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 35,
+        "reference_Hz": 3004.8564419699355,
+        "best_rank": 35,
+        "best_MAC": 0.9943143881720783,
+        "runner_up_MAC": 0.21532889550612433,
+        "assigned_rank": 35,
+        "assigned_Hz": 3000.5661101797846,
+        "assigned_MAC": 0.9943143881720783,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9943143881720783,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 36,
+        "reference_Hz": 3206.036573684775,
+        "best_rank": 36,
+        "best_MAC": 0.9999997250737143,
+        "runner_up_MAC": 0.10289149448957954,
+        "assigned_rank": 36,
+        "assigned_Hz": 3206.0099300454103,
+        "assigned_MAC": 0.9999997250737143,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999997250737143,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 37,
+        "reference_Hz": 3305.282725439711,
+        "best_rank": 37,
+        "best_MAC": 0.999891821942623,
+        "runner_up_MAC": 0.13298374311034614,
+        "assigned_rank": 37,
+        "assigned_Hz": 3304.1786115403665,
+        "assigned_MAC": 0.999891821942623,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.999891821942623,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 38,
+        "reference_Hz": 3381.6427808377107,
+        "best_rank": 38,
+        "best_MAC": 0.9998979845202163,
+        "runner_up_MAC": 0.12347988248052383,
+        "assigned_rank": 38,
+        "assigned_Hz": 3381.088886529391,
+        "assigned_MAC": 0.9998979845202163,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9998979845202163,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 39,
+        "reference_Hz": 3498.323320469907,
+        "best_rank": 39,
+        "best_MAC": 0.9987008798488541,
+        "runner_up_MAC": 0.12408087784057087,
+        "assigned_rank": 39,
+        "assigned_Hz": 3496.1431460717795,
+        "assigned_MAC": 0.9987008798488541,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9987008798488541,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 40,
+        "reference_Hz": 3547.2444347661544,
+        "best_rank": 40,
+        "best_MAC": 0.7279705316291931,
+        "runner_up_MAC": 0.6866188030179351,
+        "assigned_rank": 40,
+        "assigned_Hz": 3533.441329334065,
+        "assigned_MAC": 0.7279705316291931,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.7279705316291931,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 41,
+        "reference_Hz": 3561.365881807292,
+        "best_rank": 41,
+        "best_MAC": 0.9948351745434152,
+        "runner_up_MAC": 0.14622611023132967,
+        "assigned_rank": 41,
+        "assigned_Hz": 3559.527139354745,
+        "assigned_MAC": 0.9948351745434152,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9948351745434152,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 42,
+        "reference_Hz": 3640.6842770826597,
+        "best_rank": 42,
+        "best_MAC": 0.9976285514849661,
+        "runner_up_MAC": 0.15876769823852133,
+        "assigned_rank": 42,
+        "assigned_Hz": 3638.0882360676783,
+        "assigned_MAC": 0.9976285514849661,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9976285514849661,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 43,
+        "reference_Hz": 3668.001007476473,
+        "best_rank": 43,
+        "best_MAC": 0.9993552683426071,
+        "runner_up_MAC": 0.24516842579055892,
+        "assigned_rank": 43,
+        "assigned_Hz": 3667.5171286129043,
+        "assigned_MAC": 0.9993552683426071,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9993552683426071,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 44,
+        "reference_Hz": 3708.705331312322,
+        "best_rank": 44,
+        "best_MAC": 0.9998671026324576,
+        "runner_up_MAC": 0.2527864395605036,
+        "assigned_rank": 44,
+        "assigned_Hz": 3708.2690554330566,
+        "assigned_MAC": 0.9998671026324576,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9998671026324576,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 45,
+        "reference_Hz": 3773.5355115399593,
+        "best_rank": 45,
+        "best_MAC": 0.9999132243258326,
+        "runner_up_MAC": 0.126035551906606,
+        "assigned_rank": 45,
+        "assigned_Hz": 3773.0552743957724,
+        "assigned_MAC": 0.9999132243258326,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9999132243258326,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 46,
+        "reference_Hz": 3901.981796781016,
+        "best_rank": 46,
+        "best_MAC": 0.9987179763709827,
+        "runner_up_MAC": 0.7558461994316341,
+        "assigned_rank": 46,
+        "assigned_Hz": 3895.7180358741994,
+        "assigned_MAC": 0.9987179763709827,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9987179763709827,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 47,
+        "reference_Hz": 3952.7428670429576,
+        "best_rank": 47,
+        "best_MAC": 0.9937468727204348,
+        "runner_up_MAC": 0.6657448021076953,
+        "assigned_rank": 47,
+        "assigned_Hz": 3945.8410460222535,
+        "assigned_MAC": 0.9937468727204348,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9937468727204348,
+        "equal_rank_sign": 1
+      },
+      {
+        "reference_rank": 48,
+        "reference_Hz": 3990.3218744128485,
+        "best_rank": 48,
+        "best_MAC": 0.9976294334164746,
+        "runner_up_MAC": 0.03221231673953775,
+        "assigned_rank": 48,
+        "assigned_Hz": 3989.6168823608677,
+        "assigned_MAC": 0.9976294334164746,
+        "assigned_sign": 1,
+        "equal_rank_MAC": 0.9976294334164746,
+        "equal_rank_sign": 1
+      }
+    ]
+  },
+  "independent_RMS_displacements": {
+    "X": {
+      "assembly": {
+        "nominal_peak_XYZ_um": [
+          54.148608521213504,
+          28.317102587660994,
+          78.96358065274279
+        ],
+        "fine_peak_XYZ_um": [
+          55.24944099910571,
+          29.412811345145304,
+          82.74308094516195
+        ],
+        "fine_minus_nominal_percent": [
+          2.032983871526328,
+          3.869423978291331,
+          4.7863841294637055
+        ]
+      },
+      "pcb": {
+        "nominal_peak_XYZ_um": [
+          3.212239460659452,
+          3.31994354736478,
+          78.96358065274279
+        ],
+        "fine_peak_XYZ_um": [
+          3.3205980997877402,
+          3.313978835426298,
+          82.74308094516195
+        ],
+        "fine_minus_nominal_percent": [
+          3.3733051491137145,
+          -0.1796630531027077,
+          4.7863841294637055
+        ]
+      },
+      "cells": {
+        "nominal_peak_XYZ_um": [
+          54.148608521213504,
+          0.622450130232813,
+          25.555797892011626
+        ],
+        "fine_peak_XYZ_um": [
+          54.62030274774315,
+          0.6287657223837427,
+          25.773112033654023
+        ],
+        "fine_minus_nominal_percent": [
+          0.8711105223412341,
+          1.0146342404278252,
+          0.8503516210320416
+        ]
+      },
+      "nickel": {
+        "nominal_peak_XYZ_um": [
+          45.076190918135005,
+          2.8545368364669326,
+          18.340429765133226
+        ],
+        "fine_peak_XYZ_um": [
+          45.46776679265701,
+          2.85713817488581,
+          18.494483311062776
+        ],
+        "fine_minus_nominal_percent": [
+          0.868697790443651,
+          0.09112996496121184,
+          0.8399669359025586
+        ]
+      },
+      "case": {
+        "nominal_peak_XYZ_um": [
+          54.042625967604835,
+          22.19536930507804,
+          73.37463831976608
+        ],
+        "fine_peak_XYZ_um": [
+          55.24944099910571,
+          22.098984815948345,
+          75.98928193645851
+        ],
+        "fine_minus_nominal_percent": [
+          2.233079925139614,
+          -0.43425494662817643,
+          3.5634160202573595
+        ]
+      }
+    },
+    "Y": {
+      "assembly": {
+        "nominal_peak_XYZ_um": [
+          20.18742244462113,
+          38.29627206542003,
+          83.51507741761483
+        ],
+        "fine_peak_XYZ_um": [
+          20.52219505790557,
+          37.907059881985475,
+          84.22386791937099
+        ],
+        "fine_minus_nominal_percent": [
+          1.6583227215004603,
+          -1.0163187235814442,
+          0.8486976527745549
+        ]
+      },
+      "pcb": {
+        "nominal_peak_XYZ_um": [
+          1.428283101503516,
+          3.007147279291837,
+          66.78100915155751
+        ],
+        "fine_peak_XYZ_um": [
+          1.4287950336122095,
+          3.003569748298793,
+          66.58918272893185
+        ],
+        "fine_minus_nominal_percent": [
+          0.03584248165888759,
+          -0.11896760154316288,
+          -0.28724696596053034
+        ]
+      },
+      "cells": {
+        "nominal_peak_XYZ_um": [
+          11.13434719941814,
+          1.3794790745028553,
+          5.164350079937406
+        ],
+        "fine_peak_XYZ_um": [
+          10.973738499269617,
+          1.376718978887471,
+          5.077110646374167
+        ],
+        "fine_minus_nominal_percent": [
+          -1.4424617561496267,
+          -0.20008245622566978,
+          -1.6892625831495867
+        ]
+      },
+      "nickel": {
+        "nominal_peak_XYZ_um": [
+          9.306445198301269,
+          1.3761112881924478,
+          3.756357489052126
+        ],
+        "fine_peak_XYZ_um": [
+          9.171547275647676,
+          1.3745321379854087,
+          3.688610216672402
+        ],
+        "fine_minus_nominal_percent": [
+          -1.4495107399140728,
+          -0.11475454206273383,
+          -1.8035363401159965
+        ]
+      },
+      "case": {
+        "nominal_peak_XYZ_um": [
+          20.18742244462113,
+          38.29627206542003,
+          62.10858775127459
+        ],
+        "fine_peak_XYZ_um": [
+          20.52219505790557,
+          37.907059881985475,
+          61.95409678756434
+        ],
+        "fine_minus_nominal_percent": [
+          1.6583227215004603,
+          -1.0163187235814442,
+          -0.24874332085755846
+        ]
+      }
+    },
+    "Z": {
+      "assembly": {
+        "nominal_peak_XYZ_um": [
+          44.53184528597156,
+          32.63482468092878,
+          90.2428770738878
+        ],
+        "fine_peak_XYZ_um": [
+          44.90586314660024,
+          32.644333915904284,
+          89.49722666332045
+        ],
+        "fine_minus_nominal_percent": [
+          0.839888529718058,
+          0.02913830568564979,
+          -0.8262706539784115
+        ]
+      },
+      "pcb": {
+        "nominal_peak_XYZ_um": [
+          2.625606940691365,
+          3.1703699243444494,
+          75.86284703234081
+        ],
+        "fine_peak_XYZ_um": [
+          2.527314806923546,
+          3.1218306133153164,
+          74.43501424558765
+        ],
+        "fine_minus_nominal_percent": [
+          -3.743596661194737,
+          -1.531029885705515,
+          -1.8821239152077451
+        ]
+      },
+      "cells": {
+        "nominal_peak_XYZ_um": [
+          18.527685426931797,
+          0.3526712459281131,
+          8.499756236604256
+        ],
+        "fine_peak_XYZ_um": [
+          18.049735421792896,
+          0.38069292263189314,
+          8.271987089100383
+        ],
+        "fine_minus_nominal_percent": [
+          -2.579653065806886,
+          7.94555184958059,
+          -2.6797138784167007
+        ]
+      },
+      "nickel": {
+        "nominal_peak_XYZ_um": [
+          15.555171453161957,
+          0.8523232560517395,
+          6.2119310876515295
+        ],
+        "fine_peak_XYZ_um": [
+          15.154438706635757,
+          0.8440778054458083,
+          6.046279479196196
+        ],
+        "fine_minus_nominal_percent": [
+          -2.576202697172736,
+          -0.9674088495633559,
+          -2.6666684822796327
+        ]
+      },
+      "case": {
+        "nominal_peak_XYZ_um": [
+          44.53184528597156,
+          21.832204321356002,
+          77.6569654128167
+        ],
+        "fine_peak_XYZ_um": [
+          44.90586314660024,
+          23.914039513201743,
+          73.9981358269264
+        ],
+        "fine_minus_nominal_percent": [
+          0.839888529718058,
+          9.535616107299404,
+          -4.711527892495326
+        ]
+      }
+    }
+  },
+  "scope": "Native mode correspondence uses the identical original assembly nodes after undoing each installed pose. The PLA mesh changes. Each spectrum is independently integrated from its own native frequencies, participation and signed shapes. Each tangent fixes the contact state of its own preload."
+}

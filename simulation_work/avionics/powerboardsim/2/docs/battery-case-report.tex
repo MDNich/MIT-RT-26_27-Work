@@ -117,7 +117,7 @@ We repeated the two installation steps with a fixed 0.01~N force-residual criter
 \begin{center}\includegraphics[width=.98\linewidth]{figures/snug-preload-convergence.pdf}
 \captionof{figure}{At load-step parameter 1 the six original fasteners reached 750~N each. The second step locked their achieved adjustment. Each panel uses its own vertical scale. The tab trace sums the four force vectors before taking their magnitude.}\end{center}
 
-The maximum nodal change across the PCB between the two 2~mm runs was 0.0042~$\mu$m. Peak PCB displacement after lock was 28.915~$\mu$m in both, about 39\% below bare. The tighter calculation reduced the largest saved contact pressure from 1.080 to 0.331~MPa. The vibration results use their original installed states.
+The maximum nodal change across the PCB between the two 2~mm runs was 0.0042~$\mu$m. Peak PCB displacement after lock was 28.915~$\mu$m in both, about 39\% below bare. The tighter calculation reduced the largest saved contact pressure from 1.080 to 0.331~MPa. The matching tighter aluminium repeat carried 0.02230~N at full tightening and lock. Its tab reaction differed by at most 0.000013~N at all eight states. The earlier 0.1058~N tightening peak disappeared. The final lock force changed by 0.015\% and the maximum matched PCB displacement difference was 0.000068~$\mu$m. The vibration results use their original installed states.
 
 \newpage
 \pageheading{The first two default-contact shapes persist with either mount}
@@ -239,7 +239,7 @@ The nominal model reached that condition at 15.46~ms for base X, 24.48~ms for ba
 At both force crossings for each base direction, the outer cells remained clear on both meshes. On the finer mesh, an intersection within the seven-face installed patch confirmed middle-cell contact even where the whole-shell search lacked sufficient resolution. The force check detects a need to redistribute the installed pressure before those snapshots show an outer cell reaching its pocket. Complete lift-off remains unresolved. The nonlinear controls include an intact shell with all three cells, six nickel strips and six washers so both outer pockets can engage.
 
 \heading{How closely did the installed models balance?}
-At the rejected 2~mm peak, independent stress integration gave 2.441~N at the PLA pocket, 0.260~N on the cell and 0.056~N at the four tab bearings. With tighter convergence all three gave 0.1211~N at that station. At bolt lock all three gave 0.5684~N, and their moments about the centre of the four bearing pilots agreed within 0.0004~N\,mm. Individual nylon tab loads remained larger than their net resultant because their directions differed. On the original aluminium mesh at lock the four tab magnitudes ranged from 0.724 to 0.868~N, while their resultant was 0.02229~N against 0.02230~N at the pocket. Matched tighter repeats are queued for aluminium and for the finer nylon mesh.
+At the rejected 2~mm peak, independent stress integration gave 2.441~N at the PLA pocket, 0.260~N on the cell and 0.056~N at the four tab bearings. With tighter convergence all three gave 0.1211~N at that station. At bolt lock all three gave 0.5684~N, and their moments about the centre of the four bearing pilots agreed within 0.0004~N\,mm. Individual nylon tab loads remained larger than their net resultant because their directions differed. On the original aluminium mesh at lock the four tab magnitudes ranged from 0.724 to 0.868~N, while their resultant was 0.02229~N against 0.02230~N at the pocket. The tighter aluminium repeat passed the mounting-force check at every station and retained 0.02230~N at lock. The finer nylon tolerance check is running.
 
 \newpage
 \pageheading{Under base Y, stress rises across most of the PCB}
@@ -261,10 +261,10 @@ Under base X the highest stress fell with both mounts, but the area-weighted 95t
 
 \newpage
 \pageheading{Board-normal vibration separates screw stiffness from peak stress}
-Under base Z, aluminium screws limited peak board-normal motion to 75.86~$\mu$m RMS, compared with 139.49~$\mu$m with nylon. The aluminium assembly nevertheless developed the larger peak PCB stress, 98.65 versus 69.37~MPa RMS. The bare values were 52.67~$\mu$m and 32.48~MPa. All nine spectra used the original load level and damping and held each assembly's contact state fixed at bolt lock.
+Under base Z, aluminium screws limited peak board-normal motion to 75.86~$\mu$m RMS, compared with 139.49~$\mu$m with nylon. The aluminium assembly nevertheless developed the larger peak PCB stress, 98.65 versus 69.37~MPa RMS. The bare values were 52.67~$\mu$m and 32.48~MPa. The nine native spectra used the original load level and damping and held each assembly's contact state fixed at bolt lock.
 
-\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-native-spectra.pdf}
-\captionof{figure}{Native MAPDL results for separate X, Y and Z base excitations. The left panel shows peak board-normal motion relative to the base. The right shows the largest stored equivalent stress within the PCB. Each maximum is taken over the whole PCB for that load case.}\end{center}
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-refined-spectra.pdf}
+\captionof{figure}{Separate X, Y and Z base excitations. Filled markers show native MAPDL spectra for the bare board and 2~mm case meshes. Open markers show independent integration on each native 1.5~mm basis. Each maximum is taken over the whole PCB. The two mesh sizes use their own installed contact state.}\end{center}
 
 \heading{Which excitation frequencies drive the peak stress?}
 At each assembly's own governing PCB corner, we integrated the signed modal stresses over disjoint forcing-frequency bands, retaining all cross-correlations between modes. The bands sum to the full mean square. Under base X, the 500--800~Hz band accounted for 95--97\% of the mean square in all three assemblies. Under base Z, the strongest band changed with the mount.
@@ -276,47 +276,53 @@ Snug, nylon screws & 200--350 Hz & 94.7\%\\
 Snug, aluminium screws & 350--500 Hz & 92.1\%\\\bottomrule
 \end{tabular}\end{center}
 
-The full signed-tensor calculation reproduced all nine native peak PCB stresses within 0.1\%. Reducing the modal cutoff from 4 to 3.5~kHz changed those peaks by at most 0.20\%. This checks modal truncation within the 2~mm case model. Page~13 compares the separately tightened 1.5~mm nylon case mesh.
+The full signed-tensor calculation reproduced all nine native peak PCB stresses within 0.1\%. Reducing the modal cutoff from 4 to 3.5~kHz changed those peaks by at most 0.20\%. This checks modal truncation within the 2~mm case model. Page~13 compares separately tightened 1.5~mm meshes for both screw materials. The largest aluminium PCB stress changed by $+1.1\%$, $+3.8\%$ and $-4.4\%$ under X, Y and Z. The finer base-Z peak remained 2.90 times bare.
 
 Peak nickel-strip equivalent stress under base Z also increased, from 38.13~MPa RMS bare to 122.82~MPa with nylon and 138.21~MPa with aluminium. The signed linear startup histories first crossed the local model's assumed 185~MPa yield reference at 70.30--70.31~ms and 61.25--61.26~ms, respectively. The bare history stayed below it over the first 100~ms. These conditional elastic crossings locate a demand for nonlinear analysis. Permanent strain and tearing require the local material and contact histories.
 
 \newpage
-\pageheading{How much did the finer nylon case mesh change the result?}
-We repeated bolt tightening and the prestressed ANSYS eigensolve with 99,818 quadratic PLA elements. The first frequency moved from 294.94 to 293.37~Hz. Its shapes agreed to a modal assurance criterion of 0.993 on 369,584 original assembly nodes. Of the 48 nominal modes, 31 had a one-to-one fine-mesh match above 0.95. The fine basis contained 49 modes through 4~kHz.
+\pageheading{How much does the case mesh change the vibration result?}
+We repeated tightening and the prestressed eigensolve with 99,818 quadratic PLA elements. The first nylon frequency moved from 294.94 to 293.37~Hz and aluminium from 415.42 to 413.00~Hz. First-mode correlations on 369,584 original assembly nodes were 0.993 and 0.996. Of the 48 nominal modes, 31 nylon and 45 aluminium modes matched above 0.95. The finer bases contained 49 and 48 modes through 4~kHz.
 
-\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-nylon-mesh-response.pdf}
-\captionof{figure}{Left, peak PCB Z displacement from independent integration on each native basis. Right, maximum signed through-layer PLA tension during each nine-second seeded motion, including the locked preload. The reference line is the 40.5~MPa printed-coupon mean.}\end{center}
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-refined-layer-tension.pdf}
+\captionof{figure}{Peak signed through-layer PLA tension during each nine-second input, including preload. Bars show all corners and horizontal marks exclude points within 2~mm of a bearing node. Independent integration uses native modes. The reference is the 40.5~MPa printed-coupon mean.}\end{center}
 
 \heading{Board stress depends on the excitation axis}
-Under base X, the 2~mm model gave a peak board stress 8.5\% below bare, while the 1.5~mm calculation came within 0.9\% of bare. The base-X 95th percentile across the board footprint was 9.97 and 9.78~MPa on the two case meshes, compared with 3.54~MPa bare. Under base Z, the board-normal RMS motion changed by 0.62\% on refinement and peak stress changed by 0.66\%. Under base Y, the same quantities changed by $+9.1\%$ and $-6.1\%$.
+For nylon under base X, the 2~mm model gave a peak board stress 8.5\% below bare, while the 1.5~mm calculation came within 0.9\% of bare. The base-X 95th percentile across the board footprint was 9.97 and 9.78~MPa on the two case meshes, compared with 3.54~MPa bare. Under base Z, the board-normal RMS motion changed by 0.62\% on refinement and peak stress changed by 0.66\%. Under base Y, the same quantities changed by $+9.1\%$ and $-6.1\%$.
 
 \begin{center}\small\begin{tabular}{lrrr}\toprule
 Peak PCB equivalent stress [MPa RMS] & Base X & Base Y & Base Z\\\midrule
 Bare, native MAPDL spectrum & 90.32 & 17.85 & 32.48\\
 Nylon, 2~mm, native MAPDL spectrum & 82.68 & 50.21 & 69.37\\
-Nylon, 1.5~mm, integrated from native modes & 89.54 & 47.16 & 69.83\\\bottomrule
+Nylon, 1.5~mm, integrated from native modes & 89.54 & 47.16 & 69.83\\
+Aluminium, 2~mm, native MAPDL spectrum & 79.35 & 48.40 & 98.65\\
+Aluminium, 1.5~mm, integrated from native modes & 80.23 & 50.22 & 94.29\\\bottomrule
 \end{tabular}\end{center}
 
 \heading{Printed tab and middle-pocket contact}
-The highest through-layer tension shifted from 31.17~MPa under base Y on the nominal mesh to 28.94~MPa under base X on the finer mesh, or 77.0\% and 71.5\% of the coupon mean. The fine maximum lay 0.71~mm from a constrained bearing node. Two time integrations agreed within 0.34\% on all twelve fine-mesh tensile peaks. At the fine base-X maximum, the left and middle cells intersected the printed shell in the linear reconstruction. The right cell remained clear. The real loads after contact redistribution require a nonlinear response.
+The largest nylon layer-normal tension changed from 31.17 to 28.94~MPa (77.0\% to 71.5\% of the coupon mean). Aluminium changed from 84.20~MPa under Z to 85.38~MPa under X (207.9\% to 210.8\%). Both fine maxima lay about 0.6--0.7~mm from constrained bearing nodes. Two time integrations agreed within 0.37\% on all fine tensile maxima.
 
-Refinement also shifted the base-Y time by which the locked contact load must redistribute, from about 24.5 to 20.2~ms. Both meshes put the base-Z bound near 11.5~ms. This agreement concerns the fixed contact pattern only. The time of full cell lift-off remains unresolved. The aluminium strength figure on page~9 uses its nominal mesh. Its matched refinement is queued.
+Away from the bearings, finer aluminium reached 42.72~MPa under X and 41.12~MPa under Z. These maxima occurred at one node of the locked middle-pocket face, 39.52~mm from a bearing node. Two incident tetrahedral corner records crossed the layer reference under X and one under Z. Within that region, no tetrahedron had all four corners above it at those instants.
+
+The force-balance bound requires the finer aluminium pocket to redistribute pressure within 6.00, 7.22 and 5.65~ms under X, Y and Z. Its first layer-reference crossings occurred much later, at 183.11, 459.70 and 486.34~ms; the two integrations agreed to one sample. These local elastic demands use the retained contact state. Actual cracking requires a model of the evolving contact and printed material.
+
+Peak M4 longitudinal tension reached 37.4~MPa with finer nylon and 96.2~MPa with finer aluminium, compared with 35.9 and 96.2~MPa on the nominal meshes. At the finer aluminium maximum, bending contributed 91.7~MPa and direct tension 4.53~MPa at the same section point.
 
 \newpage
 \pageheading{Board-normal vibration shifts the highest bond load to the middle cell}
 Under base-Z excitation the largest dynamic force at a cell-to-nickel attachment rose from 30.22~N bare to 40.09~N with nylon case screws and 50.50~N with aluminium, increases of 33\% and 67\%. The right cell's low-Y bond governed on the bare board. The middle cell's high-Y bond governed in both snug mounts. Under base X the largest bond load increased with nylon screws and changed by less than 1\% with aluminium.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/snug-attachment-history.pdf}
-\captionof{figure}{Left, the maximum simultaneous three-component force magnitude at any of the six bonds in each nine-second record. Diamonds give the finer nylon mesh. Right, nominal-mesh signed PCB-X force on the middle cell under base Z, evaluated separately for each assembly at its own largest middle-cell bond load. Opposing bond and pocket forces partially cancel in the total.}\end{center}
+\captionof{figure}{Left, the maximum simultaneous three-component force magnitude at any of the six bonds in each nine-second record. Diamonds give both finer case meshes. Right, nominal-mesh signed PCB-X force on the middle cell under base Z, evaluated separately for each assembly at its own largest middle-cell bond load. Opposing bond and pocket forces partially cancel in the total.}\end{center}
 
 \heading{How much does the case mesh matter?}
-Refining the nylon mesh from 2 to 1.5~mm raised the governing bond force under base X from 74.95 to 85.20~N ($+13.7\%$) and under base Z from 40.09 to 48.77~N ($+21.6\%$). Under Y it stayed near 29.6~N, while the pocket's maximum force increased from 17.98 to 28.94~N. The same bond governed each direction on both meshes. These differences limit a ranking of screw materials before the aluminium refinement.
+Refining the nylon mesh from 2 to 1.5~mm raised the governing bond force under base X from 74.95 to 85.20~N ($+13.7\%$) and under base Z from 40.09 to 48.77~N ($+21.6\%$). Under Y it stayed near 29.6~N, while the pocket's maximum force increased from 17.98 to 28.94~N. The same bond governed each direction on both meshes. On finer aluminium, the peaks changed from 68.95 to 63.22~N under X ($-8.3\%$), 29.52 to 29.45~N under Y ($-0.2\%$), and 50.50 to 53.25~N under Z ($+5.5\%$). The middle cell governed X and Z on both aluminium meshes.
 
 \heading{Where the load goes}
 At the middle cell's governing instant under base Z, its two bonds carried $+34.6$ and $+27.3$~N along PCB~X with nylon screws. The pocket contributed $-49.0$~N, leaving $+12.9$~N across the three interfaces. For aluminium, the corresponding components were $-45.3$, $-19.5$ and $+52.6$~N, giving $-12.2$~N. The modest whole-cell resultant therefore hides substantial demands on each attachment.
 
 \heading{Checks and interpretation}
-The reconstruction uses the signed native modal forces on each complete bonded area and the nominal prestressed mode shapes. For all three assemblies we checked native MAPDL coordinates against independent integration through all 589,825 stations on each axis. A second integration, exact for a linearly interpolated input, changed the nine largest bond loads by at most 1.18\%. A 3.5~kHz mode cutoff changed them by at most 0.92\%. The chart uses native MAPDL histories for the nominal meshes and bare board, with independent integration for the finer nylon mesh. At every station we summed both bonds and the installed middle pocket and checked the result against the cell's independently mass-weighted modal force operator. The largest relative difference over a whole history was below $2.4\times10^{-6}$.
+The reconstruction uses the signed native modal forces on each complete bonded area and the nominal prestressed mode shapes. For all three assemblies we checked native MAPDL coordinates against independent integration through all 589,825 stations on each axis. A second integration, exact for a linearly interpolated input, changed the nine largest bond loads by at most 1.18\%. A 3.5~kHz mode cutoff changed them by at most 0.92\%. The chart uses native MAPDL histories for the nominal meshes and bare board, with independent integration for both finer case meshes. The two integrations agreed within 0.88\% for the aluminium bond peaks. At every station we summed both bonds and the installed middle pocket and checked the result against the cell's independently mass-weighted modal force operator. The largest relative difference over a whole history was below $2.4\times10^{-6}$.
 
 These loads describe intact bonds and contact held at its installed state. Page~10 shows the early pressure redistribution required by the nylon model. Joint strength, actual contact forces after redistribution, and damage in a weld require separate evidence.
 

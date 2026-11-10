@@ -47,16 +47,19 @@ def compare(method):
         dx=(j-1)*.24
         ax.bar(np.arange(3)+dx,loads[j],width=.22,color=color,label=label)
         mid.bar(np.arange(4)+dx,transfer[j],width=.22,color=color)
-    mesh_path=source/'nylon_bond_mesh_comparison.json'
-    mesh=read(mesh_path)
-    fine=[]
-    for i,axis in enumerate('XYZ'):
-        pair=mesh['axes'][axis]
-        assert abs(pair['nominal']['governing_bond']['magnitude_N']-loads[1,i]) < .005*loads[1,i]
-        verified(source/f'snug125_nylon_mesh15_{axis}_bond_independent.json',pair['fine']['inputs'][0])
-        fine.append(pair['fine']['governing_bond']['magnitude_N'])
-    ax.plot(np.arange(3),fine,linestyle='none',marker='D',ms=5.5,mec=COLORS[1],mfc='white',mew=1.3,
-            label='Nylon, finer mesh',zorder=4)
+    mesh_hashes = {}
+    for j, material in enumerate(('nylon','aluminium'), start=1):
+        mesh_path = source / f'{material}_bond_mesh_comparison.json'
+        mesh = read(mesh_path)
+        mesh_hashes[material] = digest(mesh_path)
+        fine = []
+        for i, axis in enumerate('XYZ'):
+            pair = mesh['axes'][axis]
+            assert abs(pair['nominal']['governing_bond']['magnitude_N']-loads[j,i]) < .005*loads[j,i]
+            verified(source/f'snug125_{material}_mesh15_{axis}_bond_independent.json',pair['fine']['inputs'][0])
+            fine.append(pair['fine']['governing_bond']['magnitude_N'])
+        ax.plot(np.arange(3)+(j-1)*.24, fine, linestyle='none', marker='D', ms=5.5,
+                mec=COLORS[j], mfc='white', mew=1.3, label=f'{material.capitalize()}, 1.5 mm', zorder=4)
     ax.set(xticks=range(3),xticklabels=['Base X','Base Y','Base Z'],ylabel='Dynamic force magnitude [N]',
            title='Largest load at a single nickel bond',ylim=(0,95))
     mid.set(xticks=range(4),xticklabels=['Peak bond','Other bond','Pocket','Sum'],ylabel='Signed force along PCB X [N]',
@@ -67,11 +70,12 @@ def compare(method):
         panel.grid(axis='y',alpha=.18)
         panel.set_axisbelow(True)
         panel.spines[['top','right']].set_visible(False)
-    fig.legend(*ax.get_legend_handles_labels(),loc='outside lower center',ncol=4,frameon=False)
+    fig.legend(*ax.get_legend_handles_labels(),loc='outside lower center',ncol=5,fontsize=8,frameon=False)
     out=ROOT/'docs/figures/snug-attachment-history.pdf'
     fig.savefig(out,metadata={'CreationDate':None,'ModDate':None})
     plt.close(fig)
-    write_json(source/'bond_history_comparison.json',dict(method=method,checks=checks,nylon_mesh_check_sha256=digest(mesh_path),
+    write_json(source/'bond_history_comparison.json',dict(method=method,checks=checks,nylon_mesh_check_sha256=mesh_hashes['nylon'],
+               aluminium_mesh_check_sha256=mesh_hashes['aluminium'],
                peak_bond_N_rows_bare_nylon_aluminium_columns_XYZ=loads.tolist(),
                base_Z_simultaneous_middle_cell_X_N_rows_bare_nylon_aluminium=transfer,
                scope='Peak vector magnitude over six bonds and every sample of the given nine-second record. '

@@ -9,6 +9,7 @@ from audit_motion import native_series
 from film_identity import digest, verified, write_json
 from independent_psd import moments, spectrum_input
 from seeded_motion import excitation, FS, integrate, participation
+from stage_snug_fit import input_record
 
 
 def screw_elements(result):
@@ -66,7 +67,9 @@ def run(variant,campaign,axes,*,check_psd=False,check_history=False):
     assert np.array_equal(initial,elements)
     mean=section(static,static.nsets-1,static_positions,'ENS')*1e-6
     assert np.allclose(mean.max(axis=(1,2)),install['history'][-1]['four_screws']['peak_fiber_tension_MPa'])
-    E={'snug125_nylon':3000.,'snug125_aluminium':69000.}[variant]
+    installed = input_record(preload['case'])
+    assert installed['input_sha256'] == install['input_sha256']
+    E = {'nylon': 3000., 'aluminium': 69000.}[installed['material']]
     shapes=np.empty((modal.nsets,4,2,25))
     constitutive=0.
     for k in range(modal.nsets):
@@ -146,7 +149,7 @@ def run(variant,campaign,axes,*,check_psd=False,check_history=False):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('variant',choices=('snug125_nylon','snug125_aluminium'))
+    p.add_argument('variant',choices=('snug125_nylon','snug125_aluminium','snug125_nylon_mesh15','snug125_aluminium_mesh15'))
     p.add_argument('--axes',default='XYZ',choices=('X','Y','Z','XYZ'))
     p.add_argument('--campaign',default='nov08_01')
     checks=p.add_mutually_exclusive_group()
