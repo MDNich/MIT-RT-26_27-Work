@@ -77,6 +77,7 @@ def paired(case,bare,verdict):
     if first_contact is not None:
         pair=rows[max(0,first_contact-1):first_contact+1]
         record['moving_cell_contact_bracket']=dict(native_sets=[r['set'] for r in pair],travel_mm=[r['ux_mm'] for r in pair],
+                                                  cell_force_N=[r['cell_force_N'] for r in pair],
                                                   within_print_screen=pair[-1]['set']<print_stop,within_both_screens=pair[-1]['set']<stop)
     if supported:
         load=first_bracket(supported,'cell_force_N',base[-1]['cell_force_N'],sign)
@@ -225,6 +226,26 @@ def run(case):
     record['initial_contact_search']=registered_gaps(ROOT/'.runtime/archive'/ledger['campaign']/case,sha,spec,
                                                    '3' if suffix=='_m3' else '1.5')
     record['case_mesh_sha256']=spec['mesh_sha256'];record['input_sha256']=spec['input_sha256']
+    onset_file=AUDIT/'directional_first_contact.json'
+    if onset_file.is_file():
+        onset=read(onset_file)
+        mesh_key='fine_local_mesh_sha256' if suffix=='_m15' else 'coarse_local_mesh_sha256'
+        assert onset[mesh_key]==spec['mesh_sha256'] and onset['rigid_target_sha256']==spec['target_sha256']
+        direction='negative_X' if spec['source'].endswith('_minus') else 'positive_X'
+        prediction=onset['directions'][direction]
+        assert prediction['bare_rst_sha256']==record['bare_rst_sha256']
+        grid='native_1.5_mm' if suffix=='_m15' else '3_mm'
+        checks=prediction['meshes'][grid]['checks']
+        interval=[min(v['travel_magnitude_mm'][0] for v in checks.values()),
+                  max(v['travel_magnitude_mm'][1] for v in checks.values())]
+        observed=record['moving_cell_contact_bracket']
+        comparison=dict(prediction_sha256=digest(onset_file),travel_magnitude_mm=interval,
+                        last_saved_magnitude_mm=abs(record['last_converged_travel_mm']))
+        if observed and len(observed['travel_mm'])==2:
+            clear,loaded=map(abs,observed['travel_mm'])
+            comparison.update(native_clear_loaded_magnitudes_mm=[clear,loaded],
+                predicted_interval_inside_native_bracket=(clear<=interval[0] and interval[1]<=loaded))
+        record['initial_geometry_vs_native_contact']=comparison
     record['verified_checkpoints']=[reconcile_checkpoint(p,verdict,ledger)
                                     for p in sorted(AUDIT.glob(case+'_*_checkpoint.json'))]
     if suffix=='_m15':

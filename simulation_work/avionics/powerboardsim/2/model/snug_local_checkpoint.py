@@ -22,15 +22,22 @@ CAMPAIGN='nov08_01'
 
 
 def verify_capture(folder):
-    spec=read(AUDIT/'local_inputs_m15.json')[CASE]
     capture=read(folder/'capture.json')
-    assert capture['case']==CASE and capture['campaign']==CAMPAIGN
-    status=read(ROOT/'.runtime/receipts'/CAMPAIGN/CASE/'status.json')
+    case=capture['case']
+    assert re.fullmatch(r'snug125_(nylon|aluminium)_lateral_friction_locked(_minus)?_pin1_m15',case)
+    assert capture['campaign']==CAMPAIGN
+    spec=read(AUDIT/'local_inputs_m15.json')[case]
+    status=read(ROOT/'.runtime/receipts'/CAMPAIGN/case/'status.json')
+    assert status['case']==case and spec['bare_reference']=='bare_'+spec['source']
     assert status['input_sha256'].lower()==spec['input_sha256'] and capture['source']==status['work']+'\\pull.rst'
     file=folder/'pull.rst'
     verified(file,capture['sha256']);assert file.stat().st_size==capture['bytes']
-    verified(INPUTS/CASE/'model.inp',spec['input_sha256'])
+    verified(INPUTS/case/'model.inp',spec['input_sha256'])
     text=(folder/'solve.out').read_text(errors='replace')
+    from snug_local_core_trial import verify_production_runtime
+    job=INPUTS/case/'local_job.json'
+    verified(job,spec['spec_sha256'])
+    verify_production_runtime(case,CAMPAIGN,read(job),status,text)
     pattern=r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED[^\r\n]*[\r\n]+\s*\*\*\* TIME\s*=\s*([\d.Ee+\-]+)'
     events=list(re.finditer(pattern,text))
     steps=np.array([list(map(int,m.groups()[:2])) for m in events]);times=np.array([float(m[3]) for m in events])
@@ -167,11 +174,14 @@ def contact_history(raw,rows):
 
 
 def audit(folder):
-    source=ROOT/'.runtime/local_inputs/lateral_friction_locked'
-    catalog=read(ROOT/'validation/local_inputs.json')['lateral_friction_locked']['files']
+    spec,capture,raw=verify_capture(folder)
+    case=capture['case']
+    source=ROOT/'.runtime/local_inputs'/spec['source']
+    catalog=read(ROOT/'validation/local_inputs.json')[source.name]['files']
     for name in ('mesh.json','config.json','model.inp'):verified(source/name,catalog[name])
     config=read(source/'config.json'); mesh=read(source/'mesh.json')
-    spec,capture,raw=verify_capture(folder)
+    sign=config['sign']
+    assert sign==(-1 if source.name.endswith('_minus') else 1)
     prepare_native_fields(folder,capture,raw,config,mesh)
     moving,pose=movements(folder,capture,raw,config,mesh)
     rows,balance=force_balance(folder,capture,raw,config,source,moving)
@@ -179,7 +189,7 @@ def audit(folder):
     contacts=contact_history(raw,rows)
     print('Both contact pairs passed',flush=True)
     forces=np.array([r['cell_fx_N'] for r in rows]);travel=np.array([r['ux_mm'] for r in rows])
-    deck=(INPUTS/CASE/'model.inp').read_text()
+    deck=(INPUTS/case/'model.inp').read_text()
     nt,history,first,serr,berr,axerr=material_history(raw,deck,np.arange(len(rows)),travel,local=True,forces=forces)
     assert nt==read(AUDIT/'local_mesh15_preflight.json')['native_counts']['tetrahedra']
     baseline,bare=series(spec['bare_reference'])
@@ -200,18 +210,21 @@ def audit(folder):
         measurements.append(row)
         if stop is None and br['time']>=config['pull_start_time']:
             eligible.append(dict(set=k+1,ux_mm=br['ux_mm'],cell_force_N=br['cell_fx_N']))
-    assert eligible and eligible[-1]['ux_mm']>0
-    last=eligible[-1]
-    equal_load=first_bracket(eligible,'cell_force_N',bare[-1]['cell_force_N'],1)
-    bare_at=first_bracket(bare,'ux_mm',last['ux_mm'],1)
-    assert bare_at is not None
-    result=dict(case=CASE,campaign=CAMPAIGN,completed=False,checkpoint=folder.name,
+    assert sign*bare[-1]['ux_mm']>0 and sign*bare[-1]['cell_force_N']>0
+    equal_load=first_bracket(eligible,'cell_force_N',bare[-1]['cell_force_N'],sign)
+    last_common=None
+    if eligible and sign*eligible[-1]['ux_mm']>1e-9:
+        last=eligible[-1]
+        bare_at=first_bracket(bare,'ux_mm',last['ux_mm'],sign)
+        assert bare_at is not None
+        last_common=dict(cased=last,bare=bare_at)
+    result=dict(case=case,campaign=CAMPAIGN,completed=False,checkpoint=folder.name,
                 rst_sha256=capture['sha256'],result_bytes=capture['bytes'],input_sha256=spec['input_sha256'],
                 listing_sha256=digest(folder/'solve.out'),monitor_sha256=digest(folder/'pull.mntr'),capture_sha256=digest(folder/'capture.json'),
                 converged_sets=raw.nsets,final_converged_loadstep_substep=raw._resultheader['ls_table'][-1,:2].tolist(),
                 pose_check=pose,equilibrium=balance,case_tetrahedra=nt,constitutive_errors=dict(PLA=serr,beam=berr,beam_area=axerr),
                 states=measurements,first_print_crossings=first,first_excluded_set=stop,first_loaded_moving_cell_bracket=touch,
-                equal_bare_endpoint_load=dict(bare=bare[-1],cased=equal_load),last_common_travel=dict(cased=last,bare=bare_at),
+                equal_bare_endpoint_load=dict(bare=bare[-1],cased=equal_load),last_common_travel=last_common,
                 scope='Verified stationary copy of completed MAPDL increments during the ongoing lateral pull. This record '
                       'does not release the solver job or its dependencies. Comparisons stop at the first printed-material '
                       'reference crossing or 0.05 mm loaded-corner penetration screen. Forces are for the prescribed fixture.')
@@ -221,7 +234,11 @@ def audit(folder):
     result['bare_rst_sha256']=baseline['rst_sha256']
     result['initial_contact_search']=registered_gaps(folder,{'solve.out':result['listing_sha256'],
                                             'pull.rst':capture['sha256']},spec,'1.5')
-    write_json(AUDIT/(CASE+'_'+folder.name+'_checkpoint.json'),result)
+    destination=AUDIT/(case+'_'+folder.name+'_checkpoint.json')
+    if destination.exists():
+        assert read(destination)==result, 'Checkpoint differs from its existing audit'
+    else:
+        write_json(destination,result)
     print('Last matched travel',result['last_common_travel'],'equal load',equal_load,'contact',touch,flush=True)
 
 

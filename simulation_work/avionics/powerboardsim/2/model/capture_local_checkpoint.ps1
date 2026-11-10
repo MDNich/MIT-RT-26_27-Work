@@ -1,12 +1,22 @@
-# Copy the active forward pull without issuing a solver command. The destination
-# is the study's Mac-backed checkpoint directory, accessible through Parallels.
+# Read one stationary result prefix from an ongoing primary local pull.
+param([ValidatePattern('^snug125_(nylon|aluminium)_lateral_friction_locked(_minus)?_pin1_m15$')]
+      [string]$Case='snug125_nylon_lateral_friction_locked_pin1_m15')
 $ErrorActionPreference='Stop'
-$name='snug125_nylon_lateral_friction_locked_pin1_m15'
-$w='C:\Temp\PBCaseStudy\nov08_01\'+$name
-$base=Join-Path (Split-Path $PSScriptRoot) '.runtime\qa\snug125\forward-readback'
-if (-not (Test-Path $base -PathType Container)) { throw 'Checkpoint root missing' }
+$name=$Case
+$root=Split-Path $PSScriptRoot
+$w=Join-Path 'C:\Temp\PBCaseStudy\nov08_01' $name
+$receipt=Join-Path $root ".runtime\receipts\nov08_01\$name\status.json"
+if (!(Test-Path -LiteralPath $receipt -PathType Leaf)) {throw 'The requested pull has no matching live case receipt'}
+$status=Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json
+$spec=(Get-Content -LiteralPath "$root\validation\snug125\local_inputs_m15.json" -Raw | ConvertFrom-Json).PSObject.Properties[$name].Value
+if ($null -eq $spec -or $status.case -ne $name -or $status.phase -ne 'solving' -or
+    $status.work -ne $w -or $status.input_sha256 -ne $spec.input_sha256) {throw 'The requested pull has no matching live case receipt'}
+$qa=Join-Path $root '.runtime\qa\snug125'
+$base=if ($name -eq 'snug125_nylon_lateral_friction_locked_pin1_m15') {Join-Path $qa 'forward-readback'} else {Join-Path $qa "directional-readback\$name"}
+New-Item -ItemType Directory -Path $base -Force | Out-Null
 $p=$w+'\pull.rst';$mon=$w+'\pull.mntr';$before=Get-Content $mon -Tail 1
 $col=$before.Trim() -split '\s+';$key='ls'+$col[0]+'_ss'+$col[1]
+if ($col.Count -lt 9 -or $col[0] -ne '3' -or $col[1] -notmatch '^[1-9][0-9]*$') {throw 'No completed lateral increment in the monitor'}
 $dir=Join-Path $base $key
 if(Test-Path $dir){throw 'Existing substep snapshot or staging directory'}
 New-Item -ItemType Directory -Path $dir|Out-Null
