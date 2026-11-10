@@ -220,6 +220,12 @@ def jobs():
         force_repeat=snug_dir/'aluminium_force_repeat_input.json'
         if force_repeat.is_file():
             yield read(force_repeat)['case'],''
+        # Check the common native side load on all three assemblies before the longer mesh refinements.
+        board_pulls=snug_dir/'whole_board_pull_inputs.json'
+        if board_pulls.is_file():
+            for case,meta in read(board_pulls).items():
+                yield meta['parent'],''
+                yield case,meta['parent']
         aluminium=snug_dir/'aluminium_refinement_inputs.json'
         if aluminium.is_file():
             for case,spec in read(aluminium).items():
@@ -232,11 +238,6 @@ def jobs():
         if coarse_basis.is_file():
             entry=read(coarse_basis)
             yield entry['case'],entry['parent']
-        board_pulls=snug_dir/'whole_board_pull_inputs.json'
-        if board_pulls.is_file():
-            for case,meta in read(board_pulls).items():
-                yield meta['parent'],''
-                yield case,meta['parent']
         for file in ('aluminium_projection_input.json','aluminium_cylinder_input.json'):
             registration=snug_dir/file
             if registration.is_file():

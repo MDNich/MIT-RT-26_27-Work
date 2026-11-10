@@ -645,7 +645,31 @@ Over the full 31.25~ms board-normal interval, the largest middle-cell Z travel w
 \heading{What the startup calculation resolves}
 The calculation retains the native prestressed modes and adds five groups of static displacement fields driven by unit pocket forces, spacer forces and three base inertia loads. The original pocket contains five loaded integration points on nominal nylon, ten on finer nylon and one on aluminium. All three models retain 2\% damping in their installed modes. Removing a group of displacement fields changed the pocket-force histories by at most 2.4\% in relative RMS norm. An independent matrix-exponential solution located changes of contact within each input interval and checked the implicit time integration.
 
-At the matched 24.70~ms base-Y sample, we identified an intersecting case triangle in each model. All three triangles had been unloaded at bolt lock. Forces at those new locations could change the motion. The surface checks give the geometry at the calculated positions. Contact forces on newly engaged faces, the effects of actual print dimensions and any damage after recontact remain unresolved.
+At the matched 24.70~ms base-Y sample, we identified an intersecting case triangle in each model. All three triangles had been unloaded at bolt lock. Page~32 evaluates the additional forces at the prescribed pose. The surface checks give the geometry at the calculated positions. Coupled reactions on newly engaged faces, the effects of actual print dimensions and any damage after recontact remain unresolved.
+
+\clearpage
+\pageheading{Where does the moving battery reach a new contact point?}
+At 24.70~ms under base-Y excitation, the nylon models placed the newly reached contact points near the \textbf{high-Y end} of the middle battery. With aluminium screws the twelve new points lay \textbf{0.6--14.0~mm from the low-Y end}. The locations below are contact integration points on the cylindrical pocket wall. A triangle can intersect the cell between those points.
+
+\begin{center}\includegraphics[width=\linewidth]{figures/snug-new-contact-sites.pdf}
+\captionof{figure}{Each symbol is one newly reached integration point on the deformed FE surfaces at the common base-Y instant. Axial distance is measured from the low-Y end of the undeformed cylindrical cell wall. Pressure uses the ANSYS normal stiffness with the assembly held at the calculated pose.}\end{center}
+
+\heading{How much force would those points carry at that pose?}
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+& Nylon, 2 mm & Nylon, 1.5 mm & Aluminium, 2 mm\\\midrule
+New FE points inside the cell & 3 & 7 & 12\\
+Largest radial penetration [$\mu$m] & 0.095 & 0.222 & 0.300\\
+Resultant on the case [N] & 0.354 & 1.495 & 5.775\\
+Points inside with STEP curvature & 39 & 68 & 80\\\bottomrule
+\end{tabular}\end{center}
+The original seated points all had zero force at this instant in the independent vibration calculation. We held its displacements fixed and evaluated the force required by the penalty law on the new points. The aluminium calculation used the normal stiffness from the matching nylon mesh. Its value at the original aluminium contact agreed with the aluminium element matrix to better than one part per million. If the new forces act on the assembly, its displacements can change. The fourfold change in the nylon resultant with mesh refinement limits the accuracy of a force estimate.
+
+\heading{Geometry and force checks}
+For each of the three Gauss points on every middle-pocket triangle, we intersected a radial ray with the deformed quadratic cylindrical cell surface. Repeating the calculation with the original STEP curvatures and the same displacements increased the counts in all three models. The axial rim and flat cell ends are outside this radial calculation. On aluminium the triangle intersection identified on page~31 was at the low-Y rim. All three points of that case triangle lay beyond the cylindrical barrel; the twelve barrel contacts came from other triangles.
+
+At bolt lock the FE calculation identified all five loaded points on nominal nylon and all ten on finer nylon. Multiplying penetration by the native normal contact stiffness and the area represented by each point reproduced the locked pocket resultants of 0.594 and 0.572~N to within 0.000002~N. The calculation matched the loaded faces at 15 of the 16 saved nylon states. At the remaining tightening station it missed one edge face and gave 7.946~N against the native 8.323~N. The ANSYS normal stiffness and force records are defined in the \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_CONTA174.html}{CONTA174 element output table}.
+
+Under base Z, the first previously unloaded cylindrical point entered the mesh at 5.91~ms with nominal nylon, 10.07~ms on finer nylon and 6.33~ms with aluminium. The later gaps on page~31 use a trajectory that omits the forces at those new points. They quantify the geometry of that trajectory; the actual battery motion through recontact remains open.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
