@@ -242,6 +242,76 @@ def audit(folder):
     print('Last matched travel',result['last_common_travel'],'equal load',equal_load,'contact',touch,flush=True)
 
 
+def audit_terminal(folder):
+    """Check the original process exit and RST set inventory before POST1 publishes a partial verdict."""
+    from datetime import datetime
+    from snug_local_core_trial import verify_production_runtime
+    stamp = read(folder/'capture.json')
+    assert stamp['case'] == CASE and stamp['campaign'] == CAMPAIGN
+    receipt = ROOT/'.runtime/receipts'/CAMPAIGN/CASE
+    source = ROOT/'.runtime/local_inputs/lateral_friction_locked'
+    spec = read(AUDIT/'local_inputs_m15.json')[CASE]
+    verified(receipt/'observed_solver_exit.json',stamp['exit_sha256'].lower())
+    exit_record = read(receipt/'observed_solver_exit.json')
+    status = read(receipt/'status.json')
+    assert exit_record['case'] == status['case'] == CASE and exit_record['exit_code'] != 0
+    assert exit_record['input_sha256'] == status['input_sha256'].lower() == spec['input_sha256']
+    assert stamp['source'] == status['work'] + chr(92) + 'pull.rst'
+    path = folder/'pull.rst'
+    verified(path, stamp['rst_sha256'])
+    assert stamp['bytes'] == path.stat().st_size
+    verified(folder/'solve.out', stamp['listing_sha256'].lower())
+    verified(folder/'pull.mntr', stamp['monitor_sha256'].lower())
+    verified(INPUTS/CASE/'local_job.json',spec['spec_sha256'])
+    verified(INPUTS/CASE/'model.inp',spec['input_sha256'])
+    listing = (folder/'solve.out').read_text(errors='replace')
+    assert re.search(r'REASON FOR TERMINATION[^\n]*UNCONVERGED SOLUTION',listing) and 'RUN COMPLETED' in listing
+    cores = verify_production_runtime(CASE,CAMPAIGN,read(INPUTS/CASE/'local_job.json'),status,listing)
+    pattern = r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED[^\r\n]*[\r\n]+\s*\*\*\* TIME\s*=\s*([\d.Ee+\-]+)'
+    events = re.findall(pattern,listing)
+    steps = np.array([[int(ls),int(ss)] for ls,ss,_ in events])
+    times = np.array([float(t) for _,_,t in events])
+    raw = reader.read_binary(str(path))
+    terminal = converged_prefix(raw,steps,times,True)
+    assert terminal == 1
+    check_element_tables(path,raw,len(steps))
+    monitor = [line.split() for line in (folder/'pull.mntr').read_text().splitlines()
+               if re.match(r'^\s*\d+\s+\d+\s+\d+\s+',line)]
+    assert np.array_equal(steps,[[int(row[0]),int(row[1])] for row in monitor])
+    np.testing.assert_allclose(raw.time_values[:len(steps)],[float(row[6]) for row in monitor],rtol=0,atol=5.1e-5)
+    pilot = read(source/'mesh.json')['pilot']
+    cfg = read(source/'config.json')
+    prefix_files = sorted(AUDIT.glob(CASE+'_ls*_checkpoint.json'))
+    assert prefix_files
+    checks = []
+    force = []
+    travel = cfg['sign']*cfg['displacement_mm']*np.clip(raw.time_values[:len(steps)]-cfg['pull_start_time'],0,1)
+    for i in range(len(steps)):
+        values, ids, dofs = raw.nodal_reaction_forces(i)
+        force.append(float(values[(ids==pilot)&(dofs==1)].sum()))
+    for check in prefix_files:
+        known=read(check)
+        assert known['case']==CASE and known['input_sha256']==spec['input_sha256'] and not known['completed']
+        n=known['converged_sets']
+        np.testing.assert_allclose(force[:n],[r['cell_force_N'] for r in known['states']],rtol=1e-7,atol=1e-5)
+        np.testing.assert_allclose(travel[:n],[r['travel_mm'] for r in known['states']],rtol=0,atol=1e-7)
+        assert np.array_equal(steps[:n],[[r['loadstep'],r['substep']] for r in known['states']])
+        checks.append(dict(checkpoint=check.name,sha256=digest(check),matching_states=n))
+    elapsed=(datetime.fromisoformat(exit_record['exit_utc'])-datetime.fromisoformat(exit_record['native_start_utc'])).total_seconds()
+    record=dict(case=CASE,campaign=CAMPAIGN,input_sha256=spec['input_sha256'],observed_exit_sha256=stamp['exit_sha256'].lower(),
+                original_exit=exit_record['exit_code'],solver_wall_seconds=elapsed,rst_sha256=stamp['rst_sha256'],result_bytes=stamp['bytes'],
+                listing_sha256=stamp['listing_sha256'].lower(),monitor_sha256=stamp['monitor_sha256'].lower(),runtime=cores,
+                RST_sets=raw.nsets,converged_states=len(steps),last_converged_step=steps[-1].tolist(),
+                last_converged_time=float(raw.time_values[len(steps)-1]),last_imposed_travel_mm=float(travel[-1]),
+                excluded_terminal_set=raw._resultheader['ls_table'][-1,:2].tolist(),matching_checkpoints=checks,
+                scope='Closed original native file and solver-exit inventory. The failed terminal state is excluded. '
+                      'This verifies saved set identities and earlier force and travel histories; material and complete fixture audits retain their own scope.')
+    write_json(AUDIT/(CASE+'_termination.json'),record)
+    print(len(steps),steps[-1],travel[-1],elapsed,flush=True)
+
+
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('folder',type=Path)
-    audit(p.parse_args().folder.resolve())
+    p.add_argument('--terminal',action='store_true',help='Use the closed result with its original observed structural exit.')
+    args=p.parse_args()
+    (audit_terminal if args.terminal else audit)(args.folder.resolve())

@@ -119,7 +119,7 @@ def contact_columns(d, free, transfer, parts):
     return (B0 + transfer.T @ B0)[free].tocsc()
 
 
-def study(branch, *, check_left_load=False):
+def study(branch, *, check_left_load=False, screw_preload=False):
     faces_file = AUDIT / f"{branch}_pocket_face_unloading.json"
     seats_file = AUDIT / f"{branch}_spacer_bearing.json"
     faces, seats = read(faces_file), read(seats_file)
@@ -167,6 +167,10 @@ def study(branch, *, check_left_load=False):
     ru = symmetric_product(K, u) - loads
     assert np.linalg.norm(ru, axis=0).max() < 2e-7
     ids = [label for _, _, label in parts]
+    if screw_preload:
+        from snug_screw_preload import check
+        check(branch, raw, d, free, transfer, ids, k, g, C, Y, B, K, cell, u[:, -3:], seats, identity)
+        return
     if check_left_load:
         from snug_cellpush_geometry import check
         check(branch, raw, d, free, transfer, ids, k, g, C, dload[:, 0], Y, u[:, -3], identity)
@@ -242,6 +246,8 @@ def study(branch, *, check_left_load=False):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("branch", choices=("snug125_nylon", "snug125_nylon_mesh15", "snug125_aluminium"))
-    p.add_argument("--check-left-load", action="store_true", help="Sweep the middle-pocket integration points through the queued left-cell load.")
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument("--screw-preload", action="store_true", help="Check pocket and tab bearing during equal tightening of the four M4 shanks.")
+    mode.add_argument("--check-left-load", action="store_true", help="Sweep the middle-pocket integration points through the queued left-cell load.")
     args = p.parse_args()
-    study(args.branch, check_left_load=args.check_left_load)
+    study(args.branch, check_left_load=args.check_left_load, screw_preload=args.screw_preload)
