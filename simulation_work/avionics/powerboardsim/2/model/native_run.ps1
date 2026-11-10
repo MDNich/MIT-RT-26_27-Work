@@ -205,6 +205,20 @@ try {
         }
         $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
     }
+    if ($Case.StartsWith('shellwave_')){
+        if ($Case -notmatch '^shellwave_(snug125_(?:nylon|aluminium))_(?:free|contact)_pilot_s4$'){throw 'Unknown whole-shell transient pilot'}
+        $branch=$Matches[1]
+        $registry="$share\validation\snug125\${branch}_shellwave_pilot_s4.json"
+        $pre=Get-Content "$share\validation\snug125\${branch}_shellwave_pilot_s4_preflight.json" -Raw|ConvertFrom-Json
+        $pub=(Get-Content $registry -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+        if ($pre.registry_sha256 -ne (Get-FileHash $registry).Hash -or $pub.case -ne $Case -or $pub.campaign -ne $Campaign -or
+            $pub.spacing_mm -ne 1.25 -or $pub.final_sample -ne 64 -or $Cores -ne 2 -or $Parent -or
+            $pub.step_sha256 -ne '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef'){throw 'Transient pilot provenance mismatch'}
+        foreach ($entry in $pub.files.PSObject.Properties){
+            if ((Get-FileHash -LiteralPath (Join-Path $work $entry.Name)).Hash -ne $entry.Value){throw 'Transient pilot input checksum failed'}
+        }
+        $argsList=@('-b','nolist','-s','noread','-smp','-np',"$Cores",'-p','ansys','-j','file','-i','model.inp','-o','solve.out')
+    }
     if ($Case.StartsWith('replay_')){
         $pub=(Get-Content "$share\validation\contact_replay_inputs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
         if ($pub.case -ne $Case -or $pub.campaign -ne $Campaign -or $Cores -ne 2){throw 'Wrong transient replay case'}

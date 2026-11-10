@@ -239,6 +239,11 @@ def jobs():
                 for name,spec in read(registry).items():
                     parent=f'shell_{branch}_free_v2' if spec['contact'] else branch+'_basis'
                     yield name,parent
+        for branch in branches:
+            name=branch+'_shellwave_pilot_s4'
+            if (snug_dir/(name+'_preflight.json')).is_file():
+                for case,spec in read(snug_dir/(name+'.json')).items():
+                    yield case,spec['static_fixture']
         coarse=snug_dir/'local_inputs_m3.json'
         if coarse.is_file() and (snug_dir/'local_rigid_side_clearance_m3.json').is_file():
             for case in read(coarse):
@@ -424,6 +429,8 @@ def damage_reference_ready(spec):
 
 
 def result_path(case):
+    if case.startswith('shellwave_'):
+        return ROOT/'validation/shellwave_pilot'/(case+'.json')
     if case.startswith('shell_snug125_'):
         return ROOT/'validation/shell_equilibrium'/(case+'.json')
     if case.startswith('replay_'):
@@ -499,6 +506,9 @@ def run():
                 and (ROOT/'validation/snug125/local_rigid_side_clearance_m3.json').is_file()):
             controls.append(('snug_local_mesh3_shape_v1','pre.inp','snug125/local_mesh3_preflight',
                              'flush_install_check.ps1','snug_local_preflight.py'))
+        if (case=='snug125_aluminium_mesh15_static' or case.startswith('shellwave_')) and not (RECEIPTS/case/'dispatch.json').exists():
+            controls.append(('snug_transient_control_v1','control.inp','snug125/transient_control',
+                             'actuator_control.ps1','snug_transient_control.py'))
         if controls:
             # These short checks are serial native jobs; a known numerical rejection only
             # holds the installation branch. An ambiguous live job blocks further dispatch.
@@ -536,6 +546,10 @@ def run():
         if final.exists() or partial.exists() or review.exists() or (ROOT/'validation/review_global'/(case+'.json')).exists():continue
         if parent and not result_path(parent).is_file() and not (ROOT/'validation/partial_local'/(parent+'.json')).is_file():
             log('Parent unaccepted: '+case);continue
+        if case.startswith('shellwave_'):
+            free=case.replace('_contact_pilot_','_free_pilot_')
+            if not (ROOT/'validation/snug125/transient_control.json').is_file() or (free!=case and not result_path(free).is_file()):
+                continue
         if case.startswith('shell_snug125_') and (ROOT/'validation/review_shell_equilibrium'/(case+'.json')).is_file():
             continue
         if case.startswith('patch_snug125_') and (ROOT/'validation/review_contact_patch'/(case+'.json')).is_file():
@@ -597,7 +611,7 @@ def run():
                 branch=case.removesuffix('_enforced').split('_motion_')[0]
                 stage(branch,CAMPAIGN)
             flags=['-Case',case,'-Campaign',CAMPAIGN]
-            if case.startswith(('patch_','replay_','shell_snug125_')):
+            if case.startswith(('patch_','replay_','shell_snug125_','shellwave_')):
                 flags.extend(['-Cores','2'])
             elif parent and not local:
                 flags.extend(['-Parent',parent])
@@ -622,7 +636,9 @@ def run():
         audit='audit_board_surface.py' if case.endswith('_surf1_static') else ('audit_install.py' if case.endswith(('_approach1','_seatfaces1')) else ('audit_local.py' if local else 'audit_global.py'))
         if '_default_' in case and case.endswith('_static'):
             audit='audit_default_install.py'
-        if case.startswith('shell_snug125_'):
+        if case.startswith('shellwave_'):
+            audit='audit_snug_transient_pilot.py'
+        elif case.startswith('shell_snug125_'):
             audit='audit_snug_shell.py'
         elif case.startswith('patch_'):
             audit='audit_contact_patch.py'

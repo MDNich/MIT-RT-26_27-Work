@@ -19,18 +19,24 @@ def load_array(name,shape,filename):
     dims=','.join(map(str,shape))
     return [f'*dim,{name},array,{dims}',f'*vread,{name}(1),{filename},dat,,IJK,{dims}','(E24.16)']
 
-def tables(folder,nodes,time,modal,shapes,acceleration):
+def tables(folder,nodes,time,modal,shapes,acceleration,*,acceleration_time=None):
     nt,ndof=modal.shape
     assert shapes.shape==(len(nodes),3,ndof) and np.all(np.diff(nodes)>0) and np.all(np.diff(time)>0)
     files={}
     arrays=[('pbt',time),('pbn',nodes),('pbq',modal),('pba',acceleration)]
+    at=time if acceleration_time is None else acceleration_time
+    assert len(time)==nt and len(acceleration)==len(at) and np.all(np.diff(at)>0)
+    if acceleration_time is not None:
+        assert at[0]==time[0] and at[-1]==time[-1]
+        arrays.append(('pbat',at))
     arrays += [('shape'+a,shapes[:,i,:].T) for i,a in enumerate('xyz')]
     lines=[]
     for name,value in arrays:
         files[name+'.dat']=data_file(folder,name,value)
         lines+=load_array(name,value.shape,name)
-    lines += [f'*dim,baseacc,table,{nt},1,1,time',f'*vlen,{nt}',
-              '*vfun,baseacc(1,0),copy,pbt(1)',f'*vlen,{nt}','*vfun,baseacc(1,1),copy,pba(1)',
+    clock='pbt' if acceleration_time is None else 'pbat'
+    lines += [f'*dim,baseacc,table,{len(at)},1,1,time',f'*vlen,{len(at)}',
+              f'*vfun,baseacc(1,0),copy,{clock}(1)',f'*vlen,{len(at)}','*vfun,baseacc(1,1),copy,pba(1)',
               f'*dim,dispbuf,array,{nt},{len(nodes)}']
     for a in 'xyz':
         label='cut'+a
