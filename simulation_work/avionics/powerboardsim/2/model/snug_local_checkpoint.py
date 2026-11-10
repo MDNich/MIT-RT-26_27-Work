@@ -298,10 +298,32 @@ def audit_terminal(folder):
         assert np.array_equal(steps[:n],[[r['loadstep'],r['substep']] for r in known['states']])
         checks.append(dict(checkpoint=check.name,sha256=digest(check),matching_states=n))
     elapsed=(datetime.fromisoformat(exit_record['exit_utc'])-datetime.fromisoformat(exit_record['native_start_utc'])).total_seconds()
+    # The original moving-support POST1 closed before the replacement table readback.
+    # Apply the existing fixture tolerances to each physical reaction set.
+    from local_equilibrium import movement_table
+    moving = folder/'moving_supports.csv'
+    moving_log = folder/'moving.out'
+    assert re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',moving_log.read_text(errors='replace'))
+    balance = recover(path,source,movement_table(moving),True)
+    assert len(balance) == len(steps)
+    failed = []
+    for row,expected_force,expected_ux in zip(balance,force,travel,strict=True):
+        assert abs(row['ux_mm']-expected_ux)<1e-7 and abs(row['cell_fx_N']-expected_force)<1e-5
+        x,y,z = (row['force_N_'+ax] for ax in 'xyz')
+        moment = np.linalg.norm([row['moment_cell_Nmm_'+ax] for ax in 'xyz'])
+        scale = max(1,abs(expected_force))
+        rel_moment = moment/max(1,abs(expected_force)*42.5)
+        if abs(x)/scale >= .01 or abs(y) >= .1 or abs(z) >= .2 or (row['loadstep']>=3 and rel_moment>=.01):
+            failed.append(dict(native_set=row['native_set'],travel_mm=row['ux_mm'],force_residual_N=[x,y,z],
+                               relative_lateral_imbalance=abs(x)/scale,relative_pull_moment=rel_moment))
+    prefix=failed[0]['native_set']-1 if failed else len(balance)
     record=dict(case=CASE,campaign=CAMPAIGN,input_sha256=spec['input_sha256'],observed_exit_sha256=stamp['exit_sha256'].lower(),
                 original_exit=exit_record['exit_code'],solver_wall_seconds=elapsed,rst_sha256=stamp['rst_sha256'],result_bytes=stamp['bytes'],
                 listing_sha256=stamp['listing_sha256'].lower(),monitor_sha256=stamp['monitor_sha256'].lower(),runtime=cores,
                 RST_sets=raw.nsets,converged_states=len(steps),last_converged_step=steps[-1].tolist(),
+                original_moving_supports_sha256=digest(moving),moving_listing_sha256=digest(moving_log),
+                force_balance_violations=failed,first_contiguous_balance_pass_states=prefix,
+                last_travel_before_balance_violation_mm=balance[prefix-1]['ux_mm'] if prefix else None,
                 last_converged_time=float(raw.time_values[len(steps)-1]),last_imposed_travel_mm=float(travel[-1]),
                 excluded_terminal_set=raw._resultheader['ls_table'][-1,:2].tolist(),matching_checkpoints=checks,
                 scope='Closed original native file and solver-exit inventory. The failed terminal state is excluded. '
