@@ -47,9 +47,23 @@ def control():
     assert first_overlap(rest,modes,trace*0.)['first_intersecting_sample'] is None
 
 
-def run(variant,campaign,method,axis='Z'):
+def scan_path(variant,axis,method,cutoff):
+    suffix='' if cutoff is None else f'_{cutoff}Hz'
+    return AUDIT/f'{variant}_outer_onset_{axis}_{method}{suffix}.json'
+
+
+def apply_cutoff(q,freq,cutoff):
+    if cutoff is None:
+        return {}
+    keep=freq<=cutoff
+    assert cutoff>0 and np.any(keep) and not np.all(keep) and np.all(np.diff(freq)>=0)
+    q[:,~keep]=0.
+    return dict(cutoff_Hz=cutoff,retained_modes=int(keep.sum()),available_modes=len(freq))
+
+
+def run(variant,campaign,method,axis='Z',*,cutoff=None):
     control()
-    replay_path=AUDIT/(variant.replace('_mesh15','')+'_replay_window.json')
+    replay_path=AUDIT/(variant.removesuffix('_mesh15').removesuffix('_mesh3')+'_replay_window.json')
     horizon=read(replay_path)['replay_last_sample']
     basis=variant+'_basis'
     proof,folder,rst=source(basis,campaign)
@@ -67,6 +81,7 @@ def run(variant,campaign,method,axis='Z'):
         assert np.allclose(forcing[:,0],samples/FS,rtol=0,atol=5.1e-13)
         q,checks=refined_coordinates('linear_input_exact',forcing[:,1],samples,rst.time_values,
                                      participation(log.read_text(errors='replace'),axis))
+    frequency_scope=apply_cutoff(q,rst.time_values,cutoff)
     cover,cells=contact_solids(rst)
     solids=[cover]+[cells.extract_cells(cells.cell_data['ansys_material_type']==mat) for mat in (176,187)]
     shapes=[outer_faces(rst,[mat]) for mat in (850,176,187)]
@@ -87,7 +102,7 @@ def run(variant,campaign,method,axis='Z'):
                 witness.append(dict(sample=k,subdivisions=gaps))
             result['reconstructed_skin_checks']=witness
         rows[cell]=result
-    write_json(AUDIT/(variant+'_outer_onset_'+axis+'_'+method+'.json'),dict(variant=variant,campaign=campaign,
+    write_json(scan_path(variant,axis,method,cutoff),dict(**frequency_scope,variant=variant,campaign=campaign,
         method=method,base_axis=axis,basis_rst_sha256=proof['rst_sha256'],input_sha256=motion['input_sha256'],
         window_sha256=digest(replay_path),samples=len(q),sample_rate_Hz=FS,quadratic_face_counts=list(map(len,shapes)),
         checks=checks,cells=rows,scope='Registered outer cells and full quadratic case exterior on the fixed-contact '
@@ -97,9 +112,10 @@ def run(variant,campaign,method,axis='Z'):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('variant',choices=('snug125_nylon','snug125_aluminium','snug125_nylon_mesh15','snug125_aluminium_mesh15'))
+    parser.add_argument('variant',choices=('snug125_nylon','snug125_aluminium','snug125_nylon_mesh15','snug125_aluminium_mesh15','snug125_nylon_mesh3'))
     parser.add_argument('--campaign',default='nov08_01')
     parser.add_argument('--method',choices=('exact','native'),default='native')
     parser.add_argument('--axis',choices=('X','Y','Z'),default='Z')
+    parser.add_argument('--cutoff',type=int,choices=(3500,))
     args=parser.parse_args()
-    run(args.variant,args.campaign,args.method,args.axis)
+    run(args.variant,args.campaign,args.method,args.axis,cutoff=args.cutoff)

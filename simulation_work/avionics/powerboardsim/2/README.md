@@ -34,6 +34,10 @@ In the nine-second base-X vibration record, the left cell moved laterally by up 
 
 At a sideways load of 8.54 N toward the middle cell, the bare cell moved 0.500 mm. The snug case with nylon screws moved about 0.034 mm, interpolated between saved equilibria at 0.02875 and 0.04000 mm. At 0.206875 mm travel the cased fixture required 109.53 N versus 7.23 N bare. The nylon result covers the first 12 converged pull increments and assumes tied screw-head footprints. At the last audited station 26.68 MPa of the peak 27.64 MPa nylon screw tension came from bending. [Force curve and load paths, page 19](output/pdf/battery-case-report.pdf#page=19) · [Slide 4](output/pdf/battery-case-slides.pdf#page=4) · [Verified checkpoint](validation/snug125/snug125_nylon_lateral_friction_locked_pin1_m15_ls3_ss12_checkpoint.json)
 
+Under base X, refining the nylon case mesh from 2 to 1.5 mm moves the first left-pocket crossing from 38.3 to 29.3 ms. The nominal mesh crosses the 185 MPa nickel trial reference first. The finer mesh reaches the pocket 9.64–9.68 ms before that reference. These independently integrated histories hold contact fixed at bolt lock. [Mesh and event order, page 20](output/pdf/battery-case-report.pdf#page=20) · [Slide 7](output/pdf/battery-case-slides.pdf#page=7)
+
+At 0.26469 mm in the positive pull, the nylon fixture required 1,645.8 N versus 7.63 N interpolated bare. Of that reaction, 1,483.3 N went to the fixed middle cell. The four case mounts carried 95.27 N. The large fixture force depends on holding the neighbouring cells fixed. [Component forces, page 21](output/pdf/battery-case-report.pdf#page=21)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.

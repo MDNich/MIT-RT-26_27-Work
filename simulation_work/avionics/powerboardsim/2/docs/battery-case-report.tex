@@ -376,21 +376,21 @@ Rotation matters because the centre is about 10.5~mm below the washer faces. Und
 All three assemblies retained the same washer-face nodes and quadratic connectivity. Fits directly to the reconstructed displacements at each signed extreme reproduced the modal projection to within $10^{-7}$~mm. Independent integration of the same modes with linearly interpolated acceleration changed the 18 signed extrema by at most 1.07\%. Refining the nylon case from 2 to 1.5~mm reduced its independently calculated base-X peak by 4.1\%, to 33.1~$\mu$m. The finer base-Z value increased by 11.6\%, to 1.81~$\mu$m.
 
 \heading{When do the outer cells reach the case under base X and Y?}
-On the native fixed-contact trajectory the left cell reaches the case first for both screw materials. With nylon it reaches the case at 38.28--38.30~ms, about 0.46~ms after the first nickel-strip corner crosses the assumed 185~MPa yield reference. With aluminium the left cell reaches the case at 29.09--29.12~ms, roughly 11.3~ms before that nickel reference is crossed. The right pocket follows at about 40.4~ms in both models. For nylon the middle pocket already needs to redistribute its installed pressure by 18.40~ms under base X.
+On the nominal 2~mm native fixed-contact trajectory the left cell reaches the case first for both screw materials. With nylon it reaches the case at 38.28--38.30~ms, about 0.46~ms after the first nickel-strip corner crosses the assumed 185~MPa yield reference. With aluminium the left cell reaches the case at 29.09--29.12~ms, roughly 11.3~ms before that nickel reference is crossed. The right pocket follows at about 40.4~ms in both models. For nylon the middle pocket already needs to redistribute its installed pressure by 18.40~ms under base X.
 
-The quasistatic fixture prescribes one cell displacement while the global model excites the board, the clamps and all three cells. The case itself also vibrates, so clamp-relative cell travel cannot by itself establish pocket closure, nickel damage or pull force. The results above use the fixed contact state at bolt lock. Under base Y the left cell crosses first at 38.0~ms with nylon and 48.1~ms with aluminium, about 34.2 and 42.3~ms before the respective nickel reference crossings. Independent integration reproduced the outer-cell order for both mounts under all three base axes. The largest change in a crossing bracket endpoint was one sample (0.0153~ms). Page~17 covers base Z.
+The quasistatic fixture prescribes one cell displacement while the global model excites the board, the clamps and all three cells. The case itself also vibrates, so clamp-relative cell travel cannot by itself establish pocket closure, nickel damage or pull force. The results above use the fixed contact state at bolt lock. Under base Y the left cell crosses first at 38.0~ms with nylon and 48.1~ms with aluminium, about 34.2 and 42.3~ms before the respective nickel reference crossings. Independent integration reproduced the outer-cell order for both mounts under all three base axes. The largest change between integration methods was one sample (0.0153~ms). Page~20 compares the event order on two nylon case meshes.
 
 \newpage
 \pageheading{The snug case restrains the edge cell in a sideways pull}
 An 8.54~N sideways load moved the left cell 0.500~mm bare and about \textbf{0.034~mm} with the snug nylon mount, a 93\% reduction. The estimate interpolates between the cased equilibria at 5.53~N (0.02875~mm) and 11.57~N (0.04000~mm).
 
 \begin{center}\includegraphics[width=.99\linewidth]{figures/snug-forward-pull.pdf}
-\captionof{figure}{Left, the low-force part of the forward pull. Dots mark saved equilibria and diamonds mark the common load. Right, reactions opposing the 109.53~N applied to the cased cell at the last audited station.}\end{center}
+\captionof{figure}{Left, the low-force part of the forward pull. Dots mark saved equilibria and diamonds mark the common load. Right, reactions opposing the 109.53~N applied to the cased cell at 0.206875~mm.}\end{center}
 
 \heading{Where the load goes}
 At 0.206875~mm travel the snug case required 109.53~N. Interpolating the bare reaction between 0.195625 and 0.220625~mm gives 7.23~N at the same travel. The four case screw supports resisted 90.31~N, the fixed neighbouring hardware 12.69~N and the original nickel clamps 6.54~N. The lateral balance residual was 0.010~N. The moving cell first loaded the printed pocket between 0.01750 and 0.02875~mm. Two independent subdivisions of the displaced contact surfaces found clearance at 0.01750~mm and intersection at 0.02875~mm. Native initial clearances at the moving outer cell and the fixed middle cell were 19.702 and 2.933~$\mu$m, within 0.007~$\mu$m of their registered CAD gaps.
 
-\heading{Stress at the last audited station}
+\heading{Stress at 0.206875 mm travel}
 Peak printed-PLA tension reached 17.94~MPa in the layer plane and 17.97~MPa across the layers, respectively 34\% and 44\% of the published coupon means. The four mounts carried 22.07--23.10~N each sideways. The highest nylon shank tension occurred at the fixed PCB end of a screw on the pulled-cell side. Of its 27.64~MPa peak, 26.68~MPa came from bending and 0.96~MPa from axial loading. The actual screw grade and thread capacity are unknown. Loaded contact corners penetrated by at most 0.0027~mm at this station, below the 0.05~mm comparison limit.
 
 \heading{How the nickel strips respond}
@@ -400,7 +400,42 @@ At 8.54~N the bare nickel reached 1.254\% peak equivalent plastic strain. All 2,
 The tabs move with the screw ends. When the cell moved 0.206875~mm, all four tabs shifted 0.0817--0.0837~mm sideways. The ties enforce equal tab and screw-tip rotation. Reproducing each tab’s normal load and moment inside the 3.75~mm bearing radius requires at least 6.33--8.11~N per tab opposing the net normal force. The 93\% travel reduction depends on this mount assumption. The two queued controls allow rotation between the tab and shank.
 
 \heading{How far this result applies}
-Two washers clamp the nickel strips at 750~N each before locking. The fixture then drives the left cell toward the middle and holds the screw supports and neighbouring hardware fixed. The audit covers 12 forward increments on the 1.5~mm case mesh. DPF and result-file support reactions agreed. The cased $+0.500$~mm endpoint, reverse pull, aluminium comparison and damage tests remain open.
+Two washers clamp the nickel strips at 750~N each before locking. The fixture then drives the left cell toward the middle and holds the screw supports and neighbouring hardware fixed. These first 12 forward increments use the 1.5~mm mesh. Page~21 follows the same pull through the next six increments. DPF and result-file reactions agreed. The cased $+0.500$~mm endpoint, reverse pull, aluminium comparison and damage tests remain open.
+
+\newpage
+\pageheading{Refining the case mesh changes the base-X event order}
+For the snug nylon-screw assembly, the 2~mm case mesh puts the first nickel stress crossing about 0.46~ms before the left cell reaches the case. On the 1.5~mm mesh, the left cell reaches the case \textbf{9.64--9.68~ms before} the nickel crossing. Both models predict that the left cell reaches its pocket first under base~X. The relative timing of pocket contact and nickel loading remains sensitive to mesh size.
+
+\begin{center}\includegraphics[width=.97\linewidth]{figures/snug-mesh-event-order.pdf}
+\captionof{figure}{Times from the start of the matched base acceleration. Pocket markers give the midpoint of the first confirmed surface-intersection interval. The middle-load marker gives the latest time the initial middle-pocket pressure distribution can persist. The nickel marker gives the first sampled 185~MPa equivalent stress anywhere in the six strips. Each mesh uses its own installed state and mode shapes.}\end{center}
+
+\heading{Which prediction changes?}
+Under base X, the fine mesh puts the left-pocket crossing at 29.27~ms and the right at 37.65~ms. These are 9.02 and 2.78~ms earlier than on the nominal mesh. The nickel reference moves later, from 37.83 to 38.93~ms, and a different strip governs. The initial sampled gap at the left outer cell is slightly \emph{larger} on the finer mesh, 13.56 versus 13.14~$\mu$m. Tighter initial clearance alone cannot explain the earlier crossing.
+
+Under base Y the left cell reaches the case first at 38.00~ms on the 2~mm mesh and 35.12~ms on the 1.5~mm mesh. The right-cell crossing moves earlier by 12.22~ms, from 50.44 to 38.22~ms. The nickel reference follows the first outer crossing on both meshes, by about 34 and 47~ms respectively.
+
+Under base Z, the right cell reaches the case first on both nylon meshes, near 31.1~ms. The two outer-pocket brackets each shift by one sample (0.0153~ms) on refinement. The nickel reference moves from 70.30 to 67.18~ms and follows both outer-pocket crossings in either model.
+
+\heading{What the calculation establishes}
+We integrated the same piecewise-linear acceleration record at $65{,}536$~Hz on the two native MAPDL modal bases. For each sample the signed modal stresses were added to the locked preload before evaluating the equivalent stress at all 11,348 nickel element corners. The two meshes have identical original nickel elements, corner nodes and coordinates. Retaining modes only through 3.5~kHz shifted the first nickel crossing by at most one sample across all six mesh/axis combinations. Under base X, the 3.5 and 4~kHz calculations also gave identical sampled crossing intervals for both outer pockets on each mesh. The native nominal histories confirmed the nickel crossing intervals.
+
+In both base-X calculations, the middle pocket already requires a change in pressure by about 18.5~ms. Both later times depend on continuing along the locked-contact modes. They locate where a contact-changing simulation is needed. A third native displacement basis on the existing 3~mm nylon mesh is queued to test the spatial trend.
+
+\newpage
+\pageheading{The fixed middle cell carries the rising sideways load}
+At 0.26469~mm of prescribed left-cell travel, the snug nylon fixture required \textbf{1,645.8~N}, compared with 7.63~N interpolated on the bare force curve. Contact with the middle cell, which is rigidly held in the local fixture, carried 1,483.3~N or \textbf{90.1\%} of the applied force. This load depends strongly on the assumed restraint of that cell. The assembled board can move and the actual weld and cell-sleeve strengths remain unknown.
+
+\begin{center}\includegraphics[width=.97\linewidth]{figures/snug-fixed-middle-pull.pdf}
+\captionof{figure}{The shaded interval brackets the first load transferred from the case to the fixed middle cell. The right panel uses a smaller force scale. The bare curve uses the same bilinear nickel law and prescribed left-cell displacement.}\end{center}
+
+\heading{Where the reaction increased}
+At 0.206875~mm the right cell took 12.69~N and the middle cell carried zero. At the next saved state, 0.219375~mm, the middle cell carried 424.29~N of the 538.13~N applied. At 0.26469~mm the four case mounts carried 95.27~N, the right cell 21.46~N and the original nickel clamps 45.69~N. The middle cell accounts for most of the steep change in the applied-force curve.
+
+\heading{Material and contact checks}
+At 0.26469~mm the printed case reached 66.2\% of the in-plane coupon tension reference and 77.5\% of the layer-normal reference. Peak nylon shank tension was 43.52~MPa. The two contact pairs had maximum loaded-corner penetrations of 0.0138 and 0.0059~mm, below the 0.05~mm numerical screen. Peak equivalent plastic strain in the bilinear nickel strips reached 11.02\%; the two bare states bracketing the same travel gave 0.502\% and 0.575\%. The intact-weld idealization and bilinear material law do not predict a pack failure load.
+
+\heading{How the middle-cell force was identified}
+The fixed-hardware pilot combines eight CAD bodies into one reaction. We reconstructed the deformed quadratic case faces from native DPF displacements, bounded each face, and expanded those bounds by the full 1~mm contact-search radius in all three coordinates. Every loaded face had a single possible rigid target body. Summing its native contact forces by body reproduced the fixed support reaction to within 0.01~N at every loaded state. All 21 states of the earlier checkpoint also reproduced in this 27-state result. The aluminium, reverse-pull and damage-law comparisons remain in progress.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

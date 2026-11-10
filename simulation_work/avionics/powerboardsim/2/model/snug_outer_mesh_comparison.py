@@ -8,10 +8,22 @@ from film_identity import digest, write_json
 from stage_snug_fit import AUDIT, STEP_HASH
 
 
-def compare(material,axis='Z'):
+def compare(material,axis='Z',*,coarse=False):
     modal=AUDIT/(material+'_modal_mesh_comparison.json')
     models=read(modal)['models']
     assert [m['mesh_size_mm'] for m in models]==[2,1.5]
+    additional={}
+    if coarse:
+        assert material=='nylon'
+        setup_file=AUDIT/'coarse_geometry_modes.json';setup=read(setup_file)
+        proof_file=AUDIT/'coarse_geometry_modes_audit.json';proof=read(proof_file)
+        assert proof['registry_sha256']==digest(setup_file) and proof['case']==setup['case']
+        assert proof['matching']['reference_rst_sha256']==models[0]['basis_rst_sha256']
+        assert setup['reference']==models[0]['case']
+        models=[dict(case=setup['case'],preload=setup['parent'],mesh_sha256=setup['mesh_sha256'],
+                     installed_rst_sha256=setup['static_rst_sha256'],mesh_size_mm=setup['size_mm'],
+                     basis_rst_sha256=proof['matching']['candidate_rst_sha256']),models[0]]
+        additional['coarse_displacement_audit_sha256']=digest(proof_file)
     result=[]
     for model in models:
         variant=model['case'].removesuffix('_basis')
@@ -58,7 +70,11 @@ def compare(material,axis='Z'):
         delta[side]=dict(fine_minus_nominal_midpoint_ms=(fine_lo+fine_hi-lo-hi)/2,
                          possible_fine_minus_nominal_ms=[fine_lo-hi,fine_hi-lo])
     suffix='' if axis=='Z' else '_'+axis
-    write_json(AUDIT/(material+'_outer_startup_mesh_comparison'+suffix+'.json'),dict(models=result,interval_changes=delta,
+    if coarse:
+        suffix='_3_to_2mm_'+axis
+        delta={side:dict(nominal_minus_coarse_midpoint_ms=d['fine_minus_nominal_midpoint_ms'],
+                         possible_nominal_minus_coarse_ms=d['possible_fine_minus_nominal_ms']) for side,d in delta.items()}
+    write_json(AUDIT/(material+'_outer_startup_mesh_comparison'+suffix+'.json'),dict(**additional,models=result,interval_changes=delta,
                order_retained=a['order']==b['order'],modal_comparison_sha256=digest(modal),
                scope='Sampled fixed-contact trajectories from independent exact integration of each native mode basis. '
                      'Interval differences reflect the two tested meshes. A face-intersection witness does not determine '
@@ -70,4 +86,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('material',choices=('nylon','aluminium'))
     p.add_argument('--axis',choices=('X','Y','Z'),default='Z')
-    args=p.parse_args();compare(args.material,args.axis)
+    p.add_argument('--coarse',action='store_true',help='Compare the 3 and 2 mm cases.')
+    args=p.parse_args();compare(args.material,args.axis,coarse=args.coarse)

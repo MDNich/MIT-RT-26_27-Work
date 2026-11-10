@@ -47,6 +47,37 @@ def verify_capture(folder):
     return spec,capture,raw
 
 
+def prepare_native_fields(folder,capture,raw,config,mesh):
+    """Read only an identity-checked stationary copy using the installed DPF operators."""
+    import fcntl,subprocess,sys
+    from tab_seating import read_point_file
+    source=folder/'pull.rst';sha=capture['sha256']
+    sets=list(range(1,raw.nsets+1))
+    supports=sorted({mesh['pilot'],*config['target_pilots'],*SCREW_PILOTS,NEIGHBOR_PILOT})
+    faces=np.stack([e[10:18] for e in raw.mesh.elem if e[1]==862 and e[2]==861])
+    points=sorted(set(supports).union(mesh['attachment'],map(int,faces.ravel())))
+    read_point_file(source,folder/'dpf_points',sha,sets,points)
+    out=folder/'dpf_forces';out.mkdir(exist_ok=True)
+    with (out/'request.lock').open('a') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        spec=dict(source_sha256=sha,nodes=supports,sets=sets)
+        request=out/'request.json'
+        if request.exists():assert read(request)==spec
+        else:write_json(request,spec)
+        if not (out/'forces.json').exists():
+            if (out/'dispatch.json').exists():
+                raise RuntimeError('Reconcile the existing DPF reaction readback before dispatch')
+            driver=ROOT/'model/dpf_support_forces.py'
+            def win(path):return chr(92)*2+'Mac'+chr(92)+'Home'+chr(92)+str(path.relative_to('/Users/mdn')).replace('/',chr(92))
+            exe=r'C:\Program Files\ANSYS Inc\v261\commonfiles\IronPython\ipy64.exe'
+            cmd="& '{}' '{}' '{}' '{}'\nexit $LASTEXITCODE".format(exe,win(driver),win(source),win(out))
+            write_json(out/'dispatch.json',dict(source_sha256=sha,reader_sha256=digest(driver)))
+            result=subprocess.run([sys.executable,str(ROOT/'model/guest_command.py'),'--timeout','3600'],
+                                  input=cmd,text=True,capture_output=True)
+            (out/'export.log').write_text(result.stdout+result.stderr)
+            assert result.returncode==0 and 'DPF_SUPPORT_FORCES_DONE' in result.stdout
+
+
 def movements(folder,capture,raw,settings,mesh):
     out=folder/'dpf_points';req=read(out/'request.json');done=read(out/'done.json')
     assert req['source_sha256']==done['source_sha256']==capture['sha256']
@@ -141,6 +172,7 @@ def audit(folder):
     for name in ('mesh.json','config.json','model.inp'):verified(source/name,catalog[name])
     config=read(source/'config.json'); mesh=read(source/'mesh.json')
     spec,capture,raw=verify_capture(folder)
+    prepare_native_fields(folder,capture,raw,config,mesh)
     moving,pose=movements(folder,capture,raw,config,mesh)
     rows,balance=force_balance(folder,capture,raw,config,source,moving)
     print('Balance passed',len(rows),flush=True)

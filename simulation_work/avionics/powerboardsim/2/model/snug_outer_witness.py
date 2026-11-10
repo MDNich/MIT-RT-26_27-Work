@@ -14,6 +14,7 @@ from film_identity import digest,verified,write_json
 from motion_surface import displacement_basis
 from seeded_motion import FS,participation
 from snug_shell_drive_sampling import native_startup
+from snug_outer_onset import scan_path,apply_cutoff
 from stage_snug_fit import AUDIT
 
 
@@ -78,8 +79,8 @@ def confirm(a0,b0):
     return None
 
 
-def run(variant,method,campaign,axis='Z'):
-    path=AUDIT/(variant+'_outer_onset_'+axis+'_'+method+'.json')
+def run(variant,method,campaign,axis='Z',*,cutoff=None):
+    path=scan_path(variant,axis,method,cutoff)
     onset=read(path)
     proof,folder,rst=source(variant+'_basis',campaign)
     assert onset['basis_rst_sha256']==proof['rst_sha256'] and onset['method']==method
@@ -97,6 +98,8 @@ def run(variant,method,campaign,axis='Z'):
         verified(load,motion['input_sha256']);verified(log,motion['modal_listing_sha256'])
         acc=np.loadtxt(load,skiprows=1,max_rows=int(samples[-1])+1)
         q,_=refined_coordinates('linear_input_exact',acc[:,1],samples,rst.time_values,participation(log.read_text(),axis))
+    frequency_scope=apply_cutoff(q,rst.time_values,cutoff)
+    assert {k:onset[k] for k in frequency_scope}==frequency_scope and onset.get('cutoff_Hz')==cutoff
     faces=[outer_faces(rst,[m]) for m in (850,176,187)]
     ids=np.unique(np.concatenate([f.ravel() for f in faces]))
     ix=np.searchsorted(rst.mesh.nnum,ids);assert np.array_equal(rst.mesh.nnum[ix],ids)
@@ -126,7 +129,7 @@ def run(variant,method,campaign,axis='Z'):
         assert np.linalg.norm(coords[0]-rec['quadratic_point_xyz_mm'])<1.e-9
         certs[name]=dict(first_intersection_interval_ms=[1000*lower/FS,1000*station/FS],sample=station,time_s=station/FS,**rec)
         print(variant,method,name,sample,station,rec['residual_mm'],rec['normal_cross_magnitude'],flush=True)
-    write_json(path.with_name(path.stem+'_witness.json'),dict(variant=variant,method=method,source_sha256=digest(path),
+    write_json(path.with_name(path.stem+'_witness.json'),dict(**frequency_scope,variant=variant,method=method,source_sha256=digest(path),
                cells=certs,scope='Both original six-node interpolation surfaces share the reported interior point; '
                                 'their normals are nonparallel. The witness tests the fixed-tangent geometry.'))
 
@@ -134,4 +137,5 @@ def run(variant,method,campaign,axis='Z'):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('variant');p.add_argument('--method',choices=('native','exact'),required=True)
     p.add_argument('--campaign',default='nov08_01');p.add_argument('--axis',choices=('X','Y','Z'),default='Z')
-    a=p.parse_args();run(a.variant,a.method,a.campaign,a.axis)
+    p.add_argument('--cutoff',type=int,choices=(3500,))
+    a=p.parse_args();run(a.variant,a.method,a.campaign,a.axis,cutoff=a.cutoff)

@@ -226,6 +226,10 @@ def jobs():
         if trial.is_file():
             entry=read(trial)
             yield entry['case'],entry['parent']
+        coarse_basis=snug_dir/'coarse_geometry_modes.json'
+        if coarse_basis.is_file():
+            entry=read(coarse_basis)
+            yield entry['case'],entry['parent']
         local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
         local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
         if local_catalog.is_file():

@@ -140,5 +140,8 @@ def audit(case,campaign):
                         and all((ROOT/'validation/snug125'/(name+'_residuals.json')).is_file() for name in pair)):
                     compare_forces(pair[1])
             else:compare_forces(case)
+    if case=='snug125_nylon_mesh3_basis':
+        from snug_coarse_modes import audit as check_coarse_basis
+        check_coarse_basis(campaign)
     print(case,'verified',flush=True)
 if __name__=='__main__':audit(*sys.argv[1:])

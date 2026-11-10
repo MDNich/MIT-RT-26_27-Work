@@ -1,0 +1,181 @@
+{
+  "variant": "snug125_nylon_mesh15",
+  "campaign": "nov08_01",
+  "method": "exact",
+  "base_axis": "Y",
+  "basis_rst_sha256": "a9f9b10e19c1ec61e1751e5fed6d555bb198a871551b900a28aba592f24cc1da",
+  "input_sha256": "a3a97229029dbe3f4d4501b2d80dfeb9cdfc91aabb019da13160ee6b17f94ade",
+  "window_sha256": "548797a2f72e27506119a7770d656fb3b9f92377b0074535ad0e47adc79e0ef4",
+  "samples": 5941,
+  "sample_rate_Hz": 65536,
+  "quadratic_face_counts": [
+    28174,
+    328,
+    302
+  ],
+  "checks": {
+    "integration": "Matrix exponential with piecewise-linear input",
+    "ramp_control_relative_max_error": 2.878386949524641e-13
+  },
+  "cells": {
+    "left": {
+      "last_contiguous_clear_sample": 2301,
+      "first_intersecting_sample": 2302,
+      "first_intersection_time_interval_ms": [
+        35.1104736328125,
+        35.125732421875
+      ],
+      "unresolved_samples": [],
+      "candidate_face_pairs": 9519,
+      "certified_by_block": 0,
+      "individually_classified": 2303,
+      "individual_control_samples": [
+        0,
+        287,
+        575,
+        862,
+        1150,
+        1438,
+        1725,
+        2013,
+        2299,
+        2300,
+        2301,
+        2302
+      ],
+      "reconstructed_skin_checks": [
+        {
+          "sample": 2301,
+          "subdivisions": {
+            "2": {
+              "PLA_triangles": 450784,
+              "cell_triangles": 5248,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.0003499587726487159
+            },
+            "3": {
+              "PLA_triangles": 1803136,
+              "cell_triangles": 20992,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -3.723213789694834e-05
+            }
+          }
+        },
+        {
+          "sample": 2302,
+          "subdivisions": {
+            "2": {
+              "PLA_triangles": 450784,
+              "cell_triangles": 5248,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.0009536301106568077
+            },
+            "3": {
+              "PLA_triangles": 1803136,
+              "cell_triangles": 20992,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.0006516478988312332
+            }
+          }
+        },
+        {
+          "sample": 2310,
+          "subdivisions": {
+            "2": {
+              "PLA_triangles": 450784,
+              "cell_triangles": 5248,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.004793296601476364
+            },
+            "3": {
+              "PLA_triangles": 1803136,
+              "cell_triangles": 20992,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.004602410315938364
+            }
+          }
+        }
+      ]
+    },
+    "right": {
+      "last_contiguous_clear_sample": 2504,
+      "first_intersecting_sample": 2505,
+      "first_intersection_time_interval_ms": [
+        38.2080078125,
+        38.2232666015625
+      ],
+      "unresolved_samples": [],
+      "candidate_face_pairs": 9509,
+      "certified_by_block": 0,
+      "individually_classified": 2506,
+      "individual_control_samples": [
+        0,
+        313,
+        626,
+        939,
+        1252,
+        1565,
+        1878,
+        2191,
+        2502,
+        2503,
+        2504,
+        2505
+      ],
+      "reconstructed_skin_checks": [
+        {
+          "sample": 2504,
+          "subdivisions": {
+            "2": {
+              "PLA_triangles": 450784,
+              "cell_triangles": 4832,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.0007221844983532687
+            },
+            "3": {
+              "PLA_triangles": 1803136,
+              "cell_triangles": 19328,
+              "intersect": false,
+              "minimum_signed_vertex_gap_mm": 1.783426867392996e-06
+            }
+          }
+        },
+        {
+          "sample": 2505,
+          "subdivisions": {
+            "2": {
+              "PLA_triangles": 450784,
+              "cell_triangles": 4832,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.0013602990344361312
+            },
+            "3": {
+              "PLA_triangles": 1803136,
+              "cell_triangles": 19328,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.0006595366378271409
+            }
+          }
+        },
+        {
+          "sample": 2513,
+          "subdivisions": {
+            "2": {
+              "PLA_triangles": 450784,
+              "cell_triangles": 4832,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.00470618156444756
+            },
+            "3": {
+              "PLA_triangles": 1803136,
+              "cell_triangles": 19328,
+              "intersect": true,
+              "minimum_signed_vertex_gap_mm": -0.0040064185903967925
+            }
+          }
+        }
+      ]
+    }
+  },
+  "scope": "Registered outer cells and full quadratic case exterior on the fixed-contact trajectory. Hull separation is checked for every earlier native sampling station. The first crossing is a geometric prediction. Actual contact reactions and rebound require nonlinear dynamics."
+}

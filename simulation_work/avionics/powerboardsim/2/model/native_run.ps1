@@ -18,7 +18,7 @@ if ($active.Count){throw "Another native job is running"}
 New-Item -ItemType Directory -Path $work -ErrorAction Stop|Out-Null
 $guard=$work
 $enforcedMotion = $Case -match '^(?:bare|(?:stand3|snug125)_(?:nylon|aluminium)|flush_(?:nylon|aluminium)_surf1)_enforced$'
-$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2|snug125_(?:nylon|aluminium)|snug125_(?:nylon|aluminium)_mesh15)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
+$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2|snug125_(?:nylon|aluminium)|snug125_(?:nylon|aluminium)_mesh15|snug125_nylon_mesh3)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
 if ($sharedWork) {
     $work=Join-Path $share ".runtime\shared_native\$Campaign\$Case"
     if (Test-Path -LiteralPath $work){throw 'Preserving the existing shared working directory'}
@@ -97,7 +97,18 @@ try {
         if ($entry.input_sha256 -ne $stage.input_sha256 -or $entry.step_sha256 -ne '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef' -or
             $entry.post_sha256 -ne (Get-FileHash "$work\snug_force_post.inp").Hash -or $entry.tab_spacing_mm -ne 1.25 -or $Parent) {throw 'Snug contact refinement identity mismatch'}
     }
-    if ($Case -match '^snug125_(nylon|aluminium)(_mesh3)?_(static|original|refined|modal20|basis)$') {
+    if ($Case -eq 'snug125_nylon_mesh3_basis') {
+        $entry=Get-Content "$share\validation\snug125\coarse_geometry_modes.json" -Raw | ConvertFrom-Json
+        $book=Get-Content "$share\validation\snug125\global_inputs.json" -Raw | ConvertFrom-Json
+        $coarse=$book.PSObject.Properties[$Parent].Value
+        $nominal=$book.PSObject.Properties['snug125_nylon_basis'].Value
+        $installed="$share\validation\snug125\snug125_nylon_mesh3_static_installed.json"
+        if ($Parent -ne 'snug125_nylon_mesh3_static' -or $entry.parent -ne $Parent -or $entry.case -ne $Case -or
+            $entry.input_sha256 -ne $stage.input_sha256 -or $entry.reference_input_sha256 -ne $nominal.input_sha256 -or
+            $entry.parent_input_sha256 -ne $coarse.input_sha256 -or $entry.mesh_sha256 -ne $coarse.mesh_sha256 -or
+            $entry.step_sha256 -ne $coarse.step_sha256 -or $entry.tab_spacing_mm -ne 1.25 -or $entry.size_mm -ne 3 -or
+            (Get-FileHash -LiteralPath $installed).Hash -ne $entry.installed_sha256) {throw 'Coarse displacement basis or its locked parent differs from registry'}
+    } elseif ($Case -match '^snug125_(nylon|aluminium)(_mesh3)?_(static|original|refined|modal20|basis)$') {
         $manifest=Get-Content "$share\validation\snug125\global_inputs.json" -Raw | ConvertFrom-Json
         $entry=$manifest.PSObject.Properties[$Case].Value
         if ($entry.step_sha256 -ne '43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef' -or
