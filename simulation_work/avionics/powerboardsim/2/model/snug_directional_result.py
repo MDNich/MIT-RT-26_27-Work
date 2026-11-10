@@ -31,6 +31,26 @@ def first_bracket(rows, quantity, target, sign):
                 cell_force_N=(1-alpha)*x['cell_force_N']+alpha*y['cell_force_N'])
 
 
+def refined_tab_crossing(case, input_sha, travel_by_set):
+    """Apply the local PLA result only to the sealed parent deck and its verified travel stations."""
+    if case != 'snug125_nylon_lateral_friction_locked_pin1_m15':
+        return None
+    path=AUDIT/'nylon_forward_tab_submodel.json'
+    refined=read(path)
+    assert refined['case']==case and refined['input_sha256']==input_sha
+    checkpoint=AUDIT/f"{case}_{refined['checkpoint']}_checkpoint.json"
+    verified(checkpoint,refined['checkpoint_sha256'])
+    native=read(checkpoint)
+    assert native['input_sha256']==input_sha and native['rst_sha256']==refined['DPF_source_sha256']
+    high=min(s['first_sample_above_coupon_native_set'] for s in refined['independent'] if s['subdivisions']==8)
+    bracket=[r for r in native['states'] if r['native_set'] in (high-1,high)]
+    assert len(bracket)==2 and all(r['loadstep']==3 for r in bracket)
+    for r in bracket:
+        assert abs(travel_by_set[r['native_set']]-r['travel_mm'])<1e-7
+    return dict(native_set=high,travel_bracket_mm=[r['travel_mm'] for r in bracket],
+                submodel_sha256=digest(path),checkpoint_sha256=refined['checkpoint_sha256'])
+
+
 def paired(case,bare,verdict):
     ref,base=series(bare)
     proof,rows=series(case,proof_path=verdict)
@@ -59,6 +79,11 @@ def paired(case,bare,verdict):
     print_stop=stop
     if first_excess is not None:
         stop=min(stop,int(first_excess['native_set']))
+    refined=refined_tab_crossing(case,mat['input_sha256'],{r['set']:r['ux_mm'] for r in rows})
+    if refined:
+        parent_last=max((r['set'] for r in rows if r['set']<stop and sign*r['ux_mm']<=sign*base[-1]['ux_mm']+1e-9),default=0)
+        stop=min(stop,refined['native_set'])
+        print_stop=min(print_stop,refined['native_set'])
     supported=[r for r in rows if r['set']<stop]
     first_contact=next((i for i,r in enumerate(rows) if int(contacts[r['set']]['closed_faces'])>0),None)
     record=dict(case=case,bare=bare,source=proof['source'],full_numerical_path=proof['full_requested_path'],
@@ -74,6 +99,10 @@ def paired(case,bare,verdict):
                 scope='First loading branch at matched displacement or matched bare terminal force. All reported '
                       'comparisons stop before the first printed-material or closed-corner penetration screen is exceeded. Screw beam stress '
                       'is given in MPa; the fitted screw grade and thread capacity have no established allowable.')
+    if refined:
+        record['refined_tab_crossing']=refined
+        record['parent_screen_last_set']=parent_last
+        record['scope']+=' The first refined tab-corner coupon crossing also bounds the comparisons on this deck.'
     if first_contact is not None:
         pair=rows[max(0,first_contact-1):first_contact+1]
         record['moving_cell_contact_bracket']=dict(native_sets=[r['set'] for r in pair],travel_mm=[r['ux_mm'] for r in pair],
@@ -209,6 +238,13 @@ def reconcile_checkpoint(checkpoint, verdict, ledger):
                 assert abs(saved['all_four_'+name]-metric['highest_element_minimum'])<1.e-6
                 assert saved[name+'_elements_all_four_above']==metric['elements_all_corners_at_reference']
         receipt['tab_corner_sha256']=digest(corners_file)
+    pressure_file=checkpoint.with_name(checkpoint.stem.removesuffix('_checkpoint')+'_cell_pressure.json')
+    if pressure_file.is_file():
+        from snug_pull_pressure import verify_saved_records
+        pressure=read(pressure_file)
+        assert pressure['checkpoint_sha256']==receipt['checkpoint_sha256'] and pressure['case']==case
+        verify_saved_records(archive/'pull.rst',sha['pull.rst'],pressure['states'])
+        receipt['cell_pressure_sha256']=digest(pressure_file)
     return receipt
 
 

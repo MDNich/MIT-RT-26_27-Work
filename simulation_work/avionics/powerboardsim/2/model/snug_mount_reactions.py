@@ -137,7 +137,8 @@ def archive(case,comparison,folder,sha):
     balance=table(ROOT/'.runtime/post'/material['campaign']/case/'whole_fixture_balance.csv')
     assert len(balance)==len(material['history'])
     last=comparison['equal_travel']
-    last_set=last['cased']['set'] if last else 0
+    supported=last['cased']['set'] if last else 0
+    last_set=comparison.get('parent_screen_last_set',supported)
     checks=[];source=[]
     for m,br in zip(material['history'],balance,strict=True):
         k=m['native_set']
@@ -169,7 +170,7 @@ def archive(case,comparison,folder,sha):
         checks.append(dict(source=path.name,sha256=digest(path),stations=len(cp['states'])))
     out=AUDIT/f'{case}_bearing_history.json'
     write_json(out,dict(case=case,rst_sha256=sha['pull.rst'],material_sha256=digest(material_file),
-                        checkpoint_reconciliations=checks,states=states,bearing_radius_mm=3.75))
+                        checkpoint_reconciliations=checks,states=states,bearing_radius_mm=3.75,last_comparison_set=supported))
     return out
 
 

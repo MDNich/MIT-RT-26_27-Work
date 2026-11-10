@@ -83,13 +83,14 @@ def classify(folder,case,rst_sha,spec,states,out):
     return records
 
 
-def write_result(path,case,source_key,source_sha,spec,out,records):
+def write_result(path,case,source_key,source_sha,spec,out,records,*,last_comparison_set=None):
     result=dict(case=case,skin_sha256=spec['target_sha256'],fixed_body_numbers=[15,19,1,6,9,10,11,20],
                 search_radius_mm=1.,loaded_states=records,
                 scope='Each target triangle has its exact native vertices. The deformed quadratic contact-face hull '
                       'bounds are expanded by the full 1 mm native search radius in each coordinate. A unique candidate '
                       'body establishes attribution. Ambiguous facet forces are retained as a group.')
     result[source_key]=source_sha
+    if last_comparison_set is not None:result['last_comparison_set']=last_comparison_set
     if records:result['DPF_displacements_sha256']=digest(out/'displacements.bin')
     write_json(path,result)
     return path
@@ -112,7 +113,8 @@ def archive(case,comparison,folder,sha):
     pairs=table(folder/'case_pairs.csv');balance=table(post/'whole_fixture_balance.csv')
     fixed=pairs[pairs['pair']==862]
     assert np.array_equal(fixed['set'],balance['native_set'])
-    end=comparison['equal_travel'];last=end['cased']['set'] if end else 0
+    end=comparison['equal_travel'];supported=end['cased']['set'] if end else 0
+    last=comparison.get('parent_screen_last_set',supported)
     rows=[dict(native_set=int(b['native_set']),within_screens=True,travel_mm=b['ux_mm'],cell_force_N=b['cell_fx_N'],
                neighbor_resistance_N=-b['neighbor_support_N_x'],both_contact_pairs={'862':dict(
                closed_faces=f['closed'],force_N=[f[k+'_N'] for k in ('fx','fy','fz')])})
@@ -129,7 +131,7 @@ def archive(case,comparison,folder,sha):
             for k,v in before.items():
                 assert v['faces']==after[k]['faces']
                 np.testing.assert_allclose(v['force_N'],after[k]['force_N'],atol=1e-5,rtol=1e-6)
-    return write_result(AUDIT/f'{case}_fixed_target_history.json',case,'closed_rst_sha256',sha['pull.rst'],spec,out,records)
+    return write_result(AUDIT/f'{case}_fixed_target_history.json',case,'closed_rst_sha256',sha['pull.rst'],spec,out,records,last_comparison_set=supported)
 
 
 if __name__=='__main__':

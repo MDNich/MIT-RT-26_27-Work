@@ -309,10 +309,16 @@ def at_crossing(rows, target, key):
     }
 
 
-def report(cased, bare, supported):
+def report(cased, bare, supported, *, comparison_stop=None):
     summary(cased, supported)
     summary(bare, bare["history"][-1]["native_set"])
     eligible = [r for r in cased["history"] if r["within_parent_screens"]]
+    if comparison_stop is not None:
+        assert comparison_stop <= supported
+        cased["last_comparison_set"] = comparison_stop
+        for row in cased["history"]:
+            row["within_comparison_screens"] = row["within_parent_screens"] and row["native_set"] <= comparison_stop
+        eligible = [r for r in eligible if r["within_comparison_screens"]]
     force = bare["history"][-1]["cell_force_N"]
     return {
         "cased": cased,
@@ -356,7 +362,8 @@ def archived(case, campaign, verdict, comparison):
         and bare["rst_sha256"] == comparison["bare_rst_sha256"]
     )
     supported = comparison["equal_travel"]["cased"]["set"]
-    record = report(cased, bare, supported)
+    parent = comparison.get("parent_screen_last_set", supported)
+    record = report(cased, bare, parent, comparison_stop=supported if parent != supported else None)
     record["local_verdict_sha256"] = digest(verdict)
     matched = []
     for p in AUDIT.glob(case + "_ls*_energy.json"):
