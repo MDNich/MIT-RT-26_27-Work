@@ -1,0 +1,97 @@
+{
+  "step_sha256": "43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef",
+  "hardware_sha256": "89736bd0df1f686a68624276203d0cb153f728042bd5a4eeab82d57c36972b81",
+  "registration_sha256": "6131b3a6e3f495581abd8fdf01933f3715b3f033f7ecb668200b19a1d75c002b",
+  "PCB2_tgz_sha256": "9ade1b62e979de876af1fe63bbfe641e43b0bf9e2c6c3b3475f6c1cfe34607fc",
+  "PCB_drill_member": "odb/steps/pcb/layers/drill_non-plated_bottom_layer-top_layer/features",
+  "PCB_drill_member_sha256": "616d64b1c9f26130b9d8600679b6cc08c93a7fd2257b4e5d92a23026fba9c8e9",
+  "PCB_drill_sha256": "6b89fc05646cadd1479303aad7a449ebee7ab4eb611e2f1c2871af7e87ee4bde",
+  "tab_spacing_mm": 1.25,
+  "screw_diameter_mm": 4.0,
+  "PCB_bore_diameter_mm": 4.199991600000001,
+  "case_bore_radii_mm": [
+    2.544977,
+    2.544977,
+    2.5,
+    2.5
+  ],
+  "axes": {
+    "-X": {
+      "hole_limit_mm": 0.08687400947836563,
+      "hole_limiting_tabs": [
+        3,
+        4
+      ],
+      "candidate_hardware_bodies": [
+        4,
+        15,
+        19
+      ],
+      "event": "hardware contact",
+      "first_clear_touch_mm": [
+        0.0030064430770406067,
+        0.003011745445783183
+      ],
+      "bodies": [
+        19
+      ],
+      "overlap_check_at_mm": 0.013011745445783183,
+      "overlap_mm3": {
+        "19": 3.5319121022708373
+      },
+      "fresh_pose_overlap_mm3": {
+        "4": 0,
+        "15": 0,
+        "19": 3.5319121022708373
+      }
+    },
+    "+X": {
+      "hole_limit_mm": 0.09687400947838495,
+      "hole_limiting_tabs": [
+        3,
+        4
+      ],
+      "candidate_hardware_bodies": [
+        4,
+        15,
+        19
+      ],
+      "event": "hole limit",
+      "minimum_hardware_gap_at_limit_mm": 0.0622522236187244,
+      "fresh_pose_overlap_mm3": {
+        "4": 0,
+        "15": 0,
+        "19": 0
+      }
+    },
+    "-Y": {
+      "hole_limit_mm": 0.0070549661591160495,
+      "hole_limiting_tabs": [
+        4
+      ],
+      "candidate_hardware_bodies": [
+        19
+      ],
+      "event": "hole limit",
+      "minimum_hardware_gap_at_limit_mm": 0.0029319672917687,
+      "fresh_pose_overlap_mm3": {
+        "19": 0
+      }
+    },
+    "+Y": {
+      "hole_limit_mm": 0.0070549661591160495,
+      "hole_limiting_tabs": [
+        3
+      ],
+      "candidate_hardware_bodies": [
+        19
+      ],
+      "event": "hole limit",
+      "minimum_hardware_gap_at_limit_mm": 0.0029319672917687,
+      "fresh_pose_overlap_mm3": {
+        "19": 0
+      }
+    }
+  },
+  "scope": "Rigid case translation relative to the fixed PCB and cells, no rotation, preload or deformation. All four M4 axes may float independently in the intersecting circular bore clearances. Distances are nominal CAD margins, not print tolerances or predicted contact forces."
+}
