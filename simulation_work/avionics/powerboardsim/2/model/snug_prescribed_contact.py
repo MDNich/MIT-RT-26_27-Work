@@ -86,7 +86,68 @@ def stiffness_and_force(raw, k, caps):
     return kn, net
 
 
-def run(branch):
+def installation_history(controls, raw, node_numbers, cap, target):
+    """Reconstruct each barrel traction from its native displacement and normal stiffness."""
+    caps, face_ids, case0, _, _ = cap
+    targets, cell_ids, cell0, ctr, radius = target
+    selected = np.union1d(face_ids, cell_ids)
+    ids = node_numbers[selected]
+    case_rows = positions(selected, face_ids)
+    cell_rows = positions(selected, cell_ids)
+    initial = 1000 * raw.mesh.nodes[positions(raw.mesh.nnum, ids)]
+    np.testing.assert_allclose(initial[case_rows], case0, atol=2e-8, rtol=0)
+    np.testing.assert_allclose(initial[cell_rows], cell0, atol=2e-8, rtol=0)
+    frames = []
+    sets = list(range(1, raw.nsets + 1))
+    fields = export(controls, CAMPAIGN, sets)
+    for step in sets:
+        stem = fields / f"set_{step:04d}"
+        n = np.fromfile(stem.with_suffix(".ids"), "<i4")
+        order = np.argsort(n)
+        u = np.fromfile(stem.with_suffix(".u"), "<f8").reshape(-1, 3)[
+            order[positions(n[order], ids)]
+        ]
+        xyz = initial + 1000 * u
+        kn, native = stiffness_and_force(raw, step - 1, caps)
+        force, rows, _areas = predicted(
+            caps, targets, xyz[case_rows], xyz[cell_rows], cell0, ctr, radius, kn
+        )
+        expected = np.linalg.norm(native, axis=1) > 1e-8
+        observed = np.linalg.norm(force, axis=1) > 1e-8
+        error = float(np.linalg.norm(force - native))
+        frames.append(
+            {
+                "native_set": step,
+                "time": float(raw.time_values[step - 1]),
+                "displacement_sha256": digest(stem.with_suffix(".u")),
+                "native_net_N": float(np.linalg.norm(native.sum(0))),
+                "reconstructed_net_N": float(np.linalg.norm(force.sum(0))),
+                "native_faces": caps[expected].tolist(),
+                "geometry_faces": caps[observed].tolist(),
+                "face_vector_mismatch_N": error,
+                "largest_individual_face_error_N": float(
+                    np.linalg.norm(force - native, axis=1).max()
+                ),
+                "points": rows,
+            }
+        )
+        print(
+            controls,
+            "set",
+            step,
+            np.count_nonzero(expected),
+            np.count_nonzero(observed),
+            frames[-1]["native_net_N"],
+            frames[-1]["reconstructed_net_N"],
+            error,
+            flush=True,
+        )
+    return frames
+
+
+def run(branch, aluminium_repeat=False):
+    if aluminium_repeat and branch != "snug125_aluminium":
+        raise ValueError("The aluminium output repeat applies to the nominal aluminium assembly")
     bp = AUDIT / f"{branch}_contact_vibration_basis.json"
     br = read(bp)
     cache = CACHE / (branch + "_basis") / f"coupled_contact_b{br['residual_blocks']}"
@@ -100,7 +161,16 @@ def run(branch):
     controls = (
         "snug125_nylon_mesh15_static" if branch.endswith("mesh15") else "snug125_nylon_out2_static"
     )
+    if aluminium_repeat:
+        controls = "snug125_aluminium_out2_static"
     proof, _folder, raw = source(controls, CAMPAIGN)
+    if aluminium_repeat:
+        repeat_path = AUDIT / "aluminium_force_repeat.json"
+        repeat = read(repeat_path)
+        assert repeat["repeat_static_rst_sha256"] == proof["rst_sha256"]
+        assert repeat["original_static_rst_sha256"] == static["rst_sha256"]
+        assert repeat["identical_locked_bolt_forces_and_contact_histories"]
+        assert max(repeat["maximum_nodal_displacement_difference_m_by_set"]) < 1e-12
     frames = []
     all_indices = np.unique(np.r_[face_ids.ravel(), cell_ids.ravel()])
     ids = data["nodes"][all_indices]
@@ -109,58 +179,17 @@ def run(branch):
     cell_rows = positions(all_indices, cell_ids)
     np.testing.assert_allclose(initial[case_rows], case0, atol=2e-8, rtol=0)
     np.testing.assert_allclose(initial[cell_rows], cell0, atol=2e-8, rtol=0)
-    if branch != "snug125_aluminium":
-        sets = list(range(1, raw.nsets + 1))
-        fields = export(controls, CAMPAIGN, sets)
-        for step in sets:
-            stem = fields / f"set_{step:04d}"
-            n = np.fromfile(stem.with_suffix(".ids"), "<i4")
-            order = np.argsort(n)
-            u = np.fromfile(stem.with_suffix(".u"), "<f8").reshape(-1, 3)[
-                order[positions(n[order], ids)]
-            ]
-            xyz = initial + 1000 * u
-            kn, native = stiffness_and_force(raw, step - 1, caps)
-            force, rows, _areas = predicted(
-                caps, targets, xyz[case_rows], xyz[cell_rows], cell0, ctr, radius, kn
-            )
-            expected = np.linalg.norm(native, axis=1) > 1e-8
-            observed = np.linalg.norm(force, axis=1) > 1e-8
-            error = float(np.linalg.norm(force - native))
-            frames.append(
-                {
-                    "native_set": step,
-                    "time": float(raw.time_values[step - 1]),
-                    "displacement_sha256": digest(stem.with_suffix(".u")),
-                    "native_net_N": float(np.linalg.norm(native.sum(0))),
-                    "reconstructed_net_N": float(np.linalg.norm(force.sum(0))),
-                    "native_faces": caps[expected].tolist(),
-                    "geometry_faces": caps[observed].tolist(),
-                    "face_vector_mismatch_N": error,
-                    "largest_individual_face_error_N": float(
-                        np.linalg.norm(force - native, axis=1).max()
-                    ),
-                    "points": rows,
-                }
-            )
-            print(
-                branch,
-                "set",
-                step,
-                np.count_nonzero(expected),
-                np.count_nonzero(observed),
-                frames[-1]["native_net_N"],
-                frames[-1]["reconstructed_net_N"],
-                error,
-                flush=True,
-            )
+    if branch != "snug125_aluminium" or aluminium_repeat:
+        frames = installation_history(controls, raw, data["nodes"], cap, target)
     if frames:
         assert len(frames) == 8 and np.array_equal([r["native_set"] for r in frames], np.arange(1, 9))
         for r in frames:
             assert set(r["geometry_faces"]) <= set(r["native_faces"])
             if r["native_net_N"] == 0:
                 assert r["reconstructed_net_N"] == 0
-        for r in frames[-3:]:
+        # Geometric pressure agreement is distinct from whole-case force balance.
+        checked = frames if aluminium_repeat else frames[-3:]
+        for r in checked:
             assert r["geometry_faces"] == r["native_faces"] and r["face_vector_mismatch_N"] < 0.0002
     book = AUDIT / f"{branch}_spacer_pocket_pull.json"
     base = read(book)
@@ -210,11 +239,41 @@ def run(branch):
         },
         "scope": "Independent prescribed-pose estimate on cylindrical target faces. KN is the archived normal penalty stiffness. Aluminium uses the nominal nylon KN, checked against its own locked contact matrix. Reactions at newly reached points have not been coupled back into the motion.",
     }
-    write_json(AUDIT / (branch + "_prescribed_contact_check.json"), report)
+    suffix = "_prescribed_contact_check.json"
+    if aluminium_repeat:
+        previous = AUDIT / (branch + suffix)
+        proxy = read(previous)
+        assert proxy["original_static_rst_sha256"] == static["rst_sha256"]
+        assert proxy["startup_basis_sha256"] == br["basis_sha256"]
+        assert proxy["matched_pose_sha256"] == report["matched_pose_sha256"]
+        old = proxy["matched_base_Y"]
+        assert old["sample"] == sample and len(old["points"]) == len(rows)
+        point_differences = []
+        for original, current in zip(old["points"], rows, strict=True):
+            for key in ("element", "point", "target"):
+                assert original[key] == current[key]
+            np.testing.assert_allclose(original["point_xyz_mm"], current["point_xyz_mm"], rtol=0, atol=1e-9)
+            point_differences.append(current["reference_stiffness_N_per_m3"] / original["reference_stiffness_N_per_m3"] - 1)
+        report["output_repeat_proof_sha256"] = digest(repeat_path)
+        report["previous_stiffness_comparison"] = {
+            "receipt_sha256": digest(previous),
+            "previous_resultant_N": old["total_N"],
+            "resultant_difference_N": report["matched_base_Y"]["total_N"] - old["total_N"],
+            "largest_relative_point_stiffness_change": max(abs(x) for x in point_differences),
+        }
+        report["scope"] = (
+            "Independent force reconstruction on the FE cylindrical barrel at prescribed displacements. "
+            "Each saved static state uses its own native aluminium-mount penalty stiffness and displacement. "
+            "The startup snapshot uses the aluminium lock stiffness. The motion omits feedback from new contacts."
+        )
+        suffix = "_prescribed_contact_native_kn.json"
+    write_json(AUDIT / (branch + suffix), report)
     print(branch, "prescribed Y", report["matched_base_Y"]["total_N"], len(rows), flush=True)
 
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("branch", choices=BRANCHES)
-    run(p.parse_args().branch)
+    p.add_argument("--aluminium-repeat", action="store_true", help="Check the archived aluminium stiffness at the same poses")
+    args = p.parse_args()
+    run(args.branch, args.aluminium_repeat)

@@ -112,10 +112,15 @@ def project(p, face, undeformed, centre, radius, restore):
 def groups(branch, data):
     ref = input_record(branch + "_static")
     sp, _, sr = source(branch + "_static", CAMPAIGN)
+    return cylindrical_surfaces(ref, sr, data["nodes"], data["nodes"][data["middle"]]), sp
+
+
+def cylindrical_surfaces(ref, sr, nodes, middle_faces):
+    """Map the registered pocket and cell barrel triangles to a supplied sorted node array."""
     mesh = MESH / f"case_{ref['size_mm']}.npz"
     owners = surface_owners(sr, mesh, ref.get("case_node_start", NODE))
     caps = np.array(sorted(e for e, tag in owners.items() if tag == 17))
-    skin = set(map(tuple, np.sort(data["nodes"][data["middle"]], axis=1)))
+    skin = set(map(tuple, np.sort(middle_faces, axis=1)))
     targets = np.array(
         sorted(
             e
@@ -142,8 +147,8 @@ def groups(branch, data):
             assert select.any() and not select.all()
         else:
             assert select.all()
-        out.append((elem[select], positions(data["nodes"], f[select]), undeformed[select], ctr, rad))
-    return out, sp
+        out.append((elem[select], positions(nodes, f[select]), undeformed[select], ctr, rad))
+    return out
 
 
 def candidates(case_start, case_delta, cell_start, cell_delta, centre, radius, cell_initial):

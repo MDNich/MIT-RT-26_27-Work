@@ -155,6 +155,8 @@ def audit(case,campaign):
                 check_load_path(case)
                 from snug_preload_fields import audit as check_locked_fields
                 check_locked_fields(case)
+                from snug_installation_barrel import audit as check_barrel_tractions
+                check_barrel_tractions(case)
     if case=='snug125_nylon_mesh3_basis':
         from snug_coarse_modes import audit as check_coarse_basis
         check_coarse_basis(campaign)
