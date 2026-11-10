@@ -1,6 +1,6 @@
 param([Parameter(Mandatory)][string]$Work,
       [Parameter(Mandatory)][string]$Case,[Parameter(Mandatory)][string]$Exe,[Parameter(Mandatory)][string]$Receipt,
-      [ValidateSet(0,1,4,12)][int]$SolveCores=0)
+      [ValidateSet(0,1,4,12)][int]$SolveCores=0,[switch]$ValidateOnly)
 $ErrorActionPreference='Stop'
 $ProgressPreference='SilentlyContinue'
 $spec=Get-Content -LiteralPath "$Work\local_job.json" -Raw|ConvertFrom-Json
@@ -25,6 +25,12 @@ if ($Case -eq 'snug125_nylon_lateral_friction_locked_steps_m15') {
         $spec.displacement_mm -ne 0.219375) {throw 'Invalid snug increment-control fixture'}
     $catalog='snug125/local_pull_step_input.json'
 }
+if ($Case -eq 'snug125_nylon_lateral_friction_locked_target4_m15') {
+    if ($spec.snug_target_parent -ne 'snug125_nylon_lateral_friction_locked_steps_m15' -or
+        $spec.snug_step_parent -ne 'snug125_nylon_lateral_friction_locked_pin1_m15' -or
+        $spec.end_time -ne 2.08 -or $spec.displacement_mm -ne 0.040) {throw 'Invalid driven-cell target refinement'}
+    $catalog='snug125/local_target_control.json'
+}
 if ($Case -like 'snug125_*_rock125_m15') {
     if (!$spec.snug_bearing_control -or $spec.end_time -ne 2.25 -or $spec.displacement_mm -ne 0.125) {throw 'Invalid snug rocking-control path'}
     $catalog='snug125/local_bearing_inputs.json'
@@ -46,6 +52,9 @@ if ($SolveCores -ne $spec.cores) {
     if ($Case -notlike 'snug125_*_m15' -or $SolveCores -ne 12 -or $spec.cores -ne 4 -or
         $receiptState.case -ne $Case -or $receiptState.cores -ne $SolveCores -or
         $receiptState.local_runtime.trial_sha256 -notmatch '^[a-f0-9]{64}$') {throw 'Unverified local SMP override'}
+}
+if ($ValidateOnly) {
+    return [PSCustomObject]@{case=$Case;catalog=$catalog;model_sha256=$spec.files.'model.inp';cores=$SolveCores}
 }
 $job=$spec.job
 $arguments=@('-b','nolist','-s','noread','-smp','-np',"$SolveCores",'-p','ansys','-j',$job,'-i','model.inp','-o','solve.out')
