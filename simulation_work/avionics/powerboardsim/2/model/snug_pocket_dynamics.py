@@ -25,14 +25,16 @@ STUDY = AUDIT / "aluminium_unilateral_startup.json"
 
 
 def residual_basis(basis, mass, stiffness, loads, factor, native_modes, blocks):
-    """Mass-orthogonal block inverse iteration starting with four static load responses."""
+    """Mass-orthogonal block inverse iteration starting with the static load responses."""
     n0 = native_modes
+    width = loads.shape[1]
+    assert basis.shape[1] == n0 + width * blocks
     weighted = np.empty_like(basis, order="F")
     weighted[:, :n0] = mass @ basis[:, :n0]
     np.testing.assert_allclose(basis[:, :n0].T @ weighted[:, :n0], np.eye(n0), atol=1e-6)
     rhs = loads
     for j in range(blocks):
-        start = n0 + 4 * j
+        start = n0 + width * j
         v = factor.solve(rhs)
         if j == 0:
             work = loads.T @ v
@@ -46,9 +48,9 @@ def residual_basis(basis, mass, stiffness, loads, factor, native_modes, blocks):
         mv /= scale
         gram = v.T @ mv
         lower = np.linalg.cholesky(0.5 * (gram + gram.T))
-        basis[:, start : start + 4] = solve_triangular(lower, v.T, lower=True).T
-        weighted[:, start : start + 4] = solve_triangular(lower, mv.T, lower=True).T
-        rhs = weighted[:, start : start + 4]
+        basis[:, start : start + width] = solve_triangular(lower, v.T, lower=True).T
+        weighted[:, start : start + width] = solve_triangular(lower, mv.T, lower=True).T
+        rhs = weighted[:, start : start + width]
     mass_error = float(abs(basis.T @ weighted - np.eye(basis.shape[1])).max())
     assert mass_error < 1e-6
     extra = basis[:, n0:]

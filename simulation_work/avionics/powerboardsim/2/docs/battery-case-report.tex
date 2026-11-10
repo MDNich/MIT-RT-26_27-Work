@@ -34,6 +34,9 @@ The native export has 6.350~mm thick tabs at the four case screw bearings. The n
 
 In the unloaded CAD assembly, shifting the case 0.0030~mm in negative PCB X brings it into contact with the middle cell. In positive X the first limit comes from the mounting holes at 0.0969~mm. Along PCB Y the holes allow only 0.0071~mm in either direction. These one-axis limits assume a fixed 1.250~mm stand-off, zero rotation and four straight 4.00~mm shanks free to centre within their holes.
 
+\heading{What changed with the case?}
+After tightening, peak PCB deflection fell 39\% with nylon screws and 51\% with aluminium. Board-normal random vibration raised peak PCB stress from 32.5~MPa RMS bare to 69.4 and 98.7~MPa RMS, respectively. Those spectra hold the installed contacts fixed. Page~31 shows how early the middle pocket can lose and regain compression in the corresponding seeded motion.
+
 \newpage
 \pageheading{Comparison baseline and native rerun}
 Both screw-material comparisons use the October bare board, its three cells and six preloaded fasteners. The three native base-excitation runs use the eight original mounting faces, the 20--2000~Hz spectrum and the nine-second seeded records. The side-pull fixtures retain the original clamp preload and idealized weld footprints.
@@ -619,6 +622,30 @@ Loading the \emph{left} cell toward positive PCB X gave a different result. At 8
 The contact elements retained the same installed nodal forces across every prestressed mode. For both nylon meshes we checked the forces on each triangle against the separate static ANSYS output. For aluminium the inherited resultant was 0.0222964~N. The difference from the independent solid-stress integration was 0.00000034~N in vector norm. This use of stored base contact data follows the \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_elem/Hlp_E_LinearPerturbElems.html}{ANSYS Element Reference, section 5.9.2}.
 
 We recovered the forces at the three integration points of each quadratic triangle from the six nodal forces. Recombining the individual point stiffnesses reproduced each native contact matrix. At every change of bearing we checked force balance, nonnegative compression and continuity of displacements. At the 8.54~N middle-cell endpoint, all three reconstructed cell surfaces cleared the case in all three cased models. With the same load applied to the left cell, the middle-cell surfaces still intersected on both nylon meshes and cleared on aluminium. These geometry checks use the calculated displacements. The queued native left-cell loading controls can detect new load-carrying contact along the path.
+
+\clearpage
+\pageheading{Does the middle battery stay seated during vibration?}
+Under the original board-normal vibration record, the middle pocket repeatedly unloaded and carried compression again in all three cased models. On the nominal 2~mm mesh the first interval with zero force at every originally loaded pocket point was \textbf{5.61--6.15~ms with aluminium screws} and \textbf{11.54--11.78~ms with nylon}. The first such interval on the finer nylon mesh was shorter, 11.64--11.67~ms. Both the pocket and the four tab spacers were free to open or close in this independent whole-board calculation.
+
+\begin{center}\includegraphics[width=\linewidth]{figures/snug-coupled-startup.pdf}
+\captionof{figure}{First 31.25~ms of the same base-Z excitation. The left panel sums the modeled compressive forces at the middle pocket. The right panel gives signed, mass-weighted middle-cell travel relative to the moving base. Bare uses the native MAPDL history. Each cased trace uses the independent switching-contact model. The vertical line identifies the common instant used to check all three case surfaces.}\end{center}
+
+\heading{One comparison time for each excitation}
+We selected the stored input sample at which the smallest opening among the originally loaded pocket points, across all three cased models, was greatest. We then checked the \emph{entire} deformed quadratic surface of the middle cell against the case in each model at that same time. The values below bound the shortest distance between the two meshes. Each bound includes subdivisions of both curved surfaces. The marked times describe the selected snapshots; the smallest surface distance may reach its peak at a different time.
+
+\begin{center}\small\begin{tabular}{lrrrr}\toprule
+Base & Time [ms] & Nylon, 2 mm [$\mu$m] & Nylon, 1.5 mm [$\mu$m] & Aluminium, 2 mm [$\mu$m]\\\midrule
+X & 31.08 & 5.00--5.11 & 4.74--4.85 & 6.09--6.20\\
+Y & 24.70 & Overlap & Overlap & Overlap\\
+Z & 28.79 & 3.90--4.01 & 2.44--2.55 & 1.73--1.84\\
+\bottomrule\end{tabular}\end{center}
+
+Over the full 31.25~ms board-normal interval, the largest middle-cell Z travel was 0.56~$\mu$m bare, 0.65~$\mu$m with nylon screws (0.60~$\mu$m on finer nylon), and 0.64~$\mu$m with aluminium. These peaks occur at different times.
+
+\heading{What the startup calculation resolves}
+The calculation retains the native prestressed modes and adds five groups of static displacement fields driven by unit pocket forces, spacer forces and three base inertia loads. The original pocket contains five loaded integration points on nominal nylon, ten on finer nylon and one on aluminium. All three models retain 2\% damping in their installed modes. Removing a group of displacement fields changed the pocket-force histories by at most 2.4\% in relative RMS norm. An independent matrix-exponential solution located changes of contact within each input interval and checked the implicit time integration.
+
+At the matched 24.70~ms base-Y sample, we identified an intersecting case triangle in each model. All three triangles had been unloaded at bolt lock. Forces at those new locations could change the motion. The surface checks give the geometry at the calculated positions. Contact forces on newly engaged faces, the effects of actual print dimensions and any damage after recontact remain unresolved.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

@@ -109,6 +109,16 @@ def endpoint_geometry(raw, dofs, free, transfer, displacement, surfaces):
     }
 
 
+def contact_columns(d, free, transfer, parts):
+    keys = 8 * d[:, 0].astype(np.int64) + d[:, 1]
+    order = np.argsort(keys)
+    labels = np.concatenate([a for a, _, _ in parts])
+    rows = order[positions(keys[order], labels)]
+    cols = np.repeat(np.arange(len(parts)), [len(a) for a, _, _ in parts])
+    B0 = csc_matrix((np.concatenate([b for _, b, _ in parts]), (rows, cols)), shape=(len(d), len(parts)))
+    return (B0 + transfer.T @ B0)[free].tocsc()
+
+
 def study(branch):
     faces_file = AUDIT / f"{branch}_pocket_face_unloading.json"
     seats_file = AUDIT / f"{branch}_spacer_bearing.json"
@@ -123,13 +133,7 @@ def study(branch):
     d, free, _, _, transfer, K, _, identity = assemble(folder, hashes)
     reference = read(AUDIT / f"{branch}_full_board_tangent.json")
     assert reference["matrix_assembly"] == identity
-    keys = 8 * d[:, 0].astype(np.int64) + d[:, 1]
-    order = np.argsort(keys)
-    labels = np.concatenate([a for a, _, _ in parts])
-    rows = order[positions(keys[order], labels)]
-    cols = np.repeat(np.arange(len(parts)), [len(a) for a, _, _ in parts])
-    B0 = csc_matrix((np.concatenate([b for _, b, _ in parts]), (rows, cols)), shape=(len(d), len(parts)))
-    B = (B0 + transfer.T @ B0)[free].tocsc()
+    B = contact_columns(d, free, transfer, parts)
     ids, w, _ = mass_weights(branch)
     _, cell = cell_forces(d, free, transfer, ids, w)
     with TemporaryDirectory() as tmp:
