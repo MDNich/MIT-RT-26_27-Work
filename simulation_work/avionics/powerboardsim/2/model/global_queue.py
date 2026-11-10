@@ -232,6 +232,9 @@ def jobs():
             yield entry['case'],entry['parent']
         local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
         local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
+        coarse=snug_dir/'local_inputs_m3.json'
+        coarse_cases=list(read(coarse)) if coarse.is_file() and (snug_dir/'local_rigid_side_clearance_m3.json').is_file() else []
+        nylon_forward_coarse='snug125_nylon_lateral_friction_locked_pin1_m3'
         if local_catalog.is_file():
             local_cases=read(local_catalog)
             # Complete both directions on both nominal mounts before testing tab rotation.
@@ -241,6 +244,10 @@ def jobs():
                     if (meta['source'] in primary)==directional:
                         yield meta['bare_reference'],''
                         yield case,meta['bare_reference']
+                # Compare the reported tab-root crossing on the second mesh after the four primary directions.
+                if directional and nylon_forward_coarse in coarse_cases:
+                    yield nylon_forward_coarse,nylon_forward_coarse.removesuffix('_m3')+'_m15'
+                    coarse_cases.remove(nylon_forward_coarse)
                 rocking=snug_dir/'local_bearing_inputs.json'
                 if directional and rocking.is_file():
                     for case,meta in read(rocking).items():
@@ -261,10 +268,8 @@ def jobs():
             if (snug_dir/(name+'_preflight.json')).is_file():
                 for case,spec in read(snug_dir/(name+'.json')).items():
                     yield case,spec['static_fixture']
-        coarse=snug_dir/'local_inputs_m3.json'
-        if coarse.is_file() and (snug_dir/'local_rigid_side_clearance_m3.json').is_file():
-            for case in read(coarse):
-                yield case,case.removesuffix('_m3')+'_m15'
+        for case in coarse_cases:
+            yield case,case.removesuffix('_m3')+'_m15'
         sensitivities=snug_dir/('local_sensitivity_inputs'+local_suffix+'.json')
         if sensitivities.is_file():
             for case,meta in read(sensitivities).items():

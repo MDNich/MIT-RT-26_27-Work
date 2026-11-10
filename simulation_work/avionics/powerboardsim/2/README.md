@@ -40,6 +40,8 @@ At 0.26469 mm in the positive pull, the nylon fixture required 1,645.8 N versus 
 
 Under base X, the largest decrease in spacing between the left and middle cell centres was 19.1 µm bare, 85.5 µm with nylon screws and 70.8 µm with aluminium. The fine nylon mesh gave 85.0 µm under independent integration. At the nominal nylon peak the left cell moved +10.6 µm and the middle cell −74.9 µm from the same clamp reference. These nine-second whole-board histories retain the contact state at bolt lock. [Cell spacing, page 22](output/pdf/battery-case-report.pdf#page=22) · [Briefing, slide 9](output/pdf/battery-case-slides.pdf#page=9)
 
+In the nylon forward pull, two printed tab corners reached the 40.5 MPa through-layer coupon mean between 0.2950 and 0.3039 mm. At the upper station the corner values were 40.68 and 40.79 MPa. The mean signed stresses along the two 6.36 mm root edges were 16.51 and 17.02 MPa. The result identifies a localized stress concentration under fixed-neighbour loading. [Tab location and material comparison, page 23](output/pdf/battery-case-report.pdf#page=23) · [Briefing, slide 4](output/pdf/battery-case-slides.pdf#page=4)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.

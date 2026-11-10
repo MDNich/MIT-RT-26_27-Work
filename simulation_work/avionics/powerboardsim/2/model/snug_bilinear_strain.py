@@ -71,13 +71,17 @@ def compare(folder):
     source=ROOT/'.runtime/local_inputs/lateral_friction_locked/mesh.json'
     verified(source,read(ROOT/'validation/local_inputs.json')['lateral_friction_locked']['files']['mesh.json'])
     mesh=read(source);p=AUDIT/f'{CASE}_{folder.name}_checkpoint.json'
-    r=read(p);assert r['case']==CASE and r['campaign']==CAMPAIGN and r['first_excluded_set'] is None
+    r=read(p);assert r['case']==CASE and r['campaign']==CAMPAIGN
     verified(folder/'pull.rst',r['rst_sha256'])
     bare,ref=closed(r['bare_case'],mesh)
     _,alternate=closed('stand3_nylon_lateral_friction_locked_pin1',mesh)
     snug,_=extract(folder,'pull.rst',mesh)
     assert len(snug)==r['converged_sets'] and ref['rst_sha256']==r['bare_rst_sha256']
     equal=r['equal_bare_endpoint_load'];travel=r['last_common_travel']
+    last_supported = travel['cased']['set']
+    assert all(state['within_screens'] for state in r['states'][:last_supported])
+    assert r['first_excluded_set'] in (None, last_supported + 1)
+    assert max(equal['cased']['native_sets']) <= last_supported
     def subset(rows,ids):
         return [rows[i-1] for i in ids]
     out=dict(bare_terminal_force_N=equal['bare']['cell_force_N'],

@@ -11,7 +11,7 @@
 \pdfbookmark[0]{Snug Balius fit versus bare board}{snug-overview}
 {\LARGE\bfseries\color{B}The snug Balius battery case and the bare power board}\par
 {\large Three-cell fit, mounting loads and vibration response}\par
-{\small 9 November 2026\quad|\quad Study in progress\quad|\quad SolidWorks native export and ANSYS MAPDL 2026 R1}
+{\small Started 9 November 2026\quad|\quad Updated 10 November 2026\quad|\quad SolidWorks native export and ANSYS MAPDL 2026 R1}
 
 \heading{What fits at 1.25 mm}
 The three-pocket Balius SolidWorks part follows the spacing of the archived cells and clears all four outer washers at a nominal 1.250~mm gap between the mounting tabs and the underside of the PCB. The middle cell has only 0.003~mm of clearance. Print dimensions, battery sleeves and assembly alignment can therefore determine whether a real cell starts in contact.
@@ -30,7 +30,7 @@ Mass of board plus printed shell$^\ast$ & 251.82 g & 325.51 g\\\bottomrule
 \captionof*{table}{$^\ast$The bare value is the archived model mass. A dense PLA shell at 1.17~g/cm$^3$ adds 73.69~g, or 29.3\%. The estimate excludes the four added screws and spacer material. Actual print mass has not been measured.}\end{center}
 
 \heading{Mounting and contact assumptions}
-The native export has 6.350~mm thick tabs at the four case screw bearings. The nominal distance from the PCB underside to each modeled screw-bearing plane is 7.600~mm. Both variants use the same hole registration and air around the cells. The added screw shanks have nominal M4 geometry. The plastic scenario uses the nylon properties from the original comparison; the metal scenario uses aluminium. The 1.25~mm spacers are represented by the same assumed printed-PLA compression law. The four added screws have no specified installation torque.
+The native export has 6.350~mm thick tabs at the four case screw bearings. The nominal distance from the PCB underside to each modeled screw-bearing plane is 7.600~mm. Both variants use the same hole registration and air around the cells. The added screw shanks have nominal M4 geometry. The nylon scenario uses a 3.0~GPa shank modulus and McMaster-Carr 93640A145 as representative M4 hardware. The aluminium shank modulus is 69~GPa. The 1.25~mm spacers are represented by the same assumed printed-PLA compression law. The four added screws have no specified installation torque.
 
 In the unloaded CAD assembly, shifting the case 0.0030~mm in negative PCB X brings it into contact with the middle cell. In positive X the first limit comes from the mounting holes at 0.0969~mm. Along PCB Y the holes allow only 0.0071~mm in either direction. These one-axis limits assume a fixed 1.250~mm stand-off, zero rotation and four straight 4.00~mm shanks free to centre within their holes.
 
@@ -53,9 +53,10 @@ The nominal 2~mm case mesh has 45,549 quadratic tetrahedra and 77,166 nodes. Its
 
 In the local side-pull fixture the left cell moves along PCB X. With rigid, undeformed CAD and fixed registration it first touches its pocket after 0.02035--0.02039~mm in positive X or 0.16470--0.16474~mm in negative X. Both first contacts fall on the cylindrical pocket face selected in the native fixture. Replaying the bare nickel fixture's native cell translation and rotation against the stationary case gave first sampled overlaps between 0.0175 and 0.02875~mm toward the middle cell, and between 0.145625 and 0.170625~mm away. Exact CAD and two reconstructions of the fixture surfaces agreed on both brackets. ANSYS rejected one nearly flat PLA element in the 2~mm local fixture before it solved a load step. The replacement uses the 1.5~mm shell mesh. Native shape checks passed for all 99,818 tetrahedra, four screw beams, four spacer springs and both contact pairs. Page~19 compares the first converged nylon forward-pull stations with the bare force curve.
 
-\heading{Response quantities}
-The native comparisons will report mounting reactions, board deformation, cell and washer contact, matched natural modes, signed and RMS vibration quantities, tension along and across the printed layers, and edge-cell force and nickel damage for both pull directions where supported by the fixture. The 22 movie subjects use the bare board as the reference on shared physical or display scales. The following pages identify the native solver results and the independent reconstructions from those results. Appendix~A preserves the previous study with its original geometries and page numbering.
+\heading{What changes with the case}
+Peak PCB deflection at bolt lock fell by 39\% with nylon screws and 51\% with aluminium screws. Under board-normal vibration the nominal peak PCB stress rose from 32.5~MPa RMS bare to 69.4 and 98.7~MPa RMS, respectively (page~12). The vibration model holds contact fixed at bolt lock. In the separate nylon forward-pull fixture the PLA first reached its through-layer tensile reference at two tab roots between 0.295 and 0.304~mm (page~23). The aluminium, reverse and damage-law pulls remain in progress.
 
+All 22 movie subjects compare the bare board with both snug mounts on shared scales (page~16). Appendix~A preserves the previous geometry study and its original page numbering.
 
 \newpage
 \pageheading{Both snug mounts reduce PCB deflection during tightening}
@@ -400,7 +401,7 @@ At 8.54~N the bare nickel reached 1.254\% peak equivalent plastic strain. All 2,
 The tabs move with the screw ends. When the cell moved 0.206875~mm, all four tabs shifted 0.0817--0.0837~mm sideways. The ties enforce equal tab and screw-tip rotation. Reproducing each tab’s normal load and moment inside the 3.75~mm bearing radius requires at least 6.33--8.11~N per tab opposing the net normal force. The 93\% travel reduction depends on this mount assumption. The two queued controls allow rotation between the tab and shank.
 
 \heading{How far this result applies}
-Two washers clamp the nickel strips at 750~N each before locking. The fixture then drives the left cell toward the middle and holds the screw supports and neighbouring hardware fixed. These first 12 forward increments use the 1.5~mm mesh. Page~21 follows the same pull through the next six increments. DPF and result-file reactions agreed. The cased $+0.500$~mm endpoint, reverse pull, aluminium comparison and damage tests remain open.
+Two washers clamp the nickel strips at 750~N each before locking. The fixture then drives the left cell toward the middle and holds the screw supports and neighbouring hardware fixed. These first 12 forward increments use the 1.5~mm mesh. Page~21 traces the load into the fixed middle cell. Page~23 locates the first printed-material crossing. DPF and result-file reactions agreed. The cased $+0.500$~mm endpoint, reverse pull, aluminium comparison and damage tests remain open.
 
 \newpage
 \pageheading{Refining the case mesh changes the base-X event order}
@@ -462,6 +463,21 @@ The first three columns use native MAPDL coordinates. The last uses independent 
 At each of the 589,825 samples we subtracted simultaneous mass-centre translations. We checked the extrema against the nodal displacement fields of the three cells. Using the full three-dimensional centre distance changed the result by less than 0.001~$\mu$m at every sample. Across both pairs and all drives, independent integration reproduced the nominal approach and opening peaks within 0.63\%. Reducing the modal cutoff from 4 to 3.5~kHz changed those peaks by less than 0.69\%.
 
 Cell-centre spacing and cell-to-pocket clearance measure different motions. For example, the nominal nylon left cell first reached its pocket at 38.30~ms under X, when the left and middle centres had approached by only 3.85~$\mu$m. The nine-second comparisons continue along the modes at bolt lock. Predicting subsequent contact forces and the assembled board's resistance to a sideways pull requires the corresponding nonlinear loading and restraints.
+
+\newpage
+\pageheading{The first PLA tensile crossing occurs at two mounting-tab roots}
+In the forward side pull with nylon screws, peak tension across the printed layers rose from \textbf{38.79 to 40.79~MPa} between \textbf{0.2950 and 0.3039~mm} of left-cell travel. The 40.5~MPa reference comes from a printed PLA tensile coupon. This was the first of the three printed-material references to be reached. It occurred at the two tab roots on the pulled-cell side of the case.
+
+\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-pull-tab-limit.pdf}
+\captionof{figure}{Left, the most highly loaded PLA corner for each material quantity at every saved forward-pull station through the first crossing. Shading brackets the crossing. Right, the native bearing-face mesh on the high-Y tab, viewed from the PCB. The cross marks the screw axis. The star lies at the junction of three planar STEP faces. The purple line marks the 6.36~mm tab-root edge.}\end{center}
+
+\heading{How local is the peak?}
+Only two of the 99,818 PLA tetrahedra had a corner above 40.5~MPa. They occurred at corresponding ends of the mounting tabs, 4.19~mm from the nearest nodes tied to either screw head. The low-Y tab reached 40.68~MPa. At the high-Y tab, nine elements met at the same corner and their unaveraged layer stresses ranged from 6.76 to 40.79~MPa. No tetrahedron had all four corners above the coupon value. Averaging the signed through-layer stress along each 6.36~mm root edge gave 16.51~MPa at low Y and 17.02~MPa at high Y. Even choosing the highest incident-element line average on each segment gave only 29.39 and 30.38~MPa. These results locate the crossing at the corners. Its travel and peak value still require a matched mesh check.
+
+\heading{What happened to the screws and strips?}
+At the upper station the highest tensile stress in a nylon screw shank was 59.01~MPa. The installed screw and its threads have no verified strength limit in this study. The PLA in-plane tension reached 44.35~MPa (84.8\% of its separate coupon mean), while the highest through-layer strain reached 96.7\% of its reference at the left pocket. Maximum loaded-corner penetrations were 0.0191~mm at the moving cell and 0.0084~mm at the fixed hardware, both below the 0.05~mm numerical screen.
+
+At the last station before the PLA crossing, 0.2950~mm, the fixture reaction was 2,138~N versus 7.78~N interpolated bare. Peak nickel equivalent plastic strain reached 17.14\% on the flat strip next to the idealized cell attachment. At least one exterior shell face reached 10\% across 4.68~mm$^2$ of the two strips' 924.64~mm$^2$ reference area. Both bare states bracketing the same travel stayed below 0.65\% everywhere. These are bilinear strip strains with intact welds. The fixed-neighbour fixture and the localized PLA crossing do not establish an assembled-pack failure load.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

@@ -197,6 +197,17 @@ def reconcile_checkpoint(checkpoint, verdict, ledger):
         assert np.array_equal(rows['set'],[r['native_set'] for r in strain['states']])
         np.testing.assert_allclose(rows['max_eppl'],[r['peak'] for r in strain['states']],rtol=2e-7,atol=1e-8)
         receipt['nickel_strain_sha256']=digest(strain_file)
+    corners_file=checkpoint.with_name(checkpoint.stem.removesuffix('_checkpoint')+'_tab_corners.json')
+    if corners_file.is_file():
+        corners=read(corners_file)
+        assert corners['checkpoint_sha256']==receipt['checkpoint_sha256']
+        for state in corners['stations']:
+            saved=history[state['native_set']-1]
+            for name,metric in state['metrics'].items():
+                assert abs(saved['all_'+name]-metric['peak'])<1.e-6
+                assert abs(saved['all_four_'+name]-metric['highest_element_minimum'])<1.e-6
+                assert saved[name+'_elements_all_four_above']==metric['elements_all_corners_at_reference']
+        receipt['tab_corner_sha256']=digest(corners_file)
     return receipt
 
 
@@ -222,6 +233,10 @@ def run(case):
         folder=ROOT/'.runtime/archive'/ledger['campaign']/case
         record['mount_history_sha256']=digest(check_mounts(case,record,folder,sha))
         record['fixed_target_history_sha256']=digest(check_fixed_targets(case,record,folder,sha))
+    from snug_tab_edge import FORWARD, closed as check_tab_edge
+    if case in (FORWARD+'_m15', FORWARD+'_m3'):
+        folder=ROOT/'.runtime/archive'/ledger['campaign']/case
+        record['tab_edge_history_sha256']=digest(check_tab_edge(case,record,folder))
     write_json(AUDIT/(case+'_comparison.json'),record)
 
 
