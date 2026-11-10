@@ -134,6 +134,8 @@ def audit(case,campaign):
                                 repeat_static_rst_sha256=proofs[1]['rst_sha256'],
                                 maximum_nodal_displacement_difference_m_by_set=errors,
                                 identical_locked_bolt_forces_and_contact_histories=True))
+                from snug_pocket_unloading import compare_native_repeat
+                compare_native_repeat('snug125_aluminium',case,errors)
             if case.startswith('snug125_aluminium_'):
                 pair=('snug125_aluminium_out2_static','snug125_aluminium_mesh15_static')
                 if ((ROOT/'validation/snug125/aluminium_force_repeat.json').is_file()

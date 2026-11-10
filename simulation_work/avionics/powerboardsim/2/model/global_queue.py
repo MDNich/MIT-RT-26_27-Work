@@ -215,13 +215,15 @@ def jobs():
             for branch in branches:
                 yield branch+'_motion_'+axis,branch+'_enforced'
         snug_dir=ROOT/'validation/snug125'
-        aluminium=ROOT/'validation/snug125/aluminium_refinement_inputs.json'
-        if aluminium.is_file():
-            for case,spec in read(aluminium).items():
-                yield case,spec['parent']
+        # Verify the small aluminium pocket reaction while the first pull is still
+        # the timing reference. Updated priorities are read only at a case boundary.
         force_repeat=snug_dir/'aluminium_force_repeat_input.json'
         if force_repeat.is_file():
             yield read(force_repeat)['case'],''
+        aluminium=snug_dir/'aluminium_refinement_inputs.json'
+        if aluminium.is_file():
+            for case,spec in read(aluminium).items():
+                yield case,spec['parent']
         tolerance=ROOT/'validation/snug125/force_tolerance_input.json'
         if tolerance.is_file():
             control=read(tolerance)
@@ -230,6 +232,11 @@ def jobs():
         if coarse_basis.is_file():
             entry=read(coarse_basis)
             yield entry['case'],entry['parent']
+        board_pulls=snug_dir/'whole_board_pull_inputs.json'
+        if board_pulls.is_file():
+            for case,meta in read(board_pulls).items():
+                yield meta['parent'],''
+                yield case,meta['parent']
         local_suffix='_m15' if (snug_dir/'local_mesh15_preflight.json').is_file() else ''
         local_catalog=snug_dir/('local_inputs'+local_suffix+'.json')
         coarse=snug_dir/'local_inputs_m3.json'
@@ -250,10 +257,6 @@ def jobs():
                 if directional and nylon_forward_coarse in coarse_cases:
                     yield nylon_forward_coarse,nylon_forward_coarse.removesuffix('_m3')+'_m15'
                     coarse_cases.remove(nylon_forward_coarse)
-                board_pulls=snug_dir/'whole_board_pull_inputs.json'
-                if directional and board_pulls.is_file():
-                    for case,meta in read(board_pulls).items():
-                        yield case,meta['parent']
                 rocking=snug_dir/'local_bearing_inputs.json'
                 if directional and rocking.is_file():
                     for case,meta in read(rocking).items():

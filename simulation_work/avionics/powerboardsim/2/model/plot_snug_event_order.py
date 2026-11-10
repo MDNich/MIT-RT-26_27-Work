@@ -17,7 +17,12 @@ def draw():
         ax.set_xlim(*limits)
         ax.set_ylim(-.6,3.7)
         for entry,offset,color,mk in zip(result['models'],(.16,-.16),('#08357E','#38761D'),('o','s'),strict=True):
-            t=[entry['pressure_redistribution_by_ms'],
+            signed=read(AUDIT/(entry['variant']+'_pocket_unloading.json'))
+            assert signed['modal_rst_sha256']==entry['basis_sha256']
+            clock=signed['axes'][drive]['integrations']['exact_linear_input']['first_crossing']
+            bound_ms=1000*clock['time_bracket_s'][1]
+            assert bound_ms<=entry['pressure_redistribution_by_ms']
+            t=[bound_ms,
                np.mean(entry['outer_brackets_ms']['left']),np.mean(entry['outer_brackets_ms']['right']),
                np.mean(entry['trial_yield_bracket_ms'])]
             y=np.array([3,2,1,0])+offset

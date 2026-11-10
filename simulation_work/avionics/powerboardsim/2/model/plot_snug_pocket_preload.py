@@ -24,17 +24,19 @@ def draw():
     loads.legend(frameon=False,fontsize=8,loc='upper right')
     loads.set(xlabel='Native load-step parameter',ylabel='Case contact resultant [N]',xlim=(-.07,2.10),ylim=(0,None))
     colors=['#08357E','#3C78D8','#38761D']
+    signed=read(ROOT/'validation/snug125/snug125_nylon_pocket_unloading.json')
     for i,(axis,color) in enumerate(zip('XYZ',colors,strict=True)):
         records=data['axes'][axis]['integrations']
         p,n=[records['independent'][s]['sample']*1000/65536 for s in ('positive','negative')]
+        assert records['independent']['positive']['sample']==signed['axes'][axis]['integrations']['native']['first_crossing']['sample']
         clock.plot([p,n],[i,i],lw=1.2,color=color)
         clock.scatter(p,i,s=36,facecolors='white',edgecolors=color,zorder=3)
         clock.scatter(n,i,s=36,color=color,zorder=3)
-        clock.text(max(p,n)+.45,i,f'{max(p,n):.1f} ms',va='center',fontsize=9)
-    clock.scatter([],[],s=27,facecolors='white',edgecolors='#08357E',label='Positive increment')
-    clock.scatter([],[],s=27,color='#08357E',label='Negative increment')
+        clock.annotate(f'{p:.1f} ms',(p,i),xytext=(0,6),textcoords='offset points',ha='center',va='bottom',fontsize=9)
+    clock.scatter([],[],s=27,facecolors='white',edgecolors='#08357E',label='Relieves compression')
+    clock.scatter([],[],s=27,color='#08357E',label='Adds compression')
     clock.legend(frameon=False,fontsize=8,loc='lower left',ncol=1)
-    clock.set(xlabel='Time from start of base excitation [ms]',xlim=(8,31.6),ylim=(2.96,-.4),
+    clock.set(xlabel='Time from start of base excitation [ms]',xlim=(8,31.6),ylim=(2.96,-.55),
               yticks=range(3),yticklabels=['Base X','Base Y','Base Z'])
     for a in (loads,clock):
         a.spines[['right','top']].set_visible(False);a.grid(axis='x',alpha=.16);a.set_axisbelow(True)

@@ -18,12 +18,13 @@ def draw():
                         xytext=(-3 if index == 0 else 3, 6 if row == 0 else 5),
                         textcoords='offset points', fontsize=9,
                         ha='right' if index == 0 else 'left', va='bottom')
-    reserve = read(AUDIT / 'nylon_pocket_preload.json')['axes']['Z']['integrations']['independent']
-    limit = 1000 * reserve['sign_independent_latest_sample'] / result['nylon']['methods']['exact']['sample_rate_Hz']
-    ax.plot([0, limit], [1, 1], color='#5A43A0', lw=2.5, solid_capstyle='butt')
-    ax.plot(limit, 1, marker='|', color='#5A43A0', ms=9)
-    ax.text(limit / 2, .88, f'Middle-pocket pressure\nchanges by {limit:.1f} ms',
-            color='#5A43A0', ha='center', va='top', fontsize=8)
+        record=read(AUDIT/f'snug125_{screw}_pocket_unloading.json')
+        sample=record['axes']['Z']['integrations']['native']['first_crossing']['sample']
+        limit=1000*sample/result[screw]['methods']['exact']['sample_rate_Hz']
+        ax.plot([0,limit], [row,row], color='#5A43A0', lw=2.5, solid_capstyle='butt')
+        ax.plot(limit,row,marker='|',color='#5A43A0',ms=9)
+        ax.annotate(f'Middle {limit:.1f} ms',(limit,row),xytext=(3,6),textcoords='offset points',
+                    fontsize=8,color='#5A43A0',ha='left')
     ax.set(xlim=(0, 53), ylim=(-.25, 1.47), yticks=(0, 1), yticklabels=('Aluminium', 'Nylon'),
            xlabel='Time after base-Z vibration starts [ms]')
     ax.spines[['left', 'top', 'right']].set_visible(False)

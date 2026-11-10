@@ -1,0 +1,355 @@
+{
+  "branch": "snug125_aluminium",
+  "locked_equilibrium_sha256": "601e4ba6951ef66d59edab8490c485a67347c61ee87049a3c7e7d96ce3c1c4ee",
+  "initial_load_paths_sha256": "730116b1647e54aca8d4e79f08aee8374bf701e9e5a205298b7a67001603bdd7",
+  "modal_force_shapes_sha256": "f572e9a84a9144bf5a78872be6561a66ec2717cca78a27e442e221aea659d01e",
+  "modal_rst_sha256": "b1ea191bc69596e0b4b8cde834f5df66c3ffc6d2057df26cf574f9de7473fb86",
+  "selected_preload_source": "PLA_pocket",
+  "opening_direction": [
+    -0.933643885151815,
+    9.114177819492342e-06,
+    0.3582025902133544
+  ],
+  "projected_compression_N": {
+    "PLA_pocket": 0.022296039885728765,
+    "four_mounts": 0.02228975698243556,
+    "middle_cell": 0.0222899983375826
+  },
+  "minimum_installed_normal_cosine": 0.9945264272297781,
+  "load_order": [
+    "left",
+    "middle",
+    "right"
+  ],
+  "opening_force_increment_N_per_unit_positive_X_load": [
+    0.007258751421407338,
+    -0.15546640574473958,
+    0.0044490933308699845
+  ],
+  "signed_applied_X_N_at_zero_compression_by_source": {
+    "PLA_pocket": [
+      3.071608130838289,
+      -0.14341387632217248,
+      5.01136708709344
+    ],
+    "four_mounts": [
+      3.070742568301642,
+      -0.1433734630684981,
+      5.009954910987893
+    ],
+    "middle_cell": [
+      3.070775818530645,
+      -0.14337501552702367,
+      5.0100091591524265
+    ]
+  },
+  "axes": {
+    "X": {
+      "input_sha256": "f04864b2974a882b110dbf0a9442317a992b1a2a0360617cf08f1f8d1f36de67",
+      "listing_sha256": "8a8ba375a35453c1008135abccad2abda7d5cf6945c24c4094ffb0564a96f7ff",
+      "independent_motion_sha256": "65d07fb211a348ad70bcb335d4fc5516ad8e4d6e61b446c140033b33b0cb1273",
+      "native_coordinate_source": {
+        "native_mcf_sha256": "0b292394ee68ae21dd4595750c659e18f50d6aff1e5b24a3fb08e5f6b0a0fdff",
+        "native_history_audit_sha256": "80053c2311f34a18889da4f93adfafa5d891aacdcdc4360f4bc4d3ef1cf1e3ce"
+      },
+      "exact_integrator_control": {
+        "integration": "Matrix exponential with piecewise-linear input",
+        "ramp_control_relative_max_error": 2.878386949524641e-13
+      },
+      "integrations": {
+        "Newmark": {
+          "first_crossing": {
+            "sample": 200,
+            "time_bracket_s": [
+              0.0030364990234375,
+              0.0030517578125
+            ],
+            "signed_increments_N": [
+              0.021613630788472983,
+              0.022520498856772625
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945271396445008,
+          "projected_total_force_into_case_N": [
+            0.0006824090972557817,
+            -0.0002244589710438602
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 200,
+            "four_mounts": 200,
+            "middle_cell": 200
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 200,
+            "3000": 200,
+            "3500": 200,
+            "4000": 200
+          }
+        },
+        "exact_linear_input": {
+          "first_crossing": {
+            "sample": 200,
+            "time_bracket_s": [
+              0.0030364990234375,
+              0.0030517578125
+            ],
+            "signed_increments_N": [
+              0.021645298265380673,
+              0.022550240227811255
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945271405594683,
+          "projected_total_force_into_case_N": [
+            0.0006507416203480922,
+            -0.00025420034208249037
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 200,
+            "four_mounts": 200,
+            "middle_cell": 200
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 200,
+            "3000": 200,
+            "3500": 200,
+            "4000": 200
+          }
+        },
+        "native": {
+          "first_crossing": {
+            "sample": 200,
+            "time_bracket_s": [
+              0.0030364990234375,
+              0.0030517578125
+            ],
+            "signed_increments_N": [
+              0.021613329664420425,
+              0.022520189762826614
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945271396354031,
+          "projected_total_force_into_case_N": [
+            0.0006827102213083393,
+            -0.0002241498770978491
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 200,
+            "four_mounts": 200,
+            "middle_cell": 200
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 200,
+            "3000": 200,
+            "3500": 200,
+            "4000": 200
+          }
+        }
+      }
+    },
+    "Y": {
+      "input_sha256": "a3a97229029dbe3f4d4501b2d80dfeb9cdfc91aabb019da13160ee6b17f94ade",
+      "listing_sha256": "8a8ba375a35453c1008135abccad2abda7d5cf6945c24c4094ffb0564a96f7ff",
+      "independent_motion_sha256": "d23da0db4255ca75828fe47e54fb806e5603a72f1eb855cfad4d7f232de0ccd7",
+      "native_coordinate_source": {
+        "native_mcf_sha256": "a117a9fae32f78e6db47ef267d829795f374c46456f61aace394ae9d52d708c6",
+        "native_history_audit_sha256": "883164ea9d574ed284d3f7c1a212268f5e2c8fea289d2404798440f837d2e2c9"
+      },
+      "exact_integrator_control": {
+        "integration": "Matrix exponential with piecewise-linear input",
+        "ramp_control_relative_max_error": 2.878386949524641e-13
+      },
+      "integrations": {
+        "Newmark": {
+          "first_crossing": {
+            "sample": 473,
+            "time_bracket_s": [
+              0.0072021484375,
+              0.0072174072265625
+            ],
+            "signed_increments_N": [
+              0.020847660992036016,
+              0.022747707915104422
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945269470462632,
+          "projected_total_force_into_case_N": [
+            0.0014483788936927484,
+            -0.000451668029375657
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 473,
+            "four_mounts": 473,
+            "middle_cell": 473
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 471,
+            "3000": 473,
+            "3500": 473,
+            "4000": 473
+          }
+        },
+        "exact_linear_input": {
+          "first_crossing": {
+            "sample": 473,
+            "time_bracket_s": [
+              0.0072021484375,
+              0.0072174072265625
+            ],
+            "signed_increments_N": [
+              0.02100525193389449,
+              0.02290726906009178
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945269505224897,
+          "projected_total_force_into_case_N": [
+            0.0012907879518342762,
+            -0.0006112291743630149
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 473,
+            "four_mounts": 473,
+            "middle_cell": 473
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 471,
+            "3000": 473,
+            "3500": 473,
+            "4000": 473
+          }
+        },
+        "native": {
+          "first_crossing": {
+            "sample": 473,
+            "time_bracket_s": [
+              0.0072021484375,
+              0.0072174072265625
+            ],
+            "signed_increments_N": [
+              0.02084774081249377,
+              0.022747801950328175
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945269470470568,
+          "projected_total_force_into_case_N": [
+            0.0014482990732349946,
+            -0.00045176206459941054
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 473,
+            "four_mounts": 473,
+            "middle_cell": 473
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 471,
+            "3000": 473,
+            "3500": 473,
+            "4000": 473
+          }
+        }
+      }
+    },
+    "Z": {
+      "input_sha256": "f80650a5a0051703d9f1099f6257ddfb4a96180b5c2b73d388999c2d1efa1dbe",
+      "listing_sha256": "8a8ba375a35453c1008135abccad2abda7d5cf6945c24c4094ffb0564a96f7ff",
+      "independent_motion_sha256": "4f7203bdb0cb694494ee0d70bed288f9021544f2c3e4b908c2e2e78d27758e8d",
+      "native_coordinate_source": {
+        "native_mcf_sha256": "65c04c087faabc24e1c821f70ada7b08e9a6d9ed396916288d8c9c94c2228c49",
+        "native_history_audit_sha256": "fd803adf4aad773797c271802ca6ba0b41673c15f0beddbd46902e74f548c5c1"
+      },
+      "exact_integrator_control": {
+        "integration": "Matrix exponential with piecewise-linear input",
+        "ramp_control_relative_max_error": 2.878386949524641e-13
+      },
+      "integrations": {
+        "Newmark": {
+          "first_crossing": {
+            "sample": 368,
+            "time_bracket_s": [
+              0.0055999755859375,
+              0.005615234375
+            ],
+            "signed_increments_N": [
+              0.01961738562960557,
+              0.024364814749295437
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945269252263226,
+          "projected_total_force_into_case_N": [
+            0.0026786542561231946,
+            -0.002068774863566672
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 368,
+            "four_mounts": 368,
+            "middle_cell": 368
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 367,
+            "3000": 368,
+            "3500": 368,
+            "4000": 368
+          }
+        },
+        "exact_linear_input": {
+          "first_crossing": {
+            "sample": 368,
+            "time_bracket_s": [
+              0.0055999755859375,
+              0.005615234375
+            ],
+            "signed_increments_N": [
+              0.01980934980541208,
+              0.02456672109698708
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945269300062458,
+          "projected_total_force_into_case_N": [
+            0.0024866900803166836,
+            -0.0022706812112583165
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 368,
+            "four_mounts": 368,
+            "middle_cell": 368
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 366,
+            "3000": 368,
+            "3500": 368,
+            "4000": 368
+          }
+        },
+        "native": {
+          "first_crossing": {
+            "sample": 368,
+            "time_bracket_s": [
+              0.0055999755859375,
+              0.005615234375
+            ],
+            "signed_increments_N": [
+              0.019617233566137468,
+              0.024364640775903036
+            ]
+          },
+          "normal_cosine_at_first_crossing": 0.9945269252202356,
+          "projected_total_force_into_case_N": [
+            0.0026788063195912967,
+            -0.0020686008901742714
+          ],
+          "crossing_sample_by_preload_source": {
+            "PLA_pocket": 368,
+            "four_mounts": 368,
+            "middle_cell": 368
+          },
+          "crossing_sample_by_cutoff_Hz": {
+            "2000": 367,
+            "3000": 368,
+            "3500": 368,
+            "4000": 368
+          }
+        }
+      }
+    }
+  },
+  "scope": "The middle pocket is frictionless and unilateral. A negative net compressive projection is incompatible with the installed set of contact faces. Each applied-load intercept extrapolates the initial stiffness; redistribution or engagement elsewhere can precede it. Each time bracket locates this test on the fixed-contact vibration trajectory. Actual opening, reseating and impact require changing contact."
+}
