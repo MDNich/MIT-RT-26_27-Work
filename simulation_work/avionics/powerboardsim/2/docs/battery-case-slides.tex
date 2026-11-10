@@ -15,9 +15,9 @@
 \centering\includegraphics[width=.95\linewidth]{figures/snug-seeded-board-travel.pdf}
 \par\raggedright During the displayed base-Z interval, PCB travel normal to the board reached \textbf{0.168 mm bare}, \textbf{0.390 mm with nylon screws} and \textbf{0.248 mm with aluminium}. All \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/avionics/powerboardsim/2/output/videos/snug125/README.md}{22 paired movie subjects} are available.
 \end{frame}
-\begin{frame}{Both snug mounts reduce PCB movement during tightening}
-\centering\includegraphics[width=.89\linewidth]{figures/snug-preload.pdf}
-\par\raggedright At bolt lock, peak PCB displacement fell from \textbf{47.46~$\mu$m bare} to \textbf{28.91 with nylon screws} and \textbf{23.09 with aluminium screws}. All three nylon meshes put the peak at the same corner, with a spread of 0.055~$\mu$m. Only the middle cell touched the case.
+\begin{frame}{The case restrains the middle cell at bolt lock}
+\centering\includegraphics[width=.97\linewidth]{figures/snug-installed-lateral-response.pdf}
+\par\raggedright Only the middle cell touched the case after tightening. In an independent calculation on the installed board, it moved \textbf{9.9\% less with nylon screws} and \textbf{13.9\% less with aluminium} under the same small lateral force. The finer nylon mesh gave 9.4\%. At each outer cell the change from bare was below 0.36\%. The PCB displacement at left comes from native ANSYS.
 \end{frame}
 \begin{frame}{The tab-corner stress depends strongly on mesh size}
 \centering\includegraphics[width=.97\linewidth]{figures/snug-tab-local-refinement.pdf}

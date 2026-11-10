@@ -240,9 +240,32 @@ def audit(case):
         s['initial_tangent_left_cell_X_um']=s['applied_X_N']*stiffness['cell_X_compliance_um_per_N'][0][0]
         s['initial_tangent_left_to_clamps_X_um']=s['applied_X_N']*stiffness['left_relative_to_its_clamps_X_um_per_N']
     result['independent_flexibility_sha256']=digest(prediction)
+    compare_full_tangent(branch,spec,result)
     result['scope']='Whole installed board loaded in +X through the mass-weighted nodes of its left cell. Displacements are relative to the zero-added-load hold; the original stage-2 lock is also retained for drift checks.'
     write_json(AUDIT/(case+'.json'),result)
     compare_closed()
+
+
+def compare_full_tangent(branch, spec, result):
+    """Compare native load stations with the full tangent from the same installed board."""
+    path=AUDIT/f'{branch}_full_board_tangent.json'
+    if not path.is_file():
+        return
+    full=read(path)
+    assert full['branch']==branch and full['static_rst_sha256']==result['parent_rst_sha256']
+    assert full['force_cards_sha256']==spec['force_cards_sha256']
+    centre_slope=np.array(full['cell_X_um_per_N'])[:,0]
+    clamp_slope=full['left_relative_to_its_clamps_X_um_per_N'][0]
+    for state in result['states']:
+        if state['load_step']<4:
+            continue
+        force=state['applied_X_N']
+        centres=np.asarray(state['cell_centres_XYZ_um'])[:,0]
+        state['full_tangent_check']=dict(predicted_cell_centres_X_um=(force*centre_slope).tolist(),
+            native_minus_predicted_cell_centres_X_um=(centres-force*centre_slope).tolist(),
+            predicted_left_to_clamps_X_um=force*clamp_slope,
+            native_minus_predicted_left_to_clamps_X_um=state['left_to_clamps_XYZ_um'][0]-force*clamp_slope)
+    result['full_linear_tangent_sha256']=digest(path)
 
 
 def compare_closed():

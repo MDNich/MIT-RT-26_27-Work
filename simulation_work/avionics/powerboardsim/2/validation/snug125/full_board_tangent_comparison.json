@@ -1,0 +1,83 @@
+{
+  "inputs": {
+    "bare_full_board_tangent.json": "7a0794e866429d8da3b4f7267b4971bc1f306bae91c8777f0bfe529555812c57",
+    "snug125_nylon_full_board_tangent.json": "601fc4e7a32cd3c7dbcbe7af230a8351947529548b47eec64432c3b1996e2961",
+    "snug125_aluminium_full_board_tangent.json": "e1294b038f8becf4089e0af7bd5395e73b07871c56eb3318fbef7570c4af5026",
+    "snug125_nylon_static.json": "9cfb23f8f5fd5cfea4ebafa51fb9a939d210e766fd5254d1d4642593ceaa6e4b",
+    "snug125_aluminium_static.json": "e4c496379c25c68243429634857020adc08ae5dd3334e6026b31c54ae3099823",
+    "snug125_nylon_mesh15_full_board_tangent.json": "2dddd6ba3d23c174aff77d7ffe6a21ba77f936dde0748c573c3334eaf04b89ca"
+  },
+  "comparisons": {
+    "bare": {
+      "loaded_cell_X_um_per_N": [
+        0.5617617105090612,
+        0.5235044493188143,
+        0.7968747503928141
+      ],
+      "loaded_cell_travel_change_pct": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "left_relative_to_clamps_um_per_N": 0.27260354364473977,
+      "left_relative_roll_um_per_N": 0.2132542041907478,
+      "retained_minus_full_relative_pct": -0.757014228829378
+    },
+    "snug125_nylon": {
+      "loaded_cell_X_um_per_N": [
+        0.5606750633464314,
+        0.4716522992180084,
+        0.7953804696588426
+      ],
+      "loaded_cell_travel_change_pct": [
+        -0.19343560486618783,
+        -9.90481554994922,
+        -0.18751764103893676
+      ],
+      "left_relative_to_clamps_um_per_N": 0.27264623727686965,
+      "left_relative_roll_um_per_N": 0.2133101591151648,
+      "retained_minus_full_relative_pct": -0.7823598591968794
+    },
+    "snug125_aluminium": {
+      "loaded_cell_X_um_per_N": [
+        0.560030369708177,
+        0.4509034892023072,
+        0.794063410163035
+      ],
+      "loaded_cell_travel_change_pct": [
+        -0.30819843511856737,
+        -13.86826037696064,
+        -0.35279574718526385
+      ],
+      "left_relative_to_clamps_um_per_N": 0.272666996818938,
+      "left_relative_roll_um_per_N": 0.21333520472065345,
+      "retained_minus_full_relative_pct": -0.7593118139166077
+    }
+  },
+  "mesh_checks": {
+    "snug125_nylon": {
+      "fine_loaded_cell_X_um_per_N": [
+        0.5606868134310807,
+        0.4741935480330031,
+        0.7953968795473025
+      ],
+      "fine_change_vs_bare_pct": [
+        -0.19134395560822526,
+        -9.4193853270922,
+        -0.18545836027343832
+      ],
+      "fine_change_vs_nominal_pct": [
+        0.002095703093907275,
+        0.538797079799691,
+        0.0020631495348366613
+      ],
+      "fine_left_relative_to_clamps_um_per_N": 0.2726440511308542
+    }
+  },
+  "pcb_lock_displacement_um": {
+    "bare": 47.45948132105399,
+    "snug125_nylon": 28.914817024135342,
+    "snug125_aluminium": 23.08781757390825
+  },
+  "scope": "Separate unit loads on the three installed cells. Small motion about bolt lock."
+}

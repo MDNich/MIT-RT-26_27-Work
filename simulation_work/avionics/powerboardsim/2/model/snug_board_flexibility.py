@@ -44,12 +44,8 @@ def rotations(folder, ledger, ids, frequency):
     return values
 
 
-def mass_check(branch, basis, folder, raw):
-    src=branch+'_enforced'
-    record=read(ROOT/'validation/motion'/f'{src}.json');assert record['basis_rst_sha256']==basis['rst_sha256']
-    path=folder.parent/src/'file.full'
-    sha=verified(path,record['smp_parent_sha256']['file.full'])
-    full=reader.read_binary(path);d,k,m=full.load_km(sort=False);del full,k
+def equation_modes(branch, basis, folder, raw, d, sets):
+    """Yield native expanded eigenvectors in the supplied physical node and DOF order."""
     freq=raw.time_values
     fields=field_files(basis['case'],CAMPAIGN,basis['rst_sha256'],len(freq)) if branch!='bare' else None
     physical=d[:,1]<3
@@ -57,19 +53,31 @@ def mass_check(branch, basis, folder, raw):
     if len(rot_ids):
         ledger=read(ROOT/'.runtime/receipts'/CAMPAIGN/basis['case']/'archived.json')
         rot=rotations(folder,{r['name']:r['sha256'] for r in ledger['files']},rot_ids,freq)
-    phi=np.zeros((len(d),len(freq)))
-    for j in range(len(freq)):
+    for j in sets:
+        phi=np.empty(len(d))
         if fields is None:
             n,u=raw.nodal_displacement(j)
         else:
             stem=fields[j+1];n=np.fromfile(stem.with_suffix('.ids'),'<i4')
             u=np.fromfile(stem.with_suffix('.u'),'<f8').reshape(-1,3)
         order=np.argsort(n);idx=order[positions(n[order],d[physical,0])]
-        phi[physical,j]=u[idx,d[physical,1]]
+        phi[physical]=u[idx,d[physical,1]]
         if len(rot_ids):
             take=order[positions(n[order],rot_ids)]
             assert np.allclose(u[take,:3],rot[j,:,:3],rtol=1e-9,atol=1.e-9)
-            phi[~physical,j]=rot[j,positions(rot_ids,d[~physical,0]),d[~physical,1]]
+            phi[~physical]=rot[j,positions(rot_ids,d[~physical,0]),d[~physical,1]]
+        yield phi
+
+
+def mass_check(branch, basis, folder, raw):
+    src=branch+'_enforced'
+    record=read(ROOT/'validation/motion'/f'{src}.json');assert record['basis_rst_sha256']==basis['rst_sha256']
+    path=folder.parent/src/'file.full'
+    sha=verified(path,record['smp_parent_sha256']['file.full'])
+    full=reader.read_binary(path);d,k,m=full.load_km(sort=False);del full,k
+    freq=raw.time_values
+    rot_ids=np.unique(d[d[:,1]>=3,0])
+    phi=np.column_stack(list(equation_modes(branch,basis,folder,raw,d,range(len(freq)))))
     gram=phi.T@(m@phi)
     gram=gram+gram.T-phi.T@(m.diagonal()[:,None]*phi)
     error=abs(gram-np.eye(len(freq)))

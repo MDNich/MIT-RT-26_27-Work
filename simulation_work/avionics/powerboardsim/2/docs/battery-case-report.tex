@@ -438,17 +438,18 @@ At 0.26469~mm the printed case reached 66.2\% of the in-plane coupon tension ref
 \heading{How the middle-cell force was identified}
 The fixed-hardware pilot combines eight target bodies. We expanded the bounds of each deformed contact face by the 1~mm search radius and found one possible target for each loaded face. Their summed forces reproduced the fixed support reaction within 0.01~N at every loaded station.
 
-\heading{Initial flexibility of the installed board}
-We projected a force distributed through the left cell onto the native modes at bolt lock. Travel relative to the strip clamps was about \textbf{0.271~$\mu$m/N} across the three whole-board models. The local bare and nylon fixtures gave \textbf{17.95~$\mu$m/N} between 5 and 10~$\mu$m of travel. Rotation relative to the clamps accounts for \textbf{17.81~$\mu$m/N} of that local response and \textbf{0.213~$\mu$m/N} on the whole boards. At strip height the respective translations are 0.132 and about 0.058~$\mu$m/N. The local fixture has fixed clamps and bilinear nickel shells. The whole board uses elastic solid strips and allows clamp motion.
+\heading{How much does the installed case restrain each cell?}
+At bolt lock, the middle cell moved \textbf{9.9\% less with nylon screws} and \textbf{13.9\% less with aluminium} under the same small sideways force. Refining the nylon case from 2 to 1.5~mm gave a 9.4\% reduction. The change from bare at either outer cell was below 0.36\%. We solved each full stiffness matrix independently, applying a unit force along PCB X through each cell's mass centre in turn. Contacts retained their installed state.
 
 \begin{center}\small\begin{tabular}{lrrr}\toprule
-X motion per unit force on left cell [$\mu$m/N] & Bare & Nylon & Aluminium\\\midrule
-Left cell relative to board supports & 0.5614 & 0.5602 & 0.5596\\
-Left cell relative to its strip clamps & 0.2705 & 0.2705 & 0.2706\\
-Middle cell relative to board supports & 0.0336 & 0.0377 & 0.0373\\\bottomrule
+X travel per unit force on the named cell [$\mu$m/N] & Bare & Nylon & Aluminium\\\midrule
+Left cell relative to board supports & 0.5618 & 0.5607 & 0.5600\\
+Middle cell relative to board supports & 0.5235 & 0.4717 & 0.4509\\
+Right cell relative to board supports & 0.7969 & 0.7954 & 0.7941\\
+Left cell relative to its own strip clamps & 0.2726 & 0.2726 & 0.2727\\\bottomrule
 \end{tabular}\end{center}
 
-For clamp-relative travel, the change from a 3.5 to 4~kHz mode cutoff exceeded the differences between assemblies. Queued nonlinear whole-board checks apply 1 and 8.542~N, then unload.
+Cutting off the modes at 4~kHz lowered the last row by less than 0.8\%. Relative cell rotation contributed 0.213~$\mu$m/N on each board and 17.81 of 17.95~$\mu$m/N in the local bare and nylon fixtures over 5--10~$\mu$m of travel. Queued nonlinear checks load the left cell to 1 and 8.542~N, then unload.
 
 \newpage
 \pageheading{How much closer do neighbouring cells move?}
