@@ -70,7 +70,9 @@ if ($spec.coupon) {
     if ((Get-FileHash -LiteralPath $destination).Hash -ne $postProof.post_input_sha256){throw 'Coupon readback input identity failed'}
     $readbacks=@('coupon_post')
 } else {
-    $readbacks=@('moving','local_post')
+    . "$PSScriptRoot\local_partial_post.ps1"
+    $pullPost=Get-LocalPullPost $Work $Case $job $clean
+    $readbacks=@('moving',$pullPost)
 }
 foreach ($stem in $readbacks){
     $p=Start-Process -FilePath $Exe -WorkingDirectory $Work -Wait -PassThru -ArgumentList @(
