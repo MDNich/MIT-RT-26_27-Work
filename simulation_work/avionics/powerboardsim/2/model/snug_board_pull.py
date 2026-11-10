@@ -292,6 +292,43 @@ def compare_pocket_unloading(branch, result, zero):
         scope='CNF sums all contacting targets. Retained and new face counts track changes from bolt lock. '
               'The tangent refers to the original equilibrium; the native increments start at the converged zero-load hold.')
 
+    released_path = AUDIT / f'{branch}_released_pocket_tangent.json'
+    if released_path.is_file():
+        release = read(released_path)
+        assert release['installed_load_paths_sha256'] == digest(tangent_path)
+        if 'single_contact_prediction' in release:
+            compare_single_spring(result, states, release, released_path, record_path, held, preload, slope)
+
+
+def compare_single_spring(result, states, release, released_path, record_path, held, preload, slope):
+    """Test the one-point aluminium prediction at the actual native load stations."""
+    path = release['single_contact_prediction']
+    assert release['contact_rank'] == 1 and path['unloading_record_sha256'] == digest(record_path)
+    seated = np.asarray(release['restored_compliance_X_um_per_N'])[:,0]
+    opened = np.asarray(release['open_compliance_X_um_per_N'])[:,0]
+    geometry = path['curved_cell_surfaces']
+    confirmed_faces = {test['whole_shell']['witness']['case_contact_element']
+                       for test in geometry.get('middle_surface_transition',{}).get('tests',[])
+                       if 'case_contact_element' in test['whole_shell'].get('witness',{})}
+    adjusted = held>0 and states[0]['middle_patch_comparison']['same_faces_as_parent']
+    for state in states:
+        force = state['applied_X_N']
+        assert force>=0 and slope>0
+        def prediction(offset):
+            used = min(force, offset/slope)
+            return seated*used + opened*(force-used)
+        expected = prediction(preload)
+        measured = np.asarray(state['cell_centres_XYZ_um'])[:,0]
+        item = dict(predicted_centres_X_um=expected.tolist(),
+                    native_minus_predicted_centres_X_um=(measured-expected).tolist())
+        if adjusted:
+            item['predicted_centres_using_native_hold_X_um']=prediction(held).tolist()
+        if confirmed_faces:
+            actual_faces = {n for group in state['loaded_case_faces'] for n in group['element_ids']}
+            item['confirmed_geometric_faces_closed'] = sorted(confirmed_faces & actual_faces)
+        state['single_spring_comparison'] = item
+    result['single_spring_prediction_sha256'] = digest(released_path)
+
 
 def compare_full_tangent(branch, spec, result):
     """Compare native load stations with the full tangent from the same installed board."""

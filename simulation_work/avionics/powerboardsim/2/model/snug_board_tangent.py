@@ -84,6 +84,18 @@ def check_modes(branch, modal, folder, rst, dofs, free, fixed, dep, G, K, M, sol
     return check,error
 
 
+def cell_forces(dofs, free, transfer, ids, weights):
+    """Three mass-distributed unit loads, in full and independent equation order."""
+    keys = 8*dofs[:,0].astype(np.int64) + dofs[:,1]
+    order = np.argsort(keys)
+    loads = np.zeros((len(dofs),3))
+    for j,w in enumerate(weights):
+        take = w != 0
+        loads[order[positions(keys[order],8*ids[take])],j] = w[take]
+    assert np.max(abs(loads.sum(0)-1)) < 1e-12
+    return loads, (loads + transfer.T@loads)[free]
+
+
 def evaluate(branch, matrices, *, load_paths=False):
     d,free,fixed,dep,G,K,M,identity=matrices
     basis,folder,rst=source(branch+'_basis',CAMPAIGN)
@@ -98,12 +110,8 @@ def evaluate(branch, matrices, *, load_paths=False):
     order=np.argsort(keys)
     def indices(nodes,components):
         return order[positions(keys[order],nodes[:,None]*8+components)]
-    loads=np.zeros((len(d),3))
-    for j,w in enumerate(W):
-        take=w!=0
-        loads[indices(ids[take],[0])[:,0],j]=w[take]
-    assert np.max(abs(loads.sum(0)-1))<1e-12 and not loads[fixed].any()
-    effective=(loads+G.T@loads)[free]
+    loads,effective=cell_forces(d,free,G,ids,W)
+    assert not loads[fixed].any()
     c_source=Path(__file__).with_name('board_tangent_factor.c')
     with TemporaryDirectory() as build:
         lib=Path(build)/'factor.dylib'

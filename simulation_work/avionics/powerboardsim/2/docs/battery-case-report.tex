@@ -126,7 +126,7 @@ The \href{https://github.com/MDNich/MIT-RT-26_27-Work/blob/main/simulation_work/
 
 \newpage
 \pageheading{Vibration of the tightened board and case}
-We restarted each assembly from its last converged bolt-locked equilibrium. The lowest frequency was 485.96~Hz bare, 294.94~Hz with nylon and 415.42~Hz with aluminium. Both mounts introduced shapes below the first bare frequency. Comparing the two screw materials, their lowest shapes had a full-solid MAC of 0.921 and a case-only MAC of 0.929. Aluminium raised the frequency of this matched shape by 40.8\%. The cells' peak amplitudes were only 3.8\% and 8.6\% of the PCB peaks in the nylon and aluminium first modes, respectively.
+We restarted each assembly from its last converged bolt-locked equilibrium. The lowest frequency was 485.96~Hz bare, 294.94~Hz with nylon and 415.42~Hz with aluminium. Both mounts introduced shapes below the first bare frequency. Comparing the two screw materials, their lowest shapes had a full-solid MAC of 0.921 and a case-only MAC of 0.929. Aluminium raised the frequency of this matched shape by 40.8\%. The cells' peak amplitudes were only 3.8\% and 8.6\% of the PCB peaks in the nylon and aluminium first modes, respectively. When the middle pocket is held open, the lowest frequencies are 266.38 and 363.65~Hz, respectively (page~25). The open nylon mode at 293.81~Hz most closely retains the seated first shape (mass-weighted MAC 0.946).
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/snug-locked-vibration.pdf}
 \captionof{figure}{Left, each tick marks a native natural frequency through 1.3~kHz. Right, the maximum board-normal RMS displacement anywhere on the PCB, relative to the base. Each axis was excited separately with the October 20--2000~Hz spectrum and 2\% modal damping. The independent calculation integrates the signed native modes and their participation factors.}\end{center}
@@ -524,10 +524,11 @@ For each newton applied along PCB X, the low- and high-Y strips carried 0.458 an
 \heading{Why the load location matters}
 We applied a separate load through the mass centre of each cell. With either outer cell loaded, both outer pockets remained open in the installed configuration, and the loaded cell transferred its full additional X force to its two strips. The board flexed enough to change the reaction at the already seated middle pocket. Per newton on the left cell, its signed X increment was $-0.0066$~N with nylon and $-0.0068$~N with aluminium. Under load on the middle cell, the corresponding increments were $+0.1037$ and $+0.1452$~N.
 
-\heading{How the forces were checked}
-We solved the full linearized board equations for each load and recovered the forces from the original ANSYS element matrices on the nickel, PLA and contact sides. Each cell balanced in X, Y and Z to within $10^{-9}$~N per newton applied. The four tab reactions balanced the pocket force within $10^{-11}$~N/N across the cases. As a separate check, the same element operators reproduced native force fields on the six bonds and the closed pocket across 38 bare, 48 nominal and 49 fine-nylon modes. The largest relative force-field difference was below $4.1\times10^{-7}$.
+We recovered the forces from the native element matrices. Each cell balanced within $10^{-9}$~N/N in all three axes. The four tab reactions balanced the pocket within $10^{-11}$~N/N. Across 38 bare, 48 nominal and 49 fine-nylon modes, the largest relative difference from native bond and pocket force fields was below $4.1\times10^{-7}$.
 
-Page~26 shows where the initial slope exhausts the installed compression. Page~14 gives bond loads under vibration and page~21 gives the local fixture's finite-travel response.
+\heading{When the middle pocket is open}
+\begin{center}\includegraphics[width=.96\linewidth]{figures/snug-middle-pocket-release.pdf}
+\captionof{figure}{All case mounts remain attached. Removing the middle contact from the installed stiffness matrix brings the middle cell's lateral travel within 0.011\% of bare. The lowest frequency also falls. Each frequency is the lowest in its own model. Mode shapes can change order.}\end{center}
 
 \newpage
 \pageheading{How much force keeps the middle cell seated?}
@@ -544,6 +545,9 @@ With aluminium screws the net projection first changed sign at 3.05~ms for base 
 
 \heading{Checks on magnitude and direction}
 We integrated stress over the deformed quadratic solids on both sides of the interface. For aluminium, the PLA pocket, the four tab reactions and the middle cell outside its two nickel bonds gave 0.022296, 0.022290 and 0.022290~N. On the fine nylon mesh those three values and the native contact output agreed within 0.00002~N in magnitude. On nominal nylon the solid values were 0.568--0.571~N against 0.594~N from the contact elements. The tab, cell and native contact forces were put on the same side of the interface before comparison. The aluminium force repeat and mesh refinement are pending. The 0.003~mm nominal middle-cell clearance makes this comparison sensitive to the as-printed fit.
+
+\heading{Does zero contact force mean the middle cell has cleared the case?}
+The aluminium mesh has one independent normal contact stiffness at lock. We allowed it to open under the left-cell pull, keeping the other supports at their installed stiffness. Its modeled force reached zero at 3.07~N. At 5.807~N the original triangle was clear, but a different case triangle still crossed the curved middle-cell surface. At 5.850~N the complete surfaces were separated. At 8.54~N all three cells cleared the case on this calculated path. The nonlinear whole-board control can test whether pressure transfers to the neighbouring triangle and changes the path.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}

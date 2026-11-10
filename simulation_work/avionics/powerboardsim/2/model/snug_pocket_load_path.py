@@ -60,14 +60,17 @@ def sections(branch, rst, deck):
     return regions, bonds, faces
 
 
-def force_operators(folder, regions, hashes):
-    # Each row vector recovers one resultant component from nodal displacements.
-    rows = {}
+def element_matrices(folder, elements, hashes, *, nonzero_only=False):
+    """Read symmetric stiffness, mass and stress-stiffening blocks in physical DOF order.
+
+    A contact element can repeat a node in its local face definitions. Callers sum
+    the repeated rows and columns when assembling that element.
+    """
+    elements = np.asarray(list(elements))
     seen = set()
-    files = {}
     for rank in range(12):
         path = folder / f"file{rank}.emat"
-        files[path.name] = verified(path, hashes[path.name])
+        verified(path, hashes[path.name])
         header = reader.read_binary(path).header
         stream = _binary_reader.AnsysFile(str(path))
         try:
@@ -75,7 +78,7 @@ def force_operators(folder, regions, hashes):
             pointers = stream.read_record(int(header["ptrIDX"]))
             nodes = stream.read_record(int(header["ptrBAC"]))
             assert len(pointers) == 2 * len(numbers) and len(nodes) == header["lenbac"]
-            for i in np.flatnonzero(np.isin(numbers, list(regions))):
+            for i in np.flatnonzero(np.isin(numbers, elements)):
                 element = int(numbers[i])
                 assert element not in seen
                 seen.add(element)
@@ -104,24 +107,33 @@ def force_operators(folder, regions, hashes):
                     # expose a view sized by words; only the declared payload is valid.
                     assert length == 2 * entries + 3 and vals.dtype == np.float64
                     assert len(vals) in (entries, 2 * entries)
+                    if nonzero_only and not np.any(vals[:entries]):
+                        continue
                     matrix = np.zeros((width, width))
                     matrix[np.tril_indices(width)] = vals[:entries]
                     matrix += np.tril(matrix, -1).T
                     assert np.isfinite(matrix).all()
                     if not valid.all():
                         assert abs(matrix[:, ~valid]).max() < 1e-10
-                    for label, targets in regions[element].items():
-                        use = np.isin(native, targets)
-                        assert np.isin(targets, native[use]).all()
-                        result = rows.setdefault(label, defaultdict(lambda: np.zeros((2, 3))))
-                        block = np.stack([matrix[use & (component == axis)].sum(0) for axis in range(3)])
-                        # The fourth stored matrix, when present, is stress stiffening.
-                        kind = 1 if code == 1 else 0
-                        for j in np.flatnonzero(valid):
-                            result[int(keys[j])][kind] += block[:, j]
+                    yield element, code, keys[valid], matrix[np.ix_(valid,valid)]
         finally:
             stream.close()
-    assert seen == set(regions)
+    assert seen == set(elements)
+
+
+def force_operators(folder, regions, hashes):
+    rows = {}
+    files = {f'file{rank}.emat': hashes[f'file{rank}.emat'] for rank in range(12)}
+    for element, code, keys, matrix in element_matrices(folder, regions, hashes):
+        native, component = np.divmod(keys,8)
+        for label, targets in regions[element].items():
+            use = np.isin(native, targets)
+            assert np.isin(targets, native[use]).all()
+            result = rows.setdefault(label, defaultdict(lambda: np.zeros((2, 3))))
+            block = np.stack([matrix[use & (component == axis)].sum(0) for axis in range(3)])
+            kind = 1 if code == 1 else 0
+            for j, key in enumerate(keys):
+                result[int(key)][kind] += block[:, j]
     keys = np.unique([k for row in rows.values() for k in row])
     assert np.all(keys % 8 < 3)
     operators = {}
