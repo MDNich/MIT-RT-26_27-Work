@@ -9,8 +9,14 @@ import numpy as np
 from audit_local import ROOT,read,table
 
 
-def series(name):
-    proof=read(ROOT/f'validation/local/{name}.json');assert proof['full_requested_path']
+def series(name, *, proof_path=None):
+    if proof_path is None:
+        proof=read(ROOT/f'validation/local/{name}.json')
+        assert proof['full_requested_path']
+    else:
+        proof=read(proof_path)
+        assert proof_path==ROOT/'validation'/('local' if proof['full_requested_path'] else 'partial_local')/(name+'.json')
+    assert proof['case']==name
     camp=proof['campaign']
     d=ROOT/f'.runtime/archive/{camp}/{name}'
     source=read(d/'local_job.json')['source']

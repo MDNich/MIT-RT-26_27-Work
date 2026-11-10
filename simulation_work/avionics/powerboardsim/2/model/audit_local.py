@@ -170,6 +170,10 @@ def audit(case, campaign):
         from common_pull_resolution import check as check_resolution
         check_resolution(case,campaign)
     write_json(dest/(case+'.json'),data)
+    if (case.startswith('snug125_') and case.endswith(('_m15','_m3'))
+            and spec['source'] in ('lateral_friction_locked','lateral_friction_locked_minus')):
+        from snug_directional_result import run as compare_bare
+        compare_bare(case)
     if case=='bare_damage_cont_nominal':
         from damage_repeat import compare as compare_damage
         compare_damage(case,campaign)
