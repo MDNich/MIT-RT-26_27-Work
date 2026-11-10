@@ -437,6 +437,32 @@ At 0.26469~mm the printed case reached 66.2\% of the in-plane coupon tension ref
 \heading{How the middle-cell force was identified}
 The fixed-hardware pilot combines eight CAD bodies into one reaction. We reconstructed the deformed quadratic case faces from native DPF displacements, bounded each face, and expanded those bounds by the full 1~mm contact-search radius in all three coordinates. Every loaded face had a single possible rigid target body. Summing its native contact forces by body reproduced the fixed support reaction to within 0.01~N at every loaded state. All 21 states of the earlier checkpoint also reproduced in this 27-state result. The aluminium, reverse-pull and damage-law comparisons remain in progress.
 
+\newpage
+\pageheading{How much closer do neighbouring cells move?}
+During the nine-second base-X history, the snug case reduced the left cell's motion relative to its own strip clamps (page~18). Its peak approach toward the middle cell nevertheless increased from \textbf{19.1~$\mu$m bare} to \textbf{85.5~$\mu$m with nylon screws} and \textbf{70.8~$\mu$m with aluminium screws}. The middle cell moves in the whole-board model. In the local side-pull fixture on page~21 it is held fixed.
+
+\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-cell-spacing.pdf}
+\captionof{figure}{Left, greatest decrease in each pair's centre spacing along its installed line of centres. Each pair can peak at a different time. Right, both cell motions at the instant of peak left--middle approach in each assembly, measured relative to the same two left strip clamps. Positive points along the row towards the right cell.}\end{center}
+
+\heading{Which cell supplies the relative motion?}
+At the bare left--middle peak, both cells moved in the same direction relative to the left clamps, by $+32.9$ and $+13.8~\mu$m. With nylon mounts the left cell moved $+10.6~\mu$m while the middle cell moved $-74.9~\mu$m. With aluminium mounts the corresponding motions were $+31.7$ and $-39.1~\mu$m. The other pair approached by 162.9~$\mu$m bare, 121.1~$\mu$m with nylon and 122.5~$\mu$m with aluminium.
+
+\begin{center}\small
+\begin{tabular}{@{}lrrrr@{}}\toprule
+ & Bare & Nylon & Aluminium & Fine nylon\\
+Base drive & \multicolumn{4}{c}{Peak left--middle approach [$\mu$m]}\\\midrule
+X & 19.10 & 85.46 & 70.80 & 84.98\\
+Y & 0.53 & 15.63 & 29.57 & 19.80\\
+Z & 3.41 & 33.75 & 32.45 & 26.52\\\bottomrule
+\end{tabular}
+\end{center}
+The first three columns use native MAPDL coordinates. The last uses independent integration on the 1.5~mm nylon modes. Relative to independent integration of the nominal 2~mm nylon modes, mesh refinement changed the left--middle peak by $-0.1\%$ under X, $+26\%$ under Y and $-21\%$ under Z.
+
+\heading{Measurement and scope}
+At each of the 589,825 samples we subtracted simultaneous mass-centre translations. We checked the extrema against the nodal displacement fields of the three cells. Using the full three-dimensional centre distance changed the result by less than 0.001~$\mu$m at every sample. Across both pairs and all drives, independent integration reproduced the nominal approach and opening peaks within 0.63\%. Reducing the modal cutoff from 4 to 3.5~kHz changed those peaks by less than 0.69\%.
+
+Cell-centre spacing and cell-to-pocket clearance measure different motions. For example, the nominal nylon left cell first reached its pocket at 38.30~ms under X, when the left and middle centres had approached by only 3.85~$\mu$m. The nine-second comparisons continue along the modes at bolt lock. Predicting subsequent contact forces and the assembled board's resistance to a sideways pull requires the corresponding nonlinear loading and restraints.
+
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}
