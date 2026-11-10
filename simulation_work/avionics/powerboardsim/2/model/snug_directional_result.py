@@ -5,7 +5,7 @@ import re
 
 import numpy as np
 
-from audit_local import ROOT, read, table
+from audit_local import ROOT, converged_pull_table, read, table
 from compare_pull import series
 from film_identity import digest, verified, write_json
 from stage_snug_fit import AUDIT
@@ -193,7 +193,7 @@ def reconcile_checkpoint(checkpoint, verdict, ledger):
         strain=read(strain_file)
         assert strain['checkpoint_sha256']==receipt['checkpoint_sha256'] and strain['case']==case
         verified(archive/'history.csv',sha['history.csv'])
-        rows=table(archive/'history.csv')[:n]
+        rows=converged_pull_table(archive/'history.csv', archive/'pull.rst')[:n]
         assert np.array_equal(rows['set'],[r['native_set'] for r in strain['states']])
         np.testing.assert_allclose(rows['max_eppl'],[r['peak'] for r in strain['states']],rtol=2e-7,atol=1e-8)
         receipt['nickel_strain_sha256']=digest(strain_file)

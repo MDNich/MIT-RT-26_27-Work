@@ -586,6 +586,24 @@ On the parent mesh at 0.2950~mm, the moving-cell contact pair accumulated 37.19~
 An independently copied native result contains 56 converged states through 0.45139~mm. It reproduces every force, travel, contact and printed-material entry in the four earlier snapshots. The 1.5~mm mesh crossed its layer-tension coupon reference by 0.30391~mm (page~23), and the locally refined corner crossed earlier (page~24). The common-travel comparison above precedes all tested corner crossings. Later increments document the numerical path beyond those references. Reverse pull, aluminium and damage-law results require their own native audits.
 
 \clearpage
+\pageheading{Which case spacers carry load after tightening?}
+After the six original battery bolts locked, \textbf{one of the four spacers carried compression with nylon case screws, and two with aluminium}. In these models the four M4 case screws began at their stress-free length. The 750~N installation preload applies to each original battery bolt. The installed M4 preload on the hardware is unknown.
+
+\begin{center}\includegraphics[width=\linewidth]{figures/snug-spacer-bearing.pdf}
+\captionof{figure}{Two predictions from the same nominal, fixed-contact vibration history. The circle marks the first change in the axial bearing state of a case spacer. The square marks the first sample at which the middle pocket has exhausted its initial net compression (page~26). Once one contact changes, the later marker is an extrapolation of the installed stiffness.}\end{center}
+
+\heading{Installed forces at the four tabs}
+The nylon mount compressed the high-X, low-Y spacer by 4.07~nm and loaded it to 0.0586~N. On the finer nylon mesh the same spacer carried 0.0633~N. With aluminium screws, the low-X, high-Y and high-X, low-Y spacers carried 0.0154 and 0.0151~N. These nanometre changes measure axial extension from the modeled 7.60~mm screw grip. The nominal tab-to-board spacing is 1.250~mm. We checked every spacer against its native element stiffness and compared the combined shank and spacer force with a separate integration at the PLA bearing. The largest difference at any tab was 0.00012~N.
+
+\heading{Which contact changes first during vibration?}
+With nylon screws the low-X, high-Y spacer reached compression before the middle pocket exhausted its net compression in all three base directions. Refining the PLA mesh from 2 to 1.5~mm moved the base-Y closure from 9.75 to 7.04~ms. The ordering persisted. With aluminium the middle pocket unloaded first in all three directions. Reducing the modal cutoff from 4 to 3~kHz changed the first spacer time by less than one 0.0153~ms sample in all nine comparisons. For aluminium under base Z, two spacers were close enough to exchange order. Neither indicator tracks the subsequent motion after contact redistributes.
+
+\heading{Effect on the lowest natural frequency}
+Keeping the middle pocket and the rest of the assembly at their locked stiffness, we changed the four axial spacer stiffnesses and re-solved the whole-board eigenproblem. With nylon screws the lowest frequencies were \textbf{294.25, 294.94 and 295.93~Hz} for all spacers open, the installed state and all four bearing. With aluminium they were \textbf{415.40, 415.42 and 415.44~Hz}. Both spans are small compared with the difference from the bare board at 485.96~Hz. The installed calculation reproduced the first four native frequencies for each screw material.
+
+In a separate static calculation we shortened the four screws' stress-free lengths equally, allowing each spacer to engage in turn. All four began carrying compression just above 45.54~nm of shortening with nylon and 1.40~nm with aluminium, with the middle pocket held at its installed stiffness. These values show how easily the modeled seating pattern can change with assembly preload. They cannot establish the preload produced by a particular tightening torque.
+
+\clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
 \setcounter{figure}{0}\renewcommand{\thefigure}{A.\arabic{figure}}
 \setcounter{table}{0}\renewcommand{\thetable}{A.\arabic{table}}

@@ -23,9 +23,30 @@ def table(path):
     return values
 
 
+def converged_pull_table(path, result_file):
+    """Match POST1 rows to RST set IDs, discarding only native nonconverged diagnostics."""
+    from ansys.mapdl.reader.rst import Result
+
+    result = Result(str(result_file), read_mesh=False)
+    ids = np.arange(1, result.nsets + 1)
+    kept = result._resultheader['ls_table'][:, 1] != 999999
+    values = np.atleast_1d(np.genfromtxt(path, delimiter=',', names=True))
+    if np.array_equal(values['set'], ids):
+        values = values[kept]
+    if not len(values) or not np.array_equal(values['set'], ids[kept]):
+        raise ValueError(f'POST1 rows differ from converged RST set IDs in {path.name}')
+    if not np.isfinite(values.view(float)).all():
+        raise ValueError(f'Nonfinite value on a converged RST set in {path.name}')
+    if not np.allclose(values['time'], result.time_values[kept], atol=1e-7, rtol=0):
+        raise ValueError(f'POST1 times differ from converged RST sets in {path.name}')
+    return values
+
+
 def fixture(folder, spec, config, source, listing, balance_path):
-    history = table(folder/'history.csv')
-    native = recover(folder/f"{spec['job']}.rst", source, movement_table(folder/'moving_supports.csv'), spec['cased'])
+    result_file = folder / (spec['job'] + '.rst')
+    is_damage = spec['source'].startswith('damage_')
+    history = table(folder/'history.csv') if is_damage else converged_pull_table(folder/'history.csv', result_file)
+    native = recover(result_file, source, movement_table(folder/'moving_supports.csv'), spec['cased'])
     converged = [(int(a),int(b)) for a,b in re.findall(r'LOAD STEP\s+(\d+)\s+SUBSTEP\s+(\d+)\s+COMPLETED',listing)]
     if not converged or converged[0]!=(1,1) or any(right<=left or right[0]>left[0]+1 for left,right in zip(converged,converged[1:])):
         raise ValueError('Native solver listing contains a reset or a skipped load step')
@@ -35,7 +56,6 @@ def fixture(folder, spec, config, source, listing, balance_path):
     steps = np.array([r['loadstep'] for r in native])
     if not np.array_equal(np.unique(steps), np.arange(1,steps.max()+1)) or np.any(np.diff(steps)<0):
         raise ValueError('Load-step sequence resets or skips a stage')
-    is_damage = spec['source'].startswith('damage_')
     start = config.get('pull_start_time',0)
     pull = [row for row in native if row['time'] > start+1e-9]
     if not pull:
@@ -47,7 +67,8 @@ def fixture(folder, spec, config, source, listing, balance_path):
     if not np.allclose(forces, matching['fx_N'], rtol=1e-6,atol=1e-5):
         raise ValueError('Native POST1 cell force differs from the RST reactions')
     if 'bottom_pilots' in config:
-        clamps = table(folder/('set_inventory.csv' if is_damage else 'contact_history.csv'))
+        clamps = (table(folder/'set_inventory.csv') if is_damage
+                  else converged_pull_table(folder/'contact_history.csv', result_file))
         fields = ('clamp1_N','clamp2_N') if is_damage else ('washer1_RFz','washer2_RFz')
         lock = clamps[np.isclose(clamps['time'],start,rtol=0,atol=1e-7)]
         if len(lock)!=1 or any(abs(abs(float(lock[k][0]))-config['preload_N'])>.2 for k in fields):

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from report_plot import plt
 import numpy as np
-from audit_local import ROOT,read,table
+from audit_local import ROOT, converged_pull_table, read, table
 
 
 def series(name, *, proof_path=None):
@@ -19,16 +19,17 @@ def series(name, *, proof_path=None):
     assert proof['case']==name
     camp=proof['campaign']
     d=ROOT/f'.runtime/archive/{camp}/{name}'
-    source=read(d/'local_job.json')['source']
+    spec=read(d/'local_job.json')
+    source=spec['source']
     t0=read(ROOT/f'.runtime/local_inputs/{source}/config.json')['pull_start_time']
     eq=table(ROOT/f'.runtime/post/{camp}/{name}/whole_fixture_balance.csv')
-    native=table(d/'history.csv')
+    native=converged_pull_table(d/'history.csv', d/(spec['job']+'.rst'))
     sets=eq['native_set'].astype(int)
-    assert np.array_equal(native['set'][sets-1],sets)
-    assert np.allclose(native['fx_N'][sets-1],eq['cell_fx_N'],rtol=1e-6,atol=1e-5)
+    assert np.array_equal(native['set'],sets)
+    assert np.allclose(native['fx_N'],eq['cell_fx_N'],rtol=1e-6,atol=1e-5)
     rows=[]
     for i in np.flatnonzero(eq['time']>=t0-1.e-7):
-        er=eq[i];hi=native[sets[i]-1]
+        er=eq[i];hi=native[i]
         cell=er['cell_fx_N'];resid=er['force_N_x']
         # RF of a fixed mounting point is its force on this isolated fixture.
         screws=-er['screw_support_N_x'] if 'screw_support_N_x' in eq.dtype.names else 0.
