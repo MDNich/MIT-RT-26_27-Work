@@ -106,7 +106,7 @@ def surface_transfer(groups, ids, xyz, ref_xyz, modes, cell_centre, centres, hol
     return fixed
 
 
-def verify_extrema(groups,ids,xyz,centre,modal_washer,modal_cell,q,expected):
+def verify_extrema(groups,ids,xyz,centre,modal_washer,modal_cell,q,expected,*,return_rotations=False):
     """Fit a rigid pose directly to each reconstructed two-washer displacement field."""
     position=[];area=[];moved=[]
     fields=(q@modal_washer.reshape(len(modal_washer),-1)).reshape(len(q),len(ids),3)
@@ -131,15 +131,20 @@ def verify_extrema(groups,ids,xyz,centre,modal_washer,modal_cell,q,expected):
     reconstructed=cell-fits[:3].T
     err=float(abs(reconstructed-expected).max())
     assert err<1e-7
-    w=w/w.sum();mean=w@x;finite=[]
+    w=w/w.sum();mean=w@x;finite=[];rotations=[]
     for k in range(len(q)):
         y=x+u[:,:,k]
         end=w@y
         left,_,right=np.linalg.svd((x-mean).T@(w[:,None]*(y-end)))
         rotation=(left*np.array([1.,1.,np.linalg.det(left@right)]))@right
         finite.append(cell[k]-(end-mean@rotation))
-    return dict(direct_field_fit_max_component_error_mm=err,
+        if return_rotations:
+            rotations.append(rotation.T.tolist())
+    result=dict(direct_field_fit_max_component_error_mm=err,
                 finite_rotation_minus_linear_X_mm_at_extrema=(np.array(finite)[:,0]-reconstructed[:,0]).tolist())
+    if return_rotations:
+        result.update(finite_rotation_matrices=rotations,small_rotvec_rad=fits[3:].T.tolist())
+    return result
 
 
 def get_geometry(variant,campaign):

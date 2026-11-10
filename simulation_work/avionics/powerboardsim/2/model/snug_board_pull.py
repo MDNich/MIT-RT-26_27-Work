@@ -7,6 +7,8 @@ import numpy as np
 
 from audit_local import ROOT, read, table
 from case_stress import source
+from cell_rigid_fit import body_mass, check_pose, fit, pose_operator, strip_height
+from scipy.spatial.transform import Rotation
 from film_identity import digest, verified, write_json
 from local_equilibrium import positions
 from native_rst import read_rst
@@ -112,6 +114,27 @@ def forces_and_bolts(raw, indices, supports, pilots):
     return np.array(result),np.array(bolts)
 
 
+def cell_roll_states(parent,ids,weights,volume,reference_cell,displacements,centre_motion,washer_spin,pose_check,travel):
+    """Resolve the finite rotation contribution at the flat-strip height for the direct-load states."""
+    M,measure=body_mass(parent,ids,weights,volume)
+    op=pose_operator(M,reference_cell)
+    centroid,cell_spin=fit(op,displacements)
+    assert np.max(abs(centroid-centre_motion))<1e-8
+    height=strip_height()
+    dz=np.array([0.,0.,height])
+    states=[]
+    for j,clamp in enumerate(pose_check['finite_rotation_matrices']):
+        fitted=check_pose(M,op,displacements[j])
+        cell_rotation=Rotation.from_rotvec(fitted['finite_rotvec_rad'])
+        finite_roll=1000*((clamp@dz)[0]-cell_rotation.apply(dz)[0])
+        finite_centre=1000*(travel[j,0]+pose_check['finite_rotation_minus_linear_X_mm_at_extrema'][j])
+        states.append(dict(cell_Y_mrad=1e3*cell_spin[j,1],clamps_Y_mrad=1e3*washer_spin[j,1],
+                    linear_roll_X_um=-1000*height*(cell_spin[j,1]-washer_spin[j,1]),
+                    finite_roll_X_um=finite_roll,finite_strip_height_X_um=finite_centre-finite_roll,
+                    cell_fit=fitted))
+    return states,measure,height
+
+
 def audit(case):
     spec=read(REGISTRY)[case];parent=spec['parent'];branch=parent.removesuffix('_static')
     assert branch in BRANCHES and case==branch+'_cellpush_x'
@@ -170,9 +193,16 @@ def audit(case):
     centres=[np.array(geom['washer_faces'][i]['fixture_lower_platen_centre_mm']) for i in groups]
     hole=read(ROOT/'.runtime/local_inputs/lateral_friction_locked/config.json')['hole_radius_mm']
     washer_u=relative[:,positions(nodes,washer_ids)]
-    frame=surface_transfer(groups,washer_ids,actual_xyz,washer_reference,washer_u,loaded_port,centres,hole,5)['whole']['transfer']
-    travel=centre_motion[:,0]-frame
-    pose_check=verify_extrema(groups,washer_ids,actual_xyz,loaded_port,washer_u,centre_motion[:,0],np.eye(len(steps)),travel)
+    frame=surface_transfer(groups,washer_ids,actual_xyz,washer_reference,washer_u,loaded_port,centres,hole,5)['whole']
+    travel=centre_motion[:,0]-frame['transfer']
+    pose_check=verify_extrema(groups,washer_ids,actual_xyz,loaded_port,washer_u,centre_motion[:,0],
+                              np.eye(len(steps)),travel,return_rotations=True)
+    assert np.max(abs(np.asarray(pose_check['small_rotvec_rad'])-frame['rot']))<1e-8
+    use=W[0]!=0
+    cell_ids=mass_ids[use]
+    take=positions(nodes,cell_ids)
+    rotation_states,measure,height=cell_roll_states(locked,cell_ids,W[0,use],evidence['geometry']['176']['volume_m3'],
+        original_centres[use]+u[zero,take],relative[:,take],centre_motion[:,0],frame['rot'],pose_check,travel)
     applied=np.interp(times[steps],[2.,3.,4.,5.,6.],[0.,0.,1.,spec['endpoint_force_N'],0.])
     residual=reactions-reactions[zero];residual[:,0]+=applied
     assert np.max(abs(residual[zero:])) < .03
@@ -180,11 +210,12 @@ def audit(case):
                 parent_rst_sha256=spec['parent_rst_sha256'],input_sha256=hashes['model.inp'],listing_sha256=hashes['solve.out'],
                 parent_DPF_sha256=digest(post/'parent_lock_nodes/displacements.bin'),native_converged_steps=residuals,
                 source_DPF_sha256=digest(post/'cell_load_nodes/displacements.bin'),
+                cell_mass_integration=measure,virtual_gauge_height_mm=height,
                 max_incremental_support_residual_N=float(abs(residual[zero:]).max()),clamp_fit_check=pose_check,
                 zero_load_reequilibration_max_sampled_translation_um=1000*float(abs(u[zero]-u[0]).max()),
                 states=[dict(native_set=int(k+1),load_step=int(ls[k,0]),time=float(times[k]),applied_X_N=applied[j],
                     cell_centres_XYZ_um=(1000*centre_motion[j]).tolist(),left_to_clamps_XYZ_um=(1000*travel[j]).tolist(),
-                    support_XYZ_N=reactions[j].tolist(),bolt_reactions_N=bolts[j].tolist()) for j,k in enumerate(steps)])
+                    cell_roll=rotation_states[j],support_XYZ_N=reactions[j].tolist(),bolt_reactions_N=bolts[j].tolist()) for j,k in enumerate(steps)])
     if branch!='bare':
         from global_contact import pair_summary
         grid=raw.grid.cell_data;ids=grid['ansys_elem_num'][grid['ansys_etype']==853]

@@ -58,13 +58,52 @@ def summarize():
     return result
 
 
-def draw(result):
+def compare_roll():
+    sources={}
+    fractions={}
+    finite_error=0.
+    for variant in (*MODELS,'snug125_nylon_mesh15'):
+        methods=('native','exact') if variant in MODELS else ('exact',)
+        for method in methods:
+            file=AUDIT/f'{variant}_cell_roll_{method}.json'
+            record=read(file)
+            sources[file.name]=digest(file)
+            assert (record['branch'],record['method'])==(variant,method)
+            travel=read(AUDIT/f'{variant}_edge_cell_travel_{method}.json')
+            assert record['basis_sha256']==travel['geometry']['basis_sha256']
+            peaks={}
+            for axis,data in record['axes'].items():
+                original=travel['axes'][axis]
+                assert data['drive_sha256']==original['excitation_sha256']
+                for direction,state in data['extrema']['centre'].items():
+                    endpoint=original[direction+'_X']
+                    assert (state['sample']==endpoint['sample']
+                            and abs(state['centre_X_um']-1000*endpoint['simultaneous_relative_xyz_mm'][0])<1.e-7)
+                for pair in data['extrema'].values():
+                    for state in pair.values():
+                        finite_error=max(finite_error,abs(state['finite_pose_roll_X_um']-state['roll_X_um']),
+                                         abs(state['finite_pose_strip_height_X_um']-state['strip_height_X_um']))
+                peaks[axis]=max(data['extrema']['centre'].values(),key=lambda r:abs(r['centre_X_um']))
+            fractions[variant+'_'+method]={axis:{key:state[key] for key in
+                ('sample','centre_X_um','roll_X_um','strip_height_X_um','roll_fraction')} for axis,state in peaks.items()}
+    local_file=AUDIT/'initial_local_cell_roll.json'
+    sources[local_file.name]=digest(local_file)
+    assert finite_error<.003
+    write_json(AUDIT/'cell_roll_comparison.json',dict(sources=sources,at_peak_absolute_centre_travel=fractions,
+               finite_pose_max_difference_um=finite_error,offset_above_centre_mm=read(local_file)['offset_above_mass_centre_mm']))
+    return fractions
+
+
+def draw(result,roll):
     names=['Bare','Nylon','Aluminium'];colours=['#08357E','#3C78D8','#38761D']
     fig,(ax,bx)=plt.subplots(1,2,figsize=(7.7,2.65),layout='constrained',gridspec_kw={'width_ratios':[1.15,1]})
     for pos,name,variant,colour in zip([2,1,0],names,MODELS,colours,strict=True):
         a,b=result['X']['signed_native_um'][variant]
         ax.plot([a,b],[pos,pos],lw=2.4,color=colour,solid_capstyle='round')
         ax.scatter([a,b],[pos,pos],s=20,color=colour,zorder=3)
+        point=roll[variant+'_native']['X']
+        ax.scatter(point['roll_X_um'],pos,marker='D',s=29,facecolor='white',edgecolor=colour,
+                   linewidths=1.1,zorder=4)
         ax.annotate(f'{a:.1f}',(a,pos),xytext=(0,6),textcoords='offset points',ha='center',fontsize=9)
         ax.annotate(f'{b:.1f}',(b,pos),xytext=(0,6),textcoords='offset points',ha='center',fontsize=9)
     ax.axvline(0,color='#888888',lw=.7,zorder=0)
@@ -87,4 +126,4 @@ def draw(result):
 
 
 if __name__=='__main__':
-    draw(summarize())
+    draw(summarize(),compare_roll())

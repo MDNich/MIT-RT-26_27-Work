@@ -46,6 +46,8 @@ The tab-corner stress has yet to converge. At the same 0.2194 mm forward travel,
 
 With contact held at bolt lock, independent projection onto the whole-board modes gave about 0.271 µm/N of left-cell travel relative to its strip clamps with all three assemblies. The local bare and nylon shells gave 17.95 µm/N over the initial 5–10 µm displacement increment. The small whole-board differences are below the change from increasing the mode cutoff from 3.5 to 4 kHz. Three nonlinear whole-board checks use the same left-cell load distribution and independently moving neighbouring cells. [Comparison, page 21](output/pdf/battery-case-report.pdf#page=21) · [Sealed whole-board checks](validation/snug125/whole_board_pull_inputs.json)
 
+At the peak of each native base-X vibration record, rotation of the left cell relative to its two strip clamps accounted for 39.6 of 48.2 µm bare, 28.2 of 34.3 µm with nylon screws, and 35.1 of 42.6 µm with aluminium. The values at strip height follow a virtual point on the cell and cannot establish weld slip. [Vibration comparison, page 18](output/pdf/battery-case-report.pdf#page=18) · [Rotation checks](validation/snug125/cell_roll_comparison.json)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.
