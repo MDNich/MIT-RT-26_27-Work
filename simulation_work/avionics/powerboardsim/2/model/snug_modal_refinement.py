@@ -10,8 +10,11 @@ from snug_modal_mesh import run as check_jacobians
 from stage_snug_fit import AUDIT, input_record
 
 
-def compare(campaign):
-    staged=read(AUDIT/'modal_refinement_input.json')
+def compare(campaign,material='nylon'):
+    if material=='aluminium':
+        staged=read(AUDIT/'aluminium_refinement_inputs.json')['snug125_aluminium_mesh15_basis']
+    else:
+        staged=read(AUDIT/'modal_refinement_input.json')
     cases=[staged['reference'],staged['case']]
     branches=[case.removesuffix('_basis') for case in cases]
     spectra=[]
@@ -54,7 +57,7 @@ def compare(campaign):
             assert (coarse>0).all() and (fine>0).all()
             response[axis][scope]=dict(nominal_peak_XYZ_um=(1000*coarse).tolist(),fine_peak_XYZ_um=(1000*fine).tolist(),
                                       fine_minus_nominal_percent=(100*(fine/coarse-1)).tolist())
-    write_json(AUDIT/'nylon_modal_mesh_comparison.json',dict(campaign=campaign,models=checks,
+    write_json(AUDIT/(material+'_modal_mesh_comparison.json'),dict(campaign=campaign,models=checks,
         native_mode_matching=modes,independent_RMS_displacements=response,
         scope='Native mode correspondence uses the identical original assembly nodes after undoing each installed pose. '
               'The PLA mesh changes. Each spectrum is independently integrated from its own native frequencies, '
@@ -64,4 +67,6 @@ def compare(campaign):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--campaign',default='nov08_01')
-    compare(parser.parse_args().campaign)
+    parser.add_argument('--material',choices=('nylon','aluminium'),default='nylon')
+    args=parser.parse_args()
+    compare(args.campaign,args.material)

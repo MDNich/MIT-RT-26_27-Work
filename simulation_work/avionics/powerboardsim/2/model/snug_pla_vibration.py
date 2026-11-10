@@ -223,7 +223,7 @@ def run(variant,campaign,method,axes,onset_only=False):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('variant',choices=('snug125_nylon','snug125_aluminium'))
+    p.add_argument('variant',choices=('snug125_nylon','snug125_aluminium','snug125_nylon_mesh15','snug125_aluminium_mesh15'))
     p.add_argument('--campaign',default='nov08_01')
     p.add_argument('--method',choices=('native','independent','exact'),default='independent')
     p.add_argument('--axes',choices=('XYZ','X','Y','Z'),default='XYZ')

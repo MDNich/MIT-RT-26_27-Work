@@ -1,4 +1,6 @@
 """Stage matched 2.0 and 1.5 mm preload contact-force readbacks following mesh-sensitive peak pressure."""
+import re
+
 import numpy as np
 
 from audit_local import ROOT,read
@@ -110,13 +112,57 @@ def stage_force_tolerance():
     write_json(AUDIT/'force_tolerance_input.json',entry)
 
 
+def stage_aluminium_refinement():
+    """Transfer the verified three screw-material card differences to the 1.5 mm model."""
+    main=read(AUDIT/'global_inputs.json')
+    base='snug125_aluminium_static'
+    source='snug125_nylon_mesh15_static'
+    fine=read(AUDIT/'contact_refinement_inputs.json')[source]
+    decks=[]
+    for name,spec in [('snug125_nylon_static',main['snug125_nylon_static']),(base,main[base]),(source,fine)]:
+        path=INPUTS/name/'model.inp'
+        verified(path,spec['input_sha256'])
+        assert spec['step_sha256']==STEP_HASH and spec['tab_spacing_mm']==SPACING
+        decks.append(path.read_bytes())
+    nylon,aluminium,refined=decks
+    changes=[]
+    for prop in (b'EX',b'PRXY',b'DENS'):
+        pattern=rb'^MP,'+prop+rb',851,[^\r\n]+\r?$'
+        before,=re.findall(pattern,nylon,re.M)
+        after,=re.findall(pattern,aluminium,re.M)
+        assert before!=after and nylon.count(before)==refined.count(before)==1
+        nylon=nylon.replace(before,after)
+        refined=refined.replace(before,after)
+        changes.append(dict(reference=before.decode().strip(),replacement=after.decode().strip()))
+    assert nylon==aluminium
+    case='snug125_aluminium_mesh15_static'
+    directory=INPUTS/case
+    directory.mkdir(exist_ok=True)
+    post=INPUTS/source/'snug_force_post.inp'
+    verified(post,fine['post_sha256'])
+    spec=dict(fine,case=case,material='aluminium',reference_case=base,
+              reference_input_sha256=main[base]['input_sha256'],nylon_fine_input_sha256=fine['input_sha256'],
+              screw_card_changes=changes,input_sha256=seal(directory/'model.inp',refined),
+              post_sha256=seal(directory/post.name,post.read_bytes()))
+    basis='snug125_aluminium_mesh15_basis'
+    ref='snug125_aluminium_basis'
+    verified(INPUTS/ref/'model.inp',main[ref]['input_sha256'])
+    directory=INPUTS/basis;directory.mkdir(exist_ok=True)
+    modal=dict(read(AUDIT/'modal_refinement_input.json'),case=basis,parent=case,reference=ref,
+               input_sha256=seal(directory/'model.inp',(INPUTS/ref/'model.inp').read_bytes()),
+               parent_input_sha256=spec['input_sha256'])
+    write_json(AUDIT/'aluminium_refinement_inputs.json',{case:spec,basis:modal})
+
+
 if __name__=='__main__':
     import argparse
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--modal-only',action='store_true')
     parser.add_argument('--force-tolerance-only',action='store_true')
+    parser.add_argument('--aluminium-only',action='store_true')
     args=parser.parse_args()
-    if args.force_tolerance_only:
+    if args.aluminium_only:stage_aluminium_refinement()
+    elif args.force_tolerance_only:
         stage_force_tolerance()
     else:
         if not args.modal_only:stage()

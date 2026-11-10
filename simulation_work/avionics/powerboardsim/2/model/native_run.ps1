@@ -18,7 +18,7 @@ if ($active.Count){throw "Another native job is running"}
 New-Item -ItemType Directory -Path $work -ErrorAction Stop|Out-Null
 $guard=$work
 $enforcedMotion = $Case -match '^(?:bare|(?:stand3|snug125)_(?:nylon|aluminium)|flush_(?:nylon|aluminium)_surf1)_enforced$'
-$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2|snug125_(?:nylon|aluminium)|snug125_nylon_mesh15)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
+$sharedWork=(Test-Path -LiteralPath "$share\validation\shared_dmp_control.json") -and ($enforcedMotion -or $Case -match '^(?:(?:stand3_aluminium|stand3_nylon_mesh2|snug125_(?:nylon|aluminium)|snug125_(?:nylon|aluminium)_mesh15)_basis|flush_(?:nylon|aluminium)_(?:surf1_(?:static|basis|modal20)|default_(?:original|refined)_(?:static|modal20)))$')
 if ($sharedWork) {
     $work=Join-Path $share ".runtime\shared_native\$Campaign\$Case"
     if (Test-Path -LiteralPath $work){throw 'Preserving the existing shared working directory'}
@@ -54,9 +54,14 @@ try {
         if ($entry.retry -ne $Case -or $entry.campaign -ne $Campaign -or $entry.retry_input_sha256 -ne $stage.input_sha256 -or
             $core.PSObject.Properties[$entry.source].Value.input_sha256 -ne $entry.original_input_sha256 -or $Parent) {throw 'Snug default-mesh retry lineage mismatch'}
     }
-    if ($Case -eq 'snug125_nylon_mesh15_basis') {
-        $entry=Get-Content "$share\validation\snug125\modal_refinement_input.json" -Raw | ConvertFrom-Json
-        $series=Get-Content "$share\validation\snug125\contact_refinement_inputs.json" -Raw | ConvertFrom-Json
+    if ($Case -match '^snug125_(?:nylon|aluminium)_mesh15_basis$') {
+        if ($Case -eq 'snug125_aluminium_mesh15_basis') {
+            $series=Get-Content "$share\validation\snug125\aluminium_refinement_inputs.json" -Raw | ConvertFrom-Json
+            $entry=$series.PSObject.Properties[$Case].Value
+        } else {
+            $entry=Get-Content "$share\validation\snug125\modal_refinement_input.json" -Raw | ConvertFrom-Json
+            $series=Get-Content "$share\validation\snug125\contact_refinement_inputs.json" -Raw | ConvertFrom-Json
+        }
         $fine=$series.PSObject.Properties[$Parent].Value
         if ($entry.case -ne $Case -or $entry.parent -ne $Parent -or $entry.input_sha256 -ne $stage.input_sha256 -or
             $entry.parent_input_sha256 -ne $fine.input_sha256 -or $entry.mesh_sha256 -ne $fine.mesh_sha256 -or
@@ -64,10 +69,16 @@ try {
             throw 'Fine prestressed basis or parent mesh identity mismatch'
         }
     }
-    $forceReadback = $Case -match '^snug125_nylon_(out2|mesh15|tol001)_static$'
+    $forceReadback = $Case -match '^snug125_(?:nylon_(?:out2|mesh15|tol001)|aluminium_mesh15)_static$'
     if ($forceReadback) {
         $book=Get-Content "$share\validation\snug125\contact_refinement_inputs.json" -Raw | ConvertFrom-Json
-        if ($Case -eq 'snug125_nylon_tol001_static') {
+        if ($Case -eq 'snug125_aluminium_mesh15_static') {
+            $al=Get-Content "$share\validation\snug125\aluminium_refinement_inputs.json" -Raw | ConvertFrom-Json
+            $entry=$al.PSObject.Properties[$Case].Value
+            $nylon=$book.PSObject.Properties['snug125_nylon_mesh15_static'].Value
+            if ($entry.case -ne $Case -or $entry.material -ne 'aluminium' -or $entry.nylon_fine_input_sha256 -ne $nylon.input_sha256 -or
+                $entry.mesh_sha256 -ne $nylon.mesh_sha256 -or $entry.post_sha256 -ne $nylon.post_sha256) {throw 'Fine aluminium control lineage mismatch'}
+        } elseif ($Case -eq 'snug125_nylon_tol001_static') {
             $entry=Get-Content "$share\validation\snug125\force_tolerance_input.json" -Raw | ConvertFrom-Json
             $ref=$book.PSObject.Properties['snug125_nylon_out2_static'].Value
             if ($entry.case -ne $Case -or $entry.reference_case -ne 'snug125_nylon_out2_static' -or

@@ -91,6 +91,12 @@ def archive_closed_case(case,receipt):
         from archive_shared import archive
         archive(case,CAMPAIGN)
         return
+    if case.startswith('snug125_') and status.get('motion_kind')=='transient' and not (receipt/'archive_request.json').exists():
+        from motion_archive_clones import prefill
+        try:
+            prefill(case,CAMPAIGN,status,receipt)
+        except (OSError,ValueError,subprocess.TimeoutExpired) as exc:
+            log(f'Modal clone prefill unavailable for {case}: {exc}; using native archive verification')
     for attempt in range(3):
         path=receipt/('archive_request.json' if attempt==0 else f'archive_retry_{attempt}.json')
         if not path.exists():
@@ -209,6 +215,10 @@ def jobs():
             for case,meta in read(local_catalog).items():
                 yield meta['bare_reference'],''
                 yield case,meta['bare_reference']
+        aluminium=ROOT/'validation/snug125/aluminium_refinement_inputs.json'
+        if aluminium.is_file():
+            for case,spec in read(aluminium).items():
+                yield case,spec['parent']
         tolerance=ROOT/'validation/snug125/force_tolerance_input.json'
         if tolerance.is_file():
             control=read(tolerance)

@@ -1,0 +1,125 @@
+{
+  "branch": "snug125_nylon_mesh15",
+  "campaign": "nov08_01",
+  "fine_basis_rst_sha256": "a9f9b10e19c1ec61e1751e5fed6d555bb198a871551b900a28aba592f24cc1da",
+  "modal_tensor_manifest_sha256": "09f23d3d59f8dd259438b5299286a68394ab86e9910221dc9de8da5d43c0b990",
+  "original_geometry": {
+    "rst_sha256": "22b8a2bda1cf7fc68e77b25be5ad12a34ba558b6ed9bc563e30511f1302249bc",
+    "native_volume_set": 1,
+    "native_volume_divided_by_thickness_mm2": 8150.066016607244,
+    "nominal_thickness_mm": 1.10236
+  },
+  "matched_corners": 312112,
+  "matched_board_columns": 19507,
+  "axes": {
+    "X": {
+      "nominal_case": "snug125_nylon_psd_X_private1",
+      "nominal_native_rst_sha256": "d99b32c59acf6d4e97c86b67e7946a263bc012f548cc2d7504a765c1d00197ba",
+      "nominal_peak_MPa": 82.68180799999999,
+      "nominal_area_95th_percentile_MPa": 9.974254,
+      "fine_cutoffs_Hz": {
+        "3500": {
+          "modes": 39,
+          "peak_MPa": 89.55799520723642,
+          "element": 105927,
+          "node": 173651,
+          "original_xyz_mm": [
+            60.5464864,
+            101.10905600000001,
+            0.55118
+          ],
+          "area_95th_percentile_MPa": 9.782210382673798
+        },
+        "4000": {
+          "modes": 49,
+          "peak_MPa": 89.53668212843873,
+          "element": 105927,
+          "node": 173651,
+          "original_xyz_mm": [
+            60.5464864,
+            101.10905600000001,
+            0.55118
+          ],
+          "area_95th_percentile_MPa": 9.776012331430595
+        }
+      },
+      "peak_change_percent": 8.290667916258855,
+      "area_95th_percentile_change_percent": -1.9875337901902768,
+      "fine_covariance_quadrature_relative_change": 3.687228244126388e-09,
+      "spectrum_input_sha256": "d3527df0c4e1fb81bbcc8212ba7b83d91604b0d33f9fe6d94cf4ed62e4aad80c"
+    },
+    "Y": {
+      "nominal_case": "snug125_nylon_psd_Y_private1",
+      "nominal_native_rst_sha256": "521d5a6833aeb1085c2e0e588ee34fe0616b61a3ff2f4a9b61367fca26bc4419",
+      "nominal_peak_MPa": 50.206343999999994,
+      "nominal_area_95th_percentile_MPa": 8.839685,
+      "fine_cutoffs_Hz": {
+        "3500": {
+          "modes": 39,
+          "peak_MPa": 47.1564375615938,
+          "element": 104743,
+          "node": 171154,
+          "original_xyz_mm": [
+            44.28223086,
+            13.80648133,
+            0.55118
+          ],
+          "area_95th_percentile_MPa": 9.157416708299875
+        },
+        "4000": {
+          "modes": 49,
+          "peak_MPa": 47.156202032954326,
+          "element": 104743,
+          "node": 171154,
+          "original_xyz_mm": [
+            44.28223086,
+            13.80648133,
+            0.55118
+          ],
+          "area_95th_percentile_MPa": 9.15469906953204
+        }
+      },
+      "peak_change_percent": -6.075212262111074,
+      "area_95th_percentile_change_percent": 3.5636345586074647,
+      "fine_covariance_quadrature_relative_change": 2.325573438416754e-09,
+      "spectrum_input_sha256": "b06a915b11e462b565f21f5935027618262e629930137d4aadb906950a2b3cab"
+    },
+    "Z": {
+      "nominal_case": "snug125_nylon_psd_Z_private1",
+      "nominal_native_rst_sha256": "57f081a6317305b07ac9b3ad225cddb6276897f9acb2307929bd7ad902772831",
+      "nominal_peak_MPa": 69.367072,
+      "nominal_area_95th_percentile_MPa": 10.724072,
+      "fine_cutoffs_Hz": {
+        "3500": {
+          "modes": 39,
+          "peak_MPa": 69.83037393805489,
+          "element": 106487,
+          "node": 175346,
+          "original_xyz_mm": [
+            52.326758760000004,
+            111.1096526,
+            0.55118
+          ],
+          "area_95th_percentile_MPa": 10.975001190427474
+        },
+        "4000": {
+          "modes": 49,
+          "peak_MPa": 69.82648261847996,
+          "element": 106487,
+          "node": 175346,
+          "original_xyz_mm": [
+            52.326758760000004,
+            111.1096526,
+            0.55118
+          ],
+          "area_95th_percentile_MPa": 10.975309672616895
+        }
+      },
+      "peak_change_percent": 0.6622891888531157,
+      "area_95th_percentile_change_percent": 2.342745112275413,
+      "fine_covariance_quadrature_relative_change": 2.5089980167777524e-09,
+      "spectrum_input_sha256": "578aafc9cb22afdb05f744660cf79e28df17fb12280eef7c88f610d34edd12f5"
+    }
+  },
+  "scope": "Nominal PCB stresses are read from native MAPDL spectra. Fine stresses are independent combinations of all signed native eigenvector tensors using each base spectrum and two percent damping. Each mesh uses its own installed tangent. The 95th percentile weights columns by their original PCB area."
+}

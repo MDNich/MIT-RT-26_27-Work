@@ -1,0 +1,254 @@
+{
+  "variant": "snug125_nylon_mesh15",
+  "campaign": "nov08_01",
+  "force_audit_sha256": "70bee26b1706fa7efcac5765de7a512d03be2b3992e7575b9b0440c2fedbdb37",
+  "native_basis_sha256": "a9f9b10e19c1ec61e1751e5fed6d555bb198a871551b900a28aba592f24cc1da",
+  "axes": {
+    "X": {
+      "samples": [
+        0,
+        1013,
+        1211,
+        156785
+      ],
+      "time_s": [
+        0.0,
+        0.0154571533203125,
+        0.0184783935546875,
+        2.3923492431640625
+      ],
+      "geometry": {
+        "left": {
+          "states": [
+            "separated",
+            "separated",
+            "separated",
+            "intersecting"
+          ],
+          "candidate_pairs": 9840,
+          "intersecting_refinement_depths": [
+            4
+          ]
+        },
+        "middle": {
+          "states": [
+            "intersecting",
+            "intersecting",
+            "intersecting",
+            "intersecting"
+          ],
+          "candidate_pairs": 8963,
+          "intersecting_refinement_depths": [
+            4
+          ],
+          "whole_surface_search": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "intersecting"
+          ],
+          "witness_exterior_triangle_indices": [
+            20694,
+            20693,
+            20695,
+            20697,
+            21123,
+            20696,
+            20722
+          ]
+        },
+        "right": {
+          "states": [
+            "separated",
+            "separated",
+            "separated",
+            "separated"
+          ],
+          "candidate_pairs": 9863,
+          "intersecting_refinement_depths": []
+        },
+        "installed_faces_to_middle": {
+          "states": [
+            "intersecting",
+            "intersecting",
+            "intersecting",
+            "intersecting"
+          ],
+          "candidate_pairs": 18,
+          "intersecting_refinement_depths": [
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      }
+    },
+    "Y": {
+      "samples": [
+        0,
+        1323,
+        1377,
+        25659
+      ],
+      "time_s": [
+        0.0,
+        0.0201873779296875,
+        0.0210113525390625,
+        0.3915252685546875
+      ],
+      "geometry": {
+        "left": {
+          "states": [
+            "separated",
+            "separated",
+            "separated",
+            "intersecting"
+          ],
+          "candidate_pairs": 9422,
+          "intersecting_refinement_depths": [
+            4
+          ]
+        },
+        "middle": {
+          "states": [
+            "intersecting",
+            "intersecting",
+            "intersecting",
+            "intersecting"
+          ],
+          "candidate_pairs": 9189,
+          "intersecting_refinement_depths": [
+            4
+          ],
+          "whole_surface_search": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "intersecting"
+          ],
+          "witness_exterior_triangle_indices": [
+            20694,
+            20693,
+            20695,
+            20697,
+            21123,
+            20696,
+            20722
+          ]
+        },
+        "right": {
+          "states": [
+            "separated",
+            "separated",
+            "separated",
+            "intersecting"
+          ],
+          "candidate_pairs": 9423,
+          "intersecting_refinement_depths": [
+            4
+          ]
+        },
+        "installed_faces_to_middle": {
+          "states": [
+            "intersecting",
+            "intersecting",
+            "intersecting",
+            "intersecting"
+          ],
+          "candidate_pairs": 19,
+          "intersecting_refinement_depths": [
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      }
+    },
+    "Z": {
+      "samples": [
+        0,
+        759,
+        841,
+        552508
+      ],
+      "time_s": [
+        0.0,
+        0.0115814208984375,
+        0.0128326416015625,
+        8.43060302734375
+      ],
+      "geometry": {
+        "left": {
+          "states": [
+            "separated",
+            "separated",
+            "separated",
+            "intersecting"
+          ],
+          "candidate_pairs": 10095,
+          "intersecting_refinement_depths": [
+            4
+          ]
+        },
+        "middle": {
+          "states": [
+            "intersecting",
+            "intersecting",
+            "intersecting",
+            "intersecting"
+          ],
+          "candidate_pairs": 9503,
+          "intersecting_refinement_depths": [
+            4
+          ],
+          "whole_surface_search": [
+            "unresolved",
+            "unresolved",
+            "unresolved",
+            "intersecting"
+          ],
+          "witness_exterior_triangle_indices": [
+            20694,
+            20693,
+            20695,
+            20697,
+            21123,
+            20696,
+            20722
+          ]
+        },
+        "right": {
+          "states": [
+            "separated",
+            "separated",
+            "separated",
+            "intersecting"
+          ],
+          "candidate_pairs": 10308,
+          "intersecting_refinement_depths": [
+            4
+          ]
+        },
+        "installed_faces_to_middle": {
+          "states": [
+            "intersecting",
+            "intersecting",
+            "intersecting",
+            "intersecting"
+          ],
+          "candidate_pairs": 18,
+          "intersecting_refinement_depths": [
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      }
+    }
+  },
+  "order": "Bolt lock, first positive preload-sized force increment, first negative increment, peak through-layer tension.",
+  "scope": "At each selected instant every exterior quadratic PLA and cell face is tested. Separated classifications use disjoint Bernstein control hulls; intersections persist at two successive triangle refinements. The originally active PLA faces are also tested against the middle cell. The linear path cannot determine the adjusted nonlinear load distribution."
+}

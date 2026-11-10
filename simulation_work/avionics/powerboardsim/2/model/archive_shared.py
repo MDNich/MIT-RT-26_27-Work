@@ -8,10 +8,15 @@ from audit_local import read
 from stage_remote_psd import win
 
 
-def copy_family(source,destination):
-    destination.mkdir(parents=True,exist_ok=True)
+def clone_file(source,destination):
     clone=ctypes.CDLL(None,use_errno=True).clonefile
     clone.argtypes=[ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int]
+    if clone(os.fsencode(source),os.fsencode(destination),0):
+        raise OSError(ctypes.get_errno(),'APFS archive clone failed',str(destination))
+
+
+def copy_family(source,destination):
+    destination.mkdir(parents=True,exist_ok=True)
     records=[]
     for path in sorted(source.iterdir()):
         if not path.is_file() or path.is_symlink():raise ValueError(f'Unexpected scratch entry {path}')
@@ -19,7 +24,7 @@ def copy_family(source,destination):
         sha=digest(path)
         target=destination/path.name
         if not target.exists():
-            if clone(os.fsencode(path),os.fsencode(target),0):raise OSError(ctypes.get_errno(),'APFS archive clone failed')
+            clone_file(path,target)
         after=path.stat();snapshot=target.stat()
         assert (before.st_size,before.st_mtime_ns,before.st_ctime_ns)==(after.st_size,after.st_mtime_ns,after.st_ctime_ns)
         assert snapshot.st_ino!=after.st_ino and snapshot.st_size==after.st_size and digest(target)==sha

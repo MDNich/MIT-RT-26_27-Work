@@ -58,19 +58,7 @@ def bracket(projected,level,sign):
                 signed_increments_N=projected[[k-1,k]].tolist())
 
 
-def run(campaign):
-    branch='snug125_nylon';repeated=branch+'_out2'
-    (original,measured),delta=repeat(branch,repeated,campaign)
-    force=measured['resultant_force_check']
-    vector=np.array(force[-1]['force_xyz_N']);preload=np.linalg.norm(vector);direction=vector/preload
-    p,_,static=source(repeated+'_static',campaign)
-    modal,folder,rst=source(branch+'_basis',campaign)
-    assert p['rst_sha256']==measured['rst_sha256']
-    attachment=read(ROOT/'validation/cell_attachment'/(branch+'.json'))
-    assert attachment['modal_rst_sha256']==modal['rst_sha256']
-    elems=attachment['middle_pocket']['active_contact_elements']
-    active=original['contact_history'][-1]['loaded_case_faces']
-    assert len(active)==1 and active[0]['element_ids']==elems and active[0]['STEP_face']==17
+def patch_geometry(rst,static,elems,direction,vector):
     order=np.argsort(rst.mesh.enum);where=order[np.searchsorted(rst.mesh.enum[order],elems)]
     assert np.array_equal(rst.mesh.enum[where],elems)
     lower=[]
@@ -88,20 +76,17 @@ def run(campaign):
     records=static._cfile.read_element_data(ptr[sel],ELEMENT_INDEX_TABLE_KEYS.index('EMN'),off)
     face_forces=np.array([v[42:45] for v in records],dtype=float)
     assert np.all(face_forces@direction>0) and np.allclose(face_forces.sum(0),vector,atol=1e-7)
-    modes=ROOT/'.runtime/post'/campaign/(branch+'_basis')/'attachment_modes.npz'
-    verified(modes,attachment['shape_force_sha256'])
-    with np.load(modes) as data:
-        assert np.array_equal(data['frequency_Hz'],rst.time_values)
-        projected_shapes=direction@data['middle_cell_pocket_force']
-    log=folder/'solve.out'
-    mass=read(ROOT/'validation/cell_force'/(branch+'.json'))
-    verified(log,mass['modal_listing_sha256'])
+    return lower,face_forces
+
+
+def excursions(branch,rst,log,projected_shapes,preload):
     results={}
     for axis in 'XYZ':
         gamma=participation(log.read_text(errors='replace'),axis)
         samples=np.arange(round(.1*FS)+1)
         t,q,_=integrate(rst.time_values,gamma,axis,samples)
         motion=read(ROOT/'validation/independent_motion'/(branch+'_motion_'+axis+'.json'))
+        assert motion['modal_listing_sha256']==digest(log) and motion['case']==branch+'_motion_'+axis
         load=ROOT/'.runtime/motion_loads'/(axis+'.txt');verified(load,motion['input_sha256'])
         forcing=np.loadtxt(load,skiprows=1,max_rows=len(samples))
         assert np.allclose(t,forcing[:,0],rtol=0,atol=5.1e-13)
@@ -123,18 +108,71 @@ def run(campaign):
                              negative_sample=negative['sample'],peak_abs_projection_0p1s_N=float(abs(projection).max()))
         results[axis]=dict(integrations=records,verification=ctrl,modal_cutoff_Hz=cutoffs,
                           excitation_sha256=motion['input_sha256'])
+    return results
+
+
+def run(campaign,*,fine=False):
+    base='snug125_nylon'
+    branch=base+'_mesh15' if fine else base
+    repeated=branch if fine else base+'_out2'
+    details={}
+    repeat_details={}
+    if fine:
+        measured=read(AUDIT/(branch+'_static_contacts.json'))
+        original=measured
+    else:
+        (original,measured),delta=repeat(branch,repeated,campaign)
+        repeat_details['all_station_displacement_repeat_max_m']=delta
+    force=measured['resultant_force_check']
+    vector=np.array(force[-1]['force_xyz_N'])
+    preload=np.linalg.norm(vector)
+    assert preload>0
+    direction=vector/preload
+    p,_,static=source(repeated+'_static',campaign)
+    modal,folder,rst=source(branch+'_basis',campaign)
+    parent=read(ROOT/'.runtime/receipts'/campaign/modal['case']/'status.json')['parent']
+    assert p['rst_sha256']==measured['rst_sha256'] and original['case']==parent
+    assert original['rst_sha256']==read(ROOT/'validation/global'/(parent+'.json'))['rst_sha256']
+    active,=original['contact_history'][-1]['loaded_case_faces']
+    assert active['STEP_face']==17
+    elems=active['element_ids']
+    lower,face_forces=patch_geometry(rst,static,elems,direction,vector)
+    mass=read(ROOT/'validation/cell_force'/(base+'.json'))
+    if fine:
+        from cell_attachment_force import modal_transfer
+        _,_,_,_,_,_,off_patch,opposition,pocket=modal_transfer(rst,mass['geometry'],elems)
+        shapes=pocket['cell']
+        details.update(active_contact_elements=elems,cell_pocket_shapes_N=shapes.tolist(),
+                       pla_pocket_shapes_N=pocket['case'].tolist(),maximum_off_patch_ratio=off_patch,
+                       maximum_bond_opposition_ratio=opposition,
+                       maximum_two_side_relative_residual=pocket['max_two_side_residual_relative_to_interface_forces'])
+    else:
+        attachment=read(ROOT/'validation/cell_attachment'/(branch+'.json'))
+        assert attachment['modal_rst_sha256']==modal['rst_sha256'] and attachment['middle_pocket']['active_contact_elements']==elems
+        modes=ROOT/'.runtime/post'/campaign/(branch+'_basis')/'attachment_modes.npz'
+        verified(modes,attachment['shape_force_sha256'])
+        with np.load(modes) as saved:
+            assert np.array_equal(saved['frequency_Hz'],rst.time_values)
+            shapes=saved['middle_cell_pocket_force']
+        details['modes_sha256']=attachment['shape_force_sha256']
+    log=folder/'solve.out'
+    ledger=read(ROOT/'.runtime/receipts'/campaign/modal['case']/'archived.json')
+    verified(log,next(r['sha256'] for r in ledger['files'] if r['name']=='solve.out'))
+    if fine:
+        details['modal_listing_sha256']=digest(log)
+    results=excursions(branch,rst,log,direction@shapes,preload)
     data=dict(variant=branch,campaign=campaign,native_force_rst_sha256=p['rst_sha256'],
               reference_static_rst_sha256=original['rst_sha256'],modal_rst_sha256=modal['rst_sha256'],
-              all_station_displacement_repeat_max_m=delta,
-              force_history=force,final_force_xyz_N=vector.tolist(),normal_axis=direction.tolist(),
+              **repeat_details,force_history=force,final_force_xyz_N=vector.tolist(),normal_axis=direction.tolist(),
               face_min_normal_cosine_bounds=lower,locked_face_forces_N=face_forces.tolist(),
-              modes_sha256=attachment['shape_force_sha256'],axes=results,
+              **details,axes=results,
               scope='The installed frictionless faces have co-oriented normals. Their total compressive '
                     'projection is nonnegative. The signed modal transfer is checked in both polarities, so '
                     'once both have exceeded the preload at least one would require a tensile total reaction '
                     'on the frozen patch. This is an upper bound on fixed-contact consistency, not an actual '
                     'opening time or the force following redistribution.')
-    write_json(AUDIT/'nylon_pocket_preload.json',data)
+    output='nylon_mesh15_pocket_preload.json' if fine else 'nylon_pocket_preload.json'
+    write_json(AUDIT/output,data)
     print('lock N',preload,'minimum cosine',min(lower),'latest ms',
           {a:1000*r['integrations']['independent']['sign_independent_latest_sample']/FS for a,r in results.items()})
 
@@ -142,4 +180,6 @@ def run(campaign):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--campaign',default='nov08_01')
-    run(parser.parse_args().campaign)
+    parser.add_argument('--fine',action='store_true')
+    args=parser.parse_args()
+    run(args.campaign,fine=args.fine)

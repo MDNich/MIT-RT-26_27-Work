@@ -135,7 +135,7 @@ Snug, aluminium screws & 78.96 & 66.78 & 75.86\\\bottomrule
 Both mounts reduced PCB deflection during bolt tightening. Under base-Z vibration, the calculated RMS board motion increased to 2.65 times bare with nylon and 1.44 times bare with aluminium. The native bases retained 38 bare modes and 48 modes for each mount up to 4~kHz. Removing modes above 3.5~kHz changed all nine tabulated peaks by less than 0.003\%. The independent bare calculation reproduced the 18 archived native displacement peaks within 0.013\%. The six cased MAPDL spectra reproduced the independent peak PCB Z displacements within 0.002~$\mu$m. Pages~11--12 compare the native stresses across directions.
 
 \heading{Case-mesh qualification}
-After tightening, MAPDL flagged the same PLA tetrahedron in both mounts at its 179.9$^\circ$ edge-angle limit. On each locked mesh, an independent polynomial bound confirmed a positive Jacobian determinant throughout all 45,549 case elements. The flagged element had the smallest lower bound, 0.01286~mm$^3$ in both cases. The separate 1.5~mm nylon prestressed basis will test frequency and vibration-response sensitivity.
+After tightening, MAPDL flagged the same PLA tetrahedron in both mounts at its 179.9$^\circ$ edge-angle limit. On each locked mesh, an independent polynomial bound confirmed a positive Jacobian determinant throughout all 45,549 case elements. The flagged element had the smallest lower bound, 0.01286~mm$^3$ in both cases. The 1.5~mm nylon mesh passed the same orientation check for all 99,818 PLA tetrahedra. No PLA element triggered the native edge-angle error-limit warning on that mesh. Page~13 compares its vibration response.
 
 \newpage
 \pageheading{Outer cells can reach the case during vibration}
@@ -175,7 +175,7 @@ PLA through-layer normal stress [MPa RMS] & --- & 4.97 & 11.87\\
 Screw longitudinal stress [MPa RMS] & --- & 7.74 & 23.36\\\bottomrule
 \end{tabular}\end{center}
 
-Peak PCB equivalent stress fell by 8.5\% with nylon screws and 12.1\% with aluminium screws under this excitation. The independent calculation on page~6 reproduced all three native PCB Z displacement maxima within 0.001~$\mu$m. The equivalent board material gives a comparison of assembly response. A service margin for the populated PCB requires the laminate data and package-specific board-strain limits.
+On the nominal case mesh, peak PCB equivalent stress fell by 8.5\% with nylon screws and 12.1\% with aluminium screws. The fine nylon model placed the peak within 1\% of bare (page~13). The independent calculation on page~6 reproduced all three native PCB Z displacement maxima within 0.001~$\mu$m. The equivalent board material gives a comparison of assembly response. A service margin for the populated PCB requires the laminate data and package-specific board-strain limits.
 
 \heading{How the middle cell transfers vibration load}
 At bolt lock the middle cell touches the case and remains attached to its two nickel strips. We summed the signed native modal element forces separately at the two strip bonds and at the loaded pocket. The case-side resultant opposed the force recovered on the middle cell outside the bond footprints. Including all three interfaces reproduced the independently integrated modal cell inertia within a relative error of $6\times10^{-6}$ across the modes. The other two cells continued to transmit load through the strip bonds in this linearization.
@@ -213,9 +213,9 @@ The six original fasteners were each tightened to 750~N. The case carried a much
 \heading{Why the fixed-contact force becomes inconsistent}
 The five active frictionless faces point towards the same side of the middle cell. Over their full curved surfaces, the cosine between the case normals and the resultant direction exceeded 0.993. A compressive force on any of those faces contributes with the same sign along this direction. Once the signed vibration increment has exceeded the installed force in both directions, one excursion would require the pocket to pull on the cell.
 
-In the nominal 2~mm model that condition occurred by 18.41~ms for base X, 25.56~ms for base Y and 12.69~ms for base Z, taking the later bound from two time-integration methods. Reducing the modal cutoff from 4 to 3~kHz left the three Newmark bounds at the same integration stations. The 2~kHz cutoff changed the bounds by at most 0.046~ms. The corresponding 1.5~mm vibration bound requires its own prestressed modes.
+In the nominal 2~mm model that condition occurred by 18.41~ms for base X, 25.56~ms for base Y and 12.69~ms for base Z, taking the later bound from two time-integration methods. Reducing the modal cutoff from 4 to 3~kHz left the three Newmark bounds at the same integration stations. The 2~kHz cutoff changed the bounds by at most 0.046~ms. Using the 1.5~mm model with its own seven active faces and prestressed modes gave corresponding upper bounds of 18.48, 21.02 and 12.84~ms.
 
-At the six sampled crossing instants, tests of the complete quadratic surfaces found the outer cells clear and the middle cell still touching or overlapping the case. The force check detects a need to redistribute the installed pressure before those snapshots show an outer cell reaching its pocket. It cannot establish when the middle cell fully lifts off. The nonlinear controls include an intact shell with all three cells, six nickel strips and six washers so both outer pockets can engage.
+At both force crossings for each base direction, the outer cells remained clear on both meshes. On the finer mesh, an intersection within the seven-face installed patch confirmed middle-cell contact even where the whole-shell search lacked sufficient resolution. The force check detects a need to redistribute the installed pressure before those snapshots show an outer cell reaching its pocket. It cannot establish when the middle cell fully lifts off. The nonlinear controls include an intact shell with all three cells, six nickel strips and six washers so both outer pockets can engage.
 
 \heading{How closely did the installed models balance?}
 On the 2~mm mesh, the whole-model force residual was 3.01~N at peak pocket load and 0.028~N at lock. On the 1.5~mm mesh the corresponding values were 2.97 and 0.00071~N. A global residual measures imbalance across the assembly. It does not directly measure the error in one pocket force. A same-mesh repeat with a 0.01~N force criterion will check the sensitivity to nonlinear convergence. The two independent readbacks of contact force agreed within $10^{-10}$~N at every station on both meshes.
@@ -254,9 +254,31 @@ Snug, nylon screws & 200--350 Hz & 94.7\%\\
 Snug, aluminium screws & 350--500 Hz & 92.1\%\\\bottomrule
 \end{tabular}\end{center}
 
-The full signed-tensor calculation reproduced all nine native peak PCB stresses within 0.1\%. Reducing the modal cutoff from 4 to 3.5~kHz changed those peaks by at most 0.20\%. This checks modal truncation within the 2~mm case model. The finer case mesh has its own installed contact state and prestressed calculation.
+The full signed-tensor calculation reproduced all nine native peak PCB stresses within 0.1\%. Reducing the modal cutoff from 4 to 3.5~kHz changed those peaks by at most 0.20\%. This checks modal truncation within the 2~mm case model. Page~13 compares the separately tightened 1.5~mm nylon case mesh.
 
 Peak nickel-strip equivalent stress under base Z also increased, from 38.13~MPa RMS bare to 122.82~MPa with nylon and 138.21~MPa with aluminium. The signed linear startup histories first crossed the local model's assumed 185~MPa yield reference at 70.30--70.31~ms and 61.25--61.26~ms, respectively. The bare history stayed below it over the first 100~ms. These conditional elastic crossings locate a demand for nonlinear analysis. Permanent strain and tearing require the local material and contact histories.
+
+\newpage
+\pageheading{How much did the finer nylon case mesh change the result?}
+We repeated bolt tightening and the prestressed ANSYS eigensolve with 99,818 quadratic PLA elements. The first frequency moved from 294.94 to 293.37~Hz. Its shapes agreed to a modal assurance criterion of 0.993 on 369,584 original assembly nodes. Of the 48 nominal modes, 31 had a one-to-one fine-mesh match above 0.95. The fine basis contained 49 modes through 4~kHz.
+
+\begin{center}\includegraphics[width=.98\linewidth]{figures/snug-nylon-mesh-response.pdf}
+\captionof{figure}{Left, peak PCB Z displacement from independent integration on each native basis. Right, maximum signed through-layer PLA tension during each nine-second seeded motion, including the locked preload. The reference line is the 40.5~MPa printed-coupon mean.}\end{center}
+
+\heading{Board stress depends on the excitation axis}
+Under base X, the 2~mm model gave a peak board stress 8.5\% below bare, while the 1.5~mm calculation came within 0.9\% of bare. The base-X 95th percentile across the board footprint was 9.97 and 9.78~MPa on the two case meshes, compared with 3.54~MPa bare. Under base Z, the board-normal RMS motion changed by 0.62\% on refinement and peak stress changed by 0.66\%. Under base Y, the same quantities changed by $+9.1\%$ and $-6.1\%$.
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+Peak PCB equivalent stress [MPa RMS] & Base X & Base Y & Base Z\\\midrule
+Bare, native MAPDL spectrum & 90.32 & 17.85 & 32.48\\
+Nylon, 2~mm, native MAPDL spectrum & 82.68 & 50.21 & 69.37\\
+Nylon, 1.5~mm, integrated from native modes & 89.54 & 47.16 & 69.83\\\bottomrule
+\end{tabular}\end{center}
+
+\heading{Printed tab and middle-pocket contact}
+The highest through-layer tension shifted from 31.17~MPa under base Y on the nominal mesh to 28.94~MPa under base X on the finer mesh, or 77.0\% and 71.5\% of the coupon mean. The fine maximum lay 0.71~mm from a constrained bearing node. Two time integrations agreed within 0.34\% on all twelve fine-mesh tensile peaks. At the fine base-X maximum, the left and middle cells intersected the printed shell in the linear reconstruction. The right cell remained clear. The real loads after contact redistribution require a nonlinear response.
+
+Refinement also shifted the base-Y time by which the locked contact load must redistribute, from about 25.6 to 21.0~ms. Both meshes put the base-Z bound near 13~ms. This agreement concerns the fixed contact pattern only. The time of full cell lift-off remains unresolved. The aluminium strength figure on page~9 uses its nominal mesh. Its matched refinement is queued.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
