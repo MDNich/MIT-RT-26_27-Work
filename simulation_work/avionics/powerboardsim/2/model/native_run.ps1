@@ -118,11 +118,22 @@ try {
     }
     if ($stage.input_sha256 -ne (Get-FileHash "$inputDir\model.inp").Hash){throw 'Staging checksum failed'}
     if ((Get-PSDrive C).Free -lt 18000000000){throw 'Insufficient space for a fresh structural job'}
+    if ($Case -like '*_cellpush_x' -and !$Parent) {throw 'Whole-board cell load requires its installed parent'}
     if ($Parent) {
         if ($Parent -notmatch '^[A-Za-z0-9_]+$') {throw 'Invalid parent'}
         $parentRoot=Join-Path $share ".runtime\archive\$Campaign\$Parent"
         $parentReceipt=Join-Path $share ".runtime\receipts\$Campaign\$Parent\archived.json"
         $manifest=Get-Content $parentReceipt -Raw|ConvertFrom-Json
+        if ($Case -match '^(bare|snug125_(?:nylon|aluminium))_cellpush_x$') {
+            $expectedParent=$Matches[1]+'_static'
+            $entry=(Get-Content "$share\validation\snug125\whole_board_pull_inputs.json" -Raw|ConvertFrom-Json).PSObject.Properties[$Case].Value
+            $locked=Get-Content "$share\validation\global\$Parent.json" -Raw|ConvertFrom-Json
+            if ($entry.case -ne $Case -or $entry.campaign -ne $Campaign -or $Parent -ne $expectedParent -or
+                $entry.parent -ne $Parent -or $entry.input_sha256 -ne $stage.input_sha256 -or $Cores -ne 12 -or
+                $entry.native_ranks -ne $Cores -or $entry.parent_rst_sha256 -ne $locked.rst_sha256 -or
+                $manifest.case -ne $Parent -or $manifest.campaign -ne $Campaign -or
+                (Get-FileHash -LiteralPath $parentReceipt).Hash -ne $entry.parent_ledger_sha256) {throw 'Whole-board cell loading lineage differs'}
+        }
         $pattern=if($Case -match '_enforced$'){'^file(?:[0-9]*)\.(?:db|mode|full|esav|emat|dsp|mlv)$'}elseif($Case -match '_motion_[XYZ]$'){'^file\.(?:db|mode|full|enf|mlv)$'}elseif($Case -match '_psd_'){'^file(?:[0-9]*)\.(?:db|mode|full|esav|emat|rst|dsp)$'}else{'^file(?:[0-9]*)\.(?:rdb|ldhi|r[0-9]{3,}|rst|dsp|emat|esav|full|db|rsm|rth|s[0-9]{2,})$'}
         $parents=@($manifest.files|Where-Object name -match $pattern)
         if ($parents.Count -lt 3) {throw 'Parent restart files missing'}

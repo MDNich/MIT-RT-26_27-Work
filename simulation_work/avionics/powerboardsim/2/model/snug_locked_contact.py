@@ -36,10 +36,14 @@ def surface_owners(rst, mesh_file, node_start=NODE):
     return owners
 
 
-def contact_by_face(rst, owners, recorded):
+def contact_by_face(rst, owners, recorded, indices=None):
     all_faces = np.array(sorted(owners))
     final = []
-    for k, state in enumerate(recorded):
+    if indices is None:
+        indices=range(len(recorded))
+    for k, state in zip(indices,recorded,strict=True):
+        k=int(k)
+        assert state['set']==k+1 and np.isclose(rst.time_values[k],state['time_s'])
         enum, data, nodes = rst.element_solution_data(k,'ECT')
         pos = np.searchsorted(enum,all_faces)
         assert np.array_equal(enum[pos],all_faces)

@@ -248,6 +248,10 @@ def jobs():
                 if directional and nylon_forward_coarse in coarse_cases:
                     yield nylon_forward_coarse,nylon_forward_coarse.removesuffix('_m3')+'_m15'
                     coarse_cases.remove(nylon_forward_coarse)
+                board_pulls=snug_dir/'whole_board_pull_inputs.json'
+                if directional and board_pulls.is_file():
+                    for case,meta in read(board_pulls).items():
+                        yield case,meta['parent']
                 rocking=snug_dir/'local_bearing_inputs.json'
                 if directional and rocking.is_file():
                     for case,meta in read(rocking).items():
@@ -455,6 +459,8 @@ def damage_reference_ready(spec):
 
 
 def result_path(case):
+    if case.endswith('_cellpush_x'):
+        return ROOT/'validation/snug125'/(case+'.json')
     if case=='snug125_nylon_clamp_smp12':
         return ROOT/'validation/snug125/local_core_trial.json'
     if case.startswith('shellwave_'):
@@ -677,6 +683,8 @@ def run():
         args=['audit_motion.py','case',case,CAMPAIGN] if motion else [audit,case,CAMPAIGN]
         if case=='snug125_nylon_clamp_smp12':
             args=['snug_local_core_trial.py','audit','--campaign',CAMPAIGN]
+        if case.endswith('_cellpush_x'):
+            args=['snug_board_pull.py','audit',case]
         r=subprocess.run([sys.executable,str(ROOT/'model'/args[0]),*args[1:]],text=True,capture_output=True)
         log(r.stdout[-1000:])
         if r.returncode:(receipt/'audit_failed.txt').write_text(r.stderr);log('Audit failed '+case+': '+r.stderr[-330:])

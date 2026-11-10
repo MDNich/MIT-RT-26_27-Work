@@ -436,7 +436,19 @@ At 0.206875~mm the right cell took 12.69~N and the middle cell carried zero. At 
 At 0.26469~mm the printed case reached 66.2\% of the in-plane coupon tension reference and 77.5\% of the layer-normal reference. Peak nylon shank tension was 43.52~MPa. The two contact pairs had maximum loaded-corner penetrations of 0.0138 and 0.0059~mm, below the 0.05~mm numerical screen. Peak equivalent plastic strain in the bilinear nickel strips reached 11.02\%; the two bare states bracketing the same travel gave 0.502\% and 0.575\%. The intact-weld idealization and bilinear material law do not predict a pack failure load.
 
 \heading{How the middle-cell force was identified}
-The fixed-hardware pilot combines eight CAD bodies into one reaction. We reconstructed the deformed quadratic case faces from native DPF displacements, bounded each face, and expanded those bounds by the full 1~mm contact-search radius in all three coordinates. Every loaded face had a single possible rigid target body. Summing its native contact forces by body reproduced the fixed support reaction to within 0.01~N at every loaded state. All 21 states of the earlier checkpoint also reproduced in this 27-state result. The aluminium, reverse-pull and damage-law comparisons remain in progress.
+The fixed-hardware pilot combines eight target bodies. We expanded the bounds of each deformed contact face by the 1~mm search radius and found one possible target for each loaded face. Their summed forces reproduced the fixed support reaction within 0.01~N at every loaded station.
+
+\heading{Initial flexibility of the installed board}
+We projected a force distributed through the left cell onto the native modes at bolt lock. Travel relative to the strip clamps was about \textbf{0.271~$\mu$m/N} across the three whole-board models. The local bare and nylon fixtures gave \textbf{17.95~$\mu$m/N} between 5 and 10~$\mu$m of travel. Those fixtures prescribe rigid-cell motion with bilinear nickel shells. The whole boards have elastic solid strips and mobile cells and clamps.
+
+\begin{center}\small\begin{tabular}{lrrr}\toprule
+X motion per unit force on left cell [$\mu$m/N] & Bare & Nylon & Aluminium\\\midrule
+Left cell relative to board supports & 0.5614 & 0.5602 & 0.5596\\
+Left cell relative to its strip clamps & 0.2705 & 0.2705 & 0.2706\\
+Middle cell relative to board supports & 0.0336 & 0.0377 & 0.0373\\\bottomrule
+\end{tabular}\end{center}
+
+For clamp-relative travel, the change from a 3.5 to 4~kHz mode cutoff exceeded the differences between assemblies. Queued nonlinear whole-board checks apply 1 and 8.542~N, then unload.
 
 \newpage
 \pageheading{How much closer do neighbouring cells move?}

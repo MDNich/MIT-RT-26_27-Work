@@ -1,0 +1,247 @@
+"""Compare left-cell side loading on three complete installed boards with the original local fixture."""
+import argparse
+import hashlib
+import re
+
+import numpy as np
+
+from audit_local import ROOT, read, table
+from case_stress import source
+from film_identity import digest, verified, write_json
+from local_equilibrium import positions
+from native_rst import read_rst
+from snug_edge_cell_travel import get_geometry, surface_transfer, verify_extrema
+from snug_equilibrium_residual import accepted_substeps
+from stage_local_jobs import seal
+from stage_snug_fit import AUDIT, INPUTS, MESH, STEP_HASH, input_record
+from tab_seating import read_point_file
+
+CAMPAIGN='nov08_01'
+BRANCHES=('bare','snug125_nylon','snug125_aluminium')
+REGISTRY=AUDIT/'whole_board_pull_inputs.json'
+REFERENCE='snug125_nylon_lateral_friction_locked_pin1_m15_ls3_ss24_checkpoint.json'
+BODIES=(176,191,187)
+
+
+def mass_weights(branch):
+    evidence=read(ROOT/'validation/cell_force'/f'{branch}.json')
+    path=ROOT/'.runtime/post'/CAMPAIGN/(branch+'_basis')/'cell_mass_weights.npz'
+    verified(path,evidence['mass_weights_sha256'])
+    with np.load(path) as data:
+        weights=np.stack([data['weights'][np.flatnonzero(data['materials']==m).item()] for m in BODIES])
+        nodes=data['nodes']
+    assert np.allclose(weights.sum(1),1.,rtol=0,atol=1e-12)
+    assert np.all((weights!=0).sum(0)==1)
+    return nodes,weights,evidence
+
+
+def commands(step, increment, nodes, weights, force):
+    lines=['ALLSEL,ALL','CSYS,0','FCUM,REPL','KBC,0',f'TIME,{step}',f'NSUBST,{increment},64,1']
+    if force is not None:
+        lines.extend(f'F,{int(n)},FX,{force*w:.15e}' for n,w in zip(nodes,weights,strict=True))
+    return lines+['SOLVE']
+
+
+def stage():
+    reference=read(AUDIT/REFERENCE)
+    common=reference['equal_bare_endpoint_load']['bare']['cell_force_N']
+    assert 8.54<common<8.55
+    specs={}
+    patterns=[]
+    for branch in BRANCHES:
+        case=branch+'_cellpush_x'
+        parent=branch+'_static'
+        data,folder,raw=source(parent,CAMPAIGN)
+        receipt=ROOT/'.runtime/receipts'/CAMPAIGN/parent
+        ledger=read(receipt/'archived.json');state=read(receipt/'status.json')
+        assert ledger['case']==parent and state['phase']=='solver_complete' and state['cores']==12
+        assert (receipt/'released.txt').is_file()
+        if branch!='bare':
+            installed=read(AUDIT/(parent+'_installed.json'))
+            assert installed['linearization_review_passed'] and installed['rst_sha256']==data['rst_sha256']
+        ids,W,evidence=mass_weights(branch)
+        assert data['rst_sha256']==evidence['static_rst_sha256']
+        last=int(raw._resultheader['ls_table'][-1,1])
+        assert raw._resultheader['ls_table'][-1,0]==2 and raw.time_values[-1]==2
+        take=W[0]!=0;nodes=ids[take];w=W[0,take]
+        ix=positions(raw.mesh.nnum,nodes)
+        assert np.max(abs(raw.mesh.node_angles[ix]))<1e-12
+        xyz=raw.mesh.nodes[ix]
+        centroid=w@xyz
+        assert np.allclose(1000*centroid,evidence['geometry']['176']['centroid_mm'],rtol=0,atol=1e-9)
+        assert np.linalg.norm(np.cross(xyz-centroid,np.column_stack((common*w,np.zeros((len(w),2))))).sum(0))<1e-12
+        assert not np.intersect1d(nodes,raw.mesh.node_components['_FIXEDSU']).size
+        files={r['name']:r for r in ledger['files']}
+        for name in ['file.rdb','file.ldhi','file.rst',*[f'file{rank}.{ext}' for rank in range(12) for ext in ('r001','rst')]]:
+            verified(folder/name,files[name]['sha256'])
+        deck=['/BATCH','/SOLU',f'ANTYPE,,REST,2,{last},CONTINUE','ALLSEL,ALL','AUTOTS,ON',
+              'CNVTOL,F,1,0.01,2','OUTRES,NSOL,ALL','OUTRES,RSOL,ALL','OUTRES,CONT,ALL','OUTRES,MISC,ALL']
+        for step,inc,force in ((3,1,None),(4,2,1.),(5,4,common),(6,4,0.)):
+            deck.extend(commands(step,inc,nodes,w,force))
+        deck+=['FINISH','/POST1','SET,LAST','/COM,PB_WHOLE_BOARD_PULL_FINISHED','FINISH','/EXIT,NOSAVE']
+        dest=INPUTS/case;dest.mkdir(exist_ok=True)
+        binary=('\n'.join(deck)+'\n').encode('ascii')
+        sha=seal(dest/'model.inp',binary)
+        patterns.append(hashlib.sha256('\n'.join(x for x in deck if x.startswith('F,')).encode()).hexdigest())
+        specs[case]=dict(case=case,campaign=CAMPAIGN,parent=parent,parent_rst_sha256=data['rst_sha256'],
+            parent_ledger_sha256=digest(receipt/'archived.json'),parent_lock_substep=last,native_ranks=12,
+            input_sha256=sha,mesh_load_nodes=len(nodes),mass_weights_sha256=evidence['mass_weights_sha256'],
+            load_centre_mm=(1000*centroid).tolist(),endpoint_force_N=common,force_cards_sha256=patterns[-1],
+            reference_checkpoint_sha256=digest(AUDIT/REFERENCE),case_step_sha256=STEP_HASH if branch!='bare' else None)
+    assert len(set(patterns))==1
+    if REGISTRY.exists():
+        assert read(REGISTRY)==specs
+    else:
+        write_json(REGISTRY,specs)
+    print('Three installed parents verified. All three decks contain the identical left-cell load pattern.')
+
+
+def forces_and_bolts(raw, indices, supports, pilots):
+    result=[];bolts=[]
+    for i in indices:
+        f,n,d=raw.nodal_reaction_forces(int(i))
+        take=np.isin(n,supports)&(d<=3)
+        sums=np.bincount(d[take],weights=f[take],minlength=4)[1:4]
+        assert len(np.unique(n[take]))==len(supports)
+        result.append(sums)
+        loads=[]
+        for pilot in pilots:
+            row=np.flatnonzero((n==pilot)&(d==1)).item()
+            loads.append(float(f[row]))
+        bolts.append(loads)
+    return np.array(result),np.array(bolts)
+
+
+def audit(case):
+    spec=read(REGISTRY)[case];parent=spec['parent'];branch=parent.removesuffix('_static')
+    assert branch in BRANCHES and case==branch+'_cellpush_x'
+    proof,original,locked=source(parent,CAMPAIGN)
+    assert proof['rst_sha256']==spec['parent_rst_sha256']
+    rec=ROOT/'.runtime/receipts'/CAMPAIGN/case
+    ledger=read(rec/'archived.json');state=read(rec/'status.json')
+    assert ledger['case']==case and ledger['campaign']==CAMPAIGN and (rec/'released.txt').is_file()
+    assert state['native_clean'] and state['exit']==0 and state['parent']==parent and state['cores']==12
+    folder=ROOT/'.runtime/archive'/CAMPAIGN/case
+    hashes={r['name']:r['sha256'] for r in ledger['files']}
+    for name in ('model.inp','file.rst','solve.out'):verified(folder/name,hashes[name])
+    assert hashes['model.inp']==spec['input_sha256']
+    listing=(folder/'solve.out').read_text(errors='replace')
+    assert 'PB_WHOLE_BOARD_PULL_FINISHED' in listing and re.search(r'TOTAL OF\s+12 CORES REQUESTED',listing)
+    assert re.search(r'NUMBER OF ERROR\s+MESSAGES ENCOUNTERED=\s*0\b',listing)
+    residuals=accepted_substeps(listing)
+    raw=read_rst(folder/'file.rst');times=raw.time_values
+    assert np.array_equal(times[:locked.nsets],locked.time_values) and times[-1]==6
+    ls=raw._resultheader['ls_table'][:,:2];add=np.arange(locked.nsets,raw.nsets)
+    assert np.array_equal(ls[:locked.nsets],locked._resultheader['ls_table'][:,:2])
+    assert np.array_equal(ls[add],[[r['step'],r['substep']] for r in residuals])
+    assert np.allclose(times[add],[r['load_time'] for r in residuals],rtol=0,atol=1e-4)
+    assert max(r['force_residual_N'] for r in residuals)<=.01001
+    for end in (3.,4.,5.,6.): assert np.count_nonzero(np.isclose(times,end,rtol=0,atol=1e-9))==1
+    mass_ids,W,evidence=mass_weights(branch)
+    assert evidence['mass_weights_sha256']==spec['mass_weights_sha256']
+    original_ledger=read(ROOT/'.runtime/receipts'/CAMPAIGN/parent/'archived.json')
+    assert spec['parent_ledger_sha256']==digest(ROOT/'.runtime/receipts'/CAMPAIGN/parent/'archived.json')
+    bolt_file=original/'bolt_preload_audit.csv'
+    verified(bolt_file,next(r['sha256'] for r in original_ledger['files'] if r['name']==bolt_file.name))
+    bf=table(bolt_file);final=bf[bf['step']==2];pilots=final['pilot'].astype(int)
+    assert len(pilots)==6 and np.max(abs(final['reaction_N']-750))<1.
+    _,_,_,geom,_,_,_,_,control=get_geometry(branch,CAMPAIGN)
+    groups,washer_ids,xyz,port,_,_=control
+    nodes=np.unique(np.r_[mass_ids,washer_ids,pilots])
+    overlap=locked.nsets-1;steps=np.r_[overlap,add]
+    post=ROOT/'.runtime/post'/CAMPAIGN/case
+    u,_=read_point_file(folder/'file.rst',post/'cell_load_nodes',hashes['file.rst'],(steps+1).tolist(),nodes.tolist())
+    initial,_=read_point_file(original/'file.rst',post/'parent_lock_nodes',spec['parent_rst_sha256'],[locked.nsets],nodes.tolist())
+    assert np.max(abs(initial[0]-u[0]))<1.e-7
+    supports=np.sort(raw.mesh.node_components['_FIXEDSU'])
+    assert len(supports)==781 and np.array_equal(supports,np.sort(locked.mesh.node_components['_FIXEDSU']))
+    reactions,bolts=forces_and_bolts(raw,steps,supports,pilots)
+    assert np.max(abs(bolts[0]-final['reaction_N']))<1.e-3
+    assert np.max(abs(u[:,positions(nodes,pilots),0]-u[0,positions(nodes,pilots),0]))<1.e-6
+    zero=np.flatnonzero(np.isclose(times[steps],3.,rtol=0,atol=1.e-9)).item()
+    relative=u-u[zero];centre_motion=W@relative[:,positions(nodes,mass_ids)]
+    washer_reference=raw.mesh.nodes[positions(raw.mesh.nnum,washer_ids)]*1000
+    assert np.max(abs(washer_reference+u[0,positions(nodes,washer_ids)]-xyz))<1.e-6
+    original_centres=1000*raw.mesh.nodes[positions(raw.mesh.nnum,mass_ids)]
+    assert np.max(abs(W[0]@(original_centres+u[0,positions(nodes,mass_ids)])-port))<1.e-6
+    actual_xyz=washer_reference+u[zero,positions(nodes,washer_ids)]
+    loaded_port=W[0]@(original_centres+u[zero,positions(nodes,mass_ids)])
+    assert np.linalg.norm(loaded_port-port)<.1
+    centres=[np.array(geom['washer_faces'][i]['fixture_lower_platen_centre_mm']) for i in groups]
+    hole=read(ROOT/'.runtime/local_inputs/lateral_friction_locked/config.json')['hole_radius_mm']
+    washer_u=relative[:,positions(nodes,washer_ids)]
+    frame=surface_transfer(groups,washer_ids,actual_xyz,washer_reference,washer_u,loaded_port,centres,hole,5)['whole']['transfer']
+    travel=centre_motion[:,0]-frame
+    pose_check=verify_extrema(groups,washer_ids,actual_xyz,loaded_port,washer_u,centre_motion[:,0],np.eye(len(steps)),travel)
+    applied=np.interp(times[steps],[2.,3.,4.,5.,6.],[0.,0.,1.,spec['endpoint_force_N'],0.])
+    residual=reactions-reactions[zero];residual[:,0]+=applied
+    assert np.max(abs(residual[zero:])) < .03
+    result=dict(case=case,campaign=CAMPAIGN,registry_sha256=digest(REGISTRY),rst_sha256=hashes['file.rst'],
+                parent_rst_sha256=spec['parent_rst_sha256'],input_sha256=hashes['model.inp'],listing_sha256=hashes['solve.out'],
+                parent_DPF_sha256=digest(post/'parent_lock_nodes/displacements.bin'),native_converged_steps=residuals,
+                source_DPF_sha256=digest(post/'cell_load_nodes/displacements.bin'),
+                max_incremental_support_residual_N=float(abs(residual[zero:]).max()),clamp_fit_check=pose_check,
+                zero_load_reequilibration_max_sampled_translation_um=1000*float(abs(u[zero]-u[0]).max()),
+                states=[dict(native_set=int(k+1),load_step=int(ls[k,0]),time=float(times[k]),applied_X_N=applied[j],
+                    cell_centres_XYZ_um=(1000*centre_motion[j]).tolist(),left_to_clamps_XYZ_um=(1000*travel[j]).tolist(),
+                    support_XYZ_N=reactions[j].tolist(),bolt_reactions_N=bolts[j].tolist()) for j,k in enumerate(steps)])
+    if branch!='bare':
+        from global_contact import pair_summary
+        grid=raw.grid.cell_data;ids=grid['ansys_elem_num'][grid['ansys_etype']==853]
+        assert len(ids)>0
+        for i,s in zip(steps,result['states'],strict=True):
+            num,vals,nn=raw.element_solution_data(int(i),'ECT')
+            s['case_contact']=pair_summary(int(i),times[i],ids,num,vals,nn)
+        from snug_locked_contact import contact_by_face, surface_owners
+        mesh=MESH/'case_2.npz'
+        verified(mesh,input_record(parent)['mesh_sha256'])
+        owners=surface_owners(raw,mesh)
+        by_face=contact_by_face(raw,owners,[s['case_contact'] for s in result['states']],steps)
+        for s,faces in zip(result['states'],by_face,strict=True):
+            assert s['native_set']==faces['native_set']
+            s['loaded_case_faces']=faces['loaded_case_faces']
+    prediction=AUDIT/f'{branch}_cell_flexibility.json'
+    projected=read(prediction)
+    assert projected['force_pattern_sha256']==spec['force_cards_sha256']
+    stiffness=projected['cutoff_Hz']['4000']
+    loading=[s for s in result['states'] if s['load_step'] in (4,5)]
+    for s in loading:
+        s['initial_tangent_left_cell_X_um']=s['applied_X_N']*stiffness['cell_X_compliance_um_per_N'][0][0]
+        s['initial_tangent_left_to_clamps_X_um']=s['applied_X_N']*stiffness['left_relative_to_its_clamps_X_um_per_N']
+    result['independent_flexibility_sha256']=digest(prediction)
+    result['scope']='Whole installed board loaded in +X through the mass-weighted nodes of its left cell. Displacements are relative to the zero-added-load hold; the original stage-2 lock is also retained for drift checks.'
+    write_json(AUDIT/(case+'.json'),result)
+    compare_closed()
+
+
+def compare_closed():
+    paths={branch:AUDIT/(branch+'_cellpush_x.json') for branch in BRANCHES}
+    if not all(path.is_file() for path in paths.values()):
+        return
+    source={};comparisons={}
+    specs=read(REGISTRY);identity=digest(REGISTRY)
+    common=float(specs['bare_cellpush_x']['endpoint_force_N'])
+    for branch,path in paths.items():
+        data=read(path);name=branch+'_cellpush_x';entry=specs[name]
+        assert data['case']==name and data['registry_sha256']==identity and data['parent_rst_sha256']==entry['parent_rst_sha256']
+        assert entry['endpoint_force_N']==common and entry['force_cards_sha256']==specs['bare_cellpush_x']['force_cards_sha256']
+        source[branch]=digest(path)
+        for label,time,force in [('unit_load',4.,1.),('matched_load',5.,common),('unloaded',6.,0.)]:
+            row,=[r for r in data['states'] if abs(r['time']-time)<1e-9]
+            assert abs(row['applied_X_N']-force)<1e-9
+            comparisons.setdefault(label,{})[branch]=dict(force_N=force,
+                left_relative_to_its_clamps_X_um=row['left_to_clamps_XYZ_um'][0],
+                left_middle_approach_X_um=row['cell_centres_XYZ_um'][0][0]-row['cell_centres_XYZ_um'][1][0],
+                cell_centres_XYZ_um=row['cell_centres_XYZ_um'],loaded_case_STEP_faces=[
+                    r['STEP_face'] for r in row.get('loaded_case_faces',[])])
+    write_json(AUDIT/'whole_board_direct_comparison.json',dict(campaign=CAMPAIGN,inputs=source,
+               registry_sha256=identity,direct_states=comparisons,
+               scope='Nonlinear whole-board load endpoints after a zero-added-load hold. All cell motions are relative to that hold.'))
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('action',choices=('stage','audit'));parser.add_argument('case',nargs='?')
+    args=parser.parse_args()
+    if args.action=='stage':stage()
+    else:audit(args.case)

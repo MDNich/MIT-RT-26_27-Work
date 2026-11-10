@@ -44,6 +44,8 @@ In the nylon forward pull, two printed tab corners reached the 40.5 MPa through-
 
 The tab-corner stress has yet to converge. At the same 0.2194 mm forward travel, three independent local mesh halvings raised the corner tension from 18.35 to 37.01 MPa. The average in the same 1.945 mm³ of PLA changed from 4.20 to 4.07 MPa. The first sampled crossing moved from the native 0.2950–0.3039 mm bracket to 0.2194–0.2319 mm on the finest local mesh. Both cut regions tested at all four resolutions gave the same intervals. The local model uses the native cut-face displacements and the idealized sharp corner. [Independent refinement, page 24](output/pdf/battery-case-report.pdf#page=24) · [Slide 4](output/pdf/battery-case-slides.pdf#page=4)
 
+With contact held at bolt lock, independent projection onto the whole-board modes gave about 0.271 µm/N of left-cell travel relative to its strip clamps with all three assemblies. The local bare and nylon shells gave 17.95 µm/N over the initial 5–10 µm displacement increment. The small whole-board differences are below the change from increasing the mode cutoff from 3.5 to 4 kHz. Three nonlinear whole-board checks use the same left-cell load distribution and independently moving neighbouring cells. [Comparison, page 21](output/pdf/battery-case-report.pdf#page=21) · [Sealed whole-board checks](validation/snug125/whole_board_pull_inputs.json)
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.
