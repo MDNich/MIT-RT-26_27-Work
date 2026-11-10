@@ -1,4 +1,4 @@
-"""Bracket the first outer-cell skin intersections on the locked-contact base-Z startup trajectory."""
+"""Bracket the first outer-cell skin intersections on the locked-contact startup trajectory."""
 import argparse
 
 import numpy as np
@@ -47,25 +47,26 @@ def control():
     assert first_overlap(rest,modes,trace*0.)['first_intersecting_sample'] is None
 
 
-def run(variant,campaign,method):
+def run(variant,campaign,method,axis='Z'):
     control()
     replay_path=AUDIT/(variant.replace('_mesh15','')+'_replay_window.json')
     horizon=read(replay_path)['replay_last_sample']
     basis=variant+'_basis'
     proof,folder,rst=source(basis,campaign)
     samples=np.arange(horizon+1)
-    motion=read(ROOT/'validation/independent_motion'/(variant+'_motion_Z.json'))
+    motion=read(ROOT/'validation/independent_motion'/(variant+'_motion_'+axis+'.json'))
     assert motion['basis_rst_sha256']==proof['rst_sha256'] and motion['campaign']==campaign
+    assert motion['axis']==axis and motion['case']==variant+'_motion_'+axis
     if method=='native':
         q,checks=native_startup(motion,campaign,rst.time_values,samples)
     else:
-        load=ROOT/'.runtime/motion_loads/Z.txt'
+        load=ROOT/'.runtime/motion_loads'/(axis+'.txt')
         log=folder/'solve.out'
         verified(log,motion['modal_listing_sha256']);verified(load,motion['input_sha256'])
         forcing=np.loadtxt(load,skiprows=1,max_rows=len(samples))
         assert np.allclose(forcing[:,0],samples/FS,rtol=0,atol=5.1e-13)
         q,checks=refined_coordinates('linear_input_exact',forcing[:,1],samples,rst.time_values,
-                                     participation(log.read_text(errors='replace'),'Z'))
+                                     participation(log.read_text(errors='replace'),axis))
     cover,cells=contact_solids(rst)
     solids=[cover]+[cells.extract_cells(cells.cell_data['ansys_material_type']==mat) for mat in (176,187)]
     shapes=[outer_faces(rst,[mat]) for mat in (850,176,187)]
@@ -86,8 +87,8 @@ def run(variant,campaign,method):
                 witness.append(dict(sample=k,subdivisions=gaps))
             result['reconstructed_skin_checks']=witness
         rows[cell]=result
-    write_json(AUDIT/(variant+'_outer_onset_Z_'+method+'.json'),dict(variant=variant,campaign=campaign,
-        method=method,base_axis='Z',basis_rst_sha256=proof['rst_sha256'],input_sha256=motion['input_sha256'],
+    write_json(AUDIT/(variant+'_outer_onset_'+axis+'_'+method+'.json'),dict(variant=variant,campaign=campaign,
+        method=method,base_axis=axis,basis_rst_sha256=proof['rst_sha256'],input_sha256=motion['input_sha256'],
         window_sha256=digest(replay_path),samples=len(q),sample_rate_Hz=FS,quadratic_face_counts=list(map(len,shapes)),
         checks=checks,cells=rows,scope='Registered outer cells and full quadratic case exterior on the fixed-contact '
               'trajectory. Hull separation is checked for every earlier native sampling station. The first crossing is '
@@ -99,5 +100,6 @@ if __name__=='__main__':
     parser.add_argument('variant',choices=('snug125_nylon','snug125_aluminium','snug125_nylon_mesh15','snug125_aluminium_mesh15'))
     parser.add_argument('--campaign',default='nov08_01')
     parser.add_argument('--method',choices=('exact','native'),default='native')
+    parser.add_argument('--axis',choices=('X','Y','Z'),default='Z')
     args=parser.parse_args()
-    run(args.variant,args.campaign,args.method)
+    run(args.variant,args.campaign,args.method,args.axis)

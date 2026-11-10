@@ -78,8 +78,8 @@ def confirm(a0,b0):
     return None
 
 
-def run(variant,method,campaign):
-    path=AUDIT/(variant+'_outer_onset_Z_'+method+'.json')
+def run(variant,method,campaign,axis='Z'):
+    path=AUDIT/(variant+'_outer_onset_'+axis+'_'+method+'.json')
     onset=read(path)
     proof,folder,rst=source(variant+'_basis',campaign)
     assert onset['basis_rst_sha256']==proof['rst_sha256'] and onset['method']==method
@@ -87,15 +87,16 @@ def run(variant,method,campaign):
     samples=np.unique([0]+[r['first_intersecting_sample']+delta for r in onset['cells'].values()
                            if r['first_intersecting_sample'] is not None for delta in offsets
                            if r['first_intersecting_sample']+delta<onset['samples']])
-    motion=read(ROOT/'validation/independent_motion'/(variant+'_motion_Z.json'))
+    motion=read(ROOT/'validation/independent_motion'/(variant+'_motion_'+axis+'.json'))
+    assert motion['axis']==axis==onset['base_axis'] and motion['input_sha256']==onset['input_sha256']
     if method=='native':
         q,source_record=native_startup(motion,campaign,rst.time_values,samples)
         assert source_record==onset['checks']
     else:
-        load=ROOT/'.runtime/motion_loads/Z.txt';log=folder/'solve.out'
+        load=ROOT/'.runtime/motion_loads'/(axis+'.txt');log=folder/'solve.out'
         verified(load,motion['input_sha256']);verified(log,motion['modal_listing_sha256'])
         acc=np.loadtxt(load,skiprows=1,max_rows=int(samples[-1])+1)
-        q,_=refined_coordinates('linear_input_exact',acc[:,1],samples,rst.time_values,participation(log.read_text(),'Z'))
+        q,_=refined_coordinates('linear_input_exact',acc[:,1],samples,rst.time_values,participation(log.read_text(),axis))
     faces=[outer_faces(rst,[m]) for m in (850,176,187)]
     ids=np.unique(np.concatenate([f.ravel() for f in faces]))
     ix=np.searchsorted(rst.mesh.nnum,ids);assert np.array_equal(rst.mesh.nnum[ix],ids)
@@ -105,7 +106,9 @@ def run(variant,method,campaign):
     for i,name in enumerate(('left','right'),1):
         row=onset['cells'][name];sample=row['first_intersecting_sample']
         if sample is None:continue
-        assert not row['unresolved_samples'] and row['last_contiguous_clear_sample']==sample-1
+        lower=row['last_contiguous_clear_sample']
+        assert 0<=lower<sample and lower+1==min([sample,*row['unresolved_samples']])
+        assert all(lower<k<sample for k in row['unresolved_samples'])
         for delta in offsets:
             station=sample+delta
             if station>=onset['samples']:break
@@ -121,7 +124,7 @@ def run(variant,method,campaign):
             coords.append(shape@arr[k]);rec[label+'_nodes']=f[k].tolist()
         assert np.linalg.norm(coords[0]-coords[1])<1.e-9
         assert np.linalg.norm(coords[0]-rec['quadratic_point_xyz_mm'])<1.e-9
-        certs[name]=dict(first_intersection_interval_ms=[1000*(sample-1)/FS,1000*station/FS],sample=station,time_s=station/FS,**rec)
+        certs[name]=dict(first_intersection_interval_ms=[1000*lower/FS,1000*station/FS],sample=station,time_s=station/FS,**rec)
         print(variant,method,name,sample,station,rec['residual_mm'],rec['normal_cross_magnitude'],flush=True)
     write_json(path.with_name(path.stem+'_witness.json'),dict(variant=variant,method=method,source_sha256=digest(path),
                cells=certs,scope='Both original six-node interpolation surfaces share the reported interior point; '
@@ -130,4 +133,5 @@ def run(variant,method,campaign):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('variant');p.add_argument('--method',choices=('native','exact'),required=True)
-    p.add_argument('--campaign',default='nov08_01');a=p.parse_args();run(a.variant,a.method,a.campaign)
+    p.add_argument('--campaign',default='nov08_01');p.add_argument('--axis',choices=('X','Y','Z'),default='Z')
+    a=p.parse_args();run(a.variant,a.method,a.campaign,a.axis)
