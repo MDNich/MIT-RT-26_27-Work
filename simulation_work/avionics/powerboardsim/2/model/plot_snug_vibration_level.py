@@ -30,6 +30,14 @@ def draw():
         stress = read(stress_path)
         assert stress["level_audit_sha256"] == digest(path)
         results[branch] = {"source_sha256": digest(path), "stress_sha256": digest(stress_path), "axes": {}}
+        geometry_path = AUDIT / f"{branch}_open_pocket_level.json"
+        geometry = read(geometry_path)
+        assert geometry["previous_vibration_level_sha256"] == digest(path)
+        expanded_path = AUDIT / f"{branch}_open_pocket_level_stress.json"
+        expanded_stress = read(expanded_path)
+        assert expanded_stress["level_audit_sha256"] == digest(geometry_path)
+        results[branch].update(open_point_audit_sha256=digest(geometry_path),
+                               open_point_stress_sha256=digest(expanded_path))
         for idx, axis in enumerate("ZYX"):
             ax = study["axes"][axis]
             selected = ax["methods"][ax["selected"]]
@@ -58,7 +66,23 @@ def draw():
                 "layer_pct": mt["metrics"]["layer_tension_MPa"]["percent_of_coupon_mean"],
                 "in_plane_pct": mt["metrics"]["in_plane_tension_MPa"]["percent_of_coupon_mean"],
             }
-            for a, x in [(time, t), (level, g * 1000)]:
+            geo = geometry["axes"][axis]
+            start = geo["reference_input_startup"]
+            assert abs(start["original_switch_ms"] - t) < 1e-10
+            hit = geo["contact_witness"]
+            event = hit or geo["previous_monitored_change"]
+            metric = expanded_stress["axes"][axis]
+            assert metric["scale"] == event["scale"] and geo["exclusion"]["unresolved_per_depth"][-1] == 0
+            results[branch]["axes"][axis]["all_middle_points_and_spacers"] = {
+                "event": f"pocket point {hit['element']}.{hit['point']} seats" if hit else
+                         f"{event['label']} {first['transition']}",
+                "full_amplitude_time_ms": start["first_time_bracket_ms"],
+                "level_bracket_rms_g": [geo["exclusion"]["stationary_rms_g"], event["stationary_rms_g"]],
+                "scale": event["scale"],
+                "peak_layer_tension_MPa": metric["metrics"]["layer_tension_MPa"]["maximum_MPa"],
+                "percent_of_layer_coupon_mean": metric["metrics"]["layer_tension_MPa"]["percent_of_coupon_mean"],
+            }
+            for a, x in [(time, start["first_time_bracket_ms"][-1]), (level, event["stationary_rms_g"] * 1000)]:
                 a.plot(
                     x,
                     idx + offset,
@@ -97,7 +121,7 @@ def draw():
     fig.legend(*time.get_legend_handles_labels(), loc="outside lower center", ncols=3, frameon=False, fontsize=9)
     fig.savefig(ROOT / "docs/figures/snug-vibration-level.pdf", metadata={"CreationDate": None, "ModDate": None})
     plt.close(fig)
-    first = min((r["axes"]["Z"]["scale"], branch) for branch, r in results.items())
+    first = min((r["axes"]["Z"]["all_middle_points_and_spacers"]["scale"], branch) for branch, r in results.items())
     shared_load = []
     hashes = set()
     for b in ("bare", *names):

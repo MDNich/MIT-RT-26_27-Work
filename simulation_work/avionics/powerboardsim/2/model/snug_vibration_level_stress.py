@@ -20,9 +20,17 @@ def static_values(base, metric):
     return base[:, 3] if metric == "layer_tension_MPa" else base[:, 0] + np.hypot(base[:, 1], base[:, 2])
 
 
-def run(branch):
+def run(branch, open_points=False):
     limit_path = AUDIT / f"{branch}_vibration_level.json"
     levels = read(limit_path)
+    name = "vibration_level"
+    open_limits = None
+    if open_points:
+        name = "open_pocket_level"
+        evidence = AUDIT / f"{branch}_{name}.json"
+        open_limits = read(evidence)
+        assert open_limits["previous_vibration_level_sha256"] == digest(limit_path)
+        limit_path = evidence
     modal, folder, modes = source(branch + "_basis", CAMPAIGN)
     preload, _, static = source(branch + "_static", CAMPAIGN)
     assert modal["rst_sha256"] == levels["modal_rst_sha256"]
@@ -48,6 +56,10 @@ def run(branch):
         )
         assert stress["input_sha256"] == s["input_sha256"]
         alpha = s["methods"][s["selected"]]["first"]["scale"]
+        if open_limits:
+            entry = open_limits["axes"][ax]
+            event = entry["contact_witness"] or entry["previous_monitored_change"]
+            alpha = event["scale"]
         assert 0 < alpha < 1
         data[ax] = {"method": method, "alpha": alpha, "stress": stress}
         axes[ax] = {"scale": alpha, "full_stress_audit_sha256": digest(path), "metrics": {}}
@@ -131,7 +143,7 @@ def run(branch):
             flush=True,
         )
     write_json(
-        AUDIT / f"{branch}_vibration_level_stress.json",
+        AUDIT / f"{branch}_{name}_stress.json",
         {
             "branch": branch,
             "level_audit_sha256": digest(limit_path),
@@ -149,5 +161,7 @@ def run(branch):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("branches", nargs="+", choices=BRANCHES)
-    for b in parser.parse_args().branches:
-        run(b)
+    parser.add_argument("--open-points", action="store_true", help="Include first touch at initially clear middle-pocket points.")
+    args = parser.parse_args()
+    for b in args.branches:
+        run(b, args.open_points)
