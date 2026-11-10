@@ -176,6 +176,9 @@ def audit(case, campaign):
     if case.startswith(('stand3_','snug125_')) and not spec['coupon'] and not raised_damage:
         from installation_material import run as check_material
         check_material(case,campaign,pull=True)
+        if case.startswith('snug125_'):
+            from pull_contact_audit import verify as check_hardware
+            check_hardware(case)
     print(data['scope'],case,flush=True)
 
 if __name__ == '__main__':

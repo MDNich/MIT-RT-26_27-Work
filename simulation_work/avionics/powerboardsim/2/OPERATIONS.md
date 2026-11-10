@@ -98,6 +98,12 @@ Use `snug_modal_refinement.py --material aluminium` and `snug_mesh_pcb_response.
 
 For newly completed snug motion jobs, the host checks the closed guest's MODE and FULL hashes against the accepted enforced-motion parent before starting the existing guest archiver. Matching files can be cloned from the parent into the new archive with distinct APFS inodes. Changed files follow the ordinary copy path. The guest still verifies its source and every destination before releasing its scratch. A test against the prior raised-nylon Z record verified 6,152,060,928 bytes across the two files. An independent copy-on-write test confirmed that a change to a clone leaves the source intact. Previously sealed archives and existing job directories remain intact.
 
+### Rigid travel before the left cell engages
+
+Before the local pulls, `snug_local_side_clearance.py` checked the pilot, target coordinates and oriented triangles, selected PLA nodes and APDL contact pair on all 42 sealed fixture inputs. Pair 861 couples the moving left cell to PLA faces 10–13. Pair 862 covers the fixed cells and washers. A separate exact CAD sweep at the installed registration gave first touch at 0.020355–0.020386 mm toward the middle cell and 0.164703–0.164734 mm away from it. Both reached cylindrical face 12, and excluded faces remained at least 1.86 mm away throughout those strokes. This is a pre-load geometry result. Compare each direction with its native force and position after clamping. [Sealed decks and rigid-contact audit](validation/snug125/local_rigid_side_clearance.json)
+
+The nylon enforced-motion parent passed its three-direction native audit, and the existing queue advanced to aluminium. A single host postprocessor at `.runtime/qa/snug125/spectra/follow_seeded.py` waits for the three accepted motion archives of each branch, then checks PLA peaks, screw peaks, all seven scalar film fields and the full sampled patch-drive history against those native coordinates. Read `seeded-review.log` and its lock before running any of those comparisons separately. This worker does not launch ANSYS, encode movies or publish results. The existing film watcher continues independently.
+
 ## Previous geometry and run history
 
 Use this revision-2 directory for study work. The older project and the isolated revision-1 rerun supply reference inputs only. The source STEP arrived directly from the user. The separate SolidWorks file is preserved. Keep the existing dedicated Mac keep-awake job until this study closes.
