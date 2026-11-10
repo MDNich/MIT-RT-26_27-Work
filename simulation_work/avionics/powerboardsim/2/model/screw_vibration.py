@@ -57,7 +57,8 @@ def scan(coordinates,mean,shapes):
     return records
 
 
-def run(variant,campaign,axes,*,check_psd=False,check_history=False):
+def run(variant,campaign,axes,*,check_psd=False,check_history=False,exact=False):
+    assert not exact or not (check_psd or check_history)
     basis,folder,modal=source(variant+'_basis',campaign)
     preload,_,static=source(variant+'_static',campaign)
     install=read(ROOT/'validation/installation_material'/(preload['case']+'.json'))
@@ -126,14 +127,20 @@ def run(variant,campaign,axes,*,check_psd=False,check_history=False):
         times,acc,_=excitation(axis)
         sealed=np.loadtxt(load,skiprows=1)
         assert np.allclose(sealed[:,0],times,rtol=0,atol=5.1e-13) and np.allclose(sealed[:,1],acc,rtol=1e-10,atol=1e-9)
-        t,q,_=integrate(frequencies,gamma,axis,slice(None))
+        if exact:
+            from snug_pla_vibration import full_coordinates
+            q,coordinate_sha,exact_load_sha=full_coordinates(variant,campaign,'exact',axis,basis,folder,frequencies)
+            assert exact_load_sha==input_sha
+            t=times
+        else:
+            t,q,_=integrate(frequencies,gamma,axis,slice(None))
         assert np.array_equal(t,times)
         records=scan(q,mean,shapes)
         high=max(records,key=lambda row:row['tensile_MPa'])
         i=high['screw']-1;end='IJ'.index(high['end']);point=high['section_index']
         stat=float(np.std(q[FS:-1]@shapes[:,i,end,point]))
         assert abs(stat/rms[i,end,point]-1)<.03
-        write_json(ROOT/'validation/screw_vibration'/(key+'.json'),dict(case=variant,campaign=campaign,axis=axis,
+        result=dict(case=variant,campaign=campaign,axis=axis,
             native_basis_sha256=basis['rst_sha256'],native_static_sha256=preload['rst_sha256'],listing_sha256=log_sha,
             input_sha256=input_sha,spectrum_input_sha256=digest(spectrum),sample_rate_Hz=FS,samples=len(t),duration_s=float(t[-1]),
             section_elements=elements.tolist(),section_nodes_per_end=25,Young_modulus_MPa=E,
@@ -143,7 +150,17 @@ def run(variant,campaign,axes,*,check_psd=False,check_history=False):
             scope='Signed independent modal integration about bolt lock with locked preload included. '
                   'Direct and bending components at the peak are simultaneous; tensile stress is longitudinal '
                   'at a modelled beam-section node. The circular beam represents an effective M4 shank. '
-                  'The seeds and the fixed-contact tangent define these conditional stress histories.'))
+                  'The seeds and the fixed-contact tangent define these conditional stress histories.')
+        if exact:
+            reference_file=ROOT/'validation/screw_vibration'/(key+'.json')
+            reference=read(reference_file)
+            assert reference['native_basis_sha256']==basis['rst_sha256'] and reference['input_sha256']==input_sha
+            errors=[abs(r['tensile_MPa']/s['tensile_MPa']-1) for r,s in zip(records,reference['screws'],strict=True)]
+            assert max(errors)<.01,errors
+            result.update(method='Exact piecewise-linear acceleration input',coordinate_source_sha256=coordinate_sha,
+                          independent_reference_sha256=digest(reference_file),
+                          four_screw_peak_relative_errors=errors)
+        write_json(ROOT/'validation/screw_vibration'/(key+('_exact' if exact else '')+'.json'),result)
         print(variant,axis,'peak screw',high,flush=True)
 
 
@@ -154,5 +171,6 @@ if __name__=='__main__':
     p.add_argument('--campaign',default='nov08_01')
     checks=p.add_mutually_exclusive_group()
     checks.add_argument('--check-psd',action='store_true');checks.add_argument('--check-history',action='store_true')
+    checks.add_argument('--exact',action='store_true')
     a=p.parse_args()
-    run(a.variant,a.campaign,a.axes,check_psd=a.check_psd,check_history=a.check_history)
+    run(a.variant,a.campaign,a.axes,check_psd=a.check_psd,check_history=a.check_history,exact=a.exact)
