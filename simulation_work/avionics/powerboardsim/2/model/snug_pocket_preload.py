@@ -111,8 +111,8 @@ def excursions(branch,rst,log,projected_shapes,preload):
     return results
 
 
-def run(campaign,*,fine=False):
-    base='snug125_nylon'
+def run(campaign,*,fine=False,material='nylon'):
+    base='snug125_'+material
     branch=base+'_mesh15' if fine else base
     repeated=branch if fine else base+'_out2'
     details={}
@@ -171,15 +171,56 @@ def run(campaign,*,fine=False):
                     'once both have exceeded the preload at least one would require a tensile total reaction '
                     'on the frozen patch. This is an upper bound on fixed-contact consistency, not an actual '
                     'opening time or the force following redistribution.')
-    output='nylon_mesh15_pocket_preload.json' if fine else 'nylon_pocket_preload.json'
+    output=material+('_mesh15' if fine else '')+'_pocket_preload.json'
     write_json(AUDIT/output,data)
     print('lock N',preload,'minimum cosine',min(lower),'latest ms',
           {a:1000*r['integrations']['independent']['sign_independent_latest_sample']/FS for a,r in results.items()})
+
+
+def native_excursions(campaign,material):
+    from snug_shell_drive_sampling import native_startup
+
+    base='snug125_'+material
+    record=AUDIT/(material+'_pocket_preload.json')
+    reference=read(record)
+    proof,_,rst=source(base+'_basis',campaign)
+    assert reference['modal_rst_sha256']==proof['rst_sha256'] and reference['campaign']==campaign
+    shapes=ROOT/'.runtime/post'/campaign/(base+'_basis')/'attachment_modes.npz'
+    verified(shapes,reference['modes_sha256'])
+    axis=np.array(reference['normal_axis'])
+    preload=np.array(reference['final_force_xyz_N'])
+    with np.load(shapes) as modes:
+        assert np.array_equal(modes['frequency_Hz'],rst.time_values)
+        projection=axis@modes['middle_cell_pocket_force']
+    assert np.allclose(preload,axis*np.linalg.norm(preload)) and min(reference['face_min_normal_cosine_bounds'])>.95
+    samples=np.arange(round(.1*FS)+1)
+    rows={}
+    for direction in 'XYZ':
+        motion=read(ROOT/'validation/independent_motion'/(base+'_motion_'+direction+'.json'))
+        assert motion['basis_rst_sha256']==proof['rst_sha256'] and motion['input_sha256']==reference['axes'][direction]['excitation_sha256']
+        q,source_ids=native_startup(motion,campaign,rst.time_values,samples)
+        force=q@projection
+        signs={name:bracket(force,np.linalg.norm(preload),sign) for name,sign in [('positive',1),('negative',-1)]}
+        latest=max(row['sample'] for row in signs.values())
+        diffs={name:{key:row[key]['sample']-signs[key]['sample'] for key in signs}
+               for name,row in reference['axes'][direction]['integrations'].items()}
+        rows[direction]=dict(**source_ids,**signs,sign_independent_latest_sample=latest,
+                             upper_bound_ms=1000*latest/FS,other_minus_native_sample=diffs,
+                             peak_absolute_force_increment_0p1s_N=float(abs(force).max()))
+    write_json(AUDIT/(material+'_pocket_preload_native.json'),
+               dict(variant=base,campaign=campaign,native_basis_sha256=proof['rst_sha256'],
+                    pocket_force_audit_sha256=digest(record),force_shape_sha256=reference['modes_sha256'],
+                    preload_N=float(np.linalg.norm(preload)),axes=rows,scope=reference['scope']))
+    print(material,'native signed-coordinate time bounds [ms]',{k:v['upper_bound_ms'] for k,v in rows.items()})
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--campaign',default='nov08_01')
     parser.add_argument('--fine',action='store_true')
+    parser.add_argument('--material',choices=('nylon','aluminium'),default='nylon')
+    parser.add_argument('--native',action='store_true')
     args=parser.parse_args()
-    run(args.campaign,fine=args.fine)
+    if args.native and args.fine:parser.error('Only the nominal mesh has native coordinate histories')
+    if args.native:native_excursions(args.campaign,args.material)
+    else:run(args.campaign,fine=args.fine,material=args.material)
