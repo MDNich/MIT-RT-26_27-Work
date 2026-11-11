@@ -1,5 +1,9 @@
 # Battery case study operations
 
+### November 11 additional archive headroom
+
+While the nylon reverse pull continued, another 16 completed PSD private copies (`file4.emat` through `file7.emat` for Y/Z and both screw materials) were consolidated using the same full-hash-verified APFS procedure. Every file retains its original bytes and metadata; only duplicate allocation was removed. This recovered 7.3 GB and left about 435 GB free on the host, above the 400 GB reserve and 425 GB dispatch margin. Windows C: had 32 GB free at the preceding readback. The single twelve-core solver, sealed inputs, finite queue and keep-awake job were unchanged. The last observed converged reverse state was load step 3/substep 14; no new physical result is claimed before its closed-file audit. [Recovery proof](validation/snug125/storage_private_modal_recovery_followup.json)
+
 ### November 11 tighter cylinder accepted; shell controls fail preprocessing
 
 The existing supervisor archived and audited `snug125_aluminium_cylinder_tol0001_static` at 04:19 UTC. Its eight native equilibria all pass the original tab/spacer and whole-case force screens. The 0.0001 N criterion gives 0.044 N middle-pocket force at lock with 0.03% imbalance. Nine middle-pocket faces carry pressure. The balanced nominal quadratic model gives 0.022 N. The earlier cylinder run remains rejected for its 22% final imbalance; tightening its force criterion changes PCB displacement by less than 0.001 micrometre. This result closes the selected tolerance check but leaves local contact formulation sensitivity unresolved. It does not replace the nominal modal bases. [Comparison and source identities](validation/snug125/aluminium_cylinder_tolerance_comparison.json)
