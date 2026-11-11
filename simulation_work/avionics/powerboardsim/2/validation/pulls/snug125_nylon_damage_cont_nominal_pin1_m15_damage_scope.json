@@ -1,0 +1,39 @@
+{
+  "case": "snug125_nylon_damage_cont_nominal_pin1_m15",
+  "campaign": "nov08_01",
+  "rst_sha256": "4034372f304fa4989529ae2d8d4d32e6974f222793a9d3440ea0f915a9fd01e3",
+  "fixture_audit_sha256": "f1392ad97d982519002d5c8a25bb84992d07618b300ea79e34be22afcfec778e",
+  "material_audit_sha256": "7c15072cdab1db2aa564b8afb68721f4e08deaa274024b3209672fe6a48a8e9b",
+  "section_map_sha256": "db4103470ce3e00d35170a41e9f0d2b53806d1068cb66361c714e8d0f0545022",
+  "contact_table_sha256": "7dcfb29144a56a352d76ac40be1d5d50ba14bc3fbd91ee046c1446d14463639f",
+  "nickel_reporting_threshold": 0.0001,
+  "nickel_bracket": [
+    {
+      "native_set": 27,
+      "time": 2.3501679687499997,
+      "cell_ux_mm": 0.35016796875,
+      "cell_fx_N": 3244.08147123999,
+      "damage": 0.0
+    },
+    {
+      "native_set": 28,
+      "time": 2.3506201660156245,
+      "cell_ux_mm": 0.350620166016,
+      "cell_fx_N": 3249.4422722514228,
+      "damage": 0.00017533895152
+    }
+  ],
+  "first_criterion_sets": {
+    "all_layer_tension_MPa": 23,
+    "all_layer_tensile_strain": 24,
+    "all_in_plane_tension_MPa": 25
+  },
+  "last_station_before_limits": {
+    "native_set": 22,
+    "travel_mm": 0.28375,
+    "cell_force_N": 2211.6951467,
+    "section_damage": 0.0
+  },
+  "interpretation": "Nickel threshold occurred after the first PLA or contact limit.",
+  "scope": "Native converged states of the 1.250 mm snug lateral fixture with the assumed nickel law. A section damage threshold marks onset within the model. Rupture and crack propagation require independent evidence."
+}

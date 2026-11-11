@@ -1,0 +1,95 @@
+{
+  "case": "snug125_nylon_damage_cont_nominal_pin1_m15",
+  "input_sha256": "df294f215b0a3708322e491d2041a520b637e1f287db646a1a5270fa84c2b067",
+  "rst_sha256": "4034372f304fa4989529ae2d8d4d32e6974f222793a9d3440ea0f915a9fd01e3",
+  "status_sha256": "13cb25556be1980db63d94a8ff9f24a02922d88820843c31402433f874df902b",
+  "archive_manifest_sha256": "5bad80cc9c28218bc055f04da660f11511d5b21afb3304c7b0aea4cf995844b4",
+  "fixture_sha256": "f1392ad97d982519002d5c8a25bb84992d07618b300ea79e34be22afcfec778e",
+  "source_sha256": {
+    "pair": "97c22272802be88ad7c73c26d5f24d730b8f0800b6a98f168d87d1d3200d24d4",
+    "material": "7c15072cdab1db2aa564b8afb68721f4e08deaa274024b3209672fe6a48a8e9b",
+    "limits": "7755f39683784cb7327a4947c542ac6ef9b6a243ce2d9f5db8341d56a749eae2",
+    "balance": "c78fd0584fad823d76595a34d89890928ba105621c7d397515342601d1a6402f",
+    "initiation": "44ff04f3841ebee0a337d552944a8e4025f8e2c1fe228816eaa29dbdaa24a752",
+    "evolution": "9dd68079b2d9ad4b66ffeb28b4ba88796588e415dce58d0e072a1c794cd75845"
+  },
+  "termination": "Native nonconvergence; no restart under the finite main-validation scope.",
+  "rejected_time": 2.35074517,
+  "rejected_load_step": 4,
+  "rejected_substep": 9,
+  "converged_states": 28,
+  "excluded_diagnostic_sets": 1,
+  "last_converged_travel_mm": 0.350620166016,
+  "all_saved_force_checks_pass": true,
+  "first_PLA_reference_bracket_mm": [
+    0.28375,
+    0.2925
+  ],
+  "nickel_reporting_bracket": [
+    {
+      "native_set": 27,
+      "time": 2.3501679687499997,
+      "cell_ux_mm": 0.35016796875,
+      "cell_fx_N": 3244.08147123999,
+      "damage": 0.0
+    },
+    {
+      "native_set": 28,
+      "time": 2.3506201660156245,
+      "cell_ux_mm": 0.350620166016,
+      "cell_fx_N": 3249.4422722514228,
+      "damage": 0.00017533895152
+    }
+  ],
+  "maximum_recorded_section_damage": 0.00017533895152,
+  "last_parent_screened": {
+    "set": 22,
+    "travel_mm": 0.28375,
+    "force_N": 2211.6951467,
+    "native_max_section_damage": 0.0,
+    "native_max_point_damage": 0.0,
+    "damaged_sites": 0,
+    "distinct_in_plane_sites_across_saved_sections": 0,
+    "damaged_elements": 0
+  },
+  "last_screened_initiation_criterion": 0.49734434485435486,
+  "equal_force_reference_N": 8.542048658016569,
+  "equal_force_travel": {
+    "bare": {
+      "exact_saved_state": false,
+      "bracket": [
+        {
+          "native_set": 14,
+          "travel_mm": 0.1875,
+          "force_N": 8.2617132369936
+        },
+        {
+          "native_set": 15,
+          "travel_mm": 0.21875,
+          "force_N": 8.826784111087967
+        }
+      ],
+      "travel_mm": 0.2030033329597957,
+      "force_N": 8.542048658016569
+    },
+    "snug": {
+      "exact_saved_state": false,
+      "bracket": [
+        {
+          "native_set": 10,
+          "travel_mm": 0.025,
+          "force_N": 3.5388412437538532
+        },
+        {
+          "native_set": 11,
+          "travel_mm": 0.05,
+          "force_N": 17.009801641625614
+        }
+      ],
+      "travel_mm": 0.03428517207847549,
+      "force_N": 8.542048658016569
+    }
+  },
+  "figure_sha256": "34784a4e8a16ecd1083e4a49f56ddccfd2549033c4b2eb93906254bbf2ed098b",
+  "scope": "Nominal multilinear nickel law on both fixtures. Brackets are adjacent saved states; left dots interpolate. The damage threshold occurs after the parent-mesh PLA reference crossing and does not establish tearing or a safe load. Earlier bilinear corner-refinement bounds are not transferred to this different deck."
+}

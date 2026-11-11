@@ -57,12 +57,12 @@ The nominal 2~mm case mesh has 45,549 quadratic tetrahedra and 77,166 nodes. Its
 In the local side-pull fixture the left cell moves along PCB X. Replaying the bare cell's measured translation and rotation gave first contact at \textbf{0.0204~mm and 1.14~N toward the middle cell}, or \textbf{0.1653~mm and 6.7~N away}. On the native nylon forward pull the pocket was clear at 0.01750~mm and carrying pressure at 0.02875~mm (pages~19 and 21). ANSYS rejected the initial 2~mm local mesh before its first solution step. The replacement 1.5~mm mesh passed the native shape checks.
 
 \heading{Nickel damage under a sideways pull}
-In the bare fixture, nickel damage first exceeded the section reporting threshold between 3.250 and 3.275~mm of cell travel (42.87--43.37~N). At the last converged station, \textbf{3.347~mm and 44.86~N}, six saved bottom-section points in four flat elements showed damage, two elements on each strip. The maximum local damage was \textbf{2.78\%}, and the largest four-site section mean was 0.887\%. The force was still increasing. The matched snug damage-law runs are pending.
+With the same nominal multilinear nickel law, \textbf{8.5~N gives about 0.03~mm travel with the nylon case versus 0.20~mm bare}. The saved-state brackets are 0.025--0.050 and 0.188--0.219~mm. The 0.50~mm bare result above uses a different, bilinear nickel law. In the nominal bare damage run, first reported damage occurs at 3.25--3.28~mm, about 43~N. Maximum local damage reaches 2.78\% at the last saved state, with force still rising.
 
-\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-nickel-damage-controls.pdf}
-\captionof*{figure}{The bare pull uses multilinear nickel hardening. The centre panel shows the three assumed initiation curves. At the peak-damage point on the right, equivalent plastic displacement accumulated since onset reached 3.33~$\mu$m against the nominal 120~$\mu$m for full degradation. The model uses this local displacement to reduce stress.}\end{center}
+\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-nominal-damage.pdf}
+\captionof*{figure}{Bars span adjacent saved native states; dots on the left interpolate. The right panel compares the nylon parent-mesh through-layer PLA reference with the first nickel section damage above $10^{-4}$. Shading marks continuation beyond the PLA reference. These are numerical reference crossings, not observed failures.}\end{center}
 
-Using deformed shell geometry reproduced the native damage within $2.7\times10^{-7}$ on three numerical coupons. With the same 0.12~mm material input, one- and four-point coupons crossed 50\% damage at 0.429--0.431 and 0.508--0.511~mm end travel. The fixture studies use 0.03, 0.12 and 0.24~mm for full degradation.
+The nylon solve stopped on \textbf{nonconvergence near 0.35~mm}. All 28 converged states pass the force checks; the unconverged diagnostic state is excluded. The PLA coupon reference is crossed first, at \textbf{0.28--0.29~mm}. No nickel damage is recorded before that crossing; the initiation criterion reaches about 50\%. First reported nickel damage near 0.35~mm therefore \textbf{does not establish a tearing load}. This parent-mesh screen is not a converged failure limit. The aluminium nominal damage case remains in progress.
 
 Both mounts reduced PCB displacement at bolt lock (page~3) and raised base-Z PCB stress (page~12). Pages~23--24 give the refined PLA limit. Page~16 links the paired movies, and Appendix~A preserves the earlier fit.
 
@@ -434,7 +434,7 @@ The screw peaks occur at the fixed PCB ends. Bending supplies 26.68~MPa of the n
 The nylon tabs moved 0.0817--0.0837~mm sideways, while aluminium tabs moved 0.0176--0.0184~mm. Tied tab and screw-tip rotations require opposing normal loads within the 3.75~mm bearing radius: at least 6.33--8.11~N per nylon tab and 5.80--7.28~N per aluminium tab. Rotation-release controls are deferred. The complete-board case (page~34) permits PCB and neighbouring-cell motion.
 
 \heading{Verified scope and remaining work}
-All 24 aluminium checkpoint equilibria pass their original balance screens. Later material refinement restricts interpretation: the roughly 538~N nylon and 598~N aluminium results at 0.219~mm (page~21) are numerical continuation. Both reverse pulls are now audited (page~35). Nominal damage and selected resolution checks remain open; broad sweeps are deferred.
+All 24 aluminium checkpoint equilibria pass their original balance screens. Later material refinement restricts interpretation: the roughly 538~N nylon and 598~N aluminium results at 0.219~mm (page~21) are numerical continuation. Both reverse pulls are audited (page~35). Nylon nominal damage closed with a nonconvergence limit (page~2); aluminium damage and selected resolution checks remain open. Broad sweeps are deferred.
 
 \newpage
 \pageheading{Refining the case mesh changes the base-X event order}
