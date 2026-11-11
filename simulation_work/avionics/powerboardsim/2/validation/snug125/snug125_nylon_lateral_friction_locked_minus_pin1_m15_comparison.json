@@ -1,0 +1,190 @@
+{
+  "case": "snug125_nylon_lateral_friction_locked_minus_pin1_m15",
+  "bare": "bare_lateral_friction_locked_minus",
+  "source": "lateral_friction_locked_minus",
+  "full_numerical_path": true,
+  "fixture_sha256": "cbf3460cdb2fe047a1727322180c17f18bfe93c3651337cf150fd6f1468400d8",
+  "native_rst_sha256": "17cbc9f5de3b9441e41ea716c5893b10b4879801bd0dea50a202943729cf60ec",
+  "bare_rst_sha256": "f45e15d6b12c21eb706e4f6202c4107f5b022f86a841cdc4a7c4fa141722414c",
+  "print_material_sha256": "ad73bc0b844459fa83f6c1f4e65ddf99cb05ce46545bdd662964fc72e9d83f82",
+  "contact_csv_sha256": "eeba6235d9b6c9109851ad219a498ec2187035b48d71de4cfcd2f16323a17908",
+  "first_print_reference_crossings": {
+    "all_in_plane_tension_MPa": {
+      "last_below_mm": -0.245625,
+      "first_above_mm": -0.270625,
+      "native_set": 23,
+      "value": 57.86254421585273,
+      "limit": 52.3,
+      "element": 1294856,
+      "node": 2100059,
+      "xyz_mm": [
+        -0.0635,
+        96.5421,
+        -11.80118
+      ],
+      "distance_to_bearing_nodes_mm": 18.1599477329962
+    },
+    "all_layer_tensile_strain": {
+      "last_below_mm": -0.395625,
+      "first_above_mm": -0.420625,
+      "native_set": 29,
+      "value": 0.01811913214623928,
+      "limit": 0.017839918128331,
+      "element": 1293656,
+      "node": 2102023,
+      "xyz_mm": [
+        -0.0635,
+        95.06644285699998,
+        -11.80118
+      ],
+      "distance_to_bearing_nodes_mm": 19.58961550977688
+    },
+    "all_layer_tension_MPa": {
+      "last_below_mm": -0.445625,
+      "first_above_mm": -0.470625,
+      "native_set": 31,
+      "value": 43.57792663574219,
+      "limit": 40.5,
+      "element": 1294593,
+      "node": 2102199,
+      "xyz_mm": [
+        0.037045212538,
+        24.234900000000003,
+        -13.271098977
+      ],
+      "distance_to_bearing_nodes_mm": 18.495904266857025
+    }
+  },
+  "closed_corner_screen_mm": 0.05,
+  "first_contact_screen_exceeded": null,
+  "last_converged_travel_mm": -0.5,
+  "supported_pull_stations": 14,
+  "bare_endpoint_load_N": -8.508911071204821,
+  "moving_cell_contact_bracket": {
+    "native_sets": [
+      18,
+      19
+    ],
+    "travel_mm": [
+      -0.145625,
+      -0.170625
+    ],
+    "cell_force_N": [
+      -6.412376206756468,
+      -9.812929489172566
+    ],
+    "within_print_screen": true,
+    "within_both_screens": true
+  },
+  "equal_load": {
+    "bare_travel_mm": -0.5,
+    "cased": {
+      "native_sets": [
+        18,
+        19
+      ],
+      "native_travel_mm": [
+        -0.145625,
+        -0.170625
+      ],
+      "native_force_N": [
+        -6.412376206756468,
+        -9.812929489172566
+      ],
+      "exact_saved_station": false,
+      "travel_mm": -0.16103818934252045,
+      "cell_force_N": -8.508911071204821
+    },
+    "reduction_in_absolute_travel_pct": 67.7923621314959
+  },
+  "equal_travel": {
+    "cased": {
+      "case": "snug125_nylon_lateral_friction_locked_minus_pin1_m15",
+      "set": 22,
+      "ux_mm": -0.245625,
+      "cell_force_N": -118.13780822227854,
+      "screw_path_N": -11.114589552239345,
+      "neighbour_path_N": -102.06275056885264,
+      "clamp_path_N": -4.96036044310064,
+      "equilibrium_residual_N": -0.00010765808592338999,
+      "nickel_peak_plastic_strain": 0.010723198298
+    },
+    "bare": {
+      "native_sets": [
+        22,
+        22
+      ],
+      "native_travel_mm": [
+        -0.245625,
+        -0.245625
+      ],
+      "native_force_N": [
+        -7.507882307273739,
+        -7.507882307273739
+      ],
+      "exact_saved_station": true,
+      "travel_mm": -0.245625,
+      "cell_force_N": -7.507882307273739
+    },
+    "cased_over_bare_force": 15.735170503115773,
+    "printed_coupon_percent": {
+      "in_plane_tension_MPa": 82.32737674931636,
+      "layer_tension_MPa": 28.036969973717206,
+      "layer_tensile_strain": 26.68440923507533
+    },
+    "peak_screw_fibre_tensions_MPa": [
+      9.805901527404785,
+      9.765461921691895,
+      5.672126293182373,
+      5.671192646026611
+    ],
+    "max_loaded_penetration_mm": 0.006124028004705906
+  },
+  "scope": "First loading branch at matched displacement or matched bare terminal force. All reported comparisons stop before the first printed-material or closed-corner penetration screen is exceeded. Screw beam stress is given in MPa; the fitted screw grade and thread capacity have no established allowable.",
+  "initial_contact_search": {
+    "pairs": {
+      "861": {
+        "gap_mm": 0.01970229325,
+        "classification": "gap",
+        "contact_element": 1312819,
+        "target_element": 1300148,
+        "target_body": 4,
+        "case_STEP_face": 12,
+        "CAD_gap_mm": 0.01969573339884434,
+        "native_minus_CAD_um": 0.006559851155659574
+      },
+      "862": {
+        "gap_mm": 0.002932839167,
+        "classification": "gap",
+        "contact_element": 1384285,
+        "target_element": 1332189,
+        "target_body": 19,
+        "case_STEP_face": 17,
+        "CAD_gap_mm": 0.002931967291763371,
+        "native_minus_CAD_um": 0.0008718752366287767
+      }
+    },
+    "native_listing_sha256": "e78637fbcdfb059b1d1e9ae1f621cb560d4008250d75399665789d0b404e5919",
+    "CAD_fit_sha256": "4379fb211485cb3c79ef5ed25d1aa79292bb9209ba33f095b7b258c6049bba14"
+  },
+  "case_mesh_sha256": "415b0bff2d28641b19fd4fc90e16c323d3192833be79c7889b106f85b0909d0b",
+  "input_sha256": "2f085e46b87c99c08df6acd1c4552d9aa4b569fd3980c2a9ca89cf0f4776fefe",
+  "initial_geometry_vs_native_contact": {
+    "prediction_sha256": "0283e674f3c8cdbbb8e9557f1e96e90bfecb658ba7bf60ac575744cf1b63772f",
+    "travel_magnitude_mm": [
+      0.16534336361694335,
+      0.16534793853759766
+    ],
+    "last_saved_magnitude_mm": 0.5,
+    "native_clear_loaded_magnitudes_mm": [
+      0.145625,
+      0.170625
+    ],
+    "predicted_interval_inside_native_bracket": true
+  },
+  "verified_checkpoints": [],
+  "moving_contact_history_sha256": "3cc5e4b2f63a3f9fbdc584f67f189c28c750031dc8afedc0bb1be0008827a620",
+  "mount_history_sha256": "91d0d588ee8f66d8c6dae4b792a5a5571c768d79c8a36edf43d292e7b5f8cd52",
+  "fixed_target_history_sha256": "c56f78b61a33c76e4edab42cbff8d73fd538347e0412b5caa6e8afb0d25e5114",
+  "energy_history_sha256": "66cebfa3b5186182d8ad0e40c99d1d94e9edd9f8b2bddd913d304c528c405ad0"
+}
