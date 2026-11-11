@@ -21,6 +21,8 @@ def draw():
     work = cased["actuator_work_mJ"]
     bare = record["bare_work_at_cased_stations"][index]["external_work_mJ"]
     paired = read(COMPARISON)
+    revised=read(AUDIT/'forward_material_scope_reassessment.json')
+    verified(COMPARISON,revised['historical_comparison_sha256']['forward_screw_energy_comparison'])
     for source in paired['sources'].values():
         verified(ROOT/source['energy_path'],source['energy_sha256'])
     (common,) = [r for r in paired['common'] if r['native_set']==21]
@@ -42,7 +44,7 @@ def draw():
         xlim=(0.006, 50),
         ylim=(-0.42, 1.39),
         yticks=[1, 0],
-        yticklabels=["8.54 N", "0.207 mm"],
+        yticklabels=["8.54 N", "0.207 mm*"],
         xlabel="Actuator work [mJ]",
         title="Matched loading",
     )
@@ -143,7 +145,7 @@ def draw():
         yticks=[3, 2, 1, 0],
         yticklabels=["Printed case", "Four shanks", "Nickel strips", "Other elements"],
         xlabel="Nodal-force work [mJ]",
-        title="Both cases at 0.207 mm",
+        title="0.207 mm*: numerical only",
         xlim=(0, 18.5),
     )
     for ax in (match, nickel, parts):

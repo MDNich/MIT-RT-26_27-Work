@@ -33,6 +33,19 @@ def first_bracket(rows, quantity, target, sign):
 
 def refined_tab_crossing(case, input_sha, travel_by_set):
     """Apply the local PLA result only to the sealed parent deck and its verified travel stations."""
+    if case == 'snug125_aluminium_lateral_friction_locked_pin1_m15':
+        path=AUDIT/'forward_material_scope_reassessment.json'
+        revised=read(path)
+        assert revised['case']==case and revised['input_sha256']==input_sha
+        verified(AUDIT/'aluminium_forward_corner_submodel.json',revised['submodel_sha256'])
+        verified(ROOT/revised['checkpoint_path'],revised['checkpoint_sha256'])
+        high=revised['native_set']
+        bracket=revised['travel_bracket_mm']
+        for k,x in zip((high-1,high),bracket,strict=True):
+            assert abs(travel_by_set[k]-x)<1e-7
+        return dict(native_set=high,travel_bracket_mm=bracket,
+                    submodel_sha256=revised['submodel_sha256'],checkpoint_sha256=revised['checkpoint_sha256'],
+                    reassessment_sha256=digest(path),scope=revised['scope'])
     if case != 'snug125_nylon_lateral_friction_locked_pin1_m15':
         return None
     path=AUDIT/'nylon_forward_tab_submodel.json'

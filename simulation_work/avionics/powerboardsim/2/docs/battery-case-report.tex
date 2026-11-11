@@ -408,16 +408,16 @@ The quasistatic fixture prescribes one cell displacement while the global model 
 
 \newpage
 \pageheading{The snug case restrains the edge cell in a sideways pull}
-At exactly \textbf{0.206875~mm} of cell travel, the local fixture required \textbf{109.53~N with nylon screws} and \textbf{242.90~N with aluminium}, a factor of 2.22. The matching bare force interpolates to 7.23~N. The sealed cased inputs differ only in screw modulus, Poisson ratio and density.
+At about \textbf{0.107~mm} of cell travel, the local fixture required \textbf{47~N with nylon screws} and \textbf{116~N with aluminium}, versus about \textbf{5.4~N bare}. This is the last common saved station below all tested corner references, not a safe-load rating. Refinement moves the aluminium PLA reference crossing to \textbf{0.107--0.132~mm} (page~24). The cased decks differ only in screw properties.
 
 \begin{center}\includegraphics[width=.99\linewidth]{figures/snug-forward-pull.pdf}
-\captionof{figure}{Left, native force; shading brackets first middle-cell loading. Centre, travel at 8.54~N: bars span saved cased states and diamonds interpolate; bare is exact. The horizontal scale is logarithmic. Right, reactions at 0.206875~mm; bare is interpolated.}\end{center}
+\captionof{figure}{Left, native forces; grey marks continuation beyond the last common reference-screened point. Centre, travel at 8.54~N; bars span saved states and diamonds interpolate. Right, reactions at 0.107~mm. Bare forces interpolate between saved states.}\end{center}
 
 \heading{Equal load and equal travel answer different questions}
 At 8.54~N, bare travel was 0.500~mm. Nylon brackets this load at 0.02875--0.04000~mm, with a linear estimate of \textbf{0.03436~mm}. Aluminium brackets it at 0.01750--0.02875~mm, with an estimate of \textbf{0.02515~mm}. The aluminium interval crosses first contact; the bracket remains essential. Both mounts first carried pocket pressure in that interval.
 
 \heading{Higher restraint transfers more load into the mounts}
-At the matched 0.206875~mm travel, the four screw supports carried \textbf{90.31~N with nylon} and \textbf{239.03~N with aluminium}. The nylon case also loaded the fixed right cell by 12.69~N; aluminium left all neighbouring hardware unloaded. Nickel clamps carried 6.54 and 3.88~N, respectively. Bearing forces and moments agree with beam ends, spacers and separate DPF support reactions at all saved stations.
+In the numerical continuation at 0.207~mm, the four screw supports carried \textbf{90.31~N with nylon} and \textbf{239.03~N with aluminium}. The nylon case also loaded the fixed right cell by 12.69~N; aluminium left all neighbouring hardware unloaded. Nickel clamps carried 6.54 and 3.88~N, respectively. Bearing forces and moments agree with beam ends, spacers and separate DPF support reactions at all saved stations.
 
 \begin{center}\small\begin{tabular}{lrr}\toprule
 At 0.206875 mm imposed cell travel & Nylon screws & Aluminium screws\\\midrule
@@ -428,13 +428,13 @@ Driven-cell mean contact pressure [MPa] & 1.74 & 3.84\\
 Driven-cell peak contact pressure [MPa] & 16.12 & 37.22\\
 Driven-cell loaded quadrature area [mm$^2$] & 59.57 & 62.65\\\bottomrule
 \end{tabular}\end{center}
-The screw peaks occur at the fixed PCB ends. Bending supplies 26.68~MPa of the nylon peak and 106.88~MPa of the aluminium peak. Face forces and deformed areas independently reproduce the pressures. These peaks need spatial convergence; screw, thread, cell-wall and sleeve limits remain unknown. Aluminium PLA demands reach 82.6\% and 58.6\% of the respective in-plane and through-layer printed-coupon means.
+The screw peaks occur at the fixed PCB ends. Bending supplies 26.68~MPa of the nylon peak and 106.88~MPa of the aluminium peak. Face forces and deformed areas independently reproduce the pressures. These peaks need spatial convergence; screw, thread, cell-wall and sleeve limits remain unknown. These parent-mesh PLA peaks understate the refined sharp-corner demand; the aluminium reference has already been crossed.
 
 \heading{The mounting assumption matters}
-The nylon tabs moved 0.0817--0.0837~mm sideways, while aluminium tabs moved 0.0176--0.0184~mm. Tied tab and screw-tip rotations require opposing normal loads within the 3.75~mm bearing radius: at least 6.33--8.11~N per nylon tab and 5.80--7.28~N per aluminium tab. Queued controls release this rotation. The complete-board case (page~34) permits PCB and neighbouring-cell motion.
+The nylon tabs moved 0.0817--0.0837~mm sideways, while aluminium tabs moved 0.0176--0.0184~mm. Tied tab and screw-tip rotations require opposing normal loads within the 3.75~mm bearing radius: at least 6.33--8.11~N per nylon tab and 5.80--7.28~N per aluminium tab. Rotation-release controls are deferred. The complete-board case (page~34) permits PCB and neighbouring-cell motion.
 
 \heading{Verified scope and remaining work}
-All 24 aluminium checkpoint equilibria pass the existing screens and reproduce the 21 earlier states. At 0.219375~mm both cases load the fixed middle cell: applied forces become 538.13~N nylon and 597.68~N aluminium, only 11.1\% apart (page~21). Reverse pulls, refinement and damage comparisons remain open.
+All 24 aluminium checkpoint equilibria pass their original balance screens. Later material refinement restricts interpretation: the roughly 538~N nylon and 598~N aluminium results at 0.219~mm (page~21) are numerical continuation. Reverse pulls, selected contact checks and nominal damage comparisons remain open; broad parameter sweeps are deferred.
 
 \newpage
 \pageheading{Refining the case mesh changes the base-X event order}
@@ -457,10 +457,10 @@ In both finer base-X calculations, the middle pocket already requires a change i
 
 \newpage
 \pageheading{Pocket pressure rises as the fixed middle cell takes load}
-Both mounts first load the fixed middle cell between \textbf{0.206875 and 0.219375~mm}. At the upper station the nylon actuator supplies \textbf{538.13~N}, of which the middle cell takes \textbf{424.29~N} (78.8\%). Aluminium requires \textbf{597.68~N}, with \textbf{348.67~N} (58.3\%) at the middle cell. These neighbours are rigidly restrained in the local fixture; on the full board they move.
+In the numerical continuation beyond the refined aluminium PLA reference, both mounts first load the fixed middle cell between \textbf{0.207 and 0.219~mm}. At the upper station the nylon actuator supplies \textbf{538.13~N}, of which the middle cell takes \textbf{424.29~N} (78.8\%). Aluminium requires \textbf{597.68~N}, with \textbf{348.67~N} (58.3\%) at the middle cell. These neighbours are rigidly restrained in the local fixture; on the full board they move.
 
 \begin{center}\includegraphics[width=.99\linewidth]{figures/snug-pull-pressure.pdf}
-\captionof{figure}{Left, native forces with bilinear nickel and both screw materials, on a logarithmic scale. Centre, nylon loaded areas and the sampled STEP overlap at the solved pose. Right, peak pressures on the driven and middle cells. Comparisons stop before the refined nylon coupon crossing.}\end{center}
+\captionof{figure}{Left, native forces with bilinear nickel. Centre, nylon loaded area and STEP overlap. Right, cell pressures. Grey marks numerical continuation beyond the last common reference-screened point.}\end{center}
 
 \heading{Which cell sees the highest pressure?}
 With nylon, driven-cell loaded area fell from 59.57 to 55.08~mm$^2$ across this interval; mean pressure rose from 1.74 to 9.68~MPa and the peak from \textbf{16.12 to 30.03~MPa}. Aluminium gave \textbf{49.90~MPa peak} and 10.44~MPa mean over 56.96~mm$^2$ at the upper station. Both middle cells averaged 7.29~MPa, but over 58.20~mm$^2$ with nylon and 47.84~mm$^2$ with aluminium. Their peaks were 10.85 and 10.43~MPa. Nylon also loaded the right cell (3.31~MPa peak); aluminium left it clear.
@@ -468,7 +468,7 @@ With nylon, driven-cell loaded area fell from 59.57 to 55.08~mm$^2$ across this 
 \heading{How much does the faceted cell surface matter?}
 At 5.53~N, 112 of 18,372 pocket points carried native pressure, covering 30.58~mm$^2$. Holding the deformed case and rigid cell pose fixed, successively finer target skins put 201 and 224 points inside the cell. The trimmed STEP solid gave 227 points (61.61~mm$^2$). At 11.57~N the finest skin and STEP agreed on the count of 278, compared with 164 loaded natively. A matched native control refines only the driven cell through 0.040~mm to determine how the forces redistribute.
 
-Nodal forces and areas reproduce pressure within $4.3\times10^{-6}$~MPa; native target IDs and separate geometry checks identify the middle-cell load. Rigid cells provide no sleeve or can strength limit. Nylon stopped on nonconvergence after 16~h 03~min at $0.470494$ of $0.500$~mm. Of 83 converged states, two at 0.453 and 0.455~mm failed the 0.20~N Z-balance screen; the diagnostic state was excluded. The first 63 passed through 0.452697~mm, but refined PLA restricts the comparison to 0.219375~mm (page~23).
+Independent force, area and target-ownership checks reproduce the native pressure fields. Rigid cells provide no sleeve or can strength limit. Nylon stopped after about 16~hours at 0.470~mm travel. Two later states failed the Z-force balance; the first 63 passed. The tighter material interpretation is separate: the paired aluminium reference bracket is now 0.107--0.132~mm (page~24).
 
 \heading{How much does the installed case restrain each cell?}
 At bolt lock, the middle cell moved \textbf{9.9\% less with nylon screws} and \textbf{13.9\% less with aluminium} under the same small sideways force. Refining the nylon case from 2 to 1.5~mm gave a 9.4\% reduction. The change from bare at either outer cell was below 0.36\%. We solved each full stiffness matrix independently, applying a unit force along PCB X through each cell's mass centre in turn. Contacts retained their installed state.
@@ -525,19 +525,22 @@ At the upper station the highest tensile stress in a nylon screw shank was 59.01
 At the last station before the PLA crossing, 0.2950~mm, the fixture reaction was 2,138~N versus 7.78~N interpolated bare. Peak nickel equivalent plastic strain reached 17.14\% on the flat strip next to the idealized cell attachment. At least one exterior shell face reached 10\% across 4.68~mm$^2$ of the two strips' 924.64~mm$^2$ reference area. Both bare states bracketing the same travel stayed below 0.65\% everywhere. These are bilinear strip strains with intact welds. The fixed-neighbour fixture and the localized PLA crossing do not establish an assembled-pack failure load.
 
 \newpage
-\pageheading{The predicted corner crossing moves earlier on a finer mesh}
-The forward-pull model has a sharp corner where three planar faces meet at the high-Y mounting tab. Holding the imposed motion fixed and refining only the material around this corner more than doubled its calculated through-layer tension at \textbf{0.2194~mm} of cell travel. The average tension in the same \textbf{1.945~mm$^3$} of surrounding PLA changed by about 3\%.
+\pageheading{Sharp PLA corners prevent a converged strength prediction}
+Refining the forward-pull model moves the aluminium case's first tested layer-strength reference crossing to \textbf{0.107--0.132~mm} of cell travel. Nylon's finest tested bracket is \textbf{0.219--0.232~mm}. Neither crossing is mesh-converged. These are comparisons with the \textbf{40.5~MPa printed-coupon mean}, not predicted cracking loads.
 
-\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-tab-local-refinement.pdf}
-\captionof{figure}{Independent elastic calculation around the high-Y tab root. Left, the corner maximum and volume average at one imposed travel, before any tested mesh reached the coupon mean. Right, the two consecutive native displacement stations that bracket each local crossing. Each halving divides every parent tetrahedron into eight quadratic elements.}\end{center}
+\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-corner-local-refinement.pdf}
+\captionof{figure}{Independent elastic patches driven by native ANSYS displacements. Left, corner peaks and averages over fixed material volumes at the same travel. Aluminium is already beyond its refined reference there. Right, brackets at the finest tested local resolution. The two mounts have different governing corners.}\end{center}
 
-\heading{How the local calculation was checked}
-At all 33 saved native equilibria, we imposed the displacements from the ANSYS pull on the cut faces of the tab region. We removed rigid translation and rotation, retained the original orthotropic PLA stiffness and solved an independent small-strain elasticity problem. The exposed physical faces were free of screw ties and active contact. The illustrated region contains the 32 native tetrahedra whose centres lie within 1.8~mm of the corner, including all nine touching it. Refinement preserved the geometry and the quadratic displacement field on the cut.
+\heading{What changed with aluminium screws?}
+Its governing corner lies on the low-Y tab root, about 11~mm from the nearest tied screw node. At 0.232~mm travel, successive element halvings raise the layer tension from about \textbf{26 to 37, 54 and 80~MPa}. The mean over the same \textbf{4.45~mm$^3$} of PLA changes only from 3.08 to 2.87~MPa. A larger cut region gives 81~MPa at the finest resolution and the same crossing bracket. The high-Y corner that governed nylon stays below 40~MPa throughout this aluminium checkpoint, even at the finest tested resolution.
 
-With the native element sizes, the independent model reproduced the native high-Y corner tension to within 0.24~MPa over the entire history. At 0.2194~mm travel the native result was 18.43~MPa. Over three successive halvings, the independent value rose from 18.35 to 22.49, 28.74 and 37.01~MPa. The volume average fell from 4.20 to 4.07~MPa. Expanding the cut region to 2.75~mm gave the same four crossing intervals. A 3.75~mm region reproduced them through the first two halvings. Changing the subdivision diagonal preserved all three refined brackets. Increasing stiffness quadrature from four to 27 points also reproduced the original and twice-refined brackets.
+\heading{How the check was made}
+Each patch retains the original orthotropic stiffness and quadratic cut-face displacements. Rigid motion is removed, while physical free surfaces stay free of active contact and screw ties. There are 16 combinations of local resolution, cut size, subdivision diagonal and quadrature at each aluminium corner. All pass equilibrium and fixed-volume checks. Unrefined patches reproduce native corner stresses within 0.2~MPa; increased quadrature reproduces the refined stress. Changing cut size or subdivision diagonal preserves the crossing classification. The earlier nylon controls show the same unresolved sharp-corner sensitivity.
 
-\heading{What the first crossing means}
-The original native mesh bracketed the coupon comparison at 0.2950--0.3039~mm. At the finest illustrated resolution the independent bracket was 0.2194--0.2319~mm, and it had moved at every refinement. This sensitivity limits any physical interpretation of a single corner reaching 40.5~MPa. The actual printed corner radius and local print quality are unmeasured. The separate native whole-fixture mesh comparison will also allow the tab and the rest of the assembly to redistribute their loads.
+\heading{How this changes the comparison}
+At the last common saved point below every tested corner reference, about \textbf{0.107~mm}, the native forces are \textbf{47~N nylon and 116~N aluminium}, versus approximately \textbf{5.4~N bare}. The earlier 0.207 and 0.219~mm force, pressure, work and nickel comparisons remain useful numerical diagnostics, but no longer sit inside the revised paired material screen. Their equilibrium audits and numerical values are unchanged. The low-load 8.54~N comparison precedes this reference crossing.
+
+The actual printed corner radius and local print quality are unmeasured. A small, mesh-sensitive peak cannot establish a physical failure load, and a low volume average cannot dismiss that peak. This independent local check does not redistribute loads through the assembly or simulate cracking. The main study reports this limitation without adding another refinement campaign.
 
 \newpage
 \pageheading{Where does a sideways force on the middle cell go?}
@@ -599,10 +602,10 @@ Across the first 8.789~ms, the 48 installed modes alone captured 44.3\% of stati
 
 \clearpage
 \pageheading{How much work does it take to move the edge cell?}
-At the bare fixture's terminal force of \textbf{8.54 N}, lateral actuator work was about \textbf{0.0846 mJ with nylon screws}, \textbf{0.0449 mJ with aluminium} and \textbf{3.30 mJ bare}. The cased values interpolate native load intervals, including first contact for aluminium. At the same imposed travel of \textbf{0.206875 mm}, the actuator supplied \textbf{9.55, 23.14 and 0.962 mJ}, respectively. The local fixture fixes the four screw supports and neighbouring cells.
+At the bare fixture's terminal force of \textbf{8.54 N}, lateral actuator work was about \textbf{0.0846 mJ with nylon screws}, \textbf{0.0449 mJ with aluminium} and \textbf{3.30 mJ bare}. The cased values interpolate native load intervals, including first contact for aluminium. At the same imposed travel of \textbf{0.206875 mm}, the actuator supplied \textbf{9.55, 23.14 and 0.962 mJ}, respectively. The local fixture fixes the four screw supports and neighbouring cells. Values at 0.207~mm are numerical continuation beyond the refined aluminium PLA reference.
 
 \begin{center}\includegraphics[width=\linewidth]{figures/snug-pull-work.pdf}
-\captionof{figure}{Left, work at matched force or travel. Native endpoint bands at 8.54~N span 0.045--0.141~mJ for nylon and 0.0085--0.0821~mJ for aluminium. Centre, independent nickel initiation replay. Right, component nodal-force work.}\end{center}
+\captionof{figure}{Left, work at matched force or travel. Native endpoint bands at 8.54~N span 0.045--0.141~mJ for nylon and 0.0085--0.0821~mJ for aluminium. Centre, independent nickel initiation replay. Right, component nodal-force work. Asterisks mark post-reference numerical continuation.}\end{center}
 
 \heading{Where the work goes}
 At 0.206875~mm the PLA and four shanks stored 4.974 and 3.365~mJ with nylon screws, together 87.3\% of actuator work. Aluminium raised these elastic energies to 15.400 and 5.794~mJ, or 91.6\%. Independent nodal-force integration reproduced the elastic storage. Nickel work was 1.022 and 1.662~mJ, respectively. Summed nodal work matched integrated actuator reactions within 0.0009~mJ across nylon's checkpoint and 0.000021~mJ across aluminium's.
@@ -610,15 +613,13 @@ At 0.206875~mm the PLA and four shanks stored 4.974 and 3.365~mJ with nylon scre
 \heading{How fixed-neighbour contact affects the interpretation}
 Both fixtures first load the fixed middle cell between 0.206875 and 0.219375~mm. Actuator work rises from 9.55 to 13.60~mJ with nylon and from 23.14 to 28.40~mJ with aluminium. At the upper station the moving and fixed contact pairs accumulate 1.32 and 1.56~mJ of net nodal work, respectively. Their native contact stiffness energies account for 0.85 and 0.96~mJ. These frictionless pairs retain numerical enforcement and finite-increment effects; the differences are not impact absorption or plastic damage. Sealed controls for both materials refine the same contact-onset intervals while retaining the original preload, mesh and continuous displacement ramp. Each retains its parent's native core count.
 
-At 0.2950~mm on the nylon parent mesh, moving-cell contact work and stiffness energy were 37.19 and 11.06~mJ; fixed-hardware values were 8.27 and 6.50~mJ. The differences account for 27.89~mJ of the 28.05~mJ gap between actuator work and summed stiffness energies. This numerical diagnostic is beyond the locally refined PLA reference.
-
 \heading{How close did the nickel get to damage initiation?}
 Following the \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_mat/mat_damageall.html}{ANSYS ductile-damage law}, each plastic-strain increment is divided by its critical strain at the current stress triaxiality. A sum of one marks initiation. Independent replay agreed with the native criterion within $2.4\times10^{-6}$ on the bare damage-law pull and three controls. On aluminium's bilinear history, computing triaxiality from the full stress tensor changed the peak criterion by less than $6.4\times10^{-9}$.
 
-At 8.54~N the bare fixture reached 6.14\% of the nominal criterion; both snug fixtures remained elastic at both bracketing loads. At 0.2069~mm travel, demand was \textbf{3.15\% with nylon and 7.90\% with aluminium}. At 0.2194~mm it rose to \textbf{6.70\% and 14.44\%}, against 1.63--1.99\% at the surrounding bare stations. Aluminium's maximum was in the top section of a flat strip element. The weakest assumed curve gave 20.1\% and 43.3\% at the same endpoint. These are fractions of an initiation criterion, not allowable-stress utilization or observed damage. They retain the bilinear deformation history; the damage law has no feedback. On the bare nominal history the weak curve reached one at 1.775--1.800~mm (21.44--21.71~N). Dedicated native material variations remain queued.
+At 8.54~N the bare fixture reached 6.14\% of the nominal criterion; both snug fixtures remained elastic at both bracketing loads. At 0.2069~mm travel, demand was \textbf{3.15\% with nylon and 7.90\% with aluminium}. At 0.2194~mm it rose to \textbf{6.70\% and 14.44\%}, against 1.63--1.99\% at the surrounding bare stations. Aluminium's maximum was in the top section of a flat strip element. The weakest assumed curve gave 20.1\% and 43.3\% at the same endpoint. These are fractions of an initiation criterion, not allowable-stress utilization or observed damage. They retain the bilinear deformation history; the damage law has no feedback. Only the two nominal native damage comparisons remain in the main scope; the parameter grid is deferred.
 
 \heading{Limit of the comparison}
-The paired comparisons stop at 0.219375~mm, before the finest nylon PLA crossing (page~24). The parent crossing was later, at 0.30391~mm (page~23). Later saved stations describe the numerical path beyond the refined reference.
+The refined aluminium corner now bounds the paired comparison at the 0.107--0.132~mm interval (page~24). The 0.207 and 0.219~mm quantities above describe numerical continuation, not an intact-case strength or energy rating. Neither mount has a converged sharp-corner failure threshold.
 
 \clearpage
 \pageheading{When does vibration change the installed contact state?}

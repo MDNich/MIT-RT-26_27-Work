@@ -17,6 +17,8 @@ def draw():
     states = audit["states"]
     travel = np.array([s["travel_mm"] for s in states])
     comparison = read(MIDDLE)
+    revised=read(AUDIT/'forward_material_scope_reassessment.json')
+    verified(MIDDLE,revised['historical_comparison_sha256']['forward_middle_engagement_comparison'])
     aluminium_path = AUDIT/f"{STEMS['aluminium']}_cell_pressure.json"
     verified(aluminium_path, comparison['sources']['aluminium']['pressure']['sha256'])
     aluminium = [s for s in read(aluminium_path)['states'] if s['native_set'] <= comparison['last_common_native_set']]
@@ -103,6 +105,8 @@ def draw():
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(axis="y", color="#DADADA", lw=0.45)
         ax.set_axisbelow(True)
+        if ax is not area:
+            ax.axvspan(revised['travel_bracket_mm'][0],xmax,color='#B6B6B6',alpha=.2)
     area.set_ylim(0, 1.06 * max(s["CAD_inside_point_area_mm2"] for s in overlaps))
     pressure.set_ylim(0, 1.12*max(g['peak_pressure_MPa'] for s in aluminium+states for g in s['cells'].values()))
     fig.savefig(

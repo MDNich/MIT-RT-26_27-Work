@@ -22,6 +22,8 @@ def plot():
     rows = comparison['common_native_travel']
     extended = continuation['common_native_travel']
     assert extended[:-1] == rows
+    revised=read(AUDIT/'forward_material_scope_reassessment.json')
+    verified(MIDDLE,revised['historical_comparison_sha256']['forward_middle_engagement_comparison'])
     labels = ['Bare', 'Nylon', 'Aluminium']
     colors = ['#08357E', '#38761D', '#7A0101']
     fig, (ax, bx, cx) = plt.subplots(1, 3, figsize=(8.15, 2.5), layout='constrained',
@@ -31,9 +33,9 @@ def plot():
     for key, label, color in zip(('nylon', 'aluminium'), labels[1:], colors[1:], strict=True):
         ax.plot([r['travel_mm'] for r in extended], [r[key]['cell_force_N'] for r in extended],
                 'o-', ms=2.8, lw=1.3, color=color, label=label)
-    ax.axvspan(rows[-1]['travel_mm'], extended[-1]['travel_mm'], color='#8EACD5', alpha=.2)
+    ax.axvspan(revised['travel_bracket_mm'][0],extended[-1]['travel_mm'],color='#B6B6B6',alpha=.2)
     ax.set(xlim=(0, .235), ylim=(0, 640), xlabel='Cell travel [mm]', ylabel='Applied force [N]',
-           title='Same imposed travel', xticks=[0, .1, .2])
+           title='Grey: numerical continuation', xticks=[0, .1, .2])
     ax.legend(fontsize=8, frameon=False, loc='upper left')
     endpoint = comparison['bare_endpoint']
     target = endpoint['cell_force_N']
@@ -51,7 +53,7 @@ def plot():
     bx.xaxis.set_major_locator(FixedLocator([.02, .05, .1, .5]))
     bx.xaxis.set_major_formatter(FixedFormatter(['0.02', '0.05', '0.1', '0.5']))
     bx.xaxis.set_minor_locator(NullLocator())
-    end = rows[-1]
+    end = revised['last_common_station_below_all_tested_corner_references']
     screws = [0.] + [end[key]['screw_support_resistance_N'] for key in ('nylon', 'aluminium')]
     nickel = [end['bare']['cell_force_N']] + [end[key]['nickel_clamp_resistance_N'] for key in ('nylon', 'aluminium')]
     neighbours = [0.] + [end[key]['neighbor_resistance_N'] for key in ('nylon', 'aluminium')]
@@ -60,8 +62,8 @@ def plot():
     cx.barh([2, 1, 0], neighbours, left=np.array(screws)+nickel, height=.48, color='#38761D', label='Fixed neighbour')
     for y, total in zip((2, 1, 0), np.array(screws)+nickel+neighbours, strict=True):
         cx.text(total+2., y, f'{total:.2f}', va='center', fontsize=8)
-    cx.set(xlim=(0, 305), ylim=(-.45, 2.75), yticks=[2, 1, 0], yticklabels=labels,
-           xlabel='Lateral support reaction [N]', title='At 0.206875 mm')
+    cx.set(xlim=(0, 150), ylim=(-.45, 2.75), yticks=[2, 1, 0], yticklabels=labels,
+           xlabel='Lateral support reaction [N]', title='At 0.107 mm cell travel')
     cx.legend(fontsize=7, frameon=False, loc='upper right')
     for axis in (ax, bx, cx):
         axis.title.set(color='#08357E', fontsize=10)
