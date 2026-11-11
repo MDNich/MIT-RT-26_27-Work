@@ -1,0 +1,1256 @@
+{
+  "authorized_utc": "2026-11-11T01:33:15.446490+00:00",
+  "user_instruction": "Cut it at main validation results; keep it brief and do not overdo precision.",
+  "scope": "Finite main comparison and essential existing checks. No additional material, damage-parameter, grip, bearing or mesh sweep. Audit each selected case once; report unresolved limits instead of automatically adding successor studies.",
+  "active_case_preserved": "snug125_aluminium_lateral_friction_locked_pin1_m15",
+  "primary_cases": [
+    "snug125_aluminium_lateral_friction_locked_pin1_m15",
+    "snug125_nylon_lateral_friction_locked_minus_pin1_m15",
+    "snug125_aluminium_lateral_friction_locked_minus_pin1_m15",
+    "snug125_nylon_damage_cont_nominal_pin1_m15",
+    "snug125_aluminium_damage_cont_nominal_pin1_m15"
+  ],
+  "contact_cases": [
+    "snug125_aluminium_cylinder_tol0001_static",
+    "shell_snug125_nylon_free_v2",
+    "shell_snug125_nylon_contact_v2",
+    "shell_snug125_aluminium_free_v2",
+    "shell_snug125_aluminium_contact_v2",
+    "shellwave_snug125_nylon_free_pilot_s4",
+    "shellwave_snug125_nylon_contact_pilot_s4",
+    "shellwave_snug125_aluminium_free_pilot_s4",
+    "shellwave_snug125_aluminium_contact_pilot_s4"
+  ],
+  "resolution_cases": [
+    "snug125_nylon_lateral_friction_locked_steps_m15",
+    "snug125_aluminium_lateral_friction_locked_steps_m15",
+    "snug125_nylon_lateral_friction_locked_target4_m15"
+  ],
+  "cases": [
+    {
+      "case": "snug125_nylon_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_basis",
+      "parent": "snug125_nylon_static"
+    },
+    {
+      "case": "snug125_aluminium_basis",
+      "parent": "snug125_aluminium_static"
+    },
+    {
+      "case": "snug125_aluminium_cylinder_tol0001_static",
+      "parent": ""
+    },
+    {
+      "case": "shell_snug125_nylon_free_v2",
+      "parent": "snug125_nylon_basis"
+    },
+    {
+      "case": "shell_snug125_nylon_contact_v2",
+      "parent": "shell_snug125_nylon_free_v2"
+    },
+    {
+      "case": "shell_snug125_aluminium_free_v2",
+      "parent": "snug125_aluminium_basis"
+    },
+    {
+      "case": "shell_snug125_aluminium_contact_v2",
+      "parent": "shell_snug125_aluminium_free_v2"
+    },
+    {
+      "case": "shellwave_snug125_nylon_free_pilot_s4",
+      "parent": "shell_snug125_nylon_free_v2"
+    },
+    {
+      "case": "shellwave_snug125_nylon_contact_pilot_s4",
+      "parent": "shell_snug125_nylon_contact_v2"
+    },
+    {
+      "case": "shellwave_snug125_aluminium_free_pilot_s4",
+      "parent": "shell_snug125_aluminium_free_v2"
+    },
+    {
+      "case": "shellwave_snug125_aluminium_contact_pilot_s4",
+      "parent": "shell_snug125_aluminium_contact_v2"
+    },
+    {
+      "case": "bare_lateral_friction_locked",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_pin1_m15",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "bare_lateral_friction_locked_minus",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_minus_pin1_m15",
+      "parent": "bare_lateral_friction_locked_minus"
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_minus_pin1_m15",
+      "parent": "bare_lateral_friction_locked_minus"
+    },
+    {
+      "case": "bare_damage_cont_nominal",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_nominal_pin1_m15",
+      "parent": "bare_damage_cont_nominal"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_nominal_pin1_m15",
+      "parent": "bare_damage_cont_nominal"
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_steps_m15",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_steps_m15",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_target4_m15",
+      "parent": "snug125_nylon_lateral_friction_locked_steps_m15"
+    }
+  ],
+  "deferred_cases": [
+    {
+      "case": "snug125_nylon_clamp_smp12",
+      "parent": "snug125_nylon_lateral_friction_locked_pin1_m15"
+    },
+    {
+      "case": "snug125_nylon_mesh3_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_refined",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_refined",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_original",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_original",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_original_sturm",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_original_sturm",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_modal20",
+      "parent": "snug125_nylon_static"
+    },
+    {
+      "case": "snug125_aluminium_modal20",
+      "parent": "snug125_aluminium_static"
+    },
+    {
+      "case": "snug125_nylon_psd_X_private1",
+      "parent": "snug125_nylon_basis"
+    },
+    {
+      "case": "snug125_aluminium_psd_X_private1",
+      "parent": "snug125_aluminium_basis"
+    },
+    {
+      "case": "snug125_nylon_out2_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_mesh15_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_psd_Y_private1",
+      "parent": "snug125_nylon_basis"
+    },
+    {
+      "case": "snug125_aluminium_psd_Y_private1",
+      "parent": "snug125_aluminium_basis"
+    },
+    {
+      "case": "snug125_nylon_psd_Z_private1",
+      "parent": "snug125_nylon_basis"
+    },
+    {
+      "case": "snug125_aluminium_psd_Z_private1",
+      "parent": "snug125_aluminium_basis"
+    },
+    {
+      "case": "snug125_nylon_mesh15_basis",
+      "parent": "snug125_nylon_mesh15_static"
+    },
+    {
+      "case": "snug125_nylon_enforced",
+      "parent": "snug125_nylon_basis"
+    },
+    {
+      "case": "snug125_aluminium_enforced",
+      "parent": "snug125_aluminium_basis"
+    },
+    {
+      "case": "snug125_nylon_motion_X",
+      "parent": "snug125_nylon_enforced"
+    },
+    {
+      "case": "snug125_aluminium_motion_X",
+      "parent": "snug125_aluminium_enforced"
+    },
+    {
+      "case": "snug125_nylon_motion_Y",
+      "parent": "snug125_nylon_enforced"
+    },
+    {
+      "case": "snug125_aluminium_motion_Y",
+      "parent": "snug125_aluminium_enforced"
+    },
+    {
+      "case": "snug125_nylon_motion_Z",
+      "parent": "snug125_nylon_enforced"
+    },
+    {
+      "case": "snug125_aluminium_motion_Z",
+      "parent": "snug125_aluminium_enforced"
+    },
+    {
+      "case": "snug125_aluminium_out2_static",
+      "parent": ""
+    },
+    {
+      "case": "bare_static",
+      "parent": ""
+    },
+    {
+      "case": "bare_cellpush_x",
+      "parent": "bare_static"
+    },
+    {
+      "case": "snug125_nylon_cellpush_x",
+      "parent": "snug125_nylon_static"
+    },
+    {
+      "case": "snug125_aluminium_cellpush_x",
+      "parent": "snug125_aluminium_static"
+    },
+    {
+      "case": "snug125_nylon_tol001_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_mesh15_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_mesh15_basis",
+      "parent": "snug125_aluminium_mesh15_static"
+    },
+    {
+      "case": "snug125_aluminium_tol001_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_mesh15_tol001_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_mesh3_basis",
+      "parent": "snug125_nylon_mesh3_static"
+    },
+    {
+      "case": "snug125_aluminium_project3_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_aluminium_cylinder_static",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_pin1_m15",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_pin1_m3",
+      "parent": "snug125_nylon_lateral_friction_locked_pin1_m15"
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_rock125_m15",
+      "parent": "snug125_nylon_lateral_friction_locked_pin1_m15"
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_rock125_m15",
+      "parent": "snug125_aluminium_lateral_friction_locked_pin1_m15"
+    },
+    {
+      "case": "bare_lateral_friction_locked_fine",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_fine_pin1_m15",
+      "parent": "bare_lateral_friction_locked_fine"
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_fine_pin1_m15",
+      "parent": "bare_lateral_friction_locked_fine"
+    },
+    {
+      "case": "patch_snug125_nylon_Z_span9_free_v1",
+      "parent": "snug125_nylon_basis"
+    },
+    {
+      "case": "patch_snug125_nylon_Z_span9_contact_v1",
+      "parent": "patch_snug125_nylon_Z_span9_free_v1"
+    },
+    {
+      "case": "patch_snug125_nylon_Z_span15_free_v1",
+      "parent": "snug125_nylon_basis"
+    },
+    {
+      "case": "patch_snug125_nylon_Z_span15_contact_v1",
+      "parent": "patch_snug125_nylon_Z_span15_free_v1"
+    },
+    {
+      "case": "patch_snug125_aluminium_Z_span9_free_v1",
+      "parent": "snug125_aluminium_basis"
+    },
+    {
+      "case": "patch_snug125_aluminium_Z_span9_contact_v1",
+      "parent": "patch_snug125_aluminium_Z_span9_free_v1"
+    },
+    {
+      "case": "patch_snug125_aluminium_Z_span15_free_v1",
+      "parent": "snug125_aluminium_basis"
+    },
+    {
+      "case": "patch_snug125_aluminium_Z_span15_contact_v1",
+      "parent": "patch_snug125_aluminium_Z_span15_free_v1"
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_pin1_m3",
+      "parent": "snug125_aluminium_lateral_friction_locked_pin1_m15"
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_minus_pin1_m3",
+      "parent": "snug125_nylon_lateral_friction_locked_minus_pin1_m15"
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_minus_pin1_m3",
+      "parent": "snug125_aluminium_lateral_friction_locked_minus_pin1_m15"
+    },
+    {
+      "case": "bare_damage_cont_e10u03",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e10u03_pin1_m15",
+      "parent": "bare_damage_cont_e10u03"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e10u03_pin1_m15",
+      "parent": "bare_damage_cont_e10u03"
+    },
+    {
+      "case": "bare_damage_cont_e10u12",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e10u12_pin1_m15",
+      "parent": "bare_damage_cont_e10u12"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e10u12_pin1_m15",
+      "parent": "bare_damage_cont_e10u12"
+    },
+    {
+      "case": "bare_damage_cont_e10u24",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e10u24_pin1_m15",
+      "parent": "bare_damage_cont_e10u24"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e10u24_pin1_m15",
+      "parent": "bare_damage_cont_e10u24"
+    },
+    {
+      "case": "bare_damage_cont_e30u03",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e30u03_pin1_m15",
+      "parent": "bare_damage_cont_e30u03"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e30u03_pin1_m15",
+      "parent": "bare_damage_cont_e30u03"
+    },
+    {
+      "case": "bare_damage_cont_e30u24",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e30u24_pin1_m15",
+      "parent": "bare_damage_cont_e30u24"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e30u24_pin1_m15",
+      "parent": "bare_damage_cont_e30u24"
+    },
+    {
+      "case": "bare_damage_cont_e60u03",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e60u03_pin1_m15",
+      "parent": "bare_damage_cont_e60u03"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e60u03_pin1_m15",
+      "parent": "bare_damage_cont_e60u03"
+    },
+    {
+      "case": "bare_damage_cont_e60u12",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e60u12_pin1_m15",
+      "parent": "bare_damage_cont_e60u12"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e60u12_pin1_m15",
+      "parent": "bare_damage_cont_e60u12"
+    },
+    {
+      "case": "bare_damage_cont_e60u24",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_e60u24_pin1_m15",
+      "parent": "bare_damage_cont_e60u24"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_e60u24_pin1_m15",
+      "parent": "bare_damage_cont_e60u24"
+    },
+    {
+      "case": "bare_damage_cont_fine",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_fine_pin1_m15",
+      "parent": "bare_damage_cont_fine"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_fine_pin1_m15",
+      "parent": "bare_damage_cont_fine"
+    },
+    {
+      "case": "bare_damage_cont_force5em5",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_cont_force5em5_pin1_m15",
+      "parent": "bare_damage_cont_force5em5"
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_force5em5_pin1_m15",
+      "parent": "bare_damage_cont_force5em5"
+    },
+    {
+      "case": "bare_damage_continuous_proof",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_damage_continuous_proof_pin1_m15",
+      "parent": "bare_damage_continuous_proof"
+    },
+    {
+      "case": "snug125_aluminium_damage_continuous_proof_pin1_m15",
+      "parent": "bare_damage_continuous_proof"
+    },
+    {
+      "case": "bare_lateral_grip_c1",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_grip_c1_pin1_m15",
+      "parent": "bare_lateral_grip_c1"
+    },
+    {
+      "case": "snug125_aluminium_lateral_grip_c1_pin1_m15",
+      "parent": "bare_lateral_grip_c1"
+    },
+    {
+      "case": "bare_lateral_grip_fine_lagrange",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_grip_fine_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_fine_lagrange"
+    },
+    {
+      "case": "snug125_aluminium_lateral_grip_fine_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_fine_lagrange"
+    },
+    {
+      "case": "bare_lateral_grip_lagrange",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_grip_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_lagrange"
+    },
+    {
+      "case": "snug125_aluminium_lateral_grip_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_lagrange"
+    },
+    {
+      "case": "bare_lateral_grip_minus_lagrange",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_grip_minus_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_minus_lagrange"
+    },
+    {
+      "case": "snug125_aluminium_lateral_grip_minus_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_minus_lagrange"
+    },
+    {
+      "case": "bare_lateral_grip_soft_lagrange",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_grip_soft_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_soft_lagrange"
+    },
+    {
+      "case": "snug125_aluminium_lateral_grip_soft_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_soft_lagrange"
+    },
+    {
+      "case": "bare_lateral_grip_strong_lagrange",
+      "parent": ""
+    },
+    {
+      "case": "snug125_nylon_lateral_grip_strong_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_strong_lagrange"
+    },
+    {
+      "case": "snug125_aluminium_lateral_grip_strong_lagrange_pin1_m15",
+      "parent": "bare_lateral_grip_strong_lagrange"
+    },
+    {
+      "case": "bare_original",
+      "parent": ""
+    },
+    {
+      "case": "bare_refined",
+      "parent": ""
+    },
+    {
+      "case": "bare_original_sturm",
+      "parent": ""
+    },
+    {
+      "case": "stand3_nylon_lateral_friction_locked_pin1",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "stand3_nylon_static",
+      "parent": ""
+    },
+    {
+      "case": "bare_basis",
+      "parent": "bare_static"
+    },
+    {
+      "case": "stand3_nylon_basis",
+      "parent": "stand3_nylon_static"
+    },
+    {
+      "case": "flush_nylon_lateral_friction_locked_approach1",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "patch_stand3_nylon_span9_free_v1",
+      "parent": "stand3_nylon_basis"
+    },
+    {
+      "case": "patch_stand3_nylon_span9_contact_v1",
+      "parent": "patch_stand3_nylon_span9_free_v1"
+    },
+    {
+      "case": "bare_modal20",
+      "parent": "bare_static"
+    },
+    {
+      "case": "patch_stand3_nylon_span9_contact_eq1",
+      "parent": "patch_stand3_nylon_span9_free_v1"
+    },
+    {
+      "case": "patch_stand3_nylon_span15_free_v1",
+      "parent": "stand3_nylon_basis"
+    },
+    {
+      "case": "patch_stand3_nylon_span15_contact_eq1",
+      "parent": "patch_stand3_nylon_span15_free_v1"
+    },
+    {
+      "case": "bare_psd_X",
+      "parent": "bare_basis"
+    },
+    {
+      "case": "stand3_aluminium_static",
+      "parent": ""
+    },
+    {
+      "case": "stand3_nylon_psd_X_private1",
+      "parent": "stand3_nylon_basis"
+    },
+    {
+      "case": "bare_psd_Y",
+      "parent": "bare_basis"
+    },
+    {
+      "case": "bare_psd_Z",
+      "parent": "bare_basis"
+    },
+    {
+      "case": "stand3_aluminium_basis",
+      "parent": "stand3_aluminium_static"
+    },
+    {
+      "case": "stand3_aluminium_psd_X_private1",
+      "parent": "stand3_aluminium_basis"
+    },
+    {
+      "case": "flush_nylon_surf1_static",
+      "parent": ""
+    },
+    {
+      "case": "stand3_nylon_refined",
+      "parent": ""
+    },
+    {
+      "case": "stand3_aluminium_refined",
+      "parent": ""
+    },
+    {
+      "case": "bare_enforced",
+      "parent": "bare_basis"
+    },
+    {
+      "case": "bare_motion_X",
+      "parent": "bare_enforced"
+    },
+    {
+      "case": "bare_motion_Y",
+      "parent": "bare_enforced"
+    },
+    {
+      "case": "bare_motion_Z",
+      "parent": "bare_enforced"
+    },
+    {
+      "case": "stand3_aluminium_lateral_friction_locked_pin1",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "stand3_nylon_psd_Y_private1",
+      "parent": "stand3_nylon_basis"
+    },
+    {
+      "case": "stand3_aluminium_psd_Y_private1",
+      "parent": "stand3_aluminium_basis"
+    },
+    {
+      "case": "stand3_nylon_psd_Z_private1",
+      "parent": "stand3_nylon_basis"
+    },
+    {
+      "case": "stand3_aluminium_psd_Z_private1",
+      "parent": "stand3_aluminium_basis"
+    },
+    {
+      "case": "flush_aluminium_surf1_static",
+      "parent": ""
+    },
+    {
+      "case": "stand3_nylon_enforced",
+      "parent": "stand3_nylon_basis"
+    },
+    {
+      "case": "stand3_nylon_motion_X",
+      "parent": "stand3_nylon_enforced"
+    },
+    {
+      "case": "stand3_nylon_motion_Y",
+      "parent": "stand3_nylon_enforced"
+    },
+    {
+      "case": "stand3_nylon_motion_Z",
+      "parent": "stand3_nylon_enforced"
+    },
+    {
+      "case": "stand3_aluminium_enforced",
+      "parent": "stand3_aluminium_basis"
+    },
+    {
+      "case": "stand3_aluminium_motion_X",
+      "parent": "stand3_aluminium_enforced"
+    },
+    {
+      "case": "stand3_aluminium_motion_Y",
+      "parent": "stand3_aluminium_enforced"
+    },
+    {
+      "case": "stand3_aluminium_motion_Z",
+      "parent": "stand3_aluminium_enforced"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_nominal_pin1",
+      "parent": "bare_damage_cont_nominal"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_nominal_pin1",
+      "parent": "bare_damage_cont_nominal"
+    },
+    {
+      "case": "bare_damage_coupon_nominal_v4",
+      "parent": ""
+    },
+    {
+      "case": "bare_damage_coupon_uniform",
+      "parent": ""
+    },
+    {
+      "case": "bare_damage_coupon_unsym",
+      "parent": ""
+    },
+    {
+      "case": "bare_damage_cont_nominal_load8ref1",
+      "parent": "bare_damage_cont_nominal"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_nominal_pin1_load8ref1",
+      "parent": "stand3_nylon_damage_cont_nominal_pin1"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_nominal_pin1_load8ref1",
+      "parent": "stand3_aluminium_damage_cont_nominal_pin1"
+    },
+    {
+      "case": "stand3_nylon_lateral_friction_locked_minus_pin1",
+      "parent": "bare_lateral_friction_locked_minus"
+    },
+    {
+      "case": "stand3_aluminium_lateral_friction_locked_minus_pin1",
+      "parent": "bare_lateral_friction_locked_minus"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_nominal_pin1_load8ref1_project3",
+      "parent": "stand3_nylon_damage_cont_nominal_pin1_load8ref1"
+    },
+    {
+      "case": "flush_nylon_lateral_friction_locked_seatfaces1",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "flush_nylon_lateral_friction_locked_rock1_seatfaces1",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "replay_stand3_nylon_span9_free_s4_v1",
+      "parent": "patch_stand3_nylon_span9_free_v1"
+    },
+    {
+      "case": "replay_stand3_nylon_span9_contact_s4_v1",
+      "parent": "replay_stand3_nylon_span9_free_s4_v1"
+    },
+    {
+      "case": "flush_aluminium_lateral_friction_locked_seatfaces1",
+      "parent": "bare_lateral_friction_locked"
+    },
+    {
+      "case": "stand3_nylon_modal20",
+      "parent": "stand3_nylon_static"
+    },
+    {
+      "case": "replay_stand3_nylon_span9_contact_s2_v1",
+      "parent": "replay_stand3_nylon_span9_contact_s4_v1"
+    },
+    {
+      "case": "replay_stand3_nylon_span15_contact_s4_v1",
+      "parent": "patch_stand3_nylon_span15_contact_eq1"
+    },
+    {
+      "case": "stand3_nylon_original",
+      "parent": ""
+    },
+    {
+      "case": "flush_nylon_surf1_basis",
+      "parent": "flush_nylon_surf1_static"
+    },
+    {
+      "case": "flush_nylon_surf1_modal20",
+      "parent": "flush_nylon_surf1_static"
+    },
+    {
+      "case": "flush_nylon_surf1_psd_X_private1",
+      "parent": "flush_nylon_surf1_basis"
+    },
+    {
+      "case": "flush_nylon_surf1_psd_Y_private1",
+      "parent": "flush_nylon_surf1_basis"
+    },
+    {
+      "case": "flush_nylon_surf1_psd_Z_private1",
+      "parent": "flush_nylon_surf1_basis"
+    },
+    {
+      "case": "flush_nylon_surf1_enforced",
+      "parent": "flush_nylon_surf1_basis"
+    },
+    {
+      "case": "flush_nylon_surf1_motion_X",
+      "parent": "flush_nylon_surf1_enforced"
+    },
+    {
+      "case": "flush_nylon_surf1_motion_Y",
+      "parent": "flush_nylon_surf1_enforced"
+    },
+    {
+      "case": "flush_nylon_surf1_motion_Z",
+      "parent": "flush_nylon_surf1_enforced"
+    },
+    {
+      "case": "flush_nylon_default_refined_static",
+      "parent": ""
+    },
+    {
+      "case": "flush_nylon_default_refined_modal20",
+      "parent": "flush_nylon_default_refined_static"
+    },
+    {
+      "case": "flush_nylon_default_original_static",
+      "parent": ""
+    },
+    {
+      "case": "flush_nylon_default_original_modal20",
+      "parent": "flush_nylon_default_original_static"
+    },
+    {
+      "case": "stand3_aluminium_modal20",
+      "parent": "stand3_aluminium_static"
+    },
+    {
+      "case": "stand3_aluminium_original",
+      "parent": ""
+    },
+    {
+      "case": "flush_aluminium_surf1_basis",
+      "parent": "flush_aluminium_surf1_static"
+    },
+    {
+      "case": "flush_aluminium_surf1_modal20",
+      "parent": "flush_aluminium_surf1_static"
+    },
+    {
+      "case": "flush_aluminium_surf1_psd_X_private1",
+      "parent": "flush_aluminium_surf1_basis"
+    },
+    {
+      "case": "flush_aluminium_surf1_psd_Y_private1",
+      "parent": "flush_aluminium_surf1_basis"
+    },
+    {
+      "case": "flush_aluminium_surf1_psd_Z_private1",
+      "parent": "flush_aluminium_surf1_basis"
+    },
+    {
+      "case": "flush_aluminium_surf1_enforced",
+      "parent": "flush_aluminium_surf1_basis"
+    },
+    {
+      "case": "flush_aluminium_surf1_motion_X",
+      "parent": "flush_aluminium_surf1_enforced"
+    },
+    {
+      "case": "flush_aluminium_surf1_motion_Y",
+      "parent": "flush_aluminium_surf1_enforced"
+    },
+    {
+      "case": "flush_aluminium_surf1_motion_Z",
+      "parent": "flush_aluminium_surf1_enforced"
+    },
+    {
+      "case": "flush_aluminium_default_refined_static",
+      "parent": ""
+    },
+    {
+      "case": "flush_aluminium_default_refined_modal20",
+      "parent": "flush_aluminium_default_refined_static"
+    },
+    {
+      "case": "flush_aluminium_default_original_static",
+      "parent": ""
+    },
+    {
+      "case": "flush_aluminium_default_original_modal20",
+      "parent": "flush_aluminium_default_original_static"
+    },
+    {
+      "case": "stand3_nylon_mesh2_static",
+      "parent": ""
+    },
+    {
+      "case": "stand3_nylon_mesh2_basis",
+      "parent": "stand3_nylon_mesh2_static"
+    },
+    {
+      "case": "stand3_nylon_mesh2_psd_X_private1",
+      "parent": "stand3_nylon_mesh2_basis"
+    },
+    {
+      "case": "bare_damage_coupon_nominal",
+      "parent": ""
+    },
+    {
+      "case": "bare_damage_coupon_nominal_v2",
+      "parent": ""
+    },
+    {
+      "case": "bare_damage_coupon_nominal_v3",
+      "parent": ""
+    },
+    {
+      "case": "stand3_nylon_lateral_friction_locked_fine_pin1",
+      "parent": "bare_lateral_friction_locked_fine"
+    },
+    {
+      "case": "stand3_aluminium_lateral_friction_locked_fine_pin1",
+      "parent": "bare_lateral_friction_locked_fine"
+    },
+    {
+      "case": "flush_nylon_lateral_friction_locked_minus_seatfaces1",
+      "parent": "bare_lateral_friction_locked_minus"
+    },
+    {
+      "case": "flush_nylon_lateral_friction_locked_fine_seatfaces1",
+      "parent": "bare_lateral_friction_locked_fine"
+    },
+    {
+      "case": "flush_nylon_damage_cont_nominal_seatfaces1",
+      "parent": "bare_damage_cont_nominal"
+    },
+    {
+      "case": "flush_aluminium_lateral_friction_locked_minus_seatfaces1",
+      "parent": "bare_lateral_friction_locked_minus"
+    },
+    {
+      "case": "flush_aluminium_lateral_friction_locked_fine_seatfaces1",
+      "parent": "bare_lateral_friction_locked_fine"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_nominal_seatfaces1",
+      "parent": "bare_damage_cont_nominal"
+    },
+    {
+      "case": "stand3_nylon_lateral_grip_c1_pin1",
+      "parent": "bare_lateral_grip_c1"
+    },
+    {
+      "case": "stand3_nylon_lateral_grip_fine_lagrange_pin1",
+      "parent": "bare_lateral_grip_fine_lagrange"
+    },
+    {
+      "case": "stand3_nylon_lateral_grip_lagrange_pin1",
+      "parent": "bare_lateral_grip_lagrange"
+    },
+    {
+      "case": "stand3_nylon_lateral_grip_minus_lagrange_pin1",
+      "parent": "bare_lateral_grip_minus_lagrange"
+    },
+    {
+      "case": "stand3_nylon_lateral_grip_soft_lagrange_pin1",
+      "parent": "bare_lateral_grip_soft_lagrange"
+    },
+    {
+      "case": "stand3_nylon_lateral_grip_strong_lagrange_pin1",
+      "parent": "bare_lateral_grip_strong_lagrange"
+    },
+    {
+      "case": "stand3_aluminium_lateral_grip_c1_pin1",
+      "parent": "bare_lateral_grip_c1"
+    },
+    {
+      "case": "stand3_aluminium_lateral_grip_fine_lagrange_pin1",
+      "parent": "bare_lateral_grip_fine_lagrange"
+    },
+    {
+      "case": "stand3_aluminium_lateral_grip_lagrange_pin1",
+      "parent": "bare_lateral_grip_lagrange"
+    },
+    {
+      "case": "stand3_aluminium_lateral_grip_minus_lagrange_pin1",
+      "parent": "bare_lateral_grip_minus_lagrange"
+    },
+    {
+      "case": "stand3_aluminium_lateral_grip_soft_lagrange_pin1",
+      "parent": "bare_lateral_grip_soft_lagrange"
+    },
+    {
+      "case": "stand3_aluminium_lateral_grip_strong_lagrange_pin1",
+      "parent": "bare_lateral_grip_strong_lagrange"
+    },
+    {
+      "case": "flush_nylon_lateral_grip_c1_seatfaces1",
+      "parent": "bare_lateral_grip_c1"
+    },
+    {
+      "case": "flush_nylon_lateral_grip_fine_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_fine_lagrange"
+    },
+    {
+      "case": "flush_nylon_lateral_grip_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_lagrange"
+    },
+    {
+      "case": "flush_nylon_lateral_grip_minus_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_minus_lagrange"
+    },
+    {
+      "case": "flush_nylon_lateral_grip_soft_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_soft_lagrange"
+    },
+    {
+      "case": "flush_nylon_lateral_grip_strong_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_strong_lagrange"
+    },
+    {
+      "case": "flush_aluminium_lateral_grip_c1_seatfaces1",
+      "parent": "bare_lateral_grip_c1"
+    },
+    {
+      "case": "flush_aluminium_lateral_grip_fine_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_fine_lagrange"
+    },
+    {
+      "case": "flush_aluminium_lateral_grip_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_lagrange"
+    },
+    {
+      "case": "flush_aluminium_lateral_grip_minus_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_minus_lagrange"
+    },
+    {
+      "case": "flush_aluminium_lateral_grip_soft_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_soft_lagrange"
+    },
+    {
+      "case": "flush_aluminium_lateral_grip_strong_lagrange_seatfaces1",
+      "parent": "bare_lateral_grip_strong_lagrange"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e10u03_pin1",
+      "parent": "bare_damage_cont_e10u03"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e10u12_pin1",
+      "parent": "bare_damage_cont_e10u12"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e10u24_pin1",
+      "parent": "bare_damage_cont_e10u24"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e30u03_pin1",
+      "parent": "bare_damage_cont_e30u03"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e30u24_pin1",
+      "parent": "bare_damage_cont_e30u24"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e60u03_pin1",
+      "parent": "bare_damage_cont_e60u03"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e60u12_pin1",
+      "parent": "bare_damage_cont_e60u12"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_e60u24_pin1",
+      "parent": "bare_damage_cont_e60u24"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_fine_pin1",
+      "parent": "bare_damage_cont_fine"
+    },
+    {
+      "case": "stand3_nylon_damage_cont_force5em5_pin1",
+      "parent": "bare_damage_cont_force5em5"
+    },
+    {
+      "case": "stand3_nylon_damage_continuous_proof_pin1",
+      "parent": "bare_damage_continuous_proof"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e10u03_pin1",
+      "parent": "bare_damage_cont_e10u03"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e10u12_pin1",
+      "parent": "bare_damage_cont_e10u12"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e10u24_pin1",
+      "parent": "bare_damage_cont_e10u24"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e30u03_pin1",
+      "parent": "bare_damage_cont_e30u03"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e30u24_pin1",
+      "parent": "bare_damage_cont_e30u24"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e60u03_pin1",
+      "parent": "bare_damage_cont_e60u03"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e60u12_pin1",
+      "parent": "bare_damage_cont_e60u12"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_e60u24_pin1",
+      "parent": "bare_damage_cont_e60u24"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_fine_pin1",
+      "parent": "bare_damage_cont_fine"
+    },
+    {
+      "case": "stand3_aluminium_damage_cont_force5em5_pin1",
+      "parent": "bare_damage_cont_force5em5"
+    },
+    {
+      "case": "stand3_aluminium_damage_continuous_proof_pin1",
+      "parent": "bare_damage_continuous_proof"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e10u03_seatfaces1",
+      "parent": "bare_damage_cont_e10u03"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e10u12_seatfaces1",
+      "parent": "bare_damage_cont_e10u12"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e10u24_seatfaces1",
+      "parent": "bare_damage_cont_e10u24"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e30u03_seatfaces1",
+      "parent": "bare_damage_cont_e30u03"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e30u24_seatfaces1",
+      "parent": "bare_damage_cont_e30u24"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e60u03_seatfaces1",
+      "parent": "bare_damage_cont_e60u03"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e60u12_seatfaces1",
+      "parent": "bare_damage_cont_e60u12"
+    },
+    {
+      "case": "flush_nylon_damage_cont_e60u24_seatfaces1",
+      "parent": "bare_damage_cont_e60u24"
+    },
+    {
+      "case": "flush_nylon_damage_cont_fine_seatfaces1",
+      "parent": "bare_damage_cont_fine"
+    },
+    {
+      "case": "flush_nylon_damage_cont_force5em5_seatfaces1",
+      "parent": "bare_damage_cont_force5em5"
+    },
+    {
+      "case": "flush_nylon_damage_continuous_proof_seatfaces1",
+      "parent": "bare_damage_continuous_proof"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e10u03_seatfaces1",
+      "parent": "bare_damage_cont_e10u03"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e10u12_seatfaces1",
+      "parent": "bare_damage_cont_e10u12"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e10u24_seatfaces1",
+      "parent": "bare_damage_cont_e10u24"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e30u03_seatfaces1",
+      "parent": "bare_damage_cont_e30u03"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e30u24_seatfaces1",
+      "parent": "bare_damage_cont_e30u24"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e60u03_seatfaces1",
+      "parent": "bare_damage_cont_e60u03"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e60u12_seatfaces1",
+      "parent": "bare_damage_cont_e60u12"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_e60u24_seatfaces1",
+      "parent": "bare_damage_cont_e60u24"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_fine_seatfaces1",
+      "parent": "bare_damage_cont_fine"
+    },
+    {
+      "case": "flush_aluminium_damage_cont_force5em5_seatfaces1",
+      "parent": "bare_damage_cont_force5em5"
+    },
+    {
+      "case": "flush_aluminium_damage_continuous_proof_seatfaces1",
+      "parent": "bare_damage_continuous_proof"
+    }
+  ],
+  "full_catalog_count": 305,
+  "previous_queue_sha256": "97b03451b40d7c6c6202b187961379489fcb5a43fc03b498ecb3b23f823d5dc8",
+  "completion": "Finish accepted or explicitly unresolved outcomes for selected main cases; finalize report, short slides and existing 22 paired subjects; update and verify account-backed ANSYS skill; stop heartbeat and release dedicated keep-awake. Do not resume deferred cases automatically."
+}

@@ -535,10 +535,29 @@ def result_path(case):
     category = 'motion' if case.endswith('_enforced') or '_motion_' in case else ('local' if local else 'global')
     return ROOT/'validation'/category/(case+'.json')
 
+def campaign_jobs():
+    """Honor the user's finite main-validation scope without deleting sealed campaigns."""
+    catalog={}
+    for case,parent in jobs():
+        if case in catalog and catalog[case]!=parent:raise ValueError('Conflicting parent for '+case)
+        catalog[case]=parent
+    path=ROOT/'validation/snug125/main_validation_scope.json'
+    if not path.is_file():raise RuntimeError('Main-validation scope is required before dispatch')
+    selected=read(path)['cases']
+    names=[r['case'] for r in selected]
+    if len(names)!=len(set(names)):raise ValueError('Duplicate main-validation case')
+    for entry in selected:
+        case,parent=entry['case'],entry['parent']
+        if case not in catalog or catalog[case]!=parent:
+            raise ValueError('Main-validation identity changed: '+case)
+        if parent and parent not in names:raise ValueError('Unlisted prerequisite for '+case)
+        yield case,parent
+
+
 def ordered_jobs():
     # Repeated priorities must refer to the same physical case and prerequisite.
     parents={}
-    for name,parent in jobs():
+    for name,parent in campaign_jobs():
         if name in parents and parents[name]!=parent:raise ValueError('Conflicting parent for '+name)
         parents[name]=parent
     sequence=list(parents.items())
