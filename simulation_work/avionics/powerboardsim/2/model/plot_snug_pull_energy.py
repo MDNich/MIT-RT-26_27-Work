@@ -7,6 +7,7 @@ from snug_board_pull import ROOT, read
 from snug_pull_steps import ENERGY, PARENT
 from stage_snug_fit import AUDIT
 from compare_snug_pull_energy import OUTPUT as COMPARISON
+from compare_snug_nickel_initiation import OUTPUT as NICKEL_COMPARISON
 
 
 def draw():
@@ -95,29 +96,36 @@ def draw():
     bare_limits = [100 * r["curves"]["0.3"]["maximum"] for r in pair]
     bare_value = np.interp(travel, [r["travel_mm"] for r in pair], bare_limits)
     snug_value = 100 * case_at_travel["curves"]["0.3"]["maximum"]
+    nickel_pair=read(NICKEL_COMPARISON)
+    verified(AUDIT/'nickel_initiation_replay.json',nickel_pair['previous_replay_sha256'])
+    (nickel_at,)=[r for r in nickel_pair['common_native_travel'] if r['native_set']==cased['native_set']]
+    assert nickel_at['nylon']==case_at_travel
+    al_value=100*nickel_at['aluminium']['curves']['0.3']['maximum']
+    assert nickel_pair['equal_load']['aluminium']['nominal_criterion_bracket']==[0.,0.]
     nickel.set(
         ylim=match.get_ylim(),
-        xlim=(-0.45, 7.2),
+        xlim=(-0.55, 9.2),
         yticks=[1, 0],
         yticklabels=[],
-        xticks=[0, 2, 4, 6],
+        xticks=[0, 2, 4, 6, 8],
         xlabel="Initiation criterion [\\%]",
-        title="Nickel: nylon versus bare",
+        title="Nickel strip history",
     )
     nickel.hlines(0, *bare_limits, color=navy, lw=4, alpha=0.35)
-    for y, first, second in [
-        (1, 0.0, 100 * bare_states[-1]["curves"]["0.3"]["maximum"]),
-        (0, snug_value, bare_value),
+    for y, first, second, third in [
+        (1, 0.0, 100 * bare_states[-1]["curves"]["0.3"]["maximum"], 0.0),
+        (0, snug_value, bare_value, al_value),
     ]:
-        nickel.hlines(y, min(first, second), max(first, second), color="#aaa", lw=0.8)
-        for val, mark, color, offset in (
-            (first, "D", green, 6),
-            (second, "o", navy, 6 if y == 1 else -13),
+        nickel.hlines(y, min(first, second, third), max(first, second, third), color="#aaa", lw=0.8)
+        for val, mark, color, dy, offset in (
+            (first, "D", green, -.10, -14),
+            (second, "o", navy, 0., 6),
+            (third, "^", red, .10, 6),
         ):
-            nickel.plot(val, y, marker=mark, ms=4.2, color=color)
+            nickel.plot(val, y+dy, marker=mark, ms=4.2, color=color)
             nickel.annotate(
                 f"{val:.2f}",
-                (val, y),
+                (val, y+dy),
                 xytext=(0, offset),
                 textcoords="offset points",
                 ha="center",
