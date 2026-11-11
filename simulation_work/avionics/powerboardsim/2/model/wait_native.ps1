@@ -3,8 +3,9 @@ function Wait-NativeProcess($Process, [string]$Directory, [string]$Job, [string]
     $stop = Join-Path $Directory 'STORAGE_STOP.txt'
     while (!$Process.WaitForExit(1500)) {
         $free = (Get-PSDrive C -ErrorAction Stop).Free
-        $critical = $SharedWork -and (Test-Path -LiteralPath (Join-Path $Receipt 'host_critical.json'))
-        $soft = $SharedWork -and (Test-Path -LiteralPath (Join-Path $Receipt 'host_stop.json'))
+        # Local Windows scratch can grow the VM image, so host flags apply to both paths.
+        $critical = Test-Path -LiteralPath (Join-Path $Receipt 'host_critical.json')
+        $soft = Test-Path -LiteralPath (Join-Path $Receipt 'host_stop.json')
         if (($free -lt 17000000000 -or $soft -or $critical) -and !(Test-Path -LiteralPath $stop)) {
             $jobNames = @($Job)
             $listing = Join-Path $Directory 'solve.out'

@@ -1,0 +1,61 @@
+{
+  "guard_checks": [
+    {
+      "shared_scratch": false,
+      "free_bytes": 425000000000,
+      "flag": null
+    },
+    {
+      "shared_scratch": false,
+      "free_bytes": 410000000000,
+      "flag": null
+    },
+    {
+      "shared_scratch": false,
+      "free_bytes": 409999999999,
+      "flag": "host_stop.json"
+    },
+    {
+      "shared_scratch": false,
+      "free_bytes": 399999999999,
+      "flag": "host_critical.json"
+    },
+    {
+      "shared_scratch": true,
+      "free_bytes": 425000000000,
+      "flag": null
+    },
+    {
+      "shared_scratch": true,
+      "free_bytes": 424999999999,
+      "flag": "host_stop.json"
+    },
+    {
+      "shared_scratch": true,
+      "free_bytes": 399999999999,
+      "flag": "host_critical.json"
+    }
+  ],
+  "held_undispatched_below_425GB": true,
+  "rejected_below_400GB": true,
+  "permitted_records": 24,
+  "queue_sha256": "a4046effdcb4c3449e483ddda2fa68845e15ce5ee26639632b6fcc870a69c388",
+  "native_wait_sha256": "37cc7fd8f9fa4c75ff1bd639e593019dbacc5775a83fba50814ed56ffe6f6e57",
+  "native_wait_stub_checks": [
+    {
+      "flag": "host_stop.json",
+      "shared_scratch": false,
+      "controlled_stop": true,
+      "mock_kill_called": false,
+      "expected_exception": false
+    },
+    {
+      "flag": "host_critical.json",
+      "shared_scratch": false,
+      "controlled_stop": true,
+      "mock_kill_called": true,
+      "expected_exception": true
+    }
+  ],
+  "native_test_sha256": "b60bdeeda24acad84949a88a64dfc2fb85d5fcd16eecd67f6b176a619ebb2ab3"
+}

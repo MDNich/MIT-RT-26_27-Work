@@ -1,0 +1,212 @@
+{
+  "case": "snug125_aluminium_lateral_friction_locked_pin1_m15",
+  "bare": "bare_lateral_friction_locked",
+  "source": "lateral_friction_locked",
+  "full_numerical_path": false,
+  "fixture_sha256": "d7a9b5ed914671cbb22308420aa1033ebad64a3a26ccfd18f163e6ae47738ad4",
+  "native_rst_sha256": "442ef048e987513b20ef2da77c4959025c6953740ebc8cecfebd6148c76128c6",
+  "bare_rst_sha256": "f8b439c1021724faf8762ce186d2f16029d62f5f290de6867b4ec23fbf84bcc3",
+  "print_material_sha256": "a32b3530fcccd58df897c388d72c2a89130fd683bcbf623c2e8a1ea792333252",
+  "contact_csv_sha256": "22d4b6805c8a4d4e6dc1b53643f455ed551b59da633ef879582a2700a8328a6c",
+  "first_print_reference_crossings": {
+    "all_layer_tensile_strain": {
+      "last_below_mm": 0.27376953125,
+      "first_above_mm": 0.279702148437,
+      "native_set": 31,
+      "value": 0.018485581502318382,
+      "limit": 0.017839918128331,
+      "element": 1290977,
+      "node": 2102149,
+      "xyz_mm": [
+        21.5265,
+        95.06644285699998,
+        -11.80118
+      ],
+      "distance_to_bearing_nodes_mm": 25.756227788740468
+    },
+    "all_layer_tension_MPa": {
+      "last_below_mm": 0.303432617187,
+      "first_above_mm": 0.310106811523,
+      "native_set": 36,
+      "value": 41.64187240600586,
+      "limit": 40.5,
+      "element": 1290977,
+      "node": 2122717,
+      "xyz_mm": [
+        21.450855118000007,
+        94.328614286,
+        -13.07689582
+      ],
+      "distance_to_bearing_nodes_mm": 26.494093450942703
+    }
+  },
+  "closed_corner_screen_mm": 0.05,
+  "first_contact_screen_exceeded": null,
+  "last_converged_travel_mm": 0.327626571655,
+  "supported_pull_stations": 9,
+  "bare_endpoint_load_N": 8.542048658016569,
+  "moving_cell_contact_bracket": {
+    "native_sets": [
+      12,
+      13
+    ],
+    "travel_mm": [
+      0.0175,
+      0.02875
+    ],
+    "cell_force_N": [
+      0.9751541288662554,
+      12.103779084429876
+    ],
+    "within_print_screen": true,
+    "within_both_screens": true
+  },
+  "equal_load": {
+    "bare_travel_mm": 0.5,
+    "cased": {
+      "native_sets": [
+        12,
+        13
+      ],
+      "native_travel_mm": [
+        0.0175,
+        0.02875
+      ],
+      "native_force_N": [
+        0.9751541288662554,
+        12.103779084429876
+      ],
+      "exact_saved_station": false,
+      "travel_mm": 0.025149423337820595,
+      "cell_force_N": 8.542048658016569
+    },
+    "reduction_in_absolute_travel_pct": 94.97011533243588
+  },
+  "equal_travel": {
+    "cased": {
+      "case": "snug125_aluminium_lateral_friction_locked_pin1_m15",
+      "set": 17,
+      "ux_mm": 0.106875,
+      "cell_force_N": 116.40598185669761,
+      "screw_path_N": 112.4532628516375,
+      "neighbour_path_N": -0.0,
+      "clamp_path_N": 3.9527166244620418,
+      "equilibrium_residual_N": 2.3805980617908062e-06,
+      "nickel_peak_plastic_strain": 0.0038647766924
+    },
+    "bare": {
+      "native_sets": [
+        16,
+        17
+      ],
+      "native_travel_mm": [
+        0.095625,
+        0.120625
+      ],
+      "native_force_N": [
+        5.058563037335166,
+        5.854709016153535
+      ],
+      "exact_saved_station": false,
+      "travel_mm": 0.106875,
+      "cell_force_N": 5.416828727803432
+    },
+    "cased_over_bare_force": 21.489692162355144,
+    "printed_coupon_percent": {
+      "in_plane_tension_MPa": 38.794227918760434,
+      "layer_tension_MPa": 27.83784277645158,
+      "layer_tensile_strain": 16.583924200384576
+    },
+    "peak_screw_fibre_tensions_MPa": [
+      51.27608108520508,
+      51.53934097290039,
+      47.09920120239258,
+      47.24900817871094
+    ],
+    "max_loaded_penetration_mm": 0.0024916725233197212
+  },
+  "scope": "First loading branch at matched displacement or matched bare terminal force. All reported comparisons stop before the first printed-material or closed-corner penetration screen is exceeded. Screw beam stress is given in MPa; the fitted screw grade and thread capacity have no established allowable. The first refined tab-corner coupon crossing also bounds the comparisons on this deck.",
+  "refined_tab_crossing": {
+    "native_set": 18,
+    "travel_bracket_mm": [
+      0.10687499999999961,
+      0.13187499999999952
+    ],
+    "submodel_sha256": "70b3599f566981da1224eb0bcb0c754f6ce6cee13c8f739c323f6755128f7827",
+    "checkpoint_sha256": "6161ab0b4cb81c8a277983db1116e84c09028f96efb800c555363cef3304fa10",
+    "reassessment_sha256": "284fc67b52048501d7456fdde0b628476e14f99380e5fcfbde585308ebb1a686",
+    "scope": "Supersedes the earlier nylon-only material screen for the exact paired forward decks. No tested corner exceeds its reference through saved set 17; this is not a proven safe load. The aluminium sharp-corner stress and its coupon crossing do not converge with refinement. Sets 18 onward, including the earlier 0.207 and 0.219 mm comparisons, are numerical continuation only. Native equilibrium, work and nickel audit values remain unchanged. The 8.54 N brackets precede this crossing. Local cut-displacement elasticity does not redistribute assembly loads or simulate fracture."
+  },
+  "parent_screen_last_set": 30,
+  "initial_contact_search": {
+    "pairs": {
+      "861": {
+        "gap_mm": 0.01970229325,
+        "classification": "gap",
+        "contact_element": 1312819,
+        "target_element": 1300148,
+        "target_body": 4,
+        "case_STEP_face": 12,
+        "CAD_gap_mm": 0.01969573339884434,
+        "native_minus_CAD_um": 0.006559851155659574
+      },
+      "862": {
+        "gap_mm": 0.002932839167,
+        "classification": "gap",
+        "contact_element": 1384285,
+        "target_element": 1332189,
+        "target_body": 19,
+        "case_STEP_face": 17,
+        "CAD_gap_mm": 0.002931967291763371,
+        "native_minus_CAD_um": 0.0008718752366287767
+      }
+    },
+    "native_listing_sha256": "3efbb1bbb12fbd96ced60ea221cbc7dc39ce40004cf7e0bca56dcf3720bf73c3",
+    "CAD_fit_sha256": "4379fb211485cb3c79ef5ed25d1aa79292bb9209ba33f095b7b258c6049bba14"
+  },
+  "case_mesh_sha256": "415b0bff2d28641b19fd4fc90e16c323d3192833be79c7889b106f85b0909d0b",
+  "input_sha256": "ca2a7c33d65667a68495ae5a84f1fc3153e251c39d3f6bf34cfe9b43b19d5fae",
+  "initial_geometry_vs_native_contact": {
+    "prediction_sha256": "0283e674f3c8cdbbb8e9557f1e96e90bfecb658ba7bf60ac575744cf1b63772f",
+    "travel_magnitude_mm": [
+      0.020404570434513537,
+      0.02040717124933286
+    ],
+    "last_saved_magnitude_mm": 0.327626571655,
+    "native_clear_loaded_magnitudes_mm": [
+      0.0175,
+      0.02875
+    ],
+    "predicted_interval_inside_native_bracket": true
+  },
+  "verified_checkpoints": [
+    {
+      "checkpoint": "snug125_aluminium_lateral_friction_locked_pin1_m15_ls3_ss12_checkpoint.json",
+      "checkpoint_sha256": "523ff7ae1c512bcafb89891a7f70cffec994f792c08c8cd5e43721392ac80a76",
+      "agreed_native_sets": 21,
+      "stationary_rst_sha256": "647536b119cc1d6f9989b638a41056c752747c900d33ce8569876d5c0986ffcb",
+      "closed_rst_sha256": "442ef048e987513b20ef2da77c4959025c6953740ebc8cecfebd6148c76128c6",
+      "cell_pressure_sha256": "fe4fda4b5bf3f4d30adc6327121e703e92b447ab8d53899e6b7807b1ba8e3036"
+    },
+    {
+      "checkpoint": "snug125_aluminium_lateral_friction_locked_pin1_m15_ls3_ss15_checkpoint.json",
+      "checkpoint_sha256": "6161ab0b4cb81c8a277983db1116e84c09028f96efb800c555363cef3304fa10",
+      "agreed_native_sets": 24,
+      "stationary_rst_sha256": "b127584da566876c2a9adcc7289bc648081769304bae85a6f979f56ba61a78e9",
+      "closed_rst_sha256": "442ef048e987513b20ef2da77c4959025c6953740ebc8cecfebd6148c76128c6",
+      "tab_corner_sha256": "db1f3090b1339665d400f0aacd098280bf9e3ca9d6774bad9b240708592d1e52",
+      "cell_pressure_sha256": "e0feb3083cd431edcc4e639a1926b0ac62c0608aa60c65da3254e6fcb02d6101"
+    },
+    {
+      "checkpoint": "snug125_aluminium_lateral_friction_locked_pin1_m15_ls3_ss7_checkpoint.json",
+      "checkpoint_sha256": "983bb1ff9ef76130672a2530a6a518651e15c8c520304552c9742abb7338ef6a",
+      "agreed_native_sets": 16,
+      "stationary_rst_sha256": "f08f0219828440547ab19a1ae353c0d60dee7fd3a68008a0c97cc5afc953145e",
+      "closed_rst_sha256": "442ef048e987513b20ef2da77c4959025c6953740ebc8cecfebd6148c76128c6"
+    }
+  ],
+  "moving_contact_history_sha256": "5c9847a91309423e92925d44ff2a330f487da3c09c6f2a808a7663c8fc59dcca",
+  "mount_history_sha256": "c2c3209420b175cb1b21ec215e15b8f8ad868b5befda5dceca480335608b86aa",
+  "fixed_target_history_sha256": "3c5c15655e5282426d3dec6d4a1663f66f164de10aefc0fefc670b1551995985",
+  "energy_history_sha256": "721a83003d79262be9e97d51437292725d7df2a9eda305c535b39ec8ff42ab1c"
+}

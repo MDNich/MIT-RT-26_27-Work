@@ -38,6 +38,29 @@ def wait_for_scratch(required):
         time.sleep(20)
 
 
+def wait_for_host_scratch(required=425_000_000_000):
+    held=False
+    while True:
+        free=shutil.disk_usage(ROOT).free
+        if free<400_000_000_000:
+            raise RuntimeError('Host storage reserve reached before dispatch')
+        if free>=required:
+            if held:log(f'Host scratch ready: {free} bytes free')
+            return
+        if not held:log(f'Holding undispatched jobs pending {required} free host bytes (readback {free})')
+        held=True
+        time.sleep(20)
+
+
+def monitor_host_storage(receipt,current,free):
+    # Guest-local scratch also expands the VM image on this host volume.
+    soft=425_000_000_000 if current.get('shared_scratch') else 410_000_000_000
+    if free<soft:
+        name='host_critical.json' if free<400_000_000_000 else 'host_stop.json'
+        stop=receipt/name
+        if not stop.exists():save(stop,dict(case=current['case'],free_bytes=free,utc=utc()))
+
+
 def dispatch_solver(script,flags,folder):
     """Reconcile an uncertain Parallels acknowledgement with the guest before any later launch."""
     native=script=='native_run.ps1'
@@ -53,6 +76,7 @@ def dispatch_solver(script,flags,folder):
             local=(RT/'inputs'/name/'local_job.json')
             required=24_000_000_000 if native and local.is_file() and read(local).get('load_protocol') in ('four_stage_install','grip_install') else 18_000_000_000
             wait_for_scratch(required)
+            wait_for_host_scratch()
             try:
                 launch(script,flags,request)
             except (RuntimeError,ValueError,subprocess.TimeoutExpired) as exc:
@@ -744,11 +768,7 @@ def run():
         while True:
             current=read(state)
             if current['phase'] in ('solver_complete','failed'):break
-            if current.get('shared_scratch'):
-                free=shutil.disk_usage(ROOT).free
-                if free<425_000_000_000:
-                    stop=receipt/('host_critical.json' if free<400_000_000_000 else 'host_stop.json')
-                    if not stop.exists():save(stop,dict(case=case,free_bytes=free,utc=utc()))
+            monitor_host_storage(receipt,current,shutil.disk_usage(ROOT).free)
             time.sleep(15)
         if current['phase']=='failed':
             log('Failed native '+case)
