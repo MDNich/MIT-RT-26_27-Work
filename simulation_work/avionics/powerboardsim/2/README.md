@@ -130,6 +130,21 @@ The nominal bare nickel-damage rerun first crossed its reporting threshold betwe
 
 The third nylon mesh now confirms that outer-pocket timing and order remain mesh-sensitive under base X: the 3 mm model reaches the right pocket first; the 2 and 1.5 mm models reach the left first. Each accepted crossing has an independent quadratic-surface witness. These histories retain the locked contact state. [Report, page 20](output/pdf/battery-case-report.pdf#page=20)
 
+## Rebuild the LaTeX publications
+
+Editable sources are [the report](docs/battery-case-report.tex) and [the Beamer slides](docs/battery-case-slides.tex). Build with `latexmk` and pdfLaTeX from TeX Live or MacTeX (including Beamer, Latin Modern and the packages named in each preamble). Required checked-in assets are [the palette](docs/colors.tex), [the prior-fit appendix](docs/appendices/prior-fit.tex) and the vector PDFs in [docs/figures](docs/figures/). The PDF build uses these assets without launching a solver.
+
+From this revision-2 directory, with the TeX binaries on `PATH`:
+
+```bash
+mkdir -p .runtime/latex-build
+cd docs
+latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=../.runtime/latex-build battery-case-report.tex
+latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=../.runtime/latex-build battery-case-slides.tex
+```
+
+Review the generated PDFs before copying them to `output/pdf/`. All report and slide plots use [the shared Matplotlib PGF/pdfLaTeX setup](model/report_plot.py), including real LaTeX labels and embedded fonts; preserve it when editing plot generators. Regenerating a figure may also require its referenced validation records and ignored native archives. From the revision-2 root, the [graphics audit](model/audit_report_graphics.py) checks the figure backend and embedded fonts (`python model/audit_report_graphics.py report PATH_TO_REPORT.pdf`, or `slides` for the deck; requires `pypdf`). The latest rendered review is recorded in `OPERATIONS.md`.
+
 ## Appendix A — previous fit study
 
 The material below describes the former supplied STEP at flush and 3 mm mounting positions. This work is preserved in Appendix A of the current report and as a standalone report with the original page numbers. The original movie catalogue belongs to that study.
