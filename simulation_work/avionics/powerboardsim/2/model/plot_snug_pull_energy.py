@@ -6,6 +6,7 @@ from report_plot import plt
 from snug_board_pull import ROOT, read
 from snug_pull_steps import ENERGY, PARENT
 from stage_snug_fit import AUDIT
+from compare_snug_pull_energy import OUTPUT as COMPARISON
 
 
 def draw():
@@ -18,47 +19,56 @@ def draw():
     atforce = record["at_bare_endpoint_force"]
     work = cased["actuator_work_mJ"]
     bare = record["bare_work_at_cased_stations"][index]["external_work_mJ"]
+    paired = read(COMPARISON)
+    for source in paired['sources'].values():
+        verified(ROOT/source['energy_path'],source['energy_sha256'])
+    (common,) = [r for r in paired['common'] if r['native_set']==21]
+    assert common['nylon']==cased and common['bare']['external_work_mJ']==bare
+    aluminium=common['aluminium']
+    alforce=paired['equal_force']['aluminium']
     fig, (match, nickel, parts) = plt.subplots(
-        1, 3, figsize=(8.3, 2.5), layout="constrained", gridspec_kw={"width_ratios": [1.15, 0.93, 1.06]}
+        1, 3, figsize=(8.3, 2.65), layout="constrained", gridspec_kw={"width_ratios": [1.15, 0.93, 1.10]}
     )
     navy = "#08357E"
     green = "#38761D"
+    red = "#A0362F"
     data = [
-        (atforce["external_work_mJ"], record["bare"]["history"][-1]["actuator_work_mJ"]),
-        (work, bare),
+        (atforce["external_work_mJ"], alforce['external_work_mJ'], record["bare"]["history"][-1]["actuator_work_mJ"]),
+        (work, aluminium['actuator_work_mJ'], bare),
     ]
     match.set(
         xscale="log",
-        xlim=(0.030, 20),
+        xlim=(0.006, 50),
         ylim=(-0.42, 1.39),
         yticks=[1, 0],
         yticklabels=["8.54 N", "0.207 mm"],
         xlabel="Actuator work [mJ]",
         title="Matched loading",
     )
-    match.hlines(1, *atforce["endpoint_work_bracket_mJ"], color=green, lw=4, alpha=0.35)
-    for i, (snug, reference) in enumerate(data):
+    match.hlines(0.90, *atforce["endpoint_work_bracket_mJ"], color=green, lw=4, alpha=0.35)
+    match.hlines(1.10, *alforce["endpoint_work_bracket_mJ"], color=red, lw=4, alpha=0.35)
+    for i, (snug, al, reference) in enumerate(data):
         y = 1 - i
-        match.plot([snug, reference], [y, y], color="#aaa", lw=0.8, zorder=0)
-        for val, mark, color, label in [
-            (snug, "D", green, "Snug nylon"),
-            (reference, "o", navy, "Bare"),
+        for val, mark, color, label, dy in [
+            (snug, "D", green, "Snug nylon", -.10),
+            (al, "^", red, "Snug aluminium", .10),
+            (reference, "o", navy, "Bare", 0),
         ]:
             match.scatter(
-                val, y, marker=mark, s=26, color=color, label=label if i == 0 else None, zorder=3
+                val, y+dy, marker=mark, s=26, color=color, label=label if i == 0 else None, zorder=3
             )
             match.annotate(
                 f"{val:.3g}",
-                (val, y),
-                xytext=(0, 5),
+                (val, y+dy),
+                xytext=(0, -14 if dy<0 else 5),
                 textcoords="offset points",
                 ha="center",
                 va="bottom",
                 color=color,
-                fontsize=9,
+                fontsize=8,
             )
     match.set_xticks([0.1, 1, 10], labels=["0.1", "1", "10"])
-    match.legend(ncol=2, loc="lower center", bbox_to_anchor=(0.5, 0.34), frameon=False, fontsize=8)
+    fig.legend(*match.get_legend_handles_labels(),ncol=3,loc='outside upper center',frameon=False,fontsize=8)
     evidence = read(AUDIT / "nickel_initiation_replay.json")
     replay = evidence["matched_bilinear"]
     proof = read(AUDIT / f"{PARENT}_ls3_ss24_checkpoint.json")
@@ -92,7 +102,7 @@ def draw():
         yticklabels=[],
         xticks=[0, 2, 4, 6],
         xlabel="Initiation criterion [\\%]",
-        title="Nickel strip history",
+        title="Nickel: nylon versus bare",
     )
     nickel.hlines(0, *bare_limits, color=navy, lw=4, alpha=0.35)
     for y, first, second in [
@@ -114,22 +124,19 @@ def draw():
                 color=color,
                 fontsize=8,
             )
-    group = cased["work_by_group_mJ"]
-    values = [
-        group["PLA"],
-        group["shanks"],
-        group["nickel"],
-        sum(group[k] for k in group if k not in ("PLA", "shanks", "nickel")),
-    ]
-    for y, (value, color) in enumerate(zip(values, [navy, "#3C78D8", green, "#5A43A0"], strict=True)):
-        parts.barh(3 - y, value, height=0.48, color=color)
-        parts.text(value + 0.08, 3 - y, f"{value:.2f}", va="center", fontsize=8)
+    for current,color,dy in ((cased,green,-.17),(aluminium,red,.17)):
+        group=current['work_by_group_mJ']
+        values=[group['PLA'],group['shanks'],group['nickel'],
+                sum(group[k] for k in group if k not in ('PLA','shanks','nickel'))]
+        for y,value in enumerate(values):
+            parts.barh(3-y+dy,value,height=.28,color=color)
+            parts.text(value+.15,3-y+dy,f'{value:.2f}',va='center',fontsize=7)
     parts.set(
         yticks=[3, 2, 1, 0],
         yticklabels=["Printed case", "Four shanks", "Nickel strips", "Other elements"],
         xlabel="Nodal-force work [mJ]",
-        title="Snug fixture at 0.207 mm",
-        xlim=(0, 5.9),
+        title="Both cases at 0.207 mm",
+        xlim=(0, 18.5),
     )
     for ax in (match, nickel, parts):
         ax.spines[["top", "right", "left"]].set_visible(False)

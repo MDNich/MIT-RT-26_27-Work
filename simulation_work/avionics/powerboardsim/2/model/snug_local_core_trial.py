@@ -148,7 +148,12 @@ def verify_production_runtime(case,campaign,spec,status,listing):
     assert profile.get('sealed_cores',spec['cores'])==spec['cores'] and profile.get('mode','SMP')=='SMP'
     proof=profile.get('trial_sha256')
     if proof:
-        assert spec['cores']==4 and not spec.get('snug_step_parent')
+        assert spec['cores']==4
+        if spec.get('snug_step_parent'):
+            assert case=='snug125_aluminium_lateral_friction_locked_steps_m15'
+            assert spec['snug_step_parent']=='snug125_aluminium_lateral_friction_locked_pin1_m15'
+            entry=read(AUDIT/'aluminium_local_pull_step_input.json')[case]
+            assert entry['runtime_cores']==cores==12 and entry['core_trial_sha256']==proof
         decision=ROOT/'.runtime/receipts'/campaign/case/'local_core_trial.json'
         verified(decision,proof)
         trial=read(decision)

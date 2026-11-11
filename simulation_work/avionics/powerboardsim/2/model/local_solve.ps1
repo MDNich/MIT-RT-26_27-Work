@@ -20,10 +20,11 @@ if ($Case -like 'snug125_*_m15') {
     $trial=Get-Content "$PSScriptRoot\..\validation\snug125\local_mesh15_preflight.json" -Raw|ConvertFrom-Json
     if ($spec.size_mm -ne 1.5 -or $spec.case_node_start -ne 2100001 -or $trial.native_counts.tetrahedra -ne 99818 -or $spec.step_sha256 -ne $trial.step_sha256) {throw 'Wrong refined local geometry'}
 }
-if ($Case -eq 'snug125_nylon_lateral_friction_locked_steps_m15') {
-    if ($spec.snug_step_parent -ne 'snug125_nylon_lateral_friction_locked_pin1_m15' -or [Math]::Abs($spec.end_time-2.43875) -gt 1e-10 -or
+if ($Case -match '^snug125_(nylon|aluminium)_lateral_friction_locked_steps_m15$') {
+    $material=$Matches[1]
+    if ($spec.snug_step_parent -ne "snug125_${material}_lateral_friction_locked_pin1_m15" -or [Math]::Abs($spec.end_time-2.43875) -gt 1e-10 -or
         $spec.displacement_mm -ne 0.219375) {throw 'Invalid snug increment-control fixture'}
-    $catalog='snug125/local_pull_step_input.json'
+    $catalog=if($material -eq 'aluminium'){'snug125/aluminium_local_pull_step_input.json'}else{'snug125/local_pull_step_input.json'}
 }
 if ($Case -eq 'snug125_nylon_lateral_friction_locked_target4_m15') {
     if ($spec.snug_target_parent -ne 'snug125_nylon_lateral_friction_locked_steps_m15' -or
@@ -52,6 +53,11 @@ if ($SolveCores -ne $spec.cores) {
     if ($Case -notlike 'snug125_*_m15' -or $SolveCores -ne 12 -or $spec.cores -ne 4 -or
         $receiptState.case -ne $Case -or $receiptState.cores -ne $SolveCores -or
         $receiptState.local_runtime.trial_sha256 -notmatch '^[a-f0-9]{64}$') {throw 'Unverified local SMP override'}
+}
+if ($Case -eq 'snug125_aluminium_lateral_friction_locked_steps_m15' -and
+    ($SolveCores -ne $record.runtime_cores -or $record.runtime_cores -ne 12 -or
+     $receiptState.local_runtime.trial_sha256 -ne $record.core_trial_sha256)) {
+    throw 'Aluminium increment control must retain its verified twelve-core parent runtime'
 }
 if ($ValidateOnly) {
     return [PSCustomObject]@{case=$Case;catalog=$catalog;model_sha256=$spec.files.'model.inp';cores=$SolveCores}

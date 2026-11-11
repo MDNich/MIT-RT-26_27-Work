@@ -1,6 +1,7 @@
-"""Resolve the two early contact transitions in the nylon side pull on the original load path."""
+"""Resolve both contact transitions on the original nylon and aluminium side-pull paths."""
 
 import json
+import argparse
 
 from audit_local import read
 from film_identity import digest, verified, write_json
@@ -16,17 +17,22 @@ ENERGY = AUDIT / (PARENT + "_ls3_ss47_energy.json")
 ORIGINAL = b"TIME,3\nNSUBST,100,4000,20\nD,2481,UX,0.5\nSOLVE\n"
 
 
-def stage():
-    source = read(ENERGY)
-    cp = AUDIT / (PARENT + "_ls3_ss47_checkpoint.json")
+ALUMINIUM_CASE = CASE.replace('nylon', 'aluminium')
+ALUMINIUM_REGISTRY = AUDIT/'aluminium_local_pull_step_input.json'
+ALUMINIUM_ENERGY = AUDIT/(PARENT.replace('nylon', 'aluminium')+'_ls3_ss15_energy.json')
+
+
+def stage(*, case=CASE, parent_case=PARENT, energy_path=ENERGY, registry_path=REGISTRY):
+    source = read(energy_path)
+    cp = energy_path.with_name(energy_path.name.replace('_energy.json', '_checkpoint.json'))
     verified(cp, source["checkpoint_sha256"])
     proof = read(cp)
-    parent = read(AUDIT / "local_inputs_m15.json")[PARENT]
+    parent = read(AUDIT / "local_inputs_m15.json")[parent_case]
     assert (
         source["cased"]["rst_sha256"] == proof["rst_sha256"]
         and proof["input_sha256"] == parent["input_sha256"]
     )
-    incoming = INPUTS / PARENT
+    incoming = INPUTS / parent_case
     config = incoming / "local_job.json"
     verified(config, parent["spec_sha256"])
     spec = read(config)
@@ -61,16 +67,16 @@ def stage():
     insert = ("\n".join(blocks) + "\n").encode()
     deck = original.replace(ORIGINAL, insert)
     assert deck.replace(insert, ORIGINAL) == original
-    dst = INPUTS / CASE
+    dst = INPUTS / case
     dst.mkdir(exist_ok=True)
     files = {"model.inp": seal(dst / "model.inp", deck)}
     for name in ("moving.inp", "local_post.inp"):
         files[name] = seal(dst / name, (incoming / name).read_bytes())
     job = dict(
         spec,
-        case=CASE,
+        case=case,
         files=files,
-        snug_step_parent=PARENT,
+        snug_step_parent=parent_case,
         end_time=time,
         displacement_mm=steps[-1]["travel_mm"],
     )
@@ -78,21 +84,23 @@ def stage():
         job.pop(key, None)
     config_sha = seal(dst / "local_job.json", (json.dumps(job, indent=2) + "\n").encode())
     write_json(
-        REGISTRY,
+        registry_path,
         {
-            CASE: {
-                "case": CASE,
-                "parent": PARENT,
+            case: {
+                "case": case,
+                "parent": parent_case,
                 "bare_reference": proof["bare_case"],
                 "spec_sha256": config_sha,
                 "input_sha256": files["model.inp"],
                 "parent_input_sha256": parent["input_sha256"],
-                "energy_sha256": digest(ENERGY),
+                "energy_sha256": digest(energy_path),
                 "steps": steps,
                 "mesh_sha256": parent["mesh_sha256"],
                 "target_sha256": parent["target_sha256"],
                 "end_time": time,
                 "displacement_mm": steps[-1]["travel_mm"],
+                **(dict(runtime_cores=12, core_trial_sha256=digest(AUDIT/'local_core_trial.json'))
+                   if case==ALUMINIUM_CASE else {}),
                 "scope": "Same displacement ramp and native stations through the first loaded middle-cell station. "
                 "Only increments at the first moving-cell contact and the fixed-cell engagement are subdivided.",
             }
@@ -130,10 +138,13 @@ def compare_histories(original, refined, steps):
 
 
 def audit(case, campaign, verdict):
-    spec = read(REGISTRY)[case]
-    verified(ENERGY, spec["energy_sha256"])
-    baseline = read(ENERGY)
-    assert read(verdict)["solver_runtime"]["cores"] == 4
+    assert case in (CASE, ALUMINIUM_CASE)
+    registry = ALUMINIUM_REGISTRY if case==ALUMINIUM_CASE else REGISTRY
+    energy = ALUMINIUM_ENERGY if case==ALUMINIUM_CASE else ENERGY
+    spec = read(registry)[case]
+    verified(energy, spec["energy_sha256"])
+    baseline = read(energy)
+    assert read(verdict)["solver_runtime"]["cores"] == spec.get('runtime_cores', 4)
     comparison = paired(case, spec["bare_reference"], verdict)
     run = closed_series(case, campaign, verdict)
     assert run["rst_sha256"] == comparison["native_rst_sha256"] == read(verdict)["rst_sha256"]
@@ -148,11 +159,18 @@ def audit(case, campaign, verdict):
             atlock = state["refined_set"]
     result.update(
         staged_input_sha256=spec["input_sha256"],
-        reference_sha256=digest(ENERGY),
+        reference_sha256=digest(energy),
         matched_stations=common,
     )
-    write_json(AUDIT / "nylon_local_step_comparison.json", result)
+    material = 'aluminium' if case==ALUMINIUM_CASE else 'nylon'
+    write_json(AUDIT / f"{material}_local_step_comparison.json", result)
 
 
 if __name__ == "__main__":
-    stage()
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--aluminium',action='store_true')
+    if parser.parse_args().aluminium:
+        stage(case=ALUMINIUM_CASE,parent_case=PARENT.replace('nylon','aluminium'),
+              energy_path=ALUMINIUM_ENERGY,registry_path=ALUMINIUM_REGISTRY)
+    else:
+        stage()

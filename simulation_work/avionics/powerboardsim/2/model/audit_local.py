@@ -192,6 +192,8 @@ def audit(case, campaign, *, equilibrium_prefix=False):
         catalog='snug125/local_inputs_m3.json'
     if spec.get('snug_step_parent'):
         catalog='snug125/local_target_control.json' if spec.get('snug_target_parent') else 'snug125/local_pull_step_input.json'
+        if case=='snug125_aluminium_lateral_friction_locked_steps_m15':
+            catalog='snug125/aluminium_local_pull_step_input.json'
     if spec.get('snug_bearing_control'):
         catalog='snug125/local_bearing_inputs.json'
     manifest = read(ROOT/'validation'/catalog)[case]
