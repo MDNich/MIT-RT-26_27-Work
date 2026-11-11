@@ -42,6 +42,14 @@ def loading_curve(branch, damage, *, source=None):
     assert np.allclose(force['ux_mm'],native['ux_mm'],rtol=0,atol=1e-7)
     assert np.allclose(force['cell_fx_N'],native['fx_N'],rtol=1e-7,atol=1e-5)
     criteria={}
+    if 'accepted_equilibrium_prefix' in proof:
+        closure=base/'snug125'/(case+'_termination.json')
+        verified(closure,proof['terminal_inventory_sha256'])
+        assert proof['accepted_equilibrium_prefix']==proof['states']<len(force)==proof['rst_converged_states']
+        force=force[:proof['states']]
+        native=native[:proof['states']]
+        criteria['accepted_equilibrium_prefix']=digest(closure)
+    assert len(force)==len(native)==proof['states']
     if damage:
         strict=base/'damage_balance'/(case+'.json')
         checked=read(strict)
@@ -66,6 +74,16 @@ def loading_curve(branch, damage, *, source=None):
         assert np.array_equal(contact['pair'],np.tile([861,862],len(full_sets)))
         bad=[p['native_set'] for key,p in material['first_reference_crossings'].items() if key.startswith('all_')]
         bad.extend(contact['native_set'][contact['max_closed_corner_penetration_mm']>.05])
+        # Refined bounds belong to their exact bilinear decks; do not transfer
+        # them to the distinct damage-law or reverse-loading histories.
+        from snug_directional_result import refined_tab_crossing
+        refined=refined_tab_crossing(case,spec['files']['model.inp'],
+                                    {int(r['set']):float(r['ux_mm']) for r in native})
+        if refined:
+            bad.append(refined['native_set'])
+            criteria['refined_tab_submodel']=refined['submodel_sha256']
+            if 'reassessment_sha256' in refined:
+                criteria['refined_tab_reassessment']=refined['reassessment_sha256']
         if bad:
             force=force[force['native_set']<min(bad)]
         criteria.update(PLA=digest(mat),closed_corners=digest(contacts))

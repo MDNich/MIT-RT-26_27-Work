@@ -1,5 +1,11 @@
 # Battery case study operations
 
+### November 11 damage-comparison reader prepared for the closed partial pulls
+
+While the nominal nylon damage solve continued, a read-only publication check found that the law-comparison reader expected contact records for all 83 saved nylon forward equilibria, although its accepted fixture audit covers only the first 63. The reader now verifies the existing termination record and uses that accepted prefix. It also applies the already published refined PLA bounds to the exact bilinear forward decks: the last screened stations remain 0.219 mm for nylon and 0.107 mm for aluminium. These bounds are not transferred to the distinct damage or reverse decks.
+
+The regression check reproduces both existing bare curves, both audited forward endpoints and their unchanged 8.5 N brackets. No native input, archived history, report figure or movie changed. [Reader check](validation/snug125/pull_law_reader_scope_check.json) · [Reproducible check](model/check_pull_law_scope.py)
+
 ### November 11 both reverse pulls audited; nominal damage next
 
 The supervisor archived `snug125_aluminium_lateral_friction_locked_minus_pin1_m15` at 10:43 UTC and completed its audit at 10:46 UTC. MAPDL returned zero after about 3 h 06 min of solver time, with 34 equilibria through -0.500 mm. Its RST SHA is `52e1c41bcd69bf21c883394fa9fa824d354f8e1e7135933ff466e65f73f71932`. All original fixture force/moment, contact, bearing, fixed-cell and work checks passed; the largest force-residual component was 0.046 N. [Completion audit](validation/snug125/aluminium_reverse_completion.json)
