@@ -1,0 +1,222 @@
+{
+  "branch": "snug125_aluminium",
+  "sources": {
+    "bare_lateral_friction_locked": {
+      "case": "bare_lateral_friction_locked",
+      "campaign": "nov08_01",
+      "fixture_sha256": "b5a270a320cd844cd38a8e1c7b280c06d3d1f57c6605572730c340ccc3ad4f4a",
+      "native_history_sha256": "c49f087c2df6aac77d5964630b34f3995752f29e3f7adffb56d6a94c5141a1af",
+      "rst_sha256": "f8b439c1021724faf8762ce186d2f16029d62f5f290de6867b4ec23fbf84bcc3",
+      "criteria_sha256": {},
+      "mesh_sha256": "d0c740d05b9f24f56be1fe1561beaf7984c4e5b8ef46fbf7f0a1ade795b58a57",
+      "washer_preload_N": 750,
+      "nickel_thickness_mm": 0.15,
+      "washer_friction": 0.2,
+      "yield_MPa": 148.0,
+      "last_supported_travel_mm": 0.5
+    },
+    "bare_damage_cont_nominal": {
+      "case": "bare_damage_cont_nominal",
+      "campaign": "nov08_01",
+      "fixture_sha256": "60e7a67008e3a65492ac2a351c5dad242c751bcbf4534b1e1aca5f7891c07870",
+      "native_history_sha256": "a28c2e866784f99fbd8ec8808376067602147ffd666feb9c909644f838781b32",
+      "rst_sha256": "8d8d971d5610bde4b7b752f99a3e55e25800065d3b901393a347db279a065066",
+      "criteria_sha256": {
+        "nickel_force_balance": "77fa40b28e1e1e043afdcaca48791862104bf1eef53502d13e50ef768280a6fc"
+      },
+      "mesh_sha256": "d0c740d05b9f24f56be1fe1561beaf7984c4e5b8ef46fbf7f0a1ade795b58a57",
+      "washer_preload_N": 750,
+      "nickel_thickness_mm": 0.15,
+      "washer_friction": 0.2,
+      "yield_MPa": 185,
+      "last_supported_travel_mm": 3.347375
+    },
+    "snug125_aluminium_lateral_friction_locked_pin1_m15": {
+      "case": "snug125_aluminium_lateral_friction_locked_pin1_m15",
+      "campaign": "nov08_01",
+      "fixture_sha256": "d7a9b5ed914671cbb22308420aa1033ebad64a3a26ccfd18f163e6ae47738ad4",
+      "native_history_sha256": "2b32446e0734f8e52859cce57b021123e58eed4a113049fadc7f39c4d56cd48c",
+      "rst_sha256": "442ef048e987513b20ef2da77c4959025c6953740ebc8cecfebd6148c76128c6",
+      "criteria_sha256": {
+        "refined_tab_submodel": "70b3599f566981da1224eb0bcb0c754f6ce6cee13c8f739c323f6755128f7827",
+        "refined_tab_reassessment": "284fc67b52048501d7456fdde0b628476e14f99380e5fcfbde585308ebb1a686",
+        "PLA": "a32b3530fcccd58df897c388d72c2a89130fd683bcbf623c2e8a1ea792333252",
+        "closed_corners": "22d4b6805c8a4d4e6dc1b53643f455ed551b59da633ef879582a2700a8328a6c"
+      },
+      "mesh_sha256": "d0c740d05b9f24f56be1fe1561beaf7984c4e5b8ef46fbf7f0a1ade795b58a57",
+      "washer_preload_N": 750,
+      "nickel_thickness_mm": 0.15,
+      "washer_friction": 0.2,
+      "yield_MPa": 148.0,
+      "last_supported_travel_mm": 0.106875
+    },
+    "snug125_aluminium_damage_cont_nominal_pin1_m15": {
+      "case": "snug125_aluminium_damage_cont_nominal_pin1_m15",
+      "campaign": "nov08_01",
+      "fixture_sha256": "b571acea9598607c7cc0004d62623029a882ce69b42d7e00913a6cc92fdd4015",
+      "native_history_sha256": "042494b4887292084617239691e38bd90e8cf2a099d2641737c5c2bd16154898",
+      "rst_sha256": "badfb129673f1d5a13ba32e41f18ebd6f705669c3a4caca670397da70a5f3664",
+      "criteria_sha256": {
+        "nickel_force_balance": "4cedb4def3122bc63b5e0147744e73baeddbc2012302dc1ba936d25dc6856f4e",
+        "PLA": "718d4ab56e793fb59eaff8199e013974ef3965cc379b98f62f93131e820e5613",
+        "closed_corners": "98b1de88d966d8dc30b9b4e449e4863bf18fa68fc1731b91d484a2f03cf91e47",
+        "threshold_chronology": "df332a9ee9c9ac9f3ca25fbe6a6598f2e24bb86ebbfe54d5668c29c9b25b3ca4"
+      },
+      "mesh_sha256": "d0c740d05b9f24f56be1fe1561beaf7984c4e5b8ef46fbf7f0a1ade795b58a57",
+      "washer_preload_N": 750,
+      "nickel_thickness_mm": 0.15,
+      "washer_friction": 0.2,
+      "yield_MPa": 185,
+      "last_supported_travel_mm": 0.25
+    }
+  },
+  "common_travel_mm": 0.106875,
+  "bare_control_force_N": 8.542048658016569,
+  "curves": {
+    "bare_lateral_friction_locked": {
+      "at_common_travel": {
+        "exact_saved_state": false,
+        "bracket": [
+          {
+            "native_set": 16,
+            "travel_mm": 0.095625,
+            "force_N": 5.058563037335166
+          },
+          {
+            "native_set": 17,
+            "travel_mm": 0.120625,
+            "force_N": 5.854709016153535
+          }
+        ],
+        "travel_mm": 0.106875,
+        "force_N": 5.416828727803432
+      },
+      "at_bare_control_force": {
+        "exact_saved_state": true,
+        "bracket": [
+          {
+            "native_set": 33,
+            "travel_mm": 0.5,
+            "force_N": 8.542048658016569
+          },
+          {
+            "native_set": 33,
+            "travel_mm": 0.5,
+            "force_N": 8.542048658016569
+          }
+        ],
+        "travel_mm": 0.5,
+        "force_N": 8.542048658016569
+      }
+    },
+    "bare_damage_cont_nominal": {
+      "at_common_travel": {
+        "exact_saved_state": false,
+        "bracket": [
+          {
+            "native_set": 12,
+            "travel_mm": 0.0875,
+            "force_N": 4.841044685245424
+          },
+          {
+            "native_set": 13,
+            "travel_mm": 0.1375,
+            "force_N": 6.969065854161534
+          }
+        ],
+        "travel_mm": 0.106875,
+        "force_N": 5.665652888200416
+      },
+      "at_bare_control_force": {
+        "exact_saved_state": false,
+        "bracket": [
+          {
+            "native_set": 14,
+            "travel_mm": 0.1875,
+            "force_N": 8.2617132369936
+          },
+          {
+            "native_set": 15,
+            "travel_mm": 0.21875,
+            "force_N": 8.826784111087967
+          }
+        ],
+        "travel_mm": 0.2030033329597957,
+        "force_N": 8.542048658016569
+      }
+    },
+    "snug125_aluminium_lateral_friction_locked_pin1_m15": {
+      "at_common_travel": {
+        "exact_saved_state": true,
+        "bracket": [
+          {
+            "native_set": 17,
+            "travel_mm": 0.106875,
+            "force_N": 116.40598185669761
+          },
+          {
+            "native_set": 17,
+            "travel_mm": 0.106875,
+            "force_N": 116.40598185669761
+          }
+        ],
+        "travel_mm": 0.106875,
+        "force_N": 116.40598185669761
+      },
+      "at_bare_control_force": {
+        "exact_saved_state": false,
+        "bracket": [
+          {
+            "native_set": 12,
+            "travel_mm": 0.0175,
+            "force_N": 0.9751541288662554
+          },
+          {
+            "native_set": 13,
+            "travel_mm": 0.02875,
+            "force_N": 12.103779084429876
+          }
+        ],
+        "travel_mm": 0.025149423337820595,
+        "force_N": 8.542048658016569
+      }
+    },
+    "snug125_aluminium_damage_cont_nominal_pin1_m15": {
+      "at_common_travel": {
+        "exact_saved_state": false,
+        "bracket": [
+          {
+            "native_set": 12,
+            "travel_mm": 0.075,
+            "force_N": 75.40890614646602
+          },
+          {
+            "native_set": 13,
+            "travel_mm": 0.1125,
+            "force_N": 125.29497018578881
+          }
+        ],
+        "travel_mm": 0.106875,
+        "force_N": 117.81206057989039
+      },
+      "at_bare_control_force": {
+        "exact_saved_state": false,
+        "bracket": [
+          {
+            "native_set": 10,
+            "travel_mm": 0.025,
+            "force_N": 7.085464119666359
+          },
+          {
+            "native_set": 11,
+            "travel_mm": 0.05,
+            "force_N": 41.17777213248666
+          }
+        ],
+        "travel_mm": 0.026068118164515635,
+        "force_N": 8.542048658016569
+      }
+    }
+  },
+  "scope": "First loading crossing, from locked clamps through the supported native range of each positive-X fixture. Interpolation between adjacent equilibrium states only. Material cards and load increments differ across the two nickel studies. Rupture is unresolved."
+}

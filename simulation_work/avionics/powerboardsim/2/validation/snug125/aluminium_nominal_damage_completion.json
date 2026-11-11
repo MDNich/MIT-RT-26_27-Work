@@ -1,0 +1,101 @@
+{
+  "case": "snug125_aluminium_damage_cont_nominal_pin1_m15",
+  "input_sha256": "931c252396124392e2cbc88747b31cf3dffb0bb819b1ef8c646d3e1a93045cf1",
+  "rst_sha256": "badfb129673f1d5a13ba32e41f18ebd6f705669c3a4caca670397da70a5f3664",
+  "listing_sha256": "0ba9be89d17eecfae19009d19028cb8ce2243c5857d8afa4f4e29110eceb75da",
+  "status_sha256": "5ecf4a1d76e417b68144880b471783632b978e69facac4843cb5308836d29ec3",
+  "archive_manifest_sha256": "1842f524fd67c1ee579283bfd15ed44f6be392b32220fa1c643d3066a4498096",
+  "fixture_sha256": "b571acea9598607c7cc0004d62623029a882ce69b42d7e00913a6cc92fdd4015",
+  "source_sha256": {
+    "pair": "8f0d155af9a4613f243be61499562574f8906ad39896ff3fae88ec2abc238409",
+    "material": "718d4ab56e793fb59eaff8199e013974ef3965cc379b98f62f93131e820e5613",
+    "limits": "df332a9ee9c9ac9f3ca25fbe6a6598f2e24bb86ebbfe54d5668c29c9b25b3ca4",
+    "balance": "4cedb4def3122bc63b5e0147744e73baeddbc2012302dc1ba936d25dc6856f4e",
+    "initiation": "85cb04fb455912f9ef099368c06176bbcac7135a6ed6d9bc43529557b9e980c9",
+    "evolution": "2e2e35c15403219f89ce45e01f6288956b681856598e19863a0cd3788da22b6c"
+  },
+  "termination": {
+    "reason": "Native element-formulation error: excessive shell thickness change",
+    "element": 1865,
+    "rejected_load_step": 4,
+    "rejected_substep": 7,
+    "diagnostic_time": 2.5
+  },
+  "no_restart_in_finite_scope": true,
+  "converged_states": 23,
+  "excluded_diagnostic_sets": 1,
+  "last_converged_travel_mm": 0.31079296875,
+  "all_saved_force_checks_pass": true,
+  "first_PLA_criterion": "all_layer_tensile_strain",
+  "first_PLA_reference_bracket_mm": [
+    0.25,
+    0.275
+  ],
+  "nickel_reporting_bracket": [
+    {
+      "native_set": 22,
+      "time": 2.3090703125,
+      "cell_ux_mm": 0.3090703125,
+      "cell_fx_N": 3038.7711328349933,
+      "damage": 0.0
+    },
+    {
+      "native_set": 23,
+      "time": 2.31079296875,
+      "cell_ux_mm": 0.31079296875,
+      "cell_fx_N": 3071.710977761685,
+      "damage": 0.0010661332926
+    }
+  ],
+  "maximum_recorded_section_damage": 0.0010661332926,
+  "last_parent_screened": {
+    "set": 17,
+    "travel_mm": 0.25,
+    "force_N": 1661.6536026,
+    "native_max_section_damage": 0.0,
+    "native_max_point_damage": 0.0,
+    "damaged_sites": 0,
+    "distinct_in_plane_sites_across_saved_sections": 0,
+    "damaged_elements": 0
+  },
+  "last_screened_initiation_criterion": 0.35462212562561035,
+  "positive_damage_reconstruction_verified": false,
+  "equal_force_reference_N": 8.542048658016569,
+  "equal_force_travel": {
+    "bare": {
+      "exact_saved_state": false,
+      "bracket": [
+        {
+          "native_set": 14,
+          "travel_mm": 0.1875,
+          "force_N": 8.2617132369936
+        },
+        {
+          "native_set": 15,
+          "travel_mm": 0.21875,
+          "force_N": 8.826784111087967
+        }
+      ],
+      "travel_mm": 0.2030033329597957,
+      "force_N": 8.542048658016569
+    },
+    "snug": {
+      "exact_saved_state": false,
+      "bracket": [
+        {
+          "native_set": 10,
+          "travel_mm": 0.025,
+          "force_N": 7.085464119666359
+        },
+        {
+          "native_set": 11,
+          "travel_mm": 0.05,
+          "force_N": 41.17777213248666
+        }
+      ],
+      "travel_mm": 0.026068118164515635,
+      "force_N": 8.542048658016569
+    }
+  },
+  "scope": "Nominal multilinear nickel law on all three fixtures. Bars span adjacent saved native states; left dots interpolate. Both cased travel brackets are 0.025--0.050 mm at 8.5 N; their overlap does not resolve a screw-material ordering. PLA is the first parent-mesh coupon reference (nylon: through-layer stress; aluminium: through-layer strain). Nickel is section-summary D > 0.0001 after that crossing, not a tearing load. Positive-damage reconstruction is not verified before the case material screen. Prior bilinear corner limits are not transferred to these different decks. No physical failure load or converged PLA limit is established."
+}

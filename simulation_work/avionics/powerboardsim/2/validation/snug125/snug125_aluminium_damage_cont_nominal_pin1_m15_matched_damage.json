@@ -1,0 +1,169 @@
+{
+  "branch": "snug125_aluminium",
+  "source": "damage_cont_nominal",
+  "control": "material_grid",
+  "case": "snug125_aluminium_damage_cont_nominal_pin1_m15",
+  "bare_case": "bare_damage_cont_nominal",
+  "fixture_sha256": [
+    "60e7a67008e3a65492ac2a351c5dad242c751bcbf4534b1e1aca5f7891c07870",
+    "b571acea9598607c7cc0004d62623029a882ce69b42d7e00913a6cc92fdd4015"
+  ],
+  "inputs_sha256": "4e6f313329fdca993363ca81611c9a7c4c1ca6506b29f9367eeef921bf3e0ce6",
+  "mounted_material_scope_sha256": "df332a9ee9c9ac9f3ca25fbe6a6598f2e24bb86ebbfe54d5668c29c9b25b3ca4",
+  "eps0": 0.3,
+  "evolution_length_mm": 0.12,
+  "nickel_model_onset": {
+    "bare": [
+      {
+        "native_set": 100,
+        "time": 5.25,
+        "cell_ux_mm": 3.25,
+        "cell_fx_N": 42.87041200588607,
+        "damage": 0.0
+      },
+      {
+        "native_set": 101,
+        "time": 5.275,
+        "cell_ux_mm": 3.275,
+        "cell_fx_N": 43.37206986732108,
+        "damage": 0.001070162165
+      }
+    ],
+    "snug": [
+      {
+        "native_set": 22,
+        "time": 2.3090703125,
+        "cell_ux_mm": 0.3090703125,
+        "cell_fx_N": 3038.7711328349933,
+        "damage": 0.0
+      },
+      {
+        "native_set": 23,
+        "time": 2.31079296875,
+        "cell_ux_mm": 0.31079296875,
+        "cell_fx_N": 3071.710977761685,
+        "damage": 0.0010661332926
+      }
+    ]
+  },
+  "mounted_first_limit_sets": {
+    "all_layer_tensile_strain": 18,
+    "all_layer_tension_MPa": 20,
+    "all_in_plane_tension_MPa": 21
+  },
+  "mounted_onset_interpretation": "Nickel threshold occurred after the first PLA or contact limit.",
+  "snug_onset_within_recorded_screens": null,
+  "common_travel_mm": 0.25,
+  "equal_force_reference_N": 8.542048658016569,
+  "at_common_travel": {
+    "bare": {
+      "exact_saved_state": true,
+      "bracket": [
+        {
+          "native_set": 16,
+          "travel_mm": 0.25,
+          "force_N": 9.272141061876766
+        },
+        {
+          "native_set": 16,
+          "travel_mm": 0.25,
+          "force_N": 9.272141061876766
+        }
+      ],
+      "travel_mm": 0.25,
+      "force_N": 9.272141061876766
+    },
+    "snug": {
+      "exact_saved_state": true,
+      "bracket": [
+        {
+          "native_set": 17,
+          "travel_mm": 0.25,
+          "force_N": 1661.6536026365015
+        },
+        {
+          "native_set": 17,
+          "travel_mm": 0.25,
+          "force_N": 1661.6536026365015
+        }
+      ],
+      "travel_mm": 0.25,
+      "force_N": 1661.6536026365015
+    }
+  },
+  "at_reference_force": {
+    "bare": {
+      "exact_saved_state": false,
+      "bracket": [
+        {
+          "native_set": 14,
+          "travel_mm": 0.1875,
+          "force_N": 8.2617132369936
+        },
+        {
+          "native_set": 15,
+          "travel_mm": 0.21875,
+          "force_N": 8.826784111087967
+        }
+      ],
+      "travel_mm": 0.2030033329597957,
+      "force_N": 8.542048658016569
+    },
+    "snug": {
+      "exact_saved_state": false,
+      "bracket": [
+        {
+          "native_set": 10,
+          "travel_mm": 0.025,
+          "force_N": 7.085464119666359
+        },
+        {
+          "native_set": 11,
+          "travel_mm": 0.05,
+          "force_N": 41.17777213248666
+        }
+      ],
+      "travel_mm": 0.026068118164515635,
+      "force_N": 8.542048658016569
+    }
+  },
+  "bare_bilinear_reference_rst_sha256": "f8b439c1021724faf8762ce186d2f16029d62f5f290de6867b4ec23fbf84bcc3",
+  "histories": [
+    {
+      "case": "bare_damage_cont_nominal",
+      "campaign": "nov08_01",
+      "fixture_sha256": "60e7a67008e3a65492ac2a351c5dad242c751bcbf4534b1e1aca5f7891c07870",
+      "native_history_sha256": "a28c2e866784f99fbd8ec8808376067602147ffd666feb9c909644f838781b32",
+      "rst_sha256": "8d8d971d5610bde4b7b752f99a3e55e25800065d3b901393a347db279a065066",
+      "criteria_sha256": {
+        "nickel_force_balance": "77fa40b28e1e1e043afdcaca48791862104bf1eef53502d13e50ef768280a6fc"
+      },
+      "mesh_sha256": "d0c740d05b9f24f56be1fe1561beaf7984c4e5b8ef46fbf7f0a1ade795b58a57",
+      "washer_preload_N": 750,
+      "nickel_thickness_mm": 0.15,
+      "washer_friction": 0.2,
+      "yield_MPa": 185,
+      "last_supported_travel_mm": 3.347375
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_nominal_pin1_m15",
+      "campaign": "nov08_01",
+      "fixture_sha256": "b571acea9598607c7cc0004d62623029a882ce69b42d7e00913a6cc92fdd4015",
+      "native_history_sha256": "042494b4887292084617239691e38bd90e8cf2a099d2641737c5c2bd16154898",
+      "rst_sha256": "badfb129673f1d5a13ba32e41f18ebd6f705669c3a4caca670397da70a5f3664",
+      "criteria_sha256": {
+        "nickel_force_balance": "4cedb4def3122bc63b5e0147744e73baeddbc2012302dc1ba936d25dc6856f4e",
+        "PLA": "718d4ab56e793fb59eaff8199e013974ef3965cc379b98f62f93131e820e5613",
+        "closed_corners": "98b1de88d966d8dc30b9b4e449e4863bf18fa68fc1731b91d484a2f03cf91e47",
+        "threshold_chronology": "df332a9ee9c9ac9f3ca25fbe6a6598f2e24bb86ebbfe54d5668c29c9b25b3ca4"
+      },
+      "mesh_sha256": "d0c740d05b9f24f56be1fe1561beaf7984c4e5b8ef46fbf7f0a1ade795b58a57",
+      "washer_preload_N": 750,
+      "nickel_thickness_mm": 0.15,
+      "washer_friction": 0.2,
+      "yield_MPa": 185,
+      "last_supported_travel_mm": 0.25
+    }
+  ],
+  "scope": "First loading crossings on screened native paths. Brackets retain both saved stations. Damage is the section-summary model variable."
+}
