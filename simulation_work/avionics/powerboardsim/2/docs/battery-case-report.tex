@@ -411,7 +411,7 @@ The quasistatic fixture prescribes one cell displacement while the global model 
 At exactly \textbf{0.206875~mm} of cell travel, the local fixture required \textbf{109.53~N with nylon screws} and \textbf{242.90~N with aluminium}, a factor of 2.22. The matching bare force interpolates to 7.23~N. The sealed cased inputs differ only in screw modulus, Poisson ratio and density.
 
 \begin{center}\includegraphics[width=.99\linewidth]{figures/snug-forward-pull.pdf}
-\captionof{figure}{Left, native force versus imposed travel. Centre, travel at 8.54~N: bars span saved cased states and diamonds interpolate; bare is an exact endpoint. The horizontal scale is logarithmic. Right, support reactions at the same 0.206875~mm travel; bare is interpolated between adjacent saved states.}\end{center}
+\captionof{figure}{Left, native force; shading brackets first middle-cell loading. Centre, travel at 8.54~N: bars span saved cased states and diamonds interpolate; bare is exact. The horizontal scale is logarithmic. Right, reactions at 0.206875~mm; bare is interpolated.}\end{center}
 
 \heading{Equal load and equal travel answer different questions}
 At 8.54~N, bare travel was 0.500~mm. Nylon brackets this load at 0.02875--0.04000~mm, with a linear estimate of \textbf{0.03436~mm}. Aluminium brackets it at 0.01750--0.02875~mm, with an estimate of \textbf{0.02515~mm}. The aluminium interval crosses first contact; the bracket remains essential. Both mounts first carried pocket pressure in that interval.
@@ -434,7 +434,7 @@ The screw peaks occur at the fixed PCB ends. Bending supplies 26.68~MPa of the n
 The nylon tabs moved 0.0817--0.0837~mm sideways, while aluminium tabs moved 0.0176--0.0184~mm. Tied tab and screw-tip rotations require opposing normal loads within the 3.75~mm bearing radius: at least 6.33--8.11~N per nylon tab and 5.80--7.28~N per aluminium tab. Queued controls release this rotation. The complete-board case (page~34) permits PCB and neighbouring-cell motion.
 
 \heading{Verified scope and remaining work}
-All 21 aluminium checkpoint equilibria pass the force, moment, contact and material screens and reproduce the sixteen earlier states. Both fixtures use the 1.5~mm mesh and two 750~N washer preloads. The aluminium solve continues; reverse pulls, contact refinement and damage comparisons remain open. Later nylon limits and nickel response are on pages~21--25 and 28.
+All 24 aluminium checkpoint equilibria pass the existing screens and reproduce the 21 earlier states. At 0.219375~mm both cases load the fixed middle cell: applied forces become 538.13~N nylon and 597.68~N aluminium, only 11.1\% apart (page~21). Reverse pulls, refinement and damage comparisons remain open.
 
 \newpage
 \pageheading{Refining the case mesh changes the base-X event order}
@@ -457,18 +457,18 @@ In both finer base-X calculations, the middle pocket already requires a change i
 
 \newpage
 \pageheading{Pocket pressure rises as the fixed middle cell takes load}
-At 0.206875~mm of prescribed left-cell travel, the snug nylon fixture required 109.53~N and the fixed middle cell carried zero. At the next saved equilibrium, 0.219375~mm, the actuator supplied \textbf{538.13~N} and the middle cell resisted \textbf{424.29~N} sideways. Both neighbours are held fixed in this local fixture. On the full board they can move.
+Both mounts first load the fixed middle cell between \textbf{0.206875 and 0.219375~mm}. At the upper station the nylon actuator supplies \textbf{538.13~N}, of which the middle cell takes \textbf{424.29~N} (78.8\%). Aluminium requires \textbf{597.68~N}, with \textbf{348.67~N} (58.3\%) at the middle cell. These neighbours are rigidly restrained in the local fixture; on the full board they move.
 
 \begin{center}\includegraphics[width=.99\linewidth]{figures/snug-pull-pressure.pdf}
-\captionof{figure}{Left, native applied force with bilinear nickel on both fixtures, plotted on a logarithmic scale. Centre, solid lines show loaded area on the native cells. The dashed line gives the area represented by pocket integration points inside the original STEP left cell at the same solved pose. Right, native peak pressure.}\end{center}
+\captionof{figure}{Left, native forces with bilinear nickel and both screw materials, on a logarithmic scale. Centre, nylon loaded areas and the sampled STEP overlap at the solved pose. Right, peak pressures on the driven and middle cells. Comparisons stop before the refined nylon coupon crossing.}\end{center}
 
 \heading{Which cell sees the highest pressure?}
-On the driven cell, the loaded area \emph{fell} from 59.57 to 55.08~mm$^2$ as the middle cell engaged. Mean pressure rose from 1.74 to 9.68~MPa and the peak rose from \textbf{16.12 to 30.03~MPa}. At the upper station the middle cell averaged 7.29~MPa over 58.20~mm$^2$, peaking at 10.85~MPa. The right cell peaked at 3.31~MPa. At the earlier saved loads of 5.53 and 11.57~N, which bracket the bare endpoint load of 8.54~N, only the driven pocket carried force. Its peaks were 0.74 and 1.46~MPa, respectively.
+With nylon, driven-cell loaded area fell from 59.57 to 55.08~mm$^2$ across this interval; mean pressure rose from 1.74 to 9.68~MPa and the peak from \textbf{16.12 to 30.03~MPa}. Aluminium gave \textbf{49.90~MPa peak} and 10.44~MPa mean over 56.96~mm$^2$ at the upper station. Both middle cells averaged 7.29~MPa, but over 58.20~mm$^2$ with nylon and 47.84~mm$^2$ with aluminium. Their peaks were 10.85 and 10.43~MPa. Nylon also loaded the right cell (3.31~MPa peak); aluminium left it clear.
 
 \heading{How much does the faceted cell surface matter?}
 At 5.53~N, 112 of 18,372 pocket points carried native pressure, covering 30.58~mm$^2$. Holding the deformed case and rigid cell pose fixed, successively finer target skins put 201 and 224 points inside the cell. The trimmed STEP solid gave 227 points (61.61~mm$^2$). At 11.57~N the finest skin and STEP agreed on the count of 278, compared with 164 loaded natively. A matched native control refines only the driven cell through 0.040~mm to determine how the forces redistribute.
 
-Pressure recovered from case-node forces and deformed areas agreed with MAPDL within $1.3\times10^{-6}$~MPa. The rigid cell and air gap give no sleeve or can damage limit. The refined PLA corner crosses its coupon reference after 0.219375~mm (page~23). The four-core solve stopped on nonconvergence after 16~h 03~min at $+0.470494$~mm of the requested $+0.500$~mm. Of 83 solver-converged states, two at 0.453 and 0.455~mm exceeded the 0.20~N force-balance limit in Z. We excluded the final diagnostic state. The first 63 states passed this check through 0.452697~mm. The refined PLA limit restricts the physical comparison to 0.219375~mm.
+Nodal forces and areas reproduce pressure within $4.3\times10^{-6}$~MPa; native target IDs and separate geometry checks identify the middle-cell load. Rigid cells provide no sleeve or can strength limit. Nylon stopped on nonconvergence after 16~h 03~min at $0.470494$ of $0.500$~mm. Of 83 converged states, two at 0.453 and 0.455~mm failed the 0.20~N Z-balance screen; the diagnostic state was excluded. The first 63 passed through 0.452697~mm, but refined PLA restricts the comparison to 0.219375~mm (page~23).
 
 \heading{How much does the installed case restrain each cell?}
 At bolt lock, the middle cell moved \textbf{9.9\% less with nylon screws} and \textbf{13.9\% less with aluminium} under the same small sideways force. Refining the nylon case from 2 to 1.5~mm gave a 9.4\% reduction. The change from bare at either outer cell was below 0.36\%. We solved each full stiffness matrix independently, applying a unit force along PCB X through each cell's mass centre in turn. Contacts retained their installed state.

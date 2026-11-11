@@ -5,6 +5,7 @@ from matplotlib.ticker import FixedLocator, FixedFormatter, NullLocator
 from audit_local import ROOT, read
 from compare_pull import series
 from compare_snug_forward_mounts import CHECKPOINTS, OUTPUT
+from compare_snug_middle_engagement import OUTPUT as MIDDLE
 from film_identity import verified
 from report_plot import plt
 from stage_snug_fit import AUDIT
@@ -12,11 +13,15 @@ from stage_snug_fit import AUDIT
 
 def plot():
     comparison = read(OUTPUT)
+    continuation = read(MIDDLE)
+    verified(OUTPUT, continuation['previous_comparison_sha256'])
     for key, name in CHECKPOINTS.items():
         verified(AUDIT/name, comparison['checkpoint_sha256'][key])
     proof, bare = series(comparison['bare_case'])
     assert proof['rst_sha256'] == comparison['bare_rst_sha256']
     rows = comparison['common_native_travel']
+    extended = continuation['common_native_travel']
+    assert extended[:-1] == rows
     labels = ['Bare', 'Nylon', 'Aluminium']
     colors = ['#08357E', '#38761D', '#7A0101']
     fig, (ax, bx, cx) = plt.subplots(1, 3, figsize=(8.15, 2.5), layout='constrained',
@@ -24,9 +29,10 @@ def plot():
     ax.plot([r['ux_mm'] for r in bare], [r['cell_force_N'] for r in bare],
             '.-', color=colors[0], ms=3, lw=1.3, label=labels[0])
     for key, label, color in zip(('nylon', 'aluminium'), labels[1:], colors[1:], strict=True):
-        ax.plot([r['travel_mm'] for r in rows], [r[key]['cell_force_N'] for r in rows],
+        ax.plot([r['travel_mm'] for r in extended], [r[key]['cell_force_N'] for r in extended],
                 'o-', ms=2.8, lw=1.3, color=color, label=label)
-    ax.set(xlim=(0, .22), ylim=(0, 260), xlabel='Cell travel [mm]', ylabel='Applied force [N]',
+    ax.axvspan(rows[-1]['travel_mm'], extended[-1]['travel_mm'], color='#8EACD5', alpha=.2)
+    ax.set(xlim=(0, .235), ylim=(0, 640), xlabel='Cell travel [mm]', ylabel='Applied force [N]',
            title='Same imposed travel', xticks=[0, .1, .2])
     ax.legend(fontsize=8, frameon=False, loc='upper left')
     endpoint = comparison['bare_endpoint']
