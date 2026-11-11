@@ -1,5 +1,9 @@
 # Battery case study operations
 
+### November 11 additional space for the remaining main cases
+
+While the nylon nominal damage solve continued, full-hash-verified APFS consolidation of 48 completed Y/Z private vibration matrix files recovered **7.8 GB**, leaving about **435 GB** free on the host. Each copy retains its original full bytes, path and metadata: all differing 64 KiB regions were restored before verification and atomic replacement. The active solver, sealed inputs, immutable modal libraries, PDFs and movies were untouched. [Storage proof](validation/snug125/storage_private_full_recovery.json)
+
 ### November 11 damage-comparison reader prepared for the closed partial pulls
 
 While the nominal nylon damage solve continued, a read-only publication check found that the law-comparison reader expected contact records for all 83 saved nylon forward equilibria, although its accepted fixture audit covers only the first 63. The reader now verifies the existing termination record and uses that accepted prefix. It also applies the already published refined PLA bounds to the exact bilinear forward decks: the last screened stations remain 0.219 mm for nylon and 0.107 mm for aluminium. These bounds are not transferred to the distinct damage or reverse decks.
