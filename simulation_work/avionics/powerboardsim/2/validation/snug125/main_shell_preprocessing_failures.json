@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {
+      "case": "shell_snug125_nylon_free_v2",
+      "input_sha256": "52fb53dcee30aa11b5b7c14115520115350439261a9b2113af4f34e96b1475f5",
+      "status_sha256": "edcef6a71b44cb553922be4b88043fc79e8f4b4f5b48df1dd759b2513d344e64",
+      "solve_out_sha256": "30eba3963bd2408103a8b908683126f2515c946205981c2f3c98c3f2962c5bc6",
+      "error_log_sha256": "d719172ad29c8a111782cf125591dca5b05be8450063b335ede30cd372b9d050",
+      "started_utc": "2026-11-11T04:29:48.6711107Z",
+      "finished_utc": "2026-11-11T04:30:07.9595442Z",
+      "exit": 1,
+      "native_cores": 2,
+      "solved_equilibria": 0,
+      "failure": "Native shape error: one of 45549 generated elements exceeds error limits; aborted before any equation solution.",
+      "blocked_undispatched_dependents": [
+        "shell_snug125_nylon_contact_v2",
+        "shellwave_snug125_nylon_free_pilot_s4",
+        "shellwave_snug125_nylon_contact_pilot_s4"
+      ]
+    },
+    {
+      "case": "shell_snug125_aluminium_free_v2",
+      "input_sha256": "52fb53dcee30aa11b5b7c14115520115350439261a9b2113af4f34e96b1475f5",
+      "status_sha256": "964a11b51bc0d6a11fa253bd7b2f97b4b047649fb8be827a54acf5654bc7d0ae",
+      "solve_out_sha256": "f688510c2fb9b2429fdd3c6a2e8fa55fad1706e667fab47a1aeb47e0bddfbe87",
+      "error_log_sha256": "388c291dc736a3d2ff37a91dcabf2e45538eaffa57f334715531aeee7b71c3ff",
+      "started_utc": "2026-11-11T04:30:12.5581978Z",
+      "finished_utc": "2026-11-11T04:30:31.6527477Z",
+      "exit": 1,
+      "native_cores": 2,
+      "solved_equilibria": 0,
+      "failure": "Native shape error: one of 45549 generated elements exceeds error limits; aborted before any equation solution.",
+      "blocked_undispatched_dependents": [
+        "shell_snug125_aluminium_contact_v2",
+        "shellwave_snug125_aluminium_free_pilot_s4",
+        "shellwave_snug125_aluminium_contact_pilot_s4"
+      ]
+    }
+  ],
+  "scope_registry_sha256": "95de034dcf7ea19f6eed59ef45e1d4f991d6b8b556bc178c180fb3595da06172",
+  "disposition": "Retain failed inputs and logs. These controls provide no physical or transient results. Six dependent checks remain blocked. Under the finite main-validation scope no replacement case or new sweep is dispatched automatically. Existing nominal and independent results retain their own limitations."
+}

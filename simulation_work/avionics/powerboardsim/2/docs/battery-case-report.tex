@@ -595,10 +595,10 @@ Under base X the first release lasted from 3.048 to 3.546~ms, and under base Y f
 
 At the base-Z peak the original mesh face cleared the middle cell by 39--40~nm. Restoring curvature gave 3--4~nm of overlap; on the second face it reduced overlap from about 23 to 13~nm. The sign at the original face also changed under base X and Y. Each maximum was bounded to 0.5~nm, with witnesses on the trimmed STEP surfaces. This reconstruction retains the existing equilibrium and supplies no new pressure.
 
-The native projection preload passed all eight force-balance checks, with at most 13.4~$\mu$N of net tab reaction. It reported zero contact force despite 72--73 and 127--128~nm of quadratic-surface overlap at these faces. Force balance therefore does not establish adequate contact resolution. The native cylindrical correction failed its final pocket-versus-tab balance by 22.1\%; a fresh 0.0001~N force-criterion repeat is queued. Neither control replaces the nominal preload above.
+The projection preload passed force balance but reported zero force despite up to 0.128~$\mu$m of overlap. The cylindrical correction initially failed balance by 22\%. Its tighter repeat (0.0001~N criterion) passed all eight states: \textbf{0.044 N at lock}, with \textbf{0.03\% imbalance}, versus \textbf{0.022 N nominal}. Local contact remains formulation-sensitive; these controls do not replace the nominal vibration bases.
 
 \heading{How accurately is the local opening calculated?}
-Across the first 8.789~ms, the 48 installed modes alone captured 44.3\% of static contact flexibility and gave 16.7~nm peak spring opening under base Z. Adding 16 static displacement vectors recovered the full flexibility. Going from 12 to 16 changed peak openings by at most 1.3\%. Time-step refinement reproduced the force-increment histories within 0.25\% in relative norm. All other contacts and 2\% installed damping stayed fixed. Physical clearance and recontact force remain unresolved.
+Adding 16 static displacement vectors to the 48 installed modes recovered the static contact flexibility. Increasing from 12 to 16 vectors changed peak openings by at most 1.3\%; time-step refinement changed force-increment histories by less than 0.25\% in relative norm. Other contacts and 2\% damping stayed fixed. Both whole-shell controls stopped at native mesh-shape checks before solving, blocking their contact and transient dependents. Physical clearance and recontact force remain unresolved.
 
 \clearpage
 \pageheading{How much work does it take to move the edge cell?}
