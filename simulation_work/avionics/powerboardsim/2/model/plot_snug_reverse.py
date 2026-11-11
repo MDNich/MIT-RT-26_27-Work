@@ -8,6 +8,32 @@ from report_plot import plt
 from stage_snug_fit import AUDIT
 
 
+def common_station(records, bare):
+    """Use an exact saved travel shared by both mounts, below each deck's screens."""
+    if len(records) != 2:
+        return None
+    stations = [{round(-r['ux_mm'], 9): r for r in item['native_points']
+                 if r['set'] <= item['last_screened_set']} for item in records]
+    magnitude = max(set(stations[0]) & set(stations[1]))
+    baseline, = [r for r in bare if abs(r['ux_mm'] + magnitude) < 1e-8]
+    models = []
+    for item, rows in zip(records, stations, strict=True):
+        row = rows[magnitude]
+        path = ROOT / 'validation/pull_material' / (item['case'] + '.json')
+        comparison = read(AUDIT / (item['case'] + '_comparison.json'))
+        verified(path, comparison['print_material_sha256'])
+        material = read(path)
+        state, = [s for s in material['history'] if s['native_set'] == row['set']]
+        assert abs(state['travel_mm'] - row['ux_mm']) < 1e-8
+        assert abs(state['cell_force_N'] - row['cell_force_N']) < 1e-5
+        fractions = {k: state['all_' + k] / v for k, v in material['reference_properties'].items()}
+        assert max(fractions.values()) < 1
+        models.append(dict(case=item['case'], native=row, material_sha256=digest(path),
+                           material_state=state, printed_reference_fractions=fractions))
+    return dict(travel_magnitude_mm=magnitude, bare=baseline, models=models,
+                scope='Exact shared saved travel, not an interpolated station. Parent-mesh material screens apply.')
+
+
 def plot():
     bare_name = 'bare_lateral_friction_locked_minus'
     bare_proof, bare = series(bare_name)
@@ -49,7 +75,8 @@ def plot():
             labels.append(label)
             bx.errorbar(x, y, xerr=np.array([[x-lo], [hi-x]]), fmt='D',
                         color=color, capsize=4, ms=5)
-            bx.text(x, y+.18, f'{x:.2f} mm', ha='center', fontsize=9, color=color)
+            bx.annotate(f'{x:.2f} mm', (x, y), xytext=(0, -12), textcoords='offset points',
+                        ha='center', va='top', fontsize=9, color=color)
         records.append(dict(case=case, comparison_sha256=digest(path),
                             input_sha256=item['input_sha256'], rst_sha256=item['native_rst_sha256'],
                             native_points=rows, last_screened_set=end,
@@ -60,7 +87,8 @@ def plot():
            xlim=(0, .51), title='Away from the neighbouring cells')
     ax.legend(frameon=False, fontsize=9)
     target = abs(bare[-1]['cell_force_N'])
-    bx.text(.5, .18, '0.50 mm', ha='center', fontsize=9, color='#08357E')
+    bx.annotate('0.50 mm', (.5, 0), xytext=(0, -12), textcoords='offset points',
+                ha='center', va='top', fontsize=9, color='#08357E')
     bx.set(xlabel='Reverse cell travel [mm]', title=f'At the same {target:.1f} N load',
            xlim=(0, .56), ylim=(-.5, len(labels)-.35), yticks=range(len(labels)),
            yticklabels=labels)
@@ -74,6 +102,7 @@ def plot():
     plt.close(fig)
     write_json(AUDIT / 'reverse_pull_plot.json', dict(
         bare_case=bare_name, bare_rst_sha256=bare_proof['rst_sha256'], models=records,
+        common_screened_native_station=common_station(records, bare),
         scope='Negative-X local fixtures. Solid curves stop at the last native material/contact-screened station; '
               'dashes show numerical continuation. Parent-mesh coupon screens are not allowable loads or '
               'converged fracture predictions. Diamonds interpolate only between adjacent saved equilibria.'))

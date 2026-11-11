@@ -434,7 +434,7 @@ The screw peaks occur at the fixed PCB ends. Bending supplies 26.68~MPa of the n
 The nylon tabs moved 0.0817--0.0837~mm sideways, while aluminium tabs moved 0.0176--0.0184~mm. Tied tab and screw-tip rotations require opposing normal loads within the 3.75~mm bearing radius: at least 6.33--8.11~N per nylon tab and 5.80--7.28~N per aluminium tab. Rotation-release controls are deferred. The complete-board case (page~34) permits PCB and neighbouring-cell motion.
 
 \heading{Verified scope and remaining work}
-All 24 aluminium checkpoint equilibria pass their original balance screens. Later material refinement restricts interpretation: the roughly 538~N nylon and 598~N aluminium results at 0.219~mm (page~21) are numerical continuation. The nylon reverse pull is now audited (page~35). Aluminium reverse, nominal damage and selected resolution checks remain open; broad sweeps are deferred.
+All 24 aluminium checkpoint equilibria pass their original balance screens. Later material refinement restricts interpretation: the roughly 538~N nylon and 598~N aluminium results at 0.219~mm (page~21) are numerical continuation. Both reverse pulls are now audited (page~35). Nominal damage and selected resolution checks remain open; broad sweeps are deferred.
 
 \newpage
 \pageheading{Refining the case mesh changes the base-X event order}
@@ -754,27 +754,29 @@ With nylon screws, the tighter hold relaxed the middle-pocket force to 0.5685~N.
 At maximum load, the smallest driven-cell gap was 9.878--9.889~$\mu$m with nylon and 11.018--11.029~$\mu$m with aluminium. All six modeled washers cleared the case by at least 0.311~mm with nylon and 0.314~mm with aluminium at the saved stations. These bounds use the nominal mesh and solved displacements. Print and sleeve tolerances remain unmeasured.
 
 \newpage
-\pageheading{The nylon case also restrains reverse sideways travel}
-When the left cell is pulled away from its neighbours, the snug nylon case brackets travel at \textbf{0.146--0.171~mm under 8.5~N}, compared with \textbf{0.500~mm bare}. Linear interpolation gives about \textbf{0.16~mm}, or two-thirds less travel. This interval spans first pocket contact; its width is part of the result. The aluminium reverse comparison is still running.
+\pageheading{Both snug mounts restrain reverse sideways travel}
+When the left cell is pulled away from its neighbours, \textbf{both screw variants bracket travel at 0.146--0.171~mm under 8.5~N}, compared with \textbf{0.500~mm bare}. Both linear estimates round to \textbf{0.16~mm}, or about two-thirds less travel. This interval spans first pocket contact. The saved steps do not resolve the small difference between the two interpolated estimates.
 
 \begin{center}\includegraphics[width=.98\linewidth]{figures/snug-reverse-pull.pdf}
-\captionof{figure}{Native negative-X local pulls, shown as positive magnitudes. The solid nylon curve ends at the last saved station below the parent-mesh PLA and contact screens. Dashes retain the later numerical continuation. The diamond interpolates between the saved states at either end of the horizontal bar.}\end{center}
+\captionof{figure}{Native negative-X local pulls, shown as positive magnitudes. Each solid cased curve ends at its last saved station below the parent-mesh PLA and contact screens. Dashes retain later numerical continuation. Diamonds interpolate within the saved-state brackets shown by the horizontal bars.}\end{center}
 
-\heading{The case transfers load into the constrained neighbours}
-At the same \textbf{0.246~mm} reverse travel, the nylon fixture requires \textbf{118~N}, versus \textbf{7.5~N bare}. About 102~N passes through the case into the fixed middle cell, 11~N into the case screw supports and 5~N into the nickel clamps. This is a local fixture with fixed neighbouring cells and screw ends, not the compliance of the complete board.
+\heading{Compare the same travel in both mounts}
+At the common saved travel of about \textbf{0.196~mm}, the reaction is \textbf{46~N with nylon screws}, \textbf{53~N with aluminium} and \textbf{7.1~N bare}. Most of the cased reaction passes through the printed shell into the fixed middle cell. Aluminium carries more load through its case mounts. These are local fixtures with fixed neighbouring cells and screw ends, not the compliance of the complete board.
 
-\begin{center}\small\begin{tabular}{lr}\toprule
-Nylon fixture at 0.246 mm reverse travel & Demand\\\midrule
-Peak PLA in-plane tension & 43 MPa (82\% of coupon mean)\\
-Peak PLA through-layer tension & 11 MPa (28\% of coupon mean)\\
-Peak nylon screw-shank fibre tension & 9.8 MPa\\
-Largest loaded corner penetration & 0.006 mm\\\bottomrule
+\begin{center}\small\begin{tabular}{lrr}\toprule
+At 0.196 mm reverse travel & Nylon screws & Aluminium screws\\\midrule
+Reaction through case mounts [N] & 5.1 & 12.8\\
+Reaction through fixed middle cell [N] & 34 & 34\\
+Reaction through nickel clamps [N] & 6.5 & 6.1\\
+Peak PLA in-plane tension [MPa] & 14 & 16\\
+Peak PLA through-layer tension [MPa] & 3.6 & 4.0\\
+Peak screw-shank fibre tension [MPa] & 3.8 & 8.9\\\bottomrule
 \end{tabular}\end{center}
 
 \heading{What the validation establishes}
-The native solve completed all 33 saved equilibria through 0.500~mm, with a maximum component force imbalance of 0.025~N. Independent force and moment checks, bearing reactions, fixed-cell loads, pressure integration and work accounting passed. The predicted first-contact travel of about 0.165~mm lies within the native clear/loaded bracket of 0.146--0.171~mm.
+Both native solves completed 0.500~mm: 33 saved equilibria for nylon and 34 for aluminium. All fixture force and moment, bearing, fixed-cell, pressure and work checks passed. The largest force-residual components were 0.025 and 0.046~N. The predicted first-contact travel of about 0.165~mm lies within both native clear/loaded brackets.
 
-The \textbf{52.3~MPa in-plane PLA coupon reference} is first crossed between \textbf{0.246 and 0.271~mm}. This is a parent-mesh reference crossing, not a measured or mesh-converged fracture load; the forward sharp-corner refinement cannot be transferred to this reversed load. The terminal 429~N is retained only as numerical continuation beyond that reference. Actual printed strength, screw allowables and battery-sleeve limits remain unverified.
+The \textbf{52.3~MPa in-plane PLA coupon reference} is first crossed at \textbf{0.246--0.271~mm with nylon} and \textbf{0.239--0.264~mm with aluminium}. These overlapping parent-mesh brackets do not establish a failure-order difference or a converged fracture load. The forward corner-refinement limit cannot be transferred to reverse loading. Terminal forces of 429 and 475~N are retained only as numerical continuation. Actual printed strength, screw allowables and battery-sleeve limits remain unverified.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
