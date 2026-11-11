@@ -4,6 +4,8 @@
 
 The links open 3840 × 2160 movies at 60 fps. Paired views use the same displacement or stress scale. The mode movies show normalized motion. In the one-sigma movies the camera moves around a fixed RMS field. The seeded movies show successive instants of the original acceleration record.
 
+The vibration movies retain the installed contact state. Apparent separation or overlap does not establish impact forces or damage. The selected changing-contact controls remain unresolved; see the [contact limitations in the report](../../pdf/battery-case-report.pdf#page=27).
+
 All seven seeded movie pairs use native MAPDL time histories for every displayed panel.
 
 ## Normalized modes

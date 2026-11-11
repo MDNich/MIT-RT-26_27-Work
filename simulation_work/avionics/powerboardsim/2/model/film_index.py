@@ -78,6 +78,9 @@ def make(reviews, *, snug_fit=False):
     if snug_fit:
         out[:3]=['# Snug Balius comparison movies','',
                  f'{raised_pairs} of 22 subjects have reviewed pairs for the bare board and both 1.250 mm mounts.']
+        out.extend(['The vibration movies retain the installed contact state. Apparent separation or overlap does not '
+                    'establish impact forces or damage. The selected changing-contact controls remain unresolved; '
+                    'see the [contact limitations in the report](../../pdf/battery-case-report.pdf#page=27).',''])
     if motion_methods:
         count='All seven' if native_seeded==7 else f'{native_seeded} of seven'
         detail=[f'{count} seeded movie pairs use native MAPDL time histories for every displayed panel.']
