@@ -1,5 +1,17 @@
 # Battery case study operations
 
+### November 12 nylon increment control completed
+
+The existing supervisor archived `snug125_nylon_lateral_friction_locked_steps_m15` at 00:41 UTC and completed its audit at 00:44 UTC. Native MAPDL returned zero with **42 converged states through 0.219375 mm**; all fixture checks passed. Input SHA `e0950f9853201ac9880055147a4860cb023ddb5358e75f5331e65cd639502e84`; RST SHA `676c6654853e6ba2cb80642a6f8bf06cd751cd3e020cc845293613f2e9b573ab`. The original four-core SMP runtime and mesh were retained.
+
+Across 13 matched stations, reaction changed by at most 0.14%. At the endpoint it rose from 538 to 539 N while integrated actuator work fell from 13.6 to 13.2 mJ, about 3%. At 8.5 N, travel remained approximately 0.034 mm. Early contact work is more step-sensitive. No parent-mesh PLA reference was crossed in this control, but this is neither a converged corner limit nor a physical failure load. Report page 28 and slide 4 record the result. [Completion and source identities](validation/snug125/nylon_increment_completion.json)
+
+The queue then held the **undispatched** aluminium increment control at the unchanged 425 GB host launch margin (about 420 GB free at the boundary). At that boundary no native solver was active. The nylon target-resolution control follows it. The supervisor and dedicated keep-awake remain active, with no duplicate launch or deferred-case dispatch. The finite inventory is 14 audited results, two preprocessing failures, six blocked descendants and two undispatched selected controls.
+
+The hold cleared at 01:01:57 UTC after byte-preserving consolidation of 48 closed prior-fit PSD matrix copies recovered another **16.2 GB**. All original file bytes and metadata remain intact. The existing supervisor launched the aluminium increment control once on its approved twelve-core SMP runtime; only the nylon target-resolution case follows. Input SHA `757ae3f1c3c6c6de8e5ce32866f1f4acb3e8572b7b0e2645d51a7c7b8913803f`. Host free space reached about 436 GB after consolidation. The 400 GB reserve and 425 GB launch gate were retained. [Recovery audit](validation/snug125/storage_prior_fit_private_recovery.json)
+
+The updated 65-page report and 12-slide briefing compiled successfully. Changed report pages 19/28 and slide 4 were rendered and visually reviewed, with no clipping or unreadable labels. All other page text, Appendix A source and figures are unchanged. The graphics audit verifies 68 report and 12 slide genuine PGF graphics. No movie changed. Review receipt: `.runtime/qa/snug125/nylon-increment-review/visual-review.json`.
+
 ### November 12 exact duplicate archives consolidated
 
 While the selected nylon increment control continued, full-hash-verified consolidation recovered **10.5 GB** from exact duplicate files in completed, released study archives. Every original path, byte and metadata value remains intact; the copies now share APFS blocks. Host free space was about **429 GB** after consolidation. The active scratch, sealed inputs, immutable modal libraries, queue and storage guards were unchanged. The existing supervisor will recheck capacity before either remaining control; the 400 GB host reserve and 425 GB launch margin remain in force. [File identities and recovery audit](validation/snug125/storage_exact_archive_recovery.json)
