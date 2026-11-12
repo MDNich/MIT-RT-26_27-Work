@@ -1,5 +1,9 @@
 # Battery case study operations
 
+### November 12 exact duplicate archives consolidated
+
+While the selected nylon increment control continued, full-hash-verified consolidation recovered **10.5 GB** from exact duplicate files in completed, released study archives. Every original path, byte and metadata value remains intact; the copies now share APFS blocks. Host free space was about **429 GB** after consolidation. The active scratch, sealed inputs, immutable modal libraries, queue and storage guards were unchanged. The existing supervisor will recheck capacity before either remaining control; the 400 GB host reserve and 425 GB launch margin remain in force. [File identities and recovery audit](validation/snug125/storage_exact_archive_recovery.json)
+
 ### November 11 both nominal damage comparisons closed
 
 The supervisor archived `snug125_aluminium_damage_cont_nominal_pin1_m15` at 22:21 UTC and finished its audit at 22:22 UTC. After about 4 h 58 min on twelve SMP cores, MAPDL terminated with `ERROR IN ELEMENT FORMULATION`: shell element 1865 had excessive thickness change during load step 4/substep 7. Its last converged travel is 0.310793 mm. All 23 converged states pass the fixture force/moment and stricter nickel-force checks; diagnostic substep 999999 is excluded. Input SHA `931c252396124392e2cbc88747b31cf3dffb0bb819b1ef8c646d3e1a93045cf1`; RST SHA `badfb129673f1d5a13ba32e41f18ebd6f705669c3a4caca670397da70a5f3664`. The stop is a numerical limitation, not physical rupture. No restart or parameter sweep is added. [Aluminium completion](validation/snug125/aluminium_nominal_damage_completion.json)
