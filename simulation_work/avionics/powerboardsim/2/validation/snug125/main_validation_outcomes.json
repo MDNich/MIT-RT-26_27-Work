@@ -1,0 +1,250 @@
+{
+  "scope_sha256": "95de034dcf7ea19f6eed59ef45e1d4f991d6b8b556bc178c180fb3595da06172",
+  "geometry_sha256": "43016e8435a85fc9ad33346ae11c0051102591c85a1fcee5ddd5658f75ca98ef",
+  "tab_to_PCB_spacing_mm": 1.25,
+  "counts": {
+    "audited": 16,
+    "preprocessing_failed": 2,
+    "blocked": 6
+  },
+  "cases": [
+    {
+      "case": "snug125_nylon_static",
+      "disposition": "audited",
+      "verdict": "validation/global/snug125_nylon_static.json",
+      "verdict_sha256": "309a17b0a08499c9cef7e261aaa6a6de73be65024bcd2b63007f1e7f5cd2ea87",
+      "status_sha256": "846b43ecfc0cbaab039acf285d9bfaa28c3830803f9197fd4d50ce7d10bce753",
+      "archive_manifest_sha256": "469c003a5e0714e249c8fedcb00ce11e22a39fb350619534ff36e4844274fa6a",
+      "native_clean": true,
+      "full_requested_path": null
+    },
+    {
+      "case": "snug125_aluminium_static",
+      "disposition": "audited",
+      "verdict": "validation/global/snug125_aluminium_static.json",
+      "verdict_sha256": "81e44d85a122b269bfd9dacc67ba3b2f1b9308ef6fd365a11d5f8b7a647b7c17",
+      "status_sha256": "5654289436df7ee41f87e0a909c55225e68e3132fecfde88fc0495e04e5ceef2",
+      "archive_manifest_sha256": "642325903bdfb676e2179bad7bdc8ad2758c1e479123f02bb40e2902e33b20af",
+      "native_clean": true,
+      "full_requested_path": null
+    },
+    {
+      "case": "snug125_nylon_basis",
+      "disposition": "audited",
+      "verdict": "validation/global/snug125_nylon_basis.json",
+      "verdict_sha256": "c303cfefebcb3657658ca5c7cf914d52331f8f3ab2040db319925d1d57e234f4",
+      "status_sha256": "0b709e40883c0c06d7ffcedb5285398317d4fb75fea435ff19f9a6a8a6f8c8f1",
+      "archive_manifest_sha256": "a941967a5a3f9fc1f9dc6403b55a79a6acb8b18cad721e0232e83d6e1382c121",
+      "native_clean": true,
+      "full_requested_path": null
+    },
+    {
+      "case": "snug125_aluminium_basis",
+      "disposition": "audited",
+      "verdict": "validation/global/snug125_aluminium_basis.json",
+      "verdict_sha256": "3dae7088e77a1c0dc6d4ee8e79e4cf9474350114d92f2fb04664fe88414e7239",
+      "status_sha256": "9b756145b66c5b6447fbe3b6e9f530462bc37419c1f92ac91e9c24211a746825",
+      "archive_manifest_sha256": "03d02c9309f2734a4a4c5b2a84557e44ee8a47931211eaa16a5ee239a71209fa",
+      "native_clean": true,
+      "full_requested_path": null
+    },
+    {
+      "case": "snug125_aluminium_cylinder_tol0001_static",
+      "disposition": "audited",
+      "verdict": "validation/global/snug125_aluminium_cylinder_tol0001_static.json",
+      "verdict_sha256": "c67b04c9efd0dcd3f20a2dc2f4def17c63dd31739442f4cb007171de65006acf",
+      "status_sha256": "989b1a367ca1a9cd7971ec747f414481e80cc463ca7201c54efab5dbc72e4fe7",
+      "archive_manifest_sha256": "5ac012466a9b0f034168b472558808117c383e6be416451ba0da6f0d01f66947",
+      "native_clean": true,
+      "full_requested_path": null
+    },
+    {
+      "case": "shell_snug125_nylon_free_v2",
+      "disposition": "preprocessing_failed",
+      "failure": {
+        "case": "shell_snug125_nylon_free_v2",
+        "input_sha256": "52fb53dcee30aa11b5b7c14115520115350439261a9b2113af4f34e96b1475f5",
+        "status_sha256": "edcef6a71b44cb553922be4b88043fc79e8f4b4f5b48df1dd759b2513d344e64",
+        "solve_out_sha256": "30eba3963bd2408103a8b908683126f2515c946205981c2f3c98c3f2962c5bc6",
+        "error_log_sha256": "d719172ad29c8a111782cf125591dca5b05be8450063b335ede30cd372b9d050",
+        "started_utc": "2026-11-11T04:29:48.6711107Z",
+        "finished_utc": "2026-11-11T04:30:07.9595442Z",
+        "exit": 1,
+        "native_cores": 2,
+        "solved_equilibria": 0,
+        "failure": "Native shape error: one of 45549 generated elements exceeds error limits; aborted before any equation solution.",
+        "blocked_undispatched_dependents": [
+          "shell_snug125_nylon_contact_v2",
+          "shellwave_snug125_nylon_free_pilot_s4",
+          "shellwave_snug125_nylon_contact_pilot_s4"
+        ]
+      }
+    },
+    {
+      "case": "shell_snug125_nylon_contact_v2",
+      "disposition": "blocked",
+      "failed_ancestor": "shell_snug125_nylon_free_v2"
+    },
+    {
+      "case": "shell_snug125_aluminium_free_v2",
+      "disposition": "preprocessing_failed",
+      "failure": {
+        "case": "shell_snug125_aluminium_free_v2",
+        "input_sha256": "52fb53dcee30aa11b5b7c14115520115350439261a9b2113af4f34e96b1475f5",
+        "status_sha256": "964a11b51bc0d6a11fa253bd7b2f97b4b047649fb8be827a54acf5654bc7d0ae",
+        "solve_out_sha256": "f688510c2fb9b2429fdd3c6a2e8fa55fad1706e667fab47a1aeb47e0bddfbe87",
+        "error_log_sha256": "388c291dc736a3d2ff37a91dcabf2e45538eaffa57f334715531aeee7b71c3ff",
+        "started_utc": "2026-11-11T04:30:12.5581978Z",
+        "finished_utc": "2026-11-11T04:30:31.6527477Z",
+        "exit": 1,
+        "native_cores": 2,
+        "solved_equilibria": 0,
+        "failure": "Native shape error: one of 45549 generated elements exceeds error limits; aborted before any equation solution.",
+        "blocked_undispatched_dependents": [
+          "shell_snug125_aluminium_contact_v2",
+          "shellwave_snug125_aluminium_free_pilot_s4",
+          "shellwave_snug125_aluminium_contact_pilot_s4"
+        ]
+      }
+    },
+    {
+      "case": "shell_snug125_aluminium_contact_v2",
+      "disposition": "blocked",
+      "failed_ancestor": "shell_snug125_aluminium_free_v2"
+    },
+    {
+      "case": "shellwave_snug125_nylon_free_pilot_s4",
+      "disposition": "blocked",
+      "failed_ancestor": "shell_snug125_nylon_free_v2"
+    },
+    {
+      "case": "shellwave_snug125_nylon_contact_pilot_s4",
+      "disposition": "blocked",
+      "failed_ancestor": "shell_snug125_nylon_free_v2"
+    },
+    {
+      "case": "shellwave_snug125_aluminium_free_pilot_s4",
+      "disposition": "blocked",
+      "failed_ancestor": "shell_snug125_aluminium_free_v2"
+    },
+    {
+      "case": "shellwave_snug125_aluminium_contact_pilot_s4",
+      "disposition": "blocked",
+      "failed_ancestor": "shell_snug125_aluminium_free_v2"
+    },
+    {
+      "case": "bare_lateral_friction_locked",
+      "disposition": "audited",
+      "verdict": "validation/local/bare_lateral_friction_locked.json",
+      "verdict_sha256": "b5a270a320cd844cd38a8e1c7b280c06d3d1f57c6605572730c340ccc3ad4f4a",
+      "status_sha256": "14b6c89dda81138b56f0f64598b334f9a0273de77e4805c31e8664395b286690",
+      "archive_manifest_sha256": "db3cd51670cd01289a8c9e6fb5ebda167f46563b91395f12ea91b13d9535e6a6",
+      "native_clean": true,
+      "full_requested_path": true
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_pin1_m15",
+      "disposition": "audited",
+      "verdict": "validation/partial_local/snug125_aluminium_lateral_friction_locked_pin1_m15.json",
+      "verdict_sha256": "d7a9b5ed914671cbb22308420aa1033ebad64a3a26ccfd18f163e6ae47738ad4",
+      "status_sha256": "a8a5e8eb6f2687d3e58e9314daf6c5b2db825c2b62f9d52e1ec30375845f3e17",
+      "archive_manifest_sha256": "020007b84cac8b202f514e80c5e9eec851d7c9c28ed4d7519aae573eb372409c",
+      "native_clean": false,
+      "full_requested_path": false
+    },
+    {
+      "case": "bare_lateral_friction_locked_minus",
+      "disposition": "audited",
+      "verdict": "validation/local/bare_lateral_friction_locked_minus.json",
+      "verdict_sha256": "cd68dd9422c742a88902463ff1eb1af9ab600715df30d564517897c00a4e4690",
+      "status_sha256": "328a4b938fe7cd09ff7cfb88bb2c65c3ab2620ff3bbdc39af8fd689ed3565527",
+      "archive_manifest_sha256": "dd3d65d75da0325d82cddf21be857958d4b7866f49455b4b30d6925f3381342b",
+      "native_clean": true,
+      "full_requested_path": true
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_minus_pin1_m15",
+      "disposition": "audited",
+      "verdict": "validation/local/snug125_nylon_lateral_friction_locked_minus_pin1_m15.json",
+      "verdict_sha256": "cbf3460cdb2fe047a1727322180c17f18bfe93c3651337cf150fd6f1468400d8",
+      "status_sha256": "9235e1b4d103a7c70a67dc5b87767437410b966c42a0d8f7fce1a9420969f6db",
+      "archive_manifest_sha256": "f45c25faf69041794431e37873eeb998310fd5897e1185266cd490cf84ff6e4d",
+      "native_clean": true,
+      "full_requested_path": true
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_minus_pin1_m15",
+      "disposition": "audited",
+      "verdict": "validation/local/snug125_aluminium_lateral_friction_locked_minus_pin1_m15.json",
+      "verdict_sha256": "634bf42f7e401cca4f831da6a09f14a1cb98fc9123bbbe396526d8c48c71b291",
+      "status_sha256": "b5c7ccaf18493fdf039e57ecf9553c8c9059fa10bdb240f2444bde2afdddf0cd",
+      "archive_manifest_sha256": "a984db8f027b149c03f6683f3a8e9b4fa9690a695d9c73c2f74c1145f1a409fd",
+      "native_clean": true,
+      "full_requested_path": true
+    },
+    {
+      "case": "bare_damage_cont_nominal",
+      "disposition": "audited",
+      "verdict": "validation/partial_local/bare_damage_cont_nominal.json",
+      "verdict_sha256": "60e7a67008e3a65492ac2a351c5dad242c751bcbf4534b1e1aca5f7891c07870",
+      "status_sha256": "08c7933b6eed4ce10933aa7ab3012b46e90cb56da5b261bf8d0147a94db21c35",
+      "archive_manifest_sha256": "7d5a7cd53bc60697eede24b7181d41a91610b4f7f8a4014fc7a0bb9fde3815fd",
+      "native_clean": false,
+      "full_requested_path": false
+    },
+    {
+      "case": "snug125_nylon_damage_cont_nominal_pin1_m15",
+      "disposition": "audited",
+      "verdict": "validation/partial_local/snug125_nylon_damage_cont_nominal_pin1_m15.json",
+      "verdict_sha256": "f1392ad97d982519002d5c8a25bb84992d07618b300ea79e34be22afcfec778e",
+      "status_sha256": "13cb25556be1980db63d94a8ff9f24a02922d88820843c31402433f874df902b",
+      "archive_manifest_sha256": "5bad80cc9c28218bc055f04da660f11511d5b21afb3304c7b0aea4cf995844b4",
+      "native_clean": false,
+      "full_requested_path": false
+    },
+    {
+      "case": "snug125_aluminium_damage_cont_nominal_pin1_m15",
+      "disposition": "audited",
+      "verdict": "validation/partial_local/snug125_aluminium_damage_cont_nominal_pin1_m15.json",
+      "verdict_sha256": "b571acea9598607c7cc0004d62623029a882ce69b42d7e00913a6cc92fdd4015",
+      "status_sha256": "5ecf4a1d76e417b68144880b471783632b978e69facac4843cb5308836d29ec3",
+      "archive_manifest_sha256": "1842f524fd67c1ee579283bfd15ed44f6be392b32220fa1c643d3066a4498096",
+      "native_clean": false,
+      "full_requested_path": false
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_steps_m15",
+      "disposition": "audited",
+      "verdict": "validation/local/snug125_nylon_lateral_friction_locked_steps_m15.json",
+      "verdict_sha256": "9a061473f3f59340110b10f75d3ef60e67be9c8cb5d0fa02fa6f9c58a087a014",
+      "status_sha256": "eb692bcbc1a5ef451679e8080fd7c3b02cf513b783852f86ded0e19e81183377",
+      "archive_manifest_sha256": "e243f2a3f5f7d7c32e7321521d620c57158ff2c32430242431a8aceee71d2f5b",
+      "native_clean": true,
+      "full_requested_path": true
+    },
+    {
+      "case": "snug125_aluminium_lateral_friction_locked_steps_m15",
+      "disposition": "audited",
+      "verdict": "validation/local/snug125_aluminium_lateral_friction_locked_steps_m15.json",
+      "verdict_sha256": "672053325435570ee0b299302d4d064d752973bf91e16ee9830bcfe183871acc",
+      "status_sha256": "03874b02045f1f6dd895e6cc458117538d19708a329b110f7fa07d4b4a69626a",
+      "archive_manifest_sha256": "1dc9b9a76fc2a5b9a1c39d1e2990452aaf38b1c80316d789b4b37e42fead19fe",
+      "native_clean": true,
+      "full_requested_path": true
+    },
+    {
+      "case": "snug125_nylon_lateral_friction_locked_target4_m15",
+      "disposition": "audited",
+      "verdict": "validation/local/snug125_nylon_lateral_friction_locked_target4_m15.json",
+      "verdict_sha256": "bd8fb954479e15f2fa4b1fbe72c7753f4144afbe3f0006516ea6743ddc26ad11",
+      "status_sha256": "0231ffaa4fb2dc61345980601c1660f83d998fb324d9244d7a2d4716ea07fc48",
+      "archive_manifest_sha256": "765e586d6c181d3a05c9e5257cdd31a4fa0df62915cf979b7a1b3c84f5fd871a",
+      "native_clean": true,
+      "full_requested_path": true
+    }
+  ],
+  "failure_record_sha256": "1616347e0fe34e8f47e67031ca5695a673eeb2134a2d7cb89fec46442afbbddd",
+  "deferred_count": 281,
+  "pending_selected_cases": [],
+  "scope": "Finite computational campaign closed with audited results, documented partial paths and explicit unresolved controls. Audited does not mean physical validation or material qualification. No replacement sweep is authorized. Publication and account-skill shutdown receipts are separate."
+}

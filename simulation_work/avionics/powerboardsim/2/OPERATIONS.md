@@ -1,5 +1,17 @@
 # Battery case study operations
 
+### November 12 final selected check and scientific publication
+
+The final nylon target-resolution control finished at **05:19:53 UTC**, archived at 05:20:07 and passed its audit at 05:21:30. All **20 equilibria through 0.040 mm** passed the fixture checks. Input SHA `14496f4ebe360a0f9560284c09d9275ebe1437172d67d48186471150149d3fe7`; RST SHA `36661e9cf562f3acba057a9f9a0e152d92907dc4ea30360221283e44235f2c0f`. The supervisor then exited naturally, with no selected case remaining. No deferred case was dispatched.
+
+Changing only the rigid battery target from 8,856 to 35,162 triangles changed matched forces by **less than 1%**. At 0.040 mm, force remained about **11.6 N**, while loaded area rose **12%** and peak pressure **6%**. Early loaded area approximately doubled. Both first-force brackets remain 0.020–0.023 mm, and travel at 8.5 N remains approximately 0.034 mm. This supports the restraint result within the local fixture while leaving local contact area, pressure convergence and physical sleeve strength unresolved. [Completion and source identities](validation/snug125/target_resolution_completion.json)
+
+The finite computational scope is closed with **16 audited records, two preprocessing failures and six blocked dependents**; 281 broad-sweep cases remain deferred. Audited records include reused prerequisites and partial paths with explicit limits. Both whole-shell controls failed mesh-shape checks before solving, so their descendants provide no contact-changing transient result. Printed-coupon crossings and numerical stops are not physical failure loads. [Final outcome registry](validation/snug125/main_validation_outcomes.json)
+
+The final report has **36 main pages plus the unchanged 30-page prior-fit Appendix A**; the briefing has **12 slides**. Changed report pages 1/19/21/28, the new page 36, the appendix transition and slide 11 were rendered and visually reviewed. Other page text and the Appendix A source are unchanged. Both builds are free of overfull/underfull warnings. The graphics audit verifies **69 report and 12 slide genuine PGF graphics** with embedded LaTeX fonts. The existing **44 reviewed movies / 22 paired subjects** pass the catalogue check without changes. The editable sources, assets and build commands remain in this repository. Review receipt: `.runtime/qa/snug125/final-main-review/visual-review.json`.
+
+Scientific publication is separate from the final account-skill update and automation shutdown. The dedicated keep-awake remains active pending that closeout; no solver is active. At the final native audit, host and guest free space remained above the required 400 GB and 10 GB reserves.
+
 ### November 12 both increment controls completed
 
 The supervisor archived `snug125_aluminium_lateral_friction_locked_steps_m15` at 04:10 UTC and completed its audit at 04:13 UTC. Native MAPDL returned zero after about 3 h 8 min on the approved twelve-core SMP runtime. All **42 equilibria through 0.219375 mm** passed the existing fixture checks. Input SHA `757ae3f1c3c6c6de8e5ce32866f1f4acb3e8572b7b0e2645d51a7c7b8913803f`; RST SHA `616db4a6edb9c7d012385a1f0fc5dc49f67f88b456759496e089d47a0c9e4946`.

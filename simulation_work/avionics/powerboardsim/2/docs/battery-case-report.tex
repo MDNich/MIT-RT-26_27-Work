@@ -11,7 +11,7 @@
 \pdfbookmark[0]{Snug Balius fit versus bare board}{snug-overview}
 {\LARGE\bfseries\color{B}The snug Balius battery case and the bare power board}\par
 {\large Three-cell fit, mounting loads and vibration response}\par
-{\small Started 9 November 2026\quad|\quad Updated 11 November 2026\quad|\quad SolidWorks native export and ANSYS MAPDL 2026 R1}
+{\small Started 9 November 2026\quad|\quad Updated 12 November 2026\quad|\quad SolidWorks native export and ANSYS MAPDL 2026 R1}
 
 \heading{What fits at 1.25 mm}
 The three-pocket Balius SolidWorks part follows the spacing of the archived cells and clears all four outer washers at a nominal 1.250~mm gap between the mounting tabs and the underside of the PCB. The middle cell has only 0.003~mm of clearance. Print dimensions, battery sleeves and assembly alignment can therefore determine whether a real cell starts in contact.
@@ -35,7 +35,7 @@ The native export has 6.350~mm thick tabs at the four case screw bearings. The n
 In the unloaded CAD assembly, shifting the case 0.0030~mm in negative PCB X brings it into contact with the middle cell. In positive X the first limit comes from the mounting holes at 0.0969~mm. Along PCB Y the holes allow only 0.0071~mm in either direction. These one-axis limits assume a fixed 1.250~mm stand-off, zero rotation and four straight 4.00~mm shanks free to centre within their holes.
 
 \heading{What changed with the case?}
-After tightening, peak PCB deflection fell 39\% with nylon screws and 51\% with aluminium. Board-normal random vibration raised peak PCB stress from 32.5~MPa RMS bare to 69.4 and 98.7~MPa RMS, respectively. Those spectra hold the installed contacts fixed. Page~31 shows how early the middle pocket can lose and regain compression in the corresponding seeded motion.
+The case reduced tightening deflection by \textbf{39\% with nylon screws and 51\% with aluminium}. At 8.5~N, local sideways travel was about \textbf{0.03~mm cased versus 0.20~mm bare} with the same nominal nickel law. It adds 74~g and can worsen vibration stresses (page~13). Contact changes limit those vibration predictions; neither screw option has a verified failure load. The finite campaign is closed (page~36).
 
 \newpage
 \pageheading{Comparison baseline and native rerun}
@@ -433,8 +433,8 @@ The screw peaks occur at the fixed PCB ends. Bending supplies 26.68~MPa of the n
 \heading{The mounting assumption matters}
 The nylon tabs moved 0.0817--0.0837~mm sideways, while aluminium tabs moved 0.0176--0.0184~mm. Tied tab and screw-tip rotations require opposing normal loads within the 3.75~mm bearing radius: at least 6.33--8.11~N per nylon tab and 5.80--7.28~N per aluminium tab. Rotation-release controls are deferred. The complete-board case (page~34) permits PCB and neighbouring-cell motion.
 
-\heading{Verified scope and remaining work}
-All 24 aluminium checkpoint equilibria pass their original balance screens. Later material refinement restricts interpretation: the roughly 538~N nylon and 598~N aluminium results at 0.219~mm (page~21) are numerical continuation. Both reverse pulls are audited (page~35). Both nominal damage cases are closed with numerical limits (page~2). Both increment controls passed all 42 saved states per case (page~28); only the nylon target-resolution check remains. Broad sweeps are deferred.
+\heading{Verified scope and closed campaign}
+All 24 aluminium checkpoint equilibria pass their original balance screens. Later material refinement restricts interpretation: the roughly 538~N nylon and 598~N aluminium results at 0.219~mm (page~21) are numerical continuation. Both reverse pulls are audited (page~35). Both nominal damage cases are closed with numerical limits (page~2). Both increment controls passed all 42 saved states per case (page~28). The final target-resolution check also passed (page~36). The finite campaign is closed; broad sweeps remain deferred.
 
 \newpage
 \pageheading{Refining the case mesh changes the base-X event order}
@@ -466,7 +466,7 @@ In the numerical continuation beyond the refined aluminium PLA reference, both m
 With nylon, driven-cell loaded area fell from 59.57 to 55.08~mm$^2$ across this interval; mean pressure rose from 1.74 to 9.68~MPa and the peak from \textbf{16.12 to 30.03~MPa}. Aluminium gave \textbf{49.90~MPa peak} and 10.44~MPa mean over 56.96~mm$^2$ at the upper station. Both middle cells averaged 7.29~MPa, but over 58.20~mm$^2$ with nylon and 47.84~mm$^2$ with aluminium. Their peaks were 10.85 and 10.43~MPa. Nylon also loaded the right cell (3.31~MPa peak); aluminium left it clear.
 
 \heading{How much does the faceted cell surface matter?}
-At 5.53~N, 112 of 18,372 pocket points carried native pressure, covering 30.58~mm$^2$. Holding the deformed case and rigid cell pose fixed, successively finer target skins put 201 and 224 points inside the cell. The trimmed STEP solid gave 227 points (61.61~mm$^2$). At 11.57~N the finest skin and STEP agreed on the count of 278, compared with 164 loaded natively. A matched native control refines only the driven cell through 0.040~mm to determine how the forces redistribute.
+At 5.53~N, 112 of 18,372 pocket points carried native pressure, covering 30.58~mm$^2$. Holding the deformed case and rigid cell pose fixed, successively finer target skins put 201 and 224 points inside the cell. The trimmed STEP solid gave 227 points (61.61~mm$^2$). At 11.57~N the finest skin and STEP agreed on the count of 278, compared with 164 loaded natively. The completed native control changed matched forces by less than 1\%. At 0.040~mm, loaded area rose about 12\% and peak pressure about 6\% (page~36).
 
 Independent force, area and target-ownership checks reproduce the native pressure fields. Rigid cells provide no sleeve or can strength limit. Nylon stopped after about 16~hours at 0.470~mm travel. Two later states failed the Z-force balance; the first 63 passed. The tighter material interpretation is separate: the paired aluminium reference bracket is now 0.107--0.132~mm (page~24).
 
@@ -611,7 +611,7 @@ At the bare fixture's terminal force of \textbf{8.54 N}, lateral actuator work w
 At 0.206875~mm the PLA and four shanks stored 4.974 and 3.365~mJ with nylon screws, together 87.3\% of actuator work. Aluminium raised these elastic energies to 15.400 and 5.794~mJ, or 91.6\%. Independent nodal-force integration reproduced the elastic storage. Nickel work was 1.022 and 1.662~mJ, respectively. Summed nodal work matched integrated actuator reactions within 0.0009~mJ across nylon's checkpoint and 0.000021~mJ across aluminium's.
 
 \heading{Smaller increments preserve both force results}
-Both selected controls completed \textbf{42 equilibria through 0.219~mm}; all passed the fixture checks. With the same meshes and bilinear nickel law, reaction changed by \textbf{less than 1\%} at all 13 matched stations for each screw material. Nylon's endpoint force changed from \textbf{538 to 539~N} and work from \textbf{13.6 to 13.2~mJ}, about 3\%. Aluminium's force stayed about \textbf{598~N}, while work fell from \textbf{28.4 to 27.9~mJ}, about 2\%. At 8.5~N, travel remained about \textbf{0.034~mm} with nylon; aluminium's estimate shifted from \textbf{0.025 to 0.026~mm}. Early contact work is more step-sensitive and is not an impact-energy rating. Both controls stay below their own parent-mesh PLA references; earlier corner-refinement bounds are not transferred to them. These checks establish neither full convergence nor a failure load. Only the selected nylon target-resolution control remains.
+Both selected controls completed \textbf{42 equilibria through 0.219~mm}; all passed the fixture checks. With the same meshes and bilinear nickel law, reaction changed by \textbf{less than 1\%} at all 13 matched stations for each screw material. Nylon's endpoint force changed from \textbf{538 to 539~N} and work from \textbf{13.6 to 13.2~mJ}, about 3\%. Aluminium's force stayed about \textbf{598~N}, while work fell from \textbf{28.4 to 27.9~mJ}, about 2\%. At 8.5~N, travel remained about \textbf{0.034~mm} with nylon; aluminium's estimate shifted from \textbf{0.025 to 0.026~mm}. Early contact work is more step-sensitive and is not an impact-energy rating. Both controls stay below their own parent-mesh PLA references; earlier corner-refinement bounds are not transferred to them. These checks establish neither full convergence nor a failure load. The final target-resolution result is on page~36.
 
 \heading{How close did the nickel get to damage initiation?}
 Following the \href{https://ansyshelp.ansys.com/public/Views/Secured/corp/v261/en/ans_mat/mat_damageall.html}{ANSYS ductile-damage law}, each plastic-strain increment is divided by its critical strain at the current stress triaxiality. A sum of one marks initiation. Independent replay agreed with the native criterion within $2.4\times10^{-6}$ on the bare damage-law pull and three controls. On aluminium's bilinear history, computing triaxiality from the full stress tensor changed the peak criterion by less than $6.4\times10^{-9}$.
@@ -777,6 +777,24 @@ Peak screw-shank fibre tension [MPa] & 3.8 & 8.9\\\bottomrule
 Both native solves completed 0.500~mm: 33 saved equilibria for nylon and 34 for aluminium. All fixture force and moment, bearing, fixed-cell, pressure and work checks passed. The largest force-residual components were 0.025 and 0.046~N. The predicted first-contact travel of about 0.165~mm lies within both native clear/loaded brackets.
 
 The \textbf{52.3~MPa in-plane PLA coupon reference} is first crossed at \textbf{0.246--0.271~mm with nylon} and \textbf{0.239--0.264~mm with aluminium}. These overlapping parent-mesh brackets do not establish a failure-order difference or a converged fracture load. The forward corner-refinement limit cannot be transferred to reverse loading. Terminal forces of 429 and 475~N are retained only as numerical continuation. Actual printed strength, screw allowables and battery-sleeve limits remain unverified.
+
+\clearpage
+\pageheading{Final contact check and main-validation outcome}
+The last selected native control refined the driven battery's rigid target from \textbf{8,856 to 35,162 triangles}. The 1.5~mm PLA mesh, bilinear nickel law, fixed neighbours, four-core SMP runtime and prescribed increments stayed unchanged. All \textbf{20 saved equilibria through 0.040~mm} passed the fixture checks. The largest force-residual component was below 0.001~N.
+
+\begin{center}\includegraphics[width=.99\linewidth]{figures/snug-target-resolution.pdf}
+\captionof{figure}{Native quantities at the same saved travel in the original and refined target controls. Loaded area is the contact quadrature measure. The curves describe the local fixed-support fixture, not free battery motion on the complete board.}\end{center}
+
+\heading{Force is stable; local contact area is less stable}
+Across the 11 common stations, applied force changed by \textbf{less than 1\%}. Both models first carried pocket pressure between \textbf{0.020 and 0.023~mm}. At 8.5~N, interpolated cell travel remains about \textbf{0.034~mm}; each native bracket is retained in the audit. Contact pressure is compared only at actual shared travel, without interpolation across the force crossing.
+
+At \textbf{0.040~mm}, force changed from 11.57 to 11.60~N, loaded area from \textbf{43 to 48~mm$^2$}, and peak pressure from \textbf{1.46 to 1.54~MPa}. The latter changes are about 12\% and 6\%. At first loading, the area approximately doubled despite the small force change. Thus the restraint conclusion survives this check, while local contact area is not converged. Rigid cell surfaces supply no physical sleeve or can strength limit.
+
+\heading{The selected computational work is closed}
+The finite scope contains \textbf{16 audited case records}, including reused prerequisites and documented partial solutions, \textbf{two preprocessing failures} and \textbf{six blocked dependents}. No selected case remains to dispatch. The two whole-shell controls failed before solving, so their contact and transient descendants provide no result. The 281 deferred cases are not resumed.
+
+\heading{What can be concluded}
+The case reduces tightening deflection and restrains sideways travel once a cell reaches its pocket. Its added mass and stiffness can increase board vibration stresses and attachment loads; aluminium generally transfers higher local loads than nylon. Fixed-contact vibration histories lose predictive scope when contact changes. Printed-coupon crossings, growing corner peaks and numerical stops do not establish fracture or tearing loads. The report preserves native ANSYS evidence, independent calculations and CAD-only findings separately. The prior fit remains in Appendix~A, and all 22 shared-scale movie subjects remain available.
 
 \clearpage
 \setcounter{page}{1}\renewcommand{\thepage}{A-\arabic{page}}
