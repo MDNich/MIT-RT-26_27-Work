@@ -1,5 +1,15 @@
 # Battery case study operations
 
+### November 12 both increment controls completed
+
+The supervisor archived `snug125_aluminium_lateral_friction_locked_steps_m15` at 04:10 UTC and completed its audit at 04:13 UTC. Native MAPDL returned zero after about 3 h 8 min on the approved twelve-core SMP runtime. All **42 equilibria through 0.219375 mm** passed the existing fixture checks. Input SHA `757ae3f1c3c6c6de8e5ce32866f1f4acb3e8572b7b0e2645d51a7c7b8913803f`; RST SHA `616db4a6edb9c7d012385a1f0fc5dc49f67f88b456759496e089d47a0c9e4946`.
+
+Across 13 matched stations, aluminium reaction changed by at most 0.10%, remaining about **598 N** at the endpoint. Integrated work fell from **28.4 to 27.9 mJ**, about 2%. At 8.5 N, resolving contact shifted the interpolated travel from **0.025 to 0.026 mm**. Both screw controls therefore preserve the force result to less than 1% at matched travel. They stay below their own parent-mesh PLA references, but earlier exact-deck corner bounds are not transferred to them. Agreement of forces establishes neither full convergence nor a physical failure load. [Aluminium completion](validation/snug125/aluminium_increment_completion.json) · [Nylon completion](validation/snug125/nylon_increment_completion.json)
+
+The final nylon target-resolution control was held before dispatch at the unchanged 425 GB host launch margin. Full-hash-verified sharing of redundant blocks in 48 closed prior-fit PSD matrix copies recovered **7.2 GB**, retaining every original file byte and metadata value. Host free space reached about **428 GB**. The supervisor released its own hold and launched the final case once at **04:25:12 UTC**, on four SMP cores. Input SHA `14496f4ebe360a0f9560284c09d9275ebe1437172d67d48186471150149d3fe7`. No further selected case follows; the 281 deferred cases remain excluded. The dedicated keep-awake and the 400 GB host/10 GB guest reserves remain in force. [Recovery audit](validation/snug125/storage_prior_fit_full_recovery.json)
+
+The updated 65-page report and 12-slide briefing compiled. Report pages 19/28 and slide 4 were rendered and visually reviewed, with no clipping or unreadable text. Other page text, Appendix A source and all figures are unchanged. The graphics audit verifies 68 report and 12 slide PGF graphics. No movie changed. Review receipt: `.runtime/qa/snug125/aluminium-increment-review/visual-review.json`. Final publication and the account-backed skill update await the last selected outcome.
+
 ### November 12 nylon increment control completed
 
 The existing supervisor archived `snug125_nylon_lateral_friction_locked_steps_m15` at 00:41 UTC and completed its audit at 00:44 UTC. Native MAPDL returned zero with **42 converged states through 0.219375 mm**; all fixture checks passed. Input SHA `e0950f9853201ac9880055147a4860cb023ddb5358e75f5331e65cd639502e84`; RST SHA `676c6654853e6ba2cb80642a6f8bf06cd751cd3e020cc845293613f2e9b573ab`. The original four-core SMP runtime and mesh were retained.
